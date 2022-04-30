@@ -1,0 +1,16 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: tiltakspenger-vedtak
+  namespace: tpts
+  labels:
+    team: tpts
+spec:
+  image: {{ image }}
+  port: 8080
+  ingresses:
+    - https://tiltakspenger-vedtak.dev.intern.nav.no
+  liveness:
+    path: /isAlive
+  readiness:
+    path: /isReady
