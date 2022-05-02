@@ -1,4 +1,4 @@
-val ktorVersion = "2.0.1"
+val ktorVersion = "2.0.0"
 val log4jVersion = "2.17.2"
 
 plugins {
