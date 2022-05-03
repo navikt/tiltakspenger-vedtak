@@ -31,7 +31,7 @@ fun main() {
                 }
             }.also { LOG.info { "setting up endpoint /isReady" } }
         }
-    }.start()
+    }.start(wait=true)
 
     Runtime.getRuntime().addShutdownHook(
         Thread {
