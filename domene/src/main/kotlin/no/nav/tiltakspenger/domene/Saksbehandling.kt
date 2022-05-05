@@ -15,20 +15,18 @@ object FaktaInhenter {
     }
 }
 
-
 interface Saksbehandling {
     fun behandle(søknad: Søknad)
 }
 
-
 class Førstegangsbehandling private constructor(
     val ident: String,
     var søknad: Søknad?,
-    val vilkårsvurdering: List<Vilkårsvurdering>,
+    val vilkårsvurderinger: List<Vilkårsvurdering>,
     var tilstand: Tilstand
 ) : Saksbehandling {
     constructor(ident: String) : this(
-        vilkårsvurdering  = listOf(
+        vilkårsvurderinger = listOf(
             Vilkårsvurdering(vilkår = ErOver18År),
         ),
         søknad = null,
@@ -36,10 +34,8 @@ class Førstegangsbehandling private constructor(
         ident = ident
     )
 
-
     override fun behandle(søknad: Søknad) {
         tilstand.behandle(søknad, this)
-
     }
 //    fun hentFakta() {
 //        vilkårsvurdering.forEach { it.start }
@@ -53,8 +49,6 @@ class Førstegangsbehandling private constructor(
 //    }
 
     fun vurder() {
-
-
 //       vilkårsvurdering.forEach { it.vurder() }
     }
 
@@ -73,7 +67,8 @@ class Førstegangsbehandling private constructor(
             TIL_MANUELL_BEHANDLING,
             FERDIG
         }
-        object Start: Tilstand() {
+
+        object Start : Tilstand() {
             fun håndterSøknad(søknad: Søknad) {
                 // TODO masse greier
                 // registere ting på førstegangsbehandlingen gitt fra søknaden
@@ -83,26 +78,20 @@ class Førstegangsbehandling private constructor(
 
             override fun behandle(søknad: Søknad, førstegangsbehandling: Førstegangsbehandling) {
                 førstegangsbehandling.søknad = søknad
-                requireNotNull(førstegangsbehandling.søknad) {" Her burde søknaden være satt"}
+                requireNotNull(førstegangsbehandling.søknad) { "Her burde søknaden være satt" }
                 førstegangsbehandling.nesteTilstand(Vurder)
             }
         }
 
         object Vurder : Tilstand() {
-
-            override fun onEntry(førstegangsbehandling: Førstegangsbehandling){
-                val søknad =  requireNotNull(førstegangsbehandling.søknad)
+            override fun onEntry(førstegangsbehandling: Førstegangsbehandling) {
+                val søknad = requireNotNull(førstegangsbehandling.søknad)
                 førstegangsbehandling.vurder()
             }
 
-            fun hånder(faktum: Faktum, førstegangsbehandling: Førstegangsbehandling) {
-               // førstegangsbehandling.vurder(faktum)
-
+            fun håndter(faktum: Faktum, førstegangsbehandling: Førstegangsbehandling) {
+                // førstegangsbehandling.vurder(faktum)
             }
-
-
-
-
         }
     }
 
@@ -111,8 +100,6 @@ class Førstegangsbehandling private constructor(
         tilstand.onEntry(this)
     }
 }
-
-
 
 class Saksbehandling1(
     private val startet: LocalDateTime = LocalDateTime.now(),

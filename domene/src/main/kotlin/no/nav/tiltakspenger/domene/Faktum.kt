@@ -8,57 +8,46 @@ enum class FaktumKilde {
     SAKSBEHANDLER
 }
 
-
 class FaktumBehov() {
 
 }
 
-
 sealed class Faktum2<R>(val tilstand: Tilstand, private val verdi: R?) {
+    fun get(): R =
+        if (tilstand == Tilstand.UKJENT) throw IllegalArgumentException("Ukjent tilstand har ikke verdi") else verdi!!
 
-    fun get(): R  = if(tilstand == Tilstand.Ukjent) throw IllegalArgumentException("Ukjent tilstand har ikke verdi") else verdi!!
     enum class Tilstand {
-        Kjent,
-        Ukjent
+        KJENT,
+        UKJENT
     }
 }
 
-
-class Fødselsdato private constructor(tilstand: Tilstand, private val dato: LocalDate?) : Faktum2<LocalDate>(tilstand, dato) {
-
-
-    constructor() : this(Tilstand.Ukjent, null)
-    constructor(date: LocalDate) : this(Tilstand.Kjent, date)
-
-
+class Fødselsdato private constructor(tilstand: Tilstand, private val dato: LocalDate?) :
+    Faktum2<LocalDate>(tilstand, dato) {
+    constructor() : this(Tilstand.UKJENT, null)
+    constructor(date: LocalDate) : this(Tilstand.KJENT, date)
 }
 
-fun main(){
-    val ukjentFødselsdato = Fødselsdato()
-    val kjentfødselsdato = Fødselsdato(LocalDate.now())
-    val listeMedfakta = listOf(ukjentFødselsdato, kjentfødselsdato)
-    val ukjentefakta = listeMedfakta.all { it.tilstand == Faktum2.Tilstand.Ukjent }
-
-
-}
+//fun main(){
+//    val ukjentFødselsdato = Fødselsdato()
+//    val kjentfødselsdato = Fødselsdato(LocalDate.now())
+//    val listeMedfakta = listOf(ukjentFødselsdato, kjentfødselsdato)
+//    val ukjentefakta = listeMedfakta.all { it.tilstand == Faktum2.Tilstand.Ukjent }
+//}
 
 interface Faktum {
     val kilde: FaktumKilde
 }
 
-
-
 class AldersFaktum(
     val alder: Int,
     val ident: String,
     override val kilde: FaktumKilde
-): Faktum {
+) : Faktum {
     fun erOver18() = alder > 17
     fun erUnder16() = alder < 16
 }
 
 class FødselsDatoFaktum(
     val fødselsdato: LocalDate
-) {
-
-}
+) {}
