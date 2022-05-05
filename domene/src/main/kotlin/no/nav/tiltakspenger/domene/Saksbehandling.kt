@@ -3,17 +3,118 @@ package no.nav.tiltakspenger.domene
 import java.time.LocalDateTime
 
 object FaktaInhenter {
-    fun hentAldersFakta(saksbehandling: Saksbehandling) {
+    fun hentAldersFakta(saksbehandling: Saksbehandling1) {
         Thread.sleep(2000)
-        saksbehandling.opplys(AldersFaktum(
-            ident = saksbehandling.ident,
-            kilde = FaktumKilde.SYSTEM,
-            alder = 17
-        ))
+        saksbehandling.opplys(
+            AldersFaktum(
+                ident = saksbehandling.ident,
+                kilde = FaktumKilde.SYSTEM,
+                alder = 17
+            )
+        )
     }
 }
 
-class Saksbehandling(
+
+interface Saksbehandling {
+    fun behandle(søknad: Søknad)
+}
+
+
+class Førstegangsbehandling private constructor(
+    val ident: String,
+    var søknad: Søknad?,
+    val vilkårsvurdering: List<Vilkårsvurdering>,
+    var tilstand: Tilstand
+) : Saksbehandling {
+    constructor(ident: String) : this(
+        vilkårsvurdering  = listOf(
+            Vilkårsvurdering(vilkår = ErOver18År),
+        ),
+        søknad = null,
+        tilstand = Tilstand.Start,
+        ident = ident
+    )
+
+
+    override fun behandle(søknad: Søknad) {
+        tilstand.behandle(søknad, this)
+
+    }
+//    fun hentFakta() {
+//        vilkårsvurdering.forEach { it.start }
+//        // Noen må hente fakta
+//    }
+
+//    fun onTilstandChange(newTilstand: Tilstand) {
+//        when (newTilstand) {
+//            Tilstand.Tilstandstype.HENTER_OPPLYSNINGER -> hentFakta()
+//        }
+//    }
+
+    fun vurder() {
+
+
+//       vilkårsvurdering.forEach { it.vurder() }
+    }
+
+    sealed class Tilstand() {
+        open fun behandle(søknad: Søknad, førstegangsbehandling: Førstegangsbehandling) {
+            println("KAN IKKE BEHANDLE")
+        }
+
+        open fun onEntry(førstegangsbehandling: Førstegangsbehandling) {}
+
+        enum class Tilstandstype {
+            START,
+            SØKNAD_MOTTATT,
+            HENTER_OPPLYSNINGER,
+            VILKÅRSVURDERING,
+            TIL_MANUELL_BEHANDLING,
+            FERDIG
+        }
+        object Start: Tilstand() {
+            fun håndterSøknad(søknad: Søknad) {
+                // TODO masse greier
+                // registere ting på førstegangsbehandlingen gitt fra søknaden
+                // trenger PDL-stuff
+                //
+            }
+
+            override fun behandle(søknad: Søknad, førstegangsbehandling: Førstegangsbehandling) {
+                førstegangsbehandling.søknad = søknad
+                requireNotNull(førstegangsbehandling.søknad) {" Her burde søknaden være satt"}
+                førstegangsbehandling.nesteTilstand(Vurder)
+            }
+        }
+
+        object Vurder : Tilstand() {
+
+            override fun onEntry(førstegangsbehandling: Førstegangsbehandling){
+                val søknad =  requireNotNull(førstegangsbehandling.søknad)
+                førstegangsbehandling.vurder()
+            }
+
+            fun hånder(faktum: Faktum, førstegangsbehandling: Førstegangsbehandling) {
+               // førstegangsbehandling.vurder(faktum)
+
+            }
+
+
+
+
+        }
+    }
+
+    private fun nesteTilstand(nestetilstand: Tilstand.Vurder) {
+        tilstand = nestetilstand
+        tilstand.onEntry(this)
+    }
+}
+
+
+
+class Saksbehandling1(
     private val startet: LocalDateTime = LocalDateTime.now(),
     val ident: String,
     vilkårsVurderinger: List<Vilkårsvurdering>
@@ -32,10 +133,12 @@ class Saksbehandling(
     companion object {
         fun start(ident: String) {
             val vurderinger = inngangsVilkår.map { Vilkårsvurdering(vilkår = it) }
-            FaktaInhenter.hentAldersFakta(Saksbehandling(
-                ident = ident,
-                vilkårsVurderinger = vurderinger
-            ))
+            FaktaInhenter.hentAldersFakta(
+                Saksbehandling1(
+                    ident = ident,
+                    vilkårsVurderinger = vurderinger
+                )
+            )
         }
     }
 }

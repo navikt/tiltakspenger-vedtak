@@ -12,7 +12,7 @@ data class Vilkårsvurdering(
     val fakta: List<Faktum> = emptyList()
 ) {
     fun vurder(faktum: Faktum): Vilkårsvurdering {
-        val oppdaterteFakta = fakta + listOf(faktum).filter { faktum -> faktum.erRelevantFor(vilkår) }
+        val oppdaterteFakta = fakta //+ listOf(faktum).filter { faktum -> faktum.erRelevantFor(vilkår) }
         return this.copy(
             utfall = vilkår.vurder(oppdaterteFakta),
             fakta = oppdaterteFakta,
