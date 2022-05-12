@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.domene
 
+import java.time.LocalDate.now
 import java.time.LocalDateTime
 
 object FaktaInhenter {
@@ -7,9 +8,8 @@ object FaktaInhenter {
         Thread.sleep(2000)
         saksbehandling.opplys(
             AldersFaktum(
-                ident = saksbehandling.ident,
-                kilde = FaktumKilde.SYSTEM,
-                alder = 17
+                fødselsdato = now(),
+                kilde = FaktumKilde.SYSTEM
             )
         )
     }

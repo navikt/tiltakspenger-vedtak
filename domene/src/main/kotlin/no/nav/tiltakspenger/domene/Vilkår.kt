@@ -32,8 +32,8 @@ object ErOver18År : Vilkår {
 
     private fun vurder(faktum: AldersFaktum): Utfall {
         return when (faktum.erOver18()) {
-            true -> Utfall.OPPFYLT
-            else -> Utfall.IKKE_OPPFYLT
+            true -> Utfall.VURDERT_OG_OPPFYLT
+            else -> Utfall.VURDERT_OG_IKKE_OPPFYLT
         }
     }
 }
