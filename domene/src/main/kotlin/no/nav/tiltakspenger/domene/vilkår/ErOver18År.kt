@@ -14,15 +14,15 @@ object ErOver18År : Vilkår {
     val vurderingsperiode: Periode
         get() = TODO("Not yet implemented")
 
-    override fun vurder(faktum: List<Faktum>): Utfall {
-        if (faktum.firstOrNull() !is FødselsdatoFaktum) return Utfall.IKKE_VURDERT
-        return vurder((faktum.first() as FødselsdatoFaktum))
+    override fun vurder(faktum: List<Faktum>, vurderingsPeriode: Periode): Utfall {
+        if (faktum.firstOrNull() !is FødselsdatoFaktum) return Utfall.IKKE_VURDERT()
+        return vurder((faktum.first() as FødselsdatoFaktum), vurderingsPeriode)
     }
 
-    private fun vurder(faktum: FødselsdatoFaktum): Utfall {
+    private fun vurder(faktum: FødselsdatoFaktum, vurderingsPeriode: Periode): Utfall {
         return when (faktum.erOver18()) {
-            true -> Utfall.VURDERT_OG_OPPFYLT
-            else -> Utfall.VURDERT_OG_IKKE_OPPFYLT
+            true -> Utfall.VURDERT_OG_OPPFYLT(vurderingsPeriode)
+            else -> Utfall.VURDERT_OG_IKKE_OPPFYLT()
         }
     }
 }

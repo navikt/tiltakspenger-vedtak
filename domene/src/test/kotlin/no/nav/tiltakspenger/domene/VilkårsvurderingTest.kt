@@ -17,7 +17,7 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertEquals(Utfall.IKKE_VURDERT, vilkårsvurdering.utfall)
+        assertTrue(vilkårsvurdering.utfall is Utfall.IKKE_VURDERT)
     }
 
     @Test
@@ -26,11 +26,11 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertEquals(Utfall.IKKE_VURDERT, vilkårsvurdering.utfall)
+        assertTrue(vilkårsvurdering.utfall is Utfall.IKKE_VURDERT)
 
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(FødselsdatoFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
-        assertEquals(Utfall.VURDERT_OG_OPPFYLT, vurderingMedUtfall.utfall)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
     }
 
     @Test
@@ -40,7 +40,7 @@ class VilkårsvurderingTest {
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
         val vurderingMedUtfall = vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-        assertEquals(Utfall.VURDERT_OG_TRENGER_MANUELL_VURDERING, vurderingMedUtfall.utfall)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_TRENGER_MANUELL_VURDERING)
     }
 
     @Test
@@ -52,7 +52,7 @@ class VilkårsvurderingTest {
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
             .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
-        assertEquals(Utfall.VURDERT_OG_OPPFYLT, vurderingMedUtfall.utfall)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
     }
 
     @Test
@@ -70,8 +70,6 @@ class VilkårsvurderingTest {
                     friKostOgLosji = false
                 )
             )
-
-        assertEquals(Utfall.VURDERT_OG_IKKE_OPPFYLT, vurderingMedUtfall.utfall)
-
+        assertEquals(Utfall.VURDERT_OG_IKKE_OPPFYLT(), vurderingMedUtfall.utfall)
     }
 }
