@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 object FaktaInhenter {
     fun hentAldersFakta(saksbehandling: Saksbehandling1) {
-        Thread.sleep(2000)
+//        Thread.sleep(2000)
         saksbehandling.opplys(
             FødselsdatoFaktum(
                 fødselsdato = now(),
@@ -54,7 +54,7 @@ class Førstegangsbehandling private constructor(
 //       vilkårsvurdering.forEach { it.vurder() }
     }
 
-    sealed class Tilstand() {
+    sealed class Tilstand {
         open fun behandle(søknad: Søknad, førstegangsbehandling: Førstegangsbehandling) {
             println("KAN IKKE BEHANDLE")
         }
@@ -121,10 +121,12 @@ class Saksbehandling1(
 
     companion object {
         fun start(ident: String) {
-            val vurderinger = inngangsVilkår.map { Vilkårsvurdering(
-                vilkår = it,
-                vurderingsperiode = Periode(fra = now(), til = now())
-            ) }
+            val vurderinger = inngangsVilkår.map {
+                Vilkårsvurdering(
+                    vilkår = it,
+                    vurderingsperiode = Periode(fra = now(), til = now())
+                )
+            }
             FaktaInhenter.hentAldersFakta(
                 Saksbehandling1(
                     ident = ident,

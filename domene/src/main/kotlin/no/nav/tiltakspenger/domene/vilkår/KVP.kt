@@ -1,6 +1,5 @@
 import no.nav.tiltakspenger.domene.*
 import no.nav.tiltakspenger.domene.fakta.KVPFaktum
-import java.time.Period
 import kotlin.reflect.KClass
 
 object KVP : Vilkår {
@@ -16,9 +15,9 @@ object KVP : Vilkår {
 
     private fun vurder(faktum: KVPFaktum, vurderingsperiode: Periode): Utfall {
         return when {
-            faktum.deltarKVP && faktum.kilde == FaktumKilde.BRUKER -> Utfall.VURDERT_OG_TRENGER_MANUELL_VURDERING()
-            !faktum.deltarKVP && faktum.kilde == FaktumKilde.SAKSBEHANDLER -> Utfall.VURDERT_OG_OPPFYLT(vurderingsperiode)
-            else -> Utfall.VURDERT_OG_IKKE_OPPFYLT()
+            faktum.deltarKVP && faktum.kilde == FaktumKilde.BRUKER -> Utfall.VurdertOgTrengerManuellBehandling()
+            !faktum.deltarKVP && faktum.kilde == FaktumKilde.SAKSBEHANDLER -> Utfall.VurdertOgOppfylt(vurderingsperiode)
+            else -> Utfall.VurdertOgIkkeOppfylt()
         }
     }
 }

@@ -17,7 +17,7 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertTrue(vilkårsvurdering.utfall is Utfall.IKKE_VURDERT)
+        assertTrue(vilkårsvurdering.utfall is Utfall.IkkeVurdert)
     }
 
     @Test
@@ -26,11 +26,11 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertTrue(vilkårsvurdering.utfall is Utfall.IKKE_VURDERT)
+        assertTrue(vilkårsvurdering.utfall is Utfall.IkkeVurdert)
 
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(FødselsdatoFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgOppfylt)
     }
 
     @Test
@@ -40,7 +40,7 @@ class VilkårsvurderingTest {
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
         val vurderingMedUtfall = vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_TRENGER_MANUELL_VURDERING)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgTrengerManuellBehandling)
     }
 
     @Test
@@ -52,7 +52,7 @@ class VilkårsvurderingTest {
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
             .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
-        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgOppfylt)
     }
 
     @Test
@@ -75,9 +75,9 @@ class VilkårsvurderingTest {
                 )
             )
 
-        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgOppfylt)
         when (val utfall = vurderingMedUtfall.utfall) {
-            is Utfall.VURDERT_OG_OPPFYLT -> {
+            is Utfall.VurdertOgOppfylt -> {
                 assertTrue(utfall.vilkårOppfyltPeriode.fra.isEqual(om1Uke))
                 assertTrue(utfall.vilkårOppfyltPeriode.til.isEqual(om2Uker))
             }

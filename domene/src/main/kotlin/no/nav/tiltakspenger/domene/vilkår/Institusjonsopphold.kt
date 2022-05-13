@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.domene.vilkår
 
 import no.nav.tiltakspenger.domene.*
 import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
-import java.time.Period
 import kotlin.reflect.KClass
 
 object Institusjonsopphold : Vilkår {
@@ -15,11 +14,11 @@ object Institusjonsopphold : Vilkår {
         val instFaktum = instFakta.first()
 
         return when {
-            instFaktum.oppholdsperiode.inneholderHele(vurderingsPeriode) -> Utfall.VURDERT_OG_IKKE_OPPFYLT()
-            instFaktum.oppholdsperiode.overlapperMed(vurderingsPeriode) -> Utfall.VURDERT_OG_OPPFYLT(
+            instFaktum.oppholdsperiode.inneholderHele(vurderingsPeriode) -> Utfall.VurdertOgIkkeOppfylt()
+            instFaktum.oppholdsperiode.overlapperMed(vurderingsPeriode) -> Utfall.VurdertOgOppfylt(
                 vurderingsPeriode.intersect(instFaktum.oppholdsperiode)
             )
-            else -> Utfall.VURDERT_OG_IKKE_OPPFYLT()
+            else -> Utfall.VurdertOgIkkeOppfylt()
         }
     }
 }

@@ -10,7 +10,7 @@ sealed class VilkårsVurderingSealed(
     class IkkeVurdertVilkår(vilkår: Vilkår): VilkårsVurderingSealed(vilkår = vilkår) {
         fun vurder(): VilkårsVurderingSealed {
             return VurdertVilkår(
-                utfall = Utfall.IKKE_VURDERT(),
+                utfall = Utfall.IkkeVurdert(),
                 vilkår = vilkår,
             )
         }

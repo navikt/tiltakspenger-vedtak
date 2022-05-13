@@ -1,14 +1,14 @@
 package no.nav.tiltakspenger.domene
 
 sealed class Utfall {
-    class IKKE_VURDERT: Utfall()
-    class VURDERT_OG_OPPFYLT(val vilkårOppfyltPeriode: Periode): Utfall()
-    class VURDERT_OG_IKKE_OPPFYLT: Utfall()
-    class VURDERT_OG_TRENGER_MANUELL_VURDERING: Utfall()
+    class IkkeVurdert: Utfall()
+    class VurdertOgOppfylt(val vilkårOppfyltPeriode: Periode): Utfall()
+    class VurdertOgIkkeOppfylt: Utfall()
+    class VurdertOgTrengerManuellBehandling: Utfall()
 }
 
 data class Vilkårsvurdering(
-    val utfall: Utfall = Utfall.IKKE_VURDERT(),
+    val utfall: Utfall = Utfall.IkkeVurdert(),
     val vilkår: Vilkår,
     val fakta: List<Faktum> = emptyList(),
     val vurderingsperiode: Periode
@@ -24,4 +24,4 @@ data class Vilkårsvurdering(
 
 fun List<Vilkårsvurdering>.erInngangsVilkårOppfylt(): Boolean = this
     .filter { it.vilkår.erInngangsVilkår }
-    .all { it.utfall is Utfall.VURDERT_OG_OPPFYLT }
+    .all { it.utfall is Utfall.VurdertOgOppfylt }
