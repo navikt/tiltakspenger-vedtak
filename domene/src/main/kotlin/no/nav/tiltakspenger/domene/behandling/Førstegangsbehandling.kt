@@ -1,25 +1,8 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
+import no.nav.tiltakspenger.domene.*
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
-import java.time.LocalDate.now
-import java.time.LocalDateTime
-
-object FaktaInhenter {
-    fun hentAldersFakta(saksbehandling: Saksbehandling1) {
-//        Thread.sleep(2000)
-        saksbehandling.opplys(
-            FødselsdatoFaktum(
-                fødselsdato = now(),
-                kilde = FaktumKilde.SYSTEM
-            )
-        )
-    }
-}
-
-interface Saksbehandling {
-    fun behandle(søknad: Søknad)
-}
+import java.time.LocalDate
 
 class Førstegangsbehandling private constructor(
     val ident: String,
@@ -29,7 +12,10 @@ class Førstegangsbehandling private constructor(
 ) : Saksbehandling {
     constructor(ident: String) : this(
         vilkårsvurderinger = listOf(
-            Vilkårsvurdering(vilkår = ErOver18År, vurderingsperiode = Periode(fra = now(), til = now())),
+            Vilkårsvurdering(
+                vilkår = ErOver18År,
+                vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+            ),
         ),
         søknad = null,
         tilstand = Tilstand.Start,
@@ -100,39 +86,5 @@ class Førstegangsbehandling private constructor(
     private fun nesteTilstand(nestetilstand: Tilstand.Vurder) {
         tilstand = nestetilstand
         tilstand.onEntry(this)
-    }
-}
-
-class Saksbehandling1(
-    private val startet: LocalDateTime = LocalDateTime.now(),
-    val ident: String,
-    vilkårsVurderinger: List<Vilkårsvurdering>
-) {
-    private var vilkårsVurderinger: List<Vilkårsvurdering> = vilkårsVurderinger
-        get() = vilkårsVurderinger
-
-    fun opplys(faktum: Faktum) {
-        vilkårsVurderinger = vilkårsVurderinger.map { vilkår -> vilkår.vurder(faktum) }
-    }
-
-    fun erInngangOppfylt(): Boolean {
-        return vilkårsVurderinger.erInngangsVilkårOppfylt()
-    }
-
-    companion object {
-        fun start(ident: String) {
-            val vurderinger = inngangsVilkår.map {
-                Vilkårsvurdering(
-                    vilkår = it,
-                    vurderingsperiode = Periode(fra = now(), til = now())
-                )
-            }
-            FaktaInhenter.hentAldersFakta(
-                Saksbehandling1(
-                    ident = ident,
-                    vilkårsVurderinger = vurderinger
-                )
-            )
-        }
     }
 }

@@ -15,6 +15,7 @@ data class Periode(val fra: LocalDate, val til: LocalDate) : ClosedRange<LocalDa
     fun overlapperMed(periode: Periode): Boolean {
         return periode.contains(fra) || periode.contains(til)
     }
+
     fun intersect(periode: Periode): Periode {
         return Periode(
             fra = maxOf(periode.fra, this.fra),

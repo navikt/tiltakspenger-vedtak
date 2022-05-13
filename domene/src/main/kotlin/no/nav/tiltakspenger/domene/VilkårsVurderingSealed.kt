@@ -7,7 +7,7 @@ sealed class VilkårsVurderingSealed(
     val id: UUID = UUID.randomUUID(),
 ) {
 
-    class IkkeVurdertVilkår(vilkår: Vilkår): VilkårsVurderingSealed(vilkår = vilkår) {
+    class IkkeVurdertVilkår(vilkår: Vilkår) : VilkårsVurderingSealed(vilkår = vilkår) {
         fun vurder(): VilkårsVurderingSealed {
             return VurdertVilkår(
                 utfall = Utfall.IkkeVurdert(),
@@ -19,11 +19,11 @@ sealed class VilkårsVurderingSealed(
     class VurdertVilkår(
         val utfall: Utfall,
         vilkår: Vilkår
-    ): VilkårsVurderingSealed(vilkår = vilkår)
+    ) : VilkårsVurderingSealed(vilkår = vilkår)
 
 }
 
-fun gjørNorMedVilkår(vilkårsVurderingSealed: VilkårsVurderingSealed) {
+fun gjørNoeMedVilkår(vilkårsVurderingSealed: VilkårsVurderingSealed) {
     when (val vilk = vilkårsVurderingSealed) {
         is VilkårsVurderingSealed.VurdertVilkår -> vilk.utfall
         is VilkårsVurderingSealed.IkkeVurdertVilkår -> TODO()

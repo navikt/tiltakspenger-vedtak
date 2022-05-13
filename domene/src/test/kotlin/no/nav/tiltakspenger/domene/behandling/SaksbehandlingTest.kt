@@ -1,5 +1,6 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.Søknad
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
