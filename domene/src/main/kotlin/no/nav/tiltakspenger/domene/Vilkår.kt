@@ -26,7 +26,7 @@ object ErOver18År : Vilkår {
     override val paragraf = Paragraf.PARAGRAF_3_LEDD_1_PUNKTUM1
 
     override fun vurder(faktum: List<Faktum>): Utfall {
-        if (faktum.first() is AldersFaktum) throw IllegalArgumentException("Faktafeil")
+        if (faktum?.firstOrNull() !is AldersFaktum) return Utfall.IKKE_VURDERT
         return vurder((faktum.first() as AldersFaktum))
     }
 

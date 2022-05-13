@@ -9,10 +9,6 @@ enum class FaktumKilde {
     SAKSBEHANDLER
 }
 
-class FaktumBehov() {
-
-}
-
 sealed class Faktum2<R>(val tilstand: Tilstand, private val verdi: R?) {
     fun get(): R =
         if (tilstand == Tilstand.UKJENT) throw IllegalArgumentException("Ukjent tilstand har ikke verdi") else verdi!!
