@@ -10,7 +10,8 @@ enum class Utfall {
 data class Vilkårsvurdering(
     val utfall: Utfall = Utfall.IKKE_VURDERT,
     val vilkår: Vilkår,
-    val fakta: List<Faktum> = emptyList()
+    val fakta: List<Faktum> = emptyList(),
+    val vurderingsperiode: Periode
 ) {
     fun vurder(faktum: Faktum): Vilkårsvurdering {
         val oppdaterteFakta = fakta + listOf(faktum).filter { faktum -> faktum.erRelevantFor(vilkår) }

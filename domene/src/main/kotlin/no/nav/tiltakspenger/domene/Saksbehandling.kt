@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.domene
 
+import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
+import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import java.time.LocalDate.now
 import java.time.LocalDateTime
 
@@ -7,7 +9,7 @@ object FaktaInhenter {
     fun hentAldersFakta(saksbehandling: Saksbehandling1) {
         Thread.sleep(2000)
         saksbehandling.opplys(
-            AldersFaktum(
+            FødselsdatoFaktum(
                 fødselsdato = now(),
                 kilde = FaktumKilde.SYSTEM
             )
@@ -27,7 +29,7 @@ class Førstegangsbehandling private constructor(
 ) : Saksbehandling {
     constructor(ident: String) : this(
         vilkårsvurderinger = listOf(
-            Vilkårsvurdering(vilkår = ErOver18År),
+            Vilkårsvurdering(vilkår = ErOver18År, vurderingsperiode = Periode(fra = now(), til = now())),
         ),
         søknad = null,
         tilstand = Tilstand.Start,
@@ -119,7 +121,10 @@ class Saksbehandling1(
 
     companion object {
         fun start(ident: String) {
-            val vurderinger = inngangsVilkår.map { Vilkårsvurdering(vilkår = it) }
+            val vurderinger = inngangsVilkår.map { Vilkårsvurdering(
+                vilkår = it,
+                vurderingsperiode = Periode(fra = now(), til = now())
+            ) }
             FaktaInhenter.hentAldersFakta(
                 Saksbehandling1(
                     ident = ident,

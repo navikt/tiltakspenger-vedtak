@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene
 
 import java.time.LocalDate
-import java.time.LocalDate.now
 
 enum class FaktumKilde {
     BRUKER,
@@ -36,14 +35,5 @@ interface Faktum {
     val kilde: FaktumKilde
 }
 
-data class AldersFaktum(
-    val fødselsdato: LocalDate,
-    override val kilde: FaktumKilde
-) : Faktum {
-    fun erOver18() = true
-    fun erUnder16() = false
-}
 
-data class FødselsDatoFaktum(
-    val fødselsdato: LocalDate
-) {}
+
