@@ -9,9 +9,15 @@ class Periode(val fra: LocalDate, val til: LocalDate) : ClosedRange<LocalDate> {
         get() = fra
 
     fun inneholderHele(periode: Periode): Boolean {
-        return fra.isBefore(periode.fra) && til.isAfter(periode.til)
+        return fra.isAfter(periode.fra) && til.isAfter(periode.til)
     }
     fun overlapperMed(periode: Periode): Boolean {
         return periode.contains(fra) || periode.contains(til)
+    }
+    fun intersect(periode: Periode): Periode {
+        return Periode(
+            fra = maxOf(periode.fra, this.fra),
+            til = minOf(periode.til, this.til)
+        )
     }
 }

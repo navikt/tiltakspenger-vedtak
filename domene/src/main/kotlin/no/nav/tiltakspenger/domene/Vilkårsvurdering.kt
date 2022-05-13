@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.domene
 
 sealed class Utfall {
     class IKKE_VURDERT: Utfall()
-    class VURDERT_OG_OPPFYLT(val vilkårOppfyltPerioder: Periode): Utfall()
+    class VURDERT_OG_OPPFYLT(val vilkårOppfyltPeriode: Periode): Utfall()
     class VURDERT_OG_IKKE_OPPFYLT: Utfall()
     class VURDERT_OG_TRENGER_MANUELL_VURDERING: Utfall()
 }

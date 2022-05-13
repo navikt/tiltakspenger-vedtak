@@ -57,19 +57,32 @@ class VilkårsvurderingTest {
 
     @Test
     fun `en bruker bor på institusjon i deler av vurderingsperioden`() {
+        val start = LocalDate.now()
+        val om1Uke = start.plusWeeks(1)
+        val om2Uker = start.plusWeeks(2)
+
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
-            vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+            vurderingsperiode = Periode(fra = start, til = om2Uker)
         )
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(
                 InstitusjonsoppholdsFaktum(
                     opphold = false,
                     kilde = FaktumKilde.BRUKER,
-                    oppholdsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now()),
+                    oppholdsperiode = Periode(fra = start, til = om1Uke),
                     friKostOgLosji = false
                 )
             )
-        assertEquals(Utfall.VURDERT_OG_IKKE_OPPFYLT(), vurderingMedUtfall.utfall)
+
+        assertTrue(vurderingMedUtfall.utfall is Utfall.VURDERT_OG_OPPFYLT)
+        when (val utfall = vurderingMedUtfall.utfall) {
+            is Utfall.VURDERT_OG_OPPFYLT -> {
+                assertTrue(utfall.vilkårOppfyltPeriode.fra.isEqual(om1Uke))
+                assertTrue(utfall.vilkårOppfyltPeriode.til.isEqual(om2Uker))
+            }
+        }
+
+
     }
 }
