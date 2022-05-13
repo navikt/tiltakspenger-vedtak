@@ -36,7 +36,7 @@ interface Faktum {
     val kilde: FaktumKilde
 }
 
-class AldersFaktum(
+data class AldersFaktum(
     val fødselsdato: LocalDate,
     override val kilde: FaktumKilde
 ) : Faktum {
@@ -44,6 +44,6 @@ class AldersFaktum(
     fun erUnder16() = false
 }
 
-class FødselsDatoFaktum(
+data class FødselsDatoFaktum(
     val fødselsdato: LocalDate
 ) {}

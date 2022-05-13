@@ -18,4 +18,20 @@ class VilkårsvurderingTest {
         val vurderingMedUtfall = vilkårsvurdering.vurder(AldersFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
         assertEquals(Utfall.VURDERT_OG_OPPFYLT, vurderingMedUtfall.utfall)
     }
+
+    @Test
+    fun `en vilkårsvurdering om KVP hvor bruker sier hen går på det skal til manuell behandling`() {
+        val vilkårsvurdering = Vilkårsvurdering(vilkår  = KVP)
+        val vurderingMedUtfall = vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
+        assertEquals(Utfall.VURDERT_OG_TRENGER_MANUELL_VURDERING, vurderingMedUtfall.utfall)
+    }
+
+    @Test
+    fun `en KVP vilkårsvurdering med fakta fra bruker og fakta fra saksbehandler skal avgjøres ved holmgang`() {
+        val vilkårsvurdering = Vilkårsvurdering(vilkår  = KVP)
+        val vurderingMedUtfall = vilkårsvurdering
+            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
+            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
+        assertEquals(Utfall.VURDERT_OG_OPPFYLT, vurderingMedUtfall.utfall)
+    }
 }
