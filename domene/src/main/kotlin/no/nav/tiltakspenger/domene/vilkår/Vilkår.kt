@@ -22,4 +22,4 @@ interface Vilkår {
 }
 
 
-val inngangsVilkår = listOf<Vilkår>(ErOver18År, KVP)
+val inngangsVilkår = listOf(ErOver18År, KVP)
