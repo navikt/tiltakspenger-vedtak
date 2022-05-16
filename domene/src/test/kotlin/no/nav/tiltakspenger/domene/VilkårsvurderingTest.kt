@@ -74,7 +74,7 @@ class VilkårsvurderingTest {
                 InstitusjonsoppholdsFaktum(
                     opphold = true,
                     kilde = FaktumKilde.BRUKER,
-                    oppholdsperiode = Periode(fra = start, til = om1Uke),
+                    oppholdsperiode = listOf(Periode(fra = start, til = om1Uke)),
                     friKostOgLosji = false
                 )
             )
@@ -82,11 +82,46 @@ class VilkårsvurderingTest {
         assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgOppfylt)
         when (val utfall = vurderingMedUtfall.utfall) {
             is Utfall.VurdertOgOppfylt -> {
-                assertEquals(om1Uke, utfall.vilkårOppfyltPeriode.fra)
-                assertEquals(om2Uker, utfall.vilkårOppfyltPeriode.til)
+                assertEquals(om1Uke.plusDays(1), utfall.vilkårOppfyltPeriode.first().fra)
+                assertEquals(om2Uker, utfall.vilkårOppfyltPeriode.first().til)
             }
         }
+    }
 
+    @Test
+    fun `en vurderingsperiode med flere vilkår`() {
+        val vilkårsvurdering1 = Vilkårsvurdering(
+            vilkår = Institusjonsopphold,
+            vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
+            utfall = Utfall.VurdertOgOppfylt(
+                listOf(
+                    Periode(fra = 1.mars(2022), til = 3.mars(2022)),
+                    Periode(fra = 10.mars(2022), til = 15.mars(2022))
+                )
+            )
+        )
+
+        val vilkårsvurdering2 = Vilkårsvurdering(
+            vilkår = Institusjonsopphold,
+            vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
+            utfall = Utfall.VurdertOgOppfylt(
+                listOf(
+                    Periode(fra = 1.mars(2022), til = 8.mars(2022)),
+                    Periode(fra = 12.mars(2022), til = 15.mars(2022))
+                )
+            )
+        )
+
+        //  OK 1-3 | NOT_OK 4-11 | OK 12-15
+        assertEquals(
+            listOf(
+                Periode(fra = 1.mars(2022), til = 3.mars(2022)),
+                Periode(fra = 12.mars(2022), til = 15.mars(2022))
+            ),
+            listOf(vilkårsvurdering1, vilkårsvurdering2).oppfyltePerioder()
+        )
 
     }
 }
+
+fun List<Vilkårsvurdering>.oppfyltePerioder() = emptyList<Periode>()

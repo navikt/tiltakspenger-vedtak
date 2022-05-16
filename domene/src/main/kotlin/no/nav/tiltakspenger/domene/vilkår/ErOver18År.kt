@@ -20,7 +20,7 @@ object ErOver18År : Vilkår {
 
     private fun vurder(faktum: FødselsdatoFaktum, vurderingsPeriode: Periode): Utfall {
         return when (faktum.erOver18()) {
-            true -> Utfall.VurdertOgOppfylt(vurderingsPeriode)
+            true -> Utfall.VurdertOgOppfylt(listOf(vurderingsPeriode))
             else -> Utfall.VurdertOgIkkeOppfylt()
         }
     }

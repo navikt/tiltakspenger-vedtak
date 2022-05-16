@@ -16,7 +16,7 @@ object KVP : Vilkår {
     private fun vurder(faktum: KVPFaktum, vurderingsperiode: Periode): Utfall {
         return when {
             faktum.deltarKVP && faktum.kilde == FaktumKilde.BRUKER -> Utfall.VurdertOgTrengerManuellBehandling()
-            !faktum.deltarKVP && faktum.kilde == FaktumKilde.SAKSBEHANDLER -> Utfall.VurdertOgOppfylt(vurderingsperiode)
+            !faktum.deltarKVP && faktum.kilde == FaktumKilde.SAKSBEHANDLER -> Utfall.VurdertOgOppfylt(listOf(vurderingsperiode))
             else -> Utfall.VurdertOgIkkeOppfylt()
         }
     }

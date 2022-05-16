@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 
 class Periode(fra: LocalDate, til: LocalDate) {
-    val range : Range<LocalDate> = Range.closed(fra, til)
+    val range: Range<LocalDate> = Range.closed(fra, til)
     val fra: LocalDate
         get() = range.lowerEndpoint()
     val til: LocalDate
@@ -18,7 +18,7 @@ class Periode(fra: LocalDate, til: LocalDate) {
 
     fun overlapperMed(periode: Periode) = try {
         !this.range.intersection(periode.range).isEmpty
-    } catch( iae: IllegalArgumentException) {
+    } catch (iae: IllegalArgumentException) {
         false
     }
 
@@ -53,7 +53,7 @@ class Periode(fra: LocalDate, til: LocalDate) {
 fun Set<Range<LocalDate>>.toPerioder() = this.map { it.toPeriode() }
 
 fun Range<LocalDate>.toPeriode(): Periode {
-    val fra = if( this.lowerBoundType() == BoundType.CLOSED ) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
-    val til = if(this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
+    val fra = if (this.lowerBoundType() == BoundType.CLOSED) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
+    val til = if (this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
     return Periode(fra, til)
 }

@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.domene.Periode
 class InstitusjonsoppholdsFaktum(
     val opphold: Boolean,
     kilde: FaktumKilde,
-    val oppholdsperiode: Periode,
+    val oppholdsperiode: List<Periode>,
     val friKostOgLosji: Boolean
 ) : Faktum {
     override val kilde: FaktumKilde

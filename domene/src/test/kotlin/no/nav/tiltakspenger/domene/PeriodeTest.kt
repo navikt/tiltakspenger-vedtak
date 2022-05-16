@@ -45,10 +45,11 @@ internal class PeriodeTest {
     }
 
     @Test
-    fun `bytt meg ut`() {
+    fun `to overlappende perioder`() {
         val periodeEn = Periode(fra = 13.mai(2022), til = 16.mai(2022))
         val periodeTo = Periode(fra = 13.mai(2022), til = 15.mai(2022))
         val fasit = Periode(fra = 16.mai(2022), til = 16.mai(2022))
         assertEquals(fasit, periodeEn.ikkeOverlappendePeriode(periodeTo).first())
+        assertEquals(1, periodeEn.ikkeOverlappendePeriode(periodeTo).size)
     }
 }

@@ -14,9 +14,9 @@ object Institusjonsopphold : Vilkår {
         val instFaktum = instFakta.first()
 
         return when {
-            instFaktum.oppholdsperiode.inneholderHele(vurderingsPeriode) -> Utfall.VurdertOgIkkeOppfylt()
-            instFaktum.oppholdsperiode.overlapperMed(vurderingsPeriode) -> Utfall.VurdertOgOppfylt(
-                vurderingsPeriode.overlappendePeriode(instFaktum.oppholdsperiode)
+            instFaktum.oppholdsperiode.first().inneholderHele(vurderingsPeriode) -> Utfall.VurdertOgIkkeOppfylt()
+            instFaktum.oppholdsperiode.first().overlapperMed(vurderingsPeriode) -> Utfall.VurdertOgOppfylt(
+                vurderingsPeriode.ikkeOverlappendePeriode(instFaktum.oppholdsperiode.first())
             )
             else -> Utfall.VurdertOgIkkeOppfylt()
         }
