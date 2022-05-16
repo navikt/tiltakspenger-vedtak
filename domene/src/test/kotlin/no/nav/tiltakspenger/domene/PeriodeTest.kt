@@ -52,4 +52,39 @@ internal class PeriodeTest {
         assertEquals(fasit, periodeEn.ikkeOverlappendePeriode(periodeTo).first())
         assertEquals(1, periodeEn.ikkeOverlappendePeriode(periodeTo).size)
     }
+
+    @Test
+    fun `ikkeOverlappendePerioder fjerner overlapp mellom flere perioder --fengsel---kvp---`() {
+        val periodeEn = Periode(fra = 1.mai(2022), til = 15.mai(2022))
+        val fengselPeriode = Periode(fra = 5.mai(2022), til = 6.mai(2022))
+        val kvpPeriode = Periode(fra = 11.mai(2022), til = 12.mai(2022))
+
+        val result = periodeEn.ikkeOverlappendePerioder(listOf(
+            fengselPeriode,
+            kvpPeriode
+        ))
+        assertEquals(3, result.size)
+        assertEquals(listOf(
+            Periode(fra = 1.mai(2022), til = 4.mai(2022)),
+            Periode(fra = 7.mai(2022), til = 10.mai(2022)),
+            Periode(fra = 13.mai(2022), til = 15.mai(2022))
+        ), result)
+    }
+
+    @Test
+    fun `ikkeOverlappendePerioder fjerner overlapp mellom flere perioder --fengselOgKvp---`() {
+        val periodeEn = Periode(fra = 1.mai(2022), til = 15.mai(2022))
+        val fengselPeriode = Periode(fra = 5.mai(2022), til = 11.mai(2022))
+        val kvpPeriode = Periode(fra = 10.mai(2022), til = 12.mai(2022))
+
+        val result = periodeEn.ikkeOverlappendePerioder(listOf(
+            fengselPeriode,
+            kvpPeriode
+        ))
+        assertEquals(2, result.size)
+        assertEquals(listOf(
+            Periode(fra = 1.mai(2022), til = 4.mai(2022)),
+            Periode(fra = 13.mai(2022), til = 15.mai(2022))
+        ), result)
+    }
 }

@@ -120,8 +120,17 @@ class VilkårsvurderingTest {
             ),
             listOf(vilkårsvurdering1, vilkårsvurdering2).oppfyltePerioder()
         )
-
     }
 }
 
-fun List<Vilkårsvurdering>.oppfyltePerioder() = emptyList<Periode>()
+fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
+    if (this.isEmpty()) return emptyList()
+    val vurderingsPeriode = this.first().vurderingsperiode
+    return this
+        .filter { it.utfall is Utfall.VurdertOgOppfylt }
+        .map { it.utfall as Utfall.VurdertOgOppfylt }
+        .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
+            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.vilkårOppfyltPeriode)
+            return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
+        }
+}

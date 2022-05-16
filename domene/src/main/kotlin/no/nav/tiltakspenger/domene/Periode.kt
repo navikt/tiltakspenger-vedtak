@@ -31,6 +31,13 @@ class Periode(fra: LocalDate, til: LocalDate) {
         return rangeSet.asRanges().toPerioder()
     }
 
+    fun ikkeOverlappendePerioder(perioder: List<Periode>): List<Periode> {
+        val rangeSet: RangeSet<LocalDate> = TreeRangeSet.create()
+        rangeSet.add(this.range)
+        perioder.forEach { periode -> rangeSet.remove(periode.range) }
+        return rangeSet.asRanges().toPerioder()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Periode) return false
