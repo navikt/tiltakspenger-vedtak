@@ -16,7 +16,7 @@ object Institusjonsopphold : Vilkår {
         return when {
             instFaktum.oppholdsperiode.inneholderHele(vurderingsPeriode) -> Utfall.VurdertOgIkkeOppfylt()
             instFaktum.oppholdsperiode.overlapperMed(vurderingsPeriode) -> Utfall.VurdertOgOppfylt(
-                vurderingsPeriode.intersect(instFaktum.oppholdsperiode)
+                vurderingsPeriode.overlappendePeriode(instFaktum.oppholdsperiode)
             )
             else -> Utfall.VurdertOgIkkeOppfylt()
         }
