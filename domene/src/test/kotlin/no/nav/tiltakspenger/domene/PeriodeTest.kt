@@ -36,12 +36,19 @@ internal class PeriodeTest {
     @Test
     fun overlapperIkkeMed() {
         val periodeSomIkkeOverlapper = Periode(fra = 13.mai(2022), til = 16.mai(2022))
-        assertEquals(periodeSomIkkeOverlapper, periode1.ikkeOverlappendePeriode(periode2))
+        assertEquals(periodeSomIkkeOverlapper, periode1.ikkeOverlappendePeriode(periode2).first())
     }
 
     @Test
-    fun inneholder() {
-        assertTrue(periode1.contains(17.mai(2022)))
-        assertFalse(periode1.contains(1.mai(2022)))
+    fun `to komplett overlappende perioder skal gi tomt svar`() {
+        assertEquals(emptyList<Periode>(), periode1.ikkeOverlappendePeriode(periode1))
+    }
+
+    @Test
+    fun `bytt meg ut`() {
+        val periodeEn = Periode(fra = 13.mai(2022), til = 16.mai(2022))
+        val periodeTo = Periode(fra = 13.mai(2022), til = 15.mai(2022))
+        val fasit = Periode(fra = 16.mai(2022), til = 16.mai(2022))
+        assertEquals(fasit, periodeEn.ikkeOverlappendePeriode(periodeTo).first())
     }
 }
