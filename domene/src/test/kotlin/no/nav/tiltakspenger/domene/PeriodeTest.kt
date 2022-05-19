@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.domene
 
-import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 internal class PeriodeTest {
     private val periode1 = Periode(fra = 13.mai(2022), til = 18.mai(2022))
@@ -59,16 +58,20 @@ internal class PeriodeTest {
         val fengselPeriode = Periode(fra = 5.mai(2022), til = 6.mai(2022))
         val kvpPeriode = Periode(fra = 11.mai(2022), til = 12.mai(2022))
 
-        val result = periodeEn.ikkeOverlappendePerioder(listOf(
-            fengselPeriode,
-            kvpPeriode
-        ))
+        val result = periodeEn.ikkeOverlappendePerioder(
+            listOf(
+                fengselPeriode,
+                kvpPeriode
+            )
+        )
         assertEquals(3, result.size)
-        assertEquals(listOf(
-            Periode(fra = 1.mai(2022), til = 4.mai(2022)),
-            Periode(fra = 7.mai(2022), til = 10.mai(2022)),
-            Periode(fra = 13.mai(2022), til = 15.mai(2022))
-        ), result)
+        assertEquals(
+            listOf(
+                Periode(fra = 1.mai(2022), til = 4.mai(2022)),
+                Periode(fra = 7.mai(2022), til = 10.mai(2022)),
+                Periode(fra = 13.mai(2022), til = 15.mai(2022))
+            ), result
+        )
     }
 
     @Test
@@ -77,14 +80,78 @@ internal class PeriodeTest {
         val fengselPeriode = Periode(fra = 5.mai(2022), til = 11.mai(2022))
         val kvpPeriode = Periode(fra = 10.mai(2022), til = 12.mai(2022))
 
-        val result = periodeEn.ikkeOverlappendePerioder(listOf(
-            fengselPeriode,
-            kvpPeriode
-        ))
+        val result = periodeEn.ikkeOverlappendePerioder(
+            listOf(
+                fengselPeriode,
+                kvpPeriode
+            )
+        )
         assertEquals(2, result.size)
-        assertEquals(listOf(
-            Periode(fra = 1.mai(2022), til = 4.mai(2022)),
-            Periode(fra = 13.mai(2022), til = 15.mai(2022))
-        ), result)
+        assertEquals(
+            listOf(
+                Periode(fra = 1.mai(2022), til = 4.mai(2022)),
+                Periode(fra = 13.mai(2022), til = 15.mai(2022))
+            ), result
+        )
+    }
+
+    @Test
+    fun `man kan trekke en periode fra en annen periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 6.mai(2022), til = 12.mai(2022))
+        val perioder = periodeEn.trekkFra(listOf(periodeTo))
+        assertEquals(2, perioder.size)
+        assertEquals(3.mai(2022), perioder[0].fra)
+        assertEquals(5.mai(2022), perioder[0].til)
+        assertEquals(13.mai(2022), perioder[1].fra)
+        assertEquals(15.mai(2022), perioder[1].til)
+    }
+
+    @Test
+    fun `man kan trekke en periode fra en annen ikke-overlappende periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 6.mai(2022), til = 18.mai(2022))
+        val perioder = periodeEn.trekkFra(listOf(periodeTo))
+        assertEquals(1, perioder.size)
+        assertEquals(3.mai(2022), perioder[0].fra)
+        assertEquals(5.mai(2022), perioder[0].til)
+    }
+
+    @Test
+    fun `man kan trekke flere perioder fra en annen periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 6.mai(2022), til = 8.mai(2022))
+        val periodeTre = Periode(fra = 10.mai(2022), til = 12.mai(2022))
+        val perioder = periodeEn.trekkFra(listOf(periodeTo, periodeTre))
+        assertEquals(3, perioder.size)
+        assertEquals(3.mai(2022), perioder[0].fra)
+        assertEquals(5.mai(2022), perioder[0].til)
+        assertEquals(9.mai(2022), perioder[1].fra)
+        assertEquals(9.mai(2022), perioder[1].til)
+        assertEquals(13.mai(2022), perioder[2].fra)
+        assertEquals(15.mai(2022), perioder[2].til)
+    }
+
+    @Test
+    fun `man kan trekke flere connected perioder fra en annen periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 6.mai(2022), til = 9.mai(2022))
+        val periodeTre = Periode(fra = 10.mai(2022), til = 12.mai(2022))
+        val perioder = periodeEn.trekkFra(listOf(periodeTo, periodeTre))
+        assertEquals(2, perioder.size)
+        assertEquals(3.mai(2022), perioder[0].fra)
+        assertEquals(5.mai(2022), perioder[0].til)
+        assertEquals(13.mai(2022), perioder[1].fra)
+        assertEquals(15.mai(2022), perioder[1].til)
+    }
+
+    @Test
+    fun `man kan ikke trekke flere overlappende perioder fra en annen periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 6.mai(2022), til = 10.mai(2022))
+        val periodeTre = Periode(fra = 9.mai(2022), til = 12.mai(2022))
+        assertThrows(IllegalArgumentException::class.java) {
+            periodeEn.trekkFra(listOf(periodeTo, periodeTre))
+        }
     }
 }

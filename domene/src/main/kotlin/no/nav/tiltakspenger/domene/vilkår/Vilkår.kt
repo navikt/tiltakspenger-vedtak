@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene
 
 import KVP
+import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import kotlin.reflect.KClass
 
@@ -18,7 +19,7 @@ interface Vilkår {
     val paragraf: Paragraf?
 
     val relevanteFaktaTyper: List<KClass<out Faktum>>
-    fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): Utfall
+    fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfall>
 }
 
 

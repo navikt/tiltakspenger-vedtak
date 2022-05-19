@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene
 
-import java.util.UUID
-
+/*
 sealed class VilkårsVurderingSealed(
     val vilkår: Vilkår,
     val id: UUID = UUID.randomUUID(),
@@ -29,3 +28,5 @@ fun gjørNoeMedVilkår(vilkårsVurderingSealed: VilkårsVurderingSealed) {
         is VilkårsVurderingSealed.IkkeVurdertVilkår -> TODO()
     }
 }
+
+ */

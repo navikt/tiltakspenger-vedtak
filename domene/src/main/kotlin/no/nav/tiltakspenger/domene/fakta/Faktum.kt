@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.domene.fakta
 
 import java.time.LocalDate
 
