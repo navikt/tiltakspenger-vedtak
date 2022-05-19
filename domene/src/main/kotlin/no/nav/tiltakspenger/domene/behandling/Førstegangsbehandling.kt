@@ -1,9 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.Saksbehandling
-import no.nav.tiltakspenger.domene.Søknad
-import no.nav.tiltakspenger.domene.Vilkårsvurdering
+import no.nav.tiltakspenger.domene.*
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import java.time.LocalDate
@@ -11,14 +8,18 @@ import java.time.LocalDate
 class Førstegangsbehandling private constructor(
     val ident: String,
     var søknad: Søknad?,
-    val vilkårsvurderinger: List<Vilkårsvurdering>,
+//    val vilkårsvurderinger: List<Vilkårsvurdering>,
+    val vilkårsvurderinger2:Vilkårsvurderinger,
     var tilstand: Tilstand
 ) : Saksbehandling {
     constructor(ident: String) : this(
-        vilkårsvurderinger = listOf(
-            Vilkårsvurdering(
-                vilkår = ErOver18År,
-                vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+        vilkårsvurderinger2 = Vilkårsvurderinger(
+            periode = Periode(fra = LocalDate.now(), til = LocalDate.now()),
+            vilkårsvurderinger = listOf(
+                Vilkårsvurdering(
+                    vilkår = ErOver18År,
+                    vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+                ),
             ),
         ),
         søknad = null,

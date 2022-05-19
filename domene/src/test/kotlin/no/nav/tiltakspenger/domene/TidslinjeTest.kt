@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.domene
 
+import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
 import no.nav.tiltakspenger.domene.vilkår.Institusjonsopphold
 import org.junit.jupiter.api.Assertions.*
@@ -32,7 +33,7 @@ internal class TidslinjeTest{
         vilkårsvurderingInstitusjon().vurder(institusjonsoppholdBrukerFaktum())
 
     @Test
-    fun foo() {
+    fun `Tidslinje skal kunne opprettes`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
             vurderingsperiode = Periode(fra = 1.januar(2022), til = 12.januar(2022)),
@@ -44,15 +45,14 @@ internal class TidslinjeTest{
                 friKostOgLosji = false
             )
         )
-        val tidslinje = Tidslinje(
-           vilkårsvurderinger = listOf(vilkårsvurdering)
+        val tidslinje = Tidslinje.lagTidslinje(
+           vilkårsvurderinger = Vilkårsvurderinger(periode = Periode(fra = 1.januar(2022), til = 12.januar(2022)), vilkårsvurderinger = listOf(vilkårsvurdering) )
         )
 
-        assertEquals(1.januar(2022), tidslinje.fra)
-        val instDager = tidslinje.dager
-            .take(10)
-            .filter { it.utfall is Utfall.VurdertOgOppfylt }.size
-
-
+        val (ikkeOppfylteDager, oppfylteDager) = tidslinje.vurderteDager.partition { it.utfallsperiode == Utfall.VurdertOgIkkeOppfylt }
+        assertEquals(10, ikkeOppfylteDager.size)
+        assertEquals(2, oppfylteDager.size)
+        assertEquals(Periode(1.januar(2022), 10.januar(2022)), ikkeOppfylteDager.toPeriode())
+        assertEquals(Periode(11.januar(2022), 12.januar(2022)), oppfylteDager.toPeriode())
     }
 }

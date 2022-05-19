@@ -83,6 +83,10 @@ class Periode(fra: LocalDate, til: LocalDate) {
         val ranges = opprinneligeRangeSet.difference(andrePeriodeRangeSet).asRanges()
         return ranges.filter { !it.canonical(LocalDateDiscreteDomain()).isEmpty }.map { it.toPeriode() }
     }
+
+    fun tilDager() : List<LocalDate> {
+        return fra.datesUntil(til.plusDays(1)).toList()
+    }
 }
 
 fun Set<Range<LocalDate>>.toPerioder() = this.map { it.toPeriode() }

@@ -19,7 +19,7 @@ interface Vilkår {
     val paragraf: Paragraf?
 
     val relevanteFaktaTyper: List<KClass<out Faktum>>
-    fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfall>
+    fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode>
 }
 
 

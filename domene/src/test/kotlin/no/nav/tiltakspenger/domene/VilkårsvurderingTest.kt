@@ -18,7 +18,7 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertTrue(vilkårsvurdering.utfall.first() is Utfall.IkkeVurdert)
+        assertTrue(vilkårsvurdering.utfallsperiodes.first().utfall == Utfall.IkkeVurdert)
     }
 
     @Test
@@ -27,11 +27,11 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
-        assertTrue(vilkårsvurdering.utfall.first() is Utfall.IkkeVurdert)
+        assertTrue(vilkårsvurdering.utfallsperiodes.first().utfall == Utfall.IkkeVurdert)
 
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(FødselsdatoFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfall.first() is Utfall.VurdertOgOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
     @Test
@@ -42,7 +42,7 @@ class VilkårsvurderingTest {
         )
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfall.first() is Utfall.VurdertOgTrengerManuellBehandling)
+        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgTrengerManuellBehandling)
     }
 
     @Test
@@ -54,7 +54,7 @@ class VilkårsvurderingTest {
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
             .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
-        assertTrue(vurderingMedUtfall.utfall.first() is Utfall.VurdertOgOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
 
@@ -81,16 +81,16 @@ class VilkårsvurderingTest {
                 )
             )
 
-        assertEquals(2, vurderingMedUtfall.utfall.size)
-        assertTrue(vurderingMedUtfall.utfall[0] is Utfall.VurdertOgIkkeOppfylt)
-        assertTrue(vurderingMedUtfall.utfall[1] is Utfall.VurdertOgOppfylt)
-        vurderingMedUtfall.utfall.forEach {
-            when (it) {
-                is Utfall.VurdertOgIkkeOppfylt -> {
+        assertEquals(2, vurderingMedUtfall.utfallsperiodes.size)
+        assertTrue(vurderingMedUtfall.utfallsperiodes[0].utfall == Utfall.VurdertOgIkkeOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperiodes[1].utfall == Utfall.VurdertOgOppfylt)
+        vurderingMedUtfall.utfallsperiodes.forEach {
+            when (it.utfall) {
+                Utfall.VurdertOgIkkeOppfylt -> {
                     assertEquals(start, it.periode.fra)
                     assertEquals(om1Uke, it.periode.til)
                 }
-                is Utfall.VurdertOgOppfylt -> {
+                Utfall.VurdertOgOppfylt -> {
                     assertEquals(om1Uke.plusDays(1), it.periode.fra)
                     assertEquals(om2Uker, it.periode.til)
                 }
@@ -104,9 +104,9 @@ class VilkårsvurderingTest {
         val vilkårsvurdering1 = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfall = listOf(
-                Utfall.VurdertOgOppfylt(Periode(fra = 1.mars(2022), til = 3.mars(2022))),
-                Utfall.VurdertOgOppfylt(Periode(fra = 10.mars(2022), til = 15.mars(2022)))
+            utfallsperiodes = listOf(
+                Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 3.mars(2022))),
+                Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 10.mars(2022), til = 15.mars(2022)))
             )
         )
 
@@ -114,9 +114,9 @@ class VilkårsvurderingTest {
         val vilkårsvurdering2 = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfall = listOf(
-                Utfall.VurdertOgOppfylt(Periode(fra = 1.mars(2022), til = 8.mars(2022))),
-                Utfall.VurdertOgOppfylt(Periode(fra = 12.mars(2022), til = 15.mars(2022)))
+            utfallsperiodes = listOf(
+                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 8.mars(2022))),
+                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 12.mars(2022), til = 15.mars(2022)))
             )
         )
 
