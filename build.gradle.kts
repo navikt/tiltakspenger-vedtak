@@ -14,12 +14,12 @@ allprojects {
         mavenLocal()
         maven("https://packages.confluent.io/maven/")
     }
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-    detekt {
-        buildUponDefaultConfig = true
-        allRules = false
-        config = files("$rootDir/config/detekt.yml")
-    }
+//    apply(plugin = "io.gitlab.arturbosch.detekt")
+//    detekt {
+//        buildUponDefaultConfig = true
+//        allRules = false
+//        config = files("$rootDir/config/detekt.yml")
+//    }
 }
 
 subprojects {

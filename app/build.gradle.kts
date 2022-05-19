@@ -12,7 +12,7 @@ application {
 
 dependencies {
     implementation(project(":domene"))
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
+//    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.20.0")
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
