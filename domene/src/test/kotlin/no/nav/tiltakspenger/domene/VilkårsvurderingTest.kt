@@ -143,7 +143,7 @@ fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
         .filter { it.utfall.first() is Utfall.VurdertOgOppfylt }
         .map { it.utfall as Utfall.VurdertOgOppfylt }
         .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
-            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.vilkårOppfyltPeriode)
+            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.perioder)
             return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
         }
 }
