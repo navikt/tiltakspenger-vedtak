@@ -82,8 +82,8 @@ class VilkårsvurderingTest {
         assertTrue(vurderingMedUtfall.utfall is Utfall.VurdertOgOppfylt)
         when (val utfall = vurderingMedUtfall.utfall) {
             is Utfall.VurdertOgOppfylt -> {
-                assertEquals(om1Uke.plusDays(1), utfall.vilkårOppfyltPeriode.first().fra)
-                assertEquals(om2Uker, utfall.vilkårOppfyltPeriode.first().til)
+                assertEquals(om1Uke.plusDays(1), utfall.perioder.first().fra)
+                assertEquals(om2Uker, utfall.perioder.first().til)
             }
         }
     }
@@ -130,7 +130,7 @@ fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
         .filter { it.utfall is Utfall.VurdertOgOppfylt }
         .map { it.utfall as Utfall.VurdertOgOppfylt }
         .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
-            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.vilkårOppfyltPeriode)
+            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.perioder)
             return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
         }
 }
