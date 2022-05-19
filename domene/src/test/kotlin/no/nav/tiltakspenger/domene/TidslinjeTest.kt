@@ -35,7 +35,7 @@ internal class TidslinjeTest{
     fun foo() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
-            vurderingsperiode = Periode(fra = 1.januar(2022), til = 10.januar(2022)),
+            vurderingsperiode = Periode(fra = 1.januar(2022), til = 12.januar(2022)),
         ).vurder(
             InstitusjonsoppholdsFaktum(
                 opphold = true,
@@ -49,6 +49,10 @@ internal class TidslinjeTest{
         )
 
         assertEquals(1.januar(2022), tidslinje.fra)
+        val instDager = tidslinje.dager
+            .take(10)
+            .filter { it.utfall is Utfall.VurdertOgOppfylt }.size
+
 
     }
 }
