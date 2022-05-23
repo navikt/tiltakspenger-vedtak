@@ -1,8 +1,9 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.domene.vilkår
 
 import KVP
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
-import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import kotlin.reflect.KClass
 
 enum class Paragraf(beskrivelse: String) {

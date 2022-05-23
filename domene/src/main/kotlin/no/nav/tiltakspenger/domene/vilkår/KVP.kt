@@ -2,6 +2,8 @@ import no.nav.tiltakspenger.domene.*
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.fakta.KVPFaktum
+import no.nav.tiltakspenger.domene.vilkår.Paragraf
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import kotlin.reflect.KClass
 
 object KVP : Vilkår {

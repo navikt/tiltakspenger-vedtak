@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.domene
 
 import no.nav.tiltakspenger.domene.fakta.Faktum
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.erRelevantFor
 
 data class Vilkårsvurdering(
     val vilkår: Vilkår,
