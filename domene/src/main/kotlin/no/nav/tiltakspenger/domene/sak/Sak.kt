@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.domene.sak
 
-import no.nav.tiltakspenger.domene.Saksbehandling
+import no.nav.tiltakspenger.domene.behandling.Saksbehandling
 import no.nav.tiltakspenger.domene.Søknad
 
 class Sak(

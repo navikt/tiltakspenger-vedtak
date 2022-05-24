@@ -1,12 +1,11 @@
 package no.nav.tiltakspenger.domene
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class Søknad(
     id: String,
-    fnr: String,
-    periode: Periode,
-    innsendtdato: LocalDate,
-    tiltak: String,
+    ident: String,
+    opprettet: LocalDateTime,
+    tiltak: Tiltak,
     deltarKvp: Boolean,
 )

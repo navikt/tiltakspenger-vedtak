@@ -12,9 +12,9 @@ object KVP : Vilkår {
     override val paragraf = Paragraf.PARAGRAF_3_LEDD_1_PUNKTUM1
 
     override fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode> {
-        val kvpFaktum = faktum as List<KVPFaktum>
-        return kvpFaktum.firstOrNull { it.kilde == FaktumKilde.SAKSBEHANDLER }?.let { vurder(it, vurderingsperiode) }
-            ?: vurder(kvpFaktum.first(), vurderingsperiode)
+        faktum as List<KVPFaktum>
+        return faktum.firstOrNull { it.kilde == FaktumKilde.SAKSBEHANDLER }?.let { vurder(it, vurderingsperiode) }
+            ?: vurder(faktum.first(), vurderingsperiode)
     }
 
     private fun vurder(faktum: KVPFaktum, vurderingsperiode: Periode): List<Utfallsperiode> {

@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.domene
 
-import com.google.common.collect.ImmutableRangeSet
 import java.time.LocalDate
 
 class Tidslinje private constructor(
@@ -10,7 +9,7 @@ class Tidslinje private constructor(
         fun lagTidslinje(vilkårsvurderinger: Vilkårsvurderinger): Tidslinje {
             val dager = vilkårsvurderinger.periode.tilDager().map { dag ->
                 val relevanteUtfallsperioder = vilkårsvurderinger.vilkårsvurderinger.mapNotNull { vilkårsvurdering ->
-                    vilkårsvurdering.utfallsperiodes.find { it.periode.inneholder(dag) }
+                    vilkårsvurdering.utfallsperioder.find { it.periode.inneholder(dag) }
                 }
 
                 val utfall = when {

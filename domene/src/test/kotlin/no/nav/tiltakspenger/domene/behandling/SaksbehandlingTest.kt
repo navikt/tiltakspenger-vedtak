@@ -1,9 +1,12 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.Tiltak
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class SaksbehandlingTest {
 
@@ -14,8 +17,10 @@ internal class SaksbehandlingTest {
 
         val søknad = Søknad(
             id = "1212",
-            innsendtdato = LocalDate.now(),
-            deltarKvp = false
+            ident = "123",
+            opprettet = LocalDateTime.now(),
+            deltarKvp = false,
+            tiltak = Tiltak("", "", "", LocalDate.now(), LocalDate.now())
         )
         saksbehandling.behandle(søknad)
 

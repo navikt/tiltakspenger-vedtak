@@ -11,17 +11,17 @@ object Institusjonsopphold : Vilkår {
     override val relevanteFaktaTyper: List<KClass<out Faktum>> = listOf(InstitusjonsoppholdsFaktum::class)
 
     override fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode> {
-        val instFakta = faktum as List<InstitusjonsoppholdsFaktum>
-        val instFaktum = instFakta.first()
+        val instFaktum = (faktum as List<InstitusjonsoppholdsFaktum>).first()
 
-        if (!instFaktum.opphold) {
-            return listOf(Utfallsperiode(utfall= Utfall.VurdertOgOppfylt, periode = vurderingsperiode))
+        return if (!instFaktum.opphold) {
+            listOf(Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = vurderingsperiode))
         } else {
-            val ikkeOppfylt = instFaktum.oppholdsperiode.map { Utfallsperiode(utfall = Utfall.VurdertOgIkkeOppfylt, periode = it) }
+            val ikkeOppfylt =
+                instFaktum.oppholdsperiode.map { Utfallsperiode(utfall = Utfall.VurdertOgIkkeOppfylt, periode = it) }
             val oppfylt = vurderingsperiode.trekkFra(instFaktum.oppholdsperiode)
                 .map { Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = it) }
             //TODO: Sorter i korrekt rekkefølge
-            return ikkeOppfylt + oppfylt
+            ikkeOppfylt + oppfylt
         }
     }
 }

@@ -18,7 +18,7 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
-        assertTrue(vilkårsvurdering.utfallsperiodes.first().utfall == Utfall.IkkeVurdert)
+        assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
     }
 
     @Test
@@ -27,11 +27,11 @@ class VilkårsvurderingTest {
             vilkår = ErOver18År,
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
-        assertTrue(vilkårsvurdering.utfallsperiodes.first().utfall == Utfall.IkkeVurdert)
+        assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
 
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(FødselsdatoFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
     @Test
@@ -42,7 +42,7 @@ class VilkårsvurderingTest {
         )
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgTrengerManuellBehandling)
+        assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgTrengerManuellBehandling)
     }
 
     @Test
@@ -54,7 +54,7 @@ class VilkårsvurderingTest {
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
             .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
-        assertTrue(vurderingMedUtfall.utfallsperiodes.first().utfall == Utfall.VurdertOgOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
 
@@ -81,10 +81,10 @@ class VilkårsvurderingTest {
                 )
             )
 
-        assertEquals(2, vurderingMedUtfall.utfallsperiodes.size)
-        assertTrue(vurderingMedUtfall.utfallsperiodes[0].utfall == Utfall.VurdertOgIkkeOppfylt)
-        assertTrue(vurderingMedUtfall.utfallsperiodes[1].utfall == Utfall.VurdertOgOppfylt)
-        vurderingMedUtfall.utfallsperiodes.forEach {
+        assertEquals(2, vurderingMedUtfall.utfallsperioder.size)
+        assertTrue(vurderingMedUtfall.utfallsperioder[0].utfall == Utfall.VurdertOgIkkeOppfylt)
+        assertTrue(vurderingMedUtfall.utfallsperioder[1].utfall == Utfall.VurdertOgOppfylt)
+        vurderingMedUtfall.utfallsperioder.forEach {
             when (it.utfall) {
                 Utfall.VurdertOgIkkeOppfylt -> {
                     assertEquals(start, it.periode.fra)
@@ -104,7 +104,7 @@ class VilkårsvurderingTest {
         val vilkårsvurdering1 = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfallsperiodes = listOf(
+            utfallsperioder = listOf(
                 Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 3.mars(2022))),
                 Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 10.mars(2022), til = 15.mars(2022)))
             )
@@ -114,7 +114,7 @@ class VilkårsvurderingTest {
         val vilkårsvurdering2 = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfallsperiodes = listOf(
+            utfallsperioder = listOf(
                 Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 8.mars(2022))),
                 Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 12.mars(2022), til = 15.mars(2022)))
             )

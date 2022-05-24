@@ -8,12 +8,14 @@ data class Vilkårsvurdering(
     val vilkår: Vilkår,
     val fakta: List<Faktum> = emptyList(),
     val vurderingsperiode: Periode,
-    val utfallsperiodes: List<Utfallsperiode> = listOf(Utfallsperiode(utfall = Utfall.IkkeVurdert, periode = vurderingsperiode)),
+    val utfallsperioder: List<Utfallsperiode> = listOf(
+        Utfallsperiode(utfall = Utfall.IkkeVurdert, periode = vurderingsperiode)
+    ),
 ) {
     fun vurder(faktum: Faktum): Vilkårsvurdering {
         val oppdaterteFakta = fakta + listOf(faktum).filter { it.erRelevantFor(vilkår) }
         return this.copy(
-            utfallsperiodes = vilkår.vurder(oppdaterteFakta, vurderingsperiode),
+            utfallsperioder = vilkår.vurder(oppdaterteFakta, vurderingsperiode),
             fakta = oppdaterteFakta,
         )
     }

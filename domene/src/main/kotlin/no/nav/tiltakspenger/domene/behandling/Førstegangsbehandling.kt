@@ -9,7 +9,7 @@ class Førstegangsbehandling private constructor(
     val ident: String,
     var søknad: Søknad?,
 //    val vilkårsvurderinger: List<Vilkårsvurdering>,
-    val vilkårsvurderinger:Vilkårsvurderinger,
+    val vilkårsvurderinger: Vilkårsvurderinger,
     var tilstand: Tilstand
 ) : Saksbehandling {
     constructor(ident: String) : this(
