@@ -17,7 +17,7 @@ internal fun Route.sakRoutes(
             text =
             // language=JSON
             """{
-                "saker" : [
+                "sak" :
                     {
                         "id" : "4d4g54g5-5g5g44g-4jh5jh",
                         "tiltak" : {
@@ -36,7 +36,7 @@ internal fun Route.sakRoutes(
                                     "vilkårsvurderinger" : [
                                         {
                                             "vilkår" : { "erInngangsVilkår" : true, "paragraf" : "PARAGRAF_3_LEDD_1_PUNKTUM1"},
-                                            "fakta" : [ { "Faktum" : "BRUKER" }],
+                                            "fakta" : [ { "Faktum" : { "kilde" : "BRUKER", "deltarKVP" :  false} }],
                                             "vurderingsperiode" : { "fra" : "2022-05-01", "til" : "2022-05-31"},
                                             "utfallsperioder" : [ { "utfall" : "IkkeVurdert", "periode" : { "fra" : "2022-05-01", "til" : "2022-05-31"} } ]
                                         },
@@ -67,7 +67,6 @@ internal fun Route.sakRoutes(
                             }
                         ]
                     }
-                ]
                 }""".trimMargin()
         )
     }

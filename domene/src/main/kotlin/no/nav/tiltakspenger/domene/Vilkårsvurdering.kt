@@ -27,6 +27,7 @@ class Vilkårsvurderinger(
     val periode: Periode,
     val vilkårsvurderinger: List<Vilkårsvurdering>
 ) {
+    //fun leggTilVilkår()
     // fun legg til vilkår
     // Sjekk at perioder er ok, at vilkår er gyldig ikke er to like på samme periode
     // fun

@@ -9,11 +9,11 @@ class Førstegangsbehandling private constructor(
     val ident: String,
     var søknad: Søknad?,
 //    val vilkårsvurderinger: List<Vilkårsvurdering>,
-    val vilkårsvurderinger2:Vilkårsvurderinger,
+    val vilkårsvurderinger:Vilkårsvurderinger,
     var tilstand: Tilstand
 ) : Saksbehandling {
     constructor(ident: String) : this(
-        vilkårsvurderinger2 = Vilkårsvurderinger(
+        vilkårsvurderinger = Vilkårsvurderinger(
             periode = Periode(fra = LocalDate.now(), til = LocalDate.now()),
             vilkårsvurderinger = listOf(
                 Vilkårsvurdering(
