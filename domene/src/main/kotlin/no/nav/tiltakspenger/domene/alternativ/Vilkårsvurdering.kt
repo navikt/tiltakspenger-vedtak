@@ -8,6 +8,8 @@ import kotlin.reflect.KClass
 interface Vilkårsvurdering {
     fun vurder(periode: Periode): UtfallsperioderForVilkår
     fun fyllInnFaktumDerDetPasser(oppdatertFaktum: Faktum)
+
+    fun finnIkkeVurderteVilkår(): List<Vilkår>
 }
 
 abstract class FaktaVilkårsvurdering<T>(private val clazz: KClass<T>) : Vilkårsvurdering where T : Faktum {
@@ -21,6 +23,8 @@ abstract class FaktaVilkårsvurdering<T>(private val clazz: KClass<T>) : Vilkår
             faktum = oppdatertFaktum as T
         }
     }
+
+    override fun finnIkkeVurderteVilkår() = if (faktum == null) listOf(vilkårForFaktum()) else emptyList()
 
     private fun nullsafeVurder(faktum: Faktum?, periode: Periode): UtfallsperioderForVilkår =
         faktum?.vurderFor(periode)
@@ -63,4 +67,7 @@ class KVPVilkårsvurdering(
         brukerOppgittKVPVilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
         saksbehandlerOppgittKVPVilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
     }
+
+    override fun finnIkkeVurderteVilkår(): List<Vilkår> =
+        brukerOppgittKVPVilkårsvurdering.finnIkkeVurderteVilkår() + saksbehandlerOppgittKVPVilkårsvurdering.finnIkkeVurderteVilkår()
 }

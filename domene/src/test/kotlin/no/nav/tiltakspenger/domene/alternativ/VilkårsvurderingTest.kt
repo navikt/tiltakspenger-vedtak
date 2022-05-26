@@ -5,6 +5,8 @@ import no.nav.tiltakspenger.domene.Utfall
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class VilkårsvurderingTest {
 
@@ -44,5 +46,18 @@ class VilkårsvurderingTest {
             periode,
             vilkårsvurdering.vurder(periode).utfallsperioder.first().periode
         )
+    }
+
+    @Test
+    fun `skal returnere begge underliggende vilkår`() {
+        //Tanken er at de representerer needs som ikke er løst ennå
+
+        val periode = Periode(LocalDate.now().minusDays(2), LocalDate.now())
+        val vilkårsvurdering =
+            KVPVilkårsvurdering(BrukerOppgittKVPVilkårsvurdering(), SaksbehandlerOppgittKVPVilkårsvurdering())
+        assertEquals(2, vilkårsvurdering.finnIkkeVurderteVilkår().size)
+        assertNotNull(vilkårsvurdering.finnIkkeVurderteVilkår().find { it == BrukerOppgittKVPVilkår })
+        assertNotNull(vilkårsvurdering.finnIkkeVurderteVilkår().find { it == SaksbehandlerOppgittKVPVilkår })
+        assertNull(vilkårsvurdering.finnIkkeVurderteVilkår().find { it == KVPVilkår })
     }
 }
