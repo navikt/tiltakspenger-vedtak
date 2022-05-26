@@ -7,12 +7,20 @@ interface Faktum {
     fun vurderFor(vurderingsperiode: Periode): UtfallsperioderForVilkår
 }
 
-class KVPFaktum(private val deltarKVP: Boolean) : Faktum {
+class SaksbehandlerOppgittKVPFaktum(val deltarKVP: Boolean) : Faktum {
     override fun vurderFor(vurderingsperiode: Periode): UtfallsperioderForVilkår =
-        KVPVilkår.vurder(this, vurderingsperiode)
+        SaksbehandlerOppgittKVPVilkår.vurder(this, vurderingsperiode)
 }
 
-class Over18Faktum(private val fdato: LocalDate) : Faktum {
+interface BrukerOppgittKVPFaktum : Faktum {
+    val deltarKVP: Boolean
+    override fun vurderFor(vurderingsperiode: Periode): UtfallsperioderForVilkår =
+        BrukerOppgittKVPVilkår.vurder(this, vurderingsperiode)
+}
+
+class Søknad(override val deltarKVP: Boolean) : BrukerOppgittKVPFaktum
+
+class FødselsdatoFaktum(val fødselsdato: LocalDate) : Faktum {
     override fun vurderFor(vurderingsperiode: Periode): UtfallsperioderForVilkår =
         Over18Vilkår.vurder(this, vurderingsperiode)
 }

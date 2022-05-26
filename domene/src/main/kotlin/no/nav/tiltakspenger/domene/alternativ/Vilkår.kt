@@ -10,21 +10,54 @@ interface FaktumVilkår<T> : Vilkår where T : Faktum {
     fun vurder(faktum: T, vurderingsperiode: Periode): UtfallsperioderForVilkår
 }
 
-object KVPVilkår : FaktumVilkår<KVPFaktum> {
-    override fun vurder(faktum: KVPFaktum, vurderingsperiode: Periode): UtfallsperioderForVilkår {
+object BrukerOppgittKVPVilkår : FaktumVilkår<BrukerOppgittKVPFaktum> {
+    override fun vurder(faktum: BrukerOppgittKVPFaktum, vurderingsperiode: Periode): UtfallsperioderForVilkår {
         return UtfallsperioderForVilkår(
             this,
-            listOf(Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = vurderingsperiode))
+            listOf(
+                Utfallsperiode(
+                    utfall = if (faktum.deltarKVP) Utfall.VurdertOgIkkeOppfylt else Utfall.VurdertOgOppfylt,
+                    periode = vurderingsperiode
+                )
+            )
         )
     }
 }
 
-object Over18Vilkår : FaktumVilkår<Over18Faktum> {
-    override fun vurder(faktum: Over18Faktum, vurderingsperiode: Periode): UtfallsperioderForVilkår {
+object SaksbehandlerOppgittKVPVilkår : FaktumVilkår<SaksbehandlerOppgittKVPFaktum> {
+    override fun vurder(faktum: SaksbehandlerOppgittKVPFaktum, vurderingsperiode: Periode): UtfallsperioderForVilkår {
         return UtfallsperioderForVilkår(
             this,
-            listOf(Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = vurderingsperiode))
+            listOf(
+                Utfallsperiode(
+                    utfall = if (faktum.deltarKVP) Utfall.VurdertOgIkkeOppfylt else Utfall.VurdertOgOppfylt,
+                    periode = vurderingsperiode
+                )
+            )
         )
+    }
+}
+
+object Over18Vilkår : FaktumVilkår<FødselsdatoFaktum> {
+    override fun vurder(faktum: FødselsdatoFaktum, vurderingsperiode: Periode): UtfallsperioderForVilkår {
+        return when {
+            vurderingsperiode.etter(faktum.fødselsdato) ->
+                UtfallsperioderForVilkår.utfallsperioderForVilkårBuilder(this)
+                    .medUtfallFraOgMedTilOgMed(Utfall.VurdertOgOppfylt, vurderingsperiode).build()
+
+            vurderingsperiode.før(faktum.fødselsdato) ->
+                UtfallsperioderForVilkår.utfallsperioderForVilkårBuilder(this)
+                    .medUtfallFraOgMedTilOgMed(Utfall.VurdertOgIkkeOppfylt, vurderingsperiode).build()
+
+            else ->
+                UtfallsperioderForVilkår.utfallsperioderForVilkårBuilder(this)
+                    .medUtfallFraOgMedTilOgMed(
+                        Utfall.VurdertOgIkkeOppfylt,
+                        vurderingsperiode.fra,
+                        faktum.fødselsdato.minusDays(1)
+                    )
+                    .utvidMedUtfallTilOgMed(Utfall.VurdertOgOppfylt, vurderingsperiode.til).build()
+        }
     }
 }
 
@@ -32,8 +65,11 @@ interface AkkumulertVilkår : Vilkår {
     fun akkumuler(utfallsperioderForVilkår: List<UtfallsperioderForVilkår>): UtfallsperioderForVilkår
 }
 
-object LivsoppholdsytelserVilkår : AkkumulertVilkår {
+object KVPVilkår : AkkumulertVilkår {
     override fun akkumuler(utfallsperioderForVilkår: List<UtfallsperioderForVilkår>): UtfallsperioderForVilkår {
-        return utfallsperioderForVilkår.first()
+        //Dette er ikke så enkelt..
+        return utfallsperioderForVilkår.find { it.vilkår is SaksbehandlerOppgittKVPVilkår }
+            ?.let { UtfallsperioderForVilkår(KVPVilkår, it.utfallsperioder) }
+            ?: UtfallsperioderForVilkår(KVPVilkår, utfallsperioderForVilkår.first().utfallsperioder)
     }
 }

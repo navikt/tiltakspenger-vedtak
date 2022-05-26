@@ -7,12 +7,16 @@ import java.time.LocalDate
 
 class UtfallsperioderForVilkår(val vilkår: Vilkår, val utfallsperioder: List<Utfallsperiode>) {
     companion object {
+        fun utfallsperioderForVilkårBuilder(vilkår: Vilkår): UtfallsperiodeBuilder.VilkårUtfallsperiodeBuilder =
+            UtfallsperiodeBuilder.VilkårUtfallsperiodeBuilder(vilkår)
+
         sealed class UtfallsperiodeBuilder {
-
-
             class VilkårUtfallsperiodeBuilder(private val vilkår: Vilkår) {
                 fun medUtfallFraOgMedTilOgMed(utfall: Utfall, fraOgMed: LocalDate, tilOgMed: LocalDate) =
                     UtvidbarUtfallsperiodeBuilder(vilkår, listOf(Utfallsperiode(utfall, Periode(fraOgMed, tilOgMed))))
+
+                fun medUtfallFraOgMedTilOgMed(utfall: Utfall, periode: Periode) =
+                    UtvidbarUtfallsperiodeBuilder(vilkår, listOf(Utfallsperiode(utfall, periode)))
             }
 
             class UtvidbarUtfallsperiodeBuilder(
@@ -33,8 +37,5 @@ class UtfallsperioderForVilkår(val vilkår: Vilkår, val utfallsperioder: List<
                 fun build() = UtfallsperioderForVilkår(vilkår, utfallsperioder)
             }
         }
-
-        fun utfallsperioderForVilkårBuilder(vilkår: Vilkår): UtfallsperiodeBuilder.VilkårUtfallsperiodeBuilder =
-            UtfallsperiodeBuilder.VilkårUtfallsperiodeBuilder(vilkår)
     }
 }

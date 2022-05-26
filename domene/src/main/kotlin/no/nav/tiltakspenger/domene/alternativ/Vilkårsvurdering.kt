@@ -32,28 +32,35 @@ abstract class FaktaVilkårsvurdering<T>(private val clazz: KClass<T>) : Vilkår
     private fun vilkårForFaktum(): Vilkår {
         println(clazz.qualifiedName)
         return when (clazz.qualifiedName) {
-            KVPFaktum::class.qualifiedName -> KVPVilkår
-            Over18Faktum::class.qualifiedName -> Over18Vilkår
+            BrukerOppgittKVPFaktum::class.qualifiedName -> BrukerOppgittKVPVilkår
+            SaksbehandlerOppgittKVPFaktum::class.qualifiedName -> SaksbehandlerOppgittKVPVilkår
+            FødselsdatoFaktum::class.qualifiedName -> Over18Vilkår
             else -> throw IllegalArgumentException("Should have used a sealed class")
         }
     }
 }
 
-class KVPVilkårsvurdering : FaktaVilkårsvurdering<KVPFaktum>(KVPFaktum::class)
+class BrukerOppgittKVPVilkårsvurdering : FaktaVilkårsvurdering<BrukerOppgittKVPFaktum>(BrukerOppgittKVPFaktum::class)
+class SaksbehandlerOppgittKVPVilkårsvurdering :
+    FaktaVilkårsvurdering<SaksbehandlerOppgittKVPFaktum>(SaksbehandlerOppgittKVPFaktum::class)
 
-class Over18Vilkårsvurdering : FaktaVilkårsvurdering<Over18Faktum>(Over18Faktum::class)
+class Over18Vilkårsvurdering : FaktaVilkårsvurdering<FødselsdatoFaktum>(FødselsdatoFaktum::class)
 
-class LivsoppholdsytelserVilkårsvurdering(
-    private val vilkår: LivsoppholdsytelserVilkår,
-    private val kvpVilkårsvurdering: KVPVilkårsvurdering,
-    private val over18Vilkårsvurdering: Over18Vilkårsvurdering
+class KVPVilkårsvurdering(
+    private val brukerOppgittKVPVilkårsvurdering: BrukerOppgittKVPVilkårsvurdering,
+    private val saksbehandlerOppgittKVPVilkårsvurdering: SaksbehandlerOppgittKVPVilkårsvurdering
 ) : Vilkårsvurdering {
     override fun vurder(periode: Periode): UtfallsperioderForVilkår {
-        return vilkår.akkumuler(listOf(kvpVilkårsvurdering.vurder(periode), over18Vilkårsvurdering.vurder(periode)))
+        return KVPVilkår.akkumuler(
+            listOf(
+                brukerOppgittKVPVilkårsvurdering.vurder(periode),
+                saksbehandlerOppgittKVPVilkårsvurdering.vurder(periode)
+            )
+        )
     }
 
     override fun fyllInnFaktumDerDetPasser(faktum: Faktum) {
-        kvpVilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
-        over18Vilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
+        brukerOppgittKVPVilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
+        saksbehandlerOppgittKVPVilkårsvurdering.fyllInnFaktumDerDetPasser(faktum)
     }
 }
