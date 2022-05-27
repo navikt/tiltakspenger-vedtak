@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.domene.vilkår
 
-import KVP
+import IkkePåKVP
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
@@ -18,10 +18,13 @@ fun Faktum.erRelevantFor(vilkår: Vilkår): Boolean =
 interface Vilkår {
     val erInngangsVilkår: Boolean
     val paragraf: Paragraf?
-
     val relevanteFaktaTyper: List<KClass<out Faktum>>
     fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode>
+    fun prioriterFakta(fakta: List<Faktum>): List<Faktum> {
+        val mestPålitligeKilde = fakta.maxOf { it.kilde }
+        return fakta.filter { it.kilde == mestPålitligeKilde }
+    }
 }
 
 
-val inngangsVilkår = listOf(ErOver18År, KVP)
+val inngangsVilkår = listOf(ErOver18År, IkkePåKVP)

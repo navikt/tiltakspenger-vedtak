@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.domene.fakta
 
 import java.time.LocalDate
 
-enum class FaktumKilde {
+enum class FaktumKilde : Comparable<FaktumKilde> {
     BRUKER,
     SYSTEM,
     SAKSBEHANDLER

@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene
 
 import no.nav.tiltakspenger.domene.fakta.Faktum
+import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.erRelevantFor
 
@@ -19,6 +20,9 @@ data class Vilkårsvurdering(
             fakta = oppdaterteFakta,
         )
     }
+
+    fun besvarteKilder() = fakta.fold(setOf<FaktumKilde>()) { kilder, fakta -> kilder + setOf(fakta.kilde) }
+    fun ikkeBesvarteKilder() = FaktumKilde.values().toSet() - besvarteKilder()
 }
 
 //fun List<Vilkårsvurdering>.erInngangsVilkårOppfylt(): Boolean = this
