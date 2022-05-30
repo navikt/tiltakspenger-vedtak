@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.domene.alternativ
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Utfall
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import kotlin.test.assertEquals
 
 class UtfallsperioderForVilkårTest {
 
