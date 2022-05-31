@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.Søknad
-import no.nav.tiltakspenger.domene.Tiltak
+import no.nav.tiltakspenger.domene.*
+import no.nav.tiltakspenger.domene.fakta.KVPFaktumBruker
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -25,5 +24,14 @@ internal class SaksbehandlingTest {
         saksbehandling.behandle(søknad)
 
         assertTrue(saksbehandling.tilstand is Førstegangsbehandling.Tilstand.Vurder)
+    }
+
+    @Test
+    fun `kan motta fakta`() {
+        val behandling = Førstegangsbehandling("asds")
+        val vurderinger = behandling.vilkårsvurderinger.vilkårsvurderinger
+            .map {
+                it.vurder(KVPFaktumBruker(deltarKVP = true))
+            }
     }
 }

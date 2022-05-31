@@ -2,6 +2,13 @@ package no.nav.tiltakspenger.domene.fakta
 
 import java.time.LocalDate
 
+interface Faktum {
+    val kilde: FaktumKilde
+}
+interface Fakta<T: Faktum>{
+    fun leggTil(faktum: T): Fakta<T>
+}
+
 enum class FaktumKilde : Comparable<FaktumKilde> {
     BRUKER,
     SYSTEM,
@@ -24,16 +31,10 @@ class Fødselsdato private constructor(tilstand: Tilstand, private val dato: Loc
     constructor(date: LocalDate) : this(Tilstand.KJENT, date)
 }
 
-//fun main(){
-//    val ukjentFødselsdato = Fødselsdato()
-//    val kjentfødselsdato = Fødselsdato(LocalDate.now())
-//    val listeMedfakta = listOf(ukjentFødselsdato, kjentfødselsdato)
-//    val ukjentefakta = listeMedfakta.all { it.tilstand == Faktum2.Tilstand.Ukjent }
-//}
-
+/*
 interface Faktum {
     val kilde: FaktumKilde
-}
+}*/
 
 
 

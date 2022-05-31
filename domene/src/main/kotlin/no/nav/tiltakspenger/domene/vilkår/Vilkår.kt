@@ -4,7 +4,6 @@ import IkkePåKVP
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
-import kotlin.reflect.KClass
 
 enum class Paragraf(beskrivelse: String) {
     PARAGRAF_3_LEDD_1_PUNKTUM1("Tiltakspenger kan gis til tiltaksdeltakere som har fylt 18 år"),
@@ -12,18 +11,10 @@ enum class Paragraf(beskrivelse: String) {
     PARAGRAF_7_LEDD_2_PUNKTUM1("KVP.kt")
 }
 
-fun Faktum.erRelevantFor(vilkår: Vilkår): Boolean =
-    vilkår.relevanteFaktaTyper.any { relevantType -> relevantType.isInstance(this) }
-
-interface Vilkår {
+interface Vilkår<T> {
     val erInngangsVilkår: Boolean
     val paragraf: Paragraf?
-    val relevanteFaktaTyper: List<KClass<out Faktum>>
-    fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode>
-    fun prioriterFakta(fakta: List<Faktum>): List<Faktum> {
-        val mestPålitligeKilde = fakta.maxOf { it.kilde }
-        return fakta.filter { it.kilde == mestPålitligeKilde }
-    }
+    fun vurder(faktum: T, vurderingsperiode: Periode): List<Utfallsperiode>
 }
 
 

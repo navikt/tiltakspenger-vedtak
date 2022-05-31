@@ -1,12 +1,9 @@
 package no.nav.tiltakspenger.domene
 
 import IkkePåKVP
-import no.nav.tiltakspenger.domene.fakta.FaktumKilde
-import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
-import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
-import no.nav.tiltakspenger.domene.fakta.KVPFaktum
+import no.nav.tiltakspenger.domene.fakta.*
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
-import no.nav.tiltakspenger.domene.vilkår.Institusjonsopphold
+import no.nav.tiltakspenger.domene.vilkår.IkkePåInstitusjon
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -16,6 +13,7 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering har utfall IKKE_VURDERT`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = ErOver18År,
+            fakta = FødselsdatoFakta(),
             vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
         )
         assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
@@ -25,12 +23,13 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering som mottar riktig fakta har utfall VURDERT_OG_OPPFYLT`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = ErOver18År,
+            fakta = FødselsdatoFakta(),
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
         assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
 
         val vurderingMedUtfall =
-            vilkårsvurdering.vurder(FødselsdatoFaktum(fødselsdato = 12.april(2019), kilde = FaktumKilde.BRUKER))
+            vilkårsvurdering.vurder(FødselsDatoSystem(fødselsdato = 12.april(2019)))
         assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
@@ -38,10 +37,11 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering om KVP hvor bruker sier hen går på det skal til manuell behandling`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = IkkePåKVP,
+            fakta = KVPFakta(),
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
         val vurderingMedUtfall =
-            vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
+            vilkårsvurdering.vurder(KVPFaktumBruker(deltarKVP = true))
         assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgTrengerManuellBehandling)
     }
 
@@ -49,11 +49,12 @@ class VilkårsvurderingTest {
     fun `en KVP vilkårsvurdering med fakta fra bruker og fakta fra saksbehandler skal avgjøres ved holmgang`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = IkkePåKVP,
+            fakta = KVPFakta(),
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
         val vurderingMedUtfall = vilkårsvurdering
-            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
+            .vurder(KVPFaktumBruker(deltarKVP = true))
+            .vurder(KVPFaktumSaksbehandler(deltarKVP = false))
         assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
@@ -68,15 +69,15 @@ class VilkårsvurderingTest {
         val om2Uker = start.plusWeeks(2)
 
         val vilkårsvurdering = Vilkårsvurdering(
-            vilkår = Institusjonsopphold,
+            vilkår = IkkePåInstitusjon,
+            fakta = InstitusjonsoppholdsFakta(),
             vurderingsperiode = Periode(fra = start, til = om2Uker)
         )
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(
-                InstitusjonsoppholdsFaktum(
+                InstitusjonsoppholdsFaktumBruker(
                     opphold = true,
-                    kilde = FaktumKilde.BRUKER,
-                    oppholdsperiode = listOf(Periode(fra = start, til = om1Uke)),
+                    oppholdsperiode = Periode(fra = start, til = om1Uke),
                     friKostOgLosji = false
                 )
             )
@@ -102,7 +103,8 @@ class VilkårsvurderingTest {
     @Test
     fun `en vurderingsperiode med flere vilkår`() {
         val vilkårsvurdering1 = Vilkårsvurdering(
-            vilkår = Institusjonsopphold,
+            vilkår = IkkePåInstitusjon,
+            fakta = InstitusjonsoppholdsFakta(),
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
             utfallsperioder = listOf(
                 Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 3.mars(2022))),
@@ -112,7 +114,8 @@ class VilkårsvurderingTest {
 
 
         val vilkårsvurdering2 = Vilkårsvurdering(
-            vilkår = Institusjonsopphold,
+            vilkår = IkkePåInstitusjon,
+            fakta = InstitusjonsoppholdsFakta(),
             vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
             utfallsperioder = listOf(
                 Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 8.mars(2022))),
@@ -139,19 +142,21 @@ class VilkårsvurderingTest {
         val periode = Periode(fra = 1.mars(2022), til = 15.mars(2022))
         val saksbehandlerSierOppfylt = Vilkårsvurdering(
             vilkår = IkkePåKVP,
+            fakta = KVPFakta(),
             vurderingsperiode = periode,
             utfallsperioder = emptyList()
         )
-            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
+            .vurder(KVPFaktumBruker(deltarKVP = true))
+            .vurder(KVPFaktumSaksbehandler(deltarKVP = false))
 
         val saksbehandlerSierIkkeOppfylt = Vilkårsvurdering(
             vilkår = IkkePåKVP,
+            fakta = KVPFakta(),
             vurderingsperiode = periode,
             utfallsperioder = emptyList()
         )
-            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.SAKSBEHANDLER))
-            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.BRUKER))
+            .vurder(KVPFaktumSaksbehandler(deltarKVP = true))
+            .vurder(KVPFaktumBruker(deltarKVP = false))
 
         assertEquals(1, saksbehandlerSierOppfylt.utfallsperioder.size)
         assertEquals(periode, saksbehandlerSierOppfylt.utfallsperioder.first().periode)
@@ -163,31 +168,20 @@ class VilkårsvurderingTest {
     }
 
     @Test
-    fun `vilkårsvurdering vet hvilke kilder som er besvart`() {
+    fun `vilkårsvurdering kan returnere underliggende fakta`() {
         val periode = Periode(fra = 1.mars(2022), til = 15.mars(2022))
         val vurdering = Vilkårsvurdering(
             vilkår = IkkePåKVP,
+            fakta = KVPFakta(),
             vurderingsperiode = periode,
             utfallsperioder = emptyList()
         )
-            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
-            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
-        val ikkeBesvarteKilder = vurdering.ikkeBesvarteKilder()
-        assertEquals(1, ikkeBesvarteKilder.size)
-        assertEquals(FaktumKilde.SYSTEM, ikkeBesvarteKilder.first())
-        val besvarteKilder = vurdering.besvarteKilder()
-        assertEquals(2, besvarteKilder.size)
-        assertEquals(setOf(FaktumKilde.BRUKER, FaktumKilde.SAKSBEHANDLER), besvarteKilder)
-    }
+            .vurder(KVPFaktumBruker(deltarKVP = true))
+            .vurder(KVPFaktumSaksbehandler(deltarKVP = false))
 
-    @Test
-    fun `prioreterer faktakilde riktig`() {
-        val prioriterteFakta = listOf(
-            KVPFaktum(true, FaktumKilde.BRUKER),
-            KVPFaktum(true, FaktumKilde.SAKSBEHANDLER),
-        ).let(IkkePåKVP::prioriterFakta)
-        assertEquals(1, prioriterteFakta.size)
-        assertEquals(FaktumKilde.SAKSBEHANDLER, prioriterteFakta.first().kilde)
+        assertNotNull(vurdering.fakta.saksbehandler)
+        assertNotNull(vurdering.fakta.bruker)
+        assertNull(vurdering.fakta.system)
     }
 }
 

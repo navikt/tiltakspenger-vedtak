@@ -1,24 +1,16 @@
 package no.nav.tiltakspenger.domene.vilkår
 
-import no.nav.tiltakspenger.domene.*
-import no.nav.tiltakspenger.domene.fakta.Faktum
-import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
-import kotlin.reflect.KClass
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Utfallsperiode
+import no.nav.tiltakspenger.domene.Utfall
+import no.nav.tiltakspenger.domene.fakta.FødselsdatoFakta
 
-object ErOver18År : Vilkår {
-    override val relevanteFaktaTyper: List<KClass<out Faktum>> = listOf(FødselsdatoFaktum::class)
+object ErOver18År : Vilkår<FødselsdatoFakta> {
     override val erInngangsVilkår: Boolean = true
     override val paragraf = Paragraf.PARAGRAF_3_LEDD_1_PUNKTUM1
 
-    override fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode> {
-        faktum as List<FødselsdatoFaktum>
-        return if (faktum.isEmpty())
-            listOf(Utfallsperiode(utfall = Utfall.IkkeVurdert, vurderingsperiode))
-        else
-            vurder(faktum.first(), vurderingsperiode)
-    }
-
-    private fun vurder(faktum: FødselsdatoFaktum, vurderingsperiode: Periode): List<Utfallsperiode> {
+    override fun vurder(fakta: FødselsdatoFakta, vurderingsperiode: Periode): List<Utfallsperiode> {
+        val faktum = fakta.system ?: return listOf(Utfallsperiode(Utfall.IkkeVurdert, vurderingsperiode))
         return when {
             vurderingsperiode.etter(faktum.fødselsdato) -> listOf(
                 Utfallsperiode(

@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.domene
 
+import no.nav.tiltakspenger.domene.fakta.Faktum
+import no.nav.tiltakspenger.domene.fakta.Fakta
 import java.time.LocalDate
 
 class Tidslinje private constructor(
@@ -32,11 +34,11 @@ class Tidslinje private constructor(
 }
 
 
-data class VurdertPeriode(
+data class VurdertPeriode<FaktaType, FaktumType>(
     val periode: Periode,
     val samletUtfall: Utfall,
-    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList()
-)
+    val vilkårsvurderinger: List<Vilkårsvurdering<FaktaType, FaktumType>> = emptyList()
+) where FaktaType: Fakta<FaktumType>, FaktumType: Faktum
 
 fun List<VurdertDag>.toPeriode(): Periode = Periode(
     fra = this.minOf { it.dag },
@@ -46,16 +48,8 @@ fun List<VurdertDag>.toPeriode(): Periode = Periode(
 class VurdertDag(
     val dag: LocalDate,
     val utfallsperiode: Utfall,
-    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList()
+    val vilkårsvurderinger: List<Vilkårsvurdering<out Fakta<out Faktum>, out Faktum>> = emptyList()
 ) {
-
-    fun ikkeOppfylteVilkår(): List<Vilkårsvurdering> = emptyList()
-
+    fun ikkeOppfylteVilkår(): List<Vilkårsvurdering<out Fakta<out Faktum>, out Faktum>> = emptyList()
     fun oppfylt(): Boolean = false
-    /*
-    vilkårsvurderinger
-        .filter { /*Bare riktig dag*/ }
-        .filter { it.utfallsperiodes.any { it is Utfallsperiode.VurdertOgOppfylt} }.isEmpty()*/
-
-
 }
