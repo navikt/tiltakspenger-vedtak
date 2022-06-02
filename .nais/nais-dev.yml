@@ -17,3 +17,5 @@ spec:
     path: /isAlive
   readiness:
     path: /isReady
+  kafka:
+    pool: nav-dev

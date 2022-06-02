@@ -13,6 +13,7 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven("https://packages.confluent.io/maven/")
+        maven("https://jitpack.io")
     }
 //    apply(plugin = "io.gitlab.arturbosch.detekt")
 //    detekt {
