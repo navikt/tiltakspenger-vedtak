@@ -14,7 +14,7 @@ private val LOG = KotlinLogging.logger {}
 const val PORT = 8080
 
 fun main() {
-    LOG.info { "starting server" }
+    LOG.error { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
 
     val server = embeddedServer(Netty, PORT) {
@@ -51,7 +51,7 @@ fun main() {
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
         "KAFKA_RESET_POLICY" to "latest",
     )).also {
-        println("vi sender en melding")
+        LOG.error { "vi sender en melding" }
         it.publish("""{ 
             "@behov" : [ "test" ],
             "@id" : "test" }
@@ -60,7 +60,7 @@ fun main() {
     }.start()
     Runtime.getRuntime().addShutdownHook(
         Thread {
-            LOG.info { "stopping server" }
+            LOG.error { "stopping server" }
             server.stop(gracePeriodMillis = 3000, timeoutMillis = 3000)
         }
     )
@@ -77,7 +77,7 @@ internal class TestService(rapidsConnection: RapidsConnection) : River.PacketLis
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        println(packet)
+        LOG.error { packet }
     }
 }
 fun Application.tiltakspenger(
