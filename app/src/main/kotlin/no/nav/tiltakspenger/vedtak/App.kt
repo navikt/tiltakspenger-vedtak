@@ -51,6 +51,7 @@ fun main() {
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
         "KAFKA_RESET_POLICY" to "latest",
     )).also {
+        println("vi sender en melding")
         it.publish("""{ 
             "@behov" : [ "test" ],
             "@id" : "test" }
