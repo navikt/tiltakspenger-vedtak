@@ -51,12 +51,14 @@ fun main() {
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
         "KAFKA_RESET_POLICY" to "latest",
     )).also {
+        TestService(it)
+        Thread.sleep(10000)
         LOG.error { "vi sender en melding" }
         it.publish("""{ 
             "@behov" : [ "test" ],
             "@id" : "test" }
             """.trimMargin())
-        TestService(it)
+
     }.start()
     Runtime.getRuntime().addShutdownHook(
         Thread {
