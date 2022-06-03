@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.*
 import no.nav.tiltakspenger.vedtak.routes.naisRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
+import org.intellij.lang.annotations.Language
 import java.time.Clock
 
 private val LOG = KotlinLogging.logger {}
@@ -40,23 +41,29 @@ fun main() {
 //    )
 
 
-    RapidApplication.create(mapOf(
-        "RAPID_APP_NAME" to "tiltakspenger-vedtak",
-        "KAFKA_BROKERS" to "localhost:9092",
-        "KAFKA_CREDSTORE_PASSWORD" to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-        "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
-        "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
-        "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
-        "KAFKA_RESET_POLICY" to "latest",
-        "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-vedtak-v1"
-    )).also {
+    RapidApplication.create(
+        mapOf(
+            "RAPID_APP_NAME" to "tiltakspenger-vedtak",
+            "KAFKA_BROKERS" to "localhost:9092",
+            "KAFKA_CREDSTORE_PASSWORD" to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
+            "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
+            "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
+            "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
+            "KAFKA_RESET_POLICY" to "latest",
+            "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-vedtak-v1"
+        )
+    ).also {
         TestService(it)
         Thread.sleep(10000)
         LOG.error { "vi sender en melding" }
-        it.publish("""{ 
+        // language=JSON
+        it.publish(
+            """{ 
             "@behov" : [ "test" ],
             "@id" : "test" }
-            """.trimMargin())
+            """.trimMargin()
+        )
+        LOG.error { "vi sendte en melding" }
 
     }.start()
 
@@ -75,7 +82,12 @@ internal class TestService(rapidsConnection: RapidsConnection) : River.PacketLis
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         LOG.error { packet }
     }
+
+    override fun onError(problems: MessageProblems, context: MessageContext) {
+        LOG.error { problems }
+    }
 }
+
 fun Application.tiltakspenger(
     clock: Clock = Clock.systemUTC(),
 ) {
