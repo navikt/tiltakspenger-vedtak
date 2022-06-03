@@ -22,7 +22,11 @@ fun main() {
     ).also {
         TestService(it)
         Thread.sleep(5000)
-        sendTestMessage(it)
+        it.register(object : RapidsConnection.StatusListener {
+            override fun onStartup(rapidsConnection: RapidsConnection) {
+                sendTestMessage(rapidsConnection)
+            }
+        })
     }.start()
     LOG.error { "nå er vi i gang" }
 }
