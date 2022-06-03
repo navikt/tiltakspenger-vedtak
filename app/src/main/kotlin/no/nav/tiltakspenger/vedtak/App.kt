@@ -8,7 +8,7 @@ private val LOG = KotlinLogging.logger {}
 fun main() {
     LOG.error { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
-    RapidApplication.create(
+    val con = RapidApplication.create(
         mapOf(
             "RAPID_APP_NAME" to "tiltakspenger-vedtak",
             "KAFKA_BROKERS" to System.getenv("KAFKA_BROKERS"),
@@ -21,9 +21,12 @@ fun main() {
         )
     ).also {
         TestService(it)
-        Thread.sleep(5000)
-        sendTestMessage(it)
-    }.start()
+//        Thread.sleep(5000)
+//        sendTestMessage(it)
+    } //.start()
+    con.start()
+    Thread.sleep(5000)
+    sendTestMessage(con)
     LOG.error { "nå er vi i gang" }
 }
 
