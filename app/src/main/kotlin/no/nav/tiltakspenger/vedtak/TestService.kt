@@ -17,7 +17,7 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.error { packet.toString() }
+        LOG.error { packet.toJson() }
     }
 
     override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
