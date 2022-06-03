@@ -66,12 +66,13 @@ fun main() {
             it.publish(
                 json.trimMargin()
             )
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             LOG.error { "En feil oppstod: $e" }
         }
         LOG.error { "vi sendte en melding" }
 
     }.start()
+    LOG.error { "nå er vi i gang" }
 
 }
 
