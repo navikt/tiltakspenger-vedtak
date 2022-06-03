@@ -50,6 +50,7 @@ fun main() {
         "KAFKA_BROKERS" to "localhost:9092",
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
         "KAFKA_RESET_POLICY" to "latest",
+        "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-vedtak-v1"
     )).also {
         TestService(it)
         Thread.sleep(10000)
