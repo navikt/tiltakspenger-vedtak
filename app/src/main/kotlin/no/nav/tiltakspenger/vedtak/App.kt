@@ -16,11 +16,6 @@ const val PORT = 8080
 fun main() {
     LOG.error { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
-
-    val server = embeddedServer(Netty, PORT) {
-        tiltakspenger()
-    }.start(wait = true)
-
 //    val
 //    val con = RapidApplication.Builder(
 //        RapidApplication.RapidApplicationConfig.fromEnv(
@@ -61,6 +56,7 @@ fun main() {
             """.trimMargin())
 
     }.start()
+
     Runtime.getRuntime().addShutdownHook(
         Thread {
             LOG.error { "stopping server" }
