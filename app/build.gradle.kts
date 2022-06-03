@@ -1,5 +1,4 @@
 val ktorVersion = "2.0.2"
-val log4jVersion = "2.17.2"
 
 plugins {
     id("com.github.johnrengelman.shadow")
@@ -16,10 +15,8 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
+    api("ch.qos.logback:logback-classic:1.2.11")
+    api("net.logstash.logback:logstash-logback-encoder:1.2.11")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
