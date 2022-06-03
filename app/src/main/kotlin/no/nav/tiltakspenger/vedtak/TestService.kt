@@ -11,13 +11,13 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
         River(rapidsConnection).apply {
             validate {
                 it.interestedIn("@behov")
-                // it.requireKey("@id")
+                it.interestedIn("@id")
             }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.error { packet }
+        LOG.error { packet.toString() }
     }
 
     override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
