@@ -57,12 +57,6 @@ fun main() {
 
     }.start()
 
-    Runtime.getRuntime().addShutdownHook(
-        Thread {
-            LOG.error { "stopping server" }
-            server.stop(gracePeriodMillis = 3000, timeoutMillis = 3000)
-        }
-    )
 }
 
 internal class TestService(rapidsConnection: RapidsConnection) : River.PacketListener {
