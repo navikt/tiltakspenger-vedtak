@@ -44,7 +44,7 @@ fun main() {
     RapidApplication.create(
         mapOf(
             "RAPID_APP_NAME" to "tiltakspenger-vedtak",
-            "KAFKA_BROKERS" to "localhost:9092",
+            "KAFKA_BROKERS" to System.getenv("KAFKA_BROKERS"),
             "KAFKA_CREDSTORE_PASSWORD" to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
             "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
             "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
