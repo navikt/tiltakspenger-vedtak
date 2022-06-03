@@ -10,8 +10,8 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
-                it.demandKey("@behov")
-                it.requireKey("@id")
+                it.interestedIn("@behov")
+                // it.requireKey("@id")
             }
         }.register(this)
     }
