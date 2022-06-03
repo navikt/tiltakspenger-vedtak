@@ -57,12 +57,18 @@ fun main() {
         Thread.sleep(10000)
         LOG.error { "vi sender en melding" }
         // language=JSON
-        it.publish(
-            """{ 
+        val json = """
+            { 
             "@behov" : [ "test" ],
-            "@id" : "test" }
-            """.trimMargin()
-        )
+            "@id" : "test"
+            }"""
+        try {
+            it.publish(
+                json.trimMargin()
+            )
+        } catch (e: Exception) {
+            LOG.error { "En feil oppstod: $e" }
+        }
         LOG.error { "vi sendte en melding" }
 
     }.start()
