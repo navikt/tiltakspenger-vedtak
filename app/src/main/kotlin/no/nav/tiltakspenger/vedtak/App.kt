@@ -32,7 +32,7 @@ fun sendTestMessage(connection: RapidsConnection) {
     // language=JSON
     val json = """
             { 
-            "@behov" : [ "test" ],
+            "@behov" : "test",
             "@id" : "test"
             }"""
     try {
