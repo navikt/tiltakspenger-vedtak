@@ -14,8 +14,8 @@ spec:
   ingresses:
     - https://tiltakspenger-vedtak.dev.intern.nav.no
   liveness:
-    path: /isAlive
+    path: /isalive
   readiness:
-    path: /isReady
+    path: /isready
   kafka:
     pool: nav-dev
