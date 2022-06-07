@@ -14,12 +14,10 @@ spec:
   ingresses:
     - https://tiltakspenger-vedtak.dev.intern.nav.no
   liveness:
-    failureThreshold: 10
-    initialDelay: 20
     path: /isalive
   readiness:
-    failureThreshold: 10
-    initialDelay: 20
     path: /isready
   kafka:
     pool: nav-dev
+  secureLogs:
+    enabled: true

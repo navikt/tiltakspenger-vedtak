@@ -1,12 +1,13 @@
 package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.*
+import no.nav.helse.rapids_rivers.RapidApplication
+import no.nav.helse.rapids_rivers.RapidsConnection
 
 private val LOG = KotlinLogging.logger {}
 
 fun main() {
-    LOG.error { "starting server" }
+    LOG.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
     RapidApplication.create(
         mapOf(
@@ -28,24 +29,19 @@ fun main() {
             }
         })
     }.start()
-    LOG.error { "nå er vi i gang" }
+    LOG.info { "nå er vi i gang" }
 }
 
 fun sendTestMessage(connection: RapidsConnection) {
-    LOG.error { "vi sender en melding" }
+    LOG.info { "vi sender en melding" }
     // language=JSON
     val json = """
             { 
             "@behov" : "test",
             "@id" : "test"
             }"""
-    try {
-        connection.publish(
-            json.trimMargin()
-        )
-    } catch (e: Throwable) {
-        LOG.error { "En feil oppstod: $e" }
-    }
-    LOG.error { "vi sendte en melding" }
-
+    connection.publish(
+        json.trimMargin()
+    )
+    LOG.info { "vi sendte en melding" }
 }
