@@ -1,5 +1,3 @@
-val ktorVersion = "2.0.2"
-
 plugins {
     id("com.github.johnrengelman.shadow")
     application
@@ -16,16 +14,6 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
-    implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-default-headers-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-host-common:$ktorVersion")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-cors:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022.05.30-08.14.d0eae6419dd7")
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
