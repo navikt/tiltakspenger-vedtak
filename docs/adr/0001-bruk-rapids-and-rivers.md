@@ -1,4 +1,4 @@
-# Bruke Rapids & Rivers
+# Bruk Rapids & Rivers
 
 * Status: Foreslått
 * Besluttere: @haagenhasle, @tu55eladd, @richardmartinsen, @pjwalstrom
