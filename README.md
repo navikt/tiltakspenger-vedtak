@@ -25,6 +25,9 @@ For å sjekke utdaterte avhengigheter:
 ./gradlew dependencyUpdates
 ```
 
+## Arkitekturbeslutninger
+Se [docs/adr/index.md](docs/adr/index.md)
+
 ---
 
 # Henvendelser
