@@ -1,7 +1,7 @@
 # Bruk Rapids & Rivers
 
 * Status: Foreslått
-* Besluttere: @haagenhasle, @tu55eladd, @richardmartinsen, @pjwalstrom
+* Besluttere: [https://github.com/haagenhasle](@haagenhasle), [https://github.com/tu55eladd](@tu55eladd), [https://github.com/richardmartinsen](@richardmartinsen), [https://github.com/pjwalstrom](@pjwalstrom)
 * Dato: 2022-06-07
 
 ## Kontekst og problembeskrivelse
@@ -15,7 +15,6 @@
     2. integrere direkte -> publisere hendelser om det som har skjedd
 * Vi skal løse samme problem som flere andre team har løst før oss - det er mye erfaring å høste derfra
 * Det er mye kunnskap om "Rapids and Rivers" i NAV
-* 
 
 ## Vurderte alternativer
 
