@@ -1,7 +1,7 @@
 # Bruk Rapids & Rivers
 
 * Status: Foreslått
-* Besluttere: [https://github.com/haagenhasle](@haagenhasle), [https://github.com/tu55eladd](@tu55eladd), [https://github.com/richardmartinsen](@richardmartinsen), [https://github.com/pjwalstrom](@pjwalstrom)
+* Besluttere: [@haagenhasle](https://github.com/haagenhasle), [@tu55eladd](https://github.com/tu55eladd), [@richardmartinsen](https://github.com/richardmartinsen), [@pjwalstrom](https://github.com/pjwalstrom)
 * Dato: 2022-06-07
 
 ## Kontekst og problembeskrivelse
