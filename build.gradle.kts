@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 val javaVersion = JavaVersion.VERSION_17
 
 plugins {
