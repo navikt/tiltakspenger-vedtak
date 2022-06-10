@@ -39,7 +39,8 @@ fun sendTestMessage(connection: RapidsConnection) {
             { 
             "@behov" : ["person"],
             "@id" : "test",
-            "@behovId": "behovId"
+            "@behovId": "behovId",
+            "identer":[{"id":"01017912345","type":"fnr","historisk":false}]
             }"""
     connection.publish(
         json.trimMargin()

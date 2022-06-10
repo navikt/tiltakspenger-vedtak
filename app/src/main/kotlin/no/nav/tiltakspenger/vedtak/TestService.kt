@@ -10,6 +10,7 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
+                it.rejectKey("@løsning")
                 it.interestedIn("@behov")
                 it.interestedIn("@id")
             }
