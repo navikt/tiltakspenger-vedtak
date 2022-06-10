@@ -38,7 +38,8 @@ fun sendTestMessage(connection: RapidsConnection) {
     val json = """
             { 
             "@behov" : ["person"],
-            "@id" : "test"
+            "@id" : "test",
+            "@behovId": "behovId"
             }"""
     connection.publish(
         json.trimMargin()
