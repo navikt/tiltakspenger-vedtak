@@ -26,7 +26,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022060808531654671206.908d671b7ae0")
+    implementation("com.github.navikt:rapids-and-rivers:2022061213251655033125.cc27254b1735")
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
