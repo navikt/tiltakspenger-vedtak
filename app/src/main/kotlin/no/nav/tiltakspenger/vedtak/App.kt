@@ -57,7 +57,7 @@ fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
             "@behov" : ["ytelser"],
             "@id" : "test",
             "@behovId": "behovId",
-            "ident": "01017912345"
+            "ident": "05906398291"
             }"""
     connection.publish(
         json.trimMargin()
