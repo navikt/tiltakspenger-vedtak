@@ -25,15 +25,16 @@ fun main() {
         Thread.sleep(5000)
         it.register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
-                sendTestMessage(rapidsConnection)
+                sendPersonBehovTestMessage(rapidsConnection)
+                sendYtelserBehovTestMessage(rapidsConnection)
             }
         })
     }.start()
     LOG.info { "nå er vi i gang" }
 }
 
-fun sendTestMessage(connection: RapidsConnection) {
-    LOG.info { "vi sender en melding" }
+fun sendPersonBehovTestMessage(connection: RapidsConnection) {
+    LOG.info { "vi sender en person behovsmelding" }
     // language=JSON
     val json = """
             { 
@@ -45,5 +46,21 @@ fun sendTestMessage(connection: RapidsConnection) {
     connection.publish(
         json.trimMargin()
     )
-    LOG.info { "vi sendte en melding" }
+    LOG.info { "vi sendte en person behovsmelding" }
+}
+
+fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
+    LOG.info { "vi sender en ytelser behovsmelding" }
+    // language=JSON
+    val json = """
+            { 
+            "@behov" : ["ytelser"],
+            "@id" : "test",
+            "@behovId": "behovId",
+            "ident": "01017912345"
+            }"""
+    connection.publish(
+        json.trimMargin()
+    )
+    LOG.info { "vi sendte en ytelser behovsmelding" }
 }
