@@ -21,11 +21,7 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
         LOG.info { "Mottok løsning: ${packet.toJson()}" }
     }
 
-    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        LOG.error { error }
-    }
-
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        LOG.error { problems }
+        LOG.debug { problems }
     }
 }
