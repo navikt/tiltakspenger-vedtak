@@ -27,6 +27,7 @@ fun main() {
             override fun onStartup(rapidsConnection: RapidsConnection) {
                 sendPersonBehovTestMessage(rapidsConnection)
                 sendYtelserBehovTestMessage(rapidsConnection)
+                sendTiltakBehovTestMessage(rapidsConnection)
             }
         })
     }.start()
@@ -65,4 +66,22 @@ fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
         json.trimMargin()
     )
     LOG.info { "vi sendte en ytelser behovsmelding" }
+}
+
+fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
+    LOG.info { "vi sender en tiltak behovsmelding" }
+    // language=JSON
+    val json = """
+            { 
+            "@behov" : ["tiltak"],
+            "@id" : "test",
+            "@behovId": "behovId",
+            "ident": "05906398291",
+            "fom" : "2019-10-01",
+            "tom" : "2022-06-01"
+            }"""
+    connection.publish(
+        json.trimMargin()
+    )
+    LOG.info { "vi sendte en tiltak behovsmelding" }
 }
