@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlin.random.Random
 
 internal const val sakPath = "/saker"
 
@@ -17,6 +18,7 @@ internal fun Route.sakRoutes(
             text =
             // language=JSON
             """{
+                "isRefreshing": ${Random.nextBoolean()},
                 "sak" :
                     {
                         "id" : "4d4g54g5-5g5g44g-4jh5jh",
