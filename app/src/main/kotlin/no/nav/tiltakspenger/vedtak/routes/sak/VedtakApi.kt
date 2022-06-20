@@ -18,8 +18,8 @@ class TokenVerificationConfig(
     companion object {
         fun fromEnv(): TokenVerificationConfig {
             return TokenVerificationConfig(
-                jwksUri = System.getenv("AZURE_JWKS_URI"),
-                issuer = System.getenv("AZURE_ISSUER"),
+                jwksUri = System.getenv("AZURE_OPENID_CONFIG_JWKS_URI"),
+                issuer = System.getenv("AZURE_OPENID_CONFIG_ISSUER"),
                 clientId = System.getenv("AZURE_APP_CLIENT_ID"),
                 leeway = 1000
             )
