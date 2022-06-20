@@ -24,10 +24,9 @@ spec:
   azure:
     application:
       enabled: true
-  # Comment out when flate is renamed
-  # accessPolicy:
-  #  inbound:
-  #    rules:
-  #      - application: tiltakspenger-flate
-  #        namespace: tpts
-  #        cluster: dev-gcp
+  accessPolicy:
+   inbound:
+     rules:
+       - application: tiltakspenger-flate
+         namespace: tpts
+         cluster: dev-gcp
