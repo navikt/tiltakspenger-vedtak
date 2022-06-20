@@ -25,7 +25,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022061213251655033125.cc27254b1735")
+    implementation("com.github.navikt:rapids-and-rivers:2022061809451655538329.d6deccc62862")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
