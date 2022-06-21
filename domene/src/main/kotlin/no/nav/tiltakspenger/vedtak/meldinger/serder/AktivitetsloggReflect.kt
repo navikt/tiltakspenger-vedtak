@@ -24,7 +24,7 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
             melding: String,
             tidsstempel: String
         ) {
-            leggTilMelding(kontekster, InnsendingData.Alvorlighetsgrad.INFO, melding, tidsstempel)
+            leggTilMelding(kontekster, InnsendingData.AktivitetsloggData.Alvorlighetsgrad.INFO, melding, tidsstempel)
         }
 
         override fun visitWarn(
@@ -33,7 +33,7 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
             melding: String,
             tidsstempel: String
         ) {
-            leggTilMelding(kontekster, InnsendingData.Alvorlighetsgrad.WARN, melding, tidsstempel)
+            leggTilMelding(kontekster, InnsendingData.AktivitetsloggData.Alvorlighetsgrad.WARN, melding, tidsstempel)
         }
 
         override fun visitBehov(
@@ -46,7 +46,7 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
         ) {
             leggTilBehov(
                 kontekster,
-                InnsendingData.Alvorlighetsgrad.BEHOV,
+                InnsendingData.AktivitetsloggData.Alvorlighetsgrad.BEHOV,
                 type,
                 melding,
                 detaljer,
@@ -60,7 +60,7 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
             melding: String,
             tidsstempel: String
         ) {
-            leggTilMelding(kontekster, InnsendingData.Alvorlighetsgrad.ERROR, melding, tidsstempel)
+            leggTilMelding(kontekster, InnsendingData.AktivitetsloggData.Alvorlighetsgrad.ERROR, melding, tidsstempel)
         }
 
         override fun visitSevere(
@@ -69,12 +69,12 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
             melding: String,
             tidsstempel: String
         ) {
-            leggTilMelding(kontekster, InnsendingData.Alvorlighetsgrad.SEVERE, melding, tidsstempel)
+            leggTilMelding(kontekster, InnsendingData.AktivitetsloggData.Alvorlighetsgrad.SEVERE, melding, tidsstempel)
         }
 
         private fun leggTilMelding(
             kontekster: List<SpesifikkKontekst>,
-            alvorlighetsgrad: InnsendingData.Alvorlighetsgrad,
+            alvorlighetsgrad: InnsendingData.AktivitetsloggData.Alvorlighetsgrad,
             melding: String,
             tidsstempel: String
         ) {
@@ -91,7 +91,7 @@ internal class AktivitetsloggReflect(aktivitetslogg: Aktivitetslogg) {
 
         private fun leggTilBehov(
             kontekster: List<SpesifikkKontekst>,
-            alvorlighetsgrad: InnsendingData.Alvorlighetsgrad,
+            alvorlighetsgrad: InnsendingData.AktivitetsloggData.Alvorlighetsgrad,
             type: Aktivitetslogg.Aktivitet.Behov.Behovtype,
             melding: String,
             detaljer: Map<String, Any>,
