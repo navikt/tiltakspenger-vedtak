@@ -4,8 +4,8 @@ import io.ktor.server.application.*
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.routes.sak.TokenVerificationConfig
-import no.nav.tiltakspenger.vedtak.routes.sak.vedtakApi
+import no.nav.tiltakspenger.vedtak.routes.TokenVerificationConfig
+import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 
 private val LOG = KotlinLogging.logger {}
 

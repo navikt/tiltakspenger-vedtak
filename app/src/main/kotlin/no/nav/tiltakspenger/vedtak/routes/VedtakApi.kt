@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.sak
+package no.nav.tiltakspenger.vedtak.routes
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.UrlJwkProvider
@@ -7,6 +7,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.application.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
+import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import java.net.URI
 
 class TokenVerificationConfig(
@@ -41,7 +42,7 @@ internal fun vedtakApi(config: TokenVerificationConfig): Application.() -> Unit 
         }
         routing {
             authenticate("auth-jwt") {
-                sakRoutes()
+                personRoutes()
             }
         }
     }
