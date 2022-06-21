@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.vedtak.meldinger.serder.AktivitetsloggReflect
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -225,8 +224,6 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         }
     }
 }
-
-fun Aktivitetslogg.toMap() = AktivitetsloggReflect(this).toMap()
 
 interface IAktivitetslogg {
     fun info(melding: String, vararg params: Any?)
