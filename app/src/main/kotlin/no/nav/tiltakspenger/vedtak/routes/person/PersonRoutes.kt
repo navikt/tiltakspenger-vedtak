@@ -50,13 +50,13 @@ internal fun Route.personRoutes(
                                     {
                                       "utfall": "IkkeOppfylt",
                                       "vilkår": "Opphold på institusjon",
-                                      "periode": { "fra": "11-12-12", "til": "11-12-12" }
+                                      "periode": { "fra": "11-12-12", "til": "11-12-12" },
                                       "kilde": "Inst2"
                                     },
                                     {
                                       "utfall": "Oppfylt",
                                       "vilkår": "Opphold på institusjon",
-                                      "periode": { "fra": "11-12-12", "til": "11-12-12" }
+                                      "periode": { "fra": "11-12-12", "til": "11-12-12" },
                                       "kilde": "Bruker"
                                     }
                                   ]
@@ -68,13 +68,13 @@ internal fun Route.personRoutes(
                                     {
                                       "utfall": "Oppfylt",
                                       "vilkår": "Ikke Dagpenger",
-                                      "periode": { "fra": "11-12-12", "til": "11-12-12" }
+                                      "periode": { "fra": "11-12-12", "til": "11-12-12" },
                                       "kilde": "Arena"
                                     },
                                     {
                                       "utfall": "Oppfylt",
                                       "vilkår": "Ikke AAP",
-                                      "periode": { "fra": "11-12-12", "til": "11-12-12" }
+                                      "periode": { "fra": "11-12-12", "til": "11-12-12" },
                                       "kilde": "Arena"
                                     }
                                   ]
