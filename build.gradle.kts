@@ -19,6 +19,14 @@ allprojects {
 //        allRules = false
 //        config = files("$rootDir/config/detekt.yml")
 //    }
+
+}
+
+detekt {
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    allRules = false
+    config = files("$projectDir/config/detekt.yml")
 }
 
 subprojects {

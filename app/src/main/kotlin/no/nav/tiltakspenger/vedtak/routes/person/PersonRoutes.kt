@@ -1,17 +1,115 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import org.apache.kafka.common.security.oauthbearer.secured.HttpAccessTokenRetriever
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.Tiltak
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 import kotlin.random.Random
 
 internal const val personPath = "/person"
 
-internal fun Route.personRoutes(
+fun Route.personRoutes() {
+    get("$personPath/test") {
+        val person = PersonDTO(
+            personalia = PersonaliaDTO(
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+                ident = "123454",
+                barn = listOf(
+                    BarnDTO(
+                        fornavn = "FornavnBarn",
+                        etternavn = "EtternavnBarn",
+                        ident = "987654"
+                    )
+                )
+            ),
+            behandlinger = listOf(
+                BehandlingDTO(
+                    id = "behandlingId",
+                    søknad = Søknad(
+                        id = "søknadId",
+                        ident = "personIdent?",
+                        opprettet = LocalDateTime.of(2022, 5, 30, 20, 0, 0),
+                        tiltak = Tiltak(
+                            id = "tiltakId",
+                            arrangør = "arrangør",
+                            navn = "navnTiltak",
+                            startDato = LocalDate.of(2022, Month.APRIL, 30),
+                            sluttDato = LocalDate.of(2022, Month.APRIL, 30),
+                        ),
+                        deltarKvp = false
+                    ),
+                    tiltak = TiltakDTO(
+                        arrangør = "Joblearn",
+                        navn = "Gruppe AMO",
+                        periode = PeriodeDTO(
+                            fra = LocalDate.of(2022, Month.APRIL, 1),
+                            til = LocalDate.of(2022, Month.APRIL, 20),
+                        ),
+                        prosent = 80,
+                        dagerIUken = 4,
+                        status = "Godkjent"
+                    ),
+                    periode = PeriodeDTO(
+                        fra = LocalDate.of(2022, Month.APRIL, 1),
+                        til = LocalDate.of(2022, Month.APRIL, 20),
+                    ),
+                    vurderinger = listOf(
+                        VilkårsVurderingsKategori(
+                            tittel = "Statlige ytelser",
+                            utfall = UtfallDTO.Uavklart,
+                            vilkårsvurderinger = listOf(
+                                VilkårsvurderingDTO(
+                                    utfall = UtfallDTO.Oppfylt,
+                                    periode = PeriodeDTO(
+                                        fra = LocalDate.of(2022, Month.APRIL, 1),
+                                        til = LocalDate.of(2022, Month.APRIL, 20),
+                                    ),
+                                    vilkår = "Dagpenger",
+                                    kilde = "Arena"
+                                ),
+                                VilkårsvurderingDTO(
+                                    utfall = UtfallDTO.Oppfylt,
+                                    periode = PeriodeDTO(
+                                        fra = LocalDate.of(2022, Month.APRIL, 1),
+                                        til = LocalDate.of(2022, Month.APRIL, 20),
+                                    ),
+                                    vilkår = "AAP",
+                                    kilde = "Arena"
+                                ),
+                                VilkårsvurderingDTO(
+                                    utfall = UtfallDTO.Uavklart,
+                                    periode = PeriodeDTO(
+                                        fra = LocalDate.of(2022, Month.APRIL, 1),
+                                        til = LocalDate.of(2022, Month.APRIL, 20),
+                                    ),
+                                    vilkår = "Tiltakspenger",
+                                    kilde = "Arena"
+                                )
+                            ),
+                        )
+                    )
+                )
+            ),
+        )
+        call.respond(person)
+        /*
+        call.respondText(
+            contentType = ContentType.Application.Json,
+            status = HttpStatusCode.OK,
+            text = serialize(person)
+        )*/
+    }
 
-) {
     get("$personPath") {
         call.respondText(
             contentType = ContentType.Application.Json,

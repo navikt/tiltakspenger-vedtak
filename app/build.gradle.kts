@@ -1,4 +1,5 @@
 val ktorVersion = "2.0.2"
+val kotestVersion = "5.3.0"
 
 plugins {
     id("com.github.johnrengelman.shadow")
@@ -25,6 +26,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022061809451655538329.d6deccc62862")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -35,6 +37,16 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:1.12.4")
     testImplementation("io.mockk:mockk-dsl-jvm:1.12.4")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(group = "junit")
+        exclude(group = "org.eclipse.jetty") // conflicts with WireMock
+        exclude(group = "org.eclipse.jetty.http2") // conflicts with WireMock
+    }
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
+    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
+    testImplementation("io.kotest:kotest-extensions:$kotestVersion")
+    testImplementation("org.skyscreamer:jsonassert:1.5.0")
 }
 
 tasks {
