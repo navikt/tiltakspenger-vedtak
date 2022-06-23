@@ -18,6 +18,7 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 
 RUN echo $(ls -1la)
 RUN pwd
+RUN printenv
 
 COPY app/build/install/* /
 
