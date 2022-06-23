@@ -2,7 +2,6 @@ val ktorVersion = "2.0.2"
 val kotestVersion = "5.3.0"
 
 plugins {
-    id("com.github.johnrengelman.shadow")
     application
 }
 
@@ -47,11 +46,4 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.0")
-}
-
-tasks {
-    shadowJar {
-        dependsOn("test")
-        transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
-    }
 }
