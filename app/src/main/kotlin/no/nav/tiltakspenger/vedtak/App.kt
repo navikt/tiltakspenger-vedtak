@@ -36,6 +36,7 @@ fun main() {
                     sendPersonBehovTestMessage(rapidsConnection)
                     sendYtelserBehovTestMessage(rapidsConnection)
                     sendTiltakBehovTestMessage(rapidsConnection)
+                    sendSkjermingBehovTestMessage(rapidsConnection)
                 }
             })
         }.start()
@@ -92,4 +93,22 @@ fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
         json.trimMargin()
     )
     LOG.info { "vi sendte en tiltak behovsmelding" }
+}
+
+fun sendSkjermingBehovTestMessage(connection: RapidsConnection) {
+    LOG.info { "vi sender en skjerming behovsmelding" }
+    // language=JSON
+    val json = """
+            { 
+            "@behov" : ["skjerming"],
+            "@id" : "test",
+            "@behovId": "behovId",
+            "ident": "05906398291",
+            "fom" : "2019-10-01",
+            "tom" : "2022-06-01"
+            }"""
+    connection.publish(
+        json.trimMargin()
+    )
+    LOG.info { "vi sendte en skjerming behovsmelding" }
 }
