@@ -19,4 +19,4 @@ COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY app/build/install/* /
 
 USER nobody
-CMD ["tiltakspenger-vedtak"]
+CMD ["app"]
