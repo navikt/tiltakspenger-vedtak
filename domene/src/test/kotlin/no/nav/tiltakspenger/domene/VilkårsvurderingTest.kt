@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.domene
 
-import KVP
+import IkkePåKVP
 import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
 import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
@@ -37,7 +37,7 @@ class VilkårsvurderingTest {
     @Test
     fun `en vilkårsvurdering om KVP hvor bruker sier hen går på det skal til manuell behandling`() {
         val vilkårsvurdering = Vilkårsvurdering(
-            vilkår = KVP,
+            vilkår = IkkePåKVP,
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
         val vurderingMedUtfall =
@@ -48,7 +48,7 @@ class VilkårsvurderingTest {
     @Test
     fun `en KVP vilkårsvurdering med fakta fra bruker og fakta fra saksbehandler skal avgjøres ved holmgang`() {
         val vilkårsvurdering = Vilkårsvurdering(
-            vilkår = KVP,
+            vilkår = IkkePåKVP,
             vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
         )
         val vurderingMedUtfall = vilkårsvurdering
@@ -133,19 +133,61 @@ class VilkårsvurderingTest {
 
          */
     }
+
+    @Test
+    fun `akkumulert vilkår prioriterer saksbehandlers faktum`() {
+        val periode = Periode(fra = 1.mars(2022), til = 15.mars(2022))
+        val saksbehandlerSierOppfylt = Vilkårsvurdering(
+            vilkår = IkkePåKVP,
+            vurderingsperiode = periode,
+            utfallsperioder = emptyList()
+        )
+            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
+            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
+
+        val saksbehandlerSierIkkeOppfylt = Vilkårsvurdering(
+            vilkår = IkkePåKVP,
+            vurderingsperiode = periode,
+            utfallsperioder = emptyList()
+        )
+            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.SAKSBEHANDLER))
+            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.BRUKER))
+
+        assertEquals(1, saksbehandlerSierOppfylt.utfallsperioder.size)
+        assertEquals(periode, saksbehandlerSierOppfylt.utfallsperioder.first().periode)
+        assertEquals(Utfall.VurdertOgOppfylt, saksbehandlerSierOppfylt.utfallsperioder.first().utfall)
+
+        assertEquals(1, saksbehandlerSierIkkeOppfylt.utfallsperioder.size)
+        assertEquals(periode, saksbehandlerSierIkkeOppfylt.utfallsperioder.first().periode)
+        assertEquals(Utfall.VurdertOgIkkeOppfylt, saksbehandlerSierIkkeOppfylt.utfallsperioder.first().utfall)
+    }
+
+    @Test
+    fun `vilkårsvurdering vet hvilke kilder som er besvart`() {
+        val periode = Periode(fra = 1.mars(2022), til = 15.mars(2022))
+        val vurdering = Vilkårsvurdering(
+            vilkår = IkkePåKVP,
+            vurderingsperiode = periode,
+            utfallsperioder = emptyList()
+        )
+            .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
+            .vurder(KVPFaktum(deltarKVP = false, kilde = FaktumKilde.SAKSBEHANDLER))
+        val ikkeBesvarteKilder = vurdering.ikkeBesvarteKilder()
+        assertEquals(1, ikkeBesvarteKilder.size)
+        assertEquals(FaktumKilde.SYSTEM, ikkeBesvarteKilder.first())
+        val besvarteKilder = vurdering.besvarteKilder()
+        assertEquals(2, besvarteKilder.size)
+        assertEquals(setOf(FaktumKilde.BRUKER, FaktumKilde.SAKSBEHANDLER), besvarteKilder)
+    }
+
+    @Test
+    fun `prioreterer faktakilde riktig`() {
+        val prioriterteFakta = listOf(
+            KVPFaktum(true, FaktumKilde.BRUKER),
+            KVPFaktum(true, FaktumKilde.SAKSBEHANDLER),
+        ).let(IkkePåKVP::prioriterFakta)
+        assertEquals(1, prioriterteFakta.size)
+        assertEquals(FaktumKilde.SAKSBEHANDLER, prioriterteFakta.first().kilde)
+    }
 }
 
-/*
-fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
-    if (this.isEmpty()) return emptyList()
-    val vurderingsPeriode = this.first().vurderingsperiode
-    return this
-        .filter { it.utfall.first() is Utfall.VurdertOgOppfylt }
-        .map { it.utfall as Utfall.VurdertOgOppfylt }
-        .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
-            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.perioder)
-            return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
-        }
-}
-
- */
