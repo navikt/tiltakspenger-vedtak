@@ -12,8 +12,8 @@ import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
 import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
-import io.ktor.server.application.install
 import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
@@ -21,7 +21,8 @@ import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
-import io.ktor.server.routing.*
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import java.net.URI
 import kotlin.reflect.KType
@@ -57,17 +58,20 @@ fun Application.openAPI() {
         server("/") {
             description = "Test server"
         }
-        replaceModule(DefaultSchemaNamer, object: SchemaNamer {
-            val regex = Regex("[A-Za-z0-9_.]+")
-            override fun get(type: KType): String {
-                return type.toString()
-                    .replace(regex) { it.value.split(".").last() }
-                    .replace(Regex(">|<|, "), "_")
-                    .replace("ø", "o")
-                    .replace("å", "a")
-                    .replace("DTO", "")
+        replaceModule(
+            DefaultSchemaNamer,
+            object : SchemaNamer {
+                val regex = Regex("[A-Za-z0-9_.]+")
+                override fun get(type: KType): String {
+                    return type.toString()
+                        .replace(regex) { it.value.split(".").last() }
+                        .replace(Regex(">|<|, "), "_")
+                        .replace("ø", "o")
+                        .replace("å", "a")
+                        .replace("DTO", "")
+                }
             }
-        })
+        )
     }
 }
 

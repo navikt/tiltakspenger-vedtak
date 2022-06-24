@@ -7,7 +7,9 @@ import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
 import no.nav.tiltakspenger.domene.fakta.KVPFaktum
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import no.nav.tiltakspenger.domene.vilkår.Institusjonsopphold
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -57,7 +59,6 @@ class VilkårsvurderingTest {
         assertTrue(vurderingMedUtfall.utfallsperioder.first().utfall == Utfall.VurdertOgOppfylt)
     }
 
-
     // | Alt ok | fengsel | Alt Ok |
     @Test
     fun `en bruker bor på institusjon i deler av vurderingsperioden`() {
@@ -99,53 +100,46 @@ class VilkårsvurderingTest {
         }
     }
 
-    @Test
-    fun `en vurderingsperiode med flere vilkår`() {
-        val vilkårsvurdering1 = Vilkårsvurdering(
-            vilkår = Institusjonsopphold,
-            vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfallsperioder = listOf(
-                Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 3.mars(2022))),
-                Utfallsperiode(utfall=Utfall.VurdertOgOppfylt, Periode(fra = 10.mars(2022), til = 15.mars(2022)))
-            )
-        )
+    // @Test
+    // fun `en vurderingsperiode med flere vilkår`() {
+    //     val vilkårsvurdering1 = Vilkårsvurdering(
+    //         vilkår = Institusjonsopphold,
+    //         vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
+    //         utfallsperioder = listOf(
+    //             Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 3.mars(2022))),
+    //             Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 10.mars(2022), til = 15.mars(2022)))
+    //         )
+    //     )
+    //
+    //     val vilkårsvurdering2 = Vilkårsvurdering(
+    //         vilkår = Institusjonsopphold,
+    //         vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
+    //         utfallsperioder = listOf(
+    //             Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 8.mars(2022))),
+    //             Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 12.mars(2022), til = 15.mars(2022)))
+    //         )
+    //     )
 
-
-        val vilkårsvurdering2 = Vilkårsvurdering(
-            vilkår = Institusjonsopphold,
-            vurderingsperiode = Periode(fra = 1.mars(2022), til = 15.mars(2022)),
-            utfallsperioder = listOf(
-                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 1.mars(2022), til = 8.mars(2022))),
-                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(fra = 12.mars(2022), til = 15.mars(2022)))
-            )
-        )
-
-        //  OK 1-3 | NOT_OK 4-11 | OK 12-15
-        //TODO: Dette hører hjemme på tidslinje?
-        /*
-        assertEquals(
-            listOf(
-                Periode(fra = 1.mars(2022), til = 3.mars(2022)),
-                Periode(fra = 12.mars(2022), til = 15.mars(2022))
-            ),
-            listOf(vilkårsvurdering1, vilkårsvurdering2).oppfyltePerioder()
-        )
-
-         */
-    }
+    //  OK 1-3 | NOT_OK 4-11 | OK 12-15
+    // TODO: Dette hører hjemme på tidslinje?
+    // assertEquals(
+    //     listOf(
+    //         Periode(fra = 1.mars(2022), til = 3.mars(2022)),
+    //         Periode(fra = 12.mars(2022), til = 15.mars(2022))
+    //     ),
+    //     listOf(vilkårsvurdering1, vilkårsvurdering2).oppfyltePerioder()
+    // )
+    // }
 }
 
-/*
-fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
-    if (this.isEmpty()) return emptyList()
-    val vurderingsPeriode = this.first().vurderingsperiode
-    return this
-        .filter { it.utfall.first() is Utfall.VurdertOgOppfylt }
-        .map { it.utfall as Utfall.VurdertOgOppfylt }
-        .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
-            val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.perioder)
-            return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
-        }
-}
-
- */
+// fun List<Vilkårsvurdering>.oppfyltePerioder(): List<Periode> {
+//     if (this.isEmpty()) return emptyList()
+//     val vurderingsPeriode = this.first().vurderingsperiode
+//     return this
+//         .filter { it.utfall.first() is Utfall.VurdertOgOppfylt }
+//         .map { it.utfall as Utfall.VurdertOgOppfylt }
+//         .fold(listOf(vurderingsPeriode)) { fratrektVurderingsPeriode, vurdertOgOppfylt ->
+//             val ikkeOppfyltPerioder = vurderingsPeriode.ikkeOverlappendePerioder(vurdertOgOppfylt.perioder)
+//             return@fold fratrektVurderingsPeriode.flatMap { it.ikkeOverlappendePerioder(ikkeOppfyltPerioder) }
+//         }
+// }
