@@ -1,121 +1,109 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import no.nav.tiltakspenger.domene.Periode
+import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
+import com.papsign.ktor.openapigen.route.path.normal.get
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
-import kotlin.random.Random
 
 internal const val personPath = "/person"
 
-fun Route.personRoutes() {
-    get("$personPath/test") {
-        val person = PersonDTO(
-            personalia = PersonaliaDTO(
-                fornavn = "Fornavn",
-                etternavn = "Etternavn",
-                ident = "123454",
-                barn = listOf(
-                    BarnDTO(
-                        fornavn = "FornavnBarn",
-                        etternavn = "EtternavnBarn",
-                        ident = "987654"
+fun NormalOpenAPIRoute.personRoutes() {
+    route("$personPath/test") {
+        get<Unit, PersonDTO> {
+            val person = PersonDTO(
+                personalia = PersonaliaDTO(
+                    fornavn = "Fornavn",
+                    etternavn = "Etternavn",
+                    ident = "123454",
+                    barn = listOf(
+                        BarnDTO(
+                            fornavn = "FornavnBarn",
+                            etternavn = "EtternavnBarn",
+                            ident = "987654"
+                        )
                     )
-                )
-            ),
-            behandlinger = listOf(
-                BehandlingDTO(
-                    id = "behandlingId",
-                    søknad = Søknad(
-                        id = "søknadId",
-                        ident = "personIdent?",
-                        opprettet = LocalDateTime.of(2022, 5, 30, 20, 0, 0),
-                        tiltak = Tiltak(
-                            id = "tiltakId",
-                            arrangør = "arrangør",
-                            navn = "navnTiltak",
-                            startDato = LocalDate.of(2022, Month.APRIL, 30),
-                            sluttDato = LocalDate.of(2022, Month.APRIL, 30),
+                ),
+                behandlinger = listOf(
+                    BehandlingDTO(
+                        id = "behandlingId",
+                        søknad = Søknad(
+                            id = "søknadId",
+                            ident = "personIdent?",
+                            opprettet = LocalDateTime.of(2022, 5, 30, 20, 0, 0),
+                            tiltak = Tiltak(
+                                id = "tiltakId",
+                                arrangør = "arrangør",
+                                navn = "navnTiltak",
+                                startDato = LocalDate.of(2022, Month.APRIL, 30),
+                                sluttDato = LocalDate.of(2022, Month.APRIL, 30),
+                            ),
+                            deltarKvp = false
                         ),
-                        deltarKvp = false
-                    ),
-                    tiltak = TiltakDTO(
-                        arrangør = "Joblearn",
-                        navn = "Gruppe AMO",
+                        tiltak = TiltakDTO(
+                            arrangør = "Joblearn",
+                            navn = "Gruppe AMO",
+                            periode = PeriodeDTO(
+                                fra = LocalDate.of(2022, Month.APRIL, 1),
+                                til = LocalDate.of(2022, Month.APRIL, 20),
+                            ),
+                            prosent = 80,
+                            dagerIUken = 4,
+                            status = "Godkjent"
+                        ),
                         periode = PeriodeDTO(
                             fra = LocalDate.of(2022, Month.APRIL, 1),
                             til = LocalDate.of(2022, Month.APRIL, 20),
                         ),
-                        prosent = 80,
-                        dagerIUken = 4,
-                        status = "Godkjent"
-                    ),
-                    periode = PeriodeDTO(
-                        fra = LocalDate.of(2022, Month.APRIL, 1),
-                        til = LocalDate.of(2022, Month.APRIL, 20),
-                    ),
-                    vurderinger = listOf(
-                        VilkårsVurderingsKategori(
-                            tittel = "Statlige ytelser",
-                            utfall = UtfallDTO.Uavklart,
-                            vilkårsvurderinger = listOf(
-                                VilkårsvurderingDTO(
-                                    utfall = UtfallDTO.Oppfylt,
-                                    periode = PeriodeDTO(
-                                        fra = LocalDate.of(2022, Month.APRIL, 1),
-                                        til = LocalDate.of(2022, Month.APRIL, 20),
+                        vurderinger = listOf(
+                            VilkårsVurderingsKategori(
+                                tittel = "Statlige ytelser",
+                                utfall = UtfallDTO.Uavklart,
+                                vilkårsvurderinger = listOf(
+                                    VilkårsvurderingDTO(
+                                        utfall = UtfallDTO.Oppfylt,
+                                        periode = PeriodeDTO(
+                                            fra = LocalDate.of(2022, Month.APRIL, 1),
+                                            til = LocalDate.of(2022, Month.APRIL, 20),
+                                        ),
+                                        vilkår = "Dagpenger",
+                                        kilde = "Arena"
                                     ),
-                                    vilkår = "Dagpenger",
-                                    kilde = "Arena"
+                                    VilkårsvurderingDTO(
+                                        utfall = UtfallDTO.Oppfylt,
+                                        periode = PeriodeDTO(
+                                            fra = LocalDate.of(2022, Month.APRIL, 1),
+                                            til = LocalDate.of(2022, Month.APRIL, 20),
+                                        ),
+                                        vilkår = "AAP",
+                                        kilde = "Arena"
+                                    ),
+                                    VilkårsvurderingDTO(
+                                        utfall = UtfallDTO.Uavklart,
+                                        periode = PeriodeDTO(
+                                            fra = LocalDate.of(2022, Month.APRIL, 1),
+                                            til = LocalDate.of(2022, Month.APRIL, 20),
+                                        ),
+                                        vilkår = "Tiltakspenger",
+                                        kilde = "Arena"
+                                    )
                                 ),
-                                VilkårsvurderingDTO(
-                                    utfall = UtfallDTO.Oppfylt,
-                                    periode = PeriodeDTO(
-                                        fra = LocalDate.of(2022, Month.APRIL, 1),
-                                        til = LocalDate.of(2022, Month.APRIL, 20),
-                                    ),
-                                    vilkår = "AAP",
-                                    kilde = "Arena"
-                                ),
-                                VilkårsvurderingDTO(
-                                    utfall = UtfallDTO.Uavklart,
-                                    periode = PeriodeDTO(
-                                        fra = LocalDate.of(2022, Month.APRIL, 1),
-                                        til = LocalDate.of(2022, Month.APRIL, 20),
-                                    ),
-                                    vilkår = "Tiltakspenger",
-                                    kilde = "Arena"
-                                )
-                            ),
+                            )
                         )
                     )
-                )
-            ),
-        )
-        call.respond(person)
-        /*
-        call.respondText(
-            contentType = ContentType.Application.Json,
-            status = HttpStatusCode.OK,
-            text = serialize(person)
-        )*/
+                ),
+            )
+            respond(response = person)
+        }
     }
 
-    get("$personPath") {
-        call.respondText(
-            contentType = ContentType.Application.Json,
-            status = HttpStatusCode.OK,
-            text =
-            // language=JSON
+    /*
+    route("$personPath").get<Unit, String> { params ->
+        respond(// language=JSON
             """
                 {
                   "isRefreshing": ${Random.nextBoolean()},
@@ -210,4 +198,6 @@ fun Route.personRoutes() {
             """.trimMargin()
         )
     }
+
+     */
 }

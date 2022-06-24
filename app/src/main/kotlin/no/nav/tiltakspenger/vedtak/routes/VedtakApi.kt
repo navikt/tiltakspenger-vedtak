@@ -5,27 +5,69 @@ import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.papsign.ktor.openapigen.OpenAPIGen
+import com.papsign.ktor.openapigen.openAPIGen
+import com.papsign.ktor.openapigen.route.apiRouting
+import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
+import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.application.call
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.routing.routing
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.*
+import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import java.net.URI
+import kotlin.reflect.KType
 
 internal fun vedtakApi(config: TokenVerificationConfig): Application.() -> Unit {
     return {
+        openAPI()
         jacksonSerialization()
         auth(config)
         routing {
-            authenticate("auth-jwt") {
-                personRoutes()
+            apiRouting {
+                authenticate("auth-jwt") {
+                    personRoutes()
+                }
+            }
+            get("/openapi.json") {
+                call.respond(this@routing.application.openAPIGen.api.serialize())
+            }
+            get("/") {
+                call.respondRedirect("/swagger-ui/index.html?url=/openapi.json", true)
             }
         }
+    }
+}
+
+fun Application.openAPI() {
+    install(OpenAPIGen) {
+        info {
+            version = "0.0.1"
+            title = "Vedtak API"
+            description = "API for vedtak"
+        }
+        server("/") {
+            description = "Test server"
+        }
+        replaceModule(DefaultSchemaNamer, object: SchemaNamer {
+            val regex = Regex("[A-Za-z0-9_.]+")
+            override fun get(type: KType): String {
+                return type.toString()
+                    .replace(regex) { it.value.split(".").last() }
+                    .replace(Regex(">|<|, "), "_")
+                    .replace("ø", "o")
+                    .replace("å", "a")
+            }
+        })
     }
 }
 

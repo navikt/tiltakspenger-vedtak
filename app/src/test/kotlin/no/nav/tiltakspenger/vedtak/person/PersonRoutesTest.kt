@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.person
 
+import com.papsign.ktor.openapigen.route.apiRouting
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.headers
@@ -9,10 +10,10 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.routes.openAPI
 import no.nav.tiltakspenger.vedtak.routes.person.personPath
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import org.junit.jupiter.api.Test
@@ -38,8 +39,9 @@ class PersonRoutesTest {
     fun `should answer 10-4`() {
         testApplication {
             application {
+                openAPI()
                 jacksonSerialization()
-                routing {
+                apiRouting {
                     personRoutes()
                 }
             }
