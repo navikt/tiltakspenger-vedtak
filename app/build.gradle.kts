@@ -31,6 +31,8 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("com.auth0:jwks-rsa:0.21.1")
+    // OpenAPI
+    implementation("dev.forst", "ktor-openapi-generator", "0.4.3")
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
