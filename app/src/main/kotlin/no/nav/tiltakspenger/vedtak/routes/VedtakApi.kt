@@ -22,7 +22,6 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.*
-import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import java.net.URI
 import kotlin.reflect.KType
@@ -66,6 +65,7 @@ fun Application.openAPI() {
                     .replace(Regex(">|<|, "), "_")
                     .replace("ø", "o")
                     .replace("å", "a")
+                    .replace("DTO", "")
             }
         })
     }
