@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak
 
+import java.time.LocalDateTime
+import java.util.*
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
-import java.time.LocalDateTime
-import java.util.*
 
 
 private val logg = KotlinLogging.logger {}
@@ -48,7 +48,9 @@ class BehovMediator(
                 .let { JsonMessage.newMessage(it) }
                 .also { message ->
                     sikkerLogg.info { "Sender $id som ${message.toJson()}" }
-                    rapidsConnection.publish(hendelse.journalpostId(), message.toJson())
+                    //Midlertidig:
+                    logg.info { "Sender $id som ${message.toJson()}" }
+                    rapidsConnection.publish(hendelse.ident(), message.toJson())
                     logg.info { "Sender behov ${behovsliste.joinToString { it }}" }
                 }
         }

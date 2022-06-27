@@ -5,11 +5,8 @@ import no.nav.tiltakspenger.vedtak.Hendelse
 
 class JoarkHendelse(
     aktivitetslogg: Aktivitetslogg,
-    private val journalpostId: String,
-    private val hendelseType: String,
-    private val journalpostStatus: String,
-    private val behandlingstema: String? = null
+    private val ident: String,
 ) : Hendelse(aktivitetslogg) {
 
-    override fun journalpostId() = journalpostId
+    override fun ident() = ident
 }

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import java.time.Duration
 import java.time.LocalDateTime
 
-interface InnsendingObserver {
-    data class InnsendingEndretTilstandEvent(
-        val journalpostId: String,
+interface SøkerObserver {
+    data class SøkerEndretTilstandEvent(
+        val ident: String,
         val gjeldendeTilstand: InnsendingTilstandType,
         val forrigeTilstand: InnsendingTilstandType,
         val aktivitetslogg: Aktivitetslogg,
@@ -28,10 +28,10 @@ interface InnsendingObserver {
         KlageOgAnkeFeriepenger
     }
 
-    data class InnsendingEvent(
+    data class SøkerEvent(
         val type: Type,
         val skjemaKode: String,
-        val journalpostId: String,
+        val ident: String,
         val aktørId: String?,
         val fødselsnummer: String?,
         val fagsakId: String?,
@@ -42,7 +42,7 @@ interface InnsendingObserver {
         val tittel: String,
     )
 
-    fun tilstandEndret(event: InnsendingEndretTilstandEvent) {}
-    fun innsendingFerdigstilt(event: InnsendingEvent) {}
-    fun innsendingMottatt(event: InnsendingEvent) {}
+    fun tilstandEndret(event: SøkerEndretTilstandEvent) {}
+    fun innsendingFerdigstilt(event: SøkerEvent) {}
+    fun innsendingMottatt(event: SøkerEvent) {}
 }

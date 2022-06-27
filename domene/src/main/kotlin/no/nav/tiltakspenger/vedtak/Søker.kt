@@ -1,42 +1,35 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.vedtak.meldinger.JoarkHendelse
 import java.time.Duration
+import no.nav.tiltakspenger.Søknad
+import no.nav.tiltakspenger.vedtak.meldinger.JoarkHendelse
 
-class Innsending private constructor(
-    private val journalpostId: String,
+class Søker private constructor(
+    private val ident: String,
     private var tilstand: Tilstand,
     //private var journalpost: Journalpost?,
-    //private var søknad: Søknadsdata.Søknad?,
-    private var oppfyllerMinsteArbeidsinntekt: Boolean?,
-    private var eksisterendeSaker: Boolean?,
-    //private var person: Person?,
-    //private var arenaSak: ArenaSak?,
+    private var søknad: Søknad?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
-    private val observers = mutableSetOf<InnsendingObserver>()
+    private val observers = mutableSetOf<SøkerObserver>()
 
     constructor(
-        journalpostId: String
+        ident: String
     ) : this(
-        journalpostId = journalpostId,
+        ident = ident,
         tilstand = Mottatt,
         //journalpost = null,
-        //søknad = null,
-        oppfyllerMinsteArbeidsinntekt = null,
-        eksisterendeSaker = null,
-        //person = null,
-        //arenaSak = null,
+        søknad = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
-    fun journalpostId(): String = journalpostId
+    fun ident(): String = ident
 
     fun håndter(joarkHendelse: JoarkHendelse) {
-        if (journalpostId != joarkHendelse.journalpostId()) return
+        if (ident != joarkHendelse.ident()) return
         kontekst(joarkHendelse, "Registrert joark hendelse")
         if (erFerdigBehandlet()) {
-            joarkHendelse.error("Journalpost med id ${joarkHendelse.journalpostId()} allerede ferdig behandlet")
+            joarkHendelse.error("ident  ${joarkHendelse.ident()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, joarkHendelse)
@@ -53,12 +46,12 @@ class Innsending private constructor(
         val type: InnsendingTilstandType
         val timeout: Duration
 
-        fun håndter(innsending: Innsending, joarkHendelse: JoarkHendelse) {
+        fun håndter(søker: Søker, joarkHendelse: JoarkHendelse) {
             joarkHendelse.warn("Forventet ikke JoarkHendelse i %s", type.name)
         }
 
-        fun leaving(innsending: Innsending, hendelse: Hendelse) {}
-        fun entering(innsending: Innsending, hendelse: Hendelse) {}
+        fun leaving(søker: Søker, hendelse: Hendelse) {}
+        fun entering(søker: Søker, hendelse: Hendelse) {}
 
         override fun toSpesifikkKontekst(): SpesifikkKontekst {
             return SpesifikkKontekst(
@@ -76,9 +69,9 @@ class Innsending private constructor(
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(innsending: Innsending, joarkHendelse: JoarkHendelse) {
-            innsending.trengerJournalpost(joarkHendelse)
-            innsending.tilstand(joarkHendelse, AvventerJournalpost)
+        override fun håndter(søker: Søker, joarkHendelse: JoarkHendelse) {
+            søker.trengerJournalpost(joarkHendelse)
+            søker.tilstand(joarkHendelse, AvventerJournalpost)
         }
     }
 
@@ -118,8 +111,8 @@ class Innsending private constructor(
     ) {
         observers.forEach {
             it.tilstandEndret(
-                InnsendingObserver.InnsendingEndretTilstandEvent(
-                    journalpostId = journalpostId,
+                SøkerObserver.SøkerEndretTilstandEvent(
+                    ident = ident,
                     gjeldendeTilstand = gjeldendeTilstand,
                     forrigeTilstand = forrigeTilstand,
                     aktivitetslogg = aktivitetslogg,
@@ -129,20 +122,17 @@ class Innsending private constructor(
         }
     }
 
-    fun accept(visitor: InnsendingVisitor) {
-        visitor.preVisitInnsending(this, journalpostId)
+    fun accept(visitor: SøkerVisitor) {
+        visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)
-        visitor.visitInnsending(oppfyllerMinsteArbeidsinntekt, eksisterendeSaker)
         //journalpost?.accept(visitor)
-        //arenaSak?.accept(visitor)
-        //person?.accept(visitor)
-        //søknad?.accept(visitor)
-        visitor.visitInnsendingAktivitetslogg(aktivitetslogg)
+        søknad?.accept(visitor)
+        visitor.visitSøkerAktivitetslogg(aktivitetslogg)
         aktivitetslogg.accept(visitor)
-        visitor.postVisitInnsending(this, journalpostId)
+        visitor.postVisitSøker(this, ident)
     }
 
-    fun addObserver(observer: InnsendingObserver) {
+    fun addObserver(observer: SøkerObserver) {
         observers.add(observer)
     }
 
@@ -153,9 +143,9 @@ class Innsending private constructor(
         )
 
     override fun toSpesifikkKontekst(): SpesifikkKontekst = SpesifikkKontekst(
-        "Innsending",
+        "Søker",
         mapOf(
-            "journalpostId" to journalpostId
+            "ident" to ident
         )
     )
 
