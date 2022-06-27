@@ -12,13 +12,13 @@ spec:
     min: 1
     max: 1
   ingresses:
-    - https://tiltakspenger-vedtak.dev.intern.nav.no
+    - {{ ingress.url }}
   liveness:
     path: /isalive
   readiness:
     path: /isready
   kafka:
-    pool: nav-dev
+    pool: {{ kafka.pool }}
   secureLogs:
     enabled: true
   azure:
@@ -29,4 +29,4 @@ spec:
      rules:
        - application: tiltakspenger-flate
          namespace: tpts
-         cluster: dev-gcp
+         cluster: {{ cluster }}
