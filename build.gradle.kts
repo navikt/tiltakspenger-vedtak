@@ -2,7 +2,6 @@ val javaVersion = JavaVersion.VERSION_17
 
 plugins {
     kotlin("jvm") version "1.7.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2" apply false
     id("io.gitlab.arturbosch.detekt").version("1.20.0")
 }
 
@@ -13,12 +12,13 @@ allprojects {
         maven("https://packages.confluent.io/maven/")
         maven("https://jitpack.io")
     }
-//    apply(plugin = "io.gitlab.arturbosch.detekt")
-//    detekt {
-//        buildUponDefaultConfig = true
-//        allRules = false
-//        config = files("$rootDir/config/detekt.yml")
-//    }
+}
+
+detekt {
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    allRules = false
+    config = files("$projectDir/config/detekt.yml")
 }
 
 subprojects {
@@ -34,6 +34,8 @@ subprojects {
         test {
             // JUnit 5 support
             useJUnitPlatform()
+            // https://phauer.com/2018/best-practices-unit-testing-kotlin/
+            systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
         }
     }
     configurations.all {

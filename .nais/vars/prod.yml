@@ -1,0 +1,5 @@
+kafka:
+  pool: nav-prod
+ingress:
+  url: https://tiltakspenger-vedtak.prod.intern.nav.no
+cluster: prod-gcp

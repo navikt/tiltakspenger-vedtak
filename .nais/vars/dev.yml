@@ -1,0 +1,5 @@
+kafka:
+  pool: nav-dev
+ingress:
+  url: https://tiltakspenger-vedtak.dev.intern.nav.no
+cluster: dev-gcp
