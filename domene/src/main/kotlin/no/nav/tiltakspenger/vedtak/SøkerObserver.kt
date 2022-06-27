@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 interface SøkerObserver {
     data class SøkerEndretTilstandEvent(
         val ident: String,
-        val gjeldendeTilstand: InnsendingTilstandType,
-        val forrigeTilstand: InnsendingTilstandType,
+        val gjeldendeTilstand: SøkerTilstandType,
+        val forrigeTilstand: SøkerTilstandType,
         val aktivitetslogg: Aktivitetslogg,
         val timeout: Duration
     )
@@ -43,6 +43,6 @@ interface SøkerObserver {
     )
 
     fun tilstandEndret(event: SøkerEndretTilstandEvent) {}
-    fun innsendingFerdigstilt(event: SøkerEvent) {}
-    fun innsendingMottatt(event: SøkerEvent) {}
+    fun søkerFerdigstilt(event: SøkerEvent) {}
+    fun søkerMottatt(event: SøkerEvent) {}
 }

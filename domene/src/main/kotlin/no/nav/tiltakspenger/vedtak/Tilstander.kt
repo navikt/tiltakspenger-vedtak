@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
-enum class InnsendingTilstandType {
+enum class SøkerTilstandType {
     MottattType,
     AvventerJournalpostType,
     AvventerPersondataType,
@@ -10,7 +10,7 @@ enum class InnsendingTilstandType {
     AvventerSvarOmEksisterendeSakerType,
     AventerArenaStartVedtakType,
     AvventerFerdigstillJournalpostType,
-    InnsendingFerdigstiltType,
+    SøkerFerdigstiltType,
     AventerArenaOppgaveType,
     AvventerGosysType,
     UkjentBrukerType,

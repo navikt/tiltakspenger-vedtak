@@ -76,7 +76,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     override fun kontekster() =
         aktiviteter
-            .groupBy { it.kontekst(listOf("Innsending")) }
+            .groupBy { it.kontekst(listOf("Søker")) }
             .map { Aktivitetslogg(this).apply { aktiviteter.addAll(it.value) } }
 
     private fun info() = Aktivitet.Info.filter(aktiviteter)

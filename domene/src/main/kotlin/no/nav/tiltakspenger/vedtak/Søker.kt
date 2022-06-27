@@ -43,7 +43,7 @@ class Søker private constructor(
 
     // Gang of four State pattern
     interface Tilstand : Aktivitetskontekst {
-        val type: InnsendingTilstandType
+        val type: SøkerTilstandType
         val timeout: Duration
 
         fun håndter(søker: Søker, joarkHendelse: JoarkHendelse) {
@@ -64,8 +64,8 @@ class Søker private constructor(
     }
 
     internal object Mottatt : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.MottattType
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.MottattType
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
@@ -76,8 +76,8 @@ class Søker private constructor(
     }
 
     internal object AvventerJournalpost : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.AvventerJournalpostType
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.AvventerJournalpostType
         override val timeout: Duration
             get() = Duration.ofDays(1)
     }
@@ -104,9 +104,9 @@ class Søker private constructor(
     }
 
     private fun emitTilstandEndret(
-        gjeldendeTilstand: InnsendingTilstandType,
+        gjeldendeTilstand: SøkerTilstandType,
         aktivitetslogg: Aktivitetslogg,
-        forrigeTilstand: InnsendingTilstandType,
+        forrigeTilstand: SøkerTilstandType,
         timeout: Duration
     ) {
         observers.forEach {
@@ -138,8 +138,8 @@ class Søker private constructor(
 
     private fun erFerdigBehandlet() =
         this.tilstand.type in setOf(
-            InnsendingTilstandType.InnsendingFerdigstiltType,
-            InnsendingTilstandType.AlleredeBehandletType
+            SøkerTilstandType.SøkerFerdigstiltType,
+            SøkerTilstandType.AlleredeBehandletType
         )
 
     override fun toSpesifikkKontekst(): SpesifikkKontekst = SpesifikkKontekst(
