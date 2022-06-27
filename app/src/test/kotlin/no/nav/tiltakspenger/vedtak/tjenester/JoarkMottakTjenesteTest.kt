@@ -35,7 +35,10 @@ internal class JoarkMottakTjenesteTest {
         testRapid.sendTestMessage(journalpostEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
+            assertEquals("behov", field(0, "@event_name").asText())
             assertEquals("Journalpost", field(0, "@behov")[0].asText())
+            assertEquals("MottattType", field(0, "tilstand").asText())
+            assertEquals("124567", field(0, "ident").asText())
         }
     }
 
