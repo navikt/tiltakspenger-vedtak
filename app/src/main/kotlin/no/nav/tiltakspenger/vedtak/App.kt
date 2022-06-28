@@ -37,10 +37,12 @@ fun main() {
             Thread.sleep(5000)
             it.register(object : RapidsConnection.StatusListener {
                 override fun onStartup(rapidsConnection: RapidsConnection) {
-                    sendPersonBehovTestMessage(rapidsConnection)
-                    sendYtelserBehovTestMessage(rapidsConnection)
-                    sendTiltakBehovTestMessage(rapidsConnection)
-                    sendSkjermingBehovTestMessage(rapidsConnection)
+                    if ((System.getenv("NAIS_CLUSTER_NAME")).equals("dev-gcp")) {
+                        sendPersonBehovTestMessage(rapidsConnection)
+                        sendYtelserBehovTestMessage(rapidsConnection)
+                        sendTiltakBehovTestMessage(rapidsConnection)
+                        sendSkjermingBehovTestMessage(rapidsConnection)
+                    }
                 }
             })
         }.start()
