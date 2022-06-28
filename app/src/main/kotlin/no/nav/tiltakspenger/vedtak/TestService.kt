@@ -26,10 +26,6 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        LOG.info { "E: $problems" }
-    }
-
-    override fun onSevere(error: MessageProblems.MessageException, context: MessageContext) {
-        LOG.error(error) { "S: $error" }
+        LOG.info { problems.toExtendedReport() }
     }
 }
