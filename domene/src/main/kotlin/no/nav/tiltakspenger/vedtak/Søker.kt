@@ -1,14 +1,14 @@
 package no.nav.tiltakspenger.vedtak
 
 import java.time.Duration
-import no.nav.tiltakspenger.Søknad
-import no.nav.tiltakspenger.vedtak.meldinger.JoarkHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 
 class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
-    //private var journalpost: Journalpost?,
     private var søknad: Søknad?,
+    private var person: Person?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -17,22 +17,22 @@ class Søker private constructor(
         ident: String
     ) : this(
         ident = ident,
-        tilstand = Mottatt,
-        //journalpost = null,
+        tilstand = PersonRegistrert,
         søknad = null,
+        person = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
     fun ident(): String = ident
 
-    fun håndter(joarkHendelse: JoarkHendelse) {
-        if (ident != joarkHendelse.ident()) return
-        kontekst(joarkHendelse, "Registrert joark hendelse")
+    fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
+        if (ident != søknadMottattHendelse.ident()) return
+        kontekst(søknadMottattHendelse, "Registrert SøknadMottattHendelse")
         if (erFerdigBehandlet()) {
-            joarkHendelse.error("ident  ${joarkHendelse.ident()} allerede ferdig behandlet")
+            søknadMottattHendelse.error("ident ${søknadMottattHendelse.ident()} allerede ferdig behandlet")
             return
         }
-        tilstand.håndter(this, joarkHendelse)
+        tilstand.håndter(this, søknadMottattHendelse)
     }
 
     private fun kontekst(hendelse: Hendelse, melding: String) {
@@ -46,8 +46,12 @@ class Søker private constructor(
         val type: SøkerTilstandType
         val timeout: Duration
 
-        fun håndter(søker: Søker, joarkHendelse: JoarkHendelse) {
-            joarkHendelse.warn("Forventet ikke JoarkHendelse i %s", type.name)
+        fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
+            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i %s", type.name)
+        }
+
+        fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
+            persondataMottattHendelse.warn("Forventet ikke PersondataMottattHendelse i %s", type.name)
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
@@ -63,27 +67,48 @@ class Søker private constructor(
         }
     }
 
-    internal object Mottatt : Tilstand {
+    internal object PersonRegistrert : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.MottattType
+            get() = SøkerTilstandType.PersonRegistrertType
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, joarkHendelse: JoarkHendelse) {
-            søker.trengerJournalpost(joarkHendelse)
-            søker.tilstand(joarkHendelse, AvventerJournalpost)
+        override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
+            søker.søknad = søknadMottattHendelse.søknad()
+            søker.trengerPersondata(søknadMottattHendelse)
+            søker.tilstand(søknadMottattHendelse, AvventerPersondata)
         }
     }
 
-    internal object AvventerJournalpost : Tilstand {
+    internal object AvventerPersondata : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerJournalpostType
+            get() = SøkerTilstandType.AvventerPersondataType
         override val timeout: Duration
             get() = Duration.ofDays(1)
+
+        override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
+            persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.person()}")
+            søker.person = persondataMottattHendelse.person()
+            søker.trengerSkjermingdata(persondataMottattHendelse)
+            søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
+        }
     }
 
-    private fun trengerJournalpost(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Journalpost, "Trenger journalpost")
+    internal object AvventerSkjermingdata : Tilstand {
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.AvventerSkjermingdataType
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+        //Må override håndter denne også, osv osv..
+    }
+
+    private fun trengerPersondata(hendelse: Hendelse) {
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata, "Trenger persondata")
+    }
+
+    private fun trengerSkjermingdata(hendelse: Hendelse) {
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Skjermingdata, "Trenger skjermingdata")
     }
 
     private fun tilstand(
@@ -149,6 +174,6 @@ class Søker private constructor(
         )
     )
 
-    // Jeg har fjernet
+    // Jeg har fjernet flere av
     // private fun emit* funksjonene
 }

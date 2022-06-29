@@ -1,8 +1,7 @@
-package no.nav.tiltakspenger
+package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import no.nav.tiltakspenger.vedtak.SøkerVisitor
 
 class Søknad(
     val id: String,

@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.meldinger.JoarkHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
 
@@ -20,9 +20,9 @@ internal class SøkerMediator(
         sikkerLogg = sikkerlogg
     )
 
-    fun håndter(joarkHendelse: JoarkHendelse) {
-        håndter(joarkHendelse) { søker ->
-            søker.håndter(joarkHendelse)
+    fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
+        håndter(søknadMottattHendelse) { søker ->
+            søker.håndter(søknadMottattHendelse)
         }
     }
 

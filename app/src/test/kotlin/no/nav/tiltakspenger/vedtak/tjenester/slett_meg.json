@@ -1,0 +1,21 @@
+{
+  "@event_name": "søknad_mottatt",
+  "søknad": {
+    "id": "13297",
+    "fornavn": "LEVENDE",
+    "etternavn": "POTET",
+    "ident": "04927799109",
+    "deltarKvp": false,
+    "deltarIntroduksjonsprogrammet": false,
+    "oppholdInstitusjon": false,
+    "typeInstitusjon": null,
+    "tiltaksArrangoer": "foobar",
+    "tiltaksType": "JOBSOK",
+    "opprettet": "2022-06-28T19:44:48.064",
+    "brukerRegistrertStartDato": "2022-06-07",
+    "brukerRegistrertSluttDato": "2022-06-30",
+    "systemRegistrertStartDato": null,
+    "systemRegistrertSluttDato": null,
+    "barnetillegg": []
+  }
+}

@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak
 
 enum class SøkerTilstandType {
-    MottattType,
-    AvventerJournalpostType,
+    PersonRegistrertType,
     AvventerPersondataType,
+    AvventerSkjermingdataType,
     KategoriseringType,
     AvventerSøknadsdataType,
     AvventerMinsteinntektVurderingType,
