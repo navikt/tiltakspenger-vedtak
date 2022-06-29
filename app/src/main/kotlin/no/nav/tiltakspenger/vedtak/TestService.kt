@@ -14,7 +14,7 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
-                it.requireValue("@event_name", "søknad_mottat")
+                it.requireValue("@event_name", "søknad_mottatt")
 //                it.requireKey("@løsning")
 //                it.interestedIn("@behov")
 //                it.interestedIn("@id")
