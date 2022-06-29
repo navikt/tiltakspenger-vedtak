@@ -23,7 +23,7 @@ class BehovMediator(
         hendelse: Hendelse,
         behov: List<Aktivitetslogg.Aktivitet.Behov>
     ) {
-        behov.groupBy { it.kontekst() }.forEach { (kontekst, behov) ->
+        behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, behov) ->
             val behovsliste = mutableListOf<String>()
             val id = UUID.randomUUID()
 

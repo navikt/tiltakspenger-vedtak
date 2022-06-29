@@ -2,6 +2,11 @@ package no.nav.tiltakspenger.vedtak
 
 
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -80,8 +85,8 @@ internal class AktivitetsloggTest {
     @Test
     fun `Melding sendt fra barnebarn til forelder`() {
         val hendelse = TestHendelse(
-            "Hendelse",
-            aktivitetslogg.barn()
+            melding = "Hendelse",
+            logg = aktivitetslogg.barn()
         )
         hendelse.kontekst(person)
         val arbeidsgiver =
@@ -97,12 +102,12 @@ internal class AktivitetsloggTest {
         }
         "error message".also {
             hendelse.error(it)
-            assertError(it, hendelse.logg)
-            assertError(it, aktivitetslogg)
-            assertError("Hendelse", aktivitetslogg)
-            assertError("Soknad", aktivitetslogg)
-            assertError("Melding", aktivitetslogg)
-            assertError("Søker", aktivitetslogg)
+            assertError(message = it, aktivitetslogg = hendelse.logg)
+            assertError(message = it, aktivitetslogg = aktivitetslogg)
+            assertError(message = "Hendelse", aktivitetslogg = aktivitetslogg)
+            assertError(message = "Soknad", aktivitetslogg = aktivitetslogg)
+            assertError(message = "Melding", aktivitetslogg = aktivitetslogg)
+            assertError(message = "Søker", aktivitetslogg = aktivitetslogg)
         }
     }
 
@@ -150,7 +155,7 @@ internal class AktivitetsloggTest {
         val param1 = "value"
         val param2 = LocalDate.now()
         hendelse1.behov(
-            Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata,
+            Behovtype.Persondata,
             "Trenger persondata",
             mapOf(
                 "param1" to param1,
@@ -159,11 +164,75 @@ internal class AktivitetsloggTest {
         )
 
         assertEquals(1, aktivitetslogg.behov().size)
-        assertEquals(1, aktivitetslogg.behov().first().kontekst().size)
+        assertEquals(1, aktivitetslogg.behov().first().alleKonteksterAsMap().size)
         assertEquals(2, aktivitetslogg.behov().first().detaljer().size)
-        assertEquals("Søker", aktivitetslogg.behov().first().kontekst()["Søker"])
+        assertEquals("Søker", aktivitetslogg.behov().first().alleKonteksterAsMap()["Søker"])
         assertEquals(param1, aktivitetslogg.behov().first().detaljer()["param1"])
         assertEquals(param2, aktivitetslogg.behov().first().detaljer()["param2"])
+    }
+
+    @Test
+    fun `Behov med flere kontekster og detaljer skal bli mappet riktig`() {
+        val hendelse1 = TestHendelse(
+            "Hendelse1",
+            aktivitetslogg.barn()
+        )
+        hendelse1.kontekst(person)
+        hendelse1.kontekst(TestKontekst("whatever"))
+        val param1 = "value"
+        val param2 = LocalDate.of(2022, 10, 1)
+        hendelse1.behov(
+            Behovtype.Persondata,
+            "Trenger persondata",
+            mapOf(
+                "param1" to param1,
+                "param2" to param2
+            )
+        )
+
+        assertEquals(1, aktivitetslogg.behov().size)
+        assertEquals(2, aktivitetslogg.behov().first().alleKonteksterAsMap().size)
+        assertEquals(2, aktivitetslogg.behov().first().detaljer().size)
+        assertEquals("Søker", aktivitetslogg.behov().first().alleKonteksterAsMap()["Søker"])
+        assertEquals("whatever", aktivitetslogg.behov().last().alleKonteksterAsMap()["whatever"])
+        assertEquals(param1, aktivitetslogg.behov().first().detaljer()["param1"])
+        assertEquals(param2, aktivitetslogg.behov().first().detaljer()["param2"])
+        assertAtBådeKontekstOgDetaljerBlirMappetInnIKafkaMeldingene(aktivitetslogg.behov())
+    }
+
+    //Denne metoden er lik-ish den som brukes i BehovMediator
+    private fun assertAtBådeKontekstOgDetaljerBlirMappetInnIKafkaMeldingene(behov: List<Behov>) {
+        behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, behov) ->
+            val behovsliste = mutableListOf<String>()
+            val id = UUID.randomUUID()
+
+            mutableMapOf(
+                "@event_name" to "behov",
+                "@opprettet" to LocalDateTime.now(),
+                "@id" to id,
+                "@behov" to behovsliste
+            )
+                .apply {
+                    putAll(kontekst)
+                    behov.forEach { behov ->
+                        require(behov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${behov.type.name} på samme kontekst" }
+                        require(
+                            behov.detaljer().filterKeys { this.containsKey(it) && this[it] != behov.detaljer()[it] }
+                                .isEmpty()
+                        ) { "Kan ikke produsere behov med duplikate detaljer" }
+                        behovsliste.add(behov.type.name)
+                        putAll(behov.detaljer())
+                    }
+                }
+                .also {
+                    assertEquals("behov", it["@event_name"])
+                    assertEquals(listOf("Persondata"), it["@behov"])
+                    assertEquals("Søker", it["Søker"])
+                    assertEquals("whatever", it["whatever"])
+                    assertEquals("value", it["param1"])
+                    assertEquals(LocalDate.of(2022, 10, 1), it["param2"])
+                }
+        }
     }
 
     private fun assertInfo(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
@@ -172,7 +241,7 @@ internal class AktivitetsloggTest {
             object : AktivitetsloggVisitor {
                 override fun visitInfo(
                     kontekster: List<SpesifikkKontekst>,
-                    aktivitet: Aktivitetslogg.Aktivitet.Info,
+                    aktivitet: Aktivitet.Info,
                     melding: String,
                     tidsstempel: String
                 ) {
@@ -190,7 +259,7 @@ internal class AktivitetsloggTest {
             object : AktivitetsloggVisitor {
                 override fun visitWarn(
                     kontekster: List<SpesifikkKontekst>,
-                    aktivitet: Aktivitetslogg.Aktivitet.Warn,
+                    aktivitet: Aktivitet.Warn,
                     melding: String,
                     tidsstempel: String
                 ) {
@@ -208,7 +277,7 @@ internal class AktivitetsloggTest {
             object : AktivitetsloggVisitor {
                 override fun visitError(
                     kontekster: List<SpesifikkKontekst>,
-                    aktivitet: Aktivitetslogg.Aktivitet.Error,
+                    aktivitet: Aktivitet.Error,
                     melding: String,
                     tidsstempel: String
                 ) {
@@ -226,7 +295,7 @@ internal class AktivitetsloggTest {
             object : AktivitetsloggVisitor {
                 override fun visitSevere(
                     kontekster: List<SpesifikkKontekst>,
-                    aktivitet: Aktivitetslogg.Aktivitet.Severe,
+                    aktivitet: Aktivitet.Severe,
                     melding: String,
                     tidsstempel: String
                 ) {
@@ -241,18 +310,21 @@ internal class AktivitetsloggTest {
     private class TestKontekst(
         private val melding: String
     ) : Aktivitetskontekst {
-        override fun toSpesifikkKontekst() = SpesifikkKontekst(melding, mapOf(melding to melding))
+        override fun toSpesifikkKontekst() = SpesifikkKontekst(
+            kontekstType = melding,
+            kontekstMap = mapOf(melding to melding)
+        )
     }
 
     private class TestHendelse(
         private val melding: String,
-        internal val logg: Aktivitetslogg
+        val logg: Aktivitetslogg
     ) : Aktivitetskontekst, IAktivitetslogg by logg {
         init {
             logg.kontekst(this)
         }
 
-        override fun toSpesifikkKontekst() = SpesifikkKontekst("TestHendelse")
+        override fun toSpesifikkKontekst() = SpesifikkKontekst(kontekstType = "TestHendelse")
         override fun kontekst(kontekst: Aktivitetskontekst) {
             logg.kontekst(kontekst)
         }

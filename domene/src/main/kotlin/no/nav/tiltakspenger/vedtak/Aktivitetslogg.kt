@@ -74,10 +74,19 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         }
     }
 
-    override fun kontekster() =
-        aktiviteter
-            .groupBy { it.kontekst(listOf("Søker")) }
-            .map { Aktivitetslogg(this).apply { aktiviteter.addAll(it.value) } }
+    //Hva gjør egentlig denne? Den er åpenbart ikke en getter på this.kontekster..
+    override fun kontekster(): List<Aktivitetslogg> {
+        val groupBy: Map<Map<String, String>, List<Aktivitet>> =
+            aktiviteter.groupBy { aktivitet -> aktivitet.konteksterAvTypeAsMap(typer = listOf("Søker")) }
+        val aktivitetListeListe: List<List<Aktivitet>> = groupBy.map { it.value }
+        return aktivitetListeListe.map { aktivitetListe ->
+            Aktivitetslogg(this).apply {
+                aktiviteter.addAll(
+                    aktivitetListe
+                )
+            }
+        }
+    }
 
     private fun info() = Aktivitet.Info.filter(aktiviteter)
     private fun warn() = Aktivitet.Warn.filter(aktiviteter)
@@ -105,12 +114,14 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
             private val tidsstempelformat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
         }
 
-        fun kontekst(): Map<String, String> = kontekst(emptyList())
-
-        internal fun kontekst(typer: List<String>): Map<String, String> =
+        fun alleKonteksterAsMap(): Map<String, String> =
             kontekster
-                .let { if (typer.isEmpty()) it else it.filter { it.kontekstType in typer } }
-                .fold(mutableMapOf()) { result, kontekst -> result.apply { putAll(kontekst.kontekstMap) } }
+                .fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
+
+        internal fun konteksterAvTypeAsMap(typer: List<String>): Map<String, String> =
+            kontekster
+                .let { spesifikkKontekst -> if (typer.isEmpty()) spesifikkKontekst else spesifikkKontekst.filter { it.kontekstType in typer } }
+                .fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
 
         override fun compareTo(other: Aktivitet) = this.tidsstempel.compareTo(other.tidsstempel)
             .let { if (it == 0) other.alvorlighetsgrad.compareTo(this.alvorlighetsgrad) else it }

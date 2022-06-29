@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.tjenester
 
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.vedtak.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
