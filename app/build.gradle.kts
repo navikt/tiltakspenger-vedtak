@@ -1,4 +1,4 @@
-val ktorVersion = "2.0.2"
+val ktorVersion = "2.0.3"
 val kotestVersion = "5.3.2"
 
 plugins {
