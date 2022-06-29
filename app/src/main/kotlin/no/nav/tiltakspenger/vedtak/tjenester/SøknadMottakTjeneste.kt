@@ -30,7 +30,7 @@ internal class SøknadMottakTjeneste(
     init {
         River(rapidsConnection).apply {
             validate {
-                it.requireValue("@event_name", "søknad_mottatt")
+                it.demandValue("@event_name", "søknad_mottatt")
                 it.requireKey("@id")
                 it.requireKey("søknad")
                 it.requireKey("søknad.ident")
