@@ -14,9 +14,10 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     init {
         River(rapidsConnection).apply {
             validate {
-                it.requireKey("@løsning")
-                it.interestedIn("@behov")
-                it.interestedIn("@id")
+                it.requireValue("@event_name", "søknad_mottatt")
+//                it.requireKey("@løsning")
+//                it.interestedIn("@behov")
+//                it.interestedIn("@id")
             }
         }.register(this)
     }
@@ -26,6 +27,6 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        LOG.debug { problems }
+        LOG.debug { problems.toExtendedReport() }
     }
 }
