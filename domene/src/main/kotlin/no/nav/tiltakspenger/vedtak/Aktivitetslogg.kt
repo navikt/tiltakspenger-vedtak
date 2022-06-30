@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter
 // Implements Visitor pattern to traverse the messages
 class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitetslogg {
     private val aktiviteter = mutableListOf<Aktivitet>()
+
+    // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<Aktivitetskontekst>() // Doesn't need serialization
 
     internal fun accept(visitor: AktivitetsloggVisitor) {

@@ -16,6 +16,9 @@ class BehovMediator(
 ) {
 
     internal fun håndter(hendelse: Hendelse) {
+        // Hvorfor ikke bare
+        // hendelse.aktivitetslogg.let { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
+        // ?? Hva er det hendelse.kontekster() gjør som er så lurt?
         hendelse.kontekster().forEach { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
     }
 
@@ -23,7 +26,11 @@ class BehovMediator(
         hendelse: Hendelse,
         behov: List<Aktivitetslogg.Aktivitet.Behov>
     ) {
-        behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, behov) ->
+        // Denne linja sørger for at alle behov som har lik kontekst (Map<String, String>) behandles sammen
+        // og blir sendt ut som en og samme melding på Rapiden.
+        // Hvorfor det nødvendigvis er riktig/viktig vet jeg ikke om jeg forstår..
+        behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, listeAvBehov) ->
+            logg.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
             val behovsliste = mutableListOf<String>()
             val id = UUID.randomUUID()
 
@@ -35,14 +42,14 @@ class BehovMediator(
             )
                 .apply {
                     putAll(kontekst)
-                    behov.forEach { behov ->
-                        require(behov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${behov.type.name} på samme kontekst" }
+                    listeAvBehov.forEach { etBehov ->
+                        require(etBehov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${etBehov.type.name} på samme kontekst" }
                         require(
-                            behov.detaljer().filterKeys { this.containsKey(it) && this[it] != behov.detaljer()[it] }
+                            etBehov.detaljer().filterKeys { this.containsKey(it) && this[it] != etBehov.detaljer()[it] }
                                 .isEmpty()
                         ) { "Kan ikke produsere behov med duplikate detaljer" }
-                        behovsliste.add(behov.type.name)
-                        putAll(behov.detaljer())
+                        behovsliste.add(etBehov.type.name)
+                        putAll(etBehov.detaljer())
                     }
                 }
                 .let { JsonMessage.newMessage(it) }
