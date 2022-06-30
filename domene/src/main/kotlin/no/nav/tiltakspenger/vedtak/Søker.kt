@@ -27,6 +27,9 @@ class Søker private constructor(
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
         if (ident != søknadMottattHendelse.ident()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(søknadMottattHendelse, "Registrert SøknadMottattHendelse")
         if (erFerdigBehandlet()) {
             søknadMottattHendelse.error("ident ${søknadMottattHendelse.ident()} allerede ferdig behandlet")
