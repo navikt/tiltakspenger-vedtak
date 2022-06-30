@@ -1,9 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-import io.ktor.server.application.install
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.cors.routing.CORS
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -33,7 +29,17 @@ fun main() {
         .withKtorModule(vedtakApi(TokenVerificationConfig.fromEnv()))
         .build()
         .also {
+            /*
+            val søkerRepository = TODO()
+            val søkerMediator = SøkerMediator(
+                søkerRepository = søkerRepository,
+                rapidsConnection = it,
+                observatører = listOf()
+            )
+            SøknadMottakTjeneste(søkerMediator = søkerMediator, rapidsConnection = it)
+            */
             TestService(it)
+
             Thread.sleep(5000)
             it.register(object : RapidsConnection.StatusListener {
                 override fun onStartup(rapidsConnection: RapidsConnection) {
@@ -91,9 +97,7 @@ fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
             "@behov" : ["tiltak"],
             "@id" : "test",
             "@behovId": "behovId",
-            "ident": "05906398291",
-            "fom" : "2019-10-01",
-            "tom" : "2022-06-01"
+            "ident": "05906398291"
             }"""
     connection.publish(
         json.trimMargin()

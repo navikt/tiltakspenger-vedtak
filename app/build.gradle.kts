@@ -15,6 +15,7 @@ dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
+    
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
