@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.tjenester
+package no.nav.tiltakspenger.vedtak.rivers
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 
-internal class SøknadMottakTjeneste(
+internal class SøknadMottakRiver(
     private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {

@@ -78,7 +78,9 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     override fun kontekster(): List<Aktivitetslogg> {
         val groupBy: Map<Map<String, String>, List<Aktivitet>> =
             aktiviteter.groupBy { aktivitet -> aktivitet.konteksterAvTypeAsMap(typer = listOf("Søker")) }
+
         val aktivitetListeListe: List<List<Aktivitet>> = groupBy.map { it.value }
+
         return aktivitetListeListe.map { aktivitetListe ->
             Aktivitetslogg(this).apply {
                 aktiviteter.addAll(

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.tjenester
+package no.nav.tiltakspenger.vedtak.rivers
 
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.InMemorySøkerRepository
@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class SøknadMottakTjenesteTest {
+internal class SøknadMottakRiverTest {
 
     private companion object {
         val IDENT = "04927799109"
@@ -16,7 +16,7 @@ internal class SøknadMottakTjenesteTest {
     private val testRapid = TestRapid()
 
     init {
-        SøknadMottakTjeneste(
+        SøknadMottakRiver(
             rapidsConnection = testRapid,
             søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
@@ -32,7 +32,7 @@ internal class SøknadMottakTjenesteTest {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
             assertEquals("Persondata", field(0, "@behov")[0].asText())
-            assertEquals("PersonRegistrertType", field(0, "tilstand").asText())
+            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }

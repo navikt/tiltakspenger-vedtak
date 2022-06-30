@@ -17,7 +17,7 @@ class Søker private constructor(
         ident: String
     ) : this(
         ident = ident,
-        tilstand = PersonRegistrert,
+        tilstand = SøkerRegistrert,
         søknad = null,
         person = null,
         aktivitetslogg = Aktivitetslogg()
@@ -61,15 +61,15 @@ class Søker private constructor(
             return SpesifikkKontekst(
                 "Tilstand",
                 mapOf(
-                    "tilstand" to type.name
+                    "tilstandtype" to type.name
                 )
             )
         }
     }
 
-    internal object PersonRegistrert : Tilstand {
+    internal object SøkerRegistrert : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.PersonRegistrertType
+            get() = SøkerTilstandType.SøkerRegistrertType
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
