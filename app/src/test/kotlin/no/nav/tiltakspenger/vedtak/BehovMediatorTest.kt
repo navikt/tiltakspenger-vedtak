@@ -71,9 +71,68 @@ internal class BehovMediatorTest {
     }
 
     @Test
-    internal fun `filtrerer kontekster og grupperer behov`() {
-        // Kopier det jeg la ut på Slack
-        
+    internal fun `grupperer behov i tre meldinger`() {
+
+        val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
+        // Dette behovet har ikke Innsending-konteksten
+        hendelse.behov(
+            Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata,
+            "Trenger personopplysninger",
+            mapOf(
+                "aktørId" to "12344"
+            )
+        )
+        hendelse.kontekst(søker)
+        // Disse behovene har Innsending-konteksten
+        hendelse.behov(Behovtype.Arenatiltak, "Trenger Arenatiltak")
+        hendelse.behov(Behovtype.Arenaytelser, "Trenger Arenaytelser")
+        hendelse.kontekst(Testkontekst("woop"))
+        // Dette behovet har Innsending-konteksten og en Test-kontekst
+        hendelse.behov(Behovtype.Skjermingdata, "Trenger Skjermingdata")
+
+        behovMediator.håndter(hendelse)
+
+        val inspektør = testRapid.inspektør
+
+        assertEquals(3, inspektør.size)
+        assertEquals(ident, inspektør.key(0))
+
+        inspektør.message(0).also {
+            assertEquals("behov", it["@event_name"].asText())
+            assertTrue(it.hasNonNull("@id"))
+            assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
+            assertTrue(it.hasNonNull("@opprettet"))
+            assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
+            assertEquals(listOf("Persondata"), it["@behov"].map(JsonNode::asText))
+            assertEquals("behov", it["@event_name"].asText())
+            assertEquals("12344", it["aktørId"].asText())
+            assertTrue(it["ident"] == null)
+            assertTrue(it["woop"] == null)
+        }
+        inspektør.message(1).also {
+            assertEquals("behov", it["@event_name"].asText())
+            assertTrue(it.hasNonNull("@id"))
+            assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
+            assertTrue(it.hasNonNull("@opprettet"))
+            assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
+            assertEquals(listOf("Arenatiltak", "Arenaytelser"), it["@behov"].map(JsonNode::asText))
+            assertEquals("behov", it["@event_name"].asText())
+            assertTrue(it["aktørId"] == null)
+            assertEquals(ident, it["ident"].asText())
+            assertTrue(it["woop"] == null)
+        }
+        inspektør.message(2).also {
+            assertEquals("behov", it["@event_name"].asText())
+            assertTrue(it.hasNonNull("@id"))
+            assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
+            assertTrue(it.hasNonNull("@opprettet"))
+            assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
+            assertEquals(listOf("Skjermingdata"), it["@behov"].map(JsonNode::asText))
+            assertEquals("behov", it["@event_name"].asText())
+            assertTrue(it["aktørId"] == null)
+            assertEquals(ident, it["ident"].asText())
+            assertEquals("woop", it["woop"].asText())
+        }
     }
 
     @Test
