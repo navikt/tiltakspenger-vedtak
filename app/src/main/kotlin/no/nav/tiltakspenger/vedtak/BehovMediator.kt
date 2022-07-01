@@ -17,9 +17,9 @@ class BehovMediator(
 
     internal fun håndter(hendelse: Hendelse) {
         // Hvorfor ikke bare
-        // hendelse.aktivitetslogg.let { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
+        if (!hendelse.hasErrors()) håndter(hendelse, hendelse.behov())
         // ?? Hva er det hendelse.kontekster() gjør som er så lurt?
-        hendelse.kontekster().forEach { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
+        // hendelse.kontekster().forEach { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
     }
 
     private fun håndter(
@@ -29,37 +29,48 @@ class BehovMediator(
         // Denne linja sørger for at alle behov som har lik kontekst (Map<String, String>) behandles sammen
         // og blir sendt ut som en og samme melding på Rapiden.
         // Hvorfor det nødvendigvis er riktig/viktig vet jeg ikke om jeg forstår..
-        behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, listeAvBehov) ->
-            logg.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
-            val behovsliste = mutableListOf<String>()
-            val id = UUID.randomUUID()
-
-            mutableMapOf(
-                "@event_name" to "behov",
-                "@opprettet" to LocalDateTime.now(),
-                "@id" to id,
-                "@behov" to behovsliste
-            )
-                .apply {
-                    putAll(kontekst)
-                    listeAvBehov.forEach { etBehov ->
-                        require(etBehov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${etBehov.type.name} på samme kontekst" }
-                        require(
-                            etBehov.detaljer().filterKeys { this.containsKey(it) && this[it] != etBehov.detaljer()[it] }
-                                .isEmpty()
-                        ) { "Kan ikke produsere behov med duplikate detaljer" }
-                        behovsliste.add(etBehov.type.name)
-                        putAll(etBehov.detaljer())
-                    }
-                }
-                .let { JsonMessage.newMessage(it) }
-                .also { message ->
-                    sikkerLogg.info { "Sender $id som ${message.toJson()}" }
-                    //Midlertidig:
-                    logg.info { "Sender $id som ${message.toJson()}" }
-                    rapidsConnection.publish(hendelse.ident(), message.toJson())
-                    logg.info { "Sender behov ${behovsliste.joinToString { it }}" }
-                }
+        behov.grupperBehovMedLikeKontekster().forEach { (kontekst, listeAvBehov) ->
+            håndterBehovMedLikeKontekster(hendelse, listeAvBehov, kontekst)
         }
     }
+
+    private fun håndterBehovMedLikeKontekster(
+        hendelse: Hendelse,
+        listeAvBehov: List<Aktivitetslogg.Aktivitet.Behov>,
+        kontekst: Map<String, String>
+    ) {
+        logg.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
+        val behovsliste = mutableListOf<String>()
+        val id = UUID.randomUUID()
+
+        mutableMapOf(
+            "@event_name" to "behov",
+            "@opprettet" to LocalDateTime.now(),
+            "@id" to id,
+            "@behov" to behovsliste
+        )
+            .apply {
+                putAll(kontekst)
+                listeAvBehov.forEach { etBehov ->
+                    require(etBehov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${etBehov.type.name} på samme kontekst" }
+                    require(
+                        etBehov.detaljer().filterKeys { this.containsKey(it) && this[it] != etBehov.detaljer()[it] }
+                            .isEmpty()
+                    ) { "Kan ikke produsere behov med duplikate detaljer" }
+                    behovsliste.add(etBehov.type.name)
+                    putAll(etBehov.detaljer())
+                }
+            }
+            .let { JsonMessage.newMessage(it) }
+            .also { message ->
+                sikkerLogg.info { "Sender $id som ${message.toJson()}" }
+                //Midlertidig:
+                logg.info { "Sender $id som ${message.toJson()}" }
+                rapidsConnection.publish(hendelse.ident(), message.toJson())
+                logg.info { "Sender behov ${behovsliste.joinToString { it }}" }
+            }
+    }
+
+    private fun List<Aktivitetslogg.Aktivitet.Behov>.grupperBehovMedLikeKontekster() =
+        this.groupBy { it.alleKonteksterAsMap() }
 }

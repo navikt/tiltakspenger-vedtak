@@ -70,28 +70,6 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         kontekst(søker as Aktivitetskontekst)
     }
 
-    internal fun logg(kontekst: Aktivitetskontekst): Aktivitetslogg {
-        return Aktivitetslogg(this).also {
-            it.aktiviteter.addAll(this.aktiviteter.filter { aktivitet -> kontekst in aktivitet })
-        }
-    }
-
-    //Hva gjør egentlig denne? Den er åpenbart ikke en getter på this.kontekster..
-    override fun kontekster(): List<Aktivitetslogg> {
-        val groupBy: Map<Map<String, String>, List<Aktivitet>> =
-            aktiviteter.groupBy { aktivitet -> aktivitet.konteksterAvTypeAsMap(typer = listOf("Søker")) }
-
-        val aktivitetListeListe: List<List<Aktivitet>> = groupBy.map { it.value }
-
-        return aktivitetListeListe.map { aktivitetListe ->
-            Aktivitetslogg(this).apply {
-                aktiviteter.addAll(
-                    aktivitetListe
-                )
-            }
-        }
-    }
-
     private fun info() = Aktivitet.Info.filter(aktiviteter)
     private fun warn() = Aktivitet.Warn.filter(aktiviteter)
     override fun behov() = Aktivitet.Behov.filter(aktiviteter)
@@ -100,9 +78,10 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     class AktivitetException internal constructor(private val aktivitetslogg: Aktivitetslogg) :
         RuntimeException(aktivitetslogg.toString()) {
-        fun kontekst() = aktivitetslogg.kontekster.fold(mutableMapOf<String, String>()) { result, kontekst ->
-            result.apply { putAll(kontekst.toSpesifikkKontekst().kontekstMap) }
-        }
+        fun kontekst(): MutableMap<String, String> =
+            aktivitetslogg.kontekster.fold(mutableMapOf()) { result, kontekst ->
+                result.apply { putAll(kontekst.toSpesifikkKontekst().kontekstMap) }
+            }
 
         fun aktivitetslogg() = aktivitetslogg
     }
@@ -251,7 +230,6 @@ interface IAktivitetslogg {
     fun kontekst(kontekst: Aktivitetskontekst)
 
     fun kontekst(søker: Søker)
-    fun kontekster(): List<IAktivitetslogg>
 }
 
 interface AktivitetsloggVisitor {

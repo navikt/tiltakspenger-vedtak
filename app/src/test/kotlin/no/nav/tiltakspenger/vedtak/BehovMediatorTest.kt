@@ -71,6 +71,12 @@ internal class BehovMediatorTest {
     }
 
     @Test
+    internal fun `filtrerer kontekster og grupperer behov`() {
+        // Kopier det jeg la ut på Slack
+        
+    }
+
+    @Test
     internal fun `sjekker etter duplikatverdier`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.kontekst(søker)
