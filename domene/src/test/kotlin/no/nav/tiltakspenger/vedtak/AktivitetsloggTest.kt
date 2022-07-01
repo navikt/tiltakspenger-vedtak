@@ -112,40 +112,6 @@ internal class AktivitetsloggTest {
     }
 
     @Test
-    fun `Vis bare arbeidsgiveraktivitet`() {
-        val hendelse1 = TestHendelse(
-            "Hendelse1",
-            aktivitetslogg.barn()
-        )
-        hendelse1.kontekst(person)
-        val arbeidsgiver1 =
-            TestKontekst("Arbeidsgiver 1")
-        hendelse1.kontekst(arbeidsgiver1)
-        val vedtaksperiode1 =
-            TestKontekst("Vedtaksperiode 1")
-        hendelse1.kontekst(vedtaksperiode1)
-        hendelse1.info("info message")
-        hendelse1.warn("warn message")
-        hendelse1.error("error message")
-        val hendelse2 = TestHendelse(
-            "Hendelse2",
-            aktivitetslogg.barn()
-        )
-        hendelse2.kontekst(person)
-        val arbeidsgiver2 =
-            TestKontekst("Arbeidsgiver 2")
-        hendelse2.kontekst(arbeidsgiver2)
-        val vedtaksperiode2 =
-            TestKontekst("Vedtaksperiode 2")
-        hendelse2.kontekst(vedtaksperiode2)
-        hendelse2.info("info message")
-        hendelse2.error("error message")
-        assertEquals(5, aktivitetslogg.aktivitetsteller())
-        assertEquals(3, aktivitetslogg.logg(vedtaksperiode1).aktivitetsteller())
-        assertEquals(2, aktivitetslogg.logg(arbeidsgiver2).aktivitetsteller())
-    }
-
-    @Test
     fun `Behov kan ha detaljer`() {
         val hendelse1 = TestHendelse(
             "Hendelse1",
