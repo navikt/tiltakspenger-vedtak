@@ -5,17 +5,13 @@ import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
-import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -25,7 +21,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import java.net.URI
-import kotlin.reflect.KType
 
 internal fun vedtakApi(config: TokenVerificationConfig): Application.() -> Unit {
     return {
@@ -34,7 +29,7 @@ internal fun vedtakApi(config: TokenVerificationConfig): Application.() -> Unit 
         auth(config)
         routing {
             apiRouting {
-                authenticate("auth-jwt") {
+                auth {
                     personRoutes()
                 }
             }
@@ -48,37 +43,10 @@ internal fun vedtakApi(config: TokenVerificationConfig): Application.() -> Unit 
     }
 }
 
-fun Application.openAPI() {
-    install(OpenAPIGen) {
-        info {
-            version = "0.0.1"
-            title = "Vedtak API"
-            description = "API for vedtak"
-        }
-        server("/") {
-            description = "Test server"
-        }
-        replaceModule(
-            DefaultSchemaNamer,
-            object : SchemaNamer {
-                val regex = Regex("[A-Za-z0-9_.]+")
-                override fun get(type: KType): String {
-                    return type.toString()
-                        .replace(regex) { it.value.split(".").last() }
-                        .replace(Regex(">|<|, "), "_")
-                        .replace("ø", "o")
-                        .replace("å", "a")
-                        .replace("DTO", "")
-                }
-            }
-        )
-    }
-}
-
 fun Application.auth(config: TokenVerificationConfig) {
     val jwkProvider: JwkProvider = UrlJwkProvider(URI(config.jwksUri).toURL())
     install(Authentication) {
-        jwt("auth-jwt") {
+        jwt {
             verifier(jwkProvider, config.issuer) {
                 withAudience(config.clientId)
                 acceptLeeway(config.leeway)

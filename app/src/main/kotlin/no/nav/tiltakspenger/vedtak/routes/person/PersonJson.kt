@@ -22,7 +22,7 @@ val objectMapper: ObjectMapper = JsonMapper.builder()
 
 fun serialize(value: Any): String = objectMapper.writeValueAsString(value)
 
-internal data class PersonDTO(
+data class PersonDTO(
     val personalia: PersonaliaDTO,
     val behandlinger: List<BehandlingDTO>,
 )
@@ -67,14 +67,14 @@ enum class UtfallDTO {
     IkkeOppfylt,
 }
 
-internal data class PersonaliaDTO(
+data class PersonaliaDTO(
     val fornavn: String,
     val etternavn: String,
     val ident: String,
     val barn: List<BarnDTO>,
 )
 
-internal data class BarnDTO(
+data class BarnDTO(
     val fornavn: String,
     val etternavn: String,
     val ident: String,

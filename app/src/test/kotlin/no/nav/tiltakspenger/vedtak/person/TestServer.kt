@@ -12,6 +12,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import no.nav.tiltakspenger.vedtak.routes.auth
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.openAPI
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
@@ -31,7 +32,9 @@ internal fun vedtakTestApi(): Application.() -> Unit {
         jacksonSerialization()
         routing {
             apiRouting {
-                personRoutes()
+                auth {
+                    personRoutes()
+                }
             }
             get("/openapi.json") {
                 call.respond(this@routing.application.openAPIGen.api.serialize())

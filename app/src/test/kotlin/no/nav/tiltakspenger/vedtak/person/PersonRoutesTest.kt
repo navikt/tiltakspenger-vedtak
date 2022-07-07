@@ -12,6 +12,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
+import no.nav.tiltakspenger.vedtak.routes.auth
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.openAPI
 import no.nav.tiltakspenger.vedtak.routes.person.personPath
@@ -42,7 +43,9 @@ class PersonRoutesTest {
                 openAPI()
                 jacksonSerialization()
                 apiRouting {
-                    personRoutes()
+                    auth {
+                        personRoutes()
+                    }
                 }
             }
 
