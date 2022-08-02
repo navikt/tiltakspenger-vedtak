@@ -38,7 +38,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:1.12.5")
-    testImplementation("io.mockk:mockk-dsl-jvm:1.12.4")
+    testImplementation("io.mockk:mockk-dsl-jvm:1.12.5")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "junit")
         exclude(group = "org.eclipse.jetty") // conflicts with WireMock
