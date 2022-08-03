@@ -6,9 +6,10 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.routes.TokenVerificationConfig
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 
-private val LOG = KotlinLogging.logger {}
-
 fun main() {
+    System.setProperty("logback.configurationFile", "egenLogback.xml")
+
+    val LOG = KotlinLogging.logger {}
     LOG.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
 
@@ -56,6 +57,7 @@ fun main() {
 }
 
 fun sendPersonBehovTestMessage(connection: RapidsConnection) {
+    val LOG = KotlinLogging.logger {}
     LOG.info { "vi sender en person behovsmelding" }
     // language=JSON
     val json = """
@@ -72,6 +74,7 @@ fun sendPersonBehovTestMessage(connection: RapidsConnection) {
 }
 
 fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
+    val LOG = KotlinLogging.logger {}
     LOG.info { "vi sender en ytelser behovsmelding" }
     // language=JSON
     val json = """
@@ -90,6 +93,7 @@ fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
 }
 
 fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
+    val LOG = KotlinLogging.logger {}
     LOG.info { "vi sender en tiltak behovsmelding" }
     // language=JSON
     val json = """
@@ -106,6 +110,7 @@ fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
 }
 
 fun sendSkjermingBehovTestMessage(connection: RapidsConnection) {
+    val LOG = KotlinLogging.logger {}
     LOG.info { "vi sender en skjerming behovsmelding" }
     // language=JSON
     val json = """
