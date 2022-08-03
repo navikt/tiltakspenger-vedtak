@@ -38,8 +38,7 @@ internal class BehovMediatorTest {
     internal fun `grupperer behov`() {
 
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.kontekst(søker)
-
+        hendelse.setForelderAndAddKontekst(søker)
         hendelse.behov(
             Behovtype.Persondata,
             "Trenger personopplysninger",
@@ -73,7 +72,7 @@ internal class BehovMediatorTest {
     @Test
     internal fun `sjekker etter duplikatverdier`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.kontekst(søker)
+        hendelse.setForelderAndAddKontekst(søker)
         hendelse.behov(
             Behovtype.Persondata,
             "Trenger personopplysninger",
@@ -95,7 +94,7 @@ internal class BehovMediatorTest {
     @Test
     internal fun `kan ikke produsere samme behov`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.kontekst(søker)
+        hendelse.setForelderAndAddKontekst(søker)
         hendelse.behov(Behovtype.Arenatiltak, "Trenger Arenatiltak")
         hendelse.behov(Behovtype.Arenatiltak, "Trenger Arenatiltak")
 
@@ -113,14 +112,14 @@ internal class BehovMediatorTest {
         internal val logg: Aktivitetslogg
     ) : Hendelse(logg), Aktivitetskontekst {
         init {
-            logg.kontekst(this)
+            logg.addKontekst(this)
         }
 
         override fun ident(): String = ident
 
         override fun toSpesifikkKontekst() = SpesifikkKontekst("TestHendelse")
-        override fun kontekst(kontekst: Aktivitetskontekst) {
-            logg.kontekst(kontekst)
+        override fun addKontekst(kontekst: Aktivitetskontekst) {
+            logg.addKontekst(kontekst)
         }
     }
 }

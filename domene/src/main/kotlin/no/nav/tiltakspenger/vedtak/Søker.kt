@@ -8,7 +8,7 @@ class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
     private var søknad: Søknad?,
-    private var person: Person?,
+    private var personinfo: Personinfo?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -19,7 +19,7 @@ class Søker private constructor(
         ident = ident,
         tilstand = SøkerRegistrert,
         søknad = null,
-        person = null,
+        personinfo = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -39,8 +39,8 @@ class Søker private constructor(
     }
 
     private fun kontekst(hendelse: Hendelse, melding: String) {
-        hendelse.kontekst(this)
-        hendelse.kontekst(this.tilstand)
+        hendelse.setForelderAndAddKontekst(this)
+        hendelse.addKontekst(this.tilstand)
         hendelse.info(melding)
     }
 
@@ -90,8 +90,8 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
-            persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.person()}")
-            søker.person = persondataMottattHendelse.person()
+            persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.personinfo()}")
+            søker.personinfo = persondataMottattHendelse.personinfo()
             søker.trengerSkjermingdata(persondataMottattHendelse)
             søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
         }
@@ -107,7 +107,11 @@ class Søker private constructor(
     }
 
     private fun trengerPersondata(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata, "Trenger persondata")
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata,
+            melding = "Trenger persondata",
+            detaljer = mapOf("identer" to listOf(this.ident))
+        )
     }
 
     private fun trengerSkjermingdata(hendelse: Hendelse) {
@@ -126,7 +130,7 @@ class Søker private constructor(
         val previousState = tilstand
         tilstand = nyTilstand
         block()
-        event.kontekst(tilstand)
+        event.addKontekst(tilstand)
         emitTilstandEndret(tilstand.type, event.aktivitetslogg, previousState.type, tilstand.timeout)
         tilstand.entering(this, event)
     }

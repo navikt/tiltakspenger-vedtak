@@ -5,11 +5,11 @@ interface SøknadVisitor {
     fun visitSøknad(søknad: Søknad?) {}
 }
 
-interface PersonVisitor {
-    fun visitPerson(person: Person?) {}
+interface PersoninfoVisitor {
+    fun visitPersoninfo(personinfo: Personinfo?) {}
 }
 
-interface SøkerVisitor : SøknadVisitor, PersonVisitor, AktivitetsloggVisitor {
+interface SøkerVisitor : SøknadVisitor, PersoninfoVisitor, AktivitetsloggVisitor {
     fun preVisitSøker(søker: Søker, ident: String) {}
     fun visitTilstand(tilstandType: Søker.Tilstand) {}
 

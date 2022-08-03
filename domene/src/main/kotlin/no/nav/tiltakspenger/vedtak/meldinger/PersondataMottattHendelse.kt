@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.meldinger
 import java.time.LocalDate
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Hendelse
-import no.nav.tiltakspenger.vedtak.Person
+import no.nav.tiltakspenger.vedtak.Personinfo
 
 class PersondataMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
@@ -18,7 +18,7 @@ class PersondataMottattHendelse(
 
     override fun ident() = ident
 
-    fun person(): Person = Person(
+    fun personinfo(): Personinfo = Personinfo(
         ident = ident,
         fødselsdato = fødselsdato,
         fornavn = fornavn,

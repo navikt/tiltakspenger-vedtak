@@ -12,6 +12,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<Aktivitetskontekst>() // Doesn't need serialization
 
+    internal fun MutableList<SpesifikkKontekst>.snapshot(): List<SpesifikkKontekst> = this.toList()
     internal fun accept(visitor: AktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
         aktiviteter.forEach { it.accept(visitor) }
@@ -61,13 +62,17 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     override fun aktivitetsteller() = aktiviteter.size
 
-    override fun kontekst(kontekst: Aktivitetskontekst) {
+    override fun addKontekst(kontekst: Aktivitetskontekst) {
         kontekster.add(kontekst)
     }
 
-    override fun kontekst(søker: Søker) {
+    private fun setForelder(søker: Søker) {
         forelder = søker.aktivitetslogg
-        kontekst(søker as Aktivitetskontekst)
+    }
+
+    override fun setForelderAndAddKontekst(søker: Søker) {
+        setForelder(søker)
+        addKontekst(søker)
     }
 
     internal fun logg(kontekst: Aktivitetskontekst): Aktivitetslogg {
@@ -100,9 +105,10 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     class AktivitetException internal constructor(private val aktivitetslogg: Aktivitetslogg) :
         RuntimeException(aktivitetslogg.toString()) {
-        fun kontekst() = aktivitetslogg.kontekster.fold(mutableMapOf<String, String>()) { result, kontekst ->
-            result.apply { putAll(kontekst.toSpesifikkKontekst().kontekstMap) }
-        }
+        fun kontekst(): Map<String, String> =
+            aktivitetslogg.kontekster.fold(mutableMapOf()) { result, kontekst ->
+                result.apply { putAll(kontekst.toSpesifikkKontekst().kontekstMap) }
+            }
 
         fun aktivitetslogg() = aktivitetslogg
     }
@@ -248,9 +254,8 @@ interface IAktivitetslogg {
     fun aktivitetsteller(): Int
     fun behov(): List<Aktivitetslogg.Aktivitet.Behov>
     fun barn(): Aktivitetslogg
-    fun kontekst(kontekst: Aktivitetskontekst)
-
-    fun kontekst(søker: Søker)
+    fun addKontekst(kontekst: Aktivitetskontekst)
+    fun setForelderAndAddKontekst(søker: Søker)
     fun kontekster(): List<IAktivitetslogg>
 }
 

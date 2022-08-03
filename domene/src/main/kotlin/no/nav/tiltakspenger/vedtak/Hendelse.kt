@@ -7,7 +7,7 @@ abstract class Hendelse protected constructor(
     abstract fun ident(): String
 
     init {
-        aktivitetslogg.kontekst(this)
+        aktivitetslogg.addKontekst(this)
     }
 
     override fun toSpesifikkKontekst(): SpesifikkKontekst {

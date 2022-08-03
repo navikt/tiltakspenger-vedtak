@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDate
 
-class Person(
+class Personinfo(
     val ident: String,
     val fødselsdato: LocalDate,
     val fornavn: String,
@@ -12,6 +12,6 @@ class Person(
     val strengtFortrolig: Boolean,
 ) {
     fun accept(visitor: SøkerVisitor) {
-        visitor.visitPerson(this)
+        visitor.visitPersoninfo(this)
     }
 }

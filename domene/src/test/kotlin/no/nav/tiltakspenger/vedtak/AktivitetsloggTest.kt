@@ -88,13 +88,13 @@ internal class AktivitetsloggTest {
             melding = "Hendelse",
             logg = aktivitetslogg.barn()
         )
-        hendelse.kontekst(person)
+        hendelse.addKontekst(person)
         val arbeidsgiver =
             TestKontekst("Melding")
-        hendelse.kontekst(arbeidsgiver)
+        hendelse.addKontekst(arbeidsgiver)
         val vedtaksperiode =
             TestKontekst("Soknad")
-        hendelse.kontekst(vedtaksperiode)
+        hendelse.addKontekst(vedtaksperiode)
         "info message".also {
             hendelse.info(it)
             assertInfo(it, hendelse.logg)
@@ -117,13 +117,13 @@ internal class AktivitetsloggTest {
             "Hendelse1",
             aktivitetslogg.barn()
         )
-        hendelse1.kontekst(person)
+        hendelse1.addKontekst(person)
         val arbeidsgiver1 =
             TestKontekst("Arbeidsgiver 1")
-        hendelse1.kontekst(arbeidsgiver1)
+        hendelse1.addKontekst(arbeidsgiver1)
         val vedtaksperiode1 =
             TestKontekst("Vedtaksperiode 1")
-        hendelse1.kontekst(vedtaksperiode1)
+        hendelse1.addKontekst(vedtaksperiode1)
         hendelse1.info("info message")
         hendelse1.warn("warn message")
         hendelse1.error("error message")
@@ -131,13 +131,13 @@ internal class AktivitetsloggTest {
             "Hendelse2",
             aktivitetslogg.barn()
         )
-        hendelse2.kontekst(person)
+        hendelse2.addKontekst(person)
         val arbeidsgiver2 =
             TestKontekst("Arbeidsgiver 2")
-        hendelse2.kontekst(arbeidsgiver2)
+        hendelse2.addKontekst(arbeidsgiver2)
         val vedtaksperiode2 =
             TestKontekst("Vedtaksperiode 2")
-        hendelse2.kontekst(vedtaksperiode2)
+        hendelse2.addKontekst(vedtaksperiode2)
         hendelse2.info("info message")
         hendelse2.error("error message")
         assertEquals(5, aktivitetslogg.aktivitetsteller())
@@ -151,7 +151,7 @@ internal class AktivitetsloggTest {
             "Hendelse1",
             aktivitetslogg.barn()
         )
-        hendelse1.kontekst(person)
+        hendelse1.addKontekst(person)
         val param1 = "value"
         val param2 = LocalDate.now()
         hendelse1.behov(
@@ -177,8 +177,8 @@ internal class AktivitetsloggTest {
             "Hendelse1",
             aktivitetslogg.barn()
         )
-        hendelse1.kontekst(person)
-        hendelse1.kontekst(TestKontekst("whatever"))
+        hendelse1.addKontekst(person)
+        hendelse1.addKontekst(TestKontekst("whatever"))
         val param1 = "value"
         val param2 = LocalDate.of(2022, 10, 1)
         hendelse1.behov(
@@ -321,12 +321,12 @@ internal class AktivitetsloggTest {
         val logg: Aktivitetslogg
     ) : Aktivitetskontekst, IAktivitetslogg by logg {
         init {
-            logg.kontekst(this)
+            logg.addKontekst(this)
         }
 
         override fun toSpesifikkKontekst() = SpesifikkKontekst(kontekstType = "TestHendelse")
-        override fun kontekst(kontekst: Aktivitetskontekst) {
-            logg.kontekst(kontekst)
+        override fun addKontekst(kontekst: Aktivitetskontekst) {
+            logg.addKontekst(kontekst)
         }
     }
 }
