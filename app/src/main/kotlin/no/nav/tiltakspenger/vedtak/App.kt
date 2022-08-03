@@ -9,6 +9,9 @@ import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 private val LOG = KotlinLogging.logger {}
 
 fun main() {
+    System.setProperty("logback.configurationFile", "egenLogback.xml")
+
+    LOG.info { "12345678901" }
     LOG.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
 
