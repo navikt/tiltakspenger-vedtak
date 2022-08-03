@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
-    private var søknader: MutableList<Søknad>,
-    private var personinfo: MutableList<Personinfo>,
+    private var søknad: Søknad?,
+    private var personinfo: Personinfo?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -18,8 +18,8 @@ class Søker private constructor(
     ) : this(
         ident = ident,
         tilstand = SøkerRegistrert,
-        søknader = mutableListOf<Søknad>(),
-        personinfo = mutableListOf<Personinfo>(),
+        søknad = null,
+        personinfo = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -77,8 +77,7 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            //Dette er for simpelt, må sjekke om den skal lagres
-            søker.søknader.add(søknadMottattHendelse.søknad())
+            søker.søknad = søknadMottattHendelse.søknad()
             søker.trengerPersondata(søknadMottattHendelse)
             søker.tilstand(søknadMottattHendelse, AvventerPersondata)
         }
@@ -92,8 +91,7 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
             persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.personinfo()}")
-            //Dette er for simpelt, må sjekke om den skal lagres
-            søker.personinfo.add(persondataMottattHendelse.personinfo())
+            søker.personinfo = persondataMottattHendelse.personinfo()
             søker.trengerSkjermingdata(persondataMottattHendelse)
             søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
         }
@@ -161,7 +159,7 @@ class Søker private constructor(
         visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)
         //journalpost?.accept(visitor)
-        søknader.forEach { it.accept(visitor) }
+        søknad?.accept(visitor)
         visitor.visitSøkerAktivitetslogg(aktivitetslogg)
         aktivitetslogg.accept(visitor)
         visitor.postVisitSøker(this, ident)
