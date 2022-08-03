@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
-    private var søknad: Søknad?,
-    private var personinfo: Personinfo?,
+    private var søknader: MutableList<Søknad>,
+    private var personinfo: MutableList<Personinfo>,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -18,8 +18,8 @@ class Søker private constructor(
     ) : this(
         ident = ident,
         tilstand = SøkerRegistrert,
-        søknad = null,
-        personinfo = null,
+        søknader = mutableListOf<Søknad>(),
+        personinfo = mutableListOf<Personinfo>(),
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -77,7 +77,8 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søker.søknad = søknadMottattHendelse.søknad()
+            //Dette er for simpelt, må sjekke om den skal lagres
+            søker.søknader.add(søknadMottattHendelse.søknad())
             søker.trengerPersondata(søknadMottattHendelse)
             søker.tilstand(søknadMottattHendelse, AvventerPersondata)
         }
@@ -91,7 +92,8 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
             persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.personinfo()}")
-            søker.personinfo = persondataMottattHendelse.personinfo()
+            //Dette er for simpelt, må sjekke om den skal lagres
+            søker.personinfo.add(persondataMottattHendelse.personinfo())
             søker.trengerSkjermingdata(persondataMottattHendelse)
             søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
         }
@@ -154,11 +156,12 @@ class Søker private constructor(
         }
     }
 
+    //Har jeg kåla det til her? Når bruker man accept og når bruker man visit??
     fun accept(visitor: SøkerVisitor) {
         visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)
         //journalpost?.accept(visitor)
-        søknad?.accept(visitor)
+        søknader.forEach { it.accept(visitor) }
         visitor.visitSøkerAktivitetslogg(aktivitetslogg)
         aktivitetslogg.accept(visitor)
         visitor.postVisitSøker(this, ident)
