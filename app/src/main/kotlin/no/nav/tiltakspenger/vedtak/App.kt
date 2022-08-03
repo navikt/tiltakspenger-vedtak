@@ -10,7 +10,6 @@ fun main() {
     System.setProperty("logback.configurationFile", "egenLogback.xml")
 
     val LOG = KotlinLogging.logger {}
-    LOG.info { "sjekk at denne blir maskert : 12345678901" }
     LOG.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
 
@@ -59,7 +58,6 @@ fun main() {
 
 fun sendPersonBehovTestMessage(connection: RapidsConnection) {
     val LOG = KotlinLogging.logger {}
-    LOG.info { "blir denne også maskert? : 12345678901" }
     LOG.info { "vi sender en person behovsmelding" }
     // language=JSON
     val json = """
