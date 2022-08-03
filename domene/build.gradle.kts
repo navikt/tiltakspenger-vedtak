@@ -1,7 +1,7 @@
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.31")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
     implementation("com.google.guava:guava:31.1-jre")
 
     implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")

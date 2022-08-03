@@ -1,5 +1,5 @@
 val ktorVersion = "2.0.3"
-val kotestVersion = "5.3.2"
+val kotestVersion = "5.4.1"
 
 plugins {
     application
@@ -27,7 +27,7 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022061809451655538329.d6deccc62862")
+    implementation("com.github.navikt:rapids-and-rivers:2022072721371658950659.c1e8f7bf35c6")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
@@ -35,10 +35,10 @@ dependencies {
     // OpenAPI
     implementation("dev.forst", "ktor-openapi-generator", "0.4.3")
 
-    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation(platform("org.junit:junit-bom:5.9.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("io.mockk:mockk:1.12.4")
-    testImplementation("io.mockk:mockk-dsl-jvm:1.12.4")
+    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation("io.mockk:mockk-dsl-jvm:1.12.5")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "junit")
         exclude(group = "org.eclipse.jetty") // conflicts with WireMock
