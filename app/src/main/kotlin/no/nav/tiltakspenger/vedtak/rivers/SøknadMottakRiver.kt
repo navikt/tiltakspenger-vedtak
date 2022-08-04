@@ -20,7 +20,7 @@ internal class SøknadMottakRiver(
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
-        private val logg = KotlinLogging.logger {}
+        private val LOG = KotlinLogging.logger {}
         private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -39,7 +39,7 @@ internal class SøknadMottakRiver(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        logg.info("Received søknad for ident id: ${packet["søknad.ident"].asText()}")
+        LOG.info("Received søknad for ident id: ${packet["søknad.ident"].asText()}")
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 

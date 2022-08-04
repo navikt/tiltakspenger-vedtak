@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
 
-private val log = KotlinLogging.logger {}
+private val LOG = KotlinLogging.logger {}
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
 
 internal class SøkerMediator(
@@ -43,13 +43,13 @@ internal class SøkerMediator(
         val søker = søkerRepository.hent(hendelse.ident())
         return when (søker) {
             is Søker -> {
-                log.debug { "Fant Søker for ${hendelse.ident()}" }
+                LOG.debug { "Fant Søker for ${hendelse.ident()}" }
                 søker
             }
             else -> {
                 val nySøker = Søker(hendelse.ident())
                 søkerRepository.lagre(nySøker)
-                log.info { "Opprettet Søker for ${hendelse.ident()}" }
+                LOG.info { "Opprettet Søker for ${hendelse.ident()}" }
                 nySøker
             }
         }
