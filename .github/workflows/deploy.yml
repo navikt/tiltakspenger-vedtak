@@ -53,6 +53,8 @@ jobs:
           context: .
           tags: ${{ env.IMAGE }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-dev:
     name: Deploy to NAIS dev
