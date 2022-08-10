@@ -15,12 +15,14 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
+
 internal class SøknadMottakRiver(
     private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
-        private val LOG = KotlinLogging.logger {}
         private val objectMapper = jacksonObjectMapper()
             .registerModule(JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -39,7 +41,8 @@ internal class SøknadMottakRiver(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.info("Received søknad for ident id: ${packet["søknad.ident"].asText()}")
+        LOG.info("Received søknad")
+        SECURELOG.info("Received søknad for ident id: ${packet["søknad.ident"].asText()}")
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 

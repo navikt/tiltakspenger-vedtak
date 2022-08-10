@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
+import mu.KLogger
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -9,9 +10,13 @@ import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 fun main() {
     System.setProperty("logback.configurationFile", "egenLogback.xml")
 
-    val LOG = KotlinLogging.logger {}
-    LOG.info { "starting server" }
-    Thread.setDefaultUncaughtExceptionHandler { _, e -> LOG.error(e) { e.message } }
+    val log = KotlinLogging.logger {}
+    val securelog = KotlinLogging.logger("tjenestekall")
+    log.info { "starting server" }
+    Thread.setDefaultUncaughtExceptionHandler { _, e ->
+        log.error { "Uncaught exception logget i securelog" }
+        securelog.error(e) { e.message }
+    }
 
     RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(
@@ -45,20 +50,19 @@ fun main() {
             it.register(object : RapidsConnection.StatusListener {
                 override fun onStartup(rapidsConnection: RapidsConnection) {
                     if ((System.getenv("NAIS_CLUSTER_NAME")).equals("dev-gcp")) {
-                        sendPersonBehovTestMessage(rapidsConnection)
-                        sendYtelserBehovTestMessage(rapidsConnection)
-                        sendTiltakBehovTestMessage(rapidsConnection)
-                        sendSkjermingBehovTestMessage(rapidsConnection)
+                        sendPersonBehovTestMessage(rapidsConnection, log)
+                        sendYtelserBehovTestMessage(rapidsConnection, log)
+                        sendTiltakBehovTestMessage(rapidsConnection, log)
+                        sendSkjermingBehovTestMessage(rapidsConnection, log)
                     }
                 }
             })
         }.start()
-    LOG.info { "nå er vi i gang" }
+    log.info { "nå er vi i gang" }
 }
 
-fun sendPersonBehovTestMessage(connection: RapidsConnection) {
-    val LOG = KotlinLogging.logger {}
-    LOG.info { "vi sender en person behovsmelding" }
+fun sendPersonBehovTestMessage(connection: RapidsConnection, log: KLogger) {
+    log.info { "vi sender en person behovsmelding" }
     // language=JSON
     val json = """
             { 
@@ -70,12 +74,11 @@ fun sendPersonBehovTestMessage(connection: RapidsConnection) {
     connection.publish(
         json.trimMargin()
     )
-    LOG.info { "vi sendte en person behovsmelding" }
+    log.info { "vi sendte en person behovsmelding" }
 }
 
-fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
-    val LOG = KotlinLogging.logger {}
-    LOG.info { "vi sender en ytelser behovsmelding" }
+fun sendYtelserBehovTestMessage(connection: RapidsConnection, log: KLogger) {
+    log.info { "vi sender en ytelser behovsmelding" }
     // language=JSON
     val json = """
             { 
@@ -89,12 +92,11 @@ fun sendYtelserBehovTestMessage(connection: RapidsConnection) {
     connection.publish(
         json.trimMargin()
     )
-    LOG.info { "vi sendte en ytelser behovsmelding" }
+    log.info { "vi sendte en ytelser behovsmelding" }
 }
 
-fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
-    val LOG = KotlinLogging.logger {}
-    LOG.info { "vi sender en tiltak behovsmelding" }
+fun sendTiltakBehovTestMessage(connection: RapidsConnection, log: KLogger) {
+    log.info { "vi sender en tiltak behovsmelding" }
     // language=JSON
     val json = """
             { 
@@ -106,12 +108,11 @@ fun sendTiltakBehovTestMessage(connection: RapidsConnection) {
     connection.publish(
         json.trimMargin()
     )
-    LOG.info { "vi sendte en tiltak behovsmelding" }
+    log.info { "vi sendte en tiltak behovsmelding" }
 }
 
-fun sendSkjermingBehovTestMessage(connection: RapidsConnection) {
-    val LOG = KotlinLogging.logger {}
-    LOG.info { "vi sender en skjerming behovsmelding" }
+fun sendSkjermingBehovTestMessage(connection: RapidsConnection, log: KLogger) {
+    log.info { "vi sender en skjerming behovsmelding" }
     // language=JSON
     val json = """
             { 
@@ -125,5 +126,5 @@ fun sendSkjermingBehovTestMessage(connection: RapidsConnection) {
     connection.publish(
         json.trimMargin()
     )
-    LOG.info { "vi sendte en skjerming behovsmelding" }
+    log.info { "vi sendte en skjerming behovsmelding" }
 }

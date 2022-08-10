@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.mockk.mockk
 import java.time.LocalDateTime
 import java.util.*
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -28,8 +27,7 @@ internal class BehovMediatorTest {
         søker = Søker(ident = ident)
         aktivitetslogg = Aktivitetslogg()
         behovMediator = BehovMediator(
-            rapidsConnection = testRapid,
-            sikkerLogg = mockk(relaxed = true)
+            rapidsConnection = testRapid
         )
         testRapid.reset()
     }

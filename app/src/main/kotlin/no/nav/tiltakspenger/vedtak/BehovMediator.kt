@@ -2,17 +2,16 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDateTime
 import java.util.*
-import mu.KLogger
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 
 
 private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehovMediator(
-    private val rapidsConnection: RapidsConnection,
-    private val sikkerLogg: KLogger
+    private val rapidsConnection: RapidsConnection
 ) {
 
     internal fun håndter(hendelse: Hendelse) {
@@ -54,9 +53,7 @@ class BehovMediator(
                 }
                 .let { JsonMessage.newMessage(it) }
                 .also { message ->
-                    sikkerLogg.info { "Sender $id som ${message.toJson()}" }
-                    //Midlertidig:
-                    LOG.info { "Sender $id som ${message.toJson()}" }
+                    SECURELOG.info { "Sender $id som ${message.toJson()}" }
                     rapidsConnection.publish(hendelse.ident(), message.toJson())
                     LOG.info { "Sender behov ${behovsliste.joinToString { it }}" }
                 }

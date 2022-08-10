@@ -9,6 +9,7 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.River.PacketListener
 
 private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     init {
@@ -23,7 +24,8 @@ class TestService(rapidsConnection: RapidsConnection) : PacketListener {
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.info { "Mottok løsning: ${packet.toJson()}" }
+        LOG.info("Mottok løsning")
+        SECURELOG.info { "Mottok løsning: ${packet.toJson()}" }
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
