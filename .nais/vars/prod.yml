@@ -1,5 +1,8 @@
 kafka:
   pool: nav-prod
+sqlInstances:
+  diskAutoresize: true
+  pointInTimeRecovery: true
 ingress:
   url: https://tiltakspenger-vedtak.prod.intern.nav.no
 cluster: prod-gcp

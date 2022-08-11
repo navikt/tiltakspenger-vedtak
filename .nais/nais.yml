@@ -24,9 +24,18 @@ spec:
   azure:
     application:
       enabled: true
+  gcp:
+    sqlInstances:
+      - name: tiltakspenger-vedtak
+        type: POSTGRES_14
+        diskAutoresize: {{ sqlInstances.diskAutoresize }}
+        pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
+        databases:
+          - name: vedtak
+            envVarPrefix: DB
   accessPolicy:
-   inbound:
-     rules:
-       - application: tiltakspenger-flate
-         namespace: tpts
-         cluster: {{ cluster }}
+    inbound:
+      rules:
+        - application: tiltakspenger-flate
+          namespace: tpts
+          cluster: {{ cluster }}
