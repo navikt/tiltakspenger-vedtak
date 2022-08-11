@@ -2,7 +2,7 @@ val javaVersion = JavaVersion.VERSION_17
 
 plugins {
     kotlin("jvm") version "1.7.10"
-    id("io.gitlab.arturbosch.detekt").version("1.20.0")
+    id("io.gitlab.arturbosch.detekt").version("1.21.0")
 }
 
 allprojects {
@@ -15,7 +15,6 @@ allprojects {
 }
 
 detekt {
-    autoCorrect = true
     buildUponDefaultConfig = true
     allRules = false
     config = files("$projectDir/config/detekt.yml")

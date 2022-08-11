@@ -2,17 +2,16 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDateTime
 import java.util.*
-import mu.KLogger
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 
 
-private val logg = KotlinLogging.logger {}
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehovMediator(
-    private val rapidsConnection: RapidsConnection,
-    private val sikkerLogg: KLogger
+    private val rapidsConnection: RapidsConnection
 ) {
 
     internal fun håndter(hendelse: Hendelse) {
@@ -30,7 +29,7 @@ class BehovMediator(
         // og blir sendt ut som en og samme melding på Rapiden.
         // Hvorfor det nødvendigvis er riktig/viktig vet jeg ikke om jeg forstår..
         behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, listeAvBehov) ->
-            logg.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
+            LOG.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
             val behovsliste = mutableListOf<String>()
             val id = UUID.randomUUID()
 
@@ -54,11 +53,9 @@ class BehovMediator(
                 }
                 .let { JsonMessage.newMessage(it) }
                 .also { message ->
-                    sikkerLogg.info { "Sender $id som ${message.toJson()}" }
-                    //Midlertidig:
-                    logg.info { "Sender $id som ${message.toJson()}" }
+                    SECURELOG.info { "Sender $id som ${message.toJson()}" }
                     rapidsConnection.publish(hendelse.ident(), message.toJson())
-                    logg.info { "Sender behov ${behovsliste.joinToString { it }}" }
+                    LOG.info { "Sender behov ${behovsliste.joinToString { it }}" }
                 }
         }
     }
