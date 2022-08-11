@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.meldinger
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Hendelse
 import no.nav.tiltakspenger.vedtak.Personinfo
@@ -13,7 +14,8 @@ class PersondataMottattHendelse(
     private val mellomnavn: String?,
     private val etternavn: String,
     private val fortrolig: Boolean,
-    private val strengtFortrolig: Boolean
+    private val strengtFortrolig: Boolean,
+    private val innhentet: LocalDateTime,
 ) : Hendelse(aktivitetslogg) {
 
     override fun ident() = ident
@@ -25,6 +27,7 @@ class PersondataMottattHendelse(
         mellomnavn = mellomnavn,
         etternavn = etternavn,
         fortrolig = fortrolig,
-        strengtFortrolig = strengtFortrolig
+        strengtFortrolig = strengtFortrolig,
+        innhentet = innhentet,
     )
 }

@@ -160,6 +160,7 @@ class Søker private constructor(
         }
     }
 
+    //Har jeg kåla det til her? Når bruker man accept og når bruker man visit??
     fun accept(visitor: SøkerVisitor) {
         visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)

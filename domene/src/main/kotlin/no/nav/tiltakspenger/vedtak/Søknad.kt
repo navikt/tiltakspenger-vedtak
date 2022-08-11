@@ -19,11 +19,16 @@ class Søknad(
     val brukerRegistrertSluttDato: LocalDate?,
     val systemRegistrertStartDato: LocalDate?,
     val systemRegistrertSluttDato: LocalDate?,
-    val barnetillegg: List<Barnetillegg>
-) {
+    val barnetillegg: List<Barnetillegg>,
+    val innhentet: LocalDateTime,
+) : Kildedata {
     fun accept(visitor: SøkerVisitor) {
         visitor.visitSøknad(this)
     }
+
+    override fun oppdatert(): LocalDateTime = opprettet ?: innhentet()
+
+    override fun innhentet(): LocalDateTime = innhentet
 }
 
 class Barnetillegg(
