@@ -55,7 +55,7 @@ internal class SøknadMottakRiver(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["søknad.ident"].asText(),
             søknad = mapSøknad(
-                eksternSøknad = packet["søknad"].asObject(EksternSøknad::class.java),
+                søknadDTO = packet["søknad"].asObject(SøknadDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime()
             )
         )
@@ -66,40 +66,40 @@ internal class SøknadMottakRiver(
     //Hvorfor finnes ikke dette i r&r?
     private fun <T> JsonNode?.asObject(clazz: Class<T>): T = objectMapper.treeToValue(this, clazz)
 
-    private fun mapSøknad(eksternSøknad: EksternSøknad, innhentet: LocalDateTime): Søknad {
+    private fun mapSøknad(søknadDTO: SøknadDTO, innhentet: LocalDateTime): Søknad {
         return Søknad(
-            id = eksternSøknad.id,
-            fornavn = eksternSøknad.fornavn,
-            etternavn = eksternSøknad.etternavn,
-            ident = eksternSøknad.ident,
-            deltarKvp = eksternSøknad.deltarKvp,
-            deltarIntroduksjonsprogrammet = eksternSøknad.deltarIntroduksjonsprogrammet,
-            oppholdInstitusjon = eksternSøknad.oppholdInstitusjon,
-            typeInstitusjon = eksternSøknad.typeInstitusjon,
-            tiltaksArrangoer = eksternSøknad.tiltaksArrangoer,
-            tiltaksType = eksternSøknad.tiltaksType,
-            opprettet = eksternSøknad.opprettet,
-            brukerRegistrertStartDato = eksternSøknad.brukerRegistrertStartDato,
-            brukerRegistrertSluttDato = eksternSøknad.brukerRegistrertSluttDato,
-            systemRegistrertStartDato = eksternSøknad.systemRegistrertStartDato,
-            systemRegistrertSluttDato = eksternSøknad.systemRegistrertSluttDato,
-            barnetillegg = eksternSøknad.barnetillegg.map { mapBarnetillegg(it) },
+            id = søknadDTO.id,
+            fornavn = søknadDTO.fornavn,
+            etternavn = søknadDTO.etternavn,
+            ident = søknadDTO.ident,
+            deltarKvp = søknadDTO.deltarKvp,
+            deltarIntroduksjonsprogrammet = søknadDTO.deltarIntroduksjonsprogrammet,
+            oppholdInstitusjon = søknadDTO.oppholdInstitusjon,
+            typeInstitusjon = søknadDTO.typeInstitusjon,
+            tiltaksArrangoer = søknadDTO.tiltaksArrangoer,
+            tiltaksType = søknadDTO.tiltaksType,
+            opprettet = søknadDTO.opprettet,
+            brukerRegistrertStartDato = søknadDTO.brukerRegistrertStartDato,
+            brukerRegistrertSluttDato = søknadDTO.brukerRegistrertSluttDato,
+            systemRegistrertStartDato = søknadDTO.systemRegistrertStartDato,
+            systemRegistrertSluttDato = søknadDTO.systemRegistrertSluttDato,
+            barnetillegg = søknadDTO.barnetillegg.map { mapBarnetillegg(it) },
             innhentet = innhentet,
         )
     }
 
-    private fun mapBarnetillegg(eksternBarnetillegg: EksternBarnetillegg): Barnetillegg {
+    private fun mapBarnetillegg(barnetilleggDTO: BarnetilleggDTO): Barnetillegg {
         return Barnetillegg(
-            fornavn = eksternBarnetillegg.fornavn,
-            etternavn = eksternBarnetillegg.etternavn,
-            alder = eksternBarnetillegg.alder,
-            ident = eksternBarnetillegg.ident,
-            bosted = eksternBarnetillegg.bosted,
+            fornavn = barnetilleggDTO.fornavn,
+            etternavn = barnetilleggDTO.etternavn,
+            alder = barnetilleggDTO.alder,
+            ident = barnetilleggDTO.ident,
+            bosted = barnetilleggDTO.bosted,
         )
     }
 }
 
-class EksternSøknad(
+class SøknadDTO(
     val id: String,
     val fornavn: String?,
     val etternavn: String?,
@@ -115,10 +115,10 @@ class EksternSøknad(
     val brukerRegistrertSluttDato: LocalDate?,
     val systemRegistrertStartDato: LocalDate?,
     val systemRegistrertSluttDato: LocalDate?,
-    val barnetillegg: List<EksternBarnetillegg>,
+    val barnetillegg: List<BarnetilleggDTO>,
 )
 
-class EksternBarnetillegg(
+class BarnetilleggDTO(
     val fornavn: String?,
     val etternavn: String?,
     val alder: Int,

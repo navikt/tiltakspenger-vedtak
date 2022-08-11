@@ -12,7 +12,7 @@ class Personinfo(
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,
     val innhentet: LocalDateTime,
-) : Kildedata {
+) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
         visitor.visitPersoninfo(this)
     }
