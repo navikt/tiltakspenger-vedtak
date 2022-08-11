@@ -9,6 +9,9 @@ class Søker private constructor(
     private var tilstand: Tilstand,
     private var søknad: Søknad?,
     private var personinfo: Personinfo?,
+    private val tiltak: List<Tiltaksaktivitet>,
+    private val ytelser: List<YtelseSak>,
+    private val egenAnsatt: Boolean?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -20,6 +23,9 @@ class Søker private constructor(
         tilstand = SøkerRegistrert,
         søknad = null,
         personinfo = null,
+        tiltak = mutableListOf(),
+        ytelser = mutableListOf(),
+        egenAnsatt = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
