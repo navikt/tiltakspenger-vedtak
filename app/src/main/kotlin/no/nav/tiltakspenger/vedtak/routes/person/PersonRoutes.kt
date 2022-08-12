@@ -2,13 +2,20 @@ package no.nav.tiltakspenger.vedtak.routes.person
 
 import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
 import com.papsign.ktor.openapigen.route.path.auth.get
-import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.*
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
+import no.nav.tiltakspenger.vedtak.modell.BarnDTO
+import no.nav.tiltakspenger.vedtak.modell.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.modell.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.modell.PersonDTO
+import no.nav.tiltakspenger.vedtak.modell.PersonaliaDTO
+import no.nav.tiltakspenger.vedtak.modell.TiltakDTO
+import no.nav.tiltakspenger.vedtak.modell.UtfallDTO
+import no.nav.tiltakspenger.vedtak.modell.VilkårsVurderingsKategori
+import no.nav.tiltakspenger.vedtak.modell.VilkårsvurderingDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month

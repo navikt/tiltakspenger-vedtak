@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.person
+package no.nav.tiltakspenger.vedtak.modell
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
@@ -39,6 +39,7 @@ data class PeriodeDTO(
     val fra: LocalDate,
     val til: LocalDate,
 )
+
 data class TiltakDTO(
     val arrangør: String,
     val navn: String,

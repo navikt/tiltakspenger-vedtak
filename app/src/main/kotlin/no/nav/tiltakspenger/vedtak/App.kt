@@ -46,7 +46,6 @@ fun main() {
             */
             TestService(it)
 
-            Thread.sleep(5000)
             it.register(object : RapidsConnection.StatusListener {
                 override fun onStartup(rapidsConnection: RapidsConnection) {
                     if ((System.getenv("NAIS_CLUSTER_NAME")).equals("dev-gcp")) {
