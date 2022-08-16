@@ -123,7 +123,7 @@ class BarnetilleggDTO(
     val etternavn: String?,
     val alder: Int,
     val ident: String,
-    val bosted: String
+    val bosted: String,
 )
 
 
