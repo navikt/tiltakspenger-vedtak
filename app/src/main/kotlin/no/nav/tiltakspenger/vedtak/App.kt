@@ -46,15 +46,19 @@ fun main() {
             */
             TestService(it)
 
+            log.info("Sover før vi sender test meldinger")
             Thread.sleep(5000)
+            log.info("Sovet ferdig før vi sender test meldinger")
             it.register(object : RapidsConnection.StatusListener {
                 override fun onStartup(rapidsConnection: RapidsConnection) {
                     if ((System.getenv("NAIS_CLUSTER_NAME")).equals("dev-gcp")) {
+                        log.info("Sender test meldinger")
                         sendPersonBehovTestMessage(rapidsConnection, log)
                         sendYtelserBehovTestMessage(rapidsConnection, log)
                         sendTiltakBehovTestMessage(rapidsConnection, log)
                         sendSkjermingBehovTestMessage(rapidsConnection, log)
                         sendInstitusjonBehovTestMessage(rapidsConnection, log)
+                        log.info("Har sendt test meldinger")
                     }
                 }
             })
