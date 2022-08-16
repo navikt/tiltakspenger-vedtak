@@ -54,6 +54,7 @@ fun main() {
                         sendYtelserBehovTestMessage(rapidsConnection, log)
                         sendTiltakBehovTestMessage(rapidsConnection, log)
                         sendSkjermingBehovTestMessage(rapidsConnection, log)
+                        sendInstitusjonBehovTestMessage(rapidsConnection, log)
                     }
                 }
             })
@@ -127,4 +128,22 @@ fun sendSkjermingBehovTestMessage(connection: RapidsConnection, log: KLogger) {
         json.trimMargin()
     )
     log.info { "vi sendte en skjerming behovsmelding" }
+}
+
+fun sendInstitusjonBehovTestMessage(connection: RapidsConnection, log: KLogger) {
+    log.info { "vi sender en institusjon behovsmelding" }
+    // language=JSON
+    val json = """
+            { 
+            "@behov" : ["institusjon"],
+            "@id" : "test",
+            "@behovId": "behovId",
+            "ident": "10108000398",
+            "fom" : "2019-10-01",
+            "tom" : "2022-06-01"
+            }"""
+    connection.publish(
+        json.trimMargin()
+    )
+    log.info { "vi sendte en institusjon behovsmelding" }
 }
