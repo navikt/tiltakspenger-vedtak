@@ -2,11 +2,9 @@ package no.nav.tiltakspenger.vedtak.routes.person
 
 import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
 import com.papsign.ktor.openapigen.route.path.auth.get
-import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.*
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import java.time.LocalDate
@@ -21,7 +19,7 @@ fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
     }
 }
 
-internal const val personPath = "/person"
+internal const val personPath = "/api/saker/person"
 
 fun person(): PersonDTO = PersonDTO(
     personalia = PersonaliaDTO(
