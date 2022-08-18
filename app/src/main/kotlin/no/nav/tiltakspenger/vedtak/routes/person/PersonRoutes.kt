@@ -26,7 +26,7 @@ fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
     }
 }
 
-internal const val personPath = "/api/saker/person"
+internal const val personPath = "/saker/person"
 
 fun person(): PersonDTO = PersonDTO(
     personalia = PersonaliaDTO(
