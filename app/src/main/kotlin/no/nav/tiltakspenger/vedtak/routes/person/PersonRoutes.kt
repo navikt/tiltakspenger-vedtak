@@ -17,6 +17,11 @@ fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
             respond(response = person())
         }
     }
+    route("$personPath") {
+        get<Unit, PersonDTO, JWTPrincipal> {
+            respond(response = person())
+        }
+    }
 }
 
 internal const val personPath = "/api/saker/person"
