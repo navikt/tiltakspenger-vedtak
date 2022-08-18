@@ -74,7 +74,7 @@ fun sendPersonBehovTestMessage(connection: RapidsConnection, log: KLogger) {
             "@behov" : ["persondata"],
             "@id" : "test",
             "@behovId": "behovId",
-            "identer":[{"id":"04078309135","type":"fnr","historisk":false}]
+            "ident": "04078309135"
             }"""
     connection.publish(
         json.trimMargin()
