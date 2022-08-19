@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.Duration
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import java.time.Duration
 
 class Søker private constructor(
     private val ident: String,
@@ -42,6 +42,19 @@ class Søker private constructor(
             return
         }
         tilstand.håndter(this, søknadMottattHendelse)
+    }
+
+    fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
+        if (ident != persondataMottattHendelse.ident()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(persondataMottattHendelse, "Registrert PersondataMottattHendelse")
+        if (erFerdigBehandlet()) {
+            persondataMottattHendelse.error("ident ${persondataMottattHendelse.ident()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, persondataMottattHendelse)
     }
 
     private fun kontekst(hendelse: Hendelse, melding: String) {
@@ -116,7 +129,7 @@ class Søker private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata,
             melding = "Trenger persondata",
-            detaljer = mapOf("identer" to listOf(this.ident))
+            detaljer = mapOf("ident" to this.ident)
         )
     }
 

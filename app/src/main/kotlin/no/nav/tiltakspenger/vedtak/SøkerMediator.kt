@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
@@ -25,6 +26,12 @@ internal class SøkerMediator(
         }
     }
 
+    fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
+        håndter(persondataMottattHendelse) { søker ->
+            søker.håndter(persondataMottattHendelse)
+        }
+    }
+
     private fun håndter(hendelse: Hendelse, handler: (Søker) -> Unit) {
         try {
             hentEllerOpprettSøker(hendelse).also { søker ->
@@ -43,6 +50,7 @@ internal class SøkerMediator(
                 SECURELOG.debug { "Fant Søker for ${hendelse.ident()}" }
                 søker
             }
+
             else -> {
                 val nySøker = Søker(hendelse.ident())
                 søkerRepository.lagre(nySøker)

@@ -9,25 +9,10 @@ import no.nav.tiltakspenger.vedtak.Personinfo
 class PersondataMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
     private val ident: String,
-    private val fødselsdato: LocalDate,
-    private val fornavn: String,
-    private val mellomnavn: String?,
-    private val etternavn: String,
-    private val fortrolig: Boolean,
-    private val strengtFortrolig: Boolean,
-    private val innhentet: LocalDateTime,
+    private val personinfo: Personinfo,
 ) : Hendelse(aktivitetslogg) {
 
     override fun ident() = ident
 
-    fun personinfo(): Personinfo = Personinfo(
-        ident = ident,
-        fødselsdato = fødselsdato,
-        fornavn = fornavn,
-        mellomnavn = mellomnavn,
-        etternavn = etternavn,
-        fortrolig = fortrolig,
-        strengtFortrolig = strengtFortrolig,
-        innhentet = innhentet,
-    )
+    fun personinfo() = personinfo
 }
