@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import java.time.Duration
 
@@ -11,7 +12,7 @@ class Søker private constructor(
     private var personinfo: Personinfo?,
     private val tiltak: List<Tiltaksaktivitet>,
     private val ytelser: List<YtelseSak>,
-    private val egenAnsatt: Boolean?,
+    private var skjerming: Boolean?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     private val observers = mutableSetOf<SøkerObserver>()
@@ -25,7 +26,7 @@ class Søker private constructor(
         personinfo = null,
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
-        egenAnsatt = null,
+        skjerming = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -57,6 +58,19 @@ class Søker private constructor(
         tilstand.håndter(this, persondataMottattHendelse)
     }
 
+    fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
+        if (ident != skjermingMottattHendelse.ident()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(skjermingMottattHendelse, "Registrert SkjermingMottattHendelse")
+        if (erFerdigBehandlet()) {
+            skjermingMottattHendelse.error("ident ${skjermingMottattHendelse.ident()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, skjermingMottattHendelse)
+    }
+
     private fun kontekst(hendelse: Hendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)
@@ -74,6 +88,10 @@ class Søker private constructor(
 
         fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
             persondataMottattHendelse.warn("Forventet ikke PersondataMottattHendelse i %s", type.name)
+        }
+
+        fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
+            skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i %s", type.name)
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
@@ -122,7 +140,20 @@ class Søker private constructor(
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        //Må override håndter denne også, osv osv..
+        override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
+            skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
+            søker.skjerming = skjermingMottattHendelse.skjerming().skjerming
+            søker.trengerTiltak(skjermingMottattHendelse)
+            søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
+        }
+    }
+
+    internal object AvventerTiltak : Tilstand {
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.AvventerTiltak
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
     }
 
     private fun trengerPersondata(hendelse: Hendelse) {
@@ -135,6 +166,10 @@ class Søker private constructor(
 
     private fun trengerSkjermingdata(hendelse: Hendelse) {
         hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Skjermingdata, "Trenger skjermingdata")
+    }
+
+    private fun trengerTiltak(hendelse: Hendelse) {
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Arenatiltak, "Trenger arenatiltak")
     }
 
     private fun tilstand(

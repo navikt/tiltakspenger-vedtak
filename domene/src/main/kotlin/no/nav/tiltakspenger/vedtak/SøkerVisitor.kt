@@ -9,7 +9,11 @@ interface PersoninfoVisitor {
     fun visitPersoninfo(personinfo: Personinfo?) {}
 }
 
-interface SøkerVisitor : SøknadVisitor, PersoninfoVisitor, AktivitetsloggVisitor {
+interface SkjermingVisitor {
+    fun visitSkjerming(skjerming: Skjerming?) {}
+}
+
+interface SøkerVisitor : SøknadVisitor, PersoninfoVisitor, AktivitetsloggVisitor, SkjermingVisitor {
     fun preVisitSøker(søker: Søker, ident: String) {}
     fun visitTilstand(tilstandType: Søker.Tilstand) {}
 

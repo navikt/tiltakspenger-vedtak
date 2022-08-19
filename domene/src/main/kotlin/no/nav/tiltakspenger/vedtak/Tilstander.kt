@@ -4,6 +4,7 @@ enum class SøkerTilstandType {
     SøkerRegistrertType,
     AvventerPersondataType,
     AvventerSkjermingdataType,
+    AvventerTiltak,
     KategoriseringType,
     AvventerSøknadsdataType,
     AvventerMinsteinntektVurderingType,

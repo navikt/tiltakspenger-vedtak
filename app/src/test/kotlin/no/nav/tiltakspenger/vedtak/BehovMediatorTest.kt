@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
 import com.fasterxml.jackson.databind.JsonNode
-import java.time.LocalDateTime
-import java.util.*
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -11,6 +9,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
+import java.util.*
 
 internal class BehovMediatorTest {
     private companion object {

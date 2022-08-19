@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
@@ -29,6 +30,12 @@ internal class SøkerMediator(
     fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
         håndter(persondataMottattHendelse) { søker ->
             søker.håndter(persondataMottattHendelse)
+        }
+    }
+
+    fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
+        håndter(skjermingMottattHendelse) { søker ->
+            søker.håndter(skjermingMottattHendelse)
         }
     }
 
