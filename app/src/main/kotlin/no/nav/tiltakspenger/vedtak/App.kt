@@ -4,6 +4,8 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.vedtak.repository.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.rivers.SøknadMottakRiver
 import no.nav.tiltakspenger.vedtak.routes.TokenVerificationConfig
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 
@@ -35,15 +37,15 @@ fun main() {
         .withKtorModule(vedtakApi(TokenVerificationConfig.fromEnv()))
         .build()
         .also {
-            /*
-            val søkerRepository = TODO()
+
+            val søkerRepository = InMemorySøkerRepository()
             val søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
                 rapidsConnection = it,
                 observatører = listOf()
             )
-            SøknadMottakTjeneste(søkerMediator = søkerMediator, rapidsConnection = it)
-            */
+            SøknadMottakRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+
             TestService(it)
 
             log.info("Sover før vi sender test meldinger")
