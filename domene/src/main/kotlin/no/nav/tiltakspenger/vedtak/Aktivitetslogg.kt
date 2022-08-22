@@ -201,7 +201,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
             @Suppress("EnumNaming")
             enum class Behovtype {
                 persondata,
-                skjermingdata,
+                skjerming,
                 arenatiltak,
                 arenaytelser,
             }
