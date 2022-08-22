@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak
 
+import java.time.Duration
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import java.time.Duration
 
 class Søker private constructor(
     private val ident: String,
@@ -158,18 +158,18 @@ class Søker private constructor(
 
     private fun trengerPersondata(hendelse: Hendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.Persondata,
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.persondata,
             melding = "Trenger persondata",
             detaljer = mapOf("ident" to this.ident)
         )
     }
 
     private fun trengerSkjermingdata(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Skjermingdata, "Trenger skjermingdata")
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.skjermingdata, "Trenger skjermingdata")
     }
 
     private fun trengerTiltak(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.Arenatiltak, "Trenger arenatiltak")
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak, "Trenger arenatiltak")
     }
 
     private fun tilstand(

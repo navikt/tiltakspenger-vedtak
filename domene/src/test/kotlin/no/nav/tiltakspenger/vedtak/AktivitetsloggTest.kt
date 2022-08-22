@@ -155,7 +155,7 @@ internal class AktivitetsloggTest {
         val param1 = "value"
         val param2 = LocalDate.now()
         hendelse1.behov(
-            Behovtype.Persondata,
+            Behovtype.persondata,
             "Trenger persondata",
             mapOf(
                 "param1" to param1,
@@ -182,7 +182,7 @@ internal class AktivitetsloggTest {
         val param1 = "value"
         val param2 = LocalDate.of(2022, 10, 1)
         hendelse1.behov(
-            Behovtype.Persondata,
+            Behovtype.persondata,
             "Trenger persondata",
             mapOf(
                 "param1" to param1,
@@ -226,7 +226,7 @@ internal class AktivitetsloggTest {
                 }
                 .also {
                     assertEquals("behov", it["@event_name"])
-                    assertEquals(listOf("Persondata"), it["@behov"])
+                    assertEquals(listOf("persondata"), it["@behov"])
                     assertEquals("Søker", it["Søker"])
                     assertEquals("whatever", it["whatever"])
                     assertEquals("value", it["param1"])

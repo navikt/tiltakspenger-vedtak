@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Søker
@@ -11,7 +12,6 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 internal class PersonMottattRiverTest {
 
@@ -65,7 +65,7 @@ internal class PersonMottattRiverTest {
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
-            assertEquals("Skjermingdata", field(0, "@behov")[0].asText())
+            assertEquals("skjermingdata", field(0, "@behov")[0].asText())
 //            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }

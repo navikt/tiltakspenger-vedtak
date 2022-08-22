@@ -30,7 +30,7 @@ internal class SkjermingMottattRiver(rapidsConnection: RapidsConnection, private
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.info("Received skerming")
+        LOG.info("Received skjerming")
         SECURELOG.info("Received skjerming for ident id: ${packet["ident"].asText()}")
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(

@@ -198,11 +198,12 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 visitor.visitBehov(kontekster, this, type, melding, detaljer, tidsstempel)
             }
 
+            @Suppress("EnumNaming")
             enum class Behovtype {
-                Persondata,
-                Skjermingdata,
-                Arenatiltak,
-                Arenaytelser,
+                persondata,
+                skjermingdata,
+                arenatiltak,
+                arenaytelser,
             }
         }
 

@@ -31,7 +31,7 @@ internal class SøknadMottattRiverTest {
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
-            assertEquals("Persondata", field(0, "@behov")[0].asText())
+            assertEquals("persondata", field(0, "@behov")[0].asText())
             assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
