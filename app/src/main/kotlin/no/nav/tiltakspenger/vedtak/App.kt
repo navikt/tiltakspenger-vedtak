@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.tiltakspenger.vedtak.repository.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
+import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.PersondataMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
@@ -46,6 +48,8 @@ fun main() {
             SøknadMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             PersondataMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             SkjermingMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+            ArenaTiltakMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+            ArenaYtelserMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
         }.start()
     log.info { "nå er vi i gang" }
 }
