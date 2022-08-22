@@ -1,9 +1,9 @@
-package no.nav.tiltakspenger.vedtak
+package no.nav.tiltakspenger.vedtak.rivers
 
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class YtelseSak(
+data class YtelseSakDTO(
     val fomGyldighetsperiode: LocalDateTime,
     val tomGyldighetsperiode: LocalDateTime,
     val datoKravMottatt: LocalDate?,
@@ -11,15 +11,13 @@ data class YtelseSak(
     val fagsystemSakId: Int? = null,
     val status: String? = null,
     val ytelsestype: String? = null,
-    val vedtak: List<YtelseVedtak> = emptyList(),
+    val vedtak: List<YtelseVedtakDTO> = emptyList(),
     val antallDagerIgjen: Int? = null,
     val antallUkerIgjen: Int? = null,
     val innhentet: LocalDateTime,
-) : Tidsstempler {
-    override fun oppdatert(): LocalDateTime = innhentet
-    override fun innhentet(): LocalDateTime = innhentet
+) {
 
-    data class YtelseVedtak(
+    data class YtelseVedtakDTO(
         val beslutningsDato: LocalDate? = null,
         val periodetypeForYtelse: String? = null,
         val vedtaksperiodeFom: LocalDate? = null,

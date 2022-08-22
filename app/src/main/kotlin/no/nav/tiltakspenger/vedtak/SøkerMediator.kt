@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
 
@@ -43,6 +44,12 @@ internal class SøkerMediator(
     fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
         håndter(arenaTiltakMottattHendelse) { søker ->
             søker.håndter(arenaTiltakMottattHendelse)
+        }
+    }
+
+    fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
+        håndter(ytelserMottattHendelse) { søker ->
+            søker.håndter(ytelserMottattHendelse)
         }
     }
 

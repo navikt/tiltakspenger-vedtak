@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 
 class Søker private constructor(
@@ -11,8 +12,8 @@ class Søker private constructor(
     private var tilstand: Tilstand,
     private var søknad: Søknad?,
     private var personinfo: Personinfo?,
-    private var tiltak: List<Tiltaksaktivitet>,  // Var eller val?
-    private val ytelser: List<YtelseSak>,
+    private var tiltak: List<Tiltaksaktivitet>,
+    private var ytelser: List<YtelseSak>,
     private var skjerming: Boolean?,
     internal val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
@@ -85,6 +86,19 @@ class Søker private constructor(
         tilstand.håndter(this, arenaTiltakMottattHendelse)
     }
 
+    fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
+        if (ident != ytelserMottattHendelse.ident()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(ytelserMottattHendelse, "Registrert YtelserMottattHendelse")
+        if (erFerdigBehandlet()) {
+            ytelserMottattHendelse.error("ident ${ytelserMottattHendelse.ident()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, ytelserMottattHendelse)
+    }
+
     private fun kontekst(hendelse: Hendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)
@@ -110,6 +124,10 @@ class Søker private constructor(
 
         fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
             arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i %s", type.name)
+        }
+
+        fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
+            ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i %s", type.name)
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
@@ -186,14 +204,20 @@ class Søker private constructor(
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
+        override fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
+            ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
+            søker.ytelser = ytelserMottattHendelse.ytelseSak()
+            søker.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
+        }
     }
 
-//    override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-//        arenaTiltakMottattHendelse.info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-//        søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
-//        søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
-//        søker.tilstand(arenaTiltakMottattHendelse, AvventerArenaYtelser)
-//    }
+    internal object SøkerFerdigstiltType : Tilstand {
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.SøkerFerdigstiltType
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+    }
 
     private fun trengerPersondata(hendelse: Hendelse) {
         hendelse.behov(

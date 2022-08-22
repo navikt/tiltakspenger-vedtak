@@ -14,14 +14,14 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class ArenaTiltakMottattRiver(
+internal class ArenaYtelserMottattRiver(
     private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection,
 ) : River.PacketListener {
@@ -36,63 +36,65 @@ internal class ArenaTiltakMottattRiver(
     init {
         River(rapidsConnection).apply {
             validate {
-                it.demandAllOrAny("@behov", listOf("arenatiltak"))
+                it.demandAllOrAny("@behov", listOf("arenaytelser"))
                 it.demandKey("@løsning")
                 it.requireKey("ident")
                 it.requireKey("@opprettet")
-                it.interestedIn("@løsning.arenatiltak")
+                it.interestedIn("@løsning.arenaytelser")
             }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        LOG.info("Received arenatiltak")
-        SECURELOG.info("Received arenatiltak for ident id: ${packet["ident"].asText()}")
+        LOG.info("Received arenaytelser")
+        SECURELOG.info("Received arenaytelser for ident id: ${packet["ident"].asText()}")
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 
-        val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
+        val ytelserMottattHendelse = YtelserMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["ident"].asText(),
-            tiltaksaktivitet = mapArenaTiltak(
-                tiltaksaktivitetDTO = packet["@løsning.arenatiltak"].asList(),
+            ytelseSak = mapYtelser(
+                ytelseSakDTO = packet["@løsning.arenaytelser"].asList(),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
             )
         )
 
-        søkerMediator.håndter(arenaTiltakMottattHendelse)
+        søkerMediator.håndter(ytelserMottattHendelse)
     }
 
-    fun JsonNode?.asList(): List<TiltaksaktivitetDTO> {
+    fun JsonNode?.asList(): List<YtelseSakDTO> {
         var javaType: CollectionType = objectMapper.getTypeFactory()
-            .constructCollectionType(List::class.java, TiltaksaktivitetDTO::class.java)
+            .constructCollectionType(List::class.java, YtelseSakDTO::class.java)
 
         return objectMapper.treeToValue(this, javaType)
     }
 
-    private fun mapArenaTiltak(
-        tiltaksaktivitetDTO: List<TiltaksaktivitetDTO>,
+    private fun mapYtelser(
+        ytelseSakDTO: List<YtelseSakDTO>,
         innhentet: LocalDateTime
-    ): List<Tiltaksaktivitet> {
-        return tiltaksaktivitetDTO.map {
-            Tiltaksaktivitet(
-                tiltaksnavn = it.tiltaksnavn,
-                aktivitetId = it.aktivitetId,
-                tiltakLokaltNavn = it.tiltakLokaltNavn,
-                arrangoer = it.arrangoer,
-                bedriftsnummer = it.bedriftsnummer,
-                deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
-                    it.deltakelsePeriode?.fom,
-                    it.deltakelsePeriode?.tom
-                ),
-                deltakelseProsent = it.deltakelseProsent,
-                deltakerStatus = Tiltaksaktivitet.DeltakerStatus(
-                    termnavn = it.deltakerStatus.termnavn,
-                    status = it.deltakerStatus.innerText
-                ),
-                statusSistEndret = it.statusSistEndret,
-                begrunnelseInnsoeking = it.begrunnelseInnsoeking,
-                antallDagerPerUke = it.antallDagerPerUke,
+    ): List<YtelseSak> {
+        return ytelseSakDTO.map {
+            YtelseSak(
+                fomGyldighetsperiode = it.fomGyldighetsperiode,
+                tomGyldighetsperiode = it.tomGyldighetsperiode,
+                datoKravMottatt = it.datoKravMottatt,
+                dataKravMottatt = it.dataKravMottatt,
+                fagsystemSakId = it.fagsystemSakId,
+                status = it.status,
+                ytelsestype = it.ytelsestype,
+                vedtak = it.vedtak.map {
+                    YtelseSak.YtelseVedtak(
+                        beslutningsDato = it.beslutningsDato,
+                        periodetypeForYtelse = it.periodetypeForYtelse,
+                        vedtaksperiodeFom = it.vedtaksperiodeFom,
+                        vedtaksperiodeTom = it.vedtaksperiodeTom,
+                        vedtaksType = it.vedtaksType,
+                        status = it.status,
+                    )
+                },
+                antallDagerIgjen = it.antallDagerIgjen,
+                antallUkerIgjen = it.antallUkerIgjen,
                 innhentet = innhentet,
             )
         }
