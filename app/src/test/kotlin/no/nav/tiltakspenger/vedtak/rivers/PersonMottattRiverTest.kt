@@ -65,7 +65,7 @@ internal class PersonMottattRiverTest {
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
-            assertEquals("skjermingdata", field(0, "@behov")[0].asText())
+            assertEquals("skjerming", field(0, "@behov")[0].asText())
 //            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }

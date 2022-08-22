@@ -45,7 +45,7 @@ internal class BehovMediatorTest {
             )
         )
         hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
-        hendelse.behov(Behovtype.skjermingdata, "Trenger Skjermingdata")
+        hendelse.behov(Behovtype.skjerming, "Trenger Skjermingdata")
 
         behovMediator.håndter(hendelse)
 
@@ -60,7 +60,7 @@ internal class BehovMediatorTest {
             assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
             assertTrue(it.hasNonNull("@opprettet"))
             assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
-            assertEquals(listOf("persondata", "arenatiltak", "skjermingdata"), it["@behov"].map(JsonNode::asText))
+            assertEquals(listOf("persondata", "arenatiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
             assertEquals("behov", it["@event_name"].asText())
             assertEquals("12344", it["aktørId"].asText())
             assertEquals(ident, it["ident"].asText())

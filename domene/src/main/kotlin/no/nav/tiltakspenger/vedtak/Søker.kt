@@ -165,7 +165,7 @@ class Søker private constructor(
     }
 
     private fun trengerSkjermingdata(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.skjermingdata, "Trenger skjermingdata")
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming, "Trenger skjermingdata")
     }
 
     private fun trengerTiltak(hendelse: Hendelse) {
