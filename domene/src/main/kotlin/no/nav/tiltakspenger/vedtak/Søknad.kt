@@ -12,9 +12,9 @@ class Søknad(
     private val deltarKvp: Boolean,
     private val deltarIntroduksjonsprogrammet: Boolean?,
     private val oppholdInstitusjon: Boolean?,
-    private val typeInstitusjon: String?,
-    private val tiltaksArrangoer: String?,
-    private val tiltaksType: String?,
+    private val typeInstitusjon: String?, // TODO Høres ut som en enum
+    private val tiltaksArrangoer: String?, // TODO Ikke mulig å få et org nr?
+    private val tiltaksType: String?, // TODO Er en enum
     private val opprettet: LocalDateTime?,
     private val brukerRegistrertStartDato: LocalDate?,
     private val brukerRegistrertSluttDato: LocalDate?,
@@ -37,5 +37,5 @@ class Barnetillegg(
     val etternavn: String?,
     val alder: Int,
     val ident: String,
-    val bosted: String
+    val bosted: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
 )

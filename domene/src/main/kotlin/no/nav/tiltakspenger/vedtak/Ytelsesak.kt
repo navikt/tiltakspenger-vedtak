@@ -3,14 +3,15 @@ package no.nav.tiltakspenger.vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+//Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+Ytelseskontrakt_v3#ArenaTjenesteWebserviceYtelseskontrakt_v3-HentYtelseskontraktListeResponse
 data class YtelseSak(
     val fomGyldighetsperiode: LocalDateTime,
     val tomGyldighetsperiode: LocalDateTime,
     val datoKravMottatt: LocalDate?,
     val dataKravMottatt: String? = null,
     val fagsystemSakId: Int? = null,
-    val status: String? = null,
-    val ytelsestype: String? = null,
+    val status: String? = null, // TODO: Gjør om til enum?
+    val ytelsestype: String? = null, // TODO: Gjør om til enum?
     val vedtak: List<YtelseVedtak> = emptyList(),
     val antallDagerIgjen: Int? = null,
     val antallUkerIgjen: Int? = null,
@@ -21,10 +22,51 @@ data class YtelseSak(
 
     data class YtelseVedtak(
         val beslutningsDato: LocalDate? = null,
-        val periodetypeForYtelse: String? = null,
+        val periodetypeForYtelse: String? = null, // TODO: Gjør om til enum?
         val vedtaksperiodeFom: LocalDate? = null,
         val vedtaksperiodeTom: LocalDate? = null,
-        val vedtaksType: String? = null,
-        val status: String? = null,
+        val vedtaksType: String? = null, // TODO: Gjør om til enum?
+        val status: String? = null, // TODO: Gjør om til enum?
     )
+}
+
+enum class YtelseSakStatus(val navn: String) {
+    AKTIV("Aktiv"),
+    AVSLU("Lukket"),
+    INAKT("Inaktiv")
+}
+
+enum class YtelseSakYtelsetype(val navn: String) {
+    AA("Arbeidsavklaringspenger"),
+    DAGP("Dagpenger"),
+    INDIV("Individstønad"),
+}
+
+enum class YtelseVedtakPeriodeTypeForYtelse(val navn: String) {
+    E("Endring"),
+    F("Forlenget ventetid"),
+    G("Gjenopptak"),
+    N("Annuller sanksjon"),
+    O("Ny rettighet"),
+    S("Stans"),
+    T("Tidsbegrenset bortfall")
+}
+
+enum class YtelseVedtakVedtakstype(val navn: String, val ytelseSakYtelsetype: YtelseSakYtelsetype) {
+    AAP("Arbeidsavklaringspenger", YtelseSakYtelsetype.AA),
+    DAGO("Ordinære dagpenger", YtelseSakYtelsetype.DAGP),
+    PERM("Dagpenger under permitteringer", YtelseSakYtelsetype.DAGP),
+    FISK("Dagp. v/perm fra fiskeindustri", YtelseSakYtelsetype.DAGP),
+    LONN("Lønnsgarantimidler - dagpenger", YtelseSakYtelsetype.DAGP),
+    BASI("Tiltakspenger (basisytelse før 2014)", YtelseSakYtelsetype.INDIV)
+}
+
+enum class YtelseVedtakStatus(val navn: String) {
+    AVSLU("Avsluttet"),
+    GODKJ("Godkjent"),
+    INNST("Innstilt"),
+    IVERK("Iverksatt"),
+    MOTAT("Mottatt"),
+    OPPRE("Opprettet"),
+    REGIS("Registrert")
 }
