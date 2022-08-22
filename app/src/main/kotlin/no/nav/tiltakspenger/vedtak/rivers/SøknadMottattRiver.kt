@@ -22,7 +22,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class SøknadMottakRiver(
+internal class SøknadMottattRiver(
     private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {

@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vedtak.repository.InMemorySøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class SøknadMottakRiverTest {
+internal class SøknadMottattRiverTest {
 
     private companion object {
         val IDENT = "04927799109"
@@ -16,7 +16,7 @@ internal class SøknadMottakRiverTest {
     private val testRapid = TestRapid()
 
     init {
-        SøknadMottakRiver(
+        SøknadMottattRiver(
             rapidsConnection = testRapid,
             søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
