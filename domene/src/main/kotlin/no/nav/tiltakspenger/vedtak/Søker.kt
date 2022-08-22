@@ -1,16 +1,17 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.Duration
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import java.time.Duration
 
 class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
     private var søknad: Søknad?,
     private var personinfo: Personinfo?,
-    private val tiltak: List<Tiltaksaktivitet>,
+    private var tiltak: List<Tiltaksaktivitet>,  // Var eller val?
     private val ytelser: List<YtelseSak>,
     private var skjerming: Boolean?,
     internal val aktivitetslogg: Aktivitetslogg
@@ -71,6 +72,19 @@ class Søker private constructor(
         tilstand.håndter(this, skjermingMottattHendelse)
     }
 
+    fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+        if (ident != arenaTiltakMottattHendelse.ident()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(arenaTiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
+        if (erFerdigBehandlet()) {
+            arenaTiltakMottattHendelse.error("ident ${arenaTiltakMottattHendelse.ident()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, arenaTiltakMottattHendelse)
+    }
+
     private fun kontekst(hendelse: Hendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)
@@ -92,6 +106,10 @@ class Søker private constructor(
 
         fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i %s", type.name)
+        }
+
+        fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+            arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i %s", type.name)
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
@@ -154,7 +172,28 @@ class Søker private constructor(
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
+        override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+            arenaTiltakMottattHendelse.info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+            søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
+            søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
+            søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
+        }
     }
+
+    internal object AvventerYtelser : Tilstand {
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.AvventerYtelser
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+    }
+
+//    override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+//        arenaTiltakMottattHendelse.info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+//        søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
+//        søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
+//        søker.tilstand(arenaTiltakMottattHendelse, AvventerArenaYtelser)
+//    }
 
     private fun trengerPersondata(hendelse: Hendelse) {
         hendelse.behov(
@@ -170,6 +209,10 @@ class Søker private constructor(
 
     private fun trengerTiltak(hendelse: Hendelse) {
         hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak, "Trenger arenatiltak")
+    }
+
+    private fun trengerArenaYtelse(hendelse: Hendelse) {
+        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser, "Trenger arenaytelser")
     }
 
     private fun tilstand(

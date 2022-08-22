@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -36,6 +37,12 @@ internal class SøkerMediator(
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
         håndter(skjermingMottattHendelse) { søker ->
             søker.håndter(skjermingMottattHendelse)
+        }
+    }
+
+    fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+        håndter(arenaTiltakMottattHendelse) { søker ->
+            søker.håndter(arenaTiltakMottattHendelse)
         }
     }
 
