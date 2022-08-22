@@ -26,12 +26,16 @@ internal class SøknadMottattRiverTest {
     }
 
     @Test
-    fun `Skal hente saf post og legge på kafka `() {
+    fun `Skal generere behov og legge på kafka `() {
         testRapid.sendTestMessage(søknadMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
             assertEquals("persondata", field(0, "@behov")[0].asText())
+            // De følgende feiler hvis feltet ikke er satt
+            field(0, "@id").asText()
+            field(0, "ident").asText()
+            field(0, "@behovId").asText()
             assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }

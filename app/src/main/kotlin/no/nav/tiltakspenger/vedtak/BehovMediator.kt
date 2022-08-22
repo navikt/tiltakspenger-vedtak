@@ -32,11 +32,13 @@ class BehovMediator(
             LOG.debug { "For kontekst $kontekst har vi følgende behov: $listeAvBehov" }
             val behovsliste = mutableListOf<String>()
             val id = UUID.randomUUID()
+            val behovId = UUID.randomUUID()
 
             mutableMapOf(
                 "@event_name" to "behov",
                 "@opprettet" to LocalDateTime.now(),
                 "@id" to id,
+                "@behovId" to behovId,
                 "@behov" to behovsliste
             )
                 .apply {
