@@ -1,5 +1,6 @@
 val ktorVersion = "2.1.0"
 val kotestVersion = "5.4.2"
+val mockkVersion = "1.12.5"
 
 plugins {
     application
@@ -38,8 +39,8 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.9.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("io.mockk:mockk:1.12.5")
-    testImplementation("io.mockk:mockk-dsl-jvm:1.12.5")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "junit")
         exclude(group = "org.eclipse.jetty") // conflicts with WireMock
