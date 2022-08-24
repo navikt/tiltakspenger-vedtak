@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personinfo
@@ -17,8 +19,6 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class ArenaYtelseMottattRiverTest {
 
@@ -94,14 +94,14 @@ internal class ArenaYtelseMottattRiverTest {
             ident = IDENT,
             tiltaksaktivitet = listOf(
                 Tiltaksaktivitet(
-                    tiltaksnavn = "",
+                    tiltaksnavn = Tiltaksaktivitet.Tiltaksnavn.ARBRRHDAG,
                     aktivitetId = "",
                     tiltakLokaltNavn = null,
                     arrangoer = null,
                     bedriftsnummer = null,
                     deltakelsePeriode = null,
                     deltakelseProsent = null,
-                    deltakerStatus = Tiltaksaktivitet.DeltakerStatus(termnavn = "", status = ""),
+                    deltakerStatus = Tiltaksaktivitet.DeltakerStatus.GJENN,
                     statusSistEndret = null,
                     begrunnelseInnsoeking = "",
                     antallDagerPerUke = null,

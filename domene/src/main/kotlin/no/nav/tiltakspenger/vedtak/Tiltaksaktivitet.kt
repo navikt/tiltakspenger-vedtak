@@ -5,14 +5,14 @@ import java.time.LocalDateTime
 
 //Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
-    val tiltaksnavn: String, // TODO: Gjør om til enum?
+    val tiltaksnavn: Tiltaksnavn, // Det vi får her er teksten i Enumen, ikke koden. Det er litt klønete..
     val aktivitetId: String,
     val tiltakLokaltNavn: String?,
     val arrangoer: String?,
     val bedriftsnummer: String?,
     val deltakelsePeriode: DeltakelsesPeriode?,
     val deltakelseProsent: Float?,
-    val deltakerStatus: DeltakerStatus, // TODO: Gjør om til enum?
+    val deltakerStatus: DeltakerStatus,
     val statusSistEndret: LocalDate?,
     val begrunnelseInnsoeking: String,
     val antallDagerPerUke: Float?,
@@ -25,11 +25,6 @@ data class Tiltaksaktivitet(
     data class DeltakelsesPeriode(
         val fom: LocalDate?,
         val tom: LocalDate?,
-    )
-
-    data class DeltakerStatus(
-        val termnavn: String,
-        val status: String
     )
 
     enum class Tiltaksnavn(val tekst: String) {
@@ -76,7 +71,7 @@ data class Tiltaksaktivitet(
         VV("Varig vernet arbeid (VVA)")
     }
 
-    enum class DeltakerStatusEnum(val tekst: String) {
+    enum class DeltakerStatus(val tekst: String) {
         AKTUELL("Aktuell"),
         AVSLAG("Fått avslag"),
         DELAVB("Deltakelse avbrutt"),

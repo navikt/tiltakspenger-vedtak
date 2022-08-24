@@ -76,7 +76,7 @@ internal class ArenaTiltakMottattRiver(
     ): List<Tiltaksaktivitet> {
         return tiltaksaktivitetDTO.map {
             Tiltaksaktivitet(
-                tiltaksnavn = it.tiltaksnavn,
+                tiltaksnavn = mapTiltaksnavn(it.tiltaksnavn),
                 aktivitetId = it.aktivitetId,
                 tiltakLokaltNavn = it.tiltakLokaltNavn,
                 arrangoer = it.arrangoer,
@@ -86,15 +86,20 @@ internal class ArenaTiltakMottattRiver(
                     it.deltakelsePeriode?.tom
                 ),
                 deltakelseProsent = it.deltakelseProsent,
-                deltakerStatus = Tiltaksaktivitet.DeltakerStatus(
-                    termnavn = it.deltakerStatus.termnavn,
-                    status = it.deltakerStatus.innerText
-                ),
+                deltakerStatus = it.deltakerStatus.status.let { s -> mapDeltakerStatus(s) },
                 statusSistEndret = it.statusSistEndret,
                 begrunnelseInnsoeking = it.begrunnelseInnsoeking,
                 antallDagerPerUke = it.antallDagerPerUke,
                 innhentet = innhentet,
             )
         }
+    }
+
+    private fun mapDeltakerStatus(dtoDeltakerStatus: TiltaksaktivitetDTO.DeltakerStatusEnum): Tiltaksaktivitet.DeltakerStatus {
+        return Tiltaksaktivitet.DeltakerStatus.valueOf(dtoDeltakerStatus.name)
+    }
+
+    private fun mapTiltaksnavn(dtoTiltaksnavn: TiltaksaktivitetDTO.TiltaksnavnEnum): Tiltaksaktivitet.Tiltaksnavn {
+        return Tiltaksaktivitet.Tiltaksnavn.valueOf(dtoTiltaksnavn.name)
     }
 }

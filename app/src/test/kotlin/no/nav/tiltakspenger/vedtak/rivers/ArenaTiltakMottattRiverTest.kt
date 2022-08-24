@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personinfo
@@ -15,8 +17,6 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class ArenaTiltakMottattRiverTest {
 
@@ -126,7 +126,7 @@ internal class ArenaTiltakMottattRiverTest {
              "@løsning": {
                "arenatiltak": [
                  {
-                   "tiltaksnavn": "Arbeidstrening",
+                   "tiltaksnavn": "ARBTREN",
                    "aktivitetId": "TA6734563",
                    "tiltakLokaltNavn": "Arbeidstrening",
                    "arrangoer": "STENDI SENIOR AS",
@@ -137,8 +137,8 @@ internal class ArenaTiltakMottattRiverTest {
                    },
                    "deltakelseProsent": 100,
                    "deltakerStatus": {
-                     "termnavn": "Gjennomføres",
-                     "innerText": "GJENN"
+                     "statusNavn": "Gjennomføres",
+                     "status": "GJENN"
                    },
                    "statusSistEndret": "2022-08-09",
                    "begrunnelseInnsoeking": "Trenger tiltaksplass",

@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak
 
+import java.time.Duration
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import java.time.Duration
 
 class Søker private constructor(
     private val ident: String,
