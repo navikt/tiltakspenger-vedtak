@@ -44,12 +44,12 @@ enum class YtelseSakYtelsetype(val navn: String) {
 
 enum class YtelseVedtakPeriodeTypeForYtelse(val navn: String) {
     E("Endring"),
-    F("Forlenget ventetid"),
+    F("Forlenget ventetid"), // Gjelder ikke tiltakspenger
     G("Gjenopptak"),
-    N("Annuller sanksjon"),
+    N("Annuller sanksjon"), // Gjelder ikke tiltakspenger
     O("Ny rettighet"),
     S("Stans"),
-    T("Tidsbegrenset bortfall")
+    T("Tidsbegrenset bortfall") // Gjelder ikke tiltakspenger
 }
 
 enum class YtelseVedtakVedtakstype(val navn: String, val ytelseSakYtelsetype: YtelseSakYtelsetype) {
