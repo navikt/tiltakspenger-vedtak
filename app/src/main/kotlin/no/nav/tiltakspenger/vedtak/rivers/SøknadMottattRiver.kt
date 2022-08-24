@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 
 private val LOG = KotlinLogging.logger {}
@@ -97,6 +98,18 @@ internal class SøknadMottattRiver(
             bosted = barnetilleggDTO.bosted,
         )
     }
+
+    // https://trello.com/c/KVY0kO8n/129-mapping-av-tiltakstype-fra-s%C3%B8knaden
+    // Verdiene man kan angi i søknaden har korresponderende kodeverdier i Tiltaksnavn fra Arena
+    private fun mapTiltaksType(tiltaksType: String): Tiltaksaktivitet.Tiltaksnavn? =
+        when (tiltaksType) {
+            "JOBSOK" -> Tiltaksaktivitet.Tiltaksnavn.JOBBK
+            "PRAKSORD" -> Tiltaksaktivitet.Tiltaksnavn.ARBTREN
+            "AMO" -> Tiltaksaktivitet.Tiltaksnavn.GRUPPEAMO
+            "Annet" -> null //TODO: Hvordan mappe Annet?
+            else -> null
+        }
+
 }
 
 class SøknadDTO(
@@ -125,5 +138,3 @@ class BarnetilleggDTO(
     val ident: String,
     val bosted: String,
 )
-
-
