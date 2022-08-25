@@ -24,6 +24,16 @@ spec:
   azure:
     application:
       enabled: true
+      tenant: {{ tenant }}
+      claims:
+        groups:
+          - id: {{ ROLE_SAKSBEHANDLER }}
+          - id: {{ ROLE_FORTROLIG }}
+          - id: {{ ROLE_STRENGT_FORTROLIG }}
+          - id: {{ ROLE_SKJERMING }}
+      extra:
+        - "NAVident"
+        - "azp_name"
   gcp:
     sqlInstances:
       - name: tiltakspenger-vedtak
