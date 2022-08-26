@@ -1,13 +1,15 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.Duration
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import java.time.Duration
+import java.util.*
 
 class Søker private constructor(
+    private val id: UUID = UUID.randomUUID(),
     private val ident: String,
     private var tilstand: Tilstand,
     private var søknad: Søknad?,

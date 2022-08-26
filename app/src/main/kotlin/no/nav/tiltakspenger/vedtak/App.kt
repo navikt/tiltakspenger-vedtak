@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
+import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
@@ -50,6 +52,13 @@ fun main() {
             SkjermingMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             ArenaTiltakMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             ArenaYtelserMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+            it.register(
+                object : RapidsConnection.StatusListener {
+                    override fun onStartup(rapidsConnection: RapidsConnection) {
+                        flywayMigrate()
+                    }
+                }
+            )
         }.start()
     log.info { "nå er vi i gang" }
 }
