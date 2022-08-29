@@ -17,7 +17,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("ch.qos.logback:logback-classic:1.4.0")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
