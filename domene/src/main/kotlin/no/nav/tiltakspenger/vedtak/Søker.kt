@@ -35,6 +35,9 @@ class Søker private constructor(
     )
 
     fun ident(): String = ident
+    fun id(): UUID = id
+
+    fun tilstand(): Tilstand = tilstand
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
         if (ident != søknadMottattHendelse.ident()) return
