@@ -19,10 +19,10 @@ For å bygge artifaktene:
 ```sh
 ./gradlew build
 ```
-For å sjekke utdaterte avhengigheter:
+For å gjøre spørringer mot databasen fra lokal maskin, må [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) kjøre:
 
 ```sh
-./gradlew dependencyUpdates
+cloud_sql_proxy -instances=tpts-dev-6211:europe-north1:tiltakspenger-vedtak=tcp:5432 -enable_iam_login
 ```
 
 ## Arkitekturbeslutninger
