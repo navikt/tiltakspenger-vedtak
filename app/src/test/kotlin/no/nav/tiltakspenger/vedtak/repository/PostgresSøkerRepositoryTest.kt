@@ -28,9 +28,9 @@ internal class PostgresSøkerRepositoryTest {
         val ident = "1"
         val søker = Søker(ident)
 
-        val antallRader = PostgresSøkerRepository.lagre(søker)
+        val antallRaderLagret = PostgresSøkerRepository.lagre(søker)
 
-        assertEquals(1, antallRader)
+        assertEquals(1, antallRaderLagret)
 
         val hentetSøker = PostgresSøkerRepository.hent(ident)
 
@@ -44,9 +44,9 @@ internal class PostgresSøkerRepositoryTest {
         val ident = "2"
         val søker = Søker(ident)
 
-        val antallRader = PostgresSøkerRepository.lagre(søker)
+        val antallRaderLagret = PostgresSøkerRepository.lagre(søker)
 
-        assertEquals(1, antallRader)
+        assertEquals(1, antallRaderLagret)
 
         val hentetSøker = PostgresSøkerRepository.hentSøker(ident, session)
 

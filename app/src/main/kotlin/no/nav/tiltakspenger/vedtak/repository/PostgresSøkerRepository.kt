@@ -18,10 +18,10 @@ object PostgresSøkerRepository : SøkerRepository {
     private val lagre = "insert into søker (id, ident, tilstand) values (:id, :ident, :tilstand)"
 
     @Language("SQL")
-    private val finnes = "select exists(select 1 from søker where ident=:ident)"
+    private val finnes = "select exists(select 1 from søker where ident = ?)"
 
     @Language("SQL")
-    private val hent = "select * from søker where ident=:ident"
+    private val hent = "select * from søker where ident = ?"
 
     fun hentSøker(ident: String, session: Session): Søker? =
         "select * from søker where ident=:ident"
@@ -36,15 +36,11 @@ object PostgresSøkerRepository : SøkerRepository {
             }
 
     override fun hent(ident: String): Søker? {
-        val søkerDto = session.run {
-            queryOf(
-                hent, mapOf(
-                    "ident" to ident
-                )
-            ).map { row ->
+        val søkerDto: SøkerDto = session.run(
+            queryOf(hent, ident).map { row ->
                 row.toSøkerDto()
             }.asSingle
-        }.runWithSession(session) ?: return null
+        ) ?: return null
         return Søker.fromDb(
             id = søkerDto.id,
             ident = søkerDto.ident,
@@ -64,29 +60,27 @@ object PostgresSøkerRepository : SøkerRepository {
     }
 
     private fun brukerFinnes(ident: String): Boolean = session.run(
-        queryOf(finnes, mapOf("ident" to ident)).map { row -> row.boolean("exists") }.asSingle
+        queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw InternalError("Failed to check if person exists")
 
     override fun lagre(søker: Søker): Int {
         val søkerDto = SøkerDto.fromSøker(søker)
-        return if (brukerFinnes(søkerDto.ident)) {
+        if (brukerFinnes(søkerDto.ident)) {
             LOG.info { "User already exists" }
             SECURELOG.info { "User ${søkerDto.id} already exists" }
-            0
-        } else {
-            LOG.info { "Insert user" }
-            SECURELOG.info { "Insert user ${søkerDto.id}" }
-            session.run(
-                queryOf(
-                    lagre,
-                    mapOf(
-                        "id" to søkerDto.id,
-                        "ident" to søkerDto.ident,
-                        "tilstand" to søkerDto.tilstand
-                    )
-                )
-                    .asUpdate
-            )
+            return 0
         }
+        LOG.info { "Insert user" }
+        SECURELOG.info { "Insert user ${søkerDto.id}" }
+        return session.run(
+            queryOf(
+                lagre,
+                mapOf(
+                    "id" to søkerDto.id,
+                    "ident" to søkerDto.ident,
+                    "tilstand" to søkerDto.tilstand
+                )
+            ).asUpdate
+        )
     }
 }
