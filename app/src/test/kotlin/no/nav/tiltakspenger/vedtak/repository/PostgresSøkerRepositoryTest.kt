@@ -2,23 +2,21 @@ package no.nav.tiltakspenger.vedtak.repository
 
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
-import no.nav.tiltakspenger.vedtak.db.TestPostgreSQLContainer
+import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Testcontainers
 internal class PostgresSøkerRepositoryTest {
 
     companion object {
         @Container
         @JvmField
-        val postgreSQLContainer: TestPostgreSQLContainer = TestPostgreSQLContainer.instance
+        val postgresContainer = PostgresTestcontainer.container
     }
 
     @BeforeAll

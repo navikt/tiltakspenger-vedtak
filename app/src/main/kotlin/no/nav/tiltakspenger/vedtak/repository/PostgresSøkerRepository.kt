@@ -23,7 +23,6 @@ object PostgresSøkerRepository : SøkerRepository {
     @Language("SQL")
     private val hent = "select * from søker where ident=:ident"
 
-
     fun hentSøker(ident: String, session: Session): Søker? =
         "select * from søker where ident=:ident"
             .hent(mapOf("ident" to ident), session) {

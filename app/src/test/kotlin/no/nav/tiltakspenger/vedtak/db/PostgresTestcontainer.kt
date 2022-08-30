@@ -8,26 +8,17 @@ import no.nav.tiltakspenger.vedtak.db.DataSource.DB_USERNAME_KEY
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 
-class TestPostgreSQLContainer private constructor() : PostgreSQLContainer<TestPostgreSQLContainer?>(IMAGE_VERSION) {
+object PostgresTestcontainer : PostgreSQLContainer<PostgresTestcontainer>("postgres:14.4") {
 
-    companion object {
-        private const val IMAGE_VERSION = "postgres:14.4"
-
-        private val CONTAINER: TestPostgreSQLContainer = TestPostgreSQLContainer().waitingFor(HostPortWaitStrategy())!!
-
-        val instance: TestPostgreSQLContainer
-            get() {
-                return CONTAINER
-            }
-    }
+    val container = waitingFor(HostPortWaitStrategy())!!
 
     override fun start() {
         super.start()
-        System.setProperty(DB_HOST_KEY, CONTAINER.host)
-        System.setProperty(DB_PORT_KEY, CONTAINER.getMappedPort(POSTGRESQL_PORT).toString())
-        System.setProperty(DB_DATABASE_KEY, CONTAINER.databaseName)
-        System.setProperty(DB_USERNAME_KEY, CONTAINER.username)
-        System.setProperty(DB_PASSWORD_KEY, CONTAINER.password)
+        System.setProperty(DB_HOST_KEY, container.host)
+        System.setProperty(DB_PORT_KEY, container.getMappedPort(POSTGRESQL_PORT).toString())
+        System.setProperty(DB_DATABASE_KEY, container.databaseName)
+        System.setProperty(DB_USERNAME_KEY, container.username)
+        System.setProperty(DB_PASSWORD_KEY, container.password)
     }
 
     override fun stop() {
