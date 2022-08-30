@@ -36,7 +36,7 @@ internal class PostgresSøkerRepositoryTest {
         val hentetSøker = PostgresSøkerRepository.hent(ident)
 
         assertEquals(søker.ident(), hentetSøker?.ident())
-        assertEquals(søker.id(), hentetSøker?.id())
+        assertEquals(søker.id().toString(), hentetSøker?.ident())
 //        assertEquals(søker.tilstand(), hentetSøker?.tilstand())
     }
 
