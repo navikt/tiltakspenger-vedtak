@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.hent
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -27,15 +26,15 @@ object PostgresSøkerRepository : SøkerRepository {
 
     fun hentSøker(ident: String, session: Session): Søker? =
         "select * from søknad where id=:id"
-        .hent(mapOf("ident" to ident), session) {
-            it.toSøkerDto().let { søkerDto ->
-                Søker.fromDb(
-                    id = søkerDto.id,
-                    ident = søkerDto.ident,
-                    tilstand = søkerDto.tilstand,
-                )
+            .hent(mapOf("ident" to ident), session) {
+                it.toSøkerDto().let { søkerDto ->
+                    Søker.fromDb(
+                        id = søkerDto.id,
+                        ident = søkerDto.ident,
+                        tilstand = søkerDto.tilstand,
+                    )
+                }
             }
-        }
 
     override fun hent(ident: String): Søker? {
         val søkerDto = session.run {
