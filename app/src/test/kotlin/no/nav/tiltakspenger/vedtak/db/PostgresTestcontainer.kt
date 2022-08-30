@@ -6,19 +6,16 @@ import no.nav.tiltakspenger.vedtak.db.DataSource.DB_PASSWORD_KEY
 import no.nav.tiltakspenger.vedtak.db.DataSource.DB_PORT_KEY
 import no.nav.tiltakspenger.vedtak.db.DataSource.DB_USERNAME_KEY
 import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 
 object PostgresTestcontainer : PostgreSQLContainer<PostgresTestcontainer>("postgres:14.4") {
 
-    val container = waitingFor(HostPortWaitStrategy())!!
-
     override fun start() {
         super.start()
-        System.setProperty(DB_HOST_KEY, container.host)
-        System.setProperty(DB_PORT_KEY, container.getMappedPort(POSTGRESQL_PORT).toString())
-        System.setProperty(DB_DATABASE_KEY, container.databaseName)
-        System.setProperty(DB_USERNAME_KEY, container.username)
-        System.setProperty(DB_PASSWORD_KEY, container.password)
+        System.setProperty(DB_HOST_KEY, host)
+        System.setProperty(DB_PORT_KEY, getMappedPort(POSTGRESQL_PORT).toString())
+        System.setProperty(DB_DATABASE_KEY, databaseName)
+        System.setProperty(DB_USERNAME_KEY, username)
+        System.setProperty(DB_PASSWORD_KEY, password)
     }
 
     override fun stop() {

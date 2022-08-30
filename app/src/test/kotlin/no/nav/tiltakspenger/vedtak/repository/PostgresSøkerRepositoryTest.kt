@@ -15,8 +15,7 @@ internal class PostgresSøkerRepositoryTest {
 
     companion object {
         @Container
-        @JvmField
-        val postgresContainer = PostgresTestcontainer.container
+        val postgresContainer = PostgresTestcontainer
     }
 
     @BeforeAll

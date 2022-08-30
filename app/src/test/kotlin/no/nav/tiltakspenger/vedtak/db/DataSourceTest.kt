@@ -8,8 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 internal class DataSourceTest {
     companion object {
         @Container
-        @JvmField
-        val postgresContainer = PostgresTestcontainer.container
+        val postgresContainer = PostgresTestcontainer
     }
 
     @Test
