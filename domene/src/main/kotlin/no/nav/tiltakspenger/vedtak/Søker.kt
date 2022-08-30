@@ -34,6 +34,30 @@ class Søker private constructor(
         aktivitetslogg = Aktivitetslogg()
     )
 
+    companion object {
+        fun fromDb(
+            id: UUID = UUID.randomUUID(),
+            ident: String,
+            tilstand: String,
+        ): Søker {
+            return Søker(
+                id = id,
+                ident = ident,
+                tilstand = when (tilstand) {
+                    "SøkerRegistrert" -> SøkerRegistrert
+                    "AvventerPersondata" -> AvventerPersondata
+                    else -> SøkerRegistrert
+                },
+                søknad = null,
+                personinfo = null,
+                tiltak = mutableListOf(),
+                ytelser = mutableListOf(),
+                skjerming = null,
+                aktivitetslogg = Aktivitetslogg(),
+            )
+        }
+    }
+
     fun ident(): String = ident
     fun id(): UUID = id
 

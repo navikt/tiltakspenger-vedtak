@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.PostgresSøkerRepository
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.PersondataMottattRiver
@@ -41,7 +41,7 @@ fun main() {
         .withKtorModule(vedtakApi(TokenVerificationConfig.fromEnv()))
         .build()
         .also {
-            val søkerRepository = InMemorySøkerRepository()
+            val søkerRepository = PostgresSøkerRepository
             val søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
                 rapidsConnection = it,

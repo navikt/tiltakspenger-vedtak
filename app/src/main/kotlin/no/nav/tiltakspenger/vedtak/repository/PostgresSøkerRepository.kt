@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository
 
+import kotliquery.Row
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
@@ -17,8 +18,34 @@ object PostgresSøkerRepository : SøkerRepository {
     @Language("SQL")
     private val finnes = "select exists(select 1 from søker where ident=:ident)"
 
+    @Language("SQL")
+    private val hent = "select * from søker where ident=:ident"
+
+
     override fun hent(ident: String): Søker? {
-        TODO("Not yet implemented")
+        val søkerDto = session.run {
+            queryOf(hent, mapOf(
+                "ident" to ident
+            )).map { row ->
+                row.toSøkerDto()
+            }.asSingle
+        }.runWithSession(session) ?: return null
+        return Søker.fromDb(
+            id = søkerDto.id,
+            ident = søkerDto.ident,
+            tilstand = søkerDto.tilstand,
+        )
+    }
+
+    private fun Row.toSøkerDto() : SøkerDto {
+        val ident = string("ident")
+        val id = uuid("id")
+        val tilstand = string("tilstand")
+        return SøkerDto(
+            id = id,
+            ident = ident,
+            tilstand = tilstand,
+        )
     }
 
     private fun brukerFinnes(ident: String): Boolean = session.run(
@@ -35,7 +62,14 @@ object PostgresSøkerRepository : SøkerRepository {
             LOG.info { "Insert user" }
             SECURELOG.info { "Insert user ${søkerDto.id}" }
             session.run(
-                queryOf(lagre, mapOf("id" to søkerDto.id, "ident" to søkerDto.ident, "tilstand" to søkerDto.tilstand))
+                queryOf(
+                    lagre,
+                    mapOf(
+                        "id" to søkerDto.id,
+                        "ident" to søkerDto.ident,
+                        "tilstand" to søkerDto.tilstand
+                    )
+                )
                     .asUpdate
             )
         }
