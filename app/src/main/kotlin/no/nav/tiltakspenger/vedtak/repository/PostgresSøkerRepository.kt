@@ -24,9 +24,11 @@ object PostgresSøkerRepository : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
         val søkerDto = session.run {
-            queryOf(hent, mapOf(
-                "ident" to ident
-            )).map { row ->
+            queryOf(
+                hent, mapOf(
+                    "ident" to ident
+                )
+            ).map { row ->
                 row.toSøkerDto()
             }.asSingle
         }.runWithSession(session) ?: return null
@@ -37,7 +39,7 @@ object PostgresSøkerRepository : SøkerRepository {
         )
     }
 
-    private fun Row.toSøkerDto() : SøkerDto {
+    private fun Row.toSøkerDto(): SøkerDto {
         val ident = string("ident")
         val id = uuid("id")
         val tilstand = string("tilstand")
