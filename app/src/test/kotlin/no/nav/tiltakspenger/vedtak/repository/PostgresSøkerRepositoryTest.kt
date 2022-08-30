@@ -27,6 +27,7 @@ internal class PostgresSøkerRepositoryTest {
     @Test
     fun `lagre og hente`() {
         val ident = "1"
+        println("********** $ident")
         val søker = Søker(ident)
 
         val antallRader = PostgresSøkerRepository.lagre(søker)
@@ -43,6 +44,7 @@ internal class PostgresSøkerRepositoryTest {
     @Test
     fun `lagre og hente med eksplisitt session`() {
         val ident = "2"
+        println("********** $ident")
         val søker = Søker(ident)
 
         val antallRader = PostgresSøkerRepository.lagre(søker)
