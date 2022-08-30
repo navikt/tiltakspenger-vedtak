@@ -1,11 +1,14 @@
 package no.nav.tiltakspenger.vedtak.repository
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
+import no.nav.tiltakspenger.vedtak.db.hent
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -21,6 +24,18 @@ object PostgresSøkerRepository : SøkerRepository {
     @Language("SQL")
     private val hent = "select * from søker where ident=:ident"
 
+
+    fun hentSøker(ident: String, session: Session): Søker? =
+        "select * from søknad where id=:id"
+        .hent(mapOf("ident" to ident), session) {
+            it.toSøkerDto().let { søkerDto ->
+                Søker.fromDb(
+                    id = søkerDto.id,
+                    ident = søkerDto.ident,
+                    tilstand = søkerDto.tilstand,
+                )
+            }
+        }
 
     override fun hent(ident: String): Søker? {
         val søkerDto = session.run {
