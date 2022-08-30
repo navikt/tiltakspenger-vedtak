@@ -25,7 +25,7 @@ object PostgresSøkerRepository : SøkerRepository {
 
 
     fun hentSøker(ident: String, session: Session): Søker? =
-        "select * from søknad where id=:id"
+        "select * from søker where ident=:ident"
             .hent(mapOf("ident" to ident), session) {
                 it.toSøkerDto().let { søkerDto ->
                     Søker.fromDb(
