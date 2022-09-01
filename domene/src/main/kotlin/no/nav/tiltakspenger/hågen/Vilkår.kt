@@ -92,8 +92,9 @@ class ErOver18ÅrTotalVilkårsvurdering(
     }
 }
 
+// TODO: Denne må kunne overstyres på toppnivå, som en sikkerhetsventil hvis ikke logikken vår er korrekt.
 class SamletVilkårsvurdering(
-    var tiltaksperiode: Periode,
+    var tiltaksperiode: Periode, //Det er egentlig et tre her også. Kilder er søknad, tiltak og manuell overstyring!
     var erOver18ÅrTotalVilkårsvurdering: ErOver18ÅrTotalVilkårsvurdering,
     var kvpTotalVilkårsvurdering: KVPTotalVilkårsvurdering,
 ) {
@@ -134,3 +135,8 @@ sealed class Vurdering {
 
 // Noen hendelser vil ha effekt litt på kryss og tvers. Hvis man f.eks endrer tiltaksperioden, så må alle manuelle
 // vurderinger gjøres på nytt. Kan håndteres vha en Observatør eller ved å la Eventen boble nedover overalt?
+
+
+class Revurdering(var forrigeVurdering: SamletVilkårsvurdering, var endredeVilkårsvurderinger: List<Vilkårsvurdering>) {
+    fun endreVurdering(vilkårsvurdering: Vilkårsvurdering) {}
+}
