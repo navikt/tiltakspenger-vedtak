@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.time.LocalDate
-import java.time.LocalDateTime
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
@@ -19,6 +17,8 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -48,7 +48,7 @@ internal class SøknadMottattRiver(
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         LOG.info("Received søknad")
-        SECURELOG.info("Received søknad for ident id: ${packet["søknad.ident"].asText()}")
+        SECURELOG.info("Received søknad: ${packet.toJson()}")
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 
