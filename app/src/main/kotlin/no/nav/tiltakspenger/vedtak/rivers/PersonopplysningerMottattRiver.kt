@@ -38,7 +38,7 @@ internal class PersonopplysningerMottattRiver(
                 it.demandKey("@løsning")
                 it.requireKey("ident")
                 it.requireKey("@opprettet")
-                it.interestedIn("@løsning.personopplysninger.data")
+                it.interestedIn("@løsning.personopplysninger.person")
             }
         }.register(this)
     }
@@ -53,7 +53,7 @@ internal class PersonopplysningerMottattRiver(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["ident"].asText(),
             personopplysninger = mapPersonopplysninger(
-                personopplysningerDTO = packet["@løsning.personopplysninger.data"].asObject(PersonopplysningerDTO::class.java),
+                personopplysningerDTO = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
                 ident = packet["ident"].asText(),
             )

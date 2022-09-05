@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-internal class PersonMottattRiverTest {
+internal class PersonopplysningerMottattRiverTest {
 
     private companion object {
-        val IDENT = "04927799109"
+        const val IDENT = "04927799109"
     }
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
@@ -33,7 +33,7 @@ internal class PersonMottattRiverTest {
     }
 
     @Test
-    fun `Når PersonRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
+    fun `Når PersonopplysningerRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
         val hendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
@@ -61,7 +61,7 @@ internal class PersonMottattRiverTest {
         søker.håndter(hendelse)
 
         every { søkerRepository.hent(IDENT) } returns søker
-        testRapid.sendTestMessage(personMottattEvent())
+        testRapid.sendTestMessage(personopplysningerMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
@@ -71,7 +71,7 @@ internal class PersonMottattRiverTest {
         }
     }
 
-    private fun personMottattEvent(): String =
+    private fun personopplysningerMottattEvent(): String =
         """
            {
              "@behov": [
@@ -93,7 +93,7 @@ internal class PersonMottattRiverTest {
              ],
              "@løsning": {
                "personopplysninger": {
-                 "data": {
+                 "person": {
                    "fødselsdato": "1983-07-04",
                    "fornavn": "Knuslete",
                    "mellomnavn": null,
