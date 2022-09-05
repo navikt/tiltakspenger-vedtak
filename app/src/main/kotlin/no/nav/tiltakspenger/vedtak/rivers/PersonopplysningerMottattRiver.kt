@@ -38,7 +38,7 @@ internal class PersonopplysningerMottattRiver(
                 it.demandKey("@løsning")
                 it.requireKey("ident")
                 it.requireKey("@opprettet")
-                it.interestedIn("@løsning.personopplysninger.person")
+                it.interestedIn("@løsning.personopplysninger.data")
             }
         }.register(this)
     }
@@ -53,7 +53,7 @@ internal class PersonopplysningerMottattRiver(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["ident"].asText(),
             personopplysninger = mapPersonopplysninger(
-                personopplysningerDTO = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
+                personopplysningerDTO = packet["@løsning.personopplysninger.data"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
                 ident = packet["ident"].asText(),
             )
@@ -65,7 +65,11 @@ internal class PersonopplysningerMottattRiver(
     //Hvorfor finnes ikke dette i r&r?
     private fun <T> JsonNode?.asObject(clazz: Class<T>): T = objectMapper.treeToValue(this, clazz)
 
-    private fun mapPersonopplysninger(personopplysningerDTO: PersonopplysningerDTO, innhentet: LocalDateTime, ident: String): Personopplysninger {
+    private fun mapPersonopplysninger(
+        personopplysningerDTO: PersonopplysningerDTO,
+        innhentet: LocalDateTime,
+        ident: String
+    ): Personopplysninger {
         return Personopplysninger(
             ident = ident,
             fødselsdato = personopplysningerDTO.fødselsdato,

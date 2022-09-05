@@ -93,7 +93,7 @@ internal class PersonMottattRiverTest {
              ],
              "@løsning": {
                "personopplysninger": {
-                 "person": {
+                 "data": {
                    "fødselsdato": "1983-07-04",
                    "fornavn": "Knuslete",
                    "mellomnavn": null,
