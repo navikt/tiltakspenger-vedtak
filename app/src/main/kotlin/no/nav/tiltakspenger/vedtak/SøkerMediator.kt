@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
@@ -29,9 +29,9 @@ internal class SøkerMediator(
         }
     }
 
-    fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
-        håndter(persondataMottattHendelse) { søker ->
-            søker.håndter(persondataMottattHendelse)
+    fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+        håndter(personopplysningerMottattHendelse) { søker ->
+            søker.håndter(personopplysningerMottattHendelse)
         }
     }
 

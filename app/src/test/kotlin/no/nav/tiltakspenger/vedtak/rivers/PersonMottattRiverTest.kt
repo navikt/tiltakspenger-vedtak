@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Søker
@@ -12,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 internal class PersonMottattRiverTest {
 
@@ -23,7 +23,7 @@ internal class PersonMottattRiverTest {
     private val testRapid = TestRapid()
 
     init {
-        PersondataMottattRiver(
+        PersonopplysningerMottattRiver(
             rapidsConnection = testRapid,
             søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
@@ -75,7 +75,7 @@ internal class PersonMottattRiverTest {
         """
            {
              "@behov": [
-               "persondata"
+               "personopplysninger"
              ],
              "@id": "test",
              "@behovId": "behovId",
@@ -92,7 +92,7 @@ internal class PersonMottattRiverTest {
                }
              ],
              "@løsning": {
-               "persondata": {
+               "personopplysninger": {
                  "person": {
                    "fødselsdato": "1983-07-04",
                    "fornavn": "Knuslete",
@@ -120,7 +120,7 @@ internal class PersonMottattRiverTest {
 //    "Skjermingdata"
 //    ],
 //    "ident": "04927799109",
-//    "tilstandtype": "AvventerPersondataType",
+//    "tilstandtype": "AvventerPersonopplysningerType",
 //    "system_read_count": 0,
 //    "system_participating_services": [
 //    {

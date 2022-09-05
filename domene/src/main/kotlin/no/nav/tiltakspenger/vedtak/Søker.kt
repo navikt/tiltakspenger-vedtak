@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
@@ -14,7 +14,7 @@ class Søker private constructor(
     private val ident: String,
     private var tilstand: Tilstand,
     private var søknad: Søknad?,
-    private var personinfo: Personinfo?,
+    private var personopplysninger: Personopplysninger?,
     private var tiltak: List<Tiltaksaktivitet>,
     private var ytelser: List<YtelseSak>,
     private var skjerming: Boolean?,
@@ -28,7 +28,7 @@ class Søker private constructor(
         ident = ident,
         tilstand = SøkerRegistrert,
         søknad = null,
-        personinfo = null,
+        personopplysninger = null,
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
         skjerming = null,
@@ -46,11 +46,11 @@ class Søker private constructor(
                 ident = ident,
                 tilstand = when (tilstand) {
                     "SøkerRegistrert" -> SøkerRegistrert
-                    "AvventerPersondata" -> AvventerPersondata
+                    "AvventerPersonopplysninger" -> AvventerPersonopplysninger
                     else -> SøkerRegistrert
                 },
                 søknad = null,
-                personinfo = null,
+                personopplysninger = null,
                 tiltak = mutableListOf(),
                 ytelser = mutableListOf(),
                 skjerming = null,
@@ -78,17 +78,17 @@ class Søker private constructor(
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
-    fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
-        if (ident != persondataMottattHendelse.ident()) return
+    fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+        if (ident != personopplysningerMottattHendelse.ident()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(persondataMottattHendelse, "Registrert PersondataMottattHendelse")
+        kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
-            persondataMottattHendelse.error("ident ${persondataMottattHendelse.ident()} allerede ferdig behandlet")
+            personopplysningerMottattHendelse.error("ident ${personopplysningerMottattHendelse.ident()} allerede ferdig behandlet")
             return
         }
-        tilstand.håndter(this, persondataMottattHendelse)
+        tilstand.håndter(this, personopplysningerMottattHendelse)
     }
 
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
@@ -145,8 +145,8 @@ class Søker private constructor(
             søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i %s", type.name)
         }
 
-        fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
-            persondataMottattHendelse.warn("Forventet ikke PersondataMottattHendelse i %s", type.name)
+        fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i %s", type.name)
         }
 
         fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
@@ -182,22 +182,22 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
             søker.søknad = søknadMottattHendelse.søknad()
-            søker.trengerPersondata(søknadMottattHendelse)
-            søker.tilstand(søknadMottattHendelse, AvventerPersondata)
+            søker.trengerPersonopplysninger(søknadMottattHendelse)
+            søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
     }
 
-    internal object AvventerPersondata : Tilstand {
+    internal object AvventerPersonopplysninger : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerPersondataType
+            get() = SøkerTilstandType.AvventerPersonopplysningerType
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
-            persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.personinfo()}")
-            søker.personinfo = persondataMottattHendelse.personinfo()
-            søker.trengerSkjermingdata(persondataMottattHendelse)
-            søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
+        override fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+            personopplysningerMottattHendelse.info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
+            søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
+            søker.trengerSkjermingdata(personopplysningerMottattHendelse)
+            søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
 
@@ -250,10 +250,10 @@ class Søker private constructor(
 
     }
 
-    private fun trengerPersondata(hendelse: Hendelse) {
+    private fun trengerPersonopplysninger(hendelse: Hendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.persondata,
-            melding = "Trenger persondata",
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            melding = "Trenger personopplysninger",
             detaljer = mapOf("ident" to this.ident)
         )
     }

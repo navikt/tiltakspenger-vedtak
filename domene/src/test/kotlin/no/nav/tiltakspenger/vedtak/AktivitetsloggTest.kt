@@ -1,9 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.*
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
@@ -13,6 +10,9 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 internal class AktivitetsloggTest {
 
@@ -155,8 +155,8 @@ internal class AktivitetsloggTest {
         val param1 = "value"
         val param2 = LocalDate.now()
         hendelse1.behov(
-            Behovtype.persondata,
-            "Trenger persondata",
+            Behovtype.personopplysninger,
+            "Trenger personopplysninger",
             mapOf(
                 "param1" to param1,
                 "param2" to param2
@@ -182,8 +182,8 @@ internal class AktivitetsloggTest {
         val param1 = "value"
         val param2 = LocalDate.of(2022, 10, 1)
         hendelse1.behov(
-            Behovtype.persondata,
-            "Trenger persondata",
+            Behovtype.personopplysninger,
+            "Trenger personopplysninger",
             mapOf(
                 "param1" to param1,
                 "param2" to param2
@@ -226,7 +226,7 @@ internal class AktivitetsloggTest {
                 }
                 .also {
                     assertEquals("behov", it["@event_name"])
-                    assertEquals(listOf("persondata"), it["@behov"])
+                    assertEquals(listOf("personopplysninger"), it["@behov"])
                     assertEquals("Søker", it["Søker"])
                     assertEquals("whatever", it["whatever"])
                     assertEquals("value", it["param1"])

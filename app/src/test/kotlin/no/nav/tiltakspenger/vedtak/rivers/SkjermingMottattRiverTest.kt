@@ -2,19 +2,19 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personinfo
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class SkjermingMottattRiverTest {
 
@@ -86,10 +86,10 @@ internal class SkjermingMottattRiverTest {
                 innhentet = LocalDateTime.now()
             )
         )
-        val persondataMottattHendelse = PersondataMottattHendelse(
+        val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = aktivitetslogg,
             ident = ident,
-            personinfo = Personinfo(
+            personopplysninger = Personopplysninger(
                 ident = ident,
                 fødselsdato = LocalDate.now(),
                 fornavn = "",
@@ -105,7 +105,7 @@ internal class SkjermingMottattRiverTest {
 
         // when
         søker.håndter(mottattSøknadHendelse)
-        søker.håndter(persondataMottattHendelse)
+        søker.håndter(personopplysningerMottattHendelse)
         testRapid.sendTestMessage(løsning)
 
         // then

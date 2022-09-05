@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import java.time.LocalDate
 
-data class PersoninfoDTO(
+data class PersonopplysningerDTO(
     val fødselsdato: LocalDate,
     val fornavn: String,
     val mellomnavn: String?,
