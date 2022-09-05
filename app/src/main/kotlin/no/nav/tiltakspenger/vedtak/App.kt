@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.PostgresSøkerRepository
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.PersondataMottattRiver
+import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.TokenVerificationConfig
@@ -48,7 +48,7 @@ fun main() {
                 observatører = listOf()
             )
             SøknadMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
-            PersondataMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+            PersonopplysningerMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             SkjermingMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             ArenaTiltakMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
             ArenaYtelserMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)

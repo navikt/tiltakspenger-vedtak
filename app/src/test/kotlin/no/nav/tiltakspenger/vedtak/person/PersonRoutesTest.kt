@@ -6,27 +6,15 @@ import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.headers
-import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.install
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.testing.testApplication
-import no.nav.tiltakspenger.vedtak.routes.auth
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.testing.*
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.openAPI
 import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
 import no.nav.tiltakspenger.vedtak.routes.person.person
 import no.nav.tiltakspenger.vedtak.routes.person.personPath
-import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -74,7 +62,7 @@ class PersonRoutesTest {
 
     private val expected = """
      {
-      "personalia": {
+      "personopplysninger": {
         "fornavn": "Fornavn",
         "etternavn": "Etternavn",
         "ident": "123454",

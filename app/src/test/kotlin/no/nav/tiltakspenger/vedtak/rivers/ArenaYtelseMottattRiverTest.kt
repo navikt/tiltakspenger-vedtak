@@ -2,23 +2,23 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personinfo
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class ArenaYtelseMottattRiverTest {
 
@@ -64,10 +64,10 @@ internal class ArenaYtelseMottattRiverTest {
                 innhentet = LocalDateTime.now(),
             )
         )
-        val persondataMottatthendelse = PersondataMottattHendelse(
+        val personopplysningerMottatthendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
-            personinfo = Personinfo(
+            personopplysninger = Personopplysninger(
                 ident = "",
                 fødselsdato = LocalDate.MAX,
                 fornavn = "",
@@ -111,7 +111,7 @@ internal class ArenaYtelseMottattRiverTest {
         )
         val søker = Søker(IDENT)
         søker.håndter(søknadMottatthendelse)
-        søker.håndter(persondataMottatthendelse)
+        søker.håndter(personopplysningerMottatthendelse)
         søker.håndter(skjermingMottattHendelse)
         søker.håndter(tiltakMottattHendelse)
 

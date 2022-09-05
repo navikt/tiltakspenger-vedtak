@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class Personinfo(
+class Personopplysninger(
     val ident: String,
     val fødselsdato: LocalDate,
     val fornavn: String,
@@ -14,7 +14,7 @@ class Personinfo(
     val innhentet: LocalDateTime,
 ) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
-        visitor.visitPersoninfo(this)
+        visitor.visitPersonopplysninger(this)
     }
 
     override fun oppdatert(): LocalDateTime = innhentet

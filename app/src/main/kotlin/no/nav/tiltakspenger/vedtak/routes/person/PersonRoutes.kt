@@ -27,7 +27,7 @@ fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
 internal const val personPath = "/saker/person"
 
 fun person(): PersonDTO = PersonDTO(
-    personalia = PersonaliaDTO(
+    personopplysninger = PersonopplysningerDTO(
         fornavn = "Fornavn",
         etternavn = "Etternavn",
         ident = "123454",
@@ -115,4 +115,3 @@ fun person(): PersonDTO = PersonDTO(
         )
     ),
 )
-

@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
 import com.fasterxml.jackson.databind.JsonNode
-import java.time.LocalDateTime
-import java.util.*
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
@@ -11,6 +9,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
+import java.util.*
 
 internal class BehovMediatorTest {
     private companion object {
@@ -38,7 +38,7 @@ internal class BehovMediatorTest {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(søker)
         hendelse.behov(
-            Behovtype.persondata,
+            Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
                 "aktørId" to "12344"
@@ -60,7 +60,7 @@ internal class BehovMediatorTest {
             assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
             assertTrue(it.hasNonNull("@opprettet"))
             assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
-            assertEquals(listOf("persondata", "arenatiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
+            assertEquals(listOf("personopplysninger", "arenatiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
             assertEquals("behov", it["@event_name"].asText())
             assertEquals("12344", it["aktørId"].asText())
             assertEquals(ident, it["ident"].asText())
@@ -72,14 +72,14 @@ internal class BehovMediatorTest {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(søker)
         hendelse.behov(
-            Behovtype.persondata,
+            Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
                 "aktørId" to "12344"
             )
         )
         hendelse.behov(
-            Behovtype.persondata,
+            Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
                 "aktørId" to "12344"
