@@ -1,30 +1,34 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.*
 import java.time.Duration
 import java.util.*
 
 @Suppress("TooManyFunctions", "LongParameterList")
 class Søker private constructor(
-    private val id: UUID = UUID.randomUUID(),
-    private val ident: String,
-    private var tilstand: Tilstand,
-    private var søknad: Søknad?,
-    private var personopplysninger: Personopplysninger?,
-    private var tiltak: List<Tiltaksaktivitet>,
-    private var ytelser: List<YtelseSak>,
-    private var skjerming: Boolean?,
-    internal val aktivitetslogg: Aktivitetslogg
+    val id: UUID,
+    val ident: String,
+    tilstand: Tilstand,
+    søknad: Søknad?,
+    personopplysninger: Personopplysninger?,
+    tiltak: List<Tiltaksaktivitet>,
+    ytelser: List<YtelseSak>,
+    skjerming: Boolean?,
+    val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
+    var tilstand: Tilstand = tilstand; private set
+    var søknad: Søknad? = søknad; private set
+    var personopplysninger: Personopplysninger? = personopplysninger; private set
+    var tiltak: List<Tiltaksaktivitet> = tiltak; private set
+    var ytelser: List<YtelseSak> = ytelser; private set
+    var skjerming: Boolean? = skjerming; private set
+
     private val observers = mutableSetOf<SøkerObserver>()
 
     constructor(
         ident: String
     ) : this(
+        id = UUID.randomUUID(),
         ident = ident,
         tilstand = SøkerRegistrert,
         søknad = null,
@@ -58,12 +62,6 @@ class Søker private constructor(
             )
         }
     }
-
-    fun ident(): String = ident
-
-    fun id(): UUID = id
-
-    fun tilstand() = tilstand
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
         if (ident != søknadMottattHendelse.ident()) return

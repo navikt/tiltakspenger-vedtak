@@ -34,9 +34,9 @@ internal class PostgresSøkerRepositoryTest {
 
         val hentetSøker = PostgresSøkerRepository.hent(ident)
 
-        assertEquals(søker.ident(), hentetSøker?.ident())
-        assertEquals(søker.id(), hentetSøker?.id())
-//        assertEquals(søker.tilstand(), hentetSøker?.tilstand())
+        assertEquals(søker.ident, hentetSøker?.ident)
+        assertEquals(søker.id, hentetSøker?.id)
+//        assertEquals(søker.tilstand, hentetSøker?.tilstand)
     }
 
     @Test
@@ -50,7 +50,7 @@ internal class PostgresSøkerRepositoryTest {
 
         val hentetSøker = PostgresSøkerRepository.hentSøker(ident, session)
 
-        assertEquals(søker.ident(), hentetSøker?.ident())
-        assertEquals(søker.id(), hentetSøker?.id())
+        assertEquals(søker.ident, hentetSøker?.ident)
+        assertEquals(søker.id, hentetSøker?.id)
     }
 }

@@ -9,6 +9,6 @@ data class SøkerDto(
     val tilstand: String
 ) {
     companion object {
-        fun fromSøker(søker: Søker) = SøkerDto(søker.id(), søker.ident(), søker.tilstand().type.toString())
+        fun fromSøker(søker: Søker) = SøkerDto(søker.id, søker.ident, søker.tilstand.type.toString())
     }
 }
