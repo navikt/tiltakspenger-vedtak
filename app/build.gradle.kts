@@ -39,7 +39,7 @@ dependencies {
     implementation("dev.forst", "ktor-openapi-generator", "0.4.3")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.2.2")
+    implementation("org.flywaydb:flyway-core:9.2.3")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
