@@ -5,20 +5,26 @@ import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.server.auth.jwt.*
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 
+private val LOG = KotlinLogging.logger {}
+
 fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
     route("$personPath/test") {
         get<Unit, PersonDTO, JWTPrincipal> {
+            LOG.info { "Vi har truffet /saker/person/test" }
             respond(response = person())
         }
     }
     route("$personPath") {
         get<Unit, PersonDTO, JWTPrincipal> {
+            LOG.info { "Vi har truffet /saker/person" }
+            LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
             respond(response = person())
         }
     }
