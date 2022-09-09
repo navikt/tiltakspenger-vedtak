@@ -37,7 +37,7 @@ class Barnetillegg(
     val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     val alder: Int, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     val ident: String,
-    val bosted: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
+    val land: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
     // SVAR på over: Barnet må med virkning fra 1. juli 2020 være bosatt og oppholde seg i Norge, herunder Svalbard.
     // men TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
 )

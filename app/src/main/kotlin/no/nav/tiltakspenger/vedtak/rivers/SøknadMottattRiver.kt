@@ -95,7 +95,7 @@ internal class SøknadMottattRiver(
             etternavn = barnetilleggDTO.etternavn,
             alder = barnetilleggDTO.alder,
             ident = barnetilleggDTO.ident,
-            bosted = barnetilleggDTO.bosted,
+            land = barnetilleggDTO.land,
         )
     }
 
@@ -136,5 +136,5 @@ class BarnetilleggDTO(
     val etternavn: String?,
     val alder: Int,
     val ident: String,
-    val bosted: String,
+    val land: String,
 )
