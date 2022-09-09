@@ -83,7 +83,8 @@ class Søker private constructor(
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
-            personopplysningerMottattHendelse.error("ident ${personopplysningerMottattHendelse.ident()} allerede ferdig behandlet")
+            personopplysningerMottattHendelse
+                .error("ident ${personopplysningerMottattHendelse.ident()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, personopplysningerMottattHendelse)
@@ -192,7 +193,8 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-            personopplysningerMottattHendelse.info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
+            personopplysningerMottattHendelse
+                .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
             søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
             søker.trengerSkjermingdata(personopplysningerMottattHendelse)
             søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
@@ -220,7 +222,8 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            arenaTiltakMottattHendelse.info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+            arenaTiltakMottattHendelse
+                .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
             søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
             søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
             søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
