@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.hågen
 
 interface Vilkår {
     fun paragraf(): String
-    fun fellesMed(vilkår: Vilkår): Vilkår = this //TODO
 }
 
 interface Inngangsvilkår : Vilkår

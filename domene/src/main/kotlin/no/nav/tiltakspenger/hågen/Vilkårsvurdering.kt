@@ -13,14 +13,14 @@ enum class Kilde {
 
 // TODO: Overhodet ikke ferdig
 sealed class Vurdering(val vilkår: Vilkår, val vurderteKilder: List<Kilde>) {
-    abstract fun kombinertMed(vurdering: Vurdering): Vurdering
+    abstract fun kombinertMed(vurdering: Vurdering, vilkår: Vilkår): Vurdering
 
     sealed class Avklart(vilkår: Vilkår, vurderteKilder: List<Kilde>) : Vurdering(vilkår, vurderteKilder)
     class IngenKonflikt(vilkår: Vilkår, vurderteKilder: List<Kilde> = emptyList()) : Avklart(vilkår, vurderteKilder) {
-        override fun kombinertMed(vurdering: Vurdering): Vurdering =
+        override fun kombinertMed(vurdering: Vurdering, vilkår: Vilkår): Vurdering =
             when (vurdering) {
                 is IngenKonflikt -> IngenKonflikt(
-                    vilkår = this.vilkår.fellesMed(vurdering.vilkår),
+                    vilkår = vilkår,
                     vurderteKilder = this.vurderteKilder + vurdering.vurderteKilder
                 )
                 is Konflikt -> vurdering
@@ -33,7 +33,7 @@ sealed class Vurdering(val vilkår: Vilkår, val vurderteKilder: List<Kilde>) {
 
     class Konflikt(vilkår: Vilkår, vurderteKilder: List<Kilde>, val perioderIKonflikt: Perioder, val detaljer: String) :
         Avklart(vilkår, vurderteKilder) {
-        override fun kombinertMed(vurdering: Vurdering): Vurdering {
+        override fun kombinertMed(vurdering: Vurdering, vilkår: Vilkår): Vurdering {
             return this
             TODO("Not yet implemented")
         }
@@ -41,7 +41,7 @@ sealed class Vurdering(val vilkår: Vilkår, val vurderteKilder: List<Kilde>) {
 
     sealed class Uavklart(vilkår: Vilkår, vurderteKilder: List<Kilde> = emptyList()) :
         Vurdering(vilkår, vurderteKilder) {
-        override fun kombinertMed(vurdering: Vurdering): Vurdering {
+        override fun kombinertMed(vurdering: Vurdering, vilkår: Vilkår): Vurdering {
             return this
             TODO("Not yet implemented")
         }
@@ -137,7 +137,10 @@ class StatligeYtelserVilkårsvurdering(periode: Periode) : Vilkårsvurdering {
         kvpVilkårsvurdering.harMotstridendeData() || erOver18ÅrIVilkårsvurdering.harMotstridendeData()
 
     override fun vurdering(): Vurdering =
-        kvpVilkårsvurdering.vurdering().kombinertMed(erOver18ÅrIVilkårsvurdering.vurdering)
+        kvpVilkårsvurdering.vurdering().kombinertMed(
+            vurdering = erOver18ÅrIVilkårsvurdering.vurdering,
+            vilkår = StatligeYtelser
+        )
 
     override fun håndterHendelse(nyPeriodeHendelse: NyPeriodeHendelse) {
         kvpVilkårsvurdering.håndterHendelse(nyPeriodeHendelse)
