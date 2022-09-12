@@ -77,15 +77,13 @@ internal class SøknadMottattRiver(
             deltarIntroduksjonsprogrammet = søknadDTO.deltarIntroduksjonsprogrammet,
             oppholdInstitusjon = søknadDTO.oppholdInstitusjon,
             typeInstitusjon = søknadDTO.typeInstitusjon,
-            tiltaksArrangoer = søknadDTO.tiltaksArrangoer,
-            tiltaksType = søknadDTO.tiltaksType,
             opprettet = søknadDTO.opprettet,
-            brukerRegistrertStartDato = søknadDTO.brukerRegistrertStartDato,
-            brukerRegistrertSluttDato = søknadDTO.brukerRegistrertSluttDato,
-            systemRegistrertStartDato = søknadDTO.systemRegistrertStartDato,
-            systemRegistrertSluttDato = søknadDTO.systemRegistrertSluttDato,
             barnetillegg = søknadDTO.barnetillegg.map { mapBarnetillegg(it) },
             innhentet = innhentet,
+            arenaTiltak = null,
+            brukerregistrertTiltak = null,
+            trygdOgPensjon = null,
+            fritekst = null,
         )
     }
 

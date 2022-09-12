@@ -1,10 +1,9 @@
-package no.nav.tiltakspenger.vedtak.repository
+package no.nav.tiltakspenger.vedtak.repository.søker
 
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll

@@ -75,15 +75,13 @@ internal class SkjermingMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
                 barnetillegg = listOf(),
-                innhentet = LocalDateTime.now()
+                innhentet = LocalDateTime.now(),
+                arenaTiltak = null,
+                brukerregistrertTiltak = null,
+                trygdOgPensjon = null,
+                fritekst = null
             )
         )
         val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(

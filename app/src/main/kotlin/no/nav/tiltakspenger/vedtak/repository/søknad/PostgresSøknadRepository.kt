@@ -1,14 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
-import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.db.hent
-import no.nav.tiltakspenger.vedtak.db.hentListe
+import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class PostgresSøknadRepository: SøknadRepository {
 
@@ -24,21 +21,23 @@ internal class PostgresSøknadRepository: SøknadRepository {
     @Language("SQL")
     private val hentAlle = "select * from søknad where ident = ?"
 
-    override fun hentAlle(ident: String, session: Session): List<Søknad> {
+    override fun hentAlle(ident: String): List<Søknad> {
         return session.run(queryOf(hentAlle, ident)
             .map { row ->
                 row.toSøknad()
             }.asList)
     }
 
-    private fun slettAlle(ident: String, session: Session): Unit {
-        session.run(
-
-        )
+    private fun slettAlle(ident: String): Unit {
+        // TODO: later når vi har skrevet noen tester
+//        session.run(
+//
+//        )
     }
 
-    override fun lagre(ident: String, søknader: List<Søknad>, session: Session) {
-        slettAlle(ident, session)
+    override fun lagre(ident: String, søknader: List<Søknad>): Int {
+        slettAlle(ident)
+        return 0
     }
 
     private fun Row.toSøknad(): Søknad {
@@ -69,15 +68,13 @@ internal class PostgresSøknadRepository: SøknadRepository {
             deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
             oppholdInstitusjon = oppholdInstitusjon,
             typeInstitusjon = typeInstitusjon,
-            tiltaksArrangoer = tiltaksArrangør,
-            tiltaksType = tiltaksType,
             opprettet = opprettet,
-            brukerRegistrertStartDato = brukerRegistrertStartDato,
-            brukerRegistrertSluttDato = brukerRegistrertSluttDato,
-            systemRegistrertStartDato = systemRegistrertStartDato,
-            systemRegistrertSluttDato = systemRegistrertSluttDato,
             barnetillegg = barnetillegg,
             innhentet = innhentet,
+            arenaTiltak = null,
+            brukerregistrertTiltak = null,
+            trygdOgPensjon = null,
+            fritekst = null,
         )
     }
 }
