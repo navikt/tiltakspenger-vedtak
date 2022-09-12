@@ -16,12 +16,18 @@ class Søker private constructor(
     skjerming: Boolean?,
     val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
-    var tilstand: Tilstand = tilstand; private set
-    var søknad: Søknad? = søknad; private set
-    var personopplysninger: Personopplysninger? = personopplysninger; private set
-    var tiltak: List<Tiltaksaktivitet> = tiltak; private set
-    var ytelser: List<YtelseSak> = ytelser; private set
-    var skjerming: Boolean? = skjerming; private set
+    var tilstand: Tilstand = tilstand
+        private set
+    var søknad: Søknad? = søknad
+        private set
+    var personopplysninger: Personopplysninger? = personopplysninger
+        private set
+    var tiltak: List<Tiltaksaktivitet> = tiltak
+        private set
+    var ytelser: List<YtelseSak> = ytelser
+        private set
+    var skjerming: Boolean? = skjerming
+        private set
 
     private val observers = mutableSetOf<SøkerObserver>()
 
