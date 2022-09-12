@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository
+package no.nav.tiltakspenger.vedtak.repository.søker
 
 import kotliquery.Row
 import kotliquery.Session
@@ -7,12 +7,15 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.hent
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadRepository
 import org.intellij.lang.annotations.Language
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-object PostgresSøkerRepository : SøkerRepository {
+internal class PostgresSøkerRepository(
+    private val søknadRepository: SøknadRepository,
+) : SøkerRepository {
 
     @Language("SQL")
     private val lagre = "insert into søker (id, ident, tilstand) values (:id, :ident, :tilstand)"
@@ -24,38 +27,28 @@ object PostgresSøkerRepository : SøkerRepository {
     private val hent = "select * from søker where ident = ?"
 
     fun hentSøker(ident: String, session: Session): Søker? =
-        "select * from søker where ident=:ident"
+        hent
             .hent(mapOf("ident" to ident), session) {
-                it.toSøkerDto().let { søkerDto ->
-                    Søker.fromDb(
-                        id = søkerDto.id,
-                        ident = søkerDto.ident,
-                        tilstand = søkerDto.tilstand,
-                    )
-                }
+                it.toSøker()
             }
 
     override fun hent(ident: String): Søker? {
-        val søkerDto: SøkerDto = session.run(
+        return session.run(
             queryOf(hent, ident).map { row ->
-                row.toSøkerDto()
+                row.toSøker()
             }.asSingle
-        ) ?: return null
-        return Søker.fromDb(
-            id = søkerDto.id,
-            ident = søkerDto.ident,
-            tilstand = søkerDto.tilstand,
         )
     }
 
-    private fun Row.toSøkerDto(): SøkerDto {
+    private fun Row.toSøker(): Søker {
         val ident = string("ident")
         val id = uuid("id")
         val tilstand = string("tilstand")
-        return SøkerDto(
+        return Søker.fromDb(
             id = id,
             ident = ident,
             tilstand = tilstand,
+            søknader = emptyList(), // søknadRepository.hentAlle(ident)
         )
     }
 
@@ -64,23 +57,27 @@ object PostgresSøkerRepository : SøkerRepository {
     ) ?: throw InternalError("Failed to check if person exists")
 
     override fun lagre(søker: Søker): Int {
-        val søkerDto = SøkerDto.fromSøker(søker)
-        if (brukerFinnes(søkerDto.ident)) {
+        if (brukerFinnes(søker.ident)) {
             LOG.info { "User already exists" }
-            SECURELOG.info { "User ${søkerDto.id} already exists" }
+            SECURELOG.info { "User ${søker.id} already exists" }
             return 0
         }
         LOG.info { "Insert user" }
-        SECURELOG.info { "Insert user ${søkerDto.id}" }
+        SECURELOG.info { "Insert user ${søker.id}" }
+//        søknadRepository.lagre(søker.søknader)
         return session.run(
             queryOf(
                 lagre,
                 mapOf(
-                    "id" to søkerDto.id,
-                    "ident" to søkerDto.ident,
-                    "tilstand" to søkerDto.tilstand
+                    "id" to søker.id,
+                    "ident" to søker.ident,
+                    "tilstand" to søker.tilstand.type.toString()
                 )
             ).asUpdate
         )
+    }
+
+    override fun oppdaterTilstand(tilstand: Søker.Tilstand) {
+        TODO("Not yet implemented")
     }
 }

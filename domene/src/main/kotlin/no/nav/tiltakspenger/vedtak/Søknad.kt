@@ -2,10 +2,11 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Suppress("LongParameterList", "UnusedPrivateMember")
 class Søknad(
-    private val id: String,
+    private val id: UUID,
     private val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     private val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     private val ident: String,
