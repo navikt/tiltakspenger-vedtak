@@ -31,13 +31,12 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022072721371658950659.c1e8f7bf35c6")
+    implementation("com.natpryce:konfig:1.6.10.0")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("com.auth0:jwks-rsa:0.21.1")
-    // OpenAPI
-    implementation("dev.forst", "ktor-openapi-generator", "0.4.3")
-
+    
     // DB
     implementation("org.flywaydb:flyway-core:9.3.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
