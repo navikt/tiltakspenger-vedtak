@@ -2,10 +2,20 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AFT
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.ARBRREHAB
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AVKLARING
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.FORSOK
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.LONNTILS
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPFOLG
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPL
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.TILRETTE
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.UTFAS
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.VARIGASV
 
 //Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
-    val tiltaksnavn: Tiltaksnavn, // Det vi får her er teksten i Enumen, ikke koden. Det er litt klønete..
+    val tiltak: Tiltak, // Det vi får her er teksten i Enumen, ikke koden. Det er litt klønete..
     val aktivitetId: String,
     val tiltakLokaltNavn: String?,
     val arrangoer: String?,
@@ -27,48 +37,71 @@ data class Tiltaksaktivitet(
         val tom: LocalDate?,
     )
 
-    enum class Tiltaksnavn(val tekst: String) {
-        MENTOR("Mentor"),
-        MIDLONTIL("Midlertidig lønnstilskudd"),
-        PV("Produksjonsverksted (PV)"),
-        REFINO("Resultatbasert finansiering av oppfølging"),
-        SUPPEMP("Supported Employment"),
-        ETAB("Egenetablering"),
-        FORSAMOENK("Forsøk AMO enkeltplass"),
-        FORSAMOGRU("Forsøk AMO gruppe"),
-        FORSFAGENK("Forsøk fag- og yrkesopplæring enkeltplass"),
-        FORSFAGGRU("Forsøk fag- og yrkesopplæring gruppe"),
-        FORSHOYUTD("Forsøk høyere utdanning"),
-        FUNKSJASS("Funksjonsassistanse"),
-        GRUFAGYRKE("Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning"),
-        GRUPPEAMO("Gruppe AMO"),
-        HOYEREUTD("Høyere utdanning"),
-        INDJOBSTOT("Individuell jobbstøtte (IPS)"),
-        INDOPPFAG("Oppfølging"),
-        INDOPPRF("Resultatbasert finansiering av formidlingsbistand"),
-        INKLUTILS("Inkluderingstilskudd"),
-        IPSUNG("Individuell karrierestøtte (IPS Ung)"),
-        JOBBK("Jobbklubb"),
-        LONNTILAAP("Arbeidsavklaringspenger som lønnstilskudd"),
-        AMBF2("Kvalifisering i arbeidsmarkedsbedrift"),
-        ARBFORB("Arbeidsforberedende trening (AFT)"),
-        ARBRRHDAG("Arbeidsrettet rehabilitering (dag)"),
+    enum class Tiltaksgruppe(val navn: String) {
+        AFT("Arbeidsforberedende trening"),
+        AMB("Tiltak i arbeidsmarkedsbedrift"),
+        ARBPRAKS("Arbeidspraksis"),
+        ARBRREHAB("Arbeidsrettet rehabilitering"),
         ARBTREN("Arbeidstrening"),
-        AVKLARAG("Avklaring"),
+        AVKLARING("Avklaring"),
+        BEHPSSAM("Behandling - lettere psykiske/sammensatte lidelser"),
+        ETAB("Egenetablering"),
+        FORSOK("Forsøk"),
+        LONNTILS("Lønnstilskudd"),
+        OPPFOLG("Oppfølging"),
+        OPPL("Opplæring"),
+        TILRETTE("Tilrettelegging"),
+        UTFAS("Tiltak under utfasing"),
+        VARIGASV("Varig tilrettelagt arbeid"),
+        JOBBSKAP("Jobbskapingsprosjekter"),
         BIO("Bedriftsintern opplæring (BIO)"),
-        DIGIOPPARB("Digitalt oppfølgingstiltak for arbeidsledige (jobbklubb)"),
-        EKSPEBIST("Ekspertbistand"),
-        ENKELAMO("Enkeltplass AMO"),
-        ENKFAGYRKE("Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning"),
-        TIDSUBLONN("Tidsubestemt lønnstilskudd"),
-        TILPERBED("Tilretteleggingstilskudd for arbeidssøker"),
-        TILRTILSK("Forebyggings- og tilretteleggingstilskudd IA virksomheter og BHT-honorar"),
-        UTVAOONAV("Utvidet oppfølging i NAV"),
-        UTVOPPFOPL("Utvidet oppfølging i opplæring"),
-        VARLONTIL("Varig lønnstilskudd"),
-        VASV("Varig tilrettelagt arbeid i skjermet virksomhet"),
-        VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet"),
-        VV("Varig vernet arbeid (VVA)")
+        BISTAND("Arbeid med Bistand (AB)"),
+        INST_S("Nye plasser institusjonelle tiltak"),
+        MIDSYSS("Midlertidig sysselsetting"),
+    }
+
+    enum class Tiltak(val navn: String, val tiltaksgruppe: Tiltaksgruppe, val rettPåTiltakspenger: Boolean) {
+        MENTOR("Mentor", OPPFOLG, true),
+        MIDLONTIL("Midlertidig lønnstilskudd", LONNTILS, false),
+        PV("Produksjonsverksted (PV)", UTFAS, false),
+        REFINO("Resultatbasert finansiering av oppfølging", FORSOK, true),
+        SUPPEMP("Supported Employment", FORSOK, true),
+        ETAB("Egenetablering", Tiltaksgruppe.ETAB, false),
+        FORSAMOENK("Forsøk AMO enkeltplass", FORSOK, true),
+        FORSAMOGRU("Forsøk AMO gruppe", FORSOK, false),
+        FORSFAGENK("Forsøk fag- og yrkesopplæring enkeltplass", FORSOK, true),
+        FORSFAGGRU("Forsøk fag- og yrkesopplæring gruppe", FORSOK, false),
+        FORSHOYUTD("Forsøk høyere utdanning", FORSOK, true),
+        FUNKSJASS("Funksjonsassistanse", TILRETTE, true),
+        GRUFAGYRKE("Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning", OPPL, true),
+        GRUPPEAMO("Gruppe AMO", OPPL, true),
+        HOYEREUTD("Høyere utdanning", OPPL, true),
+        INDJOBSTOT("Individuell jobbstøtte (IPS)", OPPFOLG, true),
+        INDOPPFAG("Oppfølging", OPPFOLG, true),
+        INDOPPRF("Resultatbasert finansiering av formidlingsbistand", FORSOK, true),
+        INKLUTILS("Inkluderingstilskudd", TILRETTE, true),
+        IPSUNG("Individuell karrierestøtte (IPS Ung)", OPPFOLG, true),
+        JOBBK("Jobbklubb", OPPFOLG, true),
+        LONNTILAAP("Arbeidsavklaringspenger som lønnstilskudd", FORSOK, false),
+        AMBF2("Kvalifisering i arbeidsmarkedsbedrift", UTFAS, false),
+        ARBFORB("Arbeidsforberedende trening (AFT)", AFT, true),
+        ARBRRHDAG("Arbeidsrettet rehabilitering (dag)", ARBRREHAB, true),
+        ARBTREN("Arbeidstrening", Tiltaksgruppe.ARBTREN, true),
+        AVKLARAG("Avklaring", AVKLARING, true),
+        BIO("Bedriftsintern opplæring (BIO)", Tiltaksgruppe.BIO, false),
+        DIGIOPPARB("Digitalt oppfølgingstiltak for arbeidsledige (jobbklubb)", OPPFOLG, true),
+        EKSPEBIST("Ekspertbistand", TILRETTE, false),
+        ENKELAMO("Enkeltplass AMO", OPPL, true),
+        ENKFAGYRKE("Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning", OPPL, true),
+        TIDSUBLONN("Tidsubestemt lønnstilskudd", UTFAS, false),
+        TILPERBED("Tilretteleggingstilskudd for arbeidssøker", UTFAS, true),
+        TILRTILSK("Forebyggings- og tilretteleggingstilskudd IA virksomheter og BHT-honorar", UTFAS, false),
+        UTVAOONAV("Utvidet oppfølging i NAV", FORSOK, true),
+        UTVOPPFOPL("Utvidet oppfølging i opplæring", OPPFOLG, true),
+        VARLONTIL("Varig lønnstilskudd", LONNTILS, false),
+        VASV("Varig tilrettelagt arbeid i skjermet virksomhet", VARIGASV, false),
+        VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet", VARIGASV, false),
+        VV("Varig vernet arbeid (VVA)", UTFAS, false)
     }
 
     enum class DeltakerStatus(val tekst: String) {

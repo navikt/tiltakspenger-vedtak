@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.time.LocalDate
+import java.time.LocalDateTime
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
@@ -17,8 +19,6 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -101,11 +101,11 @@ internal class SøknadMottattRiver(
 
     // https://trello.com/c/KVY0kO8n/129-mapping-av-tiltakstype-fra-s%C3%B8knaden
     // Verdiene man kan angi i søknaden har korresponderende kodeverdier i Tiltaksnavn fra Arena
-    private fun mapTiltaksType(tiltaksType: String): Tiltaksaktivitet.Tiltaksnavn? =
+    private fun mapTiltaksType(tiltaksType: String): Tiltaksaktivitet.Tiltak? =
         when (tiltaksType) {
-            "JOBSOK" -> Tiltaksaktivitet.Tiltaksnavn.JOBBK
-            "PRAKSORD" -> Tiltaksaktivitet.Tiltaksnavn.ARBTREN
-            "AMO" -> Tiltaksaktivitet.Tiltaksnavn.GRUPPEAMO
+            "JOBSOK" -> Tiltaksaktivitet.Tiltak.JOBBK
+            "PRAKSORD" -> Tiltaksaktivitet.Tiltak.ARBTREN
+            "AMO" -> Tiltaksaktivitet.Tiltak.GRUPPEAMO
             "Annet" -> null //TODO: Hvordan mappe Annet?
             else -> null
         }
