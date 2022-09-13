@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS søknad
     id                  UUID PRIMARY KEY,
     søker_id            UUID                     NOT NULL REFERENCES søker (id),
     søknad_id           VARCHAR                  NOT NULL,
+    ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
     deltar_kvp          BOOLEAN                  NOT NULL,
@@ -32,8 +33,8 @@ CREATE TABLE IF NOT EXISTS søknad
     institusjon_opphold BOOLEAN                  NULL,
     institusjon_type    VARCHAR                  NULL,
     fritekst            VARCHAR                  NULL,
-    journalpost_id      BIGINT                   NOT NULL,
-    dokumentinfo_id     BIGINT                   NOT NULL,
+    journalpost_id      VARCHAR                  NOT NULL,
+    dokumentinfo_id     VARCHAR                  NOT NULL,
     tidsstempel_kilde   TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );

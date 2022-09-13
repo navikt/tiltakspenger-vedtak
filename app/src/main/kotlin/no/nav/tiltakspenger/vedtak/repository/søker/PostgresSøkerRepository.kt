@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
+import java.time.LocalDateTime
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
-import no.nav.tiltakspenger.vedtak.db.hent
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadRepository
 import org.intellij.lang.annotations.Language
 
@@ -18,7 +18,8 @@ internal class PostgresSøkerRepository(
 ) : SøkerRepository {
 
     @Language("SQL")
-    private val lagre = "insert into søker (id, ident, tilstand) values (:id, :ident, :tilstand)"
+    private val lagre =
+        "insert into søker (id, ident, tilstand, sist_endret, opprettet) values (:id, :ident, :tilstand, :sist_endret, :opprettet)"
 
     @Language("SQL")
     private val finnes = "select exists(select 1 from søker where ident = ?)"
@@ -26,11 +27,14 @@ internal class PostgresSøkerRepository(
     @Language("SQL")
     private val hent = "select * from søker where ident = ?"
 
-    fun hentSøker(ident: String, session: Session): Søker? =
-        hent
-            .hent(mapOf("ident" to ident), session) {
-                it.toSøker()
-            }
+    fun hentSøker(ident: String, session: Session): Søker? {
+        return session.run(
+            queryOf(hent, ident).map { row ->
+                row.toSøker()
+            }.asSingle
+        )
+    }
+
 
     override fun hent(ident: String): Søker? {
         return session.run(
@@ -71,10 +75,13 @@ internal class PostgresSøkerRepository(
                 mapOf(
                     "id" to søker.id,
                     "ident" to søker.ident,
-                    "tilstand" to søker.tilstand.type.toString()
+                    "tilstand" to søker.tilstand.type.toString(),
+                    "sist_endret" to LocalDateTime.now(),
+                    "opprettet" to LocalDateTime.now(),
                 )
             ).asUpdate
         )
+
     }
 
     override fun oppdaterTilstand(tilstand: Søker.Tilstand) {

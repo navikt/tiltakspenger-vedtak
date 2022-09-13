@@ -2,6 +2,8 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
@@ -12,8 +14,6 @@ import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatilta
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 class SøknadDTO(
     val søknadId: String,

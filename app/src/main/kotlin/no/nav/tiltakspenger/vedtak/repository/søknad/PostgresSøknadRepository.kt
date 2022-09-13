@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
@@ -8,7 +9,6 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class PostgresSøknadRepository : SøknadRepository {
 
@@ -150,6 +150,7 @@ internal class PostgresSøknadRepository : SøknadRepository {
     @Language("SQL")
     private val finnes = "select exists(select 1 from søknad where id = ?)"
 
+    // TODO: Denne liker jeg ikke, bør vi ikke spørre på UUIDen (fremmednøkkelen)??
     @Language("SQL")
     private val hentAlle = "select * from søknad where ident = ?"
 
