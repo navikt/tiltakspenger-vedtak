@@ -1,20 +1,18 @@
-package no.nav.tiltakspenger.vedtak.person
+package no.nav.tiltakspenger.vedtak.routes.person
 
-import com.papsign.ktor.openapigen.route.apiRouting
-import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import com.papsign.ktor.openapigen.route.path.normal.get
-import com.papsign.ktor.openapigen.route.response.respond
-import com.papsign.ktor.openapigen.route.route
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.headers
+import io.ktor.client.request.request
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.server.testing.testApplication
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.routes.openAPI
-import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
-import no.nav.tiltakspenger.vedtak.routes.person.person
-import no.nav.tiltakspenger.vedtak.routes.person.personPath
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -38,9 +36,8 @@ class PersonRoutesTest {
     fun `should answer 10-4`() {
         testApplication {
             application {
-                openAPI()
                 jacksonSerialization()
-                apiRouting {
+                routing {
                     personRoutes()
                 }
             }
@@ -139,12 +136,4 @@ class PersonRoutesTest {
       ]
     }
     """.trimMargin()
-}
-
-fun NormalOpenAPIRoute.personRoutes() {
-    route("$personPath/test") {
-        get<Unit, PersonDTO> {
-            respond(response = person())
-        }
-    }
 }
