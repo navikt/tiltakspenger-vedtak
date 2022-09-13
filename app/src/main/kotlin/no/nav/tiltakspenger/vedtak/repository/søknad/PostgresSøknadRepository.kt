@@ -60,7 +60,7 @@ internal class PostgresSøknadRepository: SøknadRepository {
         val innhentet = localDateTime("innhentet")
 
         return Søknad(
-            id = id,
+            id = id,,
             fornavn = fornavn,
             etternavn = etternavn,
             ident = ident,
@@ -73,8 +73,8 @@ internal class PostgresSøknadRepository: SøknadRepository {
             innhentet = innhentet,
             arenaTiltak = null,
             brukerregistrertTiltak = null,
-            trygdOgPensjon = null,
-            fritekst = null,
+            trygdOgPensjon = null,,
+            fritekst = null
         )
     }
 }

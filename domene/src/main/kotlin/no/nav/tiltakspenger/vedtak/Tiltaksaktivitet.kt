@@ -87,4 +87,15 @@ data class Tiltaksaktivitet(
         TILBUD("Godkjent tiltaksplass"),
         VENTELISTE("Venteliste")
     }
+
+    // https://trello.com/c/KVY0kO8n/129-mapping-av-tiltakstype-fra-s%C3%B8knaden
+    // Verdiene man kan angi i søknaden har korresponderende kodeverdier i Tiltaksnavn fra Arena
+    internal fun mapTiltaksType(tiltaksType: String): Tiltaksnavn? =
+        when (tiltaksType) {
+            "JOBSOK" -> Tiltaksnavn.JOBBK
+            "PRAKSORD" -> Tiltaksnavn.ARBTREN
+            "AMO" -> Tiltaksnavn.GRUPPEAMO
+            "Annet" -> null //TODO: Hvordan mappe Annet?
+            else -> null
+        }
 }

@@ -46,7 +46,7 @@ internal class PostgresSøknadRepositoryTest {
             arenaTiltak = null,
             brukerregistrertTiltak = null,
             trygdOgPensjon = null,
-            fritekst = null
+            fritekst = null,
         )
         val antallLagret = søknadRepository.lagre(ident, listOf(søknad))
 

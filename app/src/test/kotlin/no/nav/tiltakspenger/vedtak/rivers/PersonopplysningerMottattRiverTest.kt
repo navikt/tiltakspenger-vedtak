@@ -38,7 +38,7 @@ internal class PersonopplysningerMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",
+                id = "",,
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -51,8 +51,8 @@ internal class PersonopplysningerMottattRiverTest {
                 innhentet = LocalDateTime.now(),
                 arenaTiltak = null,
                 brukerregistrertTiltak = null,
-                trygdOgPensjon = null,
-                fritekst = null,
+                trygdOgPensjon = null,,
+                fritekst = null
             )
         )
         val søker = Søker(IDENT)

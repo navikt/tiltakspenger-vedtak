@@ -7,16 +7,19 @@ import java.time.LocalDateTime
 import java.util.*
 
 class Søknad(
-    val id: UUID,
-    val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val id: UUID = UUID.randomUUID(),
+    val søknadId: String, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val journalpostId: String, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val dokumentInfoId: String,
+    val fornavn: String?,
+    val etternavn: String?,
     val ident: String,
-    val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
-    val oppholdInstitusjon: Boolean?,
-    val typeInstitusjon: String?, // TODO Høres ut som en enum
-    val opprettet: LocalDateTime?, // TODO Ikke mulig å få et org nr?
-    val barnetillegg: List<Barnetillegg>, // TODO Er en enum
+    val deltarKvp: Boolean, // TODO Høres ut som en enum
+    val deltarIntroduksjonsprogrammet: Boolean?, // TODO Ikke mulig å få et org nr?
+    val oppholdInstitusjon: Boolean?, // TODO Er en enum
+    val typeInstitusjon: String?,
+    val opprettet: LocalDateTime?,
+    val barnetillegg: List<Barnetillegg>,
     val innhentet: LocalDateTime,
     val arenaTiltak: ArenaTiltak?,
     val brukerregistrertTiltak: BrukerregistrertTiltak?,
@@ -43,7 +46,7 @@ class ArenaTiltak(
     val arenaId: String? = null,
     val arrangoer: String? = null,
     val harSluttdatoFraArena: Boolean? = null,
-    val navn: String? = null,
+    val tiltakskode: Tiltaksaktivitet.Tiltaksnavn? = null,
     val erIEndreStatus: Boolean? = null,
     val opprinneligSluttdato: LocalDate? = null,
     val opprinneligStartdato: LocalDate? = null,
@@ -62,7 +65,7 @@ class Barnetillegg(
 )
 
 class BrukerregistrertTiltak(
-    val tiltakstype: String?,
+    val tiltakskode: Tiltaksaktivitet.Tiltaksnavn?,
     val arrangoernavn: String?,
     val beskrivelse: String?,
     val fom: LocalDate?,

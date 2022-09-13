@@ -81,7 +81,7 @@ internal class SkjermingMottattRiverTest {
                 arenaTiltak = null,
                 brukerregistrertTiltak = null,
                 trygdOgPensjon = null,
-                fritekst = null
+                fritekst = null,
             )
         )
         val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
