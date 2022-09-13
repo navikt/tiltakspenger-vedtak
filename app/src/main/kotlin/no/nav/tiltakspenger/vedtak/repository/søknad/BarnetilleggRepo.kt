@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
 import java.util.*
 
@@ -18,7 +18,7 @@ internal class BarnetilleggRepo {
     }
 
     fun hentBarnetilleggListe(søknadId: UUID): List<Barnetillegg> {
-        return DataSource.session.run(
+        return session.run(
             queryOf(hentBarnetillegg, søknadId)
                 .map { row ->
                     row.toBarnetillegg()
@@ -27,7 +27,7 @@ internal class BarnetilleggRepo {
     }
 
     private fun lagreBarnetillegg(søknadId: UUID, barnetillegg: Barnetillegg) {
-        DataSource.session.run(
+        session.run(
             queryOf(
                 lagreBarnetillegg, mapOf(
                     "id" to UUID.randomUUID(),
@@ -43,7 +43,7 @@ internal class BarnetilleggRepo {
     }
 
     private fun slettBarnetillegg(søknadId: UUID): Unit {
-        DataSource.session.run(
+        session.run(
             queryOf(slettBarnetillegg, søknadId).asUpdate
         )
     }
