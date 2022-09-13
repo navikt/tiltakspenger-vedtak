@@ -14,6 +14,9 @@ import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callIdMdc
+import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
@@ -22,19 +25,26 @@ import java.util.concurrent.TimeUnit
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
-internal fun vedtakApi(config: Configuration.TokenVerificationConfig): Application.() -> Unit {
+internal fun vedtakApi(
+    config: Configuration.TokenVerificationConfig,
+    innloggetBrukerProvider: InnloggetBrukerProvider
+): Application.() -> Unit {
     return {
+        install(CallId)
+        install(CallLogging) {
+            callIdMdc("call-id")
+        }
         jacksonSerialization()
         auth(config)
         routing {
             authenticate("saksbehandling") {
-                personRoutes()
+                personRoutes(innloggetBrukerProvider)
             }
         }
     }
 }
-
 
 fun Application.auth(config: Configuration.TokenVerificationConfig) {
 
