@@ -9,8 +9,9 @@ class Søker private constructor(
     val id: UUID,
     val ident: String,
     tilstand: Tilstand,
-    søknad: Søknad?,
+    søknader: List<Søknad>,
     personopplysninger: Personopplysninger?,
+    barn: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
     skjerming: Boolean?,
@@ -18,9 +19,11 @@ class Søker private constructor(
 ) : Aktivitetskontekst {
     var tilstand: Tilstand = tilstand
         private set
-    var søknad: Søknad? = søknad
+    var søknader: List<Søknad> = søknader
         private set
     var personopplysninger: Personopplysninger? = personopplysninger
+        private set
+    var barn: List<Personopplysninger> = barn
         private set
     var tiltak: List<Tiltaksaktivitet> = tiltak
         private set
@@ -37,8 +40,9 @@ class Søker private constructor(
         id = UUID.randomUUID(),
         ident = ident,
         tilstand = SøkerRegistrert,
-        søknad = null,
+        søknader = mutableListOf(),
         personopplysninger = null,
+        barn = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
         skjerming = null,
@@ -50,6 +54,7 @@ class Søker private constructor(
             id: UUID = UUID.randomUUID(),
             ident: String,
             tilstand: String,
+            søknader: List<Søknad>,
         ): Søker {
             return Søker(
                 id = id,
@@ -59,8 +64,9 @@ class Søker private constructor(
                     "AvventerPersonopplysninger" -> AvventerPersonopplysninger
                     else -> SøkerRegistrert
                 },
-                søknad = null,
+                søknader = søknader,
                 personopplysninger = null,
+                barn = mutableListOf(),
                 tiltak = mutableListOf(),
                 ytelser = mutableListOf(),
                 skjerming = null,
@@ -186,7 +192,7 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søker.søknad = søknadMottattHendelse.søknad()
+            søker.søknader += søknadMottattHendelse.søknad()
             søker.trengerPersonopplysninger(søknadMottattHendelse)
             søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
@@ -318,7 +324,7 @@ class Søker private constructor(
         visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)
         //journalpost?.accept(visitor)
-        søknad?.accept(visitor)
+//        søknader.accept(visitor)
         visitor.visitSøkerAktivitetslogg(aktivitetslogg)
         aktivitetslogg.accept(visitor)
         visitor.postVisitSøker(this, ident)

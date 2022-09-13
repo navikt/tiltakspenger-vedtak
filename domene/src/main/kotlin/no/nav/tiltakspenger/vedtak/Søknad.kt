@@ -1,27 +1,30 @@
+@file:Suppress("LongParameterList", "UnusedPrivateMember")
+
 package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
-@Suppress("LongParameterList", "UnusedPrivateMember")
 class Søknad(
-    private val id: String,
-    private val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    private val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    private val ident: String,
-    private val deltarKvp: Boolean,
-    private val deltarIntroduksjonsprogrammet: Boolean?,
-    private val oppholdInstitusjon: Boolean?,
-    private val typeInstitusjon: String?, // TODO Høres ut som en enum
-    private val tiltaksArrangoer: String?, // TODO Ikke mulig å få et org nr?
-    private val tiltaksType: String?, // TODO Er en enum
-    private val opprettet: LocalDateTime?,
-    private val brukerRegistrertStartDato: LocalDate?,
-    private val brukerRegistrertSluttDato: LocalDate?,
-    private val systemRegistrertStartDato: LocalDate?,
-    private val systemRegistrertSluttDato: LocalDate?,
-    private val barnetillegg: List<Barnetillegg>,
-    private val innhentet: LocalDateTime,
+    val id: UUID = UUID.randomUUID(),
+    val søknadId: String,
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val ident: String,
+    val deltarKvp: Boolean, // TODO Høres ut som en enum
+    val deltarIntroduksjonsprogrammet: Boolean?, // TODO Ikke mulig å få et org nr?
+    val oppholdInstitusjon: Boolean?, // TODO Er en enum
+    val typeInstitusjon: String?,
+    val opprettet: LocalDateTime?,
+    val barnetillegg: List<Barnetillegg>,
+    val innhentet: LocalDateTime,
+    val arenaTiltak: ArenaTiltak?,
+    val brukerregistrertTiltak: BrukerregistrertTiltak?,
+    val trygdOgPensjon: List<TrygdOgPensjon>?,
+    val fritekst: String?,
 ) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
         visitor.visitSøknad(this)
@@ -32,6 +35,25 @@ class Søknad(
     override fun innhentet(): LocalDateTime = innhentet
 }
 
+class TrygdOgPensjon(
+    val utbetaler: String,
+    val prosent: Int? = null,
+    val fom: LocalDate,
+    val tom: LocalDate? = null
+)
+
+class ArenaTiltak(
+    val arenaId: String? = null,
+    val arrangoer: String? = null,
+    val harSluttdatoFraArena: Boolean? = null,
+    val tiltakskode: Tiltaksaktivitet.Tiltak? = null,
+    val erIEndreStatus: Boolean? = null,
+    val opprinneligSluttdato: LocalDate? = null,
+    val opprinneligStartdato: LocalDate? = null,
+    val sluttdato: LocalDate? = null,
+    val startdato: LocalDate? = null
+)
+
 class Barnetillegg(
     val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
@@ -40,4 +62,15 @@ class Barnetillegg(
     val land: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
     // SVAR på over: Barnet må med virkning fra 1. juli 2020 være bosatt og oppholde seg i Norge, herunder Svalbard.
     // men TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+)
+
+class BrukerregistrertTiltak(
+    val tiltakskode: Tiltaksaktivitet.Tiltak?,
+    val arrangoernavn: String?,
+    val beskrivelse: String?,
+    val fom: LocalDate?,
+    val tom: LocalDate?,
+    val adresse: String? = null,
+    val postnummer: String? = null,
+    val antallDager: Int
 )

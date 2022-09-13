@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository
 
 import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 
 class InMemorySøkerRepository : SøkerRepository {
 
@@ -11,6 +12,10 @@ class InMemorySøkerRepository : SøkerRepository {
     override fun lagre(søker: Søker): Int = with(søkere) {
         this[søker.ident] = søker
         this.size
+    }
+
+    override fun oppdaterTilstand(tilstand: Søker.Tilstand) {
+        TODO("Not yet implemented")
     }
 
     fun reset() = søkere.clear()

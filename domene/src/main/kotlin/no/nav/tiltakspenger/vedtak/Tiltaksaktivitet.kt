@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AFT
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.ARBRREHAB
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AVKLARING
@@ -12,6 +10,8 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPL
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.TILRETTE
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.UTFAS
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.VARIGASV
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 //Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
@@ -36,6 +36,19 @@ data class Tiltaksaktivitet(
         val fom: LocalDate?,
         val tom: LocalDate?,
     )
+
+    companion object {
+        // https://trello.com/c/KVY0kO8n/129-mapping-av-tiltakstype-fra-s%C3%B8knaden
+        // Verdiene man kan angi i søknaden har korresponderende kodeverdier i Tiltaksnavn fra Arena
+        fun mapTiltaksType(tiltaksType: String): Tiltak? =
+            when (tiltaksType) {
+                "JOBSOK" -> Tiltak.JOBBK
+                "PRAKSORD" -> Tiltak.ARBTREN
+                "AMO" -> Tiltak.GRUPPEAMO
+                "Annet" -> null //TODO: Hvordan mappe Annet?
+                else -> null
+            }
+    }
 
     enum class Tiltaksgruppe(val navn: String) {
         AFT("Arbeidsforberedende trening"),
