@@ -49,7 +49,7 @@ internal class BrukertiltakRepo {
 
     private fun Row.toBrukertiltak() : BrukerregistrertTiltak {
         val tiltakstype = stringOrNull("tiltakstype")
-        val tiltakskode = if (tiltakstype == null) null else Tiltaksaktivitet.Tiltaksnavn.valueOf(tiltakstype)
+        val tiltakskode = if (tiltakstype == null) null else Tiltaksaktivitet.Tiltak.valueOf(tiltakstype)
         val arrangoernavn = stringOrNull("arrangoernavn")
         val beskrivelse = stringOrNull("beskrivelse")
         val fom = localDateOrNull("fom")

@@ -46,7 +46,7 @@ class ArenaTiltak(
     val arenaId: String? = null,
     val arrangoer: String? = null,
     val harSluttdatoFraArena: Boolean? = null,
-    val tiltakskode: Tiltaksaktivitet.Tiltaksnavn? = null,
+    val tiltakskode: Tiltaksaktivitet.Tiltak? = null,
     val erIEndreStatus: Boolean? = null,
     val opprinneligSluttdato: LocalDate? = null,
     val opprinneligStartdato: LocalDate? = null,
@@ -65,7 +65,7 @@ class Barnetillegg(
 )
 
 class BrukerregistrertTiltak(
-    val tiltakskode: Tiltaksaktivitet.Tiltaksnavn?,
+    val tiltakskode: Tiltaksaktivitet.Tiltak?,
     val arrangoernavn: String?,
     val beskrivelse: String?,
     val fom: LocalDate?,

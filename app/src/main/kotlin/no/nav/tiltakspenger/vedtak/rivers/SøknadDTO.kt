@@ -2,8 +2,6 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
@@ -14,6 +12,8 @@ import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatilta
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SøknadDTO(
     val søknadId: String,
@@ -102,7 +102,7 @@ class ArenaTiltakDTO(
             arenaId = dto.arenaId,
             arrangoer = dto.arrangoer,
             harSluttdatoFraArena = dto.harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltaksnavn.valueOf(dto.tiltakskode!!),  // TODO test this
+            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode!!),  // TODO test this
             erIEndreStatus = dto.erIEndreStatus,
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,

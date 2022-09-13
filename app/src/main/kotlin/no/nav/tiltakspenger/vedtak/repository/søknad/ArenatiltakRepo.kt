@@ -62,7 +62,7 @@ internal class ArenatiltakRepo {
             arenaId = arenaId,
             arrangoer = arrangoer,
             harSluttdatoFraArena = harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltaksnavn.valueOf(navn),
+            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(navn),
             erIEndreStatus = erIEndreStatus,
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
