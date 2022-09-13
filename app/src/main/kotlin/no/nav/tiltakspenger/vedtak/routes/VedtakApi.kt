@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 
 internal fun vedtakApi(config: Configuration.TokenVerificationConfig): Application.() -> Unit {
     return {
-        // openAPI()
         jacksonSerialization()
         auth(config)
         routing {

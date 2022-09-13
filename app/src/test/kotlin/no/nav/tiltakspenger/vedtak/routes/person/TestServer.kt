@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.person
+package no.nav.tiltakspenger.vedtak.routes.person
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -7,7 +7,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 
 fun main() {
     embeddedServer(Netty, 8080) {

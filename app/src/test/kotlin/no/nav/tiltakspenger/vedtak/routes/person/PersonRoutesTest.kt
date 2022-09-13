@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.person
+package no.nav.tiltakspenger.vedtak.routes.person
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.HttpRequestBuilder
@@ -13,8 +13,6 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.routes.person.personPath
-import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
