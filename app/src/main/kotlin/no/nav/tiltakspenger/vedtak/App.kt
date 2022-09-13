@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
-import no.nav.tiltakspenger.vedtak.routes.TokenVerificationConfig
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 
 fun main() {
@@ -38,7 +37,7 @@ fun main() {
             )
         )
     )
-        .withKtorModule(vedtakApi(TokenVerificationConfig.fromEnv()))
+        .withKtorModule(vedtakApi(Configuration.TokenVerificationConfig()))
         .build()
         .also {
             val søkerRepository = PostgresSøkerRepository

@@ -1,36 +1,38 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
-import com.papsign.ktor.openapigen.route.path.auth.get
-import com.papsign.ktor.openapigen.route.response.respond
-import com.papsign.ktor.openapigen.route.route
-import io.ktor.server.auth.jwt.*
-import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.Søknad
-import no.nav.tiltakspenger.domene.Tiltak
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.Tiltak
 
 private val LOG = KotlinLogging.logger {}
 
-fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
-    route("$personPath/test") {
-        get<Unit, PersonDTO, JWTPrincipal> {
-            LOG.info { "Vi har truffet /saker/person/test" }
-            respond(response = person())
-        }
-    }
+internal const val personPath = "/saker/person"
+
+fun Route.personRoutes() {
+
     route("$personPath") {
-        get<Unit, PersonDTO, JWTPrincipal> {
+        route("/test") {
+            get {
+                LOG.info { "Vi har truffet /saker/person/test" }
+                call.respond(message = person(), status = HttpStatusCode.OK)
+            }
+        }
+        get {
             LOG.info { "Vi har truffet /saker/person" }
             LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
-            respond(response = person())
+            call.respond(message = person(), status = HttpStatusCode.OK)
         }
     }
 }
-
-internal const val personPath = "/saker/person"
 
 fun person(): PersonDTO = PersonDTO(
     personopplysninger = PersonopplysningerDTO(
