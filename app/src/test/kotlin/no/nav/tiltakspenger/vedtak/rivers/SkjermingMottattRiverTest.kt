@@ -67,7 +67,9 @@ internal class SkjermingMottattRiverTest {
             aktivitetslogg = aktivitetslogg,
             ident = ident,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = ident,

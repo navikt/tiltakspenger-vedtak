@@ -14,7 +14,7 @@ import java.util.*
 
 @Testcontainers
 internal class PostgresSøknadRepositoryTest {
-    val søknadRepository = PostgresSøknadRepository()
+    private val søknadRepository = PostgresSøknadRepository()
 
     companion object {
         @Container
@@ -33,6 +33,9 @@ internal class PostgresSøknadRepositoryTest {
         val uuid = UUID.randomUUID()
         val søknad = Søknad(
             id = uuid,
+            søknadId = "41",
+            journalpostId = "42",
+            dokumentInfoId = "43",
             fornavn = null,
             etternavn = null,
             ident = ident,

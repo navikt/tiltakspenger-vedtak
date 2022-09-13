@@ -52,7 +52,7 @@ internal class SøknadMottattRiver(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["søknad.ident"].asText(),
             søknad = mapSøknad(
-                søknadDTO = packet["søknad"].asObject(SøknadDTO::class.java),
+                dto = packet["søknad"].asObject(SøknadDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime()
             )
         )

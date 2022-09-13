@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 internal class ArenaTiltakMottattRiverTest {
 
     private companion object {
-        val IDENT = "04927799109"
+        const val IDENT = "04927799109"
     }
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
@@ -43,7 +43,9 @@ internal class ArenaTiltakMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",,
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -56,7 +58,7 @@ internal class ArenaTiltakMottattRiverTest {
                 innhentet = LocalDateTime.now(),
                 arenaTiltak = null,
                 brukerregistrertTiltak = null,
-                trygdOgPensjon = null,,
+                trygdOgPensjon = null,
                 fritekst = null
             )
         )

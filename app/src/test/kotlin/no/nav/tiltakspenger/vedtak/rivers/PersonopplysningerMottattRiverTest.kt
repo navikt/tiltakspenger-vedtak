@@ -38,7 +38,9 @@ internal class PersonopplysningerMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",,
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -51,7 +53,7 @@ internal class PersonopplysningerMottattRiverTest {
                 innhentet = LocalDateTime.now(),
                 arenaTiltak = null,
                 brukerregistrertTiltak = null,
-                trygdOgPensjon = null,,
+                trygdOgPensjon = null,
                 fritekst = null
             )
         )

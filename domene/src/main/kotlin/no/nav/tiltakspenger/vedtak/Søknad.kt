@@ -8,11 +8,11 @@ import java.util.*
 
 class Søknad(
     val id: UUID = UUID.randomUUID(),
-    val søknadId: String, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val journalpostId: String, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val søknadId: String,
+    val journalpostId: String,
     val dokumentInfoId: String,
-    val fornavn: String?,
-    val etternavn: String?,
+    val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
     val ident: String,
     val deltarKvp: Boolean, // TODO Høres ut som en enum
     val deltarIntroduksjonsprogrammet: Boolean?, // TODO Ikke mulig å få et org nr?

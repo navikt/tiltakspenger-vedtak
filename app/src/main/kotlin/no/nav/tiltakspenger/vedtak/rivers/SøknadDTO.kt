@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
@@ -33,25 +34,25 @@ class SøknadDTO(
     val fritekst: String?,
 ) {
     companion object {
-        internal fun mapSøknad(søknadDTO: SøknadDTO, innhentet: LocalDateTime): Søknad {
+        internal fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
             return Søknad(
-                søknadId = søknadDTO.søknadId,
-                journalpostId = søknadDTO.journalpostId,
-                dokumentInfoId = søknadDTO.dokumentInfoId,
-                fornavn = søknadDTO.fornavn,
-                etternavn = søknadDTO.etternavn,
-                ident = søknadDTO.ident,
-                deltarKvp = søknadDTO.deltarKvp,
-                deltarIntroduksjonsprogrammet = søknadDTO.deltarIntroduksjonsprogrammet,
-                oppholdInstitusjon = søknadDTO.oppholdInstitusjon,
-                typeInstitusjon = søknadDTO.typeInstitusjon,
-                opprettet = søknadDTO.opprettet,
-                barnetillegg = søknadDTO.barnetillegg.map { mapBarnetillegg(it) },
+                søknadId = dto.søknadId,
+                journalpostId = dto.journalpostId,
+                dokumentInfoId = dto.dokumentInfoId,
+                fornavn = dto.fornavn,
+                etternavn = dto.etternavn,
+                ident = dto.ident,
+                deltarKvp = dto.deltarKvp,
+                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet,
+                oppholdInstitusjon = dto.oppholdInstitusjon,
+                typeInstitusjon = dto.typeInstitusjon,
+                opprettet = dto.opprettet,
+                barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 innhentet = innhentet,
-                arenaTiltak = mapArenatiltak(søknadDTO.arenaTiltak),
-                brukerregistrertTiltak = mapBrukerregistrertTiltak(søknadDTO.brukerregistrertTiltak),
-                trygdOgPensjon = søknadDTO.trygdOgPensjon?.map { mapTrygdOgPensjon(it) },
-                fritekst = søknadDTO.fritekst
+                arenaTiltak = mapArenatiltak(dto.arenaTiltak),
+                brukerregistrertTiltak = mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
+                trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) },
+                fritekst = dto.fritekst
             )
         }
     }
@@ -68,9 +69,18 @@ class BrukerregistrertTiltakDTO(
     val antallDager: Int
 ) {
     companion object {
-        internal fun mapBrukerregistrertTiltak(brukerregistrertTiltak: BrukerregistrertTiltakDTO?): BrukerregistrertTiltak? {
-            TODO("Not yet implemented")
-        }
+        internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): BrukerregistrertTiltak? =
+            if (dto == null) null
+            else BrukerregistrertTiltak(
+                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode!!), // TODO:test
+                arrangoernavn = dto.arrangoernavn,
+                beskrivelse = dto.beskrivelse,
+                fom = dto.fom,
+                tom = dto.tom,
+                adresse = dto.adresse,
+                postnummer = dto.postnummer,
+                antallDager = dto.antallDager
+            )
 
     }
 }
@@ -87,22 +97,28 @@ class ArenaTiltakDTO(
     val startdato: LocalDate? = null
 ) {
     companion object {
-        internal fun mapArenatiltak(arenaTiltak: ArenaTiltakDTO?): ArenaTiltak? {
-            TODO("Not yet implemented")
-        }
+        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): ArenaTiltak? = if (dto == null) null
+        else ArenaTiltak(
+            arenaId = dto.arenaId,
+            arrangoer = dto.arrangoer,
+            harSluttdatoFraArena = dto.harSluttdatoFraArena,
+            tiltakskode = Tiltaksaktivitet.Tiltaksnavn.valueOf(dto.tiltakskode!!),  // TODO test this
+            erIEndreStatus = dto.erIEndreStatus,
+            opprinneligSluttdato = dto.opprinneligSluttdato,
+            opprinneligStartdato = dto.opprinneligStartdato,
+            sluttdato = dto.sluttdato,
+            startdato = dto.startdato
+        )
     }
 }
 
 class TrygdOgPensjonDTO(
-    val utbetaler: String,
-    val prosent: Int? = null,
-    val fom: LocalDate,
-    val tom: LocalDate? = null
+    val utbetaler: String, val prosent: Int? = null, val fom: LocalDate, val tom: LocalDate? = null
 ) {
     companion object {
-        internal fun mapTrygdOgPensjon(trygdOgPensjon: TrygdOgPensjonDTO): TrygdOgPensjon {
-            TODO("Not yet implemented")
-        }
+        internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
+            utbetaler = dto.utbetaler, prosent = dto.prosent, fom = dto.fom, tom = dto.tom
+        )
     }
 }
 
@@ -114,13 +130,13 @@ class BarnetilleggDTO(
     val land: String,
 ) {
     companion object {
-        internal fun mapBarnetillegg(barnetilleggDTO: BarnetilleggDTO): Barnetillegg {
+        internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
             return Barnetillegg(
-                fornavn = barnetilleggDTO.fornavn,
-                etternavn = barnetilleggDTO.etternavn,
-                alder = barnetilleggDTO.alder,
-                ident = barnetilleggDTO.ident,
-                land = barnetilleggDTO.land,
+                fornavn = dto.fornavn,
+                etternavn = dto.etternavn,
+                alder = dto.alder,
+                ident = dto.ident,
+                land = dto.land,
             )
         }
     }
