@@ -46,7 +46,6 @@ internal class PostgresSøknadDAO(
     }
 
     private fun oppdaterSøknad(søknad: Søknad) {
-        println("Oppdaterer søknad")
         session.run(
             queryOf(
                 oppdaterSøknad, mapOf(
@@ -69,7 +68,6 @@ internal class PostgresSøknadDAO(
     }
 
     private fun lagreSøknad(søkerId: UUID, søknad: Søknad) {
-        println("lagrer søknad for søker $søkerId")
         session.run(
             queryOf(
                 lagreSøknad, mapOf(
