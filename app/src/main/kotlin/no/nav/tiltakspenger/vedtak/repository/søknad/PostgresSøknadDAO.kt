@@ -1,20 +1,19 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class PostgresSøknadRepository : SøknadRepository {
-
-    private val barnetilleggRepo = BarnetilleggRepo()
-    private val arenatiltakRepo = ArenatiltakRepo()
-    private val brukertiltakRepo = BrukertiltakRepo()
-    private val trygdOgPensjonRepo = TrygdOgPensjonRepo()
-
+internal class PostgresSøknadDAO(
+    private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
+    private val arenatiltakDAO: ArenatiltakDAO = ArenatiltakDAO(),
+    private val brukertiltakDAO: BrukertiltakDAO = BrukertiltakDAO(),
+    private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
+) : SøknadDAO {
     override fun hentAlle(ident: String): List<Søknad> {
         return session.run(
             queryOf(hentAlle, ident)
@@ -45,10 +44,10 @@ internal class PostgresSøknadRepository : SøknadRepository {
         } else {
             lagreSøknad(søknad)
         }
-        barnetilleggRepo.lagre(søknad.id, søknad.barnetillegg)
-        arenatiltakRepo.lagre(søknad.id, søknad.arenaTiltak)
-        brukertiltakRepo.lagre(søknad.id, søknad.brukerregistrertTiltak)
-        trygdOgPensjonRepo.lagre(søknad.id, søknad.trygdOgPensjon)
+        barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg)
+        arenatiltakDAO.lagre(søknad.id, søknad.arenaTiltak)
+        brukertiltakDAO.lagre(søknad.id, søknad.brukerregistrertTiltak)
+        trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon)
     }
 
     private fun oppdaterSøknad(søknad: Søknad) {
@@ -113,10 +112,10 @@ internal class PostgresSøknadRepository : SøknadRepository {
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
-        val barnetillegg = barnetilleggRepo.hentBarnetilleggListe(id)
-        val arenaTiltak = arenatiltakRepo.hent(id)
-        val brukerTiltak = brukertiltakRepo.hent(id)
-        val trygdOgPensjon = trygdOgPensjonRepo.hentTrygdOgPensjonListe(id)
+        val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id)
+        val arenaTiltak = arenatiltakDAO.hent(id)
+        val brukerTiltak = brukertiltakDAO.hent(id)
+        val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id)
 
         return Søknad(
             id = id,

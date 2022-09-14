@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class BarnetilleggRepo {
+internal class BarnetilleggDAO {
 
 
     fun lagre(søknadId: UUID, barnetillegg: List<Barnetillegg>) {

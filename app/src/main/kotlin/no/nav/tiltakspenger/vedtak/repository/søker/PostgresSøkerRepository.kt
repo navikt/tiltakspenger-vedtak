@@ -7,14 +7,15 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadRepository
+import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresSøkerRepository(
-    private val søknadRepository: SøknadRepository,
+    private val søknadDAO: SøknadDAO,
 ) : SøkerRepository {
     fun hentSøker(ident: String, session: Session): Søker? {
         return session.run(
@@ -41,7 +42,7 @@ internal class PostgresSøkerRepository(
             id = id,
             ident = ident,
             tilstand = tilstand,
-            søknader = emptyList(), // søknadRepository.hentAlle(ident)
+            søknader = emptyList(), // søknadDAO.hentAlle(ident)
         )
     }
 
@@ -52,7 +53,7 @@ internal class PostgresSøkerRepository(
     override fun lagre(søker: Søker): Int {
         var antall = if (brukerFinnes(søker.ident)) oppdaterTilstand(søker) else insert(søker)
 
-        antall += søknadRepository.lagre(søker.ident, søker.søknader)
+        antall += søknadDAO.lagre(søker.ident, søker.søknader)
         return antall
     }
 

@@ -1,7 +1,7 @@
-package no.nav.tiltakspenger.vedtak.repository
+package no.nav.tiltakspenger.vedtak.repository.søker
 
 import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 
 class InMemorySøkerRepository : SøkerRepository {
 

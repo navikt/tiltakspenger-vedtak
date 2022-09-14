@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class TrygdOgPensjonRepo {
+internal class TrygdOgPensjonDAO {
 
     fun lagre(søknadId: UUID, trygdOgPensjon: List<TrygdOgPensjon>?) {
         slettTrygdOgPensjon(søknadId)
@@ -46,7 +46,7 @@ internal class TrygdOgPensjonRepo {
         )
     }
 
-    private fun Row.toTrygdOgPensjon() : TrygdOgPensjon {
+    private fun Row.toTrygdOgPensjon(): TrygdOgPensjon {
         val utbetaler = string("utbetaler")
         val prosent = intOrNull("prosent")
         val fom = localDate("fom")

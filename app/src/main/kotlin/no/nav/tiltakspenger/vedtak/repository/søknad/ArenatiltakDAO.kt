@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class ArenatiltakRepo {
+internal class ArenatiltakDAO {
 
-    fun hent(søknadId: UUID) : ArenaTiltak? {
+    fun hent(søknadId: UUID): ArenaTiltak? {
         return session.run(
             queryOf(hentArenaTiltak, søknadId).map { row ->
                 row.toArenatiltak()
@@ -18,7 +18,7 @@ internal class ArenatiltakRepo {
         )
     }
 
-    fun lagre(søknadId: UUID, arenaTiltak: ArenaTiltak?) : Int {
+    fun lagre(søknadId: UUID, arenaTiltak: ArenaTiltak?): Int {
         slettArenatiltak(søknadId)
         if (arenaTiltak != null) {
             session.run(
@@ -48,7 +48,7 @@ internal class ArenatiltakRepo {
         )
     }
 
-    private fun Row.toArenatiltak() : ArenaTiltak {
+    private fun Row.toArenatiltak(): ArenaTiltak {
         val arenaId = stringOrNull("arena_id")
         val arrangoer = stringOrNull("arrangoer")
         val harSluttdatoFraArena = boolean("har_slutt_dato_fra_arena")

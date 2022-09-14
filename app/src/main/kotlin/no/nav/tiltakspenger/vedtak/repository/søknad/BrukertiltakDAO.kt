@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class BrukertiltakRepo {
+internal class BrukertiltakDAO {
 
-    fun hent(søknadId: UUID) : BrukerregistrertTiltak? {
+    fun hent(søknadId: UUID): BrukerregistrertTiltak? {
         return session.run(
             queryOf(hentBrukerregistrertTiltak, søknadId).map { row ->
                 row.toBrukertiltak()
@@ -18,7 +18,7 @@ internal class BrukertiltakRepo {
         )
     }
 
-    fun lagre(søknadId: UUID, brukerregistrertTiltak: BrukerregistrertTiltak?) : Int {
+    fun lagre(søknadId: UUID, brukerregistrertTiltak: BrukerregistrertTiltak?): Int {
         slettBrukertiltak(søknadId)
         if (brukerregistrertTiltak != null) {
             session.run(
@@ -47,7 +47,7 @@ internal class BrukertiltakRepo {
         )
     }
 
-    private fun Row.toBrukertiltak() : BrukerregistrertTiltak {
+    private fun Row.toBrukertiltak(): BrukerregistrertTiltak {
         val tiltakstype = stringOrNull("tiltakstype")
         val tiltakskode = if (tiltakstype == null) null else Tiltaksaktivitet.Tiltak.valueOf(tiltakstype)
         val arrangoernavn = stringOrNull("arrangoernavn")
