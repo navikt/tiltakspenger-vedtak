@@ -78,11 +78,11 @@ internal class SkjermingMottattRiverTest {
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
                 opprettet = null,
-                barnetillegg = listOf(),
-                innhentet = LocalDateTime.now(),
+                barnetillegg = emptyList(),
+                tidsstempelHosOss = LocalDateTime.now(),
                 arenaTiltak = null,
                 brukerregistrertTiltak = null,
-                trygdOgPensjon = null,
+                trygdOgPensjon = emptyList(),
                 fritekst = null,
             )
         )

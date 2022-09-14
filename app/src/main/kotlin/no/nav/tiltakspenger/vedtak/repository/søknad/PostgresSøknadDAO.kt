@@ -31,7 +31,7 @@ internal class PostgresSøknadDAO(
 
     private fun søknadFinnes(søknadId: UUID, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, søknadId).map { row -> row.boolean("exists") }.asSingle
-    ) ?: throw InternalError("Failed to check if person exists")
+    ) ?: throw RuntimeException("Failed to check if person exists")
 
     private fun lagreHeleSøknaden(søkerId: UUID, søknad: Søknad, txSession: TransactionalSession) {
         if (søknadFinnes(søknad.id, txSession)) {
@@ -60,8 +60,8 @@ internal class PostgresSøknadDAO(
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "tidsstempelKilde" to søknad.opprettet,
-                    "tidsstempelHosOss" to søknad.innhentet,
+                    "opprettet" to søknad.opprettet,
+                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
                 )
             ).asUpdate
         )
@@ -84,8 +84,8 @@ internal class PostgresSøknadDAO(
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "tidsstempelKilde" to søknad.tidsstempelKilde(),
-                    "tidsstempelHosOss" to søknad.tidsstempelHosOss(),
+                    "opprettet" to søknad.opprettet,
+                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
                 )
             ).asUpdate
         )
@@ -101,8 +101,8 @@ internal class PostgresSøknadDAO(
         val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
         val typeInstitusjon = stringOrNull("institusjon_type")
-        val opprettet = localDateTime("tidsstempel_hos_oss")
-        val innhentet = localDateTime("tidsstempel_kilde")
+        val opprettet = localDateTimeOrNull("opprettet")
+        val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
@@ -123,7 +123,7 @@ internal class PostgresSøknadDAO(
             typeInstitusjon = typeInstitusjon,
             opprettet = opprettet,
             barnetillegg = barnetillegg,
-            innhentet = innhentet,
+            tidsstempelHosOss = tidsstempelHosOss,
             arenaTiltak = arenaTiltak,
             brukerregistrertTiltak = brukerTiltak,
             trygdOgPensjon = trygdOgPensjon,
@@ -149,7 +149,7 @@ internal class PostgresSøknadDAO(
             fritekst,
             journalpost_id,
             dokumentinfo_id,
-            tidsstempel_kilde,
+            opprettet,
             tidsstempel_hos_oss
         ) values (
             :id, 
@@ -165,7 +165,7 @@ internal class PostgresSøknadDAO(
             :fritekst,
             :journalpostId,
             :dokumentinfoId,
-            :tidsstempelKilde,
+            :opprettet,
             :tidsstempelHosOss
         )""".trimIndent()
 
@@ -182,7 +182,7 @@ internal class PostgresSøknadDAO(
             fritekst = :fritekst,
             journalpost_id = :journalpostId,
             dokumentinfo_id = :dokumentinfoId,
-            tidsstempel_kilde = :tidsstempelKilde,
+            opprettet = :opprettet,
             tidsstempel_hos_oss = :tidsstempelHosOss
         where id = :id
         )""".trimIndent()

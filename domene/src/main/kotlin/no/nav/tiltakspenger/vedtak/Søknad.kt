@@ -20,10 +20,12 @@ class Søknad(
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
-    val innhentet: LocalDateTime,
+    val tidsstempelHosOss: LocalDateTime,
+    // TODO: Kan vi bruke sealed class som union type for å fange at man
+    // *enten* har arenaTiltak *eller* brukerregistrertTiltak?
     val arenaTiltak: ArenaTiltak?,
     val brukerregistrertTiltak: BrukerregistrertTiltak?,
-    val trygdOgPensjon: List<TrygdOgPensjon>?,
+    val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
 ) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
@@ -32,7 +34,7 @@ class Søknad(
 
     override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
 
-    override fun tidsstempelHosOss(): LocalDateTime = innhentet
+    override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 }
 
 class TrygdOgPensjon(

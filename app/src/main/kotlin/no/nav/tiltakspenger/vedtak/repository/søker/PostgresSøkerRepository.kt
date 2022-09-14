@@ -20,12 +20,26 @@ internal class PostgresSøkerRepository(
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
-        sessionOf(DataSource.hikariDataSource).transaction { txSession ->
-            return txSession.run(
-                queryOf(hent, ident).map { row ->
-                    row.toSøker()
-                }.asSingle
-            )
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                return txSession.run(
+                    queryOf(hent, ident).map { row ->
+                        row.toSøker()
+                    }.asSingle
+                )
+            }
+        }
+    }
+
+    override fun lagre(søker: Søker) {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                if (brukerFinnes(søker.ident, txSession)) oppdaterTilstand(søker, txSession) else insert(
+                    søker,
+                    txSession
+                )
+                søknadDAO.lagre(søker.id, søker.søknader, txSession)
+            }
         }
     }
 
@@ -43,14 +57,7 @@ internal class PostgresSøkerRepository(
 
     private fun brukerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
-    ) ?: throw InternalError("Failed to check if person exists")
-
-    override fun lagre(søker: Søker) {
-        sessionOf(DataSource.hikariDataSource).transaction { txSession ->
-            if (brukerFinnes(søker.ident, txSession)) oppdaterTilstand(søker, txSession) else insert(søker, txSession)
-            søknadDAO.lagre(søker.id, søker.søknader, txSession)
-        }
-    }
+    ) ?: throw RuntimeException("Failed to check if person exists")
 
     private fun insert(søker: Søker, txSession: TransactionalSession) {
         LOG.info { "Insert user" }

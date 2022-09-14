@@ -50,7 +50,7 @@ internal class ArenatiltakDAO {
     private fun Row.toArenatiltak(): ArenaTiltak {
         val arenaId = stringOrNull("arena_id")
         val arrangoer = stringOrNull("arrangoer")
-        val harSluttdatoFraArena = boolean("har_slutt_dato_fra_arena")
+        val harSluttdatoFraArena = boolean("har_sluttdato_fra_arena")
         val navn = stringOrNull("navn")
         val erIEndreStatus = boolean("er_i_endre_status")
         val opprinneligStartdato = localDateOrNull("opprinnelig_startdato")

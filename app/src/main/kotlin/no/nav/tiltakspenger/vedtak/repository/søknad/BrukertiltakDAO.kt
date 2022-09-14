@@ -26,7 +26,7 @@ internal class BrukertiltakDAO {
                     lagreBrukerTiltak, mapOf(
                         "id" to UUID.randomUUID(),
                         "soknadId" to søknadId,
-                        "tiltakstype" to brukerregistrertTiltak.tiltakskode,    // TODO skal denne endre navn i basen ?
+                        "tiltakstype" to brukerregistrertTiltak.tiltakskode?.name,    // TODO skal denne endre navn i basen ?
                         "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,
                         "beskrivelse" to brukerregistrertTiltak.beskrivelse,
                         "fom" to brukerregistrertTiltak.fom,
