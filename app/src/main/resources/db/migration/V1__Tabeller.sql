@@ -16,8 +16,8 @@ CREATE TABLE søker
     id          UUID PRIMARY KEY,
     ident       VARCHAR                     NOT NULL UNIQUE,
     tilstand    VARCHAR                     NOT NULL,
-    sist_endret TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    opprettet   TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    sist_endret TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE søknad
@@ -35,8 +35,8 @@ CREATE TABLE søknad
     fritekst            VARCHAR                     NULL,
     journalpost_id      VARCHAR                     NOT NULL,
     dokumentinfo_id     VARCHAR                     NOT NULL,
-    opprettet           TIMESTAMP WITHOUT TIME ZONE NULL,
-    tidsstempel_hos_oss TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    opprettet           TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE barnetillegg

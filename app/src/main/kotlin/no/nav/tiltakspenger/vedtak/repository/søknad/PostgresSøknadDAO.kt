@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.time.ZoneId
 import java.util.*
 import kotliquery.Row
 import kotliquery.TransactionalSession
@@ -60,8 +61,8 @@ internal class PostgresSøknadDAO(
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "opprettet" to søknad.opprettet,
-                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
+                    "opprettet" to søknad.opprettet?.atZone(ZoneId.systemDefault()),
+                    "tidsstempelHosOss" to søknad.tidsstempelHosOss.atZone(ZoneId.systemDefault()),
                 )
             ).asUpdate
         )
@@ -84,8 +85,8 @@ internal class PostgresSøknadDAO(
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "opprettet" to søknad.opprettet,
-                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
+                    "opprettet" to søknad.opprettet?.atZone(ZoneId.systemDefault()),
+                    "tidsstempelHosOss" to søknad.tidsstempelHosOss.atZone(ZoneId.systemDefault()),
                 )
             ).asUpdate
         )
@@ -101,8 +102,8 @@ internal class PostgresSøknadDAO(
         val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
         val typeInstitusjon = stringOrNull("institusjon_type")
-        val opprettet = localDateTimeOrNull("opprettet")
-        val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
+        val opprettet = zonedDateTimeOrNull("opprettet")?.toLocalDateTime()
+        val tidsstempelHosOss = zonedDateTime("tidsstempel_hos_oss").toLocalDateTime()
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
