@@ -9,3 +9,10 @@ fun flywayMigrate() {
         .load()
         .migrate()
 }
+
+fun flywayRepair() {
+    Flyway.configure()
+        .dataSource(DataSource.hikariDataSource)
+        .load()
+        .repair()
+}
