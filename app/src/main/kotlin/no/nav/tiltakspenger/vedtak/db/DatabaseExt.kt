@@ -19,3 +19,5 @@ internal fun <T> String.hentListe(
 ): List<T> {
     return session.run(queryOf(this, params).map { row -> rowMapping(row) }.asList)
 }
+
+internal fun Row.booleanOrNull(name: String): Boolean? = this.anyOrNull(name)?.let { this.boolean(name) }

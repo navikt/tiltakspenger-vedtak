@@ -4,6 +4,7 @@ import kotliquery.Row
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
+import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 import java.util.*
 
@@ -27,24 +28,27 @@ internal class PostgresSøknadRepository : SøknadRepository {
         søknader.forEach {
             lagreHeleSøknaden(it)
         }
-        return 0
+        return søknader.size
     }
 
     private fun søknadFinnes(søknadId: UUID): Boolean = session.run(
         queryOf(finnes, søknadId).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw InternalError("Failed to check if person exists")
 
-    private fun lagreHeleSøknaden(søknad: Søknad) {
-        barnetilleggRepo.lagre(søknad.id, søknad.barnetillegg)
-        arenatiltakRepo.lagre(søknad.id, søknad.arenaTiltak)
-        brukertiltakRepo.lagre(søknad.id, søknad.brukerregistrertTiltak)
-        trygdOgPensjonRepo.lagre(søknad.id, søknad.trygdOgPensjon)
+    private fun hentSøkerId(ident: String): UUID = session.run(
+        queryOf(hentSøkerId, ident).map { row -> row.uuid("id") }.asSingle
+    ) ?: throw InternalError("Finnes ingen søker for ident $ident")
 
+    private fun lagreHeleSøknaden(søknad: Søknad) {
         if (søknadFinnes(søknad.id)) {
             oppdaterSøknad(søknad)
         } else {
             lagreSøknad(søknad)
         }
+        barnetilleggRepo.lagre(søknad.id, søknad.barnetillegg)
+        arenatiltakRepo.lagre(søknad.id, søknad.arenaTiltak)
+        brukertiltakRepo.lagre(søknad.id, søknad.brukerregistrertTiltak)
+        trygdOgPensjonRepo.lagre(søknad.id, søknad.trygdOgPensjon)
     }
 
     private fun oppdaterSøknad(søknad: Søknad) {
@@ -70,10 +74,13 @@ internal class PostgresSøknadRepository : SøknadRepository {
     }
 
     private fun lagreSøknad(søknad: Søknad) {
+        val søkerId = hentSøkerId(søknad.ident)
         session.run(
             queryOf(
                 lagreSøknad, mapOf(
                     "id" to søknad.id,
+                    "sokerId" to søkerId,
+                    "eksternSoknadId" to søknad.søknadId,
                     "fornavn" to søknad.fornavn,
                     "etternavn" to søknad.etternavn,
                     "ident" to søknad.ident,
@@ -84,7 +91,7 @@ internal class PostgresSøknadRepository : SøknadRepository {
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "tidsstempelKilde" to søknad.opprettet,
+                    "tidsstempelKilde" to søknad.oppdatert(),
                     "tidsstempelHosOss" to søknad.innhentet,
                 )
             ).asUpdate
@@ -94,15 +101,15 @@ internal class PostgresSøknadRepository : SøknadRepository {
     private fun Row.toSøknad(): Søknad {
         val id = uuid("id")
         val søknadId = string("søknad_id")
-        val fornavn = string("fornavn")
-        val etternavn = string("etternavn")
+        val fornavn = stringOrNull("fornavn")
+        val etternavn = stringOrNull("etternavn")
         val ident = string("ident")
         val deltarKvp = boolean("deltar_kvp")
-        val deltarIntroduksjonsprogrammet = boolean("deltar_introduksjon")
-        val oppholdInstitusjon = boolean("institusjon_opphold")
-        val typeInstitusjon = string("institusjon_type")
-        val opprettet = localDateTime("opprettet")
-        val innhentet = localDateTime("innhentet")
+        val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
+        val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
+        val typeInstitusjon = stringOrNull("institusjon_type")
+        val opprettet = localDateTime("tidsstempel_hos_oss")
+        val innhentet = localDateTime("tidsstempel_kilde")
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
@@ -136,7 +143,9 @@ internal class PostgresSøknadRepository : SøknadRepository {
     @Language("SQL")
     private val lagreSøknad = """
         insert into søknad (
-            id, 
+            id,
+            søker_id,
+            søknad_id,
             fornavn, 
             etternavn, 
             ident, 
@@ -151,6 +160,8 @@ internal class PostgresSøknadRepository : SøknadRepository {
             tidsstempel_hos_oss
         ) values (
             :id, 
+            :sokerId,
+            :eksternSoknadId,
             :fornavn, 
             :etternavn,
             :ident,
@@ -189,4 +200,7 @@ internal class PostgresSøknadRepository : SøknadRepository {
     // TODO Hågen liker ikke denne. Lurer på om vi kan bruke id istedet for ident (rotet bort kommentaren så måtte skrive en ny :-) )
     @Language("SQL")
     private val hentAlle = "select * from søknad where ident = ?"
+
+    @Language("SQL")
+    private val hentSøkerId = "select id from søker where ident = ?"
 }
