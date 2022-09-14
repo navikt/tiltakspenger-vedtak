@@ -1,8 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.time.LocalDateTime
-import java.time.Month
-import java.util.*
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -13,6 +10,9 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
+import java.time.Month
+import java.util.*
 
 @Testcontainers
 internal class PostgresSøknadDAOTest {
@@ -31,7 +31,7 @@ internal class PostgresSøknadDAOTest {
 
     @Test
     fun `lagre og hente`() {
-        val ident = "1"
+        val ident = "3"
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
