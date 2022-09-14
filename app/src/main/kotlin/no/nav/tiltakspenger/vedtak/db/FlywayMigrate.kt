@@ -5,6 +5,7 @@ import org.flywaydb.core.Flyway
 fun flywayMigrate() {
     val flyway = Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
+        .cleanDisabled(false)
         .cleanOnValidationError(true)
         .load()
     flyway.migrate()
