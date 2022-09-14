@@ -3,11 +3,11 @@ package no.nav.tiltakspenger.vedtak.db
 import org.flywaydb.core.Flyway
 
 fun flywayMigrate() {
-    Flyway.configure()
+    val flyway = Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
         .cleanOnValidationError(true)
         .load()
-        .migrate()
+    flyway.migrate()
 }
 
 fun flywayRepair() {
