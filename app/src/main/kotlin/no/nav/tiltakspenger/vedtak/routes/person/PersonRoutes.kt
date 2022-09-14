@@ -12,16 +12,18 @@ import java.time.Month
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
+import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 private val LOG = KotlinLogging.logger {}
 
 internal const val personPath = "/saker/person"
 
-fun Route.personRoutes() {
-
+fun Route.personRoutes(innloggetBrukerProvider: InnloggetBrukerProvider) {
     route("$personPath") {
         route("/test") {
             get {
+                call.auditHvisInnlogget(berørtBruker = "test")
                 LOG.info { "Vi har truffet /saker/person/test" }
                 call.respond(message = person(), status = HttpStatusCode.OK)
             }

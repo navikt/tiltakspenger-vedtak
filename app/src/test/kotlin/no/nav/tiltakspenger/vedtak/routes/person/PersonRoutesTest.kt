@@ -13,6 +13,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -38,7 +39,7 @@ class PersonRoutesTest {
             application {
                 jacksonSerialization()
                 routing {
-                    personRoutes()
+                    personRoutes(InnloggetBrukerProvider())
                 }
             }
 

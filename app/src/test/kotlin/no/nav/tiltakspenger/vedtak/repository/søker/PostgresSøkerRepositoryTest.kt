@@ -39,7 +39,7 @@ internal class PostgresSøkerRepositoryTest {
 
         assertEquals(søker.ident, hentetSøker?.ident)
         assertEquals(søker.id, hentetSøker?.id)
-//        assertEquals(søker.tilstand, hentetSøker?.tilstand)
+        assertEquals(søker.tilstand, hentetSøker?.tilstand)
     }
 
     @Test

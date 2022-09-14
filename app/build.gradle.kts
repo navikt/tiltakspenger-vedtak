@@ -29,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-id:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022072721371658950659.c1e8f7bf35c6")
     implementation("com.natpryce:konfig:1.6.10.0")
@@ -36,7 +37,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("com.auth0:jwks-rsa:0.21.1")
-    
+
     // DB
     implementation("org.flywaydb:flyway-core:9.3.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
@@ -61,5 +62,5 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:2.12.1.Final")
+    testImplementation("io.quarkus:quarkus-junit4-mock:2.12.2.Final")
 }

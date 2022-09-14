@@ -3,20 +3,21 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import java.time.LocalDateTime
 import java.time.Month
 import java.util.*
+import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
-@Disabled("Usikker på hvordan man skal teste denne i isolasjon. En søknad må ha en referanse til Søker når den lagres.")
-internal class PostgresSøknadDAOTest {
-    private val søknadRepository = PostgresSøknadDAO()
+internal class PostgresSøknadRepositoryTest {
+    private val søknadDAO = PostgresSøknadDAO()
+    private val søkerRepository = PostgresSøkerRepository(søknadDAO)
 
     companion object {
         @Container
@@ -31,6 +32,8 @@ internal class PostgresSøknadDAOTest {
     @Test
     fun `lagre og hente`() {
         val ident = "1"
+        val søker = Søker(ident)
+        søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = UUID.randomUUID()
         val søknad = Søknad(
@@ -53,11 +56,11 @@ internal class PostgresSøknadDAOTest {
             trygdOgPensjon = null,
             fritekst = null,
         )
-        val antallLagret = søknadRepository.lagre(ident, listOf(søknad))
+        val antallLagret = søknadDAO.lagre(ident, listOf(søknad))
 
         assertEquals(1, antallLagret)
 
-        val hentet = søknadRepository.hentAlle(ident)
+        val hentet = søknadDAO.hentAlle(ident)
 
         assertEquals(1, hentet.size)
         assertEquals(uuid, hentet.first().id)
