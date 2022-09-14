@@ -4,5 +4,5 @@ import no.nav.tiltakspenger.vedtak.Søker
 
 interface SøkerRepository {
     fun hent(ident: String): Søker?
-    fun lagre(søker: Søker): Int
+    fun lagre(søker: Søker)
 }

@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
-internal class PostgresSøknadRepositoryTest {
+internal class PostgresSøknadDAOTest {
     private val søknadDAO = PostgresSøknadDAO()
     private val søkerRepository = PostgresSøkerRepository(søknadDAO)
 
@@ -56,11 +56,9 @@ internal class PostgresSøknadRepositoryTest {
             trygdOgPensjon = null,
             fritekst = null,
         )
-        val antallLagret = søknadDAO.lagre(ident, listOf(søknad))
+        søknadDAO.lagre(søker.id, listOf(søknad))
 
-        assertEquals(1, antallLagret)
-
-        val hentet = søknadDAO.hentAlle(ident)
+        val hentet = søknadDAO.hentAlle(søker.id)
 
         assertEquals(1, hentet.size)
         assertEquals(uuid, hentet.first().id)

@@ -14,35 +14,30 @@ internal class PostgresSøknadDAO(
     private val brukertiltakDAO: BrukertiltakDAO = BrukertiltakDAO(),
     private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
 ) : SøknadDAO {
-    override fun hentAlle(ident: String): List<Søknad> {
+    override fun hentAlle(søkerId: UUID): List<Søknad> {
         return session.run(
-            queryOf(hentAlle, ident)
+            queryOf(hentAlle, søkerId)
                 .map { row ->
                     row.toSøknad()
                 }.asList
         )
     }
 
-    override fun lagre(ident: String, søknader: List<Søknad>): Int {
+    override fun lagre(søkerId: UUID, søknader: List<Søknad>) {
         søknader.forEach {
-            lagreHeleSøknaden(it)
+            lagreHeleSøknaden(søkerId, it)
         }
-        return søknader.size
     }
 
     private fun søknadFinnes(søknadId: UUID): Boolean = session.run(
         queryOf(finnes, søknadId).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw InternalError("Failed to check if person exists")
 
-    private fun hentSøkerId(ident: String): UUID = session.run(
-        queryOf(hentSøkerId, ident).map { row -> row.uuid("id") }.asSingle
-    ) ?: throw InternalError("Finnes ingen søker for ident $ident")
-
-    private fun lagreHeleSøknaden(søknad: Søknad) {
+    private fun lagreHeleSøknaden(søkerId: UUID, søknad: Søknad) {
         if (søknadFinnes(søknad.id)) {
             oppdaterSøknad(søknad)
         } else {
-            lagreSøknad(søknad)
+            lagreSøknad(søkerId, søknad)
         }
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg)
         arenatiltakDAO.lagre(søknad.id, søknad.arenaTiltak)
@@ -51,6 +46,7 @@ internal class PostgresSøknadDAO(
     }
 
     private fun oppdaterSøknad(søknad: Søknad) {
+        println("Oppdaterer søknad")
         session.run(
             queryOf(
                 oppdaterSøknad, mapOf(
@@ -72,8 +68,8 @@ internal class PostgresSøknadDAO(
         )
     }
 
-    private fun lagreSøknad(søknad: Søknad) {
-        val søkerId = hentSøkerId(søknad.ident)
+    private fun lagreSøknad(søkerId: UUID, søknad: Søknad) {
+        println("lagrer søknad for søker $søkerId")
         session.run(
             queryOf(
                 lagreSøknad, mapOf(
@@ -196,10 +192,6 @@ internal class PostgresSøknadDAO(
     @Language("SQL")
     private val finnes = "select exists(select 1 from søknad where id = ?)"
 
-    // TODO Hågen liker ikke denne. Lurer på om vi kan bruke id istedet for ident (rotet bort kommentaren så måtte skrive en ny :-) )
     @Language("SQL")
-    private val hentAlle = "select * from søknad where ident = ?"
-
-    @Language("SQL")
-    private val hentSøkerId = "select id from søker where ident = ?"
+    private val hentAlle = "select * from søknad where søker_id = ?"
 }

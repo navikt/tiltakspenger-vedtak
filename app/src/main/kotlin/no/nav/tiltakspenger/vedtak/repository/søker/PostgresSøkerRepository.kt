@@ -50,17 +50,15 @@ internal class PostgresSøkerRepository(
         queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw InternalError("Failed to check if person exists")
 
-    override fun lagre(søker: Søker): Int {
-        var antall = if (brukerFinnes(søker.ident)) oppdaterTilstand(søker) else insert(søker)
-
-        antall += søknadDAO.lagre(søker.ident, søker.søknader)
-        return antall
+    override fun lagre(søker: Søker) {
+        if (brukerFinnes(søker.ident)) oppdaterTilstand(søker) else insert(søker)
+        søknadDAO.lagre(søker.id, søker.søknader)
     }
 
-    private fun insert(søker: Søker): Int {
+    private fun insert(søker: Søker) {
         LOG.info { "Insert user" }
         SECURELOG.info { "Insert user ${søker.id}" }
-        return session.run(
+        session.run(
             queryOf(
                 lagre,
                 mapOf(
@@ -74,10 +72,10 @@ internal class PostgresSøkerRepository(
         )
     }
 
-    private fun oppdaterTilstand(søker: Søker): Int {
+    private fun oppdaterTilstand(søker: Søker) {
         LOG.info { "Update user" }
         SECURELOG.info { "Update user ${søker.id} tilstand ${søker.tilstand}" }
-        return session.run(
+        session.run(
             queryOf(
                 oppdater,
                 mapOf(
