@@ -4,7 +4,6 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.db.flywayRepair
 import no.nav.tiltakspenger.vedtak.repository.DatabaseBuilder
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
@@ -56,7 +55,6 @@ fun main() {
             it.register(
                 object : RapidsConnection.StatusListener {
                     override fun onStartup(rapidsConnection: RapidsConnection) {
-                        flywayRepair()
                         flywayMigrate()
                     }
                 }
