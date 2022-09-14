@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.slf4j.MDC
 
 private val LOG = KotlinLogging.logger {}

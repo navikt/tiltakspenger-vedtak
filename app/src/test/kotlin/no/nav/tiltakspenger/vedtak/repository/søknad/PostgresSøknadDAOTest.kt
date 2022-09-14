@@ -15,8 +15,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @Testcontainers
 @Disabled("Usikker på hvordan man skal teste denne i isolasjon. En søknad må ha en referanse til Søker når den lagres.")
-internal class PostgresSøknadRepositoryTest {
-    private val søknadRepository = PostgresSøknadRepository()
+internal class PostgresSøknadDAOTest {
+    private val søknadRepository = PostgresSøknadDAO()
 
     companion object {
         @Container

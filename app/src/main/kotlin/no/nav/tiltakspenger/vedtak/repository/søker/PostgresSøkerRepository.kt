@@ -7,14 +7,15 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadRepository
+import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresSøkerRepository(
-    private val søknadRepository: SøknadRepository,
+    private val søknadDAO: SøknadDAO,
 ) : SøkerRepository {
 
     @Language("SQL")
