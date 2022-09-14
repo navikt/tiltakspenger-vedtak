@@ -7,7 +7,7 @@ class Skjerming(val ident: String, val skjerming: Boolean, val innhentet: LocalD
         visitor.visitSkjerming(this)
     }
 
-    override fun oppdatert() = innhentet
-    
-    override fun innhentet() = innhentet
+    override fun tidsstempelKilde() = innhentet
+
+    override fun tidsstempelHosOss() = innhentet
 }

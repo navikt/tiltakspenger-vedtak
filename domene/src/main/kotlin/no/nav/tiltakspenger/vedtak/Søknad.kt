@@ -30,9 +30,9 @@ class Søknad(
         visitor.visitSøknad(this)
     }
 
-    override fun oppdatert(): LocalDateTime = opprettet ?: innhentet()
+    override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
 
-    override fun innhentet(): LocalDateTime = innhentet
+    override fun tidsstempelHosOss(): LocalDateTime = innhentet
 }
 
 class TrygdOgPensjon(

@@ -84,8 +84,8 @@ internal class PostgresSøknadDAO(
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
-                    "tidsstempelKilde" to søknad.oppdatert(),
-                    "tidsstempelHosOss" to søknad.innhentet,
+                    "tidsstempelKilde" to søknad.tidsstempelKilde(),
+                    "tidsstempelHosOss" to søknad.tidsstempelHosOss(),
                 )
             ).asUpdate
         )

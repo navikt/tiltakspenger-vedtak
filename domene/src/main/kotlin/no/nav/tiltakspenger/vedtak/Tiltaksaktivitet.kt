@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AFT
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.ARBRREHAB
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AVKLARING
@@ -10,8 +12,6 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPL
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.TILRETTE
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.UTFAS
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.VARIGASV
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 //Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
@@ -29,8 +29,8 @@ data class Tiltaksaktivitet(
     val innhentet: LocalDateTime,
 ) : Tidsstempler {
 
-    override fun oppdatert(): LocalDateTime = statusSistEndret?.atStartOfDay() ?: innhentet
-    override fun innhentet(): LocalDateTime = innhentet
+    override fun tidsstempelKilde(): LocalDateTime = statusSistEndret?.atStartOfDay() ?: innhentet
+    override fun tidsstempelHosOss(): LocalDateTime = innhentet
 
     data class DeltakelsesPeriode(
         val fom: LocalDate?,

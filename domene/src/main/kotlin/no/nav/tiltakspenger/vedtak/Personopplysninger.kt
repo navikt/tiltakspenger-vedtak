@@ -17,6 +17,6 @@ class Personopplysninger(
         visitor.visitPersonopplysninger(this)
     }
 
-    override fun oppdatert(): LocalDateTime = innhentet
-    override fun innhentet(): LocalDateTime = innhentet
+    override fun tidsstempelKilde(): LocalDateTime = innhentet
+    override fun tidsstempelHosOss(): LocalDateTime = innhentet
 }
