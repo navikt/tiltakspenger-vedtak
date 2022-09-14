@@ -2,26 +2,26 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import java.util.*
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
 
 internal class ArenatiltakDAO {
 
-    fun hent(søknadId: UUID): ArenaTiltak? {
-        return session.run(
+    fun hent(søknadId: UUID, txSession: TransactionalSession): ArenaTiltak? {
+        return txSession.run(
             queryOf(hentArenaTiltak, søknadId).map { row ->
                 row.toArenatiltak()
             }.asSingle
         )
     }
 
-    fun lagre(søknadId: UUID, arenaTiltak: ArenaTiltak?): Int {
-        slettArenatiltak(søknadId)
+    fun lagre(søknadId: UUID, arenaTiltak: ArenaTiltak?, txSession: TransactionalSession) {
+        slettArenatiltak(søknadId, txSession)
         if (arenaTiltak != null) {
-            session.run(
+            txSession.run(
                 queryOf(
                     lagreArenaTiltak, mapOf(
                         "id" to UUID.randomUUID(),
@@ -38,12 +38,11 @@ internal class ArenatiltakDAO {
                     )
                 ).asUpdate
             )
-            return 1
-        } else return 0
+        }
     }
 
-    private fun slettArenatiltak(søknadId: UUID): Unit {
-        session.run(
+    private fun slettArenatiltak(søknadId: UUID, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(slettArenaTiltak, søknadId).asUpdate
         )
     }

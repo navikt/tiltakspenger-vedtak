@@ -2,23 +2,23 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import java.util.*
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
 
 internal class BarnetilleggDAO {
 
 
-    fun lagre(søknadId: UUID, barnetillegg: List<Barnetillegg>) {
-        slettBarnetillegg(søknadId)
+    fun lagre(søknadId: UUID, barnetillegg: List<Barnetillegg>, txSession: TransactionalSession) {
+        slettBarnetillegg(søknadId, txSession)
         barnetillegg.forEach {
-            lagreBarnetillegg(søknadId, it)
+            lagreBarnetillegg(søknadId, it, txSession)
         }
     }
 
-    fun hentBarnetilleggListe(søknadId: UUID): List<Barnetillegg> {
-        return session.run(
+    fun hentBarnetilleggListe(søknadId: UUID, txSession: TransactionalSession): List<Barnetillegg> {
+        return txSession.run(
             queryOf(hentBarnetillegg, søknadId)
                 .map { row ->
                     row.toBarnetillegg()
@@ -26,8 +26,8 @@ internal class BarnetilleggDAO {
         )
     }
 
-    private fun lagreBarnetillegg(søknadId: UUID, barnetillegg: Barnetillegg) {
-        session.run(
+    private fun lagreBarnetillegg(søknadId: UUID, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(
                 lagreBarnetillegg, mapOf(
                     "id" to UUID.randomUUID(),
@@ -42,8 +42,8 @@ internal class BarnetilleggDAO {
         )
     }
 
-    private fun slettBarnetillegg(søknadId: UUID): Unit {
-        session.run(
+    private fun slettBarnetillegg(søknadId: UUID, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(slettBarnetillegg, søknadId).asUpdate
         )
     }

@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class PostgresSøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
@@ -14,39 +14,39 @@ internal class PostgresSøknadDAO(
     private val brukertiltakDAO: BrukertiltakDAO = BrukertiltakDAO(),
     private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
 ) : SøknadDAO {
-    override fun hentAlle(søkerId: UUID): List<Søknad> {
-        return session.run(
+    override fun hentAlle(søkerId: UUID, txSession: TransactionalSession): List<Søknad> {
+        return txSession.run(
             queryOf(hentAlle, søkerId)
                 .map { row ->
-                    row.toSøknad()
+                    row.toSøknad(txSession)
                 }.asList
         )
     }
 
-    override fun lagre(søkerId: UUID, søknader: List<Søknad>) {
+    override fun lagre(søkerId: UUID, søknader: List<Søknad>, txSession: TransactionalSession) {
         søknader.forEach {
-            lagreHeleSøknaden(søkerId, it)
+            lagreHeleSøknaden(søkerId, it, txSession)
         }
     }
 
-    private fun søknadFinnes(søknadId: UUID): Boolean = session.run(
+    private fun søknadFinnes(søknadId: UUID, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, søknadId).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw InternalError("Failed to check if person exists")
 
-    private fun lagreHeleSøknaden(søkerId: UUID, søknad: Søknad) {
-        if (søknadFinnes(søknad.id)) {
-            oppdaterSøknad(søknad)
+    private fun lagreHeleSøknaden(søkerId: UUID, søknad: Søknad, txSession: TransactionalSession) {
+        if (søknadFinnes(søknad.id, txSession)) {
+            oppdaterSøknad(søknad, txSession)
         } else {
-            lagreSøknad(søkerId, søknad)
+            lagreSøknad(søkerId, søknad, txSession)
         }
-        barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg)
-        arenatiltakDAO.lagre(søknad.id, søknad.arenaTiltak)
-        brukertiltakDAO.lagre(søknad.id, søknad.brukerregistrertTiltak)
-        trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon)
+        barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
+        arenatiltakDAO.lagre(søknad.id, søknad.arenaTiltak, txSession)
+        brukertiltakDAO.lagre(søknad.id, søknad.brukerregistrertTiltak, txSession)
+        trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon, txSession)
     }
 
-    private fun oppdaterSøknad(søknad: Søknad) {
-        session.run(
+    private fun oppdaterSøknad(søknad: Søknad, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(
                 oppdaterSøknad, mapOf(
                     "id" to søknad.id,
@@ -67,8 +67,8 @@ internal class PostgresSøknadDAO(
         )
     }
 
-    private fun lagreSøknad(søkerId: UUID, søknad: Søknad) {
-        session.run(
+    private fun lagreSøknad(søkerId: UUID, søknad: Søknad, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(
                 lagreSøknad, mapOf(
                     "id" to søknad.id,
@@ -91,7 +91,7 @@ internal class PostgresSøknadDAO(
         )
     }
 
-    private fun Row.toSøknad(): Søknad {
+    private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = uuid("id")
         val søknadId = string("søknad_id")
         val fornavn = stringOrNull("fornavn")
@@ -106,10 +106,10 @@ internal class PostgresSøknadDAO(
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
-        val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id)
-        val arenaTiltak = arenatiltakDAO.hent(id)
-        val brukerTiltak = brukertiltakDAO.hent(id)
-        val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id)
+        val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
+        val arenaTiltak = arenatiltakDAO.hent(id, txSession)
+        val brukerTiltak = brukertiltakDAO.hent(id, txSession)
+        val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id, txSession)
 
         return Søknad(
             id = id,

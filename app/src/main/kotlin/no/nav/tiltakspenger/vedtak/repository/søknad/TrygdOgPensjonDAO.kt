@@ -2,22 +2,22 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import java.util.*
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
 
 internal class TrygdOgPensjonDAO {
 
-    fun lagre(søknadId: UUID, trygdOgPensjon: List<TrygdOgPensjon>?) {
-        slettTrygdOgPensjon(søknadId)
+    fun lagre(søknadId: UUID, trygdOgPensjon: List<TrygdOgPensjon>?, txSession: TransactionalSession) {
+        slettTrygdOgPensjon(søknadId, txSession)
         trygdOgPensjon?.forEach {
-            lagreTrygdOgPensjon(søknadId, it)
+            lagreTrygdOgPensjon(søknadId, it, txSession)
         }
     }
 
-    fun hentTrygdOgPensjonListe(søknadId: UUID): List<TrygdOgPensjon> {
-        return session.run(
+    fun hentTrygdOgPensjonListe(søknadId: UUID, txSession: TransactionalSession): List<TrygdOgPensjon> {
+        return txSession.run(
             queryOf(hentTrygdOgPensjon, søknadId)
                 .map { row ->
                     row.toTrygdOgPensjon()
@@ -25,8 +25,8 @@ internal class TrygdOgPensjonDAO {
         )
     }
 
-    private fun lagreTrygdOgPensjon(søknadId: UUID, trygdOgPensjon: TrygdOgPensjon) {
-        session.run(
+    private fun lagreTrygdOgPensjon(søknadId: UUID, trygdOgPensjon: TrygdOgPensjon, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(
                 lagreTrygdOgPensjon, mapOf(
                     "id" to UUID.randomUUID(),
@@ -40,8 +40,8 @@ internal class TrygdOgPensjonDAO {
         )
     }
 
-    private fun slettTrygdOgPensjon(søknadId: UUID): Unit {
-        session.run(
+    private fun slettTrygdOgPensjon(søknadId: UUID, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(slettTrygdOgPensjon, søknadId).asUpdate
         )
     }

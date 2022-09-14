@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadDAO
@@ -38,18 +37,5 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.ident, hentetSøker?.ident)
         assertEquals(søker.id, hentetSøker?.id)
         assertEquals(søker.tilstand, hentetSøker?.tilstand)
-    }
-
-    @Test
-    fun `lagre og hente med eksplisitt session`() {
-        val ident = "2"
-        val søker = Søker(ident)
-
-        søkerRepo.lagre(søker)
-
-        val hentetSøker = søkerRepo.hentSøker(ident, session)
-
-        assertEquals(søker.ident, hentetSøker?.ident)
-        assertEquals(søker.id, hentetSøker?.id)
     }
 }

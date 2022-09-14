@@ -1,7 +1,12 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.time.LocalDateTime
+import java.time.Month
+import java.util.*
+import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
@@ -10,9 +15,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.time.LocalDateTime
-import java.time.Month
-import java.util.*
 
 @Testcontainers
 internal class PostgresSøknadDAOTest {
@@ -56,9 +58,13 @@ internal class PostgresSøknadDAOTest {
             trygdOgPensjon = null,
             fritekst = null,
         )
-        søknadDAO.lagre(søker.id, listOf(søknad))
-
-        val hentet = søknadDAO.hentAlle(søker.id)
+        sessionOf(DataSource.hikariDataSource).transaction { txSession ->
+            søknadDAO.lagre(søker.id, listOf(søknad), txSession)
+        }
+        
+        val hentet = sessionOf(DataSource.hikariDataSource).transaction { txSession ->
+            søknadDAO.hentAlle(søker.id, txSession)
+        }
 
         assertEquals(1, hentet.size)
         assertEquals(uuid, hentet.first().id)

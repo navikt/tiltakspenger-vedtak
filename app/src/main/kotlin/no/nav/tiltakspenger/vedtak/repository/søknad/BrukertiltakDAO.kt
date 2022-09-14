@@ -2,26 +2,26 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import java.util.*
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import org.intellij.lang.annotations.Language
 
 internal class BrukertiltakDAO {
 
-    fun hent(søknadId: UUID): BrukerregistrertTiltak? {
-        return session.run(
+    fun hent(søknadId: UUID, txSession: TransactionalSession): BrukerregistrertTiltak? {
+        return txSession.run(
             queryOf(hentBrukerregistrertTiltak, søknadId).map { row ->
                 row.toBrukertiltak()
             }.asSingle
         )
     }
 
-    fun lagre(søknadId: UUID, brukerregistrertTiltak: BrukerregistrertTiltak?): Int {
-        slettBrukertiltak(søknadId)
+    fun lagre(søknadId: UUID, brukerregistrertTiltak: BrukerregistrertTiltak?, txSession: TransactionalSession) {
+        slettBrukertiltak(søknadId, txSession)
         if (brukerregistrertTiltak != null) {
-            session.run(
+            txSession.run(
                 queryOf(
                     lagreBrukerTiltak, mapOf(
                         "id" to UUID.randomUUID(),
@@ -37,12 +37,11 @@ internal class BrukertiltakDAO {
                     )
                 ).asUpdate
             )
-            return 1
-        } else return 0
+        }
     }
 
-    private fun slettBrukertiltak(søknadId: UUID): Unit {
-        session.run(
+    private fun slettBrukertiltak(søknadId: UUID, txSession: TransactionalSession) {
+        txSession.run(
             queryOf(slettBrukerregistrertTiltak, søknadId).asUpdate
         )
     }
