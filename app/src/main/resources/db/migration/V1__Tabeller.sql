@@ -11,7 +11,7 @@ $$
     END
 $$;
 
-CREATE TABLE IF NOT EXISTS søker
+CREATE TABLE søker
 (
     id          UUID PRIMARY KEY,
     ident       VARCHAR                  NOT NULL UNIQUE,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS søker
     opprettet   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS søknad
+CREATE TABLE søknad
 (
     id                  UUID PRIMARY KEY,
     søker_id            UUID                     NOT NULL REFERENCES søker (id),
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS søknad
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS barnetillegg
+CREATE TABLE barnetillegg
 (
     id        UUID PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS barnetillegg
     land      VARCHAR NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS brukertiltak
+CREATE TABLE brukertiltak
 (
     id            UUID PRIMARY KEY,
     søknad_id     UUID    NOT NULL REFERENCES søknad (id),
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS brukertiltak
     antall_dager  INT     NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS arenatiltak
+CREATE TABLE arenatiltak
 (
     id                      UUID PRIMARY KEY,
     søknad_id               UUID    NOT NULL REFERENCES søknad (id),
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS arenatiltak
     sluttdato               DATE    NULL
 );
 
-CREATE TABLE IF NOT EXISTS trygdogpensjon
+CREATE TABLE trygdogpensjon
 (
     id        UUID PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
