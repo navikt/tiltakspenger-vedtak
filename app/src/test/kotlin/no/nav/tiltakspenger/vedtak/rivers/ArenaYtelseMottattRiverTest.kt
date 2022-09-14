@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalDate
+import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -14,16 +16,14 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class ArenaYtelseMottattRiverTest {
 
     private companion object {
-        val IDENT = "04927799109"
+        const val IDENT = "04927799109"
     }
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
@@ -45,7 +45,9 @@ internal class ArenaYtelseMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -53,15 +55,13 @@ internal class ArenaYtelseMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
                 barnetillegg = listOf(),
                 innhentet = LocalDateTime.now(),
+                arenaTiltak = null,
+                brukerregistrertTiltak = null,
+                trygdOgPensjon = null,
+                fritekst = null
             )
         )
         val personopplysningerMottatthendelse = PersonopplysningerMottattHendelse(
@@ -94,7 +94,7 @@ internal class ArenaYtelseMottattRiverTest {
             ident = IDENT,
             tiltaksaktivitet = listOf(
                 Tiltaksaktivitet(
-                    tiltaksnavn = Tiltaksaktivitet.Tiltaksnavn.ARBRRHDAG,
+                    tiltak = Tiltaksaktivitet.Tiltak.ARBRRHDAG,
                     aktivitetId = "",
                     tiltakLokaltNavn = null,
                     arrangoer = null,

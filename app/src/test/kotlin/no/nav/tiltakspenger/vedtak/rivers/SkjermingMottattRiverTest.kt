@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -67,7 +67,9 @@ internal class SkjermingMottattRiverTest {
             aktivitetslogg = aktivitetslogg,
             ident = ident,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = ident,
@@ -75,15 +77,13 @@ internal class SkjermingMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
                 barnetillegg = listOf(),
-                innhentet = LocalDateTime.now()
+                innhentet = LocalDateTime.now(),
+                arenaTiltak = null,
+                brukerregistrertTiltak = null,
+                trygdOgPensjon = null,
+                fritekst = null,
             )
         )
         val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(

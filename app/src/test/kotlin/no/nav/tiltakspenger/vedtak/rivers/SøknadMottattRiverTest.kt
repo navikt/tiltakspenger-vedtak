@@ -46,6 +46,9 @@ internal class SøknadMottattRiverTest {
         {
           "@event_name": "søknad_mottatt",
           "søknad": {
+            "søknadId": "whatever",
+            "journalpostId": "whatever2",
+            "dokumentInfoId": "whatever3",
             "id": "13306",
             "fornavn": "LEVENDE",
             "etternavn": "POTET",
