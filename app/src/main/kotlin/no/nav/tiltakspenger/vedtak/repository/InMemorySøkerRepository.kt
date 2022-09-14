@@ -14,9 +14,5 @@ class InMemorySøkerRepository : SøkerRepository {
         this.size
     }
 
-    override fun oppdaterTilstand(tilstand: Søker.Tilstand) {
-        TODO("Not yet implemented")
-    }
-
     fun reset() = søkere.clear()
 }
