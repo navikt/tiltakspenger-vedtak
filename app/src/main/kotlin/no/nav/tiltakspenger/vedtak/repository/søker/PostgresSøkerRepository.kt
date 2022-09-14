@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
+import java.time.LocalDateTime
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
@@ -8,7 +9,6 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource.session
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadRepository
 import org.intellij.lang.annotations.Language
-import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -81,7 +81,7 @@ internal class PostgresSøkerRepository(
                 oppdater,
                 mapOf(
                     "id" to søker.id,
-                    "tilstand" to søker.tilstand,
+                    "tilstand" to søker.tilstand.toString(),
                     "sistEndret" to LocalDateTime.now()
                 )
             ).asUpdate
