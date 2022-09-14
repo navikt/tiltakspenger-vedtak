@@ -42,6 +42,7 @@ internal fun vedtakApi(
             authenticate("saksbehandling") {
                 personRoutes(innloggetBrukerProvider)
             }
+            naisRoutes()
         }
     }
 }
