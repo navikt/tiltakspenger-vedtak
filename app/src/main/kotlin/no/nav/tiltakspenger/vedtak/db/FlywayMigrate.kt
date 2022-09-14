@@ -5,7 +5,7 @@ import org.flywaydb.core.Flyway
 fun flywayMigrate() {
     Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
-        .cleanOnValidationError(false)
+        .cleanOnValidationError(true)
         .load()
         .migrate()
 }
