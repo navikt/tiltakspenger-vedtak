@@ -9,9 +9,8 @@ class InMemorySøkerRepository : SøkerRepository {
 
     override fun hent(ident: String): Søker? = søkere[ident]
 
-    override fun lagre(søker: Søker): Int = with(søkere) {
+    override fun lagre(søker: Søker) = with(søkere) {
         this[søker.ident] = søker
-        this.size
     }
 
     fun reset() = søkere.clear()

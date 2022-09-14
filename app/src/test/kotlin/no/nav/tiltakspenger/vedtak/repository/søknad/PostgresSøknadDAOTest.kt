@@ -1,8 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.time.LocalDateTime
-import java.time.Month
-import java.util.*
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -13,9 +10,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
+import java.time.Month
+import java.util.*
 
 @Testcontainers
-internal class PostgresSøknadRepositoryTest {
+internal class PostgresSøknadDAOTest {
     private val søknadDAO = PostgresSøknadDAO()
     private val søkerRepository = PostgresSøkerRepository(søknadDAO)
 
@@ -31,7 +31,7 @@ internal class PostgresSøknadRepositoryTest {
 
     @Test
     fun `lagre og hente`() {
-        val ident = "1"
+        val ident = "3"
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
@@ -56,11 +56,9 @@ internal class PostgresSøknadRepositoryTest {
             trygdOgPensjon = null,
             fritekst = null,
         )
-        val antallLagret = søknadDAO.lagre(ident, listOf(søknad))
+        søknadDAO.lagre(søker.id, listOf(søknad))
 
-        assertEquals(1, antallLagret)
-
-        val hentet = søknadDAO.hentAlle(ident)
+        val hentet = søknadDAO.hentAlle(søker.id)
 
         assertEquals(1, hentet.size)
         assertEquals(uuid, hentet.first().id)

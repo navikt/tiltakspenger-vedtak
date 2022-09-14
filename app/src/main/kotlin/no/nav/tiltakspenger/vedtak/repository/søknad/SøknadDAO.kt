@@ -1,8 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
+import java.util.*
 import no.nav.tiltakspenger.vedtak.Søknad
 
 interface SøknadDAO {
-    fun hentAlle(ident: String): List<Søknad>
-    fun lagre(ident: String, søknader: List<Søknad>): Int
+    fun hentAlle(søkerId: UUID): List<Søknad>
+    fun lagre(søkerId: UUID, søknader: List<Søknad>)
 }
