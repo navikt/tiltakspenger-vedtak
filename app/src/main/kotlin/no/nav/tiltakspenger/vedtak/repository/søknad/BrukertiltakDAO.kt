@@ -47,8 +47,7 @@ internal class BrukertiltakDAO {
     }
 
     private fun Row.toBrukertiltak(): BrukerregistrertTiltak {
-        val tiltakstype = stringOrNull("tiltakstype")
-        val tiltakskode = if (tiltakstype == null) null else Tiltaksaktivitet.Tiltak.valueOf(tiltakstype)
+        val tiltakskode = stringOrNull("tiltakstype")?.let { Tiltaksaktivitet.Tiltak.valueOf(it) }
         val arrangoernavn = stringOrNull("arrangoernavn")
         val beskrivelse = stringOrNull("beskrivelse")
         val fom = localDateOrNull("fom")

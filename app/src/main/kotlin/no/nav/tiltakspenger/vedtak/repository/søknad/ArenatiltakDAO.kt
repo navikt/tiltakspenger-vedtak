@@ -29,7 +29,7 @@ internal class ArenatiltakDAO {
                         "arenaId" to arenaTiltak.arenaId,
                         "arrangoer" to arenaTiltak.arrangoer,
                         "harSluttdatoFraArena" to arenaTiltak.harSluttdatoFraArena,
-                        "navn" to arenaTiltak.tiltakskode,                  // TODO sjekk om denne er riktig, og om den skal endre navn i basen
+                        "navn" to arenaTiltak.tiltakskode?.name,                  // TODO sjekk om denne er riktig, og om den skal endre navn i basen
                         "erIEndreStatus" to arenaTiltak.erIEndreStatus,
                         "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
@@ -51,7 +51,7 @@ internal class ArenatiltakDAO {
         val arenaId = stringOrNull("arena_id")
         val arrangoer = stringOrNull("arrangoer")
         val harSluttdatoFraArena = boolean("har_slutt_dato_fra_arena")
-        val navn = string("navn")
+        val navn = stringOrNull("navn")
         val erIEndreStatus = boolean("er_i_endre_status")
         val opprinneligStartdato = localDateOrNull("opprinnelig_startdato")
         val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
@@ -61,7 +61,7 @@ internal class ArenatiltakDAO {
             arenaId = arenaId,
             arrangoer = arrangoer,
             harSluttdatoFraArena = harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(navn),
+            tiltakskode = navn?.let { Tiltaksaktivitet.Tiltak.valueOf(it) },
             erIEndreStatus = erIEndreStatus,
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
