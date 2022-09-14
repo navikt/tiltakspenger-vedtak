@@ -2,10 +2,11 @@ package no.nav.tiltakspenger.vedtak.tilgang
 
 import io.ktor.server.auth.jwt.JWTPrincipal
 import java.util.*
+import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.Role
 import no.nav.tiltakspenger.vedtak.RoleName
 
-class InnloggetBrukerProvider(private val allAvailableRoles: List<Role>) {
+class InnloggetBrukerProvider(private val allAvailableRoles: List<Role> = Configuration.allRoles()) {
 
     private fun epostToBrukernavn(epost: String): String =
         epost.split("@").first().replace(".", " ")

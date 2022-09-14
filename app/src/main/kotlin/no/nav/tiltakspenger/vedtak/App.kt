@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 fun main() {
     System.setProperty("logback.configurationFile", "egenLogback.xml")
@@ -37,7 +38,12 @@ fun main() {
             )
         )
     )
-        .withKtorModule(vedtakApi(Configuration.TokenVerificationConfig()))
+        .withKtorModule(
+            vedtakApi(
+                config = Configuration.TokenVerificationConfig(),
+                innloggetBrukerProvider = InnloggetBrukerProvider(),
+            )
+        )
         .build()
         .also {
             val databaseRepos = DatabaseBuilder.build()
