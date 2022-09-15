@@ -58,7 +58,7 @@ internal class PostgresSøknadDAOTest {
             deltarIntroduksjonsprogrammet = null,
             oppholdInstitusjon = null,
             typeInstitusjon = null,
-            opprettet = innhentet,
+            opprettet = null,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
             arenaTiltak = null,
@@ -103,7 +103,7 @@ internal class PostgresSøknadDAOTest {
             deltarIntroduksjonsprogrammet = null,
             oppholdInstitusjon = null,
             typeInstitusjon = null,
-            opprettet = innhentet,
+            opprettet = null,
             barnetillegg = listOf(
                 Barnetillegg(
                     fornavn = null, etternavn = null, alder = 0, ident = "1", land = "NO"
