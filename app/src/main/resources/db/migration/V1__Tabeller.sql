@@ -35,7 +35,7 @@ CREATE TABLE søknad
     fritekst            VARCHAR                     NULL,
     journalpost_id      VARCHAR                     NOT NULL,
     dokumentinfo_id     VARCHAR                     NOT NULL,
-    opprettet           TIMESTAMP WITH TIME ZONE NULL,
+    opprettet           TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
