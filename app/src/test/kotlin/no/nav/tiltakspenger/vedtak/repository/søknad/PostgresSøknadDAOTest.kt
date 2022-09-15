@@ -19,7 +19,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -34,7 +34,7 @@ internal class PostgresSøknadDAOTest {
         val postgresContainer = PostgresTestcontainer
     }
 
-    @BeforeAll
+    @BeforeEach
     fun setup() {
         flywayMigrate()
     }
@@ -242,31 +242,26 @@ internal class PostgresSøknadDAOTest {
 
         val søknadHentet: Søknad = hentet.first()
         søknadHentet::class.declaredMemberProperties.forEach {
-            println("Checking ${it.name}")
             assertNotNull(it.call(søknadHentet))
         }
 
         val barnetillegg = søknadHentet.barnetillegg.first()
         barnetillegg::class.declaredMemberProperties.forEach {
-            println("Checking ${it.name}")
             assertNotNull(it.call(barnetillegg))
         }
 
         val arenaTiltak = søknadHentet.arenaTiltak!!
         arenaTiltak::class.declaredMemberProperties.forEach {
-            println("Checking ${it.name}")
             assertNotNull(it.call(arenaTiltak))
         }
 
         val brukerregistrertTiltak = søknadHentet.brukerregistrertTiltak!!
         brukerregistrertTiltak::class.declaredMemberProperties.forEach {
-            println("Checking ${it.name}")
             assertNotNull(it.call(brukerregistrertTiltak))
         }
 
         val trygdOgPensjon = søknadHentet.trygdOgPensjon.first()
         trygdOgPensjon::class.declaredMemberProperties.forEach {
-            println("Checking ${it.name}")
             assertNotNull(it.call(trygdOgPensjon))
         }
 
