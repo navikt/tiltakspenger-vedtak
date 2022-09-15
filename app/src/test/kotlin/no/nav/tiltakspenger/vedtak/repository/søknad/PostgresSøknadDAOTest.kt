@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
 import kotliquery.sessionOf
@@ -180,7 +181,7 @@ internal class PostgresSøknadDAOTest {
             deltarIntroduksjonsprogrammet = true,
             oppholdInstitusjon = true,
             typeInstitusjon = "Barnevernet",
-            opprettet = LocalDateTime.now(),
+            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
                 Barnetillegg(
                     fornavn = "Roger", etternavn = "McPerson", alder = 16, ident = "1", land = "NO"
@@ -266,6 +267,7 @@ internal class PostgresSøknadDAOTest {
         }
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
+        println(søknad.opprettet)
         assertEquals(søknad.opprettet, hentet.first().opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.first().tidsstempelHosOss)
         assertEquals(søknad.deltarKvp, hentet.first().deltarKvp)
