@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import java.time.LocalDateTime
-import java.time.ZoneId
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -70,8 +69,8 @@ internal class PostgresSøkerRepository(
                     "id" to søker.id,
                     "ident" to søker.ident,
                     "tilstand" to søker.tilstand.type.toString(),
-                    "sist_endret" to LocalDateTime.now().atZone(ZoneId.systemDefault()),
-                    "opprettet" to LocalDateTime.now().atZone(ZoneId.systemDefault()),
+                    "sist_endret" to LocalDateTime.now(),
+                    "opprettet" to LocalDateTime.now(),
                 )
             ).asUpdate
         )
