@@ -1,10 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Month
-import java.util.*
-import kotlin.reflect.full.declaredMemberProperties
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
@@ -23,6 +18,11 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
+import java.util.*
+import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers
 internal class PostgresSøknadDAOTest {
@@ -271,7 +271,10 @@ internal class PostgresSøknadDAOTest {
         }
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
-        // assertEquals(søknad.opprettet, hentet.first().opprettet)
+        println("------")
+        println("******** ${søknad.opprettet} og ${hentet.first().opprettet}")
+        println("------")
+        assertEquals(søknad.opprettet, hentet.first().opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.first().tidsstempelHosOss)
         assertEquals(søknad.deltarKvp, hentet.first().deltarKvp)
 
