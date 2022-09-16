@@ -1,6 +1,6 @@
 val ktorVersion = "2.1.1"
 val kotestVersion = "5.4.2"
-val mockkVersion = "1.12.7"
+val mockkVersion = "1.12.8"
 val testContainersVersion = "1.17.3"
 
 plugins {
