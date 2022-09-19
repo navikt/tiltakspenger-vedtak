@@ -27,8 +27,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(fornavn = "Kari", etternavn = "Nordmann", alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(fornavn = "Sven", etternavn = "Svensk", alder = 13, ident = "789", land = "SWE")
+                BarnetilleggMedIdentDTO(alder = 10, ident = "456", land = "NOR"),
+                BarnetilleggMedIdentDTO(alder = 13, ident = "789", land = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",

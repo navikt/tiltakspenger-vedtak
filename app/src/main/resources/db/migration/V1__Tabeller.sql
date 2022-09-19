@@ -41,13 +41,12 @@ CREATE TABLE søknad
 
 CREATE TABLE barnetillegg
 (
-    id        UUID PRIMARY KEY,
-    søknad_id UUID    NOT NULL REFERENCES søknad (id),
-    ident     VARCHAR NOT NULL,
-    fornavn   VARCHAR NULL,
-    etternavn VARCHAR NULL,
-    alder     INT     NOT NULL,
-    land      VARCHAR NOT NULL
+    id          UUID PRIMARY KEY,
+    søknad_id   UUID    NOT NULL REFERENCES søknad (id),
+    ident       VARCHAR NULL,
+    fødselsdato DATE    NULL,
+    alder       INT     NOT NULL,
+    land        VARCHAR NOT NULL
 );
 
 CREATE TABLE brukertiltak

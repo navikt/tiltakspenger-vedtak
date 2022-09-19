@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.util.*
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 internal class BarnetilleggDAO {
 
@@ -27,18 +27,27 @@ internal class BarnetilleggDAO {
     }
 
     private fun lagreBarnetillegg(søknadId: UUID, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
+        val paramMap = when (barnetillegg) {
+            is Barnetillegg.MedIdent -> mapOf(
+                "id" to UUID.randomUUID(),
+                "soknadId" to søknadId,
+                "ident" to barnetillegg.ident,
+                "fodselsdato" to null,
+                "alder" to barnetillegg.alder,
+                "land" to barnetillegg.land,
+            )
+
+            is Barnetillegg.UtenIdent -> mapOf(
+                "id" to UUID.randomUUID(),
+                "soknadId" to søknadId,
+                "ident" to null,
+                "fodselsdato" to barnetillegg.fødselsdato,
+                "alder" to barnetillegg.alder,
+                "land" to barnetillegg.land,
+            )
+        }
         txSession.run(
-            queryOf(
-                lagreBarnetillegg, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "soknadId" to søknadId,
-                    "ident" to barnetillegg.ident,
-                    "fornavn" to barnetillegg.fornavn,
-                    "etternavn" to barnetillegg.etternavn,
-                    "alder" to barnetillegg.alder,
-                    "land" to barnetillegg.land,
-                )
-            ).asUpdate
+            queryOf(lagreBarnetillegg, paramMap).asUpdate
         )
     }
 
@@ -49,19 +58,15 @@ internal class BarnetilleggDAO {
     }
 
     private fun Row.toBarnetillegg(): Barnetillegg {
-        val fornavn = stringOrNull("fornavn")
-        val etternavn = stringOrNull("etternavn")
+        val ident = stringOrNull("ident")
+        val fødselsdato = localDateOrNull("fødselsdato")
         val alder = int("alder")
-        val ident = string("ident")
         val land = string("land")
-
-        return Barnetillegg(
-            fornavn = fornavn,
-            etternavn = etternavn,
-            alder = alder,
-            ident = ident,
-            land = land
-        )
+        return if (ident != null) {
+            Barnetillegg.MedIdent(alder = alder, land = land, ident = ident)
+        } else {
+            Barnetillegg.UtenIdent(alder = alder, land = land, fødselsdato = fødselsdato!!)
+        }
     }
 
     @Language("SQL")
@@ -70,16 +75,14 @@ internal class BarnetilleggDAO {
             id,
             søknad_id,
             ident,
-            fornavn, 
-            etternavn, 
+            fødselsdato,
             alder,
             land
         ) values (
             :id,
             :soknadId,
             :ident,
-            :fornavn, 
-            :etternavn,
+            :fodselsdato,
             :alder,
             :land
         )""".trimIndent()

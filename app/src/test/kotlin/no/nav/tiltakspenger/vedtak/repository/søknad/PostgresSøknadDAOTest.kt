@@ -1,11 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.temporal.ChronoUnit
-import java.util.*
-import kotlin.reflect.full.declaredMemberProperties
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
@@ -24,6 +18,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
+import java.time.temporal.ChronoUnit
+import java.util.*
+import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers
 internal class PostgresSøknadDAOTest {
@@ -115,9 +115,7 @@ internal class PostgresSøknadDAOTest {
             typeInstitusjon = null,
             opprettet = null,
             barnetillegg = listOf(
-                Barnetillegg(
-                    fornavn = null, etternavn = null, alder = 0, ident = "1", land = "NO"
-                )
+                Barnetillegg.MedIdent(alder = 0, ident = "1", land = "NO")
             ),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
@@ -192,9 +190,7 @@ internal class PostgresSøknadDAOTest {
             typeInstitusjon = "Barnevernet",
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
-                Barnetillegg(
-                    fornavn = "Roger", etternavn = "McPerson", alder = 16, ident = "1", land = "NO"
-                )
+                Barnetillegg.MedIdent(alder = 16, ident = "1", land = "NO")
             ),
             tidsstempelHosOss = innhentet,
             tiltak = tiltak,

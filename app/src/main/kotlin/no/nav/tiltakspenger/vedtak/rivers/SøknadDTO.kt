@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
-import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
+import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggMedIdentDTO.Companion.mapBarnetilleggMedIdent
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
 import java.time.LocalDate
@@ -26,7 +26,7 @@ class SøknadDTO(
     val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime?,
-    val barnetillegg: List<BarnetilleggDTO>,
+    val barnetillegg: List<BarnetilleggMedIdentDTO>,
     val arenaTiltak: ArenaTiltakDTO?,
     val brukerregistrertTiltak: BrukerregistrertTiltakDTO?,
     val trygdOgPensjon: List<TrygdOgPensjonDTO>?,
@@ -46,7 +46,7 @@ class SøknadDTO(
                 oppholdInstitusjon = dto.oppholdInstitusjon,
                 typeInstitusjon = dto.typeInstitusjon,
                 opprettet = dto.opprettet,
-                barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
+                barnetillegg = dto.barnetillegg.map { mapBarnetilleggMedIdent(it) },
                 tidsstempelHosOss = innhentet,
                 tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
                 trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
@@ -120,21 +120,25 @@ class TrygdOgPensjonDTO(
     }
 }
 
-class BarnetilleggDTO(
-    val fornavn: String?,
-    val etternavn: String?,
-    val alder: Int,
-    val ident: String,
-    val land: String,
-) {
+class BarnetilleggMedIdentDTO(val alder: Int, val land: String, val ident: String) {
     companion object {
-        internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
-            return Barnetillegg(
-                fornavn = dto.fornavn,
-                etternavn = dto.etternavn,
+        internal fun mapBarnetilleggMedIdent(dto: BarnetilleggMedIdentDTO): Barnetillegg.MedIdent {
+            return Barnetillegg.MedIdent(
                 alder = dto.alder,
-                ident = dto.ident,
                 land = dto.land,
+                ident = dto.ident
+            )
+        }
+    }
+}
+
+class BarnetilleggUtenIdentDTO(val alder: Int, val land: String, val fødselsdato: LocalDate) {
+    companion object {
+        internal fun mapBarnetilleggMedIdent(dto: BarnetilleggUtenIdentDTO): Barnetillegg.UtenIdent {
+            return Barnetillegg.UtenIdent(
+                alder = dto.alder,
+                land = dto.land,
+                fødselsdato = dto.fødselsdato
             )
         }
     }

@@ -68,12 +68,9 @@ sealed class Tiltak {
     ) : Tiltak()
 }
 
-class Barnetillegg(
-    val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val alder: Int, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val ident: String,
-    val land: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
-    // SVAR på over: Barnet må med virkning fra 1. juli 2020 være bosatt og oppholde seg i Norge, herunder Svalbard.
-    // men TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-)
+sealed class Barnetillegg {
+    abstract val alder: Int
+    abstract val land: String
+    data class MedIdent(override val alder: Int, override val land: String, val ident: String): Barnetillegg()
+    data class UtenIdent(override val alder: Int, override val land: String, val fødselsdato: LocalDate): Barnetillegg()
+}
