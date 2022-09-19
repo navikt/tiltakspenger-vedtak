@@ -5,27 +5,23 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.jackson.jackson
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.auth.Authentication
-import io.ktor.server.auth.AuthenticationConfig
-import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.plugins.callid.CallId
-import io.ktor.server.plugins.callid.callIdMdc
-import io.ktor.server.plugins.callloging.CallLogging
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.server.response.respond
-import io.ktor.server.routing.routing
-import java.util.*
-import java.util.concurrent.TimeUnit
+import io.ktor.http.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
@@ -35,6 +31,11 @@ internal fun vedtakApi(
         install(CallId)
         install(CallLogging) {
             callIdMdc("call-id")
+            filter { call ->
+                !call.request.path().startsWith("/isalive") &&
+                        !call.request.path().startsWith("/isready") &&
+                        !call.request.path().startsWith("/metrics")
+            }
         }
         jacksonSerialization()
         auth(config)
