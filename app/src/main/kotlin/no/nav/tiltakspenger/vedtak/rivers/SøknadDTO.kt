@@ -57,7 +57,7 @@ class SøknadDTO(
 }
 
 class BrukerregistrertTiltakDTO(
-    val tiltakstype: String?,
+    val tiltakskode: String?,
     val arrangoernavn: String?,
     val beskrivelse: String?,
     val fom: LocalDate?,
@@ -70,7 +70,7 @@ class BrukerregistrertTiltakDTO(
         internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
             if (dto == null) null
             else Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakstype!!), // TODO:test
+                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode!!), // TODO:test
                 arrangoernavn = dto.arrangoernavn,
                 beskrivelse = dto.beskrivelse,
                 fom = dto.fom,

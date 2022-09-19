@@ -58,6 +58,22 @@ internal class SøknadMottattRiverTest {
     }
 
     @Test
+    fun `Skal generere behov med brukertiltak2 og legge på kafka `() {
+        testRapid.sendTestMessage(brukerRegistrertSøknad())
+        with(testRapid.inspektør) {
+            assertEquals(1, size)
+            assertEquals("behov", field(0, "@event_name").asText())
+            assertEquals("personopplysninger", field(0, "@behov")[0].asText())
+            // De følgende feiler hvis feltet ikke er satt
+            field(0, "@id").asText()
+            field(0, "ident").asText()
+            field(0, "@behovId").asText()
+            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals(IDENT, field(0, "ident").asText())
+        }
+    }
+
+    @Test
     fun `Skal generere behov med barnetillegg uten ident og legge på kafka `() {
         testRapid.sendTestMessage(søknadMottattBarnUtenIdent())
         with(testRapid.inspektør) {
@@ -140,6 +156,58 @@ internal class SøknadMottattRiverTest {
         }
         """.trimIndent()
 
+    private fun brukerRegistrertSøknad(): String =
+        """
+            {
+              "@event_name": "søknad_mottatt",
+              "søknad": {
+                "søknadId": "13524",
+                "journalpostId": "573780649",
+                "dokumentInfoId": "599042477",
+                "fornavn": "UNYTTIG",
+                "etternavn": "FILTER",
+                "ident": "$IDENT",
+                "deltarKvp": false,
+                "deltarIntroduksjonsprogrammet": false,
+                "oppholdInstitusjon": false,
+                "typeInstitusjon": null,
+                "opprettet": "2022-09-19T11:14:36.502",
+                "barnetillegg": [],
+                "arenaTiltak": null,
+                "brukerregistrertTiltak": {
+                  "tiltakskode": "AMO",
+                  "arrangoernavn": "Test AS",
+                  "beskrivelse": null,
+                  "fom": "2022-09-01",
+                  "tom": "2022-09-30",
+                  "adresse": null,
+                  "postnummer": null,
+                  "antallDager": 3
+                },
+                "trygdOgPensjon": null,
+                "fritekst": null
+              },
+              "@id": "0b9bd6e5-f155-4112-ba01-c39b1f00fb14",
+              "@opprettet": "2022-09-19T11:15:51.345478133",
+              "system_read_count": 1,
+              "system_participating_services": [
+                {
+                  "id": "0b9bd6e5-f155-4112-ba01-c39b1f00fb14",
+                  "time": "2022-09-19T11:15:51.345478133",
+                  "service": "tiltakspenger-mottak",
+                  "instance": "tiltakspenger-mottak-7cdcf6dbb9-6xlhj",
+                  "image": "ghcr.io/navikt/tiltakspenger-mottak:711257b4c82c374dbbd768708e225fd10b2e7d6f"
+                },
+                {
+                  "id": "0b9bd6e5-f155-4112-ba01-c39b1f00fb14",
+                  "time": "2022-09-19T15:05:17.276763620",
+                  "service": "tiltakspenger-vedtak",
+                  "instance": "tiltakspenger-vedtak-66c79785c8-mjcrr",
+                  "image": "ghcr.io/navikt/tiltakspenger-vedtak:5cd90ca221c658a4e5465829cb76ed7eba248908"
+                }
+              ]
+            }
+        """.trimIndent()
     private fun søknadMottattBarnUtenIdent(): String =
         """
             {
@@ -306,7 +374,7 @@ internal class SøknadMottattRiverTest {
             "tiltaksArrangoer": "foo",
             "tiltaksType": "JOBSOK",
             "brukerregistrertTiltak": {
-              "tiltakstype": "Annet",
+              "tiltakskode": "Annet",
               "arrangoernavn": "test as",
               "beskrivelse": "Intro",
               "fom": "2022-04-01",
