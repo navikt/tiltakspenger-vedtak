@@ -43,7 +43,7 @@ internal class SøknadDTOTest {
 
             ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
-                tiltakskode = "JOBSOK",
+                tiltakstype = "JOBSOK",
                 arrangoernavn = null,
                 beskrivelse = null,
                 fom = null,

@@ -26,8 +26,8 @@ internal class SøknadMottattRiverTest {
     }
 
     @Test
-    fun `Skal generere behov og legge på kafka `() {
-        testRapid.sendTestMessage(søknadMottattEvent())
+    fun `Skal generere behov med arenatiltak og legge på kafka `() {
+        testRapid.sendTestMessage(søknadMottattArenatiltakEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
@@ -41,7 +41,23 @@ internal class SøknadMottattRiverTest {
         }
     }
 
-    private fun søknadMottattEvent(): String =
+    @Test
+    fun `Skal generere behov med brukertiltak og legge på kafka `() {
+        testRapid.sendTestMessage(søknadMottattBrukertiltakEvent())
+        with(testRapid.inspektør) {
+            assertEquals(1, size)
+            assertEquals("behov", field(0, "@event_name").asText())
+            assertEquals("personopplysninger", field(0, "@behov")[0].asText())
+            // De følgende feiler hvis feltet ikke er satt
+            field(0, "@id").asText()
+            field(0, "ident").asText()
+            field(0, "@behovId").asText()
+            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals(IDENT, field(0, "ident").asText())
+        }
+    }
+
+    private fun søknadMottattArenatiltakEvent(): String =
         """
         {
           "@event_name": "søknad_mottatt",
@@ -63,13 +79,63 @@ internal class SøknadMottattRiverTest {
                  "arenaId" : "id",
                  "arrangoer" : "navn",
                  "harSluttdatoFraArena" : false,
-                 "tiltakskode" : "kode",
-                 "erIEndreStatus' : false,
+                 "tiltakskode" : "MENTOR",
+                 "erIEndreStatus" : false,
                  "opprinneligSluttdato": null,
                  "opprinneligStartdato" : null,
                  "sluttdato" : null,
                  "startdato" : null
+            },
+            "opprettet": "2022-06-29T16:24:02.608",
+            "brukerRegistrertStartDato": "2022-06-21",
+            "brukerRegistrertSluttDato": "2022-06-30",
+            "systemRegistrertStartDato": null,
+            "systemRegistrertSluttDato": null,
+            "barnetillegg": []
+          },
+          "@id": "369bf01c-f46f-4cb9-ba0d-01beb0905edc",
+          "@opprettet": "2022-06-29T16:25:33.598375671",
+          "system_read_count": 1,
+          "system_participating_services": [
+            {
+              "id": "369bf01c-f46f-4cb9-ba0d-01beb0905edc",
+              "time": "2022-06-29T16:25:33.598375671",
+              "service": "tiltakspenger-mottak",
+              "instance": "tiltakspenger-mottak-6c65db7887-ffwcv",
+              "image": "ghcr.io/navikt/tiltakspenger-mottak:2074ee7461ad748d7c99d26ee5b7374e0c7fd9f4"
             }
+          ]
+        }
+        """.trimIndent()
+
+    private fun søknadMottattBrukertiltakEvent(): String =
+        """
+        {
+          "@event_name": "søknad_mottatt",
+          "søknad": {
+            "søknadId": "whatever",
+            "journalpostId": "whatever2",
+            "dokumentInfoId": "whatever3",
+            "id": "13306",
+            "fornavn": "LEVENDE",
+            "etternavn": "POTET",
+            "ident": "04927799109",
+            "deltarKvp": false,
+            "deltarIntroduksjonsprogrammet": false,
+            "oppholdInstitusjon": false,
+            "typeInstitusjon": null,
+            "tiltaksArrangoer": "foo",
+            "tiltaksType": "JOBSOK",
+            "brukerregistrertTiltak": {
+              "tiltakstype": "Annet",
+              "arrangoernavn": "test as",
+              "beskrivelse": "Intro",
+              "fom": "2022-04-01",
+              "tom": "2022-04-22",
+              "adresse": "Storgata 1",
+              "postnummer": "0318",
+              "antallDager": 5
+            },
             "opprettet": "2022-06-29T16:24:02.608",
             "brukerRegistrertStartDato": "2022-06-21",
             "brukerRegistrertSluttDato": "2022-06-30",

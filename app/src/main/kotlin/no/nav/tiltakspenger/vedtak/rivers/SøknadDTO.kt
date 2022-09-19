@@ -57,7 +57,7 @@ class SøknadDTO(
 }
 
 class BrukerregistrertTiltakDTO(
-    val tiltakskode: String?,
+    val tiltakstype: String?,
     val arrangoernavn: String?,
     val beskrivelse: String?,
     val fom: LocalDate?,
@@ -70,7 +70,7 @@ class BrukerregistrertTiltakDTO(
         internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
             if (dto == null) null
             else Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode!!), // TODO:test
+                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakstype!!), // TODO:test
                 arrangoernavn = dto.arrangoernavn,
                 beskrivelse = dto.beskrivelse,
                 fom = dto.fom,
@@ -100,7 +100,7 @@ class ArenaTiltakDTO(
             arenaId = dto.arenaId,
             arrangoer = dto.arrangoer,
             harSluttdatoFraArena = dto.harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode!!),  // TODO test this
+            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode!!.uppercase()),  // TODO test this
             erIEndreStatus = dto.erIEndreStatus,
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,
