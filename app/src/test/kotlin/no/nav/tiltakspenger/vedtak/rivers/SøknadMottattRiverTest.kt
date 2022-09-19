@@ -59,6 +59,17 @@ internal class SøknadMottattRiverTest {
             "typeInstitusjon": null,
             "tiltaksArrangoer": "foo",
             "tiltaksType": "JOBSOK",
+            "arenaTiltak" : {
+                 "arenaId" : "id",
+                 "arrangoer" : "navn",
+                 "harSluttdatoFraArena" : false,
+                 "tiltakskode" : "kode",
+                 "erIEndreStatus' : false,
+                 "opprinneligSluttdato": null,
+                 "opprinneligStartdato" : null,
+                 "sluttdato" : null,
+                 "startdato" : null
+            }
             "opprettet": "2022-06-29T16:24:02.608",
             "brukerRegistrertStartDato": "2022-06-21",
             "brukerRegistrertSluttDato": "2022-06-30",

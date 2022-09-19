@@ -2,18 +2,17 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SøknadDTO(
     val søknadId: String,
@@ -49,8 +48,7 @@ class SøknadDTO(
                 opprettet = dto.opprettet,
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
-                arenaTiltak = mapArenatiltak(dto.arenaTiltak),
-                brukerregistrertTiltak = mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
+                tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
                 trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
                 fritekst = dto.fritekst
             )
@@ -69,9 +67,9 @@ class BrukerregistrertTiltakDTO(
     val antallDager: Int
 ) {
     companion object {
-        internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): BrukerregistrertTiltak? =
+        internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
             if (dto == null) null
-            else BrukerregistrertTiltak(
+            else Tiltak.BrukerregistrertTiltak(
                 tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode!!), // TODO:test
                 arrangoernavn = dto.arrangoernavn,
                 beskrivelse = dto.beskrivelse,
@@ -97,8 +95,8 @@ class ArenaTiltakDTO(
     val startdato: LocalDate? = null
 ) {
     companion object {
-        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): ArenaTiltak? = if (dto == null) null
-        else ArenaTiltak(
+        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) null
+        else Tiltak.ArenaTiltak(
             arenaId = dto.arenaId,
             arrangoer = dto.arrangoer,
             harSluttdatoFraArena = dto.harSluttdatoFraArena,

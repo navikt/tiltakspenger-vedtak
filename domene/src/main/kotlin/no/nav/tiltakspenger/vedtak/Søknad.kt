@@ -23,8 +23,7 @@ class Søknad(
     val tidsstempelHosOss: LocalDateTime,
     // TODO: Kan vi bruke sealed class som union type for å fange at man
     // *enten* har arenaTiltak *eller* brukerregistrertTiltak?
-    val arenaTiltak: ArenaTiltak?,
-    val brukerregistrertTiltak: BrukerregistrertTiltak?,
+    val tiltak: Tiltak,
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
 ) : Tidsstempler {
@@ -44,17 +43,30 @@ class TrygdOgPensjon(
     val tom: LocalDate? = null
 )
 
-class ArenaTiltak(
-    val arenaId: String? = null,
-    val arrangoer: String? = null,
-    val harSluttdatoFraArena: Boolean? = null,
-    val tiltakskode: Tiltaksaktivitet.Tiltak? = null,
-    val erIEndreStatus: Boolean? = null,
-    val opprinneligSluttdato: LocalDate? = null,
-    val opprinneligStartdato: LocalDate? = null,
-    val sluttdato: LocalDate? = null,
-    val startdato: LocalDate? = null
-)
+sealed class Tiltak {
+    data class ArenaTiltak(
+        val arenaId: String? = null,
+        val arrangoer: String? = null,
+        val harSluttdatoFraArena: Boolean? = null,
+        val tiltakskode: Tiltaksaktivitet.Tiltak? = null,
+        val erIEndreStatus: Boolean? = null,
+        val opprinneligSluttdato: LocalDate? = null,
+        val opprinneligStartdato: LocalDate? = null,
+        val sluttdato: LocalDate? = null,
+        val startdato: LocalDate? = null
+    ) : Tiltak()
+
+    data class BrukerregistrertTiltak(
+        val tiltakskode: Tiltaksaktivitet.Tiltak?,
+        val arrangoernavn: String?,
+        val beskrivelse: String?,
+        val fom: LocalDate?,
+        val tom: LocalDate?,
+        val adresse: String? = null,
+        val postnummer: String? = null,
+        val antallDager: Int
+    ) : Tiltak()
+}
 
 class Barnetillegg(
     val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
@@ -64,15 +76,4 @@ class Barnetillegg(
     val land: String // TODO: Denne kan være sensitiv, hvis barnet er kode 6/7! Hva skal vi med den?
     // SVAR på over: Barnet må med virkning fra 1. juli 2020 være bosatt og oppholde seg i Norge, herunder Svalbard.
     // men TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-)
-
-class BrukerregistrertTiltak(
-    val tiltakskode: Tiltaksaktivitet.Tiltak?,
-    val arrangoernavn: String?,
-    val beskrivelse: String?,
-    val fom: LocalDate?,
-    val tom: LocalDate?,
-    val adresse: String? = null,
-    val postnummer: String? = null,
-    val antallDager: Int
 )

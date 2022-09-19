@@ -10,8 +10,7 @@ import org.intellij.lang.annotations.Language
 
 internal class PostgresSøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
-    private val arenatiltakDAO: ArenatiltakDAO = ArenatiltakDAO(),
-    private val brukertiltakDAO: BrukertiltakDAO = BrukertiltakDAO(),
+    private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
 ) : SøknadDAO {
     override fun hentAlle(søkerId: UUID, txSession: TransactionalSession): List<Søknad> {
@@ -40,8 +39,7 @@ internal class PostgresSøknadDAO(
             lagreSøknad(søkerId, søknad, txSession)
         }
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
-        arenatiltakDAO.lagre(søknad.id, søknad.arenaTiltak, txSession)
-        brukertiltakDAO.lagre(søknad.id, søknad.brukerregistrertTiltak, txSession)
+        tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
         trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon, txSession)
     }
 
@@ -107,8 +105,7 @@ internal class PostgresSøknadDAO(
         val journalpostId = string("journalpost_id")
         val fritekst = stringOrNull("fritekst")
         val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
-        val arenaTiltak = arenatiltakDAO.hent(id, txSession)
-        val brukerTiltak = brukertiltakDAO.hent(id, txSession)
+        val tiltak = tiltakDAO.hent(id, txSession)
         val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id, txSession)
 
         return Søknad(
@@ -124,8 +121,7 @@ internal class PostgresSøknadDAO(
             opprettet = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
-            arenaTiltak = arenaTiltak,
-            brukerregistrertTiltak = brukerTiltak,
+            tiltak = tiltak,
             trygdOgPensjon = trygdOgPensjon,
             fritekst = fritekst,
             dokumentInfoId = dokumentInfoId,

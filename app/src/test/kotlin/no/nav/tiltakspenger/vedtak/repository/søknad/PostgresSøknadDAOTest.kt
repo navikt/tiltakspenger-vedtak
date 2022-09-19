@@ -6,12 +6,12 @@ import java.time.Month
 import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
+import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.vedtak.ArenaTiltak
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.BrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -62,8 +62,17 @@ internal class PostgresSøknadDAOTest {
             opprettet = null,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
-            arenaTiltak = null,
-            brukerregistrertTiltak = null,
+            tiltak = Tiltak.ArenaTiltak(
+                arenaId = null,
+                arrangoer = null,
+                harSluttdatoFraArena = null,
+                tiltakskode = null,
+                erIEndreStatus = null,
+                opprinneligSluttdato = null,
+                opprinneligStartdato = null,
+                sluttdato = null,
+                startdato = null
+            ),
             trygdOgPensjon = emptyList(),
             fritekst = null,
         )
@@ -111,7 +120,7 @@ internal class PostgresSøknadDAOTest {
                 )
             ),
             tidsstempelHosOss = innhentet,
-            arenaTiltak = ArenaTiltak(
+            tiltak = Tiltak.ArenaTiltak(
                 arenaId = null,
                 arrangoer = null,
                 harSluttdatoFraArena = null,
@@ -121,16 +130,6 @@ internal class PostgresSøknadDAOTest {
                 opprinneligStartdato = null,
                 sluttdato = null,
                 startdato = null
-            ),
-            brukerregistrertTiltak = BrukerregistrertTiltak(
-                tiltakskode = null,
-                arrangoernavn = null,
-                beskrivelse = null,
-                fom = null,
-                tom = null,
-                adresse = null,
-                postnummer = null,
-                antallDager = 0
             ),
             trygdOgPensjon = listOf(
                 TrygdOgPensjon(
@@ -156,8 +155,7 @@ internal class PostgresSøknadDAOTest {
         assertEquals(ident, hentet.first().ident)
         assertEquals(innhentet, hentet.first().tidsstempelHosOss)
 
-        assertNotNull(hentet.first().arenaTiltak)
-        assertNotNull(hentet.first().brukerregistrertTiltak)
+        assertNotNull(hentet.first().tiltak)
         assertEquals(1, hentet.first().barnetillegg.size)
         assertEquals(1, hentet.first().trygdOgPensjon.size)
     }
@@ -169,6 +167,17 @@ internal class PostgresSøknadDAOTest {
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = UUID.randomUUID()
+        val tiltak = Tiltak.ArenaTiltak(
+            arenaId = "123",
+            arrangoer = "Tiltaksbedriften AS",
+            harSluttdatoFraArena = true,
+            tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+            erIEndreStatus = true,
+            opprinneligSluttdato = LocalDate.now(),
+            opprinneligStartdato = LocalDate.now(),
+            sluttdato = LocalDate.now(),
+            startdato = LocalDate.now()
+        )
         val søknad = Søknad(
             id = uuid,
             søknadId = "41",
@@ -188,27 +197,7 @@ internal class PostgresSøknadDAOTest {
                 )
             ),
             tidsstempelHosOss = innhentet,
-            arenaTiltak = ArenaTiltak(
-                arenaId = "123",
-                arrangoer = "Tiltaksbedriften AS",
-                harSluttdatoFraArena = true,
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = true,
-                opprinneligSluttdato = LocalDate.now(),
-                opprinneligStartdato = LocalDate.now(),
-                sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
-            ),
-            brukerregistrertTiltak = BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.Tiltak.BIO,
-                arrangoernavn = "Tiltaksbedriften AS",
-                beskrivelse = "Foo bar",
-                fom = LocalDate.now(),
-                tom = LocalDate.now(),
-                adresse = "Osloveien -1",
-                postnummer = "0491",
-                antallDager = 10
-            ),
+            tiltak = tiltak,
             trygdOgPensjon = listOf(
                 TrygdOgPensjon(
                     utbetaler = "Storebrand",
@@ -236,8 +225,7 @@ internal class PostgresSøknadDAOTest {
         assertEquals(ident, hentet.first().ident)
         assertEquals(innhentet, hentet.first().tidsstempelHosOss)
 
-        assertNotNull(hentet.first().arenaTiltak)
-        assertNotNull(hentet.first().brukerregistrertTiltak)
+        assertNotNull(hentet.first().tiltak)
         assertEquals(1, hentet.first().barnetillegg.size)
         assertEquals(1, hentet.first().trygdOgPensjon.size)
 
@@ -251,15 +239,8 @@ internal class PostgresSøknadDAOTest {
             assertNotNull(it.call(barnetillegg))
         }
 
-        val arenaTiltak = søknadHentet.arenaTiltak!!
-        arenaTiltak::class.declaredMemberProperties.forEach {
-            assertNotNull(it.call(arenaTiltak))
-        }
-
-        val brukerregistrertTiltak = søknadHentet.brukerregistrertTiltak!!
-        brukerregistrertTiltak::class.declaredMemberProperties.forEach {
-            assertNotNull(it.call(brukerregistrertTiltak))
-        }
+        søknadHentet.tiltak shouldBe tiltak
+        assertEquals(tiltak, søknadHentet.tiltak)
 
         val trygdOgPensjon = søknadHentet.trygdOgPensjon.first()
         trygdOgPensjon::class.declaredMemberProperties.forEach {
@@ -267,12 +248,16 @@ internal class PostgresSøknadDAOTest {
         }
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
+        assertEquals(søknad.opprettet, hentet.first().opprettet)
         println(søknad.opprettet)
         assertEquals(søknad.opprettet, hentet.first().opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.first().tidsstempelHosOss)
         assertEquals(søknad.deltarKvp, hentet.first().deltarKvp)
 
-        assertEquals(søknad.arenaTiltak!!.sluttdato, hentet.first().arenaTiltak!!.sluttdato)
+        assertEquals(
+            (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,
+            (hentet.first().tiltak as Tiltak.ArenaTiltak).sluttdato
+        )
         assertEquals(søknad.trygdOgPensjon.first().fom, hentet.first().trygdOgPensjon.first().fom)
     }
 }
