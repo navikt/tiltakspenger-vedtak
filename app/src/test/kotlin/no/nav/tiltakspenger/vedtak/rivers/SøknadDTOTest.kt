@@ -27,8 +27,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggMedIdentDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggMedIdentDTO(alder = 13, ident = "789", land = "SWE")
+                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
+                BarnetilleggDTO(alder = 13, ident = "789", land = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -53,7 +53,7 @@ internal class SøknadDTOTest {
                 antallDager = 0
             ),
             trygdOgPensjon = listOf(
-                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = null)
+                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
             ),
             fritekst = "hei"
         )
