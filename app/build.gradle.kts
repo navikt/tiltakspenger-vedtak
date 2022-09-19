@@ -17,7 +17,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
 
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.23")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
     implementation("ch.qos.logback:logback-classic:1.4.1")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
