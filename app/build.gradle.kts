@@ -48,11 +48,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
-        exclude(group = "junit")
-        exclude(group = "org.eclipse.jetty") // conflicts with WireMock
-        exclude(group = "org.eclipse.jetty.http2") // conflicts with WireMock
-    }
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
