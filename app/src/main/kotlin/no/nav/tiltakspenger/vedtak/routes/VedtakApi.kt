@@ -19,6 +19,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.Role
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
@@ -79,16 +80,27 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
                 }
                 validate { cred ->
                     LOG.info { "er nå i validate, skal ha preferred_username" }
-                    if (cred.getClaim("preferred_username", String::class) == null) return@validate null
+                    if (cred.getClaim("preferred_username", String::class) == null) {
+                        LOG.warn { "Fant ikke preferred_username" }
+                        return@validate null
+                    }
                     LOG.info { "er nå i validate, skal ha NAVident" }
-                    if (cred.getClaim("NAVident", String::class) == null) return@validate null
+                    if (cred.getClaim("NAVident", String::class) == null) {
+                        LOG.warn { "Fant ikke NAVident" }
+                        return@validate null
+                    }
 
-                    val claimedRoles = cred.getListClaim("groups", UUID::class)
-                    val authorizedRoles = config.roles
+                    val claimedRoles: List<UUID> = cred.getListClaim("groups", UUID::class)
+                    LOG.info { "Groups fra claim: $claimedRoles" }
+                    val configRoles: List<Role> = config.roles
+                    LOG.info { "Groups fra config: ${configRoles.map { it.objectId }}" }
+                    val authorizedRoles = configRoles
                         .filter { roles?.contains(it.name) ?: true }
                         .map { it.objectId }
-                    LOG.info { "er nå i validate, skal ha claimedRoles" }
-                    if (claimedRoles.none(authorizedRoles::contains)) return@validate null
+                    if (claimedRoles.none(authorizedRoles::contains)) {
+                        LOG.warn { "Fant ikke riktig rolle" }
+                        return@validate null
+                    }
 
                     JWTPrincipal(cred.payload)
                 }
