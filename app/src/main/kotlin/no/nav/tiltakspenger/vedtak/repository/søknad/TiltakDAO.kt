@@ -49,7 +49,7 @@ internal class TiltakDAO {
                         "arenaId" to arenaTiltak.arenaId,
                         "arrangoernavn" to arenaTiltak.arrangoernavn,
                         "harSluttdatoFraArena" to arenaTiltak.harSluttdatoFraArena,
-                        "tiltakskode" to arenaTiltak.tiltakskode.name,                  // TODO sjekk om denne er riktig, og om den skal endre navn i basen
+                        "tiltakskode" to arenaTiltak.tiltakskode.name,
                         "erIEndreStatus" to arenaTiltak.erIEndreStatus,
                         "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
@@ -72,7 +72,7 @@ internal class TiltakDAO {
                     lagreBrukerTiltak, mapOf(
                         "id" to UUID.randomUUID(),
                         "soknadId" to søknadId,
-                        "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,    // TODO skal denne endre navn i basen ?
+                        "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,
                         "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,
                         "beskrivelse" to brukerregistrertTiltak.beskrivelse,
                         "startdato" to brukerregistrertTiltak.startdato,
@@ -100,7 +100,7 @@ internal class TiltakDAO {
 
     private fun Row.toArenatiltak(): Tiltak.ArenaTiltak {
         val arenaId = string("arena_id")
-        val arrangoernavn = string("arrangoernavn")
+        val arrangoernavn = stringOrNull("arrangoernavn")
         val harSluttdatoFraArena = boolean("har_sluttdato_fra_arena")
         val tiltakskode = string("tiltakskode")
         val erIEndreStatus = boolean("er_i_endre_status")

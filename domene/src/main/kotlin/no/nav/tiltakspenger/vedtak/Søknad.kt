@@ -43,14 +43,14 @@ class TrygdOgPensjon(
 
 sealed class Tiltak {
 
-    abstract val arrangoernavn: String
+    abstract val arrangoernavn: String?
+    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
     abstract val startdato: LocalDate
     abstract val sluttdato: LocalDate
-    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
-
+    
     data class ArenaTiltak(
         val arenaId: String,
-        override val arrangoernavn: String,
+        override val arrangoernavn: String?,
         val harSluttdatoFraArena: Boolean,
         override val tiltakskode: Tiltaksaktivitet.Tiltak,
         val erIEndreStatus: Boolean,

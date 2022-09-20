@@ -54,7 +54,7 @@ CREATE TABLE brukertiltak
     id            UUID    PRIMARY KEY,
     søknad_id     UUID    NOT NULL REFERENCES søknad (id),
     tiltakskode   VARCHAR NULL,
-    arrangoernavn VARCHAR NOT NULL,
+    arrangoernavn VARCHAR NULL,
     beskrivelse   VARCHAR NULL,
     startdato     DATE    NOT NULL,
     sluttdato     DATE    NOT NULL,
