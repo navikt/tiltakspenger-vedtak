@@ -35,6 +35,7 @@ internal fun vedtakApi(
         install(CallId)
         install(CallLogging) {
             callIdMdc("call-id")
+            disableDefaultColors()
             filter { call ->
                 !call.request.path().startsWith("/isalive") &&
                         !call.request.path().startsWith("/isready") &&
@@ -64,7 +65,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
             jwt(name) {
                 this.realm = realm
                 verifier(jwkProvider, config.issuer) {
-                    withAudience(config.clientId)
+                    // withAudience(config.clientId)
                     acceptLeeway(config.leeway)
                 }
                 challenge { foo: String, bar: String ->
