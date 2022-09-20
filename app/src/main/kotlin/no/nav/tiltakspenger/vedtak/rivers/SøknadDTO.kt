@@ -120,18 +120,29 @@ class TrygdOgPensjonDTO(
     }
 }
 
-class BarnetilleggDTO(val alder: Int, val land: String, val ident: String? = null, val fødselsdato: LocalDate? = null) {
+class BarnetilleggDTO(
+    val alder: Int,
+    val land: String,
+    val ident: String? = null,
+    val fødselsdato: LocalDate? = null,
+    val fornavn: String? = null,
+    val etternavn: String? = null,
+) {
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
             return if (dto.ident != null) Barnetillegg.MedIdent(
                 alder = dto.alder,
                 land = dto.land,
                 ident = dto.ident,
+                fornavn = dto.fornavn,
+                etternavn = dto.etternavn,
             ) else
                 Barnetillegg.UtenIdent(
                     alder = dto.alder,
                     land = dto.land,
                     fødselsdato = dto.fødselsdato!!,
+                    fornavn = dto.fornavn,
+                    etternavn = dto.etternavn,
                 )
         }
     }

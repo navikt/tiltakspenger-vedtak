@@ -33,6 +33,8 @@ internal class BarnetilleggDAO {
                 "soknadId" to søknadId,
                 "ident" to barnetillegg.ident,
                 "fodselsdato" to null,
+                "fornavn" to barnetillegg.fornavn,
+                "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
             )
@@ -42,6 +44,8 @@ internal class BarnetilleggDAO {
                 "soknadId" to søknadId,
                 "ident" to null,
                 "fodselsdato" to barnetillegg.fødselsdato,
+                "fornavn" to barnetillegg.fornavn,
+                "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
             )
@@ -62,10 +66,24 @@ internal class BarnetilleggDAO {
         val fødselsdato = localDateOrNull("fødselsdato")
         val alder = int("alder")
         val land = string("land")
+        val fornavn = string("fornavn")
+        val etternavn = string("etternavn")
         return if (ident != null) {
-            Barnetillegg.MedIdent(alder = alder, land = land, ident = ident)
+            Barnetillegg.MedIdent(
+                alder = alder,
+                land = land,
+                ident = ident,
+                fornavn = fornavn,
+                etternavn = etternavn,
+            )
         } else {
-            Barnetillegg.UtenIdent(alder = alder, land = land, fødselsdato = fødselsdato!!)
+            Barnetillegg.UtenIdent(
+                alder = alder,
+                land = land,
+                fødselsdato = fødselsdato!!,
+                fornavn = fornavn,
+                etternavn = etternavn,
+            )
         }
     }
 
@@ -76,6 +94,8 @@ internal class BarnetilleggDAO {
             søknad_id,
             ident,
             fødselsdato,
+            fornavn,
+            etternavn,
             alder,
             land
         ) values (
@@ -83,6 +103,8 @@ internal class BarnetilleggDAO {
             :soknadId,
             :ident,
             :fodselsdato,
+            :fornavn,
+            :etternavn,
             :alder,
             :land
         )""".trimIndent()

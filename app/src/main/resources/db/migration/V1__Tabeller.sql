@@ -13,45 +13,47 @@ $$;
 
 CREATE TABLE søker
 (
-    id          UUID                         PRIMARY KEY,
-    ident       VARCHAR                      NOT NULL UNIQUE,
-    tilstand    VARCHAR                      NOT NULL,
+    id          UUID PRIMARY KEY,
+    ident       VARCHAR                  NOT NULL UNIQUE,
+    tilstand    VARCHAR                  NOT NULL,
     sist_endret TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE søknad
 (
-    id                  UUID                        PRIMARY KEY,
-    søker_id            UUID                        NOT NULL REFERENCES søker (id),
-    søknad_id           VARCHAR                     NOT NULL,
-    ident               VARCHAR                     NOT NULL,
-    fornavn             VARCHAR                     NULL,
-    etternavn           VARCHAR                     NULL,
-    deltar_kvp          BOOLEAN                     NOT NULL,
-    deltar_intro        BOOLEAN                     NULL,
-    institusjon_opphold BOOLEAN                     NULL,
-    institusjon_type    VARCHAR                     NULL,
-    fritekst            VARCHAR                     NULL,
-    journalpost_id      VARCHAR                     NOT NULL,
-    dokumentinfo_id     VARCHAR                     NOT NULL,
-    opprettet           TIMESTAMP WITH TIME ZONE    NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE    NOT NULL
+    id                  UUID PRIMARY KEY,
+    søker_id            UUID                     NOT NULL REFERENCES søker (id),
+    søknad_id           VARCHAR                  NOT NULL,
+    ident               VARCHAR                  NOT NULL,
+    fornavn             VARCHAR                  NULL,
+    etternavn           VARCHAR                  NULL,
+    deltar_kvp          BOOLEAN                  NOT NULL,
+    deltar_intro        BOOLEAN                  NULL,
+    institusjon_opphold BOOLEAN                  NULL,
+    institusjon_type    VARCHAR                  NULL,
+    fritekst            VARCHAR                  NULL,
+    journalpost_id      VARCHAR                  NOT NULL,
+    dokumentinfo_id     VARCHAR                  NOT NULL,
+    opprettet           TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE barnetillegg
 (
-    id          UUID    PRIMARY KEY,
+    id          UUID PRIMARY KEY,
     søknad_id   UUID    NOT NULL REFERENCES søknad (id),
     ident       VARCHAR NULL,
     fødselsdato DATE    NULL,
+    fornavn     VARCHAR NULL,
+    etternavn   VARCHAR NULL,
     alder       INT     NOT NULL,
     land        VARCHAR NOT NULL
 );
 
 CREATE TABLE brukertiltak
 (
-    id            UUID    PRIMARY KEY,
+    id            UUID PRIMARY KEY,
     søknad_id     UUID    NOT NULL REFERENCES søknad (id),
     tiltakskode   VARCHAR NULL,
     arrangoernavn VARCHAR NULL,
@@ -65,7 +67,7 @@ CREATE TABLE brukertiltak
 
 CREATE TABLE arenatiltak
 (
-    id                      UUID    PRIMARY KEY,
+    id                      UUID PRIMARY KEY,
     søknad_id               UUID    NOT NULL REFERENCES søknad (id),
     arena_id                VARCHAR NOT NULL,
     arrangoernavn           VARCHAR NOT NULL,
@@ -80,7 +82,7 @@ CREATE TABLE arenatiltak
 
 CREATE TABLE trygdogpensjon
 (
-    id        UUID    PRIMARY KEY,
+    id        UUID PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
     utbetaler VARCHAR NOT NULL,
     prosent   INT     NULL,
