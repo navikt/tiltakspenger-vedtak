@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
+import io.kotest.inspectors.forAtLeastOne
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -61,5 +63,23 @@ internal class SøknadDTOTest {
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertEquals(søknadDTO.søknadId, søknad.søknadId)
+        assertEquals(søknadDTO.journalpostId, søknad.journalpostId)
+        assertEquals(søknadDTO.dokumentInfoId, søknad.dokumentInfoId)
+        assertEquals(søknadDTO.fornavn, søknad.fornavn)
+        assertEquals(søknadDTO.etternavn, søknad.etternavn)
+        assertEquals(søknadDTO.ident, søknad.ident)
+        assertEquals(søknadDTO.deltarKvp, søknad.deltarKvp)
+        assertEquals(søknadDTO.deltarIntroduksjonsprogrammet, søknad.deltarIntroduksjonsprogrammet)
+        assertEquals(søknadDTO.oppholdInstitusjon, søknad.oppholdInstitusjon)
+        assertEquals(søknadDTO.typeInstitusjon, søknad.typeInstitusjon)
+        assertEquals(søknadDTO.opprettet, søknad.opprettet)
+        assertEquals(søknadDTO.fritekst, søknad.fritekst)
+        søknadDTO.barnetillegg.forEach { barnetilleggDTO ->
+            søknad.barnetillegg.forAtLeastOne {
+                it.land shouldBe barnetilleggDTO.land
+                it.alder shouldBe barnetilleggDTO.alder
+            }
+        }
+
     }
 }
