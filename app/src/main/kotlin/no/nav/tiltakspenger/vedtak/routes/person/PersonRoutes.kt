@@ -1,19 +1,17 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.route
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Month
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 
 private val LOG = KotlinLogging.logger {}
 
@@ -29,6 +27,7 @@ fun Route.personRoutes(innloggetBrukerProvider: InnloggetBrukerProvider) {
             }
         }
         get {
+            call.auditHvisInnlogget(berørtBruker = "person")
             LOG.info { "Vi har truffet /saker/person" }
             LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
             call.respond(message = person(), status = HttpStatusCode.OK)

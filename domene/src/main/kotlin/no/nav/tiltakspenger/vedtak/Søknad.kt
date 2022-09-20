@@ -47,10 +47,10 @@ sealed class Tiltak {
     abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
     abstract val startdato: LocalDate
     abstract val sluttdato: LocalDate
-    
+
     data class ArenaTiltak(
         val arenaId: String,
-        override val arrangoernavn: String?,
+        override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
         val harSluttdatoFraArena: Boolean,
         override val tiltakskode: Tiltaksaktivitet.Tiltak,
         val erIEndreStatus: Boolean,
@@ -61,7 +61,7 @@ sealed class Tiltak {
     ) : Tiltak()
 
     data class BrukerregistrertTiltak(
-        override val tiltakskode: Tiltaksaktivitet.Tiltak?,
+        override val tiltakskode: Tiltaksaktivitet.Tiltak?, // Er null hvis bruker velger "Annet" i søknaden
         override val arrangoernavn: String,
         val beskrivelse: String?,
         override val startdato: LocalDate,
@@ -92,6 +92,5 @@ sealed class Barnetillegg {
         override val fornavn: String?,
         override val etternavn: String?,
         val fødselsdato: LocalDate,
-    ) :
-        Barnetillegg()
+    ) : Barnetillegg()
 }
