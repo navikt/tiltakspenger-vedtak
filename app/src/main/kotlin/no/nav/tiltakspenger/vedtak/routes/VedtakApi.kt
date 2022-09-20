@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
+import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -21,6 +22,7 @@ import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import java.net.URI
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -60,12 +62,14 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
 
+    val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
+
     install(Authentication) {
         fun AuthenticationConfig.jwt(name: String, realm: String, roles: List<RoleName>? = null) =
             jwt(name) {
                 this.realm = realm
-                verifier(jwkProvider, config.issuer) {
-                    // withAudience(config.clientId)
+                verifier(jwkProviderGammel, config.issuer) {
+                    withAudience(config.clientId)
                     acceptLeeway(config.leeway)
                 }
                 challenge { foo: String, bar: String ->
