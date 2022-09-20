@@ -62,7 +62,7 @@ sealed class Tiltak {
 
     data class BrukerregistrertTiltak(
         override val tiltakskode: Tiltaksaktivitet.Tiltak?, // Er null hvis bruker velger "Annet" i søknaden
-        override val arrangoernavn: String,
+        override val arrangoernavn: String?, // Er null
         val beskrivelse: String?,
         override val startdato: LocalDate,
         override val sluttdato: LocalDate,

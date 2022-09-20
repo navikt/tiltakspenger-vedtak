@@ -70,7 +70,7 @@ CREATE TABLE arenatiltak
     id                      UUID PRIMARY KEY,
     søknad_id               UUID    NOT NULL REFERENCES søknad (id),
     arena_id                VARCHAR NOT NULL,
-    arrangoernavn           VARCHAR NOT NULL,
+    arrangoernavn           VARCHAR NULL,
     har_sluttdato_fra_arena BOOLEAN NOT NULL,
     tiltakskode             VARCHAR NOT NULL,
     er_i_endre_status       BOOLEAN NOT NULL,
