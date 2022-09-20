@@ -16,12 +16,16 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
@@ -63,15 +67,22 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
                     withAudience(config.clientId)
                     acceptLeeway(config.leeway)
                 }
-                challenge { _, _ -> call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang") }
+                challenge { foo: String, bar: String ->
+                    LOG.warn { "verifier feilet, sjekk securelog" }
+                    SECURELOG.warn("verifier feilet $foo $bar")
+                    call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
+                }
                 validate { cred ->
+                    LOG.info { "er nå i validate, skal ha preferred_username" }
                     if (cred.getClaim("preferred_username", String::class) == null) return@validate null
+                    LOG.info { "er nå i validate, skal ha NAVident" }
                     if (cred.getClaim("NAVident", String::class) == null) return@validate null
 
                     val claimedRoles = cred.getListClaim("groups", UUID::class)
                     val authorizedRoles = config.roles
                         .filter { roles?.contains(it.name) ?: true }
                         .map { it.objectId }
+                    LOG.info { "er nå i validate, skal ha claimedRoles" }
                     if (claimedRoles.none(authorizedRoles::contains)) return@validate null
 
                     JWTPrincipal(cred.payload)
