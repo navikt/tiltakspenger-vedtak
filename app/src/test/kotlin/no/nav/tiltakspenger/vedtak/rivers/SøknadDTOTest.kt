@@ -37,17 +37,17 @@ internal class SøknadDTOTest {
                 tiltakskode = "JOBBK",
                 erIEndreStatus = false,
                 opprinneligSluttdato = null,
-                opprinneligStartdato = null,
-                sluttdato = null,
-                startdato = null
+                opprinneligStartdato = LocalDate.now(),
+                sluttdato = LocalDate.now(),
+                startdato = LocalDate.now()
 
             ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
                 tiltakskode = "JOBSOK",
-                arrangoernavn = null,
+                arrangoernavn = "Arrangør",
                 beskrivelse = null,
-                fom = null,
-                tom = null,
+                fom = LocalDate.now(),
+                tom = LocalDate.now(),
                 adresse = null,
                 postnummer = null,
                 antallDager = 0

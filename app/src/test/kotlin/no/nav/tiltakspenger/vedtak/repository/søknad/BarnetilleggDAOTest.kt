@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -89,15 +90,15 @@ internal class BarnetilleggDAOTest {
         barnetillegg = emptyList(),
         tidsstempelHosOss = LocalDateTime.now(),
         tiltak = Tiltak.ArenaTiltak(
-            arenaId = null,
-            arrangoer = null,
-            harSluttdatoFraArena = null,
-            tiltakskode = null,
-            erIEndreStatus = null,
-            opprinneligSluttdato = null,
-            opprinneligStartdato = null,
-            sluttdato = null,
-            startdato = null
+            arenaId = "123",
+            arrangoernavn = "Fest og morro",
+            harSluttdatoFraArena = true,
+            tiltakskode = Tiltaksaktivitet.Tiltak.GRUPPEAMO,
+            erIEndreStatus = false,
+            opprinneligSluttdato = LocalDate.now(),
+            opprinneligStartdato = LocalDate.now(),
+            sluttdato = LocalDate.now(),
+            startdato = LocalDate.now()
         ),
         trygdOgPensjon = emptyList(),
         fritekst = null,

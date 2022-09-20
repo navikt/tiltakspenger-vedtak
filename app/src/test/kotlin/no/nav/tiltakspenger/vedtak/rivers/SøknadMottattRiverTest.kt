@@ -130,9 +130,9 @@ internal class SøknadMottattRiverTest {
                  "tiltakskode" : "MENTOR",
                  "erIEndreStatus" : false,
                  "opprinneligSluttdato": null,
-                 "opprinneligStartdato" : null,
-                 "sluttdato" : null,
-                 "startdato" : null
+                 "opprinneligStartdato" : "2022-06-21",
+                 "sluttdato" : "2022-06-29",
+                 "startdato" : "2022-06-21"
             },
             "opprettet": "2022-06-29T16:24:02.608",
             "brukerRegistrertStartDato": "2022-06-21",
@@ -184,7 +184,7 @@ internal class SøknadMottattRiverTest {
                   "postnummer": null,
                   "antallDager": 3
                 },
-                "trygdOgPensjon": null,
+                "trygdOgPensjon": [],
                 "fritekst": null
               },
               "@id": "0b9bd6e5-f155-4112-ba01-c39b1f00fb14",
@@ -208,6 +208,7 @@ internal class SøknadMottattRiverTest {
               ]
             }
         """.trimIndent()
+
     private fun søknadMottattBarnUtenIdent(): String =
         """
             {
@@ -355,6 +356,7 @@ internal class SøknadMottattRiverTest {
               ]
             }
         """.trimIndent()
+
     private fun søknadMottattBrukertiltakEvent(): String =
         """
         {

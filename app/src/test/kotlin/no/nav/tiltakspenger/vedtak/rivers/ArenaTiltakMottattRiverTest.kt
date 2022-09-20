@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -57,7 +58,17 @@ internal class ArenaTiltakMottattRiverTest {
                 opprettet = null,
                 barnetillegg = emptyList(),
                 tidsstempelHosOss = LocalDateTime.now(),
-                tiltak = Tiltak.ArenaTiltak(),
+                tiltak = Tiltak.ArenaTiltak(
+                    arenaId = "123",
+                    arrangoernavn = "Tiltaksarrangør AS",
+                    harSluttdatoFraArena = false,
+                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                    erIEndreStatus = false,
+                    opprinneligSluttdato = LocalDate.now(),
+                    opprinneligStartdato = LocalDate.now(),
+                    sluttdato = LocalDate.now(),
+                    startdato = LocalDate.now()
+                ),
                 trygdOgPensjon = emptyList(),
                 fritekst = null
             )

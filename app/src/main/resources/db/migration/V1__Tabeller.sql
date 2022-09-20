@@ -13,16 +13,16 @@ $$;
 
 CREATE TABLE søker
 (
-    id          UUID PRIMARY KEY,
-    ident       VARCHAR                     NOT NULL UNIQUE,
-    tilstand    VARCHAR                     NOT NULL,
+    id          UUID                         PRIMARY KEY,
+    ident       VARCHAR                      NOT NULL UNIQUE,
+    tilstand    VARCHAR                      NOT NULL,
     sist_endret TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE søknad
 (
-    id                  UUID PRIMARY KEY,
+    id                  UUID                        PRIMARY KEY,
     søker_id            UUID                        NOT NULL REFERENCES søker (id),
     søknad_id           VARCHAR                     NOT NULL,
     ident               VARCHAR                     NOT NULL,
@@ -35,13 +35,13 @@ CREATE TABLE søknad
     fritekst            VARCHAR                     NULL,
     journalpost_id      VARCHAR                     NOT NULL,
     dokumentinfo_id     VARCHAR                     NOT NULL,
-    opprettet           TIMESTAMP WITH TIME ZONE NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+    opprettet           TIMESTAMP WITH TIME ZONE    NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE    NOT NULL
 );
 
 CREATE TABLE barnetillegg
 (
-    id          UUID PRIMARY KEY,
+    id          UUID    PRIMARY KEY,
     søknad_id   UUID    NOT NULL REFERENCES søknad (id),
     ident       VARCHAR NULL,
     fødselsdato DATE    NULL,
@@ -51,13 +51,13 @@ CREATE TABLE barnetillegg
 
 CREATE TABLE brukertiltak
 (
-    id            UUID PRIMARY KEY,
+    id            UUID    PRIMARY KEY,
     søknad_id     UUID    NOT NULL REFERENCES søknad (id),
-    tiltakstype   VARCHAR NULL,
-    arrangoernavn VARCHAR NULL,
+    tiltakskode   VARCHAR NULL,
+    arrangoernavn VARCHAR NOT NULL,
     beskrivelse   VARCHAR NULL,
-    fom           DATE    NULL,
-    tom           DATE    NULL,
+    startdato     DATE    NOT NULL,
+    sluttdato     DATE    NOT NULL,
     adresse       VARCHAR NULL,
     postnummer    VARCHAR NULL,
     antall_dager  INT     NOT NULL
@@ -65,22 +65,22 @@ CREATE TABLE brukertiltak
 
 CREATE TABLE arenatiltak
 (
-    id                      UUID PRIMARY KEY,
+    id                      UUID    PRIMARY KEY,
     søknad_id               UUID    NOT NULL REFERENCES søknad (id),
-    arena_id                VARCHAR NULL,
-    arrangoer               VARCHAR NULL,
-    har_sluttdato_fra_arena BOOLEAN NULL,
-    navn                    VARCHAR NULL,
-    er_i_endre_status       BOOLEAN NULL,
-    opprinnelig_startdato   DATE    NULL,
+    arena_id                VARCHAR NOT NULL,
+    arrangoernavn           VARCHAR NOT NULL,
+    har_sluttdato_fra_arena BOOLEAN NOT NULL,
+    tiltakskode             VARCHAR NOT NULL,
+    er_i_endre_status       BOOLEAN NOT NULL,
+    opprinnelig_startdato   DATE    NOT NULL,
     opprinnelig_sluttdato   DATE    NULL,
-    startdato               DATE    NULL,
-    sluttdato               DATE    NULL
+    startdato               DATE    NOT NULL,
+    sluttdato               DATE    NOT NULL
 );
 
 CREATE TABLE trygdogpensjon
 (
-    id        UUID PRIMARY KEY,
+    id        UUID    PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
     utbetaler VARCHAR NOT NULL,
     prosent   INT     NULL,

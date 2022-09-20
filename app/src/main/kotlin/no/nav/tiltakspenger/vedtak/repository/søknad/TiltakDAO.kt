@@ -47,9 +47,9 @@ internal class TiltakDAO {
                         "id" to UUID.randomUUID(),
                         "soknadId" to søknadId,
                         "arenaId" to arenaTiltak.arenaId,
-                        "arrangoer" to arenaTiltak.arrangoer,
+                        "arrangoernavn" to arenaTiltak.arrangoernavn,
                         "harSluttdatoFraArena" to arenaTiltak.harSluttdatoFraArena,
-                        "navn" to arenaTiltak.tiltakskode?.name,                  // TODO sjekk om denne er riktig, og om den skal endre navn i basen
+                        "tiltakskode" to arenaTiltak.tiltakskode.name,                  // TODO sjekk om denne er riktig, og om den skal endre navn i basen
                         "erIEndreStatus" to arenaTiltak.erIEndreStatus,
                         "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
@@ -72,11 +72,11 @@ internal class TiltakDAO {
                     lagreBrukerTiltak, mapOf(
                         "id" to UUID.randomUUID(),
                         "soknadId" to søknadId,
-                        "tiltakstype" to brukerregistrertTiltak.tiltakskode?.name,    // TODO skal denne endre navn i basen ?
+                        "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,    // TODO skal denne endre navn i basen ?
                         "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,
                         "beskrivelse" to brukerregistrertTiltak.beskrivelse,
-                        "fom" to brukerregistrertTiltak.fom,
-                        "tom" to brukerregistrertTiltak.tom,
+                        "startdato" to brukerregistrertTiltak.startdato,
+                        "sluttdato" to brukerregistrertTiltak.sluttdato,
                         "adresse" to brukerregistrertTiltak.adresse,
                         "postnummer" to brukerregistrertTiltak.postnummer,
                         "antallDager" to brukerregistrertTiltak.antallDager,
@@ -99,20 +99,20 @@ internal class TiltakDAO {
     }
 
     private fun Row.toArenatiltak(): Tiltak.ArenaTiltak {
-        val arenaId = stringOrNull("arena_id")
-        val arrangoer = stringOrNull("arrangoer")
+        val arenaId = string("arena_id")
+        val arrangoernavn = string("arrangoernavn")
         val harSluttdatoFraArena = boolean("har_sluttdato_fra_arena")
-        val navn = stringOrNull("navn")
+        val tiltakskode = string("tiltakskode")
         val erIEndreStatus = boolean("er_i_endre_status")
-        val opprinneligStartdato = localDateOrNull("opprinnelig_startdato")
+        val opprinneligStartdato = localDate("opprinnelig_startdato")
         val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
-        val startdato = localDateOrNull("startdato")
-        val sluttdato = localDateOrNull("sluttdato")
+        val startdato = localDate("startdato")
+        val sluttdato = localDate("sluttdato")
         return Tiltak.ArenaTiltak(
             arenaId = arenaId,
-            arrangoer = arrangoer,
+            arrangoernavn = arrangoernavn,
             harSluttdatoFraArena = harSluttdatoFraArena,
-            tiltakskode = navn?.let { Tiltaksaktivitet.Tiltak.valueOf(it) },
+            tiltakskode = tiltakskode.let { Tiltaksaktivitet.Tiltak.valueOf(it) },
             erIEndreStatus = erIEndreStatus,
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
@@ -122,11 +122,11 @@ internal class TiltakDAO {
     }
 
     private fun Row.toBrukertiltak(): Tiltak.BrukerregistrertTiltak {
-        val tiltakskode = stringOrNull("tiltakstype")?.let { Tiltaksaktivitet.Tiltak.valueOf(it) }
-        val arrangoernavn = stringOrNull("arrangoernavn")
+        val tiltakskode = string("tiltakstype").let { Tiltaksaktivitet.Tiltak.valueOf(it) }
+        val arrangoernavn = string("arrangoernavn")
         val beskrivelse = stringOrNull("beskrivelse")
-        val fom = localDateOrNull("fom")
-        val tom = localDateOrNull("tom")
+        val fom = localDate("startdato")
+        val tom = localDate("sluttdato")
         val adresse = stringOrNull("adresse")
         val postnummer = stringOrNull("postnummer")
         val antallDager = int("antall_dager")
@@ -135,8 +135,8 @@ internal class TiltakDAO {
             tiltakskode = tiltakskode,
             arrangoernavn = arrangoernavn,
             beskrivelse = beskrivelse,
-            fom = fom,
-            tom = tom,
+            startdato = fom,
+            sluttdato = tom,
             adresse = adresse,
             postnummer = postnummer,
             antallDager = antallDager,
@@ -160,22 +160,22 @@ internal class TiltakDAO {
         insert into brukertiltak (
             id,
             søknad_id,
-            tiltakstype,
+            tiltakskode,
             arrangoernavn, 
             beskrivelse, 
-            fom,
-            tom,
+            startdato,
+            sluttdato,
             adresse,
             postnummer,
             antall_dager
         ) values (
             :id,
             :soknadId,
-            :tiltakstype,
+            :tiltakskode,
             :arrangoernavn, 
             :beskrivelse,
-            :fom,
-            :tom,
+            :startdato,
+            :sluttdato,
             :adresse,
             :postnummer,
             :antallDager
@@ -187,9 +187,9 @@ internal class TiltakDAO {
             id,
             søknad_id,
             arena_id,
-            arrangoer, 
+            arrangoernavn, 
             har_sluttdato_fra_arena, 
-            navn,
+            tiltakskode,
             er_i_endre_status,
             opprinnelig_startdato,
             opprinnelig_sluttdato,
@@ -199,9 +199,9 @@ internal class TiltakDAO {
             :id,
             :soknadId,
             :arenaId,
-            :arrangoer, 
+            :arrangoernavn, 
             :harSluttdatoFraArena,
-            :navn,
+            :tiltakskode,
             :erIEndreStatus,
             :opprinneligStartdato,
             :opprinneligSluttdato,

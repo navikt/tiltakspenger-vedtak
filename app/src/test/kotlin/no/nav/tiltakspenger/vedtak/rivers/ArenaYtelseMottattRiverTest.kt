@@ -59,7 +59,17 @@ internal class ArenaYtelseMottattRiverTest {
                 opprettet = null,
                 barnetillegg = emptyList(),
                 tidsstempelHosOss = LocalDateTime.now(),
-                tiltak = Tiltak.ArenaTiltak(),
+                tiltak = Tiltak.ArenaTiltak(
+                    arenaId = "123",
+                    arrangoernavn = "Tiltaksarrangør AS",
+                    harSluttdatoFraArena = false,
+                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                    erIEndreStatus = false,
+                    opprinneligSluttdato = LocalDate.now(),
+                    opprinneligStartdato = LocalDate.now(),
+                    sluttdato = LocalDate.now(),
+                    startdato = LocalDate.now()
+                ),
                 trygdOgPensjon = emptyList(),
                 fritekst = null
             )

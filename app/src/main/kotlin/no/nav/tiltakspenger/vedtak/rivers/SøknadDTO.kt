@@ -23,13 +23,13 @@ class SøknadDTO(
     val ident: String,
     val deltarKvp: Boolean,
     val deltarIntroduksjonsprogrammet: Boolean?,
-    val oppholdInstitusjon: Boolean?,
+    val oppholdInstitusjon: Boolean,
     val typeInstitusjon: String?,
-    val opprettet: LocalDateTime?,
+    val opprettet: LocalDateTime,
     val barnetillegg: List<BarnetilleggDTO>,
     val arenaTiltak: ArenaTiltakDTO?,
     val brukerregistrertTiltak: BrukerregistrertTiltakDTO?,
-    val trygdOgPensjon: List<TrygdOgPensjonDTO>?,
+    val trygdOgPensjon: List<TrygdOgPensjonDTO> = emptyList(),
     val fritekst: String?,
 ) {
     companion object {
@@ -49,7 +49,7 @@ class SøknadDTO(
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
                 tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
-                trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
+                trygdOgPensjon = dto.trygdOgPensjon.map { mapTrygdOgPensjon(it) },
                 fritekst = dto.fritekst
             )
         }
@@ -57,11 +57,11 @@ class SøknadDTO(
 }
 
 class BrukerregistrertTiltakDTO(
-    val tiltakskode: String?,
-    val arrangoernavn: String?,
+    val tiltakskode: String,
+    val arrangoernavn: String,
     val beskrivelse: String?,
-    val fom: LocalDate?,
-    val tom: LocalDate?,
+    val fom: LocalDate,
+    val tom: LocalDate,
     val adresse: String? = null,
     val postnummer: String? = null,
     val antallDager: Int
@@ -70,11 +70,11 @@ class BrukerregistrertTiltakDTO(
         internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
             if (dto == null) null
             else Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode!!), // TODO:test
+                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode), // TODO:test
                 arrangoernavn = dto.arrangoernavn,
                 beskrivelse = dto.beskrivelse,
-                fom = dto.fom,
-                tom = dto.tom,
+                startdato = dto.fom,
+                sluttdato = dto.tom,
                 adresse = dto.adresse,
                 postnummer = dto.postnummer,
                 antallDager = dto.antallDager
@@ -84,23 +84,23 @@ class BrukerregistrertTiltakDTO(
 }
 
 class ArenaTiltakDTO(
-    val arenaId: String? = null,
-    val arrangoer: String? = null,
-    val harSluttdatoFraArena: Boolean? = null,
-    val tiltakskode: String? = null,
-    val erIEndreStatus: Boolean? = null,
+    val arenaId: String,
+    val arrangoer: String,
+    val harSluttdatoFraArena: Boolean,
+    val tiltakskode: String,
+    val erIEndreStatus: Boolean,
     val opprinneligSluttdato: LocalDate? = null,
-    val opprinneligStartdato: LocalDate? = null,
-    val sluttdato: LocalDate? = null,
-    val startdato: LocalDate? = null
+    val opprinneligStartdato: LocalDate,
+    val sluttdato: LocalDate,
+    val startdato: LocalDate
 ) {
     companion object {
         internal fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) null
         else Tiltak.ArenaTiltak(
             arenaId = dto.arenaId,
-            arrangoer = dto.arrangoer,
+            arrangoernavn = dto.arrangoer,
             harSluttdatoFraArena = dto.harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode!!.uppercase()),  // TODO test this
+            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()),  // TODO test this
             erIEndreStatus = dto.erIEndreStatus,
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,

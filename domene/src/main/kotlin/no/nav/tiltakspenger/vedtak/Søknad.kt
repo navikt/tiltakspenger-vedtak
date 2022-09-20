@@ -11,18 +11,16 @@ class Søknad(
     val søknadId: String,
     val journalpostId: String,
     val dokumentInfoId: String,
-    val fornavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
-    val etternavn: String?, //TODO Trenger vi denne? Henter den uansett fra PDL, som kan gi et annet svar
+    val fornavn: String?,
+    val etternavn: String?,
     val ident: String,
-    val deltarKvp: Boolean, // TODO Høres ut som en enum
-    val deltarIntroduksjonsprogrammet: Boolean?, // TODO Ikke mulig å få et org nr?
-    val oppholdInstitusjon: Boolean?, // TODO Er en enum
+    val deltarKvp: Boolean,
+    val deltarIntroduksjonsprogrammet: Boolean?,
+    val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
     val tidsstempelHosOss: LocalDateTime,
-    // TODO: Kan vi bruke sealed class som union type for å fange at man
-    // *enten* har arenaTiltak *eller* brukerregistrertTiltak?
     val tiltak: Tiltak,
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
@@ -44,24 +42,30 @@ class TrygdOgPensjon(
 )
 
 sealed class Tiltak {
+
+    abstract val arrangoernavn: String
+    abstract val startdato: LocalDate
+    abstract val sluttdato: LocalDate
+    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
+
     data class ArenaTiltak(
-        val arenaId: String? = null,
-        val arrangoer: String? = null,
-        val harSluttdatoFraArena: Boolean? = null,
-        val tiltakskode: Tiltaksaktivitet.Tiltak? = null,
-        val erIEndreStatus: Boolean? = null,
+        val arenaId: String,
+        override val arrangoernavn: String,
+        val harSluttdatoFraArena: Boolean,
+        override val tiltakskode: Tiltaksaktivitet.Tiltak,
+        val erIEndreStatus: Boolean,
         val opprinneligSluttdato: LocalDate? = null,
-        val opprinneligStartdato: LocalDate? = null,
-        val sluttdato: LocalDate? = null,
-        val startdato: LocalDate? = null
+        val opprinneligStartdato: LocalDate,
+        override val sluttdato: LocalDate,
+        override val startdato: LocalDate
     ) : Tiltak()
 
     data class BrukerregistrertTiltak(
-        val tiltakskode: Tiltaksaktivitet.Tiltak?,
-        val arrangoernavn: String?,
+        override val tiltakskode: Tiltaksaktivitet.Tiltak?,
+        override val arrangoernavn: String,
         val beskrivelse: String?,
-        val fom: LocalDate?,
-        val tom: LocalDate?,
+        override val startdato: LocalDate,
+        override val sluttdato: LocalDate,
         val adresse: String? = null,
         val postnummer: String? = null,
         val antallDager: Int
@@ -71,6 +75,8 @@ sealed class Tiltak {
 sealed class Barnetillegg {
     abstract val alder: Int
     abstract val land: String
-    data class MedIdent(override val alder: Int, override val land: String, val ident: String): Barnetillegg()
-    data class UtenIdent(override val alder: Int, override val land: String, val fødselsdato: LocalDate): Barnetillegg()
+
+    data class MedIdent(override val alder: Int, override val land: String, val ident: String) : Barnetillegg()
+    data class UtenIdent(override val alder: Int, override val land: String, val fødselsdato: LocalDate) :
+        Barnetillegg()
 }

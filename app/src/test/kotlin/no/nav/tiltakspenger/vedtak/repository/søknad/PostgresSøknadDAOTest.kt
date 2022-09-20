@@ -63,15 +63,15 @@ internal class PostgresSøknadDAOTest {
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
-                arenaId = null,
-                arrangoer = null,
-                harSluttdatoFraArena = null,
-                tiltakskode = null,
-                erIEndreStatus = null,
+                arenaId = "123",
+                arrangoernavn = "Tiltaksarrangør AS",
+                harSluttdatoFraArena = false,
+                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                erIEndreStatus = false,
                 opprinneligSluttdato = null,
-                opprinneligStartdato = null,
-                sluttdato = null,
-                startdato = null
+                opprinneligStartdato = LocalDate.now(),
+                sluttdato = LocalDate.now(),
+                startdato = LocalDate.now()
             ),
             trygdOgPensjon = emptyList(),
             fritekst = null,
@@ -119,15 +119,15 @@ internal class PostgresSøknadDAOTest {
             ),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
-                arenaId = null,
-                arrangoer = null,
-                harSluttdatoFraArena = null,
-                tiltakskode = null,
-                erIEndreStatus = null,
-                opprinneligSluttdato = null,
-                opprinneligStartdato = null,
-                sluttdato = null,
-                startdato = null
+                arenaId = "123",
+                arrangoernavn = "Hurra meg rundt AS",
+                harSluttdatoFraArena = true,
+                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                erIEndreStatus = false,
+                opprinneligSluttdato = LocalDate.now(),
+                opprinneligStartdato = LocalDate.now(),
+                sluttdato = LocalDate.now(),
+                startdato = LocalDate.now()
             ),
             trygdOgPensjon = listOf(
                 TrygdOgPensjon(
@@ -167,7 +167,7 @@ internal class PostgresSøknadDAOTest {
         val uuid = UUID.randomUUID()
         val tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
-            arrangoer = "Tiltaksbedriften AS",
+            arrangoernavn = "Tiltaksbedriften AS",
             harSluttdatoFraArena = true,
             tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
             erIEndreStatus = true,
