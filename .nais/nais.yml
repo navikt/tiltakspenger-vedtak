@@ -32,8 +32,8 @@ spec:
           - id: {{ ROLE_STRENGT_FORTROLIG }}
           - id: {{ ROLE_SKJERMING }}
       extra:
-        - "NAVident"
-        - "azp_name"
+        - NAVident
+        - azp_name
   gcp:
     sqlInstances:
       - name: tiltakspenger-vedtak
