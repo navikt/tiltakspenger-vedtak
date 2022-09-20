@@ -58,7 +58,7 @@ class SøknadDTO(
 
 class BrukerregistrertTiltakDTO(
     val tiltakskode: String,
-    val arrangoernavn: String,
+    val arrangoernavn: String?,
     val beskrivelse: String?,
     val fom: LocalDate,
     val tom: LocalDate,
@@ -85,7 +85,7 @@ class BrukerregistrertTiltakDTO(
 
 class ArenaTiltakDTO(
     val arenaId: String,
-    val arrangoer: String,
+    val arrangoer: String?,
     val harSluttdatoFraArena: Boolean,
     val tiltakskode: String,
     val erIEndreStatus: Boolean,
