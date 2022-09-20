@@ -115,7 +115,13 @@ internal class PostgresSøknadDAOTest {
             typeInstitusjon = null,
             opprettet = null,
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(alder = 0, ident = "1", land = "NO")
+                Barnetillegg.MedIdent(
+                    alder = 0,
+                    ident = "1",
+                    land = "NO",
+                    fornavn = "fornavn",
+                    etternavn = "etternavn",
+                )
             ),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
@@ -190,7 +196,13 @@ internal class PostgresSøknadDAOTest {
             typeInstitusjon = "Barnevernet",
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(alder = 16, ident = "1", land = "NO")
+                Barnetillegg.MedIdent(
+                    alder = 16,
+                    ident = "1",
+                    land = "NO",
+                    fornavn = "foranvn",
+                    etternavn = "etternavn",
+                )
             ),
             tidsstempelHosOss = innhentet,
             tiltak = tiltak,

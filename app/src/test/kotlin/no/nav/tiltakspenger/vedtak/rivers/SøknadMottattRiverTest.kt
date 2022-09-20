@@ -229,6 +229,8 @@ internal class SøknadMottattRiverTest {
                   {
                     "ident": null,
                     "fødselsdato": "2022-04-01",
+                    "fornavn": "fornavn",
+                    "etternavn": "etternavn",
                     "alder": 0,
                     "land": "NOR"
                   }

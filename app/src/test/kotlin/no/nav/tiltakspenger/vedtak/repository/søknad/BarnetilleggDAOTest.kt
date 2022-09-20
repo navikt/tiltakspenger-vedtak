@@ -48,9 +48,22 @@ internal class BarnetilleggDAOTest {
                 søknadDAO.lagre(søker.id, listOf(søknad), txSession)
             }
         }
-        val barnetilleggMedIdent = Barnetillegg.MedIdent(alder = 42, land = "SWE", ident = "123")
+        val barnetilleggMedIdent =
+            Barnetillegg.MedIdent(
+                alder = 42,
+                land = "SWE",
+                ident = "123",
+                fornavn = "fornavn",
+                etternavn = "etternavn"
+            )
         val barnetilleggUtenIdent =
-            Barnetillegg.UtenIdent(alder = 42, land = "SWE", fødselsdato = LocalDate.of(2022, Month.AUGUST, 19))
+            Barnetillegg.UtenIdent(
+                alder = 42,
+                land = "SWE",
+                fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
+                fornavn = "fornavn",
+                etternavn = "etternavn"
+            )
 
         val barnetilleggDAO = BarnetilleggDAO()
         sessionOf(DataSource.hikariDataSource).use {

@@ -75,8 +75,23 @@ sealed class Tiltak {
 sealed class Barnetillegg {
     abstract val alder: Int
     abstract val land: String
+    abstract val fornavn: String?
+    abstract val etternavn: String?
 
-    data class MedIdent(override val alder: Int, override val land: String, val ident: String) : Barnetillegg()
-    data class UtenIdent(override val alder: Int, override val land: String, val fødselsdato: LocalDate) :
+    data class MedIdent(
+        override val alder: Int,
+        override val land: String,
+        override val fornavn: String?,
+        override val etternavn: String?,
+        val ident: String,
+    ) : Barnetillegg()
+
+    data class UtenIdent(
+        override val alder: Int,
+        override val land: String,
+        override val fornavn: String?,
+        override val etternavn: String?,
+        val fødselsdato: LocalDate,
+    ) :
         Barnetillegg()
 }
