@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes
 
-import com.auth0.jwk.JwkProvider
-import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -25,10 +23,8 @@ import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.net.URI
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
@@ -58,10 +54,12 @@ internal fun vedtakApi(
 
 fun Application.auth(config: Configuration.TokenVerificationConfig) {
 
+    /*
     val jwkProvider: JwkProvider = JwkProviderBuilder(config.jwksUri)
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
+     */
 
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
 
@@ -73,32 +71,29 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
                     withAudience(config.clientId)
                     acceptLeeway(config.leeway)
                 }
-                challenge { foo: String, bar: String ->
-                    LOG.warn { "verifier feilet, sjekk securelog" }
-                    SECURELOG.warn("verifier feilet $foo $bar")
+                challenge { _, _ ->
+                    LOG.info { "verifier feilet" }
                     call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
                 }
                 validate { cred ->
                     LOG.info { "er nå i validate, skal ha preferred_username" }
                     if (cred.getClaim("preferred_username", String::class) == null) {
-                        LOG.warn { "Fant ikke preferred_username" }
+                        LOG.info { "Fant ikke preferred_username" }
                         return@validate null
                     }
                     LOG.info { "er nå i validate, skal ha NAVident" }
                     if (cred.getClaim("NAVident", String::class) == null) {
-                        LOG.warn { "Fant ikke NAVident" }
+                        LOG.info { "Fant ikke NAVident" }
                         return@validate null
                     }
 
                     val claimedRoles: List<UUID> = cred.getListClaim("groups", UUID::class)
-                    LOG.info { "Groups fra claim: $claimedRoles" }
                     val configRoles: List<Role> = config.roles
-                    LOG.info { "Groups fra config: ${configRoles.map { it.objectId }}" }
                     val authorizedRoles = configRoles
                         .filter { roles?.contains(it.name) ?: true }
                         .map { it.objectId }
                     if (claimedRoles.none(authorizedRoles::contains)) {
-                        LOG.warn { "Fant ikke riktig rolle" }
+                        LOG.info { "Fant ikke riktig rolle" }
                         return@validate null
                     }
 
