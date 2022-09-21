@@ -87,12 +87,12 @@ object Configuration {
 
     fun allRoles(): List<Role> = listOf(
         Role(RoleName.SAKSBEHANDLER, UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)])),
-        Role(RoleName.FORTROLIG_ADRESSE, UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)])),
+        Role(RoleName.FORTROLIG_ADRESSE, UUID.fromString(config()[Key(RoleName.FORTROLIG_ADRESSE.name, stringType)])),
         Role(
             RoleName.STRENGT_FORTROLIG_ADRESSE,
-            UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)])
+            UUID.fromString(config()[Key(RoleName.STRENGT_FORTROLIG_ADRESSE.name, stringType)])
         ),
-        Role(RoleName.SKJERMING, UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)]))
+        Role(RoleName.SKJERMING, UUID.fromString(config()[Key(RoleName.SKJERMING.name, stringType)]))
     )
 
     data class TokenVerificationConfig(

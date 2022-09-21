@@ -21,7 +21,7 @@ class InnloggetBrukerProvider(private val allAvailableRoles: List<Role> = Config
         this.map { LOG.info { "Mapper rolle $it" }; it }
             .map { finnRolleMedUUID(it).name }
 
-    suspend fun hentInnloggetBruker(principal: JWTPrincipal): InnloggetBruker {
+    fun hentInnloggetBruker(principal: JWTPrincipal): InnloggetBruker {
         val ident = requireNotNull(principal.getClaim("NAVident", String::class)) { "NAVident er null i token" }
         val epost = requireNotNull(
             principal.getClaim("preferred_username", String::class)
