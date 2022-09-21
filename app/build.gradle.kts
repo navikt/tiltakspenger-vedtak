@@ -31,7 +31,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022072721371658950659.c1e8f7bf35c6")
+    implementation("com.github.navikt:rapids-and-rivers:2022082414021661342533.46a423f6c163")
     implementation("com.natpryce:konfig:1.6.10.0")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
