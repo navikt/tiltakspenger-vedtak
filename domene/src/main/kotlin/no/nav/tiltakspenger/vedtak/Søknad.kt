@@ -34,7 +34,7 @@ class Søknad(
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 }
 
-class TrygdOgPensjon(
+data class TrygdOgPensjon(
     val utbetaler: String,
     val prosent: Int? = null,
     val fom: LocalDate? = null,

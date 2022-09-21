@@ -111,7 +111,7 @@ class ArenaTiltakDTO(
 }
 
 class TrygdOgPensjonDTO(
-    val utbetaler: String, val prosent: Int? = null, val fom: LocalDate?, val tom: LocalDate? = null
+    val utbetaler: String, val prosent: Int? = null, val fom: LocalDate? = null, val tom: LocalDate? = null
 ) {
     companion object {
         internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
