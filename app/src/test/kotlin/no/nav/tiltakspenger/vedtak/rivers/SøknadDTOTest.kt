@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.kotest.inspectors.forAtLeastOne
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
+import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -30,7 +32,7 @@ internal class SøknadDTOTest {
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(alder = 13, ident = "789", land = "SWE")
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -78,6 +80,19 @@ internal class SøknadDTOTest {
             søknad.barnetillegg.forAtLeastOne {
                 it.land shouldBe barnetilleggDTO.land
                 it.alder shouldBe barnetilleggDTO.alder
+                it.fornavn shouldBe barnetilleggDTO.fornavn
+                it.etternavn shouldBe barnetilleggDTO.etternavn
+            }
+            if (barnetilleggDTO.ident != null) {
+                søknad.barnetillegg.forAtLeastOne {
+                    it.shouldBeTypeOf<Barnetillegg.MedIdent>()
+                    it.ident shouldBe barnetilleggDTO.ident
+                }
+            } else {
+                søknad.barnetillegg.forAtLeastOne {
+                    it.shouldBeTypeOf<Barnetillegg.UtenIdent>()
+                    it.fødselsdato shouldBe barnetilleggDTO.fødselsdato
+                }
             }
         }
 

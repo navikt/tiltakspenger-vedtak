@@ -1,18 +1,25 @@
 package no.nav.tiltakspenger.vedtak.tilgang
 
-import io.ktor.server.auth.jwt.JWTPrincipal
-import java.util.*
+import io.ktor.server.auth.jwt.*
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.Role
 import no.nav.tiltakspenger.vedtak.RoleName
+import java.util.*
+
+private val LOG = KotlinLogging.logger {}
 
 class InnloggetBrukerProvider(private val allAvailableRoles: List<Role> = Configuration.allRoles()) {
 
     private fun epostToBrukernavn(epost: String): String =
         epost.split("@").first().replace(".", " ")
 
+    private fun finnRolleMedUUID(uuidFraClaim: UUID) =
+        allAvailableRoles.single { configRole -> configRole.objectId == uuidFraClaim }
+
     private fun List<UUID>.mapFromUUIDToRoleName(): List<RoleName> =
-        this.map { claimObjectId -> allAvailableRoles.single { configRole -> configRole.objectId == claimObjectId }.name }
+        this.map { LOG.info { "Mapper rolle $it" }; it }
+            .map { finnRolleMedUUID(it).name }
 
     suspend fun hentInnloggetBruker(principal: JWTPrincipal): InnloggetBruker {
         val ident = requireNotNull(principal.getClaim("NAVident", String::class)) { "NAVident er null i token" }
