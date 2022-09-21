@@ -44,7 +44,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
-    testImplementation(platform("org.junit:junit-bom:5.9.0"))
+    testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
