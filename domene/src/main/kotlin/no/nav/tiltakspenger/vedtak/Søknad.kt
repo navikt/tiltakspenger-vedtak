@@ -37,7 +37,7 @@ class Søknad(
 class TrygdOgPensjon(
     val utbetaler: String,
     val prosent: Int? = null,
-    val fom: LocalDate,
+    val fom: LocalDate? = null,
     val tom: LocalDate? = null
 )
 
