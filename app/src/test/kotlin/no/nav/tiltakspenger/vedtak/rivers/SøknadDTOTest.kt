@@ -301,7 +301,7 @@ internal class SøknadDTOTest {
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
 
-        søknadDTO.trygdOgPensjon.forEach { trygdOgPensjonDTO ->
+        søknadDTO.trygdOgPensjon!!.forEach { trygdOgPensjonDTO ->
             søknad.trygdOgPensjon.forAtLeastOne {
                 it.utbetaler shouldBe trygdOgPensjonDTO.utbetaler
                 it.prosent shouldBe trygdOgPensjonDTO.prosent

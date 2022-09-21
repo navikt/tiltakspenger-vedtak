@@ -29,7 +29,7 @@ class SøknadDTO(
     val barnetillegg: List<BarnetilleggDTO>,
     val arenaTiltak: ArenaTiltakDTO?,
     val brukerregistrertTiltak: BrukerregistrertTiltakDTO?,
-    val trygdOgPensjon: List<TrygdOgPensjonDTO> = emptyList(),
+    val trygdOgPensjon: List<TrygdOgPensjonDTO>? = emptyList(),
     val fritekst: String?,
 ) {
     companion object {
@@ -49,7 +49,7 @@ class SøknadDTO(
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
                 tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
-                trygdOgPensjon = dto.trygdOgPensjon.map { mapTrygdOgPensjon(it) },
+                trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
                 fritekst = dto.fritekst
             )
         }
