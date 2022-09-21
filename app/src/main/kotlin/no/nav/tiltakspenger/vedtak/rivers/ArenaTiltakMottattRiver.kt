@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.time.LocalDateTime
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
@@ -17,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -86,7 +86,7 @@ internal class ArenaTiltakMottattRiver(
                     it.deltakelsePeriode?.tom
                 ),
                 deltakelseProsent = it.deltakelseProsent,
-                deltakerStatus = it.deltakerStatus.status.let { s -> mapDeltakerStatus(s) },
+                deltakerStatus = it.deltakerStatus.innerText.let { s -> mapDeltakerStatus(s) },
                 statusSistEndret = it.statusSistEndret,
                 begrunnelseInnsoeking = it.begrunnelseInnsoeking,
                 antallDagerPerUke = it.antallDagerPerUke,

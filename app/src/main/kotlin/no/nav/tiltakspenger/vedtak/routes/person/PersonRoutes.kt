@@ -27,6 +27,9 @@ fun Route.personRoutes(innloggetBrukerProvider: InnloggetBrukerProvider) {
             }
         }
         get {
+            if (call.request.queryParameters["ident"] == "asc") {
+                // Show products from the lowest price to the highest
+            }
             call.auditHvisInnlogget(berørtBruker = "person")
             LOG.info { "Vi har truffet /saker/person" }
             LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
