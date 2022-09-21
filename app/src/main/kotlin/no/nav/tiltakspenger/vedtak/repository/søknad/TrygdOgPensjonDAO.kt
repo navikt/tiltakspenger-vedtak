@@ -49,7 +49,7 @@ internal class TrygdOgPensjonDAO {
     private fun Row.toTrygdOgPensjon(): TrygdOgPensjon {
         val utbetaler = string("utbetaler")
         val prosent = intOrNull("prosent")
-        val fom = localDate("fom")
+        val fom = localDateOrNull("fom")
         val tom = localDateOrNull("tom")
 
         return TrygdOgPensjon(

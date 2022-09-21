@@ -86,6 +86,6 @@ CREATE TABLE trygdogpensjon
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
     utbetaler VARCHAR NOT NULL,
     prosent   INT     NULL,
-    fom       DATE    NOT NULL,
+    fom       DATE    NULL,
     tom       DATE    NULL
 );
