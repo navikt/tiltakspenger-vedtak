@@ -149,7 +149,7 @@ internal class ArenaTiltakMottattRiverTest {
                    "deltakelseProsent": 100,
                    "deltakerStatus": {
                      "statusNavn": "Gjennomføres",
-                     "status": "GJENN"
+                     "innerText": "GJENN"
                    },
                    "statusSistEndret": "2022-08-09",
                    "begrunnelseInnsoeking": "Trenger tiltaksplass",
