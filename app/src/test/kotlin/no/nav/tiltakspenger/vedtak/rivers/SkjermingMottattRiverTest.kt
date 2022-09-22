@@ -108,6 +108,7 @@ internal class SkjermingMottattRiverTest {
                 etternavn = "",
                 fortrolig = false,
                 strengtFortrolig = false,
+                skjermet = null,
                 innhentet = LocalDateTime.now()
             )
         )

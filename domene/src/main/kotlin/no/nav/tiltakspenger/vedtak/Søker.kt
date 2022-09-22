@@ -1,6 +1,10 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.vedtak.meldinger.*
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.util.*
 
@@ -14,7 +18,6 @@ class Søker private constructor(
     barn: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
-    skjerming: Boolean?,
     val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
     var tilstand: Tilstand = tilstand
@@ -28,8 +31,6 @@ class Søker private constructor(
     var tiltak: List<Tiltaksaktivitet> = tiltak
         private set
     var ytelser: List<YtelseSak> = ytelser
-        private set
-    var skjerming: Boolean? = skjerming
         private set
 
     private val observers = mutableSetOf<SøkerObserver>()
@@ -45,7 +46,6 @@ class Søker private constructor(
         barn = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
-        skjerming = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -69,7 +69,6 @@ class Søker private constructor(
                 barn = mutableListOf(),
                 tiltak = mutableListOf(),
                 ytelser = mutableListOf(),
-                skjerming = null,
                 aktivitetslogg = Aktivitetslogg(),
             )
         }
@@ -221,7 +220,9 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            søker.skjerming = skjermingMottattHendelse.skjerming().skjerming
+            if (søker.personopplysninger != null) {
+                søker.personopplysninger!!.skjermet = skjermingMottattHendelse.skjerming().skjerming
+            }
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }

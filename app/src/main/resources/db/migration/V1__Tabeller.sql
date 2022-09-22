@@ -89,3 +89,18 @@ CREATE TABLE trygdogpensjon
     fom       DATE    NULL,
     tom       DATE    NULL
 );
+
+CREATE TABLE personopplysninger
+(
+    id                  UUID        PRIMARY KEY,
+    søker_id            UUID        NOT NULL REFERENCES søker (id),
+    ident               VARCHAR     NOT NULL UNIQUE,
+    fødselsdato         DATE        NOT NULL,
+    fornavn             VARCHAR     NOT NULL,
+    mellomnavn          VARCHAR     NULL,
+    etternavn           VARCHAR     NOT NULL,
+    fortrolig           BOOLEAN     NOT NULL,
+    strengtFortrolig    BOOLEAN     NOT NULL,
+    skjermet            BOOLEAN     NULL,
+    innhentet           TIMESTAMP WITH TIME ZONE NULL
+);

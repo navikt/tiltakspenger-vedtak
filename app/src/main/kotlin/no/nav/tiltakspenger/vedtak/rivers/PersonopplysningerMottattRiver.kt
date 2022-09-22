@@ -78,6 +78,7 @@ internal class PersonopplysningerMottattRiver(
             etternavn = personopplysningerDTO.etternavn,
             fortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG) true else false,
             strengtFortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG || personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND) true else false,
+            skjermet = null,
             innhentet = innhentet,
         )
     }
