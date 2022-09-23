@@ -198,6 +198,63 @@ internal class SøknadDTOTest {
     }
 
     @Test
+    fun mapArenaTiltakMedAMO() {
+        val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
+        val søknadDTO = SøknadDTO(
+            søknadId = "42",
+            journalpostId = "43",
+            dokumentInfoId = "44",
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            oppholdInstitusjon = true,
+            typeInstitusjon = "fengsel",
+            opprettet = tidsstempel,
+            barnetillegg = listOf(),
+            arenaTiltak = ArenaTiltakDTO(
+                arenaId = "7",
+                arrangoer = "Arrangør",
+                harSluttdatoFraArena = false,
+                tiltakskode = "AMO",
+                erIEndreStatus = false,
+                opprinneligSluttdato = null,
+                opprinneligStartdato = LocalDate.now(),
+                sluttdato = LocalDate.now(),
+                startdato = LocalDate.now()
+
+            ),
+            brukerregistrertTiltak = null,
+            trygdOgPensjon = listOf(),
+            fritekst = "hei"
+        )
+
+        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+
+        assertNotNull(søknad.tiltak)
+        assertTrue(søknad.tiltak is Tiltak.ArenaTiltak)
+        assertEquals(søknadDTO.arenaTiltak!!.arenaId, (søknad.tiltak as Tiltak.ArenaTiltak).arenaId)
+        assertEquals(søknadDTO.arenaTiltak!!.arrangoer, (søknad.tiltak as Tiltak.ArenaTiltak).arrangoernavn)
+        assertEquals(
+            søknadDTO.arenaTiltak!!.harSluttdatoFraArena,
+            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena
+        )
+        assertEquals(søknadDTO.arenaTiltak!!.erIEndreStatus, (søknad.tiltak as Tiltak.ArenaTiltak).erIEndreStatus)
+        assertEquals(Tiltaksaktivitet.Tiltak.AMO, (søknad.tiltak as Tiltak.ArenaTiltak).tiltakskode)
+        assertEquals(søknadDTO.arenaTiltak!!.startdato, (søknad.tiltak as Tiltak.ArenaTiltak).startdato)
+        assertEquals(søknadDTO.arenaTiltak!!.sluttdato, (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato)
+        assertEquals(
+            søknadDTO.arenaTiltak!!.opprinneligStartdato,
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligStartdato
+        )
+        assertEquals(
+            søknadDTO.arenaTiltak!!.opprinneligSluttdato,
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligSluttdato
+        )
+    }
+
+    @Test
     fun mapBrukerregistrertTiltak() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(

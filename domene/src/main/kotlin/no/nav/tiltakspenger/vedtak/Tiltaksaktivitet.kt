@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AFT
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.ARBRREHAB
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AVKLARING
@@ -12,6 +10,8 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPL
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.TILRETTE
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.UTFAS
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.VARIGASV
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 //Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
@@ -88,6 +88,7 @@ data class Tiltaksaktivitet(
         FUNKSJASS("Funksjonsassistanse", TILRETTE, true),
         GRUFAGYRKE("Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning", OPPL, true),
         GRUPPEAMO("Gruppe AMO", OPPL, true),
+        AMO("AMO", OPPL, true),
         HOYEREUTD("Høyere utdanning", OPPL, true),
         INDJOBSTOT("Individuell jobbstøtte (IPS)", OPPFOLG, true),
         INDOPPFAG("Oppfølging", OPPFOLG, true),
