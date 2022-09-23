@@ -44,7 +44,7 @@ data class Tiltaksaktivitet(
             when (tiltaksType) {
                 "JOBSOK" -> Tiltak.JOBBK
                 "PRAKSORD" -> Tiltak.ARBTREN
-                "AMO" -> Tiltak.GRUPPEAMO
+                "AMO" -> Tiltak.AMO
                 "Annet" -> null //TODO: Hvordan mappe Annet?
                 else -> null
             }

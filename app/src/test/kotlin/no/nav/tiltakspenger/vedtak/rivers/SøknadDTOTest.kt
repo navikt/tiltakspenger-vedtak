@@ -315,6 +315,66 @@ internal class SøknadDTOTest {
     }
 
     @Test
+    fun mapBrukerregistrertTiltakAMO() {
+        val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
+        val søknadDTO = SøknadDTO(
+            søknadId = "42",
+            journalpostId = "43",
+            dokumentInfoId = "44",
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            oppholdInstitusjon = true,
+            typeInstitusjon = "fengsel",
+            opprettet = tidsstempel,
+            barnetillegg = listOf(),
+            arenaTiltak = null,
+            brukerregistrertTiltak = BrukerregistrertTiltakDTO(
+                tiltakskode = "AMO",
+                arrangoernavn = "Arrangør",
+                beskrivelse = "beskrivelse",
+                fom = LocalDate.now(),
+                tom = LocalDate.now(),
+                adresse = "Tiltaksveien",
+                postnummer = "0489",
+                antallDager = 4
+            ),
+            trygdOgPensjon = listOf(),
+            fritekst = "hei"
+        )
+
+        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+
+        assertNotNull(søknad.tiltak)
+        assertTrue(søknad.tiltak is Tiltak.BrukerregistrertTiltak)
+        assertEquals(
+            søknadDTO.brukerregistrertTiltak!!.adresse,
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).adresse
+        )
+        assertEquals(
+            søknadDTO.brukerregistrertTiltak!!.arrangoernavn,
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn
+        )
+        assertEquals(Tiltaksaktivitet.Tiltak.AMO, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).tiltakskode)
+        assertEquals(søknadDTO.brukerregistrertTiltak!!.fom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).startdato)
+        assertEquals(søknadDTO.brukerregistrertTiltak!!.tom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).sluttdato)
+        assertEquals(
+            søknadDTO.brukerregistrertTiltak!!.beskrivelse,
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+        )
+        assertEquals(
+            søknadDTO.brukerregistrertTiltak!!.postnummer,
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).postnummer
+        )
+        assertEquals(
+            søknadDTO.brukerregistrertTiltak!!.antallDager,
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+        )
+    }
+
+    @Test
     fun mapTrygdOgPensjon() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val fom = LocalDate.of(2022, Month.SEPTEMBER, 12)
