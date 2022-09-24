@@ -1,18 +1,15 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.headers
-import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.routing.routing
-import io.ktor.server.testing.ApplicationTestBuilder
-import io.ktor.server.testing.testApplication
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.routing.*
+import io.ktor.server.testing.*
+import io.ktor.server.util.*
+import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -39,13 +36,22 @@ class PersonRoutesTest {
             application {
                 jacksonSerialization()
                 routing {
-                    personRoutes(InnloggetBrukerProvider())
+                    personRoutes(
+                        InnloggetBrukerProvider(),
+                        PersonServiceImpl(
+                            søkerRepository = InMemorySøkerRepository()
+                        ),
+                    )
                 }
             }
 
             defaultRequest(
                 HttpMethod.Get,
-                "$personPath/test",
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$personPath")
+                    parameters.append("ident", "1234")
+                }, setup = {}
             ).apply {
 
                 status shouldBe HttpStatusCode.OK

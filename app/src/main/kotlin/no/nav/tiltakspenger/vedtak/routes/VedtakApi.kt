@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.Role
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
+import no.nav.tiltakspenger.vedtak.service.PersonService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.net.URI
 import java.util.*
@@ -28,7 +29,8 @@ private val LOG = KotlinLogging.logger {}
 
 internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
-    innloggetBrukerProvider: InnloggetBrukerProvider
+    innloggetBrukerProvider: InnloggetBrukerProvider,
+    personService: PersonService,
 ): Application.() -> Unit {
     return {
         install(CallId)
@@ -45,7 +47,7 @@ internal fun vedtakApi(
         auth(config)
         routing {
             authenticate("saksbehandling") {
-                personRoutes(innloggetBrukerProvider)
+                personRoutes(innloggetBrukerProvider, personService)
             }
             naisRoutes()
         }

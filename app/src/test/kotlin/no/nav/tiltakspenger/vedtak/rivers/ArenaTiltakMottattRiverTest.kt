@@ -3,14 +3,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.*
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -85,6 +78,7 @@ internal class ArenaTiltakMottattRiverTest {
                 fortrolig = false,
                 strengtFortrolig = false,
                 skjermet = null,
+                bosted = null,
                 innhentet = LocalDateTime.now(),
             )
         )
