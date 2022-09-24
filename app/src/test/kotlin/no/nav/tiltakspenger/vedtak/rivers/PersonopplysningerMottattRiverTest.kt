@@ -2,28 +2,31 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-internal class PersonMottattRiverTest {
+internal class PersonopplysningerMottattRiverTest {
 
     private companion object {
-        val IDENT = "04927799109"
+        const val IDENT = "04927799109"
     }
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val testRapid = TestRapid()
 
     init {
-        PersondataMottattRiver(
+        PersonopplysningerMottattRiver(
             rapidsConnection = testRapid,
             søkerMediator = SøkerMediator(
                 søkerRepository = søkerRepository,
@@ -33,12 +36,14 @@ internal class PersonMottattRiverTest {
     }
 
     @Test
-    fun `Når PersonRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
+    fun `Når PersonopplysningerRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
         val hendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -46,22 +51,29 @@ internal class PersonMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
-                barnetillegg = listOf(),
-                innhentet = LocalDateTime.now(),
+                barnetillegg = emptyList(),
+                tidsstempelHosOss = LocalDateTime.now(),
+                tiltak = Tiltak.ArenaTiltak(
+                    arenaId = "123",
+                    arrangoernavn = "Tiltaksarrangør AS",
+                    harSluttdatoFraArena = false,
+                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                    erIEndreStatus = false,
+                    opprinneligSluttdato = LocalDate.now(),
+                    opprinneligStartdato = LocalDate.now(),
+                    sluttdato = LocalDate.now(),
+                    startdato = LocalDate.now()
+                ),
+                trygdOgPensjon = emptyList(),
+                fritekst = null
             )
         )
         val søker = Søker(IDENT)
         søker.håndter(hendelse)
 
         every { søkerRepository.hent(IDENT) } returns søker
-        testRapid.sendTestMessage(personMottattEvent())
+        testRapid.sendTestMessage(personopplysningerMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
@@ -71,11 +83,11 @@ internal class PersonMottattRiverTest {
         }
     }
 
-    private fun personMottattEvent(): String =
+    private fun personopplysningerMottattEvent(): String =
         """
            {
              "@behov": [
-               "persondata"
+               "personopplysninger"
              ],
              "@id": "test",
              "@behovId": "behovId",
@@ -92,7 +104,7 @@ internal class PersonMottattRiverTest {
                }
              ],
              "@løsning": {
-               "persondata": {
+               "personopplysninger": {
                  "person": {
                    "fødselsdato": "1983-07-04",
                    "fornavn": "Knuslete",
@@ -120,7 +132,7 @@ internal class PersonMottattRiverTest {
 //    "Skjermingdata"
 //    ],
 //    "ident": "04927799109",
-//    "tilstandtype": "AvventerPersondataType",
+//    "tilstandtype": "AvventerPersonopplysningerType",
 //    "system_read_count": 0,
 //    "system_participating_services": [
 //    {

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
@@ -10,28 +10,42 @@ import java.util.*
 
 @Suppress("TooManyFunctions", "LongParameterList")
 class Søker private constructor(
-    private val id: UUID = UUID.randomUUID(),
-    private val ident: String,
-    private var tilstand: Tilstand,
-    private var søknad: Søknad?,
-    private var personinfo: Personinfo?,
-    private var tiltak: List<Tiltaksaktivitet>,
-    private var ytelser: List<YtelseSak>,
-    private var skjerming: Boolean?,
-    internal val aktivitetslogg: Aktivitetslogg
+    val id: UUID,
+    val ident: String,
+    tilstand: Tilstand,
+    søknader: List<Søknad>,
+    personopplysninger: Personopplysninger?,
+    barn: List<Personopplysninger>,
+    tiltak: List<Tiltaksaktivitet>,
+    ytelser: List<YtelseSak>,
+    val aktivitetslogg: Aktivitetslogg
 ) : Aktivitetskontekst {
+    var tilstand: Tilstand = tilstand
+        private set
+    var søknader: List<Søknad> = søknader
+        private set
+    var personopplysninger: Personopplysninger? = personopplysninger
+        private set
+    var barn: List<Personopplysninger> = barn
+        private set
+    var tiltak: List<Tiltaksaktivitet> = tiltak
+        private set
+    var ytelser: List<YtelseSak> = ytelser
+        private set
+
     private val observers = mutableSetOf<SøkerObserver>()
 
     constructor(
         ident: String
     ) : this(
+        id = UUID.randomUUID(),
         ident = ident,
         tilstand = SøkerRegistrert,
-        søknad = null,
-        personinfo = null,
+        søknader = mutableListOf(),
+        personopplysninger = null,
+        barn = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
-        skjerming = null,
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -40,30 +54,25 @@ class Søker private constructor(
             id: UUID = UUID.randomUUID(),
             ident: String,
             tilstand: String,
+            søknader: List<Søknad>,
         ): Søker {
             return Søker(
                 id = id,
                 ident = ident,
                 tilstand = when (tilstand) {
                     "SøkerRegistrert" -> SøkerRegistrert
-                    "AvventerPersondata" -> AvventerPersondata
+                    "AvventerPersonopplysninger" -> AvventerPersonopplysninger
                     else -> SøkerRegistrert
                 },
-                søknad = null,
-                personinfo = null,
+                søknader = søknader,
+                personopplysninger = null,
+                barn = mutableListOf(),
                 tiltak = mutableListOf(),
                 ytelser = mutableListOf(),
-                skjerming = null,
                 aktivitetslogg = Aktivitetslogg(),
             )
         }
     }
-
-    fun ident(): String = ident
-
-    fun id(): UUID = id
-
-    fun tilstand() = tilstand
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
         if (ident != søknadMottattHendelse.ident()) return
@@ -78,17 +87,18 @@ class Søker private constructor(
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
-    fun håndter(persondataMottattHendelse: PersondataMottattHendelse) {
-        if (ident != persondataMottattHendelse.ident()) return
+    fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+        if (ident != personopplysningerMottattHendelse.ident()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(persondataMottattHendelse, "Registrert PersondataMottattHendelse")
+        kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
-            persondataMottattHendelse.error("ident ${persondataMottattHendelse.ident()} allerede ferdig behandlet")
+            personopplysningerMottattHendelse
+                .error("ident ${personopplysningerMottattHendelse.ident()} allerede ferdig behandlet")
             return
         }
-        tilstand.håndter(this, persondataMottattHendelse)
+        tilstand.håndter(this, personopplysningerMottattHendelse)
     }
 
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
@@ -145,8 +155,8 @@ class Søker private constructor(
             søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i %s", type.name)
         }
 
-        fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
-            persondataMottattHendelse.warn("Forventet ikke PersondataMottattHendelse i %s", type.name)
+        fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i %s", type.name)
         }
 
         fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
@@ -181,23 +191,24 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søker.søknad = søknadMottattHendelse.søknad()
-            søker.trengerPersondata(søknadMottattHendelse)
-            søker.tilstand(søknadMottattHendelse, AvventerPersondata)
+            søker.søknader += søknadMottattHendelse.søknad()
+            søker.trengerPersonopplysninger(søknadMottattHendelse)
+            søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
     }
 
-    internal object AvventerPersondata : Tilstand {
+    internal object AvventerPersonopplysninger : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerPersondataType
+            get() = SøkerTilstandType.AvventerPersonopplysningerType
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, persondataMottattHendelse: PersondataMottattHendelse) {
-            persondataMottattHendelse.info("Fikk info om person saker: ${persondataMottattHendelse.personinfo()}")
-            søker.personinfo = persondataMottattHendelse.personinfo()
-            søker.trengerSkjermingdata(persondataMottattHendelse)
-            søker.tilstand(persondataMottattHendelse, AvventerSkjermingdata)
+        override fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+            personopplysningerMottattHendelse
+                .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
+            søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
+            søker.trengerSkjermingdata(personopplysningerMottattHendelse)
+            søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
 
@@ -209,7 +220,9 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            søker.skjerming = skjermingMottattHendelse.skjerming().skjerming
+            if (søker.personopplysninger != null) {
+                søker.personopplysninger!!.skjermet = skjermingMottattHendelse.skjerming().skjerming
+            }
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }
@@ -222,7 +235,8 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            arenaTiltakMottattHendelse.info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+            arenaTiltakMottattHendelse
+                .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
             søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
             søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
             søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
@@ -250,10 +264,10 @@ class Søker private constructor(
 
     }
 
-    private fun trengerPersondata(hendelse: Hendelse) {
+    private fun trengerPersonopplysninger(hendelse: Hendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.persondata,
-            melding = "Trenger persondata",
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            melding = "Trenger personopplysninger",
             detaljer = mapOf("ident" to this.ident)
         )
     }
@@ -311,7 +325,7 @@ class Søker private constructor(
         visitor.preVisitSøker(this, ident)
         visitor.visitTilstand(tilstand)
         //journalpost?.accept(visitor)
-        søknad?.accept(visitor)
+//        søknader.accept(visitor)
         visitor.visitSøkerAktivitetslogg(aktivitetslogg)
         aktivitetslogg.accept(visitor)
         visitor.postVisitSøker(this, ident)

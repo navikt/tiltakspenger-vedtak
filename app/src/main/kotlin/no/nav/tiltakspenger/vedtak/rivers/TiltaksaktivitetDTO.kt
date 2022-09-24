@@ -23,7 +23,7 @@ data class TiltaksaktivitetDTO(
 
     data class DeltakerStatusDTO(
         val statusNavn: String,
-        val status: DeltakerStatusEnum
+        val innerText: DeltakerStatusEnum
     )
 
     enum class TiltaksnavnEnum(val tekst: String) {

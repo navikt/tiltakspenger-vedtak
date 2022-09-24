@@ -2,28 +2,29 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personinfo
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class ArenaYtelseMottattRiverTest {
 
     private companion object {
-        val IDENT = "04927799109"
+        const val IDENT = "04927799109"
     }
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
@@ -45,7 +46,9 @@ internal class ArenaYtelseMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = IDENT,
@@ -53,21 +56,28 @@ internal class ArenaYtelseMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
-                barnetillegg = listOf(),
-                innhentet = LocalDateTime.now(),
+                barnetillegg = emptyList(),
+                tidsstempelHosOss = LocalDateTime.now(),
+                tiltak = Tiltak.ArenaTiltak(
+                    arenaId = "123",
+                    arrangoernavn = "Tiltaksarrangør AS",
+                    harSluttdatoFraArena = false,
+                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                    erIEndreStatus = false,
+                    opprinneligSluttdato = LocalDate.now(),
+                    opprinneligStartdato = LocalDate.now(),
+                    sluttdato = LocalDate.now(),
+                    startdato = LocalDate.now()
+                ),
+                trygdOgPensjon = emptyList(),
+                fritekst = null
             )
         )
-        val persondataMottatthendelse = PersondataMottattHendelse(
+        val personopplysningerMottatthendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
-            personinfo = Personinfo(
+            personopplysninger = Personopplysninger(
                 ident = "",
                 fødselsdato = LocalDate.MAX,
                 fornavn = "",
@@ -75,6 +85,7 @@ internal class ArenaYtelseMottattRiverTest {
                 etternavn = "",
                 fortrolig = false,
                 strengtFortrolig = false,
+                skjermet = null,
                 innhentet = LocalDateTime.now(),
             )
         )
@@ -94,7 +105,7 @@ internal class ArenaYtelseMottattRiverTest {
             ident = IDENT,
             tiltaksaktivitet = listOf(
                 Tiltaksaktivitet(
-                    tiltaksnavn = Tiltaksaktivitet.Tiltaksnavn.ARBRRHDAG,
+                    tiltak = Tiltaksaktivitet.Tiltak.ARBRRHDAG,
                     aktivitetId = "",
                     tiltakLokaltNavn = null,
                     arrangoer = null,
@@ -111,7 +122,7 @@ internal class ArenaYtelseMottattRiverTest {
         )
         val søker = Søker(IDENT)
         søker.håndter(søknadMottatthendelse)
-        søker.håndter(persondataMottatthendelse)
+        søker.håndter(personopplysningerMottatthendelse)
         søker.håndter(skjermingMottattHendelse)
         søker.håndter(tiltakMottattHendelse)
 

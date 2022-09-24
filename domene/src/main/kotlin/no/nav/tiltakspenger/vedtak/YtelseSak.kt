@@ -17,8 +17,8 @@ data class YtelseSak(
     val antallUkerIgjen: Int? = null,
     val innhentet: LocalDateTime,
 ) : Tidsstempler {
-    override fun oppdatert(): LocalDateTime = innhentet
-    override fun innhentet(): LocalDateTime = innhentet
+    override fun tidsstempelKilde(): LocalDateTime = innhentet
+    override fun tidsstempelHosOss(): LocalDateTime = innhentet
 
     data class YtelseVedtak(
         val beslutningsDato: LocalDate? = null,

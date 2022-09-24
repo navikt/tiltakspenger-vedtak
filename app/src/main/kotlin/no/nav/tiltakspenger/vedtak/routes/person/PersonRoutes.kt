@@ -1,33 +1,45 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
-import com.papsign.ktor.openapigen.route.path.auth.get
-import com.papsign.ktor.openapigen.route.response.respond
-import com.papsign.ktor.openapigen.route.route
-import io.ktor.server.auth.jwt.*
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
+import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 
-fun OpenAPIAuthenticatedRoute<JWTPrincipal>.personRoutes() {
-    route("$personPath/test") {
-        get<Unit, PersonDTO, JWTPrincipal> {
-            respond(response = person())
-        }
-    }
+private val LOG = KotlinLogging.logger {}
+
+internal const val personPath = "/saker/person"
+
+fun Route.personRoutes(innloggetBrukerProvider: InnloggetBrukerProvider) {
     route("$personPath") {
-        get<Unit, PersonDTO, JWTPrincipal> {
-            respond(response = person())
+        route("/test") {
+            get {
+                call.auditHvisInnlogget(berørtBruker = "test")
+                LOG.info { "Vi har truffet /saker/person/test" }
+                call.respond(message = person(), status = HttpStatusCode.OK)
+            }
+        }
+        get {
+            if (call.request.queryParameters["ident"] == "asc") {
+                // Show products from the lowest price to the highest
+            }
+            call.auditHvisInnlogget(berørtBruker = "person")
+            LOG.info { "Vi har truffet /saker/person" }
+            LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
+            call.respond(message = person(), status = HttpStatusCode.OK)
         }
     }
 }
 
-internal const val personPath = "/saker/person"
-
 fun person(): PersonDTO = PersonDTO(
-    personalia = PersonaliaDTO(
+    personopplysninger = PersonopplysningerDTO(
         fornavn = "Fornavn",
         etternavn = "Etternavn",
         ident = "123454",
@@ -115,4 +127,3 @@ fun person(): PersonDTO = PersonDTO(
         )
     ),
 )
-

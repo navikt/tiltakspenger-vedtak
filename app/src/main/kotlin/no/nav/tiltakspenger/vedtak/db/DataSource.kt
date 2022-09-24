@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.vedtak.db
 
 import com.zaxxer.hikari.HikariDataSource
-import kotliquery.Connection
-import kotliquery.Session
 import mu.KotlinLogging
 
 private val LOG = KotlinLogging.logger {}
@@ -36,9 +34,5 @@ object DataSource {
 
     val hikariDataSource: HikariDataSource by lazy {
         init()
-    }
-
-    val session: Session by lazy {
-        Session(Connection(hikariDataSource.connection))
     }
 }

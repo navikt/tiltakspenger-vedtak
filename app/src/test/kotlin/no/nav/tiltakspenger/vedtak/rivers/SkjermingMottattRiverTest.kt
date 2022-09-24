@@ -2,19 +2,21 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalDate
-import java.time.LocalDateTime
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personinfo
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal class SkjermingMottattRiverTest {
 
@@ -67,7 +69,9 @@ internal class SkjermingMottattRiverTest {
             aktivitetslogg = aktivitetslogg,
             ident = ident,
             søknad = Søknad(
-                id = "",
+                søknadId = "42",
+                journalpostId = "43",
+                dokumentInfoId = "44",
                 fornavn = null,
                 etternavn = null,
                 ident = ident,
@@ -75,21 +79,28 @@ internal class SkjermingMottattRiverTest {
                 deltarIntroduksjonsprogrammet = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
-                tiltaksArrangoer = null,
-                tiltaksType = null,
                 opprettet = null,
-                brukerRegistrertStartDato = null,
-                brukerRegistrertSluttDato = null,
-                systemRegistrertStartDato = null,
-                systemRegistrertSluttDato = null,
-                barnetillegg = listOf(),
-                innhentet = LocalDateTime.now()
+                barnetillegg = emptyList(),
+                tidsstempelHosOss = LocalDateTime.now(),
+                tiltak = Tiltak.ArenaTiltak(
+                    arenaId = "123",
+                    arrangoernavn = "Tiltaksarrangør AS",
+                    harSluttdatoFraArena = false,
+                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                    erIEndreStatus = false,
+                    opprinneligSluttdato = LocalDate.now(),
+                    opprinneligStartdato = LocalDate.now(),
+                    sluttdato = LocalDate.now(),
+                    startdato = LocalDate.now()
+                ),
+                trygdOgPensjon = emptyList(),
+                fritekst = null,
             )
         )
-        val persondataMottattHendelse = PersondataMottattHendelse(
+        val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = aktivitetslogg,
             ident = ident,
-            personinfo = Personinfo(
+            personopplysninger = Personopplysninger(
                 ident = ident,
                 fødselsdato = LocalDate.now(),
                 fornavn = "",
@@ -97,6 +108,7 @@ internal class SkjermingMottattRiverTest {
                 etternavn = "",
                 fortrolig = false,
                 strengtFortrolig = false,
+                skjermet = null,
                 innhentet = LocalDateTime.now()
             )
         )
@@ -105,7 +117,7 @@ internal class SkjermingMottattRiverTest {
 
         // when
         søker.håndter(mottattSøknadHendelse)
-        søker.håndter(persondataMottattHendelse)
+        søker.håndter(personopplysningerMottattHendelse)
         testRapid.sendTestMessage(løsning)
 
         // then
