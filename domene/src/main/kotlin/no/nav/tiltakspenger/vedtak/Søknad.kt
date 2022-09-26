@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-class Søknad(
+data class Søknad(
     val id: UUID = UUID.randomUUID(),
     val søknadId: String,
     val journalpostId: String,

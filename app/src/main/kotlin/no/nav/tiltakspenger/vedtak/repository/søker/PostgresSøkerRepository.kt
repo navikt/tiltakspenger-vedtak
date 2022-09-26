@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
-import java.time.LocalDateTime
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -12,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -26,7 +26,7 @@ internal class PostgresSøkerRepository(
             it.transaction { txSession ->
                 return txSession.run(
                     queryOf(hent, ident).map { row ->
-                        row.toSøker()
+                        row.toSøker(txSession)
                     }.asSingle
                 )
             }
@@ -45,7 +45,7 @@ internal class PostgresSøkerRepository(
         }
     }
 
-    private fun Row.toSøker(): Søker {
+    private fun Row.toSøker(txSession: TransactionalSession): Søker {
         val ident = string("ident")
         val id = uuid("id")
         val tilstand = string("tilstand")
@@ -53,7 +53,7 @@ internal class PostgresSøkerRepository(
             id = id,
             ident = ident,
             tilstand = tilstand,
-            søknader = emptyList(), // søknadDAO.hentAlle(ident)
+            søknader = søknadDAO.hentAlle(id, txSession)
         )
     }
 
