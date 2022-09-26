@@ -357,7 +357,7 @@ internal class SøknadDTOTest {
             søknadDTO.brukerregistrertTiltak!!.arrangoernavn,
             (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn
         )
-        assertEquals(Tiltaksaktivitet.Tiltak.AMO, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).tiltakskode)
+        assertEquals(Tiltaksaktivitet.Tiltak.GRUPPEAMO, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).tiltakskode)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.fom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).startdato)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.tom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).sluttdato)
         assertEquals(
