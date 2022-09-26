@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.hågen
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Personinfo
-import no.nav.tiltakspenger.vedtak.meldinger.PersondataMottattHendelse
+import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 
 
 class Perioder
@@ -86,7 +86,7 @@ class KVPVilkårsvurdering(periode: Periode) : Vilkårsvurdering {
 class ErOver18ÅrIVilkårsvurdering(periode: Periode) : Vilkårsvurdering {
 
     var periode: Periode = periode
-    var personinfo: Personinfo? = null
+    var personinfo: Personopplysninger? = null
     var vurdering: Vurdering = Vurdering.VenterPåData(vilkår = vilkår())
     override fun trengerManuellVurdering(): Boolean =
         vurdering is Vurdering.IkkeImplementert || vurdering is Vurdering.MotstridendeData
@@ -105,8 +105,8 @@ class ErOver18ÅrIVilkårsvurdering(periode: Periode) : Vilkårsvurdering {
         revurder()
     }
 
-    fun håndterHendelse(hendelse: PersondataMottattHendelse) {
-        personinfo = hendelse.personinfo()
+    fun håndterHendelse(hendelse: PersonopplysningerMottattHendelse) {
+        personinfo = hendelse.personopplysninger()
         // TODO: Hva hvis man har en manuell vurdering?
         revurder()
     }
@@ -120,7 +120,7 @@ class ErOver18ÅrIVilkårsvurdering(periode: Periode) : Vilkårsvurdering {
         personinfo?.let { vurdering = it.vurderForPeriode(periode) }
     }
 
-    private fun Personinfo.vurderForPeriode(periode: Periode): Vurdering.Avklart =
+    private fun Personopplysninger.vurderForPeriode(periode: Periode): Vurdering.Avklart =
         Vurdering.IngenKonflikt(vilkår = vilkår()) //TODO
 }
 
@@ -166,7 +166,7 @@ class SamletVilkårsvurdering(
         listOf(erOver18ÅrTotalVilkårsvurdering, kvpTotalVilkårsvurdering)
             .filter { it.trengerManuellVurdering() }
 
-    fun håndterHendelse(hendelse: PersondataMottattHendelse) {
+    fun håndterHendelse(hendelse: PersonopplysningerMottattHendelse) {
         erOver18ÅrTotalVilkårsvurdering.håndterHendelse(hendelse)
     }
 }
