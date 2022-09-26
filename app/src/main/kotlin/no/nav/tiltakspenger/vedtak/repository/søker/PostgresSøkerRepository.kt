@@ -10,13 +10,15 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
+import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import org.intellij.lang.annotations.Language
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresSøkerRepository(
-    private val søknadDAO: SøknadDAO,
+    private val søknadDAO: SøknadDAO = SøknadDAO(),
+    private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {

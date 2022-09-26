@@ -36,7 +36,7 @@ internal class BarnetilleggDAOTest {
 
     @Test
     fun `lagre barnetillegg og hente de ut igjen (må dessverre lagre både søker og søknad pga foreign keys)`() {
-        val søknadDAO = PostgresSøknadDAO()
+        val søknadDAO = SøknadDAO()
         val søkerRepository = PostgresSøkerRepository(søknadDAO)
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)

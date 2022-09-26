@@ -6,7 +6,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
-import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
@@ -28,7 +28,7 @@ internal fun vedtakTestApi(): Application.() -> Unit {
                 innloggetBrukerProvider = InnloggetBrukerProvider(),
                 personService = PersonServiceImpl(
                     søkerRepository = PostgresSøkerRepository(
-                        PostgresSøknadDAO()
+                        SøknadDAO()
                     )
                 ),
             )
