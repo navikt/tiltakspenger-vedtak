@@ -112,14 +112,14 @@ CREATE TABLE tiltaksaktivitet
     tiltak                  VARCHAR     NOT NULL,
     aktivitet_id            VARCHAR     NOT NULL,
     tiltak_lokalt_navn      VARCHAR     NULL,
-    arrangoer               VARCHAR     NULL,
+    arrangør                VARCHAR     NULL,
     bedriftsnummer          VARCHAR     NULL,
-    fom                     DATE        NULL,
-    tom                     DATE        NULL,
+    deltakelse_periode_fom  DATE        NULL,
+    deltakelse_periode_tom  DATE        NULL,
     deltakelse_prosent      FLOAT       NULL,
     deltaker_status         VARCHAR     NOT NULL,
     status_sist_endret      DATE        NULL,
-    begrunnelse_innsoeking  VARCHAR     NULL,
+    begrunnelse_innsøking   VARCHAR     NULL,
     antall_dager_per_uke    FLOAT       NULL,
-    innhentet               TIMESTAMP WITH TIME ZONE NULL
+    tidsstempel_hos_oss     TIMESTAMP WITH TIME ZONE NULL
 );
