@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet
 
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -31,7 +31,7 @@ internal class TiltaksaktivitetDAOTest {
     }
 
     @Test
-    fun `lagre og hente med null-felter`() {
+    fun `lagre og hente med null felter`() {
         val tiltaksaktivitetDAO = TiltaksaktivitetDAO()
         val søkerRepository = PostgresSøkerRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
         val ident = Random().nextInt().toString()
@@ -68,21 +68,50 @@ internal class TiltaksaktivitetDAOTest {
         }
 
         hentet.size shouldBe 1
-        hentet.first().let {
-            it.tiltak shouldBe Tiltaksaktivitet.Tiltak.JOBBK
-            it.aktivitetId shouldBe "aktid"
-            it.tiltakLokaltNavn shouldBe null
-            it.arrangør shouldBe null
-            it.bedriftsnummer shouldBe null
-            it.deltakelsePeriode shouldNotBe null
-            it.deltakelsePeriode.fom shouldBe null
-            it.deltakelsePeriode.tom shouldBe null
-            it.deltakelseProsent shouldBe null
-            it.deltakerStatus shouldBe Tiltaksaktivitet.DeltakerStatus.AKTUELL
-            it.statusSistEndret shouldBe null
-            it.begrunnelseInnsøking shouldBe "begrunnelse"
-            it.antallDagerPerUke shouldBe null
-            it.tidsstempelHosOss shouldBe tidspunkt
+        hentet.first() shouldBe tiltaksaktivitet
+    }
+
+    @Test
+    fun `lagre og hente med non-null felter`() {
+        val tiltaksaktivitetDAO = TiltaksaktivitetDAO()
+        val søkerRepository = PostgresSøkerRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
+        val ident = Random().nextInt().toString()
+        val søker = Søker(ident)
+        søkerRepository.lagre(søker)
+
+        val tidspunkt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+
+        val tiltaksaktivitet = Tiltaksaktivitet(
+            tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
+            aktivitetId = "aktid",
+            tiltakLokaltNavn = "lokalt navn",
+            arrangør = "Arrangør",
+            bedriftsnummer = "bedriftsnummer",
+            deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
+                LocalDate.now().minusDays(5),
+                LocalDate.now().minusDays(1)
+            ),
+            deltakelseProsent = 50.0F,
+            deltakerStatus = Tiltaksaktivitet.DeltakerStatus.AKTUELL,
+            statusSistEndret = LocalDate.now(),
+            begrunnelseInnsøking = "begrunnelse",
+            antallDagerPerUke = 3.5F,
+            tidsstempelHosOss = tidspunkt,
+        )
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                tiltaksaktivitetDAO.lagre(søker.id, listOf(tiltaksaktivitet), txSession)
+            }
         }
+
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                tiltaksaktivitetDAO.hentForSøker(søkerId = søker.id, txSession = txSession)
+            }
+        }
+
+        hentet.size shouldBe 1
+        hentet.first() shouldBe tiltaksaktivitet
     }
 }
