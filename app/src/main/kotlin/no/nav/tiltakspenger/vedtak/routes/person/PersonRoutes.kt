@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
+import no.nav.tiltakspenger.vedtak.service.PersonService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,28 +18,46 @@ private val LOG = KotlinLogging.logger {}
 
 internal const val personPath = "/saker/person"
 
-fun Route.personRoutes(innloggetBrukerProvider: InnloggetBrukerProvider) {
+fun Route.personRoutes(
+    innloggetBrukerProvider: InnloggetBrukerProvider,
+    personService: PersonService,
+) {
     route("$personPath") {
-        route("/test") {
-            get {
-                call.auditHvisInnlogget(berørtBruker = "test")
-                LOG.info { "Vi har truffet /saker/person/test" }
-                call.respond(message = person(), status = HttpStatusCode.OK)
-            }
-        }
+        //route("/test") {
+        //    get {
+        //        call.auditHvisInnlogget(berørtBruker = "test")
+        //        LOG.info { "Vi har truffet /saker/person/test" }
+        //        call.respond(message = person(), status = HttpStatusCode.OK)
+        //    }
+        //}
         get {
-            if (call.request.queryParameters["ident"] == "asc") {
-                // Show products from the lowest price to the highest
-            }
-            call.auditHvisInnlogget(berørtBruker = "person")
             LOG.info { "Vi har truffet /saker/person" }
-            LOG.info { "Vi har tenkt til å sende tilbake ${person()} " }
-            call.respond(message = person(), status = HttpStatusCode.OK)
+            val ident = call.request.queryParameters["ident"]
+
+            call.auditHvisInnlogget(berørtBruker = "person")
+
+            if (ident == "1234") {
+                LOG.info("Vi har spurt etter testbruker 1234. Returnere dummydata")
+                call.respond(message = dummyPerson(), status = HttpStatusCode.OK)
+                return@get
+            }
+
+            if (ident != null) {
+                val person = personService.hentPerson(ident)
+                if (person == null) {
+                    call.respond(message = "Vi fant ikke søker", status = HttpStatusCode.NotFound)
+                } else {
+                    LOG.info { "Vi har tenkt til å sende tilbake $person " }
+                    call.respond(message = person, status = HttpStatusCode.OK)
+                }
+            } else {
+                call.respond(message = "Vi trenger en ident", status = HttpStatusCode.NotFound)
+            }
         }
     }
 }
 
-fun person(): PersonDTO = PersonDTO(
+fun dummyPerson(): PersonDTO = PersonDTO(
     personopplysninger = PersonopplysningerDTO(
         fornavn = "Fornavn",
         etternavn = "Etternavn",

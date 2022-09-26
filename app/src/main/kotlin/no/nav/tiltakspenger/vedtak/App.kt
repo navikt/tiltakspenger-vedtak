@@ -5,12 +5,9 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepositoryBuilder
-import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
+import no.nav.tiltakspenger.vedtak.rivers.*
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
+import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 fun main() {
@@ -24,6 +21,9 @@ fun main() {
         securelog.error(e) { e.message }
     }
 
+    val søkerRepository = SøkerRepositoryBuilder.build()
+    val søkerService = PersonServiceImpl(søkerRepository)
+
     RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
     )
@@ -31,12 +31,13 @@ fun main() {
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
                 innloggetBrukerProvider = InnloggetBrukerProvider(),
+                personService = søkerService,
             )
         )
         .build()
         .also {
             val søkerMediator = SøkerMediator(
-                søkerRepository = SøkerRepositoryBuilder.build(),
+                søkerRepository = søkerRepository,
                 rapidsConnection = it,
                 observatører = listOf()
             )

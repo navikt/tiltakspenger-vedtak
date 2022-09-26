@@ -78,5 +78,5 @@ data class BarnDTO(
     val fornavn: String,
     val etternavn: String,
     val ident: String,
-    val bosted: String
+    val bosted: String?
 )

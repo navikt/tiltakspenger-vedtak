@@ -6,11 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageContext
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.asLocalDateTime
+import no.nav.helse.rapids_rivers.*
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.SøkerMediator
@@ -79,6 +75,7 @@ internal class PersonopplysningerMottattRiver(
             fortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG) true else false,
             strengtFortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG || personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND) true else false,
             skjermet = null,
+            bosted = null,
             innhentet = innhentet,
         )
     }

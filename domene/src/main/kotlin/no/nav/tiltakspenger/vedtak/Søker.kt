@@ -220,9 +220,12 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            if (søker.personopplysninger != null) {
-                søker.personopplysninger!!.skjermet = skjermingMottattHendelse.skjerming().skjerming
+            if (søker.personopplysninger == null) {
+                skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
+            søker.personopplysninger = søker.personopplysninger!!.copy(
+                skjermet = skjermingMottattHendelse.skjerming().skjerming
+            )
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }
