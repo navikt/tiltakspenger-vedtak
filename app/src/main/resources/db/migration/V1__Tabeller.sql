@@ -126,5 +126,5 @@ CREATE TABLE tiltaksaktivitet
 
 CREATE TABLE whatever
 (
-    id                      UUID        PRIMARY KEY,
+    id                      UUID        PRIMARY KEY
 );
