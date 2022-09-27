@@ -102,6 +102,9 @@ CREATE TABLE personopplysninger
     fortrolig        BOOLEAN                  NOT NULL,
     strengtFortrolig BOOLEAN                  NOT NULL,
     skjermet         BOOLEAN                  NULL,
+    kommune          VARCHAR                  NULL,
+    bydel            VARCHAR                  NULL,
+    land             VARCHAR                  NULL,
     innhentet        TIMESTAMP WITH TIME ZONE NULL
 );
 

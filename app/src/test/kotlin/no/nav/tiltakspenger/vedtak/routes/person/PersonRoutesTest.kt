@@ -75,13 +75,13 @@ class PersonRoutesTest {
             "fornavn": "Emil",
             "etternavn": "Flaks",
             "ident": "987654",
-            "bosted": "NORGE"
+            "bosted": ""
           },
           {
             "fornavn": "Emma",
             "etternavn": "Flaks",
             "ident": "987655",
-            "bosted": "NORGE"
+            "bosted": ""
           }
         ]
       },

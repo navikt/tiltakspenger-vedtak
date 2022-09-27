@@ -6,7 +6,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.*
+import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageContext
+import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.SøkerMediator
@@ -49,7 +53,7 @@ internal class PersonopplysningerMottattRiver(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["ident"].asText(),
             personopplysninger = mapPersonopplysninger(
-                personopplysningerDTO = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
+                dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
                 ident = packet["ident"].asText(),
             )
@@ -62,20 +66,23 @@ internal class PersonopplysningerMottattRiver(
     private fun <T> JsonNode?.asObject(clazz: Class<T>): T = objectMapper.treeToValue(this, clazz)
 
     private fun mapPersonopplysninger(
-        personopplysningerDTO: PersonopplysningerDTO,
+        dto: PersonopplysningerDTO,
         innhentet: LocalDateTime,
         ident: String
     ): Personopplysninger {
         return Personopplysninger(
             ident = ident,
-            fødselsdato = personopplysningerDTO.fødselsdato,
-            fornavn = personopplysningerDTO.fornavn,
-            mellomnavn = personopplysningerDTO.mellomnavn,
-            etternavn = personopplysningerDTO.etternavn,
-            fortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG) true else false,
-            strengtFortrolig = if (personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG || personopplysningerDTO.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND) true else false,
+            fødselsdato = dto.fødselsdato,
+            fornavn = dto.fornavn,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn,
+            fortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
+            strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
+                    dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+            kommune = dto.gtKommune,
+            bydel = dto.gtBydel,
+            land = dto.gtLand,
             skjermet = null,
-            bosted = null,
             innhentet = innhentet,
         )
     }
