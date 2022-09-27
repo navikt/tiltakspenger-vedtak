@@ -2,21 +2,19 @@ package no.nav.tiltakspenger.vedtak.db
 
 import org.flywaydb.core.Flyway
 
+private fun flyway() = Flyway
+    .configure()
+    .dataSource(DataSource.hikariDataSource)
+    .cleanDisabled(false)
+    .cleanOnValidationError(true)
+    .load()
+
 fun flywayMigrate() {
-    val flyway = Flyway.configure()
-        .dataSource(DataSource.hikariDataSource)
-        .cleanDisabled(false)
-        .cleanOnValidationError(true)
-        .load()
-    flyway.migrate()
+    flyway().migrate()
 }
 
 fun flywayCleanAndMigrate() {
-    val flyway = Flyway.configure()
-        .dataSource(DataSource.hikariDataSource)
-        .cleanDisabled(false)
-        .cleanOnValidationError(true)
-        .load()
+    val flyway = flyway()
     flyway.clean()
     flyway.migrate()
 }
