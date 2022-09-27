@@ -12,9 +12,9 @@ fun flywayMigrate() {
 }
 
 fun flywayClean() {
-    Flyway.configure()
+    val flyway = Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
         .load()
-        .clean()
-    flywayMigrate()
+    flyway.clean()
+    flyway.migrate()
 }
