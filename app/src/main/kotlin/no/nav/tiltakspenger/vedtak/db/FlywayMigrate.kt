@@ -11,9 +11,9 @@ fun flywayMigrate() {
     flyway.migrate()
 }
 
-fun flywayRepair() {
+fun flywayClean() {
     Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
         .load()
-        .repair()
+        .clean()
 }
