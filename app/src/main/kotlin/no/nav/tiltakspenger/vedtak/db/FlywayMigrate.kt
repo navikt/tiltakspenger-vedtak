@@ -11,9 +11,11 @@ fun flywayMigrate() {
     flyway.migrate()
 }
 
-fun flywayClean() {
+fun flywayCleanAndMigrate() {
     val flyway = Flyway.configure()
         .dataSource(DataSource.hikariDataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
         .load()
     flyway.clean()
     flyway.migrate()
