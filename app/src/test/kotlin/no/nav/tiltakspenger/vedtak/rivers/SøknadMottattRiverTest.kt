@@ -36,7 +36,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -52,7 +52,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -68,7 +68,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -84,7 +84,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -100,7 +100,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -116,7 +116,7 @@ internal class SøknadMottattRiverTest {
             field(0, "@id").asText()
             field(0, "ident").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrertType", field(0, "tilstandtype").asText())
+            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }

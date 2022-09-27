@@ -170,7 +170,7 @@ internal class PostgresSøkerRepositoryTest {
         val søker = Søker.fromDb(
             id = UUID.randomUUID(),
             ident = ident,
-            tilstand = "AvventerPersonopplysningerType",
+            tilstand = "AvventerPersonopplysninger",
             søknader = listOf(
                 søknad1, søknad2, søknad3
             )

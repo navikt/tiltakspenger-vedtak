@@ -123,3 +123,8 @@ CREATE TABLE tiltaksaktivitet
     antall_dager_per_uke    FLOAT       NULL,
     tidsstempel_hos_oss     TIMESTAMP WITH TIME ZONE NULL
 );
+
+CREATE TABLE whatever
+(
+    id                      UUID        PRIMARY KEY,
+);

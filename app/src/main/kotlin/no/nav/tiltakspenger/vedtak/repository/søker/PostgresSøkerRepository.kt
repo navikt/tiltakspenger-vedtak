@@ -36,10 +36,11 @@ internal class PostgresSøkerRepository(
     override fun lagre(søker: Søker) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                if (brukerFinnes(søker.ident, txSession)) oppdaterTilstand(søker, txSession) else insert(
-                    søker,
-                    txSession
-                )
+                if (brukerFinnes(søker.ident, txSession)) {
+                    oppdaterTilstand(søker, txSession)
+                } else {
+                    insert(søker, txSession)
+                }
                 søknadDAO.lagre(søker.id, søker.søknader, txSession)
             }
         }
@@ -70,7 +71,7 @@ internal class PostgresSøkerRepository(
                 mapOf(
                     "id" to søker.id,
                     "ident" to søker.ident,
-                    "tilstand" to søker.tilstand.type.toString(),
+                    "tilstand" to søker.tilstand.type.name,
                     "sist_endret" to LocalDateTime.now(),
                     "opprettet" to LocalDateTime.now(),
                 )

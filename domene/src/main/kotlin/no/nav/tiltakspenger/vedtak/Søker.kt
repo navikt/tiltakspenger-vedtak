@@ -51,7 +51,7 @@ class Søker private constructor(
 
     companion object {
         fun fromDb(
-            id: UUID = UUID.randomUUID(),
+            id: UUID,
             ident: String,
             tilstand: String,
             søknader: List<Søknad>,
@@ -59,11 +59,7 @@ class Søker private constructor(
             return Søker(
                 id = id,
                 ident = ident,
-                tilstand = when (tilstand) {
-                    "SøkerRegistrertType" -> SøkerRegistrert
-                    "AvventerPersonopplysningerType" -> AvventerPersonopplysninger
-                    else -> throw IllegalStateException("Ukjent tilstand $tilstand")
-                },
+                tilstand = convertTilstand(tilstand),
                 søknader = søknader,
                 personopplysninger = null,
                 barn = mutableListOf(),
@@ -71,6 +67,18 @@ class Søker private constructor(
                 ytelser = mutableListOf(),
                 aktivitetslogg = Aktivitetslogg(),
             )
+        }
+
+        private fun convertTilstand(tilstand: String): Tilstand {
+            return when (SøkerTilstandType.valueOf(tilstand)) {
+                SøkerTilstandType.SøkerRegistrert -> SøkerRegistrert
+                SøkerTilstandType.AvventerPersonopplysninger -> AvventerPersonopplysninger
+                SøkerTilstandType.AvventerSkjermingdata -> AvventerSkjermingdata
+                SøkerTilstandType.AvventerTiltak -> AvventerTiltak
+                SøkerTilstandType.AvventerYtelser -> AvventerYtelser
+                SøkerTilstandType.SøkerFerdigstilt -> SøkerFerdigstiltType
+                else -> throw IllegalStateException("Ukjent tilstand $tilstand")
+            }
         }
     }
 
@@ -186,7 +194,7 @@ class Søker private constructor(
 
     internal object SøkerRegistrert : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.SøkerRegistrertType
+            get() = SøkerTilstandType.SøkerRegistrert
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
@@ -199,7 +207,7 @@ class Søker private constructor(
 
     internal object AvventerPersonopplysninger : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerPersonopplysningerType
+            get() = SøkerTilstandType.AvventerPersonopplysninger
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
@@ -214,7 +222,7 @@ class Søker private constructor(
 
     internal object AvventerSkjermingdata : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerSkjermingdataType
+            get() = SøkerTilstandType.AvventerSkjermingdata
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
@@ -261,7 +269,7 @@ class Søker private constructor(
 
     internal object SøkerFerdigstiltType : Tilstand {
         override val type: SøkerTilstandType
-            get() = SøkerTilstandType.SøkerFerdigstiltType
+            get() = SøkerTilstandType.SøkerFerdigstilt
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
@@ -340,8 +348,8 @@ class Søker private constructor(
 
     private fun erFerdigBehandlet() =
         this.tilstand.type in setOf(
-            SøkerTilstandType.SøkerFerdigstiltType,
-            SøkerTilstandType.AlleredeBehandletType
+            SøkerTilstandType.SøkerFerdigstilt,
+            SøkerTilstandType.AlleredeBehandlet
         )
 
     override fun toSpesifikkKontekst(): SpesifikkKontekst = SpesifikkKontekst(

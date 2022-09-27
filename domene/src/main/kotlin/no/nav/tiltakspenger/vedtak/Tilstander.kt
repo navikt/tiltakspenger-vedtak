@@ -1,20 +1,20 @@
 package no.nav.tiltakspenger.vedtak
 
 enum class SøkerTilstandType {
-    SøkerRegistrertType,
-    AvventerPersonopplysningerType,
-    AvventerSkjermingdataType,
+    SøkerRegistrert,
+    AvventerPersonopplysninger,
+    AvventerSkjermingdata,
     AvventerTiltak,
     AvventerYtelser,
-    KategoriseringType,
-    AvventerSøknadsdataType,
-    AvventerMinsteinntektVurderingType,
-    AvventerSvarOmEksisterendeSakerType,
-    AventerArenaStartVedtakType,
-    AvventerFerdigstillJournalpostType,
-    SøkerFerdigstiltType,
-    AventerArenaOppgaveType,
-    AvventerGosysType,
-    UkjentBrukerType,
-    AlleredeBehandletType
+    Kategorisering,
+    AvventerSøknadsdata,
+    AvventerMinsteinntektVurdering,
+    AvventerSvarOmEksisterendeSaker,
+    AventerArenaStartVedtak,
+    AvventerFerdigstillJournalpost,
+    SøkerFerdigstilt,
+    AventerArenaOppgave,
+    AvventerGosys,
+    UkjentBruker,
+    AlleredeBehandlet
 }
