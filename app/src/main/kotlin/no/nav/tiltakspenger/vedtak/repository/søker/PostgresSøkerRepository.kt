@@ -87,7 +87,7 @@ internal class PostgresSøkerRepository(
                 oppdater,
                 mapOf(
                     "id" to søker.id,
-                    "tilstand" to søker.tilstand.toString(),
+                    "tilstand" to søker.tilstand.type.name,
                     "sistEndret" to LocalDateTime.now()
                 )
             ).asUpdate
