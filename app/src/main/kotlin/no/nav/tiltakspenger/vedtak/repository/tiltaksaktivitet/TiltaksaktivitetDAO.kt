@@ -27,7 +27,7 @@ class TiltaksaktivitetDAO {
     private fun lagreTiltak(søkerId: UUID, tiltaksaktivitet: Tiltaksaktivitet, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                lagreSøknad, mapOf(
+                lagreTiltaksaktivitet, mapOf(
                     "id" to UUID.randomUUID(),
                     "sokerId" to søkerId,
                     "tiltak" to tiltaksaktivitet.tiltak.name,
@@ -75,7 +75,7 @@ class TiltaksaktivitetDAO {
     }
 
     @Language("SQL")
-    private val lagreSøknad = """
+    private val lagreTiltaksaktivitet = """
         insert into tiltaksaktivitet (
             id,
             søker_id,

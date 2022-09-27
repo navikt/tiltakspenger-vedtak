@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
+import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -19,6 +20,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresSøkerRepository(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
+    private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
