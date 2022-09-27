@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -20,7 +19,6 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Month
 import java.util.*
 
 @Testcontainers
@@ -38,7 +36,7 @@ internal class TrygdOgPensjonDAOTest {
 
     @Test
     fun `lagre trygdogpensjon og hente de ut igjen (må dessverre lagre både søker og søknad pga foreign keys)`() {
-        val søknadDAO = PostgresSøknadDAO()
+        val søknadDAO = SøknadDAO()
         val søkerRepository = PostgresSøkerRepository(søknadDAO)
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)

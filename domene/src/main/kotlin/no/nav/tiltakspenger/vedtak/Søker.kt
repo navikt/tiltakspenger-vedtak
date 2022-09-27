@@ -61,9 +61,9 @@ class Søker private constructor(
                 id = id,
                 ident = ident,
                 tilstand = when (tilstand) {
-                    "SøkerRegistrert" -> SøkerRegistrert
-                    "AvventerPersonopplysninger" -> AvventerPersonopplysninger
-                    else -> SøkerRegistrert
+                    "SøkerRegistrertType" -> SøkerRegistrert
+                    "AvventerPersonopplysningerType" -> AvventerPersonopplysninger
+                    else -> throw IllegalStateException("Ukjent tilstand $tilstand")
                 },
                 søknader = søknader,
                 personopplysninger = null,

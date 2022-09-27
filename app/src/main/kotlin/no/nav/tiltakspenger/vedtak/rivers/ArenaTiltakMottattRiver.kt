@@ -79,7 +79,7 @@ internal class ArenaTiltakMottattRiver(
                 tiltak = mapTiltaksnavn(it.tiltaksnavn),
                 aktivitetId = it.aktivitetId,
                 tiltakLokaltNavn = it.tiltakLokaltNavn,
-                arrangoer = it.arrangoer,
+                arrangør = it.arrangoer,
                 bedriftsnummer = it.bedriftsnummer,
                 deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
                     it.deltakelsePeriode?.fom,
@@ -88,9 +88,9 @@ internal class ArenaTiltakMottattRiver(
                 deltakelseProsent = it.deltakelseProsent,
                 deltakerStatus = it.deltakerStatus.innerText.let { s -> mapDeltakerStatus(s) },
                 statusSistEndret = it.statusSistEndret,
-                begrunnelseInnsoeking = it.begrunnelseInnsoeking,
+                begrunnelseInnsøking = it.begrunnelseInnsoeking,
                 antallDagerPerUke = it.antallDagerPerUke,
-                innhentet = innhentet,
+                tidsstempelHosOss = innhentet,
             )
         }
     }

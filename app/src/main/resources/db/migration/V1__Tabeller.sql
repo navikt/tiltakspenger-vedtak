@@ -104,3 +104,22 @@ CREATE TABLE personopplysninger
     skjermet            BOOLEAN     NULL,
     innhentet           TIMESTAMP WITH TIME ZONE NULL
 );
+
+CREATE TABLE tiltaksaktivitet
+(
+    id                      UUID        PRIMARY KEY,
+    søker_id                UUID        NOT NULL REFERENCES søker (id),
+    tiltak                  VARCHAR     NOT NULL,
+    aktivitet_id            VARCHAR     NOT NULL,
+    tiltak_lokalt_navn      VARCHAR     NULL,
+    arrangør                VARCHAR     NULL,
+    bedriftsnummer          VARCHAR     NULL,
+    deltakelse_periode_fom  DATE        NULL,
+    deltakelse_periode_tom  DATE        NULL,
+    deltakelse_prosent      FLOAT       NULL,
+    deltaker_status         VARCHAR     NOT NULL,
+    status_sist_endret      DATE        NULL,
+    begrunnelse_innsøking   VARCHAR     NULL,
+    antall_dager_per_uke    FLOAT       NULL,
+    tidsstempel_hos_oss     TIMESTAMP WITH TIME ZONE NULL
+);
