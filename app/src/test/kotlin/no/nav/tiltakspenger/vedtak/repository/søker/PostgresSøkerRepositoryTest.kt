@@ -65,7 +65,7 @@ internal class PostgresSøkerRepositoryTest {
             typeInstitusjon = null,
             opprettet = null,
             barnetillegg = emptyList(),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.BrukerregistrertTiltak(
                 tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
                 arrangoernavn = "Tiltaksarrangør AS",
@@ -102,7 +102,7 @@ internal class PostgresSøkerRepositoryTest {
                     etternavn = "etternavn",
                 )
             ),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Hurra meg rundt AS",
@@ -144,7 +144,7 @@ internal class PostgresSøkerRepositoryTest {
                     etternavn = "etternavn",
                 )
             ),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Tiltaksbedriften AS",
