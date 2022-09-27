@@ -3,7 +3,15 @@ package no.nav.tiltakspenger.vedtak.service
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
-import no.nav.tiltakspenger.vedtak.routes.person.*
+import no.nav.tiltakspenger.vedtak.routes.person.BarnDTO
+import no.nav.tiltakspenger.vedtak.routes.person.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.routes.person.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
+import no.nav.tiltakspenger.vedtak.routes.person.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.person.TiltakDTO
+import no.nav.tiltakspenger.vedtak.routes.person.UtfallDTO
+import no.nav.tiltakspenger.vedtak.routes.person.VilkårsVurderingsKategori
+import no.nav.tiltakspenger.vedtak.routes.person.VilkårsvurderingDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -24,7 +32,7 @@ class PersonServiceImpl(
                         fornavn = barn.fornavn,
                         etternavn = barn.etternavn,
                         ident = barn.ident,
-                        bosted = barn.bosted,
+                        bosted = ""
                     )
                 },
             ),

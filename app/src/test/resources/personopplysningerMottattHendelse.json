@@ -1,0 +1,35 @@
+{
+  "@behov": [
+    "personopplysninger"
+  ],
+  "@id": "test",
+  "@behovId": "behovId",
+  "ident": "04927799109",
+  "@opprettet": "2022-08-18T17:44:24.723046748",
+  "system_read_count": 0,
+  "system_participating_services": [
+    {
+      "id": "test",
+      "time": "2022-08-18T17:44:24.723046748",
+      "service": "tiltakspenger-fakta-person",
+      "instance": "tiltakspenger-fakta-person-56bffc459b-4rm9s",
+      "image": "ghcr.io/navikt/tiltakspenger-fakta-person:fea0180a813ea2a49c4200906cdb844ada797109"
+    }
+  ],
+  "@løsning": {
+    "personopplysninger": {
+      "person": {
+        "fødselsdato": "1983-07-04",
+        "fornavn": "Knuslete",
+        "mellomnavn": "Melon",
+        "etternavn": "Ekspedisjon",
+        "adressebeskyttelseGradering": null,
+        "gtKommune": "Oslo",
+        "gtBydel": "460105",
+        "gtLand": "Norge",
+        "barn": []
+      },
+      "feil": null
+    }
+  }
+}

@@ -12,9 +12,11 @@ data class Personopplysninger(
     val etternavn: String,
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,
-    val bosted: String?,
-    val skjermet: Boolean?, // TODO: bør vi gjøre om denne til en val og heller kopiere objektet når vi endrer verdien?
-    val innhentet: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
+    val kommune: String?,
+    val bydel: String?,
+    val land: String?,
+    val skjermet: Boolean?,
+    val innhentet: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)){}
 ) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
         visitor.visitPersonopplysninger(this)
