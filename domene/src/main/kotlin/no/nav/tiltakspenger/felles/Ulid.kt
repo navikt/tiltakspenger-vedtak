@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.db
+package no.nav.tiltakspenger.felles
 
 import com.github.guepardoapps.kulid.ULID
 

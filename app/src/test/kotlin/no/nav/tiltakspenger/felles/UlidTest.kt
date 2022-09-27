@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.db
+package no.nav.tiltakspenger.felles
 
 import io.kotest.assertions.throwables.shouldThrowWithMessage
 import org.junit.jupiter.api.Assertions.assertEquals
