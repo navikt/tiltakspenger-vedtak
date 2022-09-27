@@ -18,19 +18,19 @@ data class Tiltaksaktivitet(
     val tiltak: Tiltak, // Det vi får her er teksten i Enumen, ikke koden. Det er litt klønete..
     val aktivitetId: String,
     val tiltakLokaltNavn: String?,
-    val arrangoer: String?,
+    val arrangør: String?,
     val bedriftsnummer: String?,
-    val deltakelsePeriode: DeltakelsesPeriode?,
+    val deltakelsePeriode: DeltakelsesPeriode,
     val deltakelseProsent: Float?,
     val deltakerStatus: DeltakerStatus,
     val statusSistEndret: LocalDate?,
-    val begrunnelseInnsoeking: String,
+    val begrunnelseInnsøking: String,
     val antallDagerPerUke: Float?,
-    val innhentet: LocalDateTime,
+    val tidsstempelHosOss: LocalDateTime,
 ) : Tidsstempler {
 
-    override fun tidsstempelKilde(): LocalDateTime = statusSistEndret?.atStartOfDay() ?: innhentet
-    override fun tidsstempelHosOss(): LocalDateTime = innhentet
+    override fun tidsstempelKilde(): LocalDateTime = statusSistEndret?.atStartOfDay() ?: tidsstempelHosOss
+    override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
     data class DeltakelsesPeriode(
         val fom: LocalDate?,

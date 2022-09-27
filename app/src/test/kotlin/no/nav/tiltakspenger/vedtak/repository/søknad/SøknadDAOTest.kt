@@ -26,8 +26,8 @@ import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers
-internal class PostgresSøknadDAOTest {
-    private val søknadDAO = PostgresSøknadDAO()
+internal class SøknadDAOTest {
+    private val søknadDAO = SøknadDAO()
     private val søkerRepository = PostgresSøkerRepository(søknadDAO)
 
     companion object {

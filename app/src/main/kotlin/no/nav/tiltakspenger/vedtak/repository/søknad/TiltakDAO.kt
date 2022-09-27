@@ -122,7 +122,7 @@ internal class TiltakDAO {
     }
 
     private fun Row.toBrukertiltak(): Tiltak.BrukerregistrertTiltak {
-        val tiltakskode = string("tiltakstype").let { Tiltaksaktivitet.Tiltak.valueOf(it) }
+        val tiltakskode = string("tiltakskode").let { Tiltaksaktivitet.Tiltak.valueOf(it) }
         val arrangoernavn = string("arrangoernavn")
         val beskrivelse = stringOrNull("beskrivelse")
         val fom = localDate("startdato")
