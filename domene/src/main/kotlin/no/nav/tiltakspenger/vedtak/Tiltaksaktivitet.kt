@@ -88,7 +88,6 @@ data class Tiltaksaktivitet(
         FUNKSJASS("Funksjonsassistanse", TILRETTE, true),
         GRUFAGYRKE("Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning", OPPL, true),
         GRUPPEAMO("Gruppe AMO", OPPL, true),
-        AMO("AMO", OPPL, true),
         HOYEREUTD("Høyere utdanning", OPPL, true),
         INDJOBSTOT("Individuell jobbstøtte (IPS)", OPPFOLG, true),
         INDOPPFAG("Oppfølging", OPPFOLG, true),
@@ -115,7 +114,9 @@ data class Tiltaksaktivitet(
         VARLONTIL("Varig lønnstilskudd", LONNTILS, false),
         VASV("Varig tilrettelagt arbeid i skjermet virksomhet", VARIGASV, false),
         VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet", VARIGASV, false),
-        VV("Varig vernet arbeid (VVA)", UTFAS, false)
+        VV("Varig vernet arbeid (VVA)", UTFAS, false),
+        AMO("AMO", UTFAS, true),
+        PRAKSKJERM("???", UTFAS, true)
     }
 
     enum class DeltakerStatus(val tekst: String) {
