@@ -39,7 +39,7 @@ class YtelsesakDAO {
                     "ytelsestype" to ytelseSak.ytelsestype?.name,
                     "antallDagerIgjen" to ytelseSak.antallDagerIgjen,
                     "antallUkerIgjen" to ytelseSak.antallUkerIgjen,
-                    "innhentet" to ytelseSak.innhentet,
+                    "tidsstempelHosOss" to ytelseSak.tidsstempelHosOss,
                 )
             ).asUpdate
         )
@@ -58,11 +58,11 @@ class YtelsesakDAO {
             datoKravMottatt = localDateOrNull("dato_krav_mottatt"),
             dataKravMottatt = stringOrNull("data_krav_mottatt"),
             fagsystemSakId = intOrNull("fagsystem_sak_id"),
-            status = string("status").let { YtelseSak.YtelseSakStatus.valueOf(it) },
-            ytelsestype = string("ytelsestype").let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
+            status = stringOrNull("status")?.let { YtelseSak.YtelseSakStatus.valueOf(it) },
+            ytelsestype = stringOrNull("ytelsestype")?.let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
             antallDagerIgjen = intOrNull("antall_dager_igjen"),
             antallUkerIgjen = intOrNull("antall_uker_igjen"),
-            innhentet = localDateTime("innhentet")
+            tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         )
     }
 
@@ -80,7 +80,7 @@ class YtelsesakDAO {
             ytelsestype,
             antall_dager_igjen,
             antall_uker_igjen,
-            innhentet
+            tidsstempel_hos_oss
         ) values (
             :id, 
             :sokerId,
@@ -93,7 +93,7 @@ class YtelsesakDAO {
             :ytelsestype,
             :antallDagerIgjen,
             :antallUkerIgjen,
-            :innhentet
+            :tidsstempelHosOss
         )""".trimIndent()
 
     @Language("SQL")

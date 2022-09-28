@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 data class YtelseSak(
     val fomGyldighetsperiode: LocalDateTime,
     val tomGyldighetsperiode: LocalDateTime,
-    val datoKravMottatt: LocalDate?,
+    val datoKravMottatt: LocalDate? = null,
     val dataKravMottatt: String? = null,
     val fagsystemSakId: Int? = null,
     val status: YtelseSakStatus? = null,
@@ -15,10 +15,10 @@ data class YtelseSak(
     // val vedtak: List<YtelseVedtak> = emptyList(),
     val antallDagerIgjen: Int? = null,
     val antallUkerIgjen: Int? = null,
-    val innhentet: LocalDateTime,
+    val tidsstempelHosOss: LocalDateTime,
 ) : Tidsstempler {
-    override fun tidsstempelKilde(): LocalDateTime = innhentet
-    override fun tidsstempelHosOss(): LocalDateTime = innhentet
+    override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
+    override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
     data class YtelseVedtak(
         val beslutningsDato: LocalDate? = null,

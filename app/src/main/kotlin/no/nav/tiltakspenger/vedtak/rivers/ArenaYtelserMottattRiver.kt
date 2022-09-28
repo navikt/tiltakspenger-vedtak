@@ -95,7 +95,7 @@ internal class ArenaYtelserMottattRiver(
                 // },
                 antallDagerIgjen = it.antallDagerIgjen,
                 antallUkerIgjen = it.antallUkerIgjen,
-                innhentet = innhentet,
+                tidsstempelHosOss = innhentet,
             )
         }
     }

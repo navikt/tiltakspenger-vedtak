@@ -105,7 +105,7 @@ CREATE TABLE personopplysninger
     kommune          VARCHAR                  NULL,
     bydel            VARCHAR                  NULL,
     land             VARCHAR                  NULL,
-    innhentet        TIMESTAMP WITH TIME ZONE NULL
+    innhentet        TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE tiltaksaktivitet
@@ -124,5 +124,21 @@ CREATE TABLE tiltaksaktivitet
     status_sist_endret     DATE                     NULL,
     begrunnelse_innsøking  VARCHAR                  NULL,
     antall_dager_per_uke   FLOAT                    NULL,
-    tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NULL
+    tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE ytelsesak
+(
+    id                    UUID PRIMARY KEY,
+    søker_id              UUID                     NOT NULL REFERENCES søker (id),
+    fom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
+    tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
+    dato_krav_mottatt     DATE                     NULL,
+    data_krav_mottatt     VARCHAR                  NULL,
+    fagsystem_sak_id      INT                      NULL,
+    status                VARCHAR                  NULL,
+    ytelsestype           VARCHAR                  NULL,
+    antall_dager_igjen    INT                      NULL,
+    antall_uker_igjen     INT                      NULL,
+    tidsstempel_hos_oss   TIMESTAMP WITH TIME ZONE NOT NULL
 );

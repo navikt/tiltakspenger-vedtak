@@ -1,12 +1,15 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
+import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.domene.mars
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -167,13 +170,46 @@ internal class PostgresSøkerRepositoryTest {
             fritekst = "Fritekst",
         )
 
+        val tiltaksaktivitet = Tiltaksaktivitet(
+            tiltak = Tiltaksaktivitet.Tiltak.AMBF2,
+            aktivitetId = "aktId",
+            tiltakLokaltNavn = "LokaltNavn",
+            arrangør = "arrangør",
+            bedriftsnummer = "bedriftsnummer",
+            deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
+                fom = 1.januar(2022),
+                tom = 31.januar(2022),
+            ),
+            deltakelseProsent = 50.0F,
+            deltakerStatus = Tiltaksaktivitet.DeltakerStatus.DELAVB,
+            statusSistEndret = 1.mars(2022),
+            begrunnelseInnsøking = "begrunnelse",
+            antallDagerPerUke = 0.5F,
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
+        )
+
+        val ytelseSak = YtelseSak(
+            fomGyldighetsperiode = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
+            tomGyldighetsperiode = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
+            datoKravMottatt = 1.januar(2022),
+            dataKravMottatt = "Masse herlige data",
+            fagsystemSakId = 1337,
+            status = YtelseSak.YtelseSakStatus.INAKT,
+            ytelsestype = YtelseSak.YtelseSakYtelsetype.INDIV,
+            antallDagerIgjen = 300,
+            antallUkerIgjen = 20,
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+        )
+
         val søker = Søker.fromDb(
             id = UUID.randomUUID(),
             ident = ident,
             tilstand = "AvventerPersonopplysninger",
             søknader = listOf(
                 søknad1, søknad2, søknad3
-            )
+            ),
+            tiltak = listOf(tiltaksaktivitet),
+            ytelser = listOf(ytelseSak),
         )
 
         søkerRepo.lagre(søker)
@@ -184,5 +220,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
         hentetSøker.søknader shouldContainExactly listOf(søknad1, søknad2, søknad3)
+        hentetSøker.tiltak shouldContainExactly listOf(tiltaksaktivitet)
+        hentetSøker.ytelser shouldContainExactly listOf(ytelseSak)
     }
 }

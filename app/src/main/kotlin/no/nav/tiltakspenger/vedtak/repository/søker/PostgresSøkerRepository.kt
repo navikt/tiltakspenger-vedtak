@@ -44,6 +44,8 @@ internal class PostgresSøkerRepository(
                     insert(søker, txSession)
                 }
                 søknadDAO.lagre(søker.id, søker.søknader, txSession)
+                tiltaksaktivitetDAO.lagre(søker.id, søker.tiltak, txSession)
+                ytelsesakDAO.lagre(søker.id, søker.ytelser, txSession)
             }
         }
     }
@@ -52,11 +54,15 @@ internal class PostgresSøkerRepository(
         val ident = string("ident")
         val id = uuid("id")
         val tilstand = string("tilstand")
+        val tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession)
+        val ytelser = ytelsesakDAO.hentForSøker(id, txSession)
         return Søker.fromDb(
             id = id,
             ident = ident,
             tilstand = tilstand,
-            søknader = søknadDAO.hentAlle(id, txSession)
+            søknader = søknadDAO.hentAlle(id, txSession),
+            tiltak = tiltak,
+            ytelser = ytelser,
         )
     }
 
