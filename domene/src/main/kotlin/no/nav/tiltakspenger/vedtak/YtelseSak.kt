@@ -12,7 +12,7 @@ data class YtelseSak(
     val fagsystemSakId: Int? = null,
     val status: YtelseSakStatus? = null,
     val ytelsestype: YtelseSakYtelsetype? = null,
-    // val vedtak: List<YtelseVedtak> = emptyList(),
+    val vedtak: List<YtelseVedtak> = emptyList(),
     val antallDagerIgjen: Int? = null,
     val antallUkerIgjen: Int? = null,
     val innhentet: LocalDateTime,

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.type.CollectionType
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.time.LocalDateTime
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
@@ -16,7 +15,13 @@ import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakStatus
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak.YtelseVedtakStatus
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak.YtelseVedtakVedtakstype
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -74,37 +79,49 @@ internal class ArenaYtelserMottattRiver(
         ytelseSakDTO: List<YtelseSakDTO>,
         innhentet: LocalDateTime
     ): List<YtelseSak> {
-        return ytelseSakDTO.map {
+        return ytelseSakDTO.map { ytelseSakDTO ->
             YtelseSak(
-                fomGyldighetsperiode = it.fomGyldighetsperiode,
-                tomGyldighetsperiode = it.tomGyldighetsperiode,
-                datoKravMottatt = it.datoKravMottatt,
-                dataKravMottatt = it.dataKravMottatt,
-                fagsystemSakId = it.fagsystemSakId,
-                status = it.status?.let { s -> mapStatus(s) },
-                ytelsestype = it.ytelsestype?.let { y -> mapYtelsetype(y) },
-                // vedtak = it.vedtak.map {
-                //     YtelseSak.YtelseVedtak(
-                //         beslutningsDato = it.beslutningsDato,
-                //         periodetypeForYtelse = it.periodetypeForYtelse,
-                //         vedtaksperiodeFom = it.vedtaksperiodeFom,
-                //        vedtaksperiodeTom = it.vedtaksperiodeTom,
-                //         vedtaksType = it.vedtaksType,
-                //         status = it.status,
-                //     )
-                // },
-                antallDagerIgjen = it.antallDagerIgjen,
-                antallUkerIgjen = it.antallUkerIgjen,
+                fomGyldighetsperiode = ytelseSakDTO.fomGyldighetsperiode,
+                tomGyldighetsperiode = ytelseSakDTO.tomGyldighetsperiode,
+                datoKravMottatt = ytelseSakDTO.datoKravMottatt,
+                dataKravMottatt = ytelseSakDTO.dataKravMottatt,
+                fagsystemSakId = ytelseSakDTO.fagsystemSakId,
+                status = ytelseSakDTO.status?.let { s -> mapStatus(s) },
+                ytelsestype = ytelseSakDTO.ytelsestype?.let { y -> mapYtelsetype(y) },
+                vedtak = ytelseSakDTO.vedtak.map { ytelseVedtakDTO ->
+                    YtelseSak.YtelseVedtak(
+                        beslutningsDato = ytelseVedtakDTO.beslutningsDato,
+                        periodetypeForYtelse = ytelseVedtakDTO.periodetypeForYtelse?.let { p -> mapPeriodeType(p) },
+                        vedtaksperiodeFom = ytelseVedtakDTO.vedtaksperiodeFom,
+                        vedtaksperiodeTom = ytelseVedtakDTO.vedtaksperiodeTom,
+                        vedtaksType = ytelseVedtakDTO.vedtaksType?.let { v -> mapVedtakstype(v) },
+                        status = ytelseVedtakDTO.status?.let { s -> mapVedtakStatus(s) },
+                    )
+                },
+                antallDagerIgjen = ytelseSakDTO.antallDagerIgjen,
+                antallUkerIgjen = ytelseSakDTO.antallUkerIgjen,
                 innhentet = innhentet,
             )
         }
     }
 
-    private fun mapYtelsetype(dtoYtelseSakYtelsetype: YtelseSakYtelsetypeEnum): YtelseSak.YtelseSakYtelsetype {
-        return YtelseSak.YtelseSakYtelsetype.valueOf(dtoYtelseSakYtelsetype.name)
+    private fun mapVedtakStatus(dto: YtelseVedtakStatusEnum): YtelseVedtakStatus {
+        return YtelseVedtakStatus.valueOf(dto.name)
     }
 
-    private fun mapStatus(dtoYtelseSakStatus: YtelseSakStatusEnum): YtelseSak.YtelseSakStatus {
-        return YtelseSak.YtelseSakStatus.valueOf(dtoYtelseSakStatus.name)
+    private fun mapVedtakstype(dto: YtelseVedtakVedtakstypeEnum): YtelseVedtakVedtakstype {
+        return YtelseVedtakVedtakstype.valueOf(dto.name)
+    }
+
+    private fun mapPeriodeType(dto: YtelseVedtakPeriodeTypeForYtelseEnum): YtelseVedtakPeriodeTypeForYtelse {
+        return YtelseVedtakPeriodeTypeForYtelse.valueOf(dto.name)
+    }
+
+    private fun mapYtelsetype(dto: YtelseSakYtelsetypeEnum): YtelseSakYtelsetype {
+        return YtelseSakYtelsetype.valueOf(dto.name)
+    }
+
+    private fun mapStatus(dto: YtelseSakStatusEnum): YtelseSakStatus {
+        return YtelseSakStatus.valueOf(dto.name)
     }
 }

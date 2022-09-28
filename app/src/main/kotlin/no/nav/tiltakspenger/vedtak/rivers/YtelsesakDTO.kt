@@ -13,8 +13,7 @@ data class YtelseSakDTO(
     val ytelsestype: YtelseSakYtelsetypeEnum? = null,
     val vedtak: List<YtelseVedtakDTO> = emptyList(),
     val antallDagerIgjen: Int? = null,
-    val antallUkerIgjen: Int? = null,
-    val innhentet: LocalDateTime,
+    val antallUkerIgjen: Int? = null
 ) {
 
     data class YtelseVedtakDTO(
@@ -22,7 +21,7 @@ data class YtelseSakDTO(
         val periodetypeForYtelse: YtelseVedtakPeriodeTypeForYtelseEnum? = null,
         val vedtaksperiodeFom: LocalDate? = null,
         val vedtaksperiodeTom: LocalDate? = null,
-        val YtelseVedtakVedtakstype: YtelseVedtakVedtakstypeEnum? = null,
+        val vedtaksType: YtelseVedtakVedtakstypeEnum? = null,
         val status: YtelseVedtakStatusEnum? = null,
     )
 }
