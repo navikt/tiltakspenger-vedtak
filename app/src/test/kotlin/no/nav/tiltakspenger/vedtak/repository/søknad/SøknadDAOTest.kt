@@ -70,7 +70,7 @@ internal class SøknadDAOTest {
                 erIEndreStatus = false,
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
-                sluttdato = LocalDate.now(),
+                sluttdato = null,
                 startdato = LocalDate.now()
             ),
             trygdOgPensjon = emptyList(),
@@ -132,7 +132,7 @@ internal class SøknadDAOTest {
                 erIEndreStatus = false,
                 opprinneligSluttdato = LocalDate.now(),
                 opprinneligStartdato = LocalDate.now(),
-                sluttdato = LocalDate.now(),
+                sluttdato = null,
                 startdato = LocalDate.now()
             ),
             trygdOgPensjon = listOf(
