@@ -4,10 +4,10 @@ import java.time.LocalDate
 
 data class BarnDTO(
     val ident: String? = null,
-    val fornavn: String,
+    val fornavn: String?,
     val mellomnavn: String?,
-    val etternavn: String,
-    val fødselsdato: LocalDate,
+    val etternavn: String?,
+    val fødselsdato: LocalDate?,
     val adressebeskyttelseGradering: AdressebeskyttelseGradering? = null,
 )
 
