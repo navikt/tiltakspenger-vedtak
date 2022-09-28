@@ -12,7 +12,7 @@ data class TiltaksaktivitetDTO(
     val deltakelseProsent: Float?,
     val deltakerStatus: DeltakerStatusDTO,
     val statusSistEndret: LocalDate?,
-    val begrunnelseInnsoeking: String,
+    val begrunnelseInnsoeking: String?,
     val antallDagerPerUke: Float?,
 ) {
 

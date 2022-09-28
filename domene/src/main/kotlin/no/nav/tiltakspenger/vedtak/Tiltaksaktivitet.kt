@@ -24,7 +24,7 @@ data class Tiltaksaktivitet(
     val deltakelseProsent: Float?,
     val deltakerStatus: DeltakerStatus,
     val statusSistEndret: LocalDate?,
-    val begrunnelseInnsøking: String,
+    val begrunnelseInnsøking: String?,
     val antallDagerPerUke: Float?,
     val tidsstempelHosOss: LocalDateTime,
 ) : Tidsstempler {
