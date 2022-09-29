@@ -174,7 +174,8 @@ data class Tiltaksaktivitet(
         VV("Varig vernet arbeid (VVA)", Tiltaksgruppe.UTFAS, false),
         VIDRSKOLE("Videregående skole", Tiltaksgruppe.UTFAS, false),
         OPPLT2AAR("2-årig opplæringstiltak", Tiltaksgruppe.UTFAS, true),
-        AB("To be deleted", Tiltaksgruppe.UTFAS, true)
+        AB("To be deleted", Tiltaksgruppe.UTFAS, true),
+        OUTDEF("Ukjent", Tiltaksgruppe.UTFAS, true)
     }
 
     enum class DeltakerStatus(val tekst: String) {

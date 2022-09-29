@@ -133,7 +133,8 @@ data class TiltaksaktivitetDTO(
         VV("Varig vernet arbeid (VVA)"),
         VIDRSKOLE("Videregående skole"),
         OPPLT2AAR("2-årig opplæringstiltak"),
-        AB("To be deleted")
+        AB("To be deleted"),
+        OUTDEF("Ukjent")
     }
 
     enum class DeltakerStatusEnum(val tekst: String) {
