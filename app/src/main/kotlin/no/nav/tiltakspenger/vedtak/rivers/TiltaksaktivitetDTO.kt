@@ -132,7 +132,8 @@ data class TiltaksaktivitetDTO(
         VASV("Varig tilrettelagt arbeid i skjermet virksomhet"),
         VV("Varig vernet arbeid (VVA)"),
         VIDRSKOLE("Videregående skole"),
-        OPPLT2AAR("2-årig opplæringstiltak");
+        OPPLT2AAR("2-årig opplæringstiltak"),
+        AB("To be deleted")
     }
 
     enum class DeltakerStatusEnum(val tekst: String) {
