@@ -116,7 +116,7 @@ data class Tiltaksaktivitet(
         VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet", VARIGASV, false),
         VV("Varig vernet arbeid (VVA)", UTFAS, false),
         AMO("AMO", UTFAS, true),
-        PRAKSKJERM("???", UTFAS, true)
+        PRAKSKJERM("Avklaring i skjermet virksomhet", UTFAS, true)
     }
 
     enum class DeltakerStatus(val tekst: String) {
