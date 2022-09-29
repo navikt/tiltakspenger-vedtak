@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AFT
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.ARBRREHAB
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.AVKLARING
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.FORSOK
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.LONNTILS
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPFOLG
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.OPPL
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.Tiltaksgruppe.TILRETTE
@@ -75,7 +74,7 @@ data class Tiltaksaktivitet(
 
     enum class Tiltak(val navn: String, val tiltaksgruppe: Tiltaksgruppe, val rettPåTiltakspenger: Boolean) {
         MENTOR("Mentor", OPPFOLG, true),
-        MIDLONTIL("Midlertidig lønnstilskudd", LONNTILS, false),
+        MIDLONTIL("Midlertidig lønnstilskudd", Tiltaksgruppe.LONNTILS, false),
         PV("Produksjonsverksted (PV)", UTFAS, false),
         REFINO("Resultatbasert finansiering av oppfølging", FORSOK, true),
         SUPPEMP("Supported Employment", FORSOK, true),
@@ -111,13 +110,37 @@ data class Tiltaksaktivitet(
         TILRTILSK("Forebyggings- og tilretteleggingstilskudd IA virksomheter og BHT-honorar", UTFAS, false),
         UTVAOONAV("Utvidet oppfølging i NAV", FORSOK, true),
         UTVOPPFOPL("Utvidet oppfølging i opplæring", OPPFOLG, true),
-        VARLONTIL("Varig lønnstilskudd", LONNTILS, false),
+        VARLONTIL("Varig lønnstilskudd", Tiltaksgruppe.LONNTILS, false),
         VASV("Varig tilrettelagt arbeid i skjermet virksomhet", VARIGASV, false),
         VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet", VARIGASV, false),
         VV("Varig vernet arbeid (VVA)", UTFAS, false),
-        AMO("AMO", UTFAS, true),
-        PRAKSKJERM("Avklaring i skjermet virksomhet", UTFAS, true),
-        AB("Arbeid med Bistand (AB)", UTFAS, true);
+
+        AB("Arbeid med Bistand (AB)", UTFAS, true), // TODO: Denne må vi få sjekket opp
+
+        DIVTILT("Diverse tiltak", UTFAS, false),
+        FLEKSJOBB("Fleksibel jobb - lønnstilskudd av lengre varighet", UTFAS, false),
+        REAKTUFOR("Lønnstilskudd - reaktivisering av uførepensjonister", UTFAS, false),
+        AMOY("Arbeidsmarkedsopplæring (AMO) yrkeshemmede", UTFAS, true),
+        KURS("Andre kurs", UTFAS, false),
+        VIKARBLED("Utdanningsvikariater", UTFAS, false),
+        LONNTILS("Lønnstilskudd", UTFAS, false),
+        AMBF1("AMB Avklaring (fase 1)", UTFAS, true),
+        SYSSOFF("Sysselsettingstiltak i offentlig sektor for yrkeshemmede", UTFAS, false),
+        UTDYRK("Utdanning", UTFAS, true),
+        AMO("Arbeidsmarkedsopplæring (AMO)", UTFAS, true),
+        AMOE("Arbeidsmarkedsopplæring (AMO) enkeltplass", UTFAS, true),
+        PRAKSKJERM("Arbeidspraksis i skjermet virksomhet", UTFAS, true),
+        PRAKSORD("Arbeidspraksis i ordinær virksomhet", UTFAS, true),
+        KAT("Formidlingstjenester", UTFAS, true),
+        TILRETTEL("Tilrettelegging for arbeidstaker", UTFAS, false),
+        NETTAMO("Nettbasert arbeidsmarkedsopplæring (AMO)", UTFAS, true),
+        LONNTILL("Lønnstilskudd av lengre varighet", UTFAS, false),
+        AVKLARKV("Avklaring av kortere varighet", UTFAS, true),
+        INDOPPFOLG("Individuelt oppfølgingstiltak", UTFAS, true),
+        AVKLARSP("Avklaring - sykmeldt arbeidstaker", UTFAS, true),
+        LONNTIL("Tidsbegrenset lønnstilskudd", UTFAS, false),
+        OPPLT2AAR("2-årig opplæringstiltak", UTFAS, true),
+        TILSJOBB("Tilskudd til sommerjobb", Tiltaksgruppe.LONNTILS, false),
     }
 
     enum class DeltakerStatus(val tekst: String) {

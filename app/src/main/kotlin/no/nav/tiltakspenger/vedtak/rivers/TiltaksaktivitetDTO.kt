@@ -68,9 +68,33 @@ data class TiltaksaktivitetDTO(
         VASV("Varig tilrettelagt arbeid i skjermet virksomhet"),
         VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet"),
         VV("Varig vernet arbeid (VVA)"),
-        AMO("AMO"),
-        PRAKSKJERM("Avklaring i skjermet virksomhet"),
-        AB("Arbeid med Bistand (AB)");
+
+        AB("Arbeid med Bistand (AB)"),// TODO: Denne må vi få sjekket opp
+
+        DIVTILT("Diverse tiltak"),
+        FLEKSJOBB("Fleksibel jobb - lønnstilskudd av lengre varighet"),
+        REAKTUFOR("Lønnstilskudd - reaktivisering av uførepensjonister"),
+        AMOY("Arbeidsmarkedsopplæring (AMO) yrkeshemmede"),
+        KURS("Andre kurs"),
+        VIKARBLED("Utdanningsvikariater"),
+        LONNTILS("Lønnstilskudd"),
+        AMBF1("AMB Avklaring (fase 1)"),
+        SYSSOFF("Sysselsettingstiltak i offentlig sektor for yrkeshemmede"),
+        UTDYRK("Utdanning"),
+        AMO("Arbeidsmarkedsopplæring (AMO)"),
+        AMOE("Arbeidsmarkedsopplæring (AMO) enkeltplass"),
+        PRAKSKJERM("Arbeidspraksis i skjermet virksomhet"),
+        PRAKSORD("Arbeidspraksis i ordinær virksomhet"),
+        KAT("Formidlingstjenester"),
+        TILRETTEL("Tilrettelegging for arbeidstaker"),
+        NETTAMO("Nettbasert arbeidsmarkedsopplæring (AMO)"),
+        LONNTILL("Lønnstilskudd av lengre varighet"),
+        AVKLARKV("Avklaring av kortere varighet"),
+        INDOPPFOLG("Individuelt oppfølgingstiltak"),
+        AVKLARSP("Avklaring - sykmeldt arbeidstaker"),
+        LONNTIL("Tidsbegrenset lønnstilskudd"),
+        OPPLT2AAR("2-årig opplæringstiltak"),
+        TILSJOBB("Tilskudd til sommerjobb")
     }
 
     enum class DeltakerStatusEnum(val tekst: String) {
