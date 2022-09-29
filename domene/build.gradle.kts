@@ -10,5 +10,9 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
 
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    implementation("ch.qos.logback:logback-classic:1.4.1")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+
     testImplementation(kotlin("test"))
 }

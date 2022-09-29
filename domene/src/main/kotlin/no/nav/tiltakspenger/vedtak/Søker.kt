@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -8,6 +9,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.util.*
 
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 @Suppress("TooManyFunctions", "LongParameterList")
 class Søker private constructor(
     val id: UUID,
@@ -212,8 +214,10 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+            val melding = "Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}"
+            SECURELOG.info("****: melding")
             personopplysningerMottattHendelse
-                .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
+                .info(melding)
             søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
             søker.trengerSkjermingdata(personopplysningerMottattHendelse)
             søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
