@@ -69,7 +69,8 @@ data class TiltaksaktivitetDTO(
         VATIAROR("Varig tilrettelagt arbeid i ordinær virksomhet"),
         VV("Varig vernet arbeid (VVA)"),
         AMO("AMO"),
-        PRAKSKJERM("Avklaring i skjermet virksomhet")
+        PRAKSKJERM("Avklaring i skjermet virksomhet"),
+        AB("Arbeid med Bistand (AB)");
     }
 
     enum class DeltakerStatusEnum(val tekst: String) {
