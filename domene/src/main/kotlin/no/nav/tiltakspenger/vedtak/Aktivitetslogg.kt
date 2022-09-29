@@ -20,12 +20,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     }
 
     override fun info(melding: String, vararg params: Any?) {
-        println("**** $melding og $params")
-        try {
-            add(Aktivitet.Info(kontekster.toSpesifikk(), String.format(melding, *params)))
-        } catch (e: Exception) {
-            throw RuntimeException("---- $melding og $params", e)
-        }
+        add(Aktivitet.Info(kontekster.toSpesifikk(), String.format(melding, *params)))
     }
 
     override fun warn(melding: String, vararg params: Any?) {
