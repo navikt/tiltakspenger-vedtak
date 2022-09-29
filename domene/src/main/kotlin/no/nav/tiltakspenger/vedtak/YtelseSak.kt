@@ -44,7 +44,8 @@ data class YtelseSak(
             PERM("Dagpenger under permitteringer", YtelseSakYtelsetype.DAGP),
             FISK("Dagp. v/perm fra fiskeindustri", YtelseSakYtelsetype.DAGP),
             LONN("Lønnsgarantimidler - dagpenger", YtelseSakYtelsetype.DAGP),
-            BASI("Tiltakspenger (basisytelse før 2014)", YtelseSakYtelsetype.INDIV)
+            BASI("Tiltakspenger (basisytelse før 2014)", YtelseSakYtelsetype.INDIV),
+            BTIL("Barnetillegg", YtelseSakYtelsetype.INDIV)
         }
 
         enum class YtelseVedtakStatus(val navn: String) {
