@@ -79,27 +79,27 @@ internal class ArenaYtelserMottattRiver(
         ytelseSakDTO: List<YtelseSakDTO>,
         innhentet: LocalDateTime
     ): List<YtelseSak> {
-        return ytelseSakDTO.map { ytelseSakDTO ->
+        return ytelseSakDTO.map { ytelse ->
             YtelseSak(
-                fomGyldighetsperiode = ytelseSakDTO.fomGyldighetsperiode,
-                tomGyldighetsperiode = ytelseSakDTO.tomGyldighetsperiode,
-                datoKravMottatt = ytelseSakDTO.datoKravMottatt,
-                dataKravMottatt = ytelseSakDTO.dataKravMottatt,
-                fagsystemSakId = ytelseSakDTO.fagsystemSakId,
-                status = ytelseSakDTO.status?.let { s -> mapStatus(s) },
-                ytelsestype = ytelseSakDTO.ytelsestype?.let { y -> mapYtelsetype(y) },
-                vedtak = ytelseSakDTO.vedtak.map { ytelseVedtakDTO ->
+                fomGyldighetsperiode = ytelse.fomGyldighetsperiode,
+                tomGyldighetsperiode = ytelse.tomGyldighetsperiode,
+                datoKravMottatt = ytelse.datoKravMottatt,
+                dataKravMottatt = ytelse.dataKravMottatt,
+                fagsystemSakId = ytelse.fagsystemSakId,
+                status = ytelse.status?.let { s -> mapStatus(s) },
+                ytelsestype = ytelse.ytelsestype?.let { y -> mapYtelsetype(y) },
+                vedtak = ytelse.vedtak.map { vedtak ->
                     YtelseSak.YtelseVedtak(
-                        beslutningsDato = ytelseVedtakDTO.beslutningsDato,
-                        periodetypeForYtelse = ytelseVedtakDTO.periodetypeForYtelse?.let { p -> mapPeriodeType(p) },
-                        vedtaksperiodeFom = ytelseVedtakDTO.vedtaksperiodeFom,
-                        vedtaksperiodeTom = ytelseVedtakDTO.vedtaksperiodeTom,
-                        vedtaksType = ytelseVedtakDTO.vedtaksType?.let { v -> mapVedtakstype(v) },
-                        status = ytelseVedtakDTO.status?.let { s -> mapVedtakStatus(s) },
+                        beslutningsDato = vedtak.beslutningsDato,
+                        periodetypeForYtelse = vedtak.periodetypeForYtelse?.let { p -> mapPeriodeType(p) },
+                        vedtaksperiodeFom = vedtak.vedtaksperiodeFom,
+                        vedtaksperiodeTom = vedtak.vedtaksperiodeTom,
+                        vedtaksType = vedtak.vedtaksType?.let { v -> mapVedtakstype(v) },
+                        status = vedtak.status?.let { s -> mapVedtakStatus(s) },
                     )
                 },
-                antallDagerIgjen = ytelseSakDTO.antallDagerIgjen,
-                antallUkerIgjen = ytelseSakDTO.antallUkerIgjen,
+                antallDagerIgjen = ytelse.antallDagerIgjen,
+                antallUkerIgjen = ytelse.antallUkerIgjen,
                 innhentet = innhentet,
             )
         }
