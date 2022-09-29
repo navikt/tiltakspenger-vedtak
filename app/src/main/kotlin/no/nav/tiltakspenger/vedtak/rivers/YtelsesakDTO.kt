@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 data class YtelseSakDTO(
     val fomGyldighetsperiode: LocalDateTime,
-    val tomGyldighetsperiode: LocalDateTime,
+    val tomGyldighetsperiode: LocalDateTime?,
     val datoKravMottatt: LocalDate?,
     val dataKravMottatt: String? = null,
     val fagsystemSakId: Int? = null,
