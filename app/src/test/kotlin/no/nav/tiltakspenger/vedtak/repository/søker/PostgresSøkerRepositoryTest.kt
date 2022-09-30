@@ -16,6 +16,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Testcontainers
@@ -64,7 +65,7 @@ internal class PostgresSøkerRepositoryTest {
             typeInstitusjon = null,
             opprettet = null,
             barnetillegg = emptyList(),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.BrukerregistrertTiltak(
                 tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
                 arrangoernavn = "Tiltaksarrangør AS",
@@ -101,7 +102,7 @@ internal class PostgresSøkerRepositoryTest {
                     etternavn = "etternavn",
                 )
             ),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Hurra meg rundt AS",
@@ -133,7 +134,7 @@ internal class PostgresSøkerRepositoryTest {
             deltarIntroduksjonsprogrammet = true,
             oppholdInstitusjon = true,
             typeInstitusjon = "Barnevernet",
-            opprettet = LocalDateTime.now(),
+            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
                 Barnetillegg.MedIdent(
                     alder = 16,
@@ -143,7 +144,7 @@ internal class PostgresSøkerRepositoryTest {
                     etternavn = "etternavn",
                 )
             ),
-            tidsstempelHosOss = LocalDateTime.now(),
+            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Tiltaksbedriften AS",

@@ -14,6 +14,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Testcontainers
@@ -37,7 +38,7 @@ internal class TiltaksaktivitetDAOTest {
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
 
-        val tidspunkt = LocalDateTime.now()
+        val tidspunkt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         val tiltaksaktivitet = Tiltaksaktivitet(
             tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
@@ -78,7 +79,7 @@ internal class TiltaksaktivitetDAOTest {
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
 
-        val tidspunkt = LocalDateTime.now()
+        val tidspunkt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
         val tiltaksaktivitet = Tiltaksaktivitet(
             tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
