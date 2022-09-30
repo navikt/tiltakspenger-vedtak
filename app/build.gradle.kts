@@ -51,7 +51,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
-    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
