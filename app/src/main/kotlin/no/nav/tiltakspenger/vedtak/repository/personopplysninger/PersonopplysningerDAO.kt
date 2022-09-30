@@ -3,12 +3,15 @@ package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 import java.util.*
 
 internal class PersonopplysningerDAO {
+    private val log = KotlinLogging.logger {}
+    private val securelog = KotlinLogging.logger("tjenestekall")
     private val toPersonopplysninger: (Row) -> Personopplysninger = { row ->
         Personopplysninger(
             row.string("ident"),
@@ -28,7 +31,7 @@ internal class PersonopplysningerDAO {
 
     private fun personopplysningerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
-    ) ?: throw RuntimeException("Failed to check if person exists")
+    ) ?: throw Exception("Failed to check if personopplysninger exists")
 
     @Language("SQL")
     private val finnes = "select exists(select 1 from personopplysninger where ident = ?)"
@@ -75,8 +78,11 @@ internal class PersonopplysningerDAO {
 
     fun lagre(søkerId: UUID, personopplysninger: Personopplysninger, txSession: TransactionalSession) {
         if (personopplysningerFinnes(personopplysninger.ident, txSession)) {
+            log.info { "Sletter personopplysninger før lagring" }
             txSession.run(queryOf(slettPersonopplysninger, personopplysninger.ident).asUpdate)
         }
+        log.info { "Lagre personopplysninger" }
+        securelog.info { "Lagre personopplysninger $søkerId" }
         txSession.run(
             queryOf(
                 lagrePersonopplysninger, mapOf(
