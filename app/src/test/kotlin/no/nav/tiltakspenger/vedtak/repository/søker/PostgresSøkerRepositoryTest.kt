@@ -173,7 +173,8 @@ internal class PostgresSøkerRepositoryTest {
             tilstand = "AvventerPersonopplysninger",
             søknader = listOf(
                 søknad1, søknad2, søknad3
-            )
+            ),
+            personopplysninger = null
         )
 
         søkerRepo.lagre(søker)

@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import org.intellij.lang.annotations.Language
@@ -19,6 +20,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresSøkerRepository(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
+    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO()
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
@@ -42,6 +44,9 @@ internal class PostgresSøkerRepository(
                     insert(søker, txSession)
                 }
                 søknadDAO.lagre(søker.id, søker.søknader, txSession)
+                if (søker.personopplysninger != null) {
+                    personopplysningerDAO.lagre(søker.id, søker.personopplysninger!!, txSession)
+                }
             }
         }
     }
@@ -54,7 +59,8 @@ internal class PostgresSøkerRepository(
             id = id,
             ident = ident,
             tilstand = tilstand,
-            søknader = søknadDAO.hentAlle(id, txSession)
+            søknader = søknadDAO.hentAlle(id, txSession),
+            personopplysninger = personopplysningerDAO.hent(id, txSession)
         )
     }
 

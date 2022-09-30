@@ -55,13 +55,14 @@ class Søker private constructor(
             ident: String,
             tilstand: String,
             søknader: List<Søknad>,
+            personopplysninger: Personopplysninger?,
         ): Søker {
             return Søker(
                 id = id,
                 ident = ident,
                 tilstand = convertTilstand(tilstand),
                 søknader = søknader,
-                personopplysninger = null,
+                personopplysninger = personopplysninger,
                 barn = mutableListOf(),
                 tiltak = mutableListOf(),
                 ytelser = mutableListOf(),
@@ -228,12 +229,12 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-//            if (søker.personopplysninger == null) {
-//                skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
-//            }
-//            søker.personopplysninger = søker.personopplysninger!!.copy(
-//                skjermet = skjermingMottattHendelse.skjerming().skjerming
-//            )
+            if (søker.personopplysninger == null) {
+                skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
+            }
+            søker.personopplysninger = søker.personopplysninger!!.copy(
+                skjermet = skjermingMottattHendelse.skjerming().skjerming
+            )
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }
