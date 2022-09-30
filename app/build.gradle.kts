@@ -1,7 +1,7 @@
 val ktorVersion = "2.1.1"
 val kotestVersion = "5.4.2"
 val mockkVersion = "1.13.2"
-val testContainersVersion = "1.17.3"
+val testContainersVersion = "1.17.4"
 
 plugins {
     application
