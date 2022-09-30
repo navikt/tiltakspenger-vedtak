@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -30,13 +31,15 @@ internal class PersonopplysningerDAOTest {
         flywayMigrate()
     }
 
+    private val dao = PersonopplysningerDAO()
+    private val søkerRepository = PostgresSøkerRepository()
+
     @Test
     fun `lagre og hent`() {
-        val søkerRepository = PostgresSøkerRepository()
+        // given
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
-        val dao = PersonopplysningerDAO()
         val personopplysninger = Personopplysninger(
             ident = ident,
             fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
@@ -45,13 +48,14 @@ internal class PersonopplysningerDAOTest {
             etternavn = "Ring",
             fortrolig = false,
             strengtFortrolig = true,
-            skjermet = null,
+            skjermet = true,
             kommune = "Oslo",
             bydel = "Bjerke",
             land = "Norge",
             tidsstempelHosOss = LocalDateTime.now()
         )
 
+        // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.lagre(søker.id, personopplysninger, txSession)
@@ -63,8 +67,58 @@ internal class PersonopplysningerDAOTest {
             }
         }
 
+        // then
         assertEquals(personopplysninger, hentet)
+    }
 
+    @Test
+    fun `lagre og hent med null-verdier`() {
+        // given
+        val ident = Random().nextInt().toString()
+        val søker = Søker(ident)
+        søkerRepository.lagre(søker)
+        val personopplysninger = Personopplysninger(
+            ident = ident,
+            fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+            fornavn = "Kjell",
+            mellomnavn = null,
+            etternavn = "Ring",
+            fortrolig = false,
+            strengtFortrolig = true,
+            skjermet = null,
+            kommune = null,
+            bydel = null,
+            land = null,
+            tidsstempelHosOss = LocalDateTime.now()
+        )
+
+        // when
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, personopplysninger, txSession)
+            }
+        }
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        // then
+        assertEquals(personopplysninger, hentet)
+    }
+
+    @Test
+    fun `hent en som ikke finnes skal gi null tilbake`() {
+        // when
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(UUID.randomUUID(), txSession)
+            }
+        }
+
+        // then
+        assertNull(hentet)
     }
 
 }

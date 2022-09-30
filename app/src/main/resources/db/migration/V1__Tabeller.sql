@@ -105,7 +105,7 @@ CREATE TABLE personopplysninger
     kommune             VARCHAR                  NULL,
     bydel               VARCHAR                  NULL,
     land                VARCHAR                  NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NULL
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE tiltaksaktivitet
