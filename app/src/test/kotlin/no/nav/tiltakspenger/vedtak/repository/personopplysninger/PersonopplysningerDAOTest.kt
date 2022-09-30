@@ -16,7 +16,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Testcontainers
@@ -53,7 +52,7 @@ internal class PersonopplysningerDAOTest {
             kommune = "Oslo",
             bydel = "Bjerke",
             land = "Norge",
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+            tidsstempelHosOss = LocalDateTime.now()
         )
 
         // when
@@ -90,7 +89,7 @@ internal class PersonopplysningerDAOTest {
             kommune = null,
             bydel = null,
             land = null,
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+            tidsstempelHosOss = LocalDateTime.now()
         )
 
         // when

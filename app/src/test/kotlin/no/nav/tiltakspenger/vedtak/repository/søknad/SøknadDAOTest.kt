@@ -21,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
-import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -194,7 +193,7 @@ internal class SøknadDAOTest {
             deltarIntroduksjonsprogrammet = true,
             oppholdInstitusjon = true,
             typeInstitusjon = "Barnevernet",
-            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
+            opprettet = LocalDateTime.now(),
             barnetillegg = listOf(
                 Barnetillegg.MedIdent(
                     alder = 16,
