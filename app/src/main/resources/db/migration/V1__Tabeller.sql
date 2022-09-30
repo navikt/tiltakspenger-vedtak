@@ -124,5 +124,5 @@ CREATE TABLE tiltaksaktivitet
     status_sist_endret     DATE                     NULL,
     begrunnelse_innsøking  VARCHAR                  NULL,
     antall_dager_per_uke   FLOAT                    NULL,
-    tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NULL
+    tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
 );
