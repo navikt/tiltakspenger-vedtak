@@ -79,11 +79,11 @@ internal class PersonopplysningerMottattRiver(
             fortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
             strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
                     dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+            skjermet = null,
             kommune = dto.gtKommune,
             bydel = dto.gtBydel,
             land = dto.gtLand,
-            skjermet = null,
-            innhentet = innhentet,
+            tidsstempelHosOss = innhentet,
         )
     }
 }
