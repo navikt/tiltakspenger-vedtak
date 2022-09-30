@@ -68,7 +68,7 @@ class TiltaksaktivitetDAO {
             deltakelseProsent = floatOrNull("deltakelse_prosent"),
             deltakerStatus = string("deltaker_status").let { Tiltaksaktivitet.DeltakerStatus.valueOf(it) },
             statusSistEndret = localDateOrNull("status_sist_endret"),
-            begrunnelseInnsøking = string("begrunnelse_innsøking"),
+            begrunnelseInnsøking = stringOrNull("begrunnelse_innsøking"),
             antallDagerPerUke = floatOrNull("antall_dager_per_uke"),
             tidsstempelHosOss = localDateTime("tidsstempel_hos_oss"),
         )

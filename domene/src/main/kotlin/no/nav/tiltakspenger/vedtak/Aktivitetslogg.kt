@@ -23,8 +23,16 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         add(Aktivitet.Info(kontekster.toSpesifikk(), String.format(melding, *params)))
     }
 
+    override fun info(melding: String) {
+        add(Aktivitet.Info(kontekster.toSpesifikk(), melding))
+    }
+
     override fun warn(melding: String, vararg params: Any?) {
         add(Aktivitet.Warn(kontekster.toSpesifikk(), String.format(melding, *params)))
+    }
+
+    override fun warn(melding: String) {
+        add(Aktivitet.Warn(kontekster.toSpesifikk(), melding))
     }
 
     override fun behov(type: Aktivitet.Behov.Behovtype, melding: String, detaljer: Map<String, Any>) {
@@ -35,8 +43,18 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         add(Aktivitet.Error(kontekster.toSpesifikk(), String.format(melding, *params)))
     }
 
+    override fun error(melding: String) {
+        add(Aktivitet.Error(kontekster.toSpesifikk(), melding))
+    }
+
     override fun severe(melding: String, vararg params: Any?): Nothing {
         add(Aktivitet.Severe(kontekster.toSpesifikk(), String.format(melding, *params)))
+
+        throw AktivitetException(this)
+    }
+
+    override fun severe(melding: String): Nothing {
+        add(Aktivitet.Severe(kontekster.toSpesifikk(), melding))
 
         throw AktivitetException(this)
     }
@@ -243,10 +261,14 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
 interface IAktivitetslogg {
     fun info(melding: String, vararg params: Any?)
+    fun info(melding: String)
     fun warn(melding: String, vararg params: Any?)
+    fun warn(melding: String)
     fun behov(type: Aktivitetslogg.Aktivitet.Behov.Behovtype, melding: String, detaljer: Map<String, Any> = emptyMap())
     fun error(melding: String, vararg params: Any?)
+    fun error(melding: String)
     fun severe(melding: String, vararg params: Any?): Nothing
+    fun severe(melding: String): Nothing
 
     fun hasMessages(): Boolean
     fun hasWarnings(): Boolean

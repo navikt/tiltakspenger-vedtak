@@ -23,11 +23,12 @@
         "fornavn": "Knuslete",
         "mellomnavn": "Melon",
         "etternavn": "Ekspedisjon",
-        "adressebeskyttelseGradering": null,
+        "adressebeskyttelseGradering": "UGRADERT",
         "gtKommune": "Oslo",
         "gtBydel": "460105",
         "gtLand": "Norge",
-        "barn": []
+        "barn": [],
+        "barnUtenFolkeregisteridentifikator": []
       },
       "feil": null
     }

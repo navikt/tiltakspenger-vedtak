@@ -77,7 +77,7 @@ CREATE TABLE arenatiltak
     opprinnelig_startdato   DATE    NOT NULL,
     opprinnelig_sluttdato   DATE    NULL,
     startdato               DATE    NOT NULL,
-    sluttdato               DATE    NOT NULL
+    sluttdato               DATE    NULL
 );
 
 CREATE TABLE trygdogpensjon

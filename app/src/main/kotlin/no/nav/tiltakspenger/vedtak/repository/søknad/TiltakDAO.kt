@@ -107,7 +107,7 @@ internal class TiltakDAO {
         val opprinneligStartdato = localDate("opprinnelig_startdato")
         val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
         val startdato = localDate("startdato")
-        val sluttdato = localDate("sluttdato")
+        val sluttdato = localDateOrNull("sluttdato")
         return Tiltak.ArenaTiltak(
             arenaId = arenaId,
             arrangoernavn = arrangoernavn,

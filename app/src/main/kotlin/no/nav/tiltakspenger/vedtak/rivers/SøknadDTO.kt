@@ -91,7 +91,7 @@ class ArenaTiltakDTO(
     val erIEndreStatus: Boolean,
     val opprinneligSluttdato: LocalDate? = null,
     val opprinneligStartdato: LocalDate,
-    val sluttdato: LocalDate,
+    val sluttdato: LocalDate? = null,
     val startdato: LocalDate
 ) {
     companion object {

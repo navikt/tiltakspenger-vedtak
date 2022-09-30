@@ -12,4 +12,5 @@ data class PersonopplysningerDTO(
     val gtBydel: String?,
     val gtLand: String?,
     val barn: List<BarnDTO>,
+    val barnUtenFolkeregisteridentifikator: List<BarnUtenFolkeregisteridentifikatorDTO> = emptyList()
 )

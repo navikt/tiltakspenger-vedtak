@@ -50,7 +50,7 @@ internal class TiltaksaktivitetDAOTest {
             deltakelseProsent = null,
             deltakerStatus = Tiltaksaktivitet.DeltakerStatus.AKTUELL,
             statusSistEndret = null,
-            begrunnelseInnsøking = "begrunnelse",
+            begrunnelseInnsøking = null,
             antallDagerPerUke = null,
             tidsstempelHosOss = tidspunkt,
         )

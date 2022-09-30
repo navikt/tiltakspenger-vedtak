@@ -46,7 +46,7 @@ sealed class Tiltak {
     abstract val arrangoernavn: String?
     abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
     abstract val startdato: LocalDate
-    abstract val sluttdato: LocalDate
+    abstract val sluttdato: LocalDate?
 
     data class ArenaTiltak(
         val arenaId: String,
@@ -56,7 +56,7 @@ sealed class Tiltak {
         val erIEndreStatus: Boolean,
         val opprinneligSluttdato: LocalDate? = null,
         val opprinneligStartdato: LocalDate,
-        override val sluttdato: LocalDate,
+        override val sluttdato: LocalDate? = null,
         override val startdato: LocalDate
     ) : Tiltak()
 
