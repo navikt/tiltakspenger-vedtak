@@ -34,6 +34,20 @@ internal class PersonopplysningerDAOTest {
 
     private val dao = PersonopplysningerDAO()
     private val søkerRepository = PostgresSøkerRepository()
+    private fun personopplysninger(ident: String) = Personopplysninger(
+        ident = ident,
+        fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+        fornavn = "Kjell",
+        mellomnavn = "T.",
+        etternavn = "Ring",
+        fortrolig = false,
+        strengtFortrolig = true,
+        skjermet = true,
+        kommune = "Oslo",
+        bydel = "3440",
+        land = "Norge",
+        tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+    )
 
     @Test
     fun `lagre og hent`() {
@@ -41,20 +55,7 @@ internal class PersonopplysningerDAOTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
-        val personopplysninger = Personopplysninger(
-            ident = ident,
-            fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
-            fornavn = "Kjell",
-            mellomnavn = "T.",
-            etternavn = "Ring",
-            fortrolig = false,
-            strengtFortrolig = true,
-            skjermet = true,
-            kommune = "Oslo",
-            bydel = "Bjerke",
-            land = "Norge",
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
-        )
+        val personopplysninger = personopplysninger(ident)
 
         // when
         sessionOf(DataSource.hikariDataSource).use {
@@ -120,6 +121,39 @@ internal class PersonopplysningerDAOTest {
 
         // then
         assertNull(hentet)
+    }
+
+    @Test
+    fun `legg til personopplysninger for en ident som finnes fra før - da skal de nye dataene gjelde`() {
+        // given
+        val ident = Random().nextInt().toString()
+        val søker = Søker(ident)
+        søkerRepository.lagre(søker)
+        val gamlePersonopplysninger = personopplysninger(ident)
+
+        // when
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, gamlePersonopplysninger, txSession)
+            }
+        }
+
+        val nyePersonopplysninger = gamlePersonopplysninger.copy(fornavn = "Ole")
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, nyePersonopplysninger, txSession)
+            }
+        }
+
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        // then
+        assertEquals(nyePersonopplysninger, hentet)
     }
 
 }
