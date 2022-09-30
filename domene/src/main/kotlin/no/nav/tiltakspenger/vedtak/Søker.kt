@@ -161,23 +161,23 @@ class Søker private constructor(
         val timeout: Duration
 
         fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i %s", type.name)
+            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i %s", type.name)
+            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
-            skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i %s", type.name)
+            skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i %s", type.name)
+            arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
-            ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i %s", type.name)
+            ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i ${type.name}")
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
