@@ -6,9 +6,9 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -30,12 +30,12 @@ internal class PersonopplysningerDAOTest {
         flywayMigrate()
     }
 
-    @Disabled("Venter på implementasjon av PersonopplysningerDAO")
     @Test
     fun `lagre og hent`() {
-//        val søkerRepository = PostgresSøkerRepository()
+        val søkerRepository = PostgresSøkerRepository()
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
+        søkerRepository.lagre(søker)
         val dao = PersonopplysningerDAO()
         val personopplysninger = Personopplysninger(
             ident = ident,

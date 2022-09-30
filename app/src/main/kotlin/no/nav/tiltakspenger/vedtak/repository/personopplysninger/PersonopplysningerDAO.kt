@@ -1,12 +1,30 @@
 package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 
+import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 import java.util.*
 
 internal class PersonopplysningerDAO {
+    private val toPersonopplysninger: (Row) -> Personopplysninger = { row ->
+        Personopplysninger(
+            row.string("ident"),
+            row.localDate("fødselsdato"),
+            row.string("fornavn"),
+            row.stringOrNull("mellomnavn"),
+            row.string("etternavn"),
+            row.boolean("fortrolig"),
+            row.boolean("strengt_fortrolig"),
+            row.booleanOrNull("skjermet"),
+            row.stringOrNull("kommune"),
+            row.stringOrNull("bydel"),
+            row.stringOrNull("land"),
+            row.localDateTime("tidsstempel_hos_oss")
+        )
+    }
 
     @Language("SQL")
     private val hentPersonopplysninger = "select * from personopplysninger where søker_id = ?"
@@ -68,5 +86,7 @@ internal class PersonopplysningerDAO {
         )
     }
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession): Personopplysninger = TODO("Not yet implemented")
+    fun hent(søkerId: UUID, txSession: TransactionalSession): Personopplysninger? = txSession.run(
+        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asSingle
+    )
 }
