@@ -1,25 +1,21 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.mars
-import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.objectmothers.barnetilleggMedIdent
+import no.nav.tiltakspenger.vedtak.objectmothers.barnetilleggUtenIdent
+import no.nav.tiltakspenger.vedtak.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.vedtak.objectmothers.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.vedtak.objectmothers.tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.objectmothers.trygdOgPensjon
+import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Testcontainers
@@ -52,154 +48,26 @@ internal class PostgresSøkerRepositoryTest {
 
     @Test
     fun `lagre og hente hele aggregatet`() {
-        val ident = "2"
+        val ident = Random().nextInt().toString()
 
-        val søknad1 = Søknad(
-            id = UUID.randomUUID(),
-            søknadId = "41",
-            journalpostId = "42",
-            dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
+        val søknad1 = nySøknadMedBrukerTiltak(
             ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = emptyList(),
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            tiltak = Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                arrangoernavn = "Tiltaksarrangør AS",
-                beskrivelse = "Beskrivelse",
-                sluttdato = LocalDate.now(),
-                startdato = LocalDate.now(),
-                adresse = "Min adresse",
-                postnummer = "0491",
-                antallDager = 4
-            ),
-            trygdOgPensjon = emptyList(),
-            fritekst = null,
         )
 
-        val søknad2 = Søknad(
-            id = UUID.randomUUID(),
-            søknadId = "41",
-            journalpostId = "42",
-            dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
+        val søknad2 = nySøknadMedArenaTiltak(
             ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 0,
-                    ident = "1",
-                    land = "NO",
-                    fornavn = "fornavn",
-                    etternavn = "etternavn",
-                )
-            ),
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            tiltak = Tiltak.ArenaTiltak(
-                arenaId = "123",
-                arrangoernavn = "Hurra meg rundt AS",
-                harSluttdatoFraArena = true,
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = false,
-                opprinneligSluttdato = LocalDate.now(),
-                opprinneligStartdato = LocalDate.now(),
-                sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
-            ),
-            trygdOgPensjon = listOf(
-                TrygdOgPensjon(
-                    utbetaler = "Storebrand", prosent = null, fom = LocalDate.of(2020, 10, 1), tom = null
-                )
-            ),
-            fritekst = null,
+            barnetillegg = listOf(barnetilleggMedIdent()),
+            trygdOgPensjon = listOf(trygdOgPensjon())
         )
 
-        val søknad3 = Søknad(
-            id = UUID.randomUUID(),
-            søknadId = "41",
-            journalpostId = "42",
-            dokumentInfoId = "43",
-            fornavn = "Johnny",
-            etternavn = "McPerson",
+        val søknad3 = nySøknadMedBrukerTiltak(
             ident = ident,
-            deltarKvp = true,
-            deltarIntroduksjonsprogrammet = true,
-            oppholdInstitusjon = true,
-            typeInstitusjon = "Barnevernet",
-            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 16,
-                    ident = "1",
-                    land = "NO",
-                    fornavn = "foranvn",
-                    etternavn = "etternavn",
-                )
-            ),
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            tiltak = Tiltak.ArenaTiltak(
-                arenaId = "123",
-                arrangoernavn = "Tiltaksbedriften AS",
-                harSluttdatoFraArena = true,
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = true,
-                opprinneligSluttdato = LocalDate.now(),
-                opprinneligStartdato = LocalDate.now(),
-                sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
-            ),
-            trygdOgPensjon = listOf(
-                TrygdOgPensjon(
-                    utbetaler = "Storebrand",
-                    prosent = 50,
-                    fom = LocalDate.of(2020, 10, 1),
-                    tom = LocalDate.of(2020, 10, 1)
-                )
-            ),
-            fritekst = "Fritekst",
+            barnetillegg = listOf(barnetilleggUtenIdent(), barnetilleggMedIdent()),
+            trygdOgPensjon = listOf(trygdOgPensjon())
         )
 
-        val tiltaksaktivitet = Tiltaksaktivitet(
-            tiltak = Tiltaksaktivitet.Tiltak.AMBF2,
-            aktivitetId = "aktId",
-            tiltakLokaltNavn = "LokaltNavn",
-            arrangør = "arrangør",
-            bedriftsnummer = "bedriftsnummer",
-            deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
-                fom = 1.januar(2022),
-                tom = 31.januar(2022),
-            ),
-            deltakelseProsent = 50.0F,
-            deltakerStatus = Tiltaksaktivitet.DeltakerStatus.DELAVB,
-            statusSistEndret = 1.mars(2022),
-            begrunnelseInnsøking = "begrunnelse",
-            antallDagerPerUke = 0.5F,
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-        )
-
-        val ytelseSak = YtelseSak(
-            fomGyldighetsperiode = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            tomGyldighetsperiode = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
-            datoKravMottatt = 1.januar(2022),
-            dataKravMottatt = "Masse herlige data",
-            fagsystemSakId = 1337,
-            status = YtelseSak.YtelseSakStatus.INAKT,
-            ytelsestype = YtelseSak.YtelseSakYtelsetype.INDIV,
-            antallDagerIgjen = 300,
-            antallUkerIgjen = 20,
-            tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
-        )
+        val tiltaksaktivitet = tiltaksaktivitet()
+        val ytelseSak = ytelseSak()
 
         val søker = Søker.fromDb(
             id = UUID.randomUUID(),
@@ -210,6 +78,7 @@ internal class PostgresSøkerRepositoryTest {
             ),
             tiltak = listOf(tiltaksaktivitet),
             ytelser = listOf(ytelseSak),
+            personopplysninger = null,
         )
 
         søkerRepo.lagre(søker)

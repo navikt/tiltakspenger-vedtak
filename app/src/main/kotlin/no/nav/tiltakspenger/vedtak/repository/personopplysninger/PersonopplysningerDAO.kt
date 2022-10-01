@@ -1,9 +1,111 @@
 package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 
+import kotliquery.Row
 import kotliquery.TransactionalSession
+import kotliquery.queryOf
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.db.booleanOrNull
+import org.intellij.lang.annotations.Language
+import java.util.*
 
 internal class PersonopplysningerDAO {
-    fun lagre(personopplysninger: Personopplysninger, txSession: TransactionalSession): Nothing = TODO("Not yet implemented")
-    fun hent(id: String, txSession: TransactionalSession): Personopplysninger = TODO("Not yet implemented")
+    private val log = KotlinLogging.logger {}
+    private val securelog = KotlinLogging.logger("tjenestekall")
+    private val toPersonopplysninger: (Row) -> Personopplysninger = { row ->
+        Personopplysninger(
+            row.string("ident"),
+            row.localDate("fødselsdato"),
+            row.string("fornavn"),
+            row.stringOrNull("mellomnavn"),
+            row.string("etternavn"),
+            row.boolean("fortrolig"),
+            row.boolean("strengt_fortrolig"),
+            row.booleanOrNull("skjermet"),
+            row.stringOrNull("kommune"),
+            row.stringOrNull("bydel"),
+            row.stringOrNull("land"),
+            row.localDateTime("tidsstempel_hos_oss")
+        )
+    }
+
+    private fun personopplysningerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
+        queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
+    ) ?: throw Exception("Failed to check if personopplysninger exists")
+
+    @Language("SQL")
+    private val finnes = "select exists(select 1 from personopplysninger where ident = ?)"
+
+    @Language("SQL")
+    private val slettPersonopplysninger = "delete from personopplysninger where ident = ?"
+
+    @Language("SQL")
+    private val hentPersonopplysninger = "select * from personopplysninger where søker_id = ?"
+
+    @Language("SQL")
+    private val lagrePersonopplysninger = """
+        insert into personopplysninger (
+            id,
+            søker_id,        
+            ident,           
+            fødselsdato,     
+            fornavn,         
+            mellomnavn,      
+            etternavn,       
+            fortrolig,       
+            strengt_fortrolig,
+            skjermet,        
+            kommune,         
+            bydel,           
+            land,
+            tidsstempel_hos_oss            
+        ) values (
+            :id,
+            :sokerId,
+            :ident,             
+            :fodselsdato,       
+            :fornavn,           
+            :mellomnavn,        
+            :etternavn,         
+            :fortrolig,         
+            :strengtFortrolig, 
+            :skjermet,          
+            :kommune,           
+            :bydel,             
+            :land,              
+            :tidsstempelHosOss
+        )""".trimIndent()
+
+    fun lagre(søkerId: UUID, personopplysninger: Personopplysninger, txSession: TransactionalSession) {
+        if (personopplysningerFinnes(personopplysninger.ident, txSession)) {
+            log.info { "Sletter personopplysninger før lagring" }
+            txSession.run(queryOf(slettPersonopplysninger, personopplysninger.ident).asUpdate)
+        }
+        log.info { "Lagre personopplysninger" }
+        securelog.info { "Lagre personopplysninger $søkerId" }
+        txSession.run(
+            queryOf(
+                lagrePersonopplysninger, mapOf(
+                    "id" to UUID.randomUUID(),
+                    "sokerId" to søkerId,
+                    "ident" to personopplysninger.ident,
+                    "fodselsdato" to personopplysninger.fødselsdato,
+                    "fornavn" to personopplysninger.fornavn,
+                    "mellomnavn" to personopplysninger.mellomnavn,
+                    "etternavn" to personopplysninger.etternavn,
+                    "fortrolig" to personopplysninger.fortrolig,
+                    "strengtFortrolig" to personopplysninger.strengtFortrolig,
+                    "skjermet" to personopplysninger.skjermet,
+                    "kommune" to personopplysninger.kommune,
+                    "bydel" to personopplysninger.bydel,
+                    "land" to personopplysninger.land,
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
+                )
+            ).asUpdate
+        )
+    }
+
+    fun hent(søkerId: UUID, txSession: TransactionalSession): Personopplysninger? = txSession.run(
+        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asSingle
+    )
 }

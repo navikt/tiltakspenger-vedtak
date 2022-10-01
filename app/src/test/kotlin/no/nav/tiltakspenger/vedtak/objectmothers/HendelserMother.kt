@@ -15,7 +15,7 @@ import java.util.*
 
 fun nySøknadMottattHendelse(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(),
+    søknad: Søknad = nySøknadMedArenaTiltak(),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SøknadMottattHendelse {
     return SøknadMottattHendelse(

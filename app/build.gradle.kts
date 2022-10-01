@@ -1,7 +1,7 @@
-val ktorVersion = "2.1.1"
+val ktorVersion = "2.1.2"
 val kotestVersion = "5.4.2"
 val mockkVersion = "1.13.2"
-val testContainersVersion = "1.17.3"
+val testContainersVersion = "1.17.4"
 
 plugins {
     application
@@ -39,7 +39,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.21.2")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.3.1")
+    implementation("org.flywaydb:flyway-core:9.4.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -51,7 +51,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
-    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.2.5")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")

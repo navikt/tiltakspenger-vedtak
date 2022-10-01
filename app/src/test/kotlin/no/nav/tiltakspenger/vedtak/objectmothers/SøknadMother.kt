@@ -1,6 +1,9 @@
+@file:Suppress("LongParameterList")
 package no.nav.tiltakspenger.vedtak.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.domene.januarDateTime
+import no.nav.tiltakspenger.domene.juni
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -70,7 +73,39 @@ fun trygdOgPensjon(
     )
 }
 
-fun nySøknad(
+fun barnetilleggMedIdent(
+    alder: Int = 10,
+    land: String = "NOR",
+    fornavn: String? = "Fornavn Barn",
+    etternavn: String? = "Etternavn Barn",
+    ident: String = Random().nextInt().toString(),
+): Barnetillegg {
+    return Barnetillegg.MedIdent(
+        alder = alder,
+        land = land,
+        fornavn = fornavn,
+        etternavn = etternavn,
+        ident = ident
+    )
+}
+
+fun barnetilleggUtenIdent(
+    alder: Int = 10,
+    land: String = "NOR",
+    fornavn: String? = "Fornavn Barn",
+    etternavn: String? = "Etternavn Barn",
+    fødselsdato: LocalDate = 14.juni(2012),
+): Barnetillegg {
+    return Barnetillegg.UtenIdent(
+        alder = alder,
+        land = land,
+        fornavn = fornavn,
+        etternavn = etternavn,
+        fødselsdato = fødselsdato,
+    )
+}
+
+fun nySøknadMedArenaTiltak(
     id: UUID = UUID.randomUUID(),
     søknadId: String = "søknadId",
     journalpostId: String = "journalpostId",
@@ -82,10 +117,50 @@ fun nySøknad(
     deltarIntroduksjonsprogrammet: Boolean? = false,
     oppholdInstitusjon: Boolean? = false,
     typeInstitusjon: String? = null,
-    opprettet: LocalDateTime? = null,
+    opprettet: LocalDateTime? = 1.januarDateTime(2022),
     barnetillegg: List<Barnetillegg> = listOf(),
-    tidsstempelHosOss: LocalDateTime = LocalDateTime.now(),
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     tiltak: Tiltak = arenaTiltak(),
+    trygdOgPensjon: List<TrygdOgPensjon> = emptyList(),
+    fritekst: String? = "fritekst"
+): Søknad {
+    return Søknad(
+        id = id,
+        søknadId = søknadId,
+        journalpostId = journalpostId,
+        dokumentInfoId = dokumentInfoId,
+        fornavn = fornavn,
+        etternavn = etternavn,
+        ident = ident,
+        deltarKvp = deltarKvp,
+        deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+        oppholdInstitusjon = oppholdInstitusjon,
+        typeInstitusjon = typeInstitusjon,
+        opprettet = opprettet,
+        barnetillegg = barnetillegg,
+        tidsstempelHosOss = tidsstempelHosOss,
+        tiltak = tiltak,
+        trygdOgPensjon = trygdOgPensjon,
+        fritekst = fritekst,
+    )
+}
+
+fun nySøknadMedBrukerTiltak(
+    id: UUID = UUID.randomUUID(),
+    søknadId: String = "søknadId",
+    journalpostId: String = "journalpostId",
+    dokumentInfoId: String = "dokumentInfoId",
+    fornavn: String? = "Fornavn",
+    etternavn: String? = "Etternavn",
+    ident: String = Random().nextInt().toString(),
+    deltarKvp: Boolean = false,
+    deltarIntroduksjonsprogrammet: Boolean? = false,
+    oppholdInstitusjon: Boolean? = false,
+    typeInstitusjon: String? = null,
+    opprettet: LocalDateTime? = 1.januarDateTime(2022),
+    barnetillegg: List<Barnetillegg> = listOf(),
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+    tiltak: Tiltak = brukerTiltak(),
     trygdOgPensjon: List<TrygdOgPensjon> = emptyList(),
     fritekst: String? = "fritekst"
 ): Søknad {

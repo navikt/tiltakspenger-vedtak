@@ -57,13 +57,14 @@ class Søker private constructor(
             søknader: List<Søknad>,
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
+            personopplysninger: Personopplysninger?,
         ): Søker {
             return Søker(
                 id = id,
                 ident = ident,
                 tilstand = convertTilstand(tilstand),
                 søknader = søknader,
-                personopplysninger = null,
+                personopplysninger = personopplysninger,
                 barn = mutableListOf(),
                 tiltak = tiltak,
                 ytelser = ytelser,
@@ -162,23 +163,23 @@ class Søker private constructor(
         val timeout: Duration
 
         fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i %s", type.name)
+            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i %s", type.name)
+            personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
-            skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i %s", type.name)
+            skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i %s", type.name)
+            arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i ${type.name}")
         }
 
         fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
-            ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i %s", type.name)
+            ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i ${type.name}")
         }
 
         fun leaving(søker: Søker, hendelse: Hendelse) {}
@@ -230,12 +231,12 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-//            if (søker.personopplysninger == null) {
-//                skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
-//            }
-//            søker.personopplysninger = søker.personopplysninger!!.copy(
-//                skjermet = skjermingMottattHendelse.skjerming().skjerming
-//            )
+            if (søker.personopplysninger == null) {
+                skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
+            }
+            søker.personopplysninger = søker.personopplysninger!!.copy(
+                skjermet = skjermingMottattHendelse.skjerming().skjerming
+            )
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }

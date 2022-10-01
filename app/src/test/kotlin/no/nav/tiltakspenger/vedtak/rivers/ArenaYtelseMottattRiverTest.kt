@@ -85,11 +85,11 @@ internal class ArenaYtelseMottattRiverTest {
                 etternavn = "",
                 fortrolig = false,
                 strengtFortrolig = false,
+                skjermet = null,
                 kommune = null,
                 bydel = null,
                 land = null,
-                skjermet = null,
-                innhentet = LocalDateTime.now(),
+                tidsstempelHosOss = LocalDateTime.now(),
             )
         )
 

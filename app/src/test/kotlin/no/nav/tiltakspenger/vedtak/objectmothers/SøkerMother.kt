@@ -26,7 +26,7 @@ fun søkerRegistrert(
 
 fun søkerMedSøknad(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
 ): Søker {
     val søker = søkerRegistrert(ident)
     val hendelse = nySøknadMottattHendelse(
@@ -39,7 +39,7 @@ fun søkerMedSøknad(
 
 fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,
@@ -51,7 +51,7 @@ fun søkerMedPersonopplysninger(
 
 fun søkerMedSkjerming(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Søker {
     val søker = søkerMedPersonopplysninger(
@@ -69,7 +69,7 @@ fun søkerMedSkjerming(
 
 fun søkerMedTiltak(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Søker {
     val søker = søkerMedSkjerming(
@@ -83,7 +83,7 @@ fun søkerMedTiltak(
 
 fun søkerMedYtelse(
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
 ): Søker {
@@ -113,7 +113,7 @@ fun personopplysningKjedeligFyr(
     bydel: String? = null,
     land: String? = null,
     skjermet: Boolean? = null,
-    innhentet: LocalDateTime = 1.januarDateTime(2022),
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
 ): Personopplysninger {
     return Personopplysninger(
         ident = ident,
@@ -127,7 +127,7 @@ fun personopplysningKjedeligFyr(
         bydel = bydel,
         land = land,
         skjermet = skjermet,
-        innhentet = innhentet,
+        tidsstempelHosOss = tidsstempelHosOss,
     )
 }
 
