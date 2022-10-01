@@ -4,15 +4,18 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vedtak.repository.søknad.TrygdOgPensjonDAO
 import org.intellij.lang.annotations.Language
 import java.util.*
 
-class YtelsesakDAO {
+class YtelsesakDAO(
+    private val ytelsevedtakDAO: YtelsevedtakDAO = YtelsevedtakDAO(),
+) {
     fun hentForSøker(søkerId: UUID, txSession: TransactionalSession): List<YtelseSak> {
         return txSession.run(
             queryOf(hentYtelsesak, søkerId)
                 .map { row ->
-                    row.toYtelsesak()
+                    row.toYtelsesak(txSession)
                 }.asList
         )
     }
@@ -25,10 +28,11 @@ class YtelsesakDAO {
     }
 
     private fun lagreYtelse(søkerId: UUID, ytelseSak: YtelseSak, txSession: TransactionalSession) {
+        val id = UUID.randomUUID()
         txSession.run(
             queryOf(
                 lagreYtelseSak, mapOf(
-                    "id" to UUID.randomUUID(),
+                    "id" to id,
                     "sokerId" to søkerId,
                     "fomGyldighetsperiode" to ytelseSak.fomGyldighetsperiode,
                     "tomGyldighetsperiode" to ytelseSak.tomGyldighetsperiode,
@@ -43,6 +47,7 @@ class YtelsesakDAO {
                 )
             ).asUpdate
         )
+        ytelsevedtakDAO.lagre(id, ytelseSak.vedtak, txSession)
     }
 
     private fun slettYtelser(søkerId: UUID, txSession: TransactionalSession) {
@@ -51,13 +56,14 @@ class YtelsesakDAO {
         )
     }
 
-    private fun Row.toYtelsesak(): YtelseSak {
+    private fun Row.toYtelsesak(txSession: TransactionalSession): YtelseSak {
         return YtelseSak(
             fomGyldighetsperiode = localDateTime("fom_gyldighetsperiode"),
             tomGyldighetsperiode = localDateTime("tom_gyldighetsperiode"),
             datoKravMottatt = localDateOrNull("dato_krav_mottatt"),
             dataKravMottatt = stringOrNull("data_krav_mottatt"),
             fagsystemSakId = intOrNull("fagsystem_sak_id"),
+            vedtak = ytelsevedtakDAO.hentForVedtak(uuid("id"), txSession),
             status = stringOrNull("status")?.let { YtelseSak.YtelseSakStatus.valueOf(it) },
             ytelsestype = stringOrNull("ytelsestype")?.let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
             antallDagerIgjen = intOrNull("antall_dager_igjen"),
