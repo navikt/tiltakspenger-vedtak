@@ -1,62 +1,58 @@
-@file:Suppress("LongParameterList")
-package no.nav.tiltakspenger.vedtak.testcommon
+package no.nav.tiltakspenger.vedtak.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-fun søkerRegistrert(
-    ident: String = Random().nextInt().toString(),
-) : Søker {
-    return Søker(
-        ident = ident,
-    )
-}
-
-fun søkerMedSøknad(
-    ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(ident = ident),
-): Søker {
-    val søker = søkerRegistrert(ident)
-    val hendelse = nySøknadMottattHendelse(
-        ident = ident,
-        søknad = søknad,
-    )
-    søker.håndter(hendelse)
-    return søker
-}
-
-fun nySøknadMottattHendelse(
-    ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknad(),
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
-): SøknadMottattHendelse {
-    return SøknadMottattHendelse(
-        aktivitetslogg = aktivitetslogg,
-        ident = ident,
-        søknad = søknad,
-    )
-}
-fun arenaTiltak(): Tiltak.ArenaTiltak {
+fun arenaTiltak(
+    arenaId: String = "arenaId",
+    arrangoernavn: String? = "arrangørnavn",
+    harSluttdatoFraArena: Boolean = false,
+    tiltakskode: Tiltaksaktivitet.Tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
+    erIEndreStatus: Boolean = false,
+    opprinneligStartdato: LocalDate = 1.januar(2022),
+    opprinneligSluttdato: LocalDate? = 31.januar(2022),
+    startdato: LocalDate = 1.januar(2022),
+    sluttdato: LocalDate? = 31.januar(2022),
+): Tiltak.ArenaTiltak {
     return Tiltak.ArenaTiltak(
-        arenaId = "arenaId",
-        arrangoernavn = null,
-        harSluttdatoFraArena = false,
-        tiltakskode = Tiltaksaktivitet.Tiltak.JOBBK,
-        erIEndreStatus = false,
-        opprinneligSluttdato = null,
-        opprinneligStartdato = 1.januar(2022),
-        sluttdato = null,
-        startdato = 1.januar(2022),
+        arenaId = arenaId,
+        arrangoernavn = arrangoernavn,
+        harSluttdatoFraArena = harSluttdatoFraArena,
+        tiltakskode = tiltakskode,
+        erIEndreStatus = erIEndreStatus,
+        opprinneligStartdato = opprinneligStartdato,
+        opprinneligSluttdato = opprinneligSluttdato,
+        startdato = startdato,
+        sluttdato = sluttdato,
+    )
+}
+
+fun brukerTiltak(
+    tiltakskode: Tiltaksaktivitet.Tiltak? = Tiltaksaktivitet.Tiltak.JOBBK,
+    arrangoernavn: String? = "arrangørnavn",
+    beskrivelse: String? = "beskrivelse",
+    startdato: LocalDate = 1.januar(2022),
+    sluttdato: LocalDate = 31.januar(2022),
+    adresse: String? = "adresse",
+    postnummer: String? = "1234",
+    antallDager: Int = 30,
+): Tiltak.BrukerregistrertTiltak {
+    return Tiltak.BrukerregistrertTiltak(
+        tiltakskode = tiltakskode,
+        arrangoernavn = arrangoernavn,
+        beskrivelse = beskrivelse,
+        startdato = startdato,
+        sluttdato = sluttdato,
+        adresse = adresse,
+        postnummer = postnummer,
+        antallDager = antallDager,
     )
 }
 
@@ -65,7 +61,7 @@ fun trygdOgPensjon(
     prosent: Int? = 0,
     fom: LocalDate? = 1.januar(2022),
     tom: LocalDate? = 31.januar(2022),
-) : TrygdOgPensjon {
+): TrygdOgPensjon {
     return TrygdOgPensjon(
         utbetaler = utbetaler,
         prosent = prosent,
@@ -79,8 +75,8 @@ fun nySøknad(
     søknadId: String = "søknadId",
     journalpostId: String = "journalpostId",
     dokumentInfoId: String = "dokumentInfoId",
-    fornavn: String? = "fornavn",
-    etternavn: String? = "etternavn",
+    fornavn: String? = "Fornavn",
+    etternavn: String? = "Etternavn",
     ident: String = Random().nextInt().toString(),
     deltarKvp: Boolean = false,
     deltarIntroduksjonsprogrammet: Boolean? = false,
@@ -92,7 +88,7 @@ fun nySøknad(
     tiltak: Tiltak = arenaTiltak(),
     trygdOgPensjon: List<TrygdOgPensjon> = emptyList(),
     fritekst: String? = "fritekst"
-) : Søknad {
+): Søknad {
     return Søknad(
         id = id,
         søknadId = søknadId,

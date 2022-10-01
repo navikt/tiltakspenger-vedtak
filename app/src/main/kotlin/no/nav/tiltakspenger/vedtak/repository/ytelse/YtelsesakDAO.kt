@@ -4,7 +4,6 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vedtak.repository.søknad.TrygdOgPensjonDAO
 import org.intellij.lang.annotations.Language
 import java.util.*
 
@@ -59,7 +58,7 @@ class YtelsesakDAO(
     private fun Row.toYtelsesak(txSession: TransactionalSession): YtelseSak {
         return YtelseSak(
             fomGyldighetsperiode = localDateTime("fom_gyldighetsperiode"),
-            tomGyldighetsperiode = localDateTime("tom_gyldighetsperiode"),
+            tomGyldighetsperiode = localDateTimeOrNull("tom_gyldighetsperiode"),
             datoKravMottatt = localDateOrNull("dato_krav_mottatt"),
             dataKravMottatt = stringOrNull("data_krav_mottatt"),
             fagsystemSakId = intOrNull("fagsystem_sak_id"),
