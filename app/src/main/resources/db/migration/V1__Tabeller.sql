@@ -126,3 +126,31 @@ CREATE TABLE tiltaksaktivitet
     antall_dager_per_uke   FLOAT                    NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+CREATE TABLE ytelsesak
+(
+    id                    UUID PRIMARY KEY,
+    søker_id              UUID                     NOT NULL REFERENCES søker (id),
+    fom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
+    tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NULL,
+    dato_krav_mottatt     DATE                     NULL,
+    data_krav_mottatt     VARCHAR                  NULL,
+    fagsystem_sak_id      INT                      NULL,
+    status                VARCHAR                  NULL,
+    ytelsestype           VARCHAR                  NULL,
+    antall_dager_igjen    INT                      NULL,
+    antall_uker_igjen     INT                      NULL,
+    tidsstempel_hos_oss   TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE ytelsevedtak
+(
+    id                     UUID PRIMARY KEY,
+    ytelsesak_id           UUID    NOT NULL REFERENCES ytelsesak (id),
+    beslutnings_dato       DATE    NULL,
+    periodetype_for_ytelse VARCHAR NULL,
+    vedtaksperiode_fom     DATE    NULL,
+    vedtaksperiode_tom     DATE NULL,
+    vedtaks_type           VARCHAR NULL,
+    status                 VARCHAR NULL
+);

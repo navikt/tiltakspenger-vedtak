@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.domene
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
+import java.time.temporal.ChronoUnit
 
 fun Int.januar(year: Int): LocalDate = LocalDate.of(year, Month.JANUARY, this)
 fun Int.februar(year: Int): LocalDate = LocalDate.of(year, Month.FEBRUARY, this)
@@ -16,3 +18,10 @@ fun Int.oktober(year: Int): LocalDate = LocalDate.of(year, Month.OCTOBER, this)
 fun Int.november(year: Int): LocalDate = LocalDate.of(year, Month.NOVEMBER, this)
 fun Int.desember(year: Int): LocalDate = LocalDate.of(year, Month.DECEMBER, this)
 
+fun Int.januarDateTime(year: Int): LocalDateTime = LocalDateTime.of(
+    year,
+    Month.JANUARY,
+    this,
+    0,
+    0
+).truncatedTo(ChronoUnit.MILLIS)

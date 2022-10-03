@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
+import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -20,7 +21,8 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresSøkerRepository(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
-    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO()
+    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
+    private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
@@ -44,6 +46,8 @@ internal class PostgresSøkerRepository(
                     insert(søker, txSession)
                 }
                 søknadDAO.lagre(søker.id, søker.søknader, txSession)
+                tiltaksaktivitetDAO.lagre(søker.id, søker.tiltak, txSession)
+                ytelsesakDAO.lagre(søker.id, søker.ytelser, txSession)
                 if (søker.personopplysninger != null) {
                     personopplysningerDAO.lagre(søker.id, søker.personopplysninger!!, txSession)
                 }
@@ -52,15 +56,15 @@ internal class PostgresSøkerRepository(
     }
 
     private fun Row.toSøker(txSession: TransactionalSession): Søker {
-        val ident = string("ident")
         val id = uuid("id")
-        val tilstand = string("tilstand")
         return Søker.fromDb(
             id = id,
-            ident = ident,
-            tilstand = tilstand,
+            ident = string("ident"),
+            tilstand = string("tilstand"),
             søknader = søknadDAO.hentAlle(id, txSession),
-            personopplysninger = personopplysningerDAO.hent(id, txSession)
+            tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
+            ytelser = ytelsesakDAO.hentForSøker(id, txSession),
+            personopplysninger = personopplysningerDAO.hent(id, txSession),
         )
     }
 

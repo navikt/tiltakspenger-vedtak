@@ -61,7 +61,7 @@ internal class ArenaYtelserMottattRiver(
             ident = packet["ident"].asText(),
             ytelseSak = mapYtelser(
                 ytelseSakDTO = packet["@løsning.arenaytelser"].asList(),
-                innhentet = packet["@opprettet"].asLocalDateTime(),
+                tidsstempelHosOss = packet["@opprettet"].asLocalDateTime(),
             )
         )
 
@@ -77,7 +77,7 @@ internal class ArenaYtelserMottattRiver(
 
     private fun mapYtelser(
         ytelseSakDTO: List<YtelseSakDTO>,
-        innhentet: LocalDateTime
+        tidsstempelHosOss: LocalDateTime
     ): List<YtelseSak> {
         return ytelseSakDTO.map { ytelse ->
             YtelseSak(
@@ -100,7 +100,7 @@ internal class ArenaYtelserMottattRiver(
                 },
                 antallDagerIgjen = ytelse.antallDagerIgjen,
                 antallUkerIgjen = ytelse.antallUkerIgjen,
-                innhentet = innhentet,
+                tidsstempelHosOss = tidsstempelHosOss,
             )
         }
     }
