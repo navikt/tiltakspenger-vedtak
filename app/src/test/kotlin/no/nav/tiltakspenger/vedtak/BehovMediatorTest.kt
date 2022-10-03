@@ -101,22 +101,22 @@ internal class BehovMediatorTest {
 
     private class Testkontekst(
         private val melding: String
-    ) : Aktivitetskontekst {
-        override fun toSpesifikkKontekst() = SpesifikkKontekst(melding, mapOf(melding to melding))
+    ) : KontekstLogable {
+        override fun opprettKontekst() = Kontekst(melding, mapOf(melding to melding))
     }
 
     private class TestHendelse(
         private val melding: String,
         internal val logg: Aktivitetslogg
-    ) : Hendelse(logg), Aktivitetskontekst {
+    ) : Hendelse(logg), KontekstLogable {
         init {
             logg.addKontekst(this)
         }
 
         override fun ident(): String = ident
 
-        override fun toSpesifikkKontekst() = SpesifikkKontekst("TestHendelse")
-        override fun addKontekst(kontekst: Aktivitetskontekst) {
+        override fun opprettKontekst() = Kontekst("TestHendelse")
+        override fun addKontekst(kontekst: KontekstLogable) {
             logg.addKontekst(kontekst)
         }
     }

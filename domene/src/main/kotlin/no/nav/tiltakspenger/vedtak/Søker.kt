@@ -19,7 +19,7 @@ class Søker private constructor(
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
     val aktivitetslogg: Aktivitetslogg
-) : Aktivitetskontekst {
+) : KontekstLogable {
     var tilstand: Tilstand = tilstand
         private set
     var søknader: List<Søknad> = søknader
@@ -158,7 +158,7 @@ class Søker private constructor(
     }
 
     // Gang of four State pattern
-    interface Tilstand : Aktivitetskontekst {
+    interface Tilstand : KontekstLogable {
         val type: SøkerTilstandType
         val timeout: Duration
 
@@ -185,8 +185,8 @@ class Søker private constructor(
         fun leaving(søker: Søker, hendelse: Hendelse) {}
         fun entering(søker: Søker, hendelse: Hendelse) {}
 
-        override fun toSpesifikkKontekst(): SpesifikkKontekst {
-            return SpesifikkKontekst(
+        override fun opprettKontekst(): Kontekst {
+            return Kontekst(
                 "Tilstand",
                 mapOf(
                     "tilstandtype" to type.name
@@ -355,7 +355,7 @@ class Søker private constructor(
             SøkerTilstandType.AlleredeBehandlet
         )
 
-    override fun toSpesifikkKontekst(): SpesifikkKontekst = SpesifikkKontekst(
+    override fun opprettKontekst(): Kontekst = Kontekst(
         "Søker",
         mapOf(
             "ident" to ident

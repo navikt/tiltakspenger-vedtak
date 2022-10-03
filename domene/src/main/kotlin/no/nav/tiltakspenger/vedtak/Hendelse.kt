@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 abstract class Hendelse protected constructor(
     internal val aktivitetslogg: Aktivitetslogg = Aktivitetslogg()
-) : IAktivitetslogg by aktivitetslogg, Aktivitetskontekst {
+) : IAktivitetslogg by aktivitetslogg, KontekstLogable {
 
     abstract fun ident(): String
 
@@ -10,9 +10,9 @@ abstract class Hendelse protected constructor(
         aktivitetslogg.addKontekst(this)
     }
 
-    override fun toSpesifikkKontekst(): SpesifikkKontekst {
+    override fun opprettKontekst(): Kontekst {
         return this.javaClass.canonicalName.split('.').last().let {
-            SpesifikkKontekst(it, mapOf("ident" to ident()))
+            Kontekst(it, mapOf("ident" to ident()))
         }
     }
 

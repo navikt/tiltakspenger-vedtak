@@ -240,7 +240,7 @@ internal class AktivitetsloggTest {
         aktivitetslogg.accept(
             object : AktivitetsloggVisitor {
                 override fun visitInfo(
-                    kontekster: List<SpesifikkKontekst>,
+                    kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Info,
                     melding: String,
                     tidsstempel: String
@@ -258,7 +258,7 @@ internal class AktivitetsloggTest {
         aktivitetslogg.accept(
             object : AktivitetsloggVisitor {
                 override fun visitWarn(
-                    kontekster: List<SpesifikkKontekst>,
+                    kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Warn,
                     melding: String,
                     tidsstempel: String
@@ -276,7 +276,7 @@ internal class AktivitetsloggTest {
         aktivitetslogg.accept(
             object : AktivitetsloggVisitor {
                 override fun visitError(
-                    kontekster: List<SpesifikkKontekst>,
+                    kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Error,
                     melding: String,
                     tidsstempel: String
@@ -294,7 +294,7 @@ internal class AktivitetsloggTest {
         aktivitetslogg.accept(
             object : AktivitetsloggVisitor {
                 override fun visitSevere(
-                    kontekster: List<SpesifikkKontekst>,
+                    kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Severe,
                     melding: String,
                     tidsstempel: String
@@ -309,8 +309,8 @@ internal class AktivitetsloggTest {
 
     private class TestKontekst(
         private val melding: String
-    ) : Aktivitetskontekst {
-        override fun toSpesifikkKontekst() = SpesifikkKontekst(
+    ) : KontekstLogable {
+        override fun opprettKontekst() = Kontekst(
             kontekstType = melding,
             kontekstMap = mapOf(melding to melding)
         )
@@ -319,13 +319,13 @@ internal class AktivitetsloggTest {
     private class TestHendelse(
         private val melding: String,
         val logg: Aktivitetslogg
-    ) : Aktivitetskontekst, IAktivitetslogg by logg {
+    ) : KontekstLogable, IAktivitetslogg by logg {
         init {
             logg.addKontekst(this)
         }
 
-        override fun toSpesifikkKontekst() = SpesifikkKontekst(kontekstType = "TestHendelse")
-        override fun addKontekst(kontekst: Aktivitetskontekst) {
+        override fun opprettKontekst() = Kontekst(kontekstType = "TestHendelse")
+        override fun addKontekst(kontekst: KontekstLogable) {
             logg.addKontekst(kontekst)
         }
     }

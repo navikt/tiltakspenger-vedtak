@@ -10,9 +10,9 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     private val aktiviteter = mutableListOf<Aktivitet>()
 
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
-    private val kontekster = mutableListOf<Aktivitetskontekst>() // Doesn't need serialization
+    private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
 
-    internal fun MutableList<SpesifikkKontekst>.snapshot(): List<SpesifikkKontekst> = this.toList()
+    internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
     internal fun accept(visitor: AktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
         aktiviteter.forEach { it.accept(visitor) }
@@ -46,7 +46,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         forelder?.let { forelder?.add(aktivitet) }
     }
 
-    private fun MutableList<Aktivitetskontekst>.toSpesifikk() = this.map { it.toSpesifikkKontekst() }
+    private fun MutableList<KontekstLogable>.toSpesifikk() = this.map { it.opprettKontekst() }
 
     override fun hasMessages() = info().isNotEmpty() || hasWarnings()
 
@@ -62,7 +62,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     override fun aktivitetsteller() = aktiviteter.size
 
-    override fun addKontekst(kontekst: Aktivitetskontekst) {
+    override fun addKontekst(kontekst: KontekstLogable) {
         kontekster.add(kontekst)
     }
 
@@ -75,7 +75,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         addKontekst(søker)
     }
 
-    internal fun logg(kontekst: Aktivitetskontekst): Aktivitetslogg {
+    internal fun logg(kontekst: KontekstLogable): Aktivitetslogg {
         return Aktivitetslogg(this).also {
             it.aktiviteter.addAll(this.aktiviteter.filter { aktivitet -> kontekst in aktivitet })
         }
@@ -107,7 +107,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         RuntimeException(aktivitetslogg.toString()) {
         fun kontekst(): Map<String, String> =
             aktivitetslogg.kontekster.fold(mutableMapOf()) { result, kontekst ->
-                result.apply { putAll(kontekst.toSpesifikkKontekst().kontekstMap) }
+                result.apply { putAll(kontekst.opprettKontekst().kontekstMap) }
             }
 
         fun aktivitetslogg() = aktivitetslogg
@@ -118,7 +118,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         private val label: Char,
         private var melding: String,
         private val tidsstempel: String,
-        internal val kontekster: List<SpesifikkKontekst>
+        internal val kontekster: List<Kontekst>
     ) : Comparable<Aktivitet> {
         private companion object {
             private val tidsstempelformat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
@@ -146,9 +146,9 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
         internal abstract fun accept(visitor: AktivitetsloggVisitor)
 
-        operator fun contains(kontekst: Aktivitetskontekst) = kontekst.toSpesifikkKontekst() in kontekster
+        operator fun contains(kontekst: KontekstLogable) = kontekst.opprettKontekst() in kontekster
         class Info(
-            kontekster: List<SpesifikkKontekst>,
+            kontekster: List<Kontekst>,
             private val melding: String,
             private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
         ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
@@ -164,7 +164,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         }
 
         class Warn(
-            kontekster: List<SpesifikkKontekst>,
+            kontekster: List<Kontekst>,
             private val melding: String,
             private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
         ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
@@ -181,7 +181,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
         class Behov(
             val type: Behovtype,
-            kontekster: List<SpesifikkKontekst>,
+            kontekster: List<Kontekst>,
             private val melding: String,
             private val detaljer: Map<String, Any> = emptyMap(),
             private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
@@ -208,7 +208,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         }
 
         class Error(
-            kontekster: List<SpesifikkKontekst>,
+            kontekster: List<Kontekst>,
             private val melding: String,
             private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
         ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster) {
@@ -224,7 +224,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         }
 
         class Severe(
-            kontekster: List<SpesifikkKontekst>,
+            kontekster: List<Kontekst>,
             private val melding: String,
             private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
         ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster) {
@@ -255,7 +255,7 @@ interface IAktivitetslogg {
     fun aktivitetsteller(): Int
     fun behov(): List<Aktivitetslogg.Aktivitet.Behov>
     fun barn(): Aktivitetslogg
-    fun addKontekst(kontekst: Aktivitetskontekst)
+    fun addKontekst(kontekst: KontekstLogable)
     fun setForelderAndAddKontekst(søker: Søker)
     fun kontekster(): List<IAktivitetslogg>
 }
@@ -263,7 +263,7 @@ interface IAktivitetslogg {
 interface AktivitetsloggVisitor {
     fun preVisitAktivitetslogg(aktivitetslogg: Aktivitetslogg) {}
     fun visitInfo(
-        kontekster: List<SpesifikkKontekst>,
+        kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Info,
         melding: String,
         tidsstempel: String
@@ -271,7 +271,7 @@ interface AktivitetsloggVisitor {
     }
 
     fun visitWarn(
-        kontekster: List<SpesifikkKontekst>,
+        kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Warn,
         melding: String,
         tidsstempel: String
@@ -279,7 +279,7 @@ interface AktivitetsloggVisitor {
     }
 
     fun visitBehov(
-        kontekster: List<SpesifikkKontekst>,
+        kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Behov,
         type: Aktivitetslogg.Aktivitet.Behov.Behovtype,
         melding: String,
@@ -289,7 +289,7 @@ interface AktivitetsloggVisitor {
     }
 
     fun visitError(
-        kontekster: List<SpesifikkKontekst>,
+        kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Error,
         melding: String,
         tidsstempel: String
@@ -297,7 +297,7 @@ interface AktivitetsloggVisitor {
     }
 
     fun visitSevere(
-        kontekster: List<SpesifikkKontekst>,
+        kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Severe,
         melding: String,
         tidsstempel: String
@@ -307,16 +307,16 @@ interface AktivitetsloggVisitor {
     fun postVisitAktivitetslogg(aktivitetslogg: Aktivitetslogg) {}
 }
 
-interface Aktivitetskontekst {
-    fun toSpesifikkKontekst(): SpesifikkKontekst
+interface KontekstLogable {
+    fun opprettKontekst(): Kontekst
 }
 
-class SpesifikkKontekst(internal val kontekstType: String, internal val kontekstMap: Map<String, String> = mapOf()) {
+class Kontekst(internal val kontekstType: String, internal val kontekstMap: Map<String, String> = mapOf()) {
     internal fun melding() =
         kontekstType + kontekstMap.entries.joinToString(separator = ", ", prefix = " - ") { "${it.key}: ${it.value}" }
 
     override fun equals(other: Any?) =
-        this === other || other is SpesifikkKontekst && this.kontekstMap == other.kontekstMap
+        this === other || other is Kontekst && this.kontekstMap == other.kontekstMap
 
     override fun hashCode() = kontekstMap.hashCode()
 }
