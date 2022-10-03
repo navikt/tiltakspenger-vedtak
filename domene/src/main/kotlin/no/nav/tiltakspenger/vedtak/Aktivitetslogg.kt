@@ -117,7 +117,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         private val alvorlighetsgrad: Int,
         private val label: Char,
         private var melding: String,
-        private val tidsstempel: String,
+        private val tidsstempel: LocalDateTime,
         internal val kontekster: List<Kontekst>
     ) : Comparable<Aktivitet> {
         private companion object {
@@ -138,7 +138,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
         internal fun inOrder() = label + "\t" + this.toString()
 
-        override fun toString() = tidsstempel + "\t" + melding + meldingerString()
+        override fun toString() = tidsstempel.toString() + "\t" + melding + meldingerString()
 
         private fun meldingerString(): String {
             return kontekster.joinToString(separator = " ") { "(${it.melding()})" }
@@ -150,7 +150,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Info(
             kontekster: List<Kontekst>,
             private val melding: String,
-            private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
+            private val tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Info> {
@@ -166,7 +166,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Warn(
             kontekster: List<Kontekst>,
             private val melding: String,
-            private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
+            private val tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Warn> {
@@ -184,7 +184,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
             kontekster: List<Kontekst>,
             private val melding: String,
             private val detaljer: Map<String, Any> = emptyMap(),
-            private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
+            private val tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(50, 'N', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Behov> {
@@ -210,7 +210,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Error(
             kontekster: List<Kontekst>,
             private val melding: String,
-            private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
+            private val tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Error> {
@@ -226,7 +226,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Severe(
             kontekster: List<Kontekst>,
             private val melding: String,
-            private val tidsstempel: String = LocalDateTime.now().format(tidsstempelformat)
+            private val tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Severe> {
@@ -266,7 +266,7 @@ interface AktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Info,
         melding: String,
-        tidsstempel: String
+        tidsstempel: LocalDateTime
     ) {
     }
 
@@ -274,7 +274,7 @@ interface AktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Warn,
         melding: String,
-        tidsstempel: String
+        tidsstempel: LocalDateTime
     ) {
     }
 
@@ -284,7 +284,7 @@ interface AktivitetsloggVisitor {
         type: Aktivitetslogg.Aktivitet.Behov.Behovtype,
         melding: String,
         detaljer: Map<String, Any>,
-        tidsstempel: String
+        tidsstempel: LocalDateTime
     ) {
     }
 
@@ -292,7 +292,7 @@ interface AktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Error,
         melding: String,
-        tidsstempel: String
+        tidsstempel: LocalDateTime
     ) {
     }
 
@@ -300,7 +300,7 @@ interface AktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Severe,
         melding: String,
-        tidsstempel: String
+        tidsstempel: LocalDateTime
     ) {
     }
 
