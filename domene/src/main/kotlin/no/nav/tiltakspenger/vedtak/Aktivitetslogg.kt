@@ -16,7 +16,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     fun getAktiviteter() = aktiviteter
 
     internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
-    internal fun accept(visitor: AktivitetsloggVisitor) {
+    fun accept(visitor: AktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
         aktiviteter.forEach { it.accept(visitor) }
         visitor.postVisitAktivitetslogg(this)

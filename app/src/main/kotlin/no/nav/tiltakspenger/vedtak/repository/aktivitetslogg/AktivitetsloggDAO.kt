@@ -9,12 +9,26 @@ import java.util.*
 class AktivitetsloggDAO {
     @Language("SQL")
     private val lagreAktivitetslogg = """
-        insert into aktivitet () values (:)
+        insert into aktivitet (
+        id, 
+        søker_id, 
+        alvorlighetsgrad, 
+        label, 
+        melding, 
+        tidsstempel
+        ) values (
+        :id, 
+        :sokerId, 
+        :alvorlighetsgrad, 
+        :label, 
+        :melding, 
+        :tidsstempel
+        )
     """.trimIndent()
 
-
     fun lagre(søkerId: UUID, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
-        aktivitetslogg.getAktiviteter().forEach {
+        aktivitetslogg.getAktiviteter().forEach { aktivitet ->
+            aktivitet.alleKonteksterAsMap()
         txSession.run(
             queryOf(
                 lagreAktivitetslogg, mapOf(
