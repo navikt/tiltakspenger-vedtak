@@ -125,6 +125,7 @@ internal class SøknadDAOTest {
                     land = "NO",
                     fornavn = "fornavn",
                     etternavn = "etternavn",
+                    søktBarnetillegg = true,
                 )
             ),
             tidsstempelHosOss = innhentet,
@@ -211,6 +212,7 @@ internal class SøknadDAOTest {
                     land = "NO",
                     fornavn = "foranvn",
                     etternavn = "etternavn",
+                    søktBarnetillegg = true,
                 )
             ),
             tidsstempelHosOss = innhentet,

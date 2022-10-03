@@ -83,6 +83,7 @@ sealed class Barnetillegg {
     abstract val land: String
     abstract val fornavn: String?
     abstract val etternavn: String?
+    abstract val søktBarnetillegg: Boolean
 
     data class MedIdent(
         override val alder: Int,
@@ -90,6 +91,7 @@ sealed class Barnetillegg {
         override val fornavn: String?,
         override val etternavn: String?,
         val ident: String,
+        override val søktBarnetillegg: Boolean,
     ) : Barnetillegg()
 
     data class UtenIdent(
@@ -98,5 +100,6 @@ sealed class Barnetillegg {
         override val fornavn: String?,
         override val etternavn: String?,
         val fødselsdato: LocalDate,
+        override val søktBarnetillegg: Boolean,
     ) : Barnetillegg()
 }

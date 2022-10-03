@@ -49,14 +49,15 @@ CREATE TABLE søknad
 
 CREATE TABLE barnetillegg
 (
-    id          UUID PRIMARY KEY,
-    søknad_id   UUID    NOT NULL REFERENCES søknad (id),
-    ident       VARCHAR NULL,
-    fødselsdato DATE NULL,
-    fornavn     VARCHAR NULL,
-    etternavn   VARCHAR NULL,
-    alder       INT     NOT NULL,
-    land        VARCHAR NOT NULL
+    id                UUID PRIMARY KEY,
+    søknad_id         UUID    NOT NULL REFERENCES søknad (id),
+    ident             VARCHAR NULL,
+    fødselsdato       DATE NULL,
+    fornavn           VARCHAR NULL,
+    etternavn         VARCHAR NULL,
+    alder             INT     NOT NULL,
+    land              VARCHAR NOT NULL,
+    søkt_barnetillegg BOOLEAN NOT NULL
 );
 
 CREATE TABLE brukertiltak
@@ -76,7 +77,7 @@ CREATE TABLE brukertiltak
 CREATE TABLE arenatiltak
 (
     id                      UUID PRIMARY KEY,
-    søknad_id               UUID NOT NULL REFERENCES søknad (id),
+    søknad_id               UUID    NOT NULL REFERENCES søknad (id),
     arena_id                VARCHAR NOT NULL,
     arrangoernavn           VARCHAR NULL,
     har_sluttdato_fra_arena BOOLEAN NOT NULL,

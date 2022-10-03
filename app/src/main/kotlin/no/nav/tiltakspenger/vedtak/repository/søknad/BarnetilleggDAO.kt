@@ -37,6 +37,7 @@ internal class BarnetilleggDAO {
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
+                "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
             )
 
             is Barnetillegg.UtenIdent -> mapOf(
@@ -48,6 +49,7 @@ internal class BarnetilleggDAO {
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
+                "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
             )
         }
         txSession.run(
@@ -68,6 +70,7 @@ internal class BarnetilleggDAO {
         val land = string("land")
         val fornavn = string("fornavn")
         val etternavn = string("etternavn")
+        val søktBarnetillegg = boolean("søkt_barnetillegg")
         return if (ident != null) {
             Barnetillegg.MedIdent(
                 alder = alder,
@@ -75,6 +78,7 @@ internal class BarnetilleggDAO {
                 ident = ident,
                 fornavn = fornavn,
                 etternavn = etternavn,
+                søktBarnetillegg = søktBarnetillegg,
             )
         } else {
             Barnetillegg.UtenIdent(
@@ -83,6 +87,7 @@ internal class BarnetilleggDAO {
                 fødselsdato = fødselsdato!!,
                 fornavn = fornavn,
                 etternavn = etternavn,
+                søktBarnetillegg = søktBarnetillegg,
             )
         }
     }
@@ -97,7 +102,8 @@ internal class BarnetilleggDAO {
             fornavn,
             etternavn,
             alder,
-            land
+            land,
+            søkt_barnetillegg
         ) values (
             :id,
             :soknadId,
@@ -106,7 +112,8 @@ internal class BarnetilleggDAO {
             :fornavn,
             :etternavn,
             :alder,
-            :land
+            :land,
+            :soktBarnetillegg
         )""".trimIndent()
 
     @Language("SQL")

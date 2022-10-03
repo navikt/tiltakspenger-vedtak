@@ -141,6 +141,7 @@ class BarnetilleggDTO(
     val fødselsdato: LocalDate? = null,
     val fornavn: String? = null,
     val etternavn: String? = null,
+    val søktBarnetillegg: Boolean? = null, //Er midlertidig at det er null, endres når alt er i sync
 ) {
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
@@ -150,6 +151,7 @@ class BarnetilleggDTO(
                 ident = dto.ident,
                 fornavn = dto.fornavn,
                 etternavn = dto.etternavn,
+                søktBarnetillegg = dto.søktBarnetillegg ?: true,
             ) else
                 Barnetillegg.UtenIdent(
                     alder = dto.alder,
@@ -157,6 +159,7 @@ class BarnetilleggDTO(
                     fødselsdato = dto.fødselsdato!!,
                     fornavn = dto.fornavn,
                     etternavn = dto.etternavn,
+                    søktBarnetillegg = dto.søktBarnetillegg ?: true
                 )
         }
     }
