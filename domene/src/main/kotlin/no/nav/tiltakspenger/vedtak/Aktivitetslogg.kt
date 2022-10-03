@@ -20,23 +20,23 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     }
 
     override fun info(melding: String) {
-        add(Aktivitet.Info(kontekster.toSpesifikk(), melding))
+        add(Aktivitet.Info(kontekster.toKontekst(), melding))
     }
 
     override fun warn(melding: String) {
-        add(Aktivitet.Warn(kontekster.toSpesifikk(), melding))
+        add(Aktivitet.Warn(kontekster.toKontekst(), melding))
     }
 
     override fun behov(type: Aktivitet.Behov.Behovtype, melding: String, detaljer: Map<String, Any>) {
-        add(Aktivitet.Behov(type, kontekster.toSpesifikk(), melding, detaljer))
+        add(Aktivitet.Behov(type, kontekster.toKontekst(), melding, detaljer))
     }
 
     override fun error(melding: String) {
-        add(Aktivitet.Error(kontekster.toSpesifikk(), melding))
+        add(Aktivitet.Error(kontekster.toKontekst(), melding))
     }
 
     override fun severe(melding: String): Nothing {
-        add(Aktivitet.Severe(kontekster.toSpesifikk(), melding))
+        add(Aktivitet.Severe(kontekster.toKontekst(), melding))
 
         throw AktivitetException(this)
     }
@@ -46,7 +46,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         forelder?.let { forelder?.add(aktivitet) }
     }
 
-    private fun MutableList<KontekstLogable>.toSpesifikk() = this.map { it.opprettKontekst() }
+    private fun MutableList<KontekstLogable>.toKontekst() = this.map { it.opprettKontekst() }
 
     override fun hasMessages() = info().isNotEmpty() || hasWarnings()
 

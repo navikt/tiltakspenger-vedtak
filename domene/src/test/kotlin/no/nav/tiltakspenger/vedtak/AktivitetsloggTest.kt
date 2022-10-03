@@ -243,7 +243,7 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Info,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
@@ -261,7 +261,7 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Warn,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
@@ -279,7 +279,7 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Error,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertTrue(message in aktivitet.toString(), aktivitetslogg.toString())
@@ -297,7 +297,7 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Severe,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
