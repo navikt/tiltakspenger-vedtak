@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 // Understands issues that arose when analyzing a JSON message
 // Implements Collecting Parameter in Refactoring by Martin Fowler
@@ -123,9 +123,6 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         private val tidsstempel: LocalDateTime,
         internal val kontekster: List<Kontekst>
     ) : Comparable<Aktivitet> {
-        private companion object {
-            private val tidsstempelformat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        }
 
         fun alleKonteksterAsMap(): Map<String, String> =
             kontekster
@@ -153,7 +150,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Info(
             kontekster: List<Kontekst>,
             private val melding: String,
-            private val tidsstempel: LocalDateTime = LocalDateTime.now()
+            private val tidsstempel: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
         ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Info> {
