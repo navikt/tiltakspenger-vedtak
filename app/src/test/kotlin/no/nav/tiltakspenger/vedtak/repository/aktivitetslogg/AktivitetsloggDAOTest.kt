@@ -26,7 +26,6 @@ internal class AktivitetsloggDAOTest {
         flywayMigrate()
     }
 
-    @Disabled
     @Test
     fun `skal kunne lagre`() {
         val søker = søkerRegistrert()

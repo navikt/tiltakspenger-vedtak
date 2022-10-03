@@ -12,6 +12,9 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
 
+    // TODO: får vi lov til å gjøre dette? omgår all encapsulation
+    fun getAktiviteter() = aktiviteter
+
     internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
     internal fun accept(visitor: AktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
