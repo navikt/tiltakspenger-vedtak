@@ -238,7 +238,7 @@ internal class AktivitetsloggTest {
     private fun assertInfo(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitInfo(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Info,
@@ -256,7 +256,7 @@ internal class AktivitetsloggTest {
     private fun assertWarn(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitWarn(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Warn,
@@ -274,7 +274,7 @@ internal class AktivitetsloggTest {
     private fun assertError(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitError(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Error,
@@ -292,7 +292,7 @@ internal class AktivitetsloggTest {
     private fun assertSevere(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitSevere(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Severe,

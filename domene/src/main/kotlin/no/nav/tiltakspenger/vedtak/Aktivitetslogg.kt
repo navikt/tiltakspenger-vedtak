@@ -16,7 +16,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
     fun getAktiviteter() = aktiviteter
 
     internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
-    fun accept(visitor: AktivitetsloggVisitor) {
+    fun accept(visitor: IAktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
         aktiviteter.forEach { it.accept(visitor) }
         visitor.postVisitAktivitetslogg(this)
@@ -147,7 +147,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
             return kontekster.joinToString(separator = " ") { "(${it.melding()})" }
         }
 
-        internal abstract fun accept(visitor: AktivitetsloggVisitor)
+        internal abstract fun accept(visitor: IAktivitetsloggVisitor)
 
         operator fun contains(kontekst: KontekstLogable) = kontekst.opprettKontekst() in kontekster
         class Info(
@@ -161,9 +161,29 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 }
             }
 
-            override fun accept(visitor: AktivitetsloggVisitor) {
+            override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitInfo(kontekster, this, melding, tidsstempel)
             }
+
+            // TODO: equals and hashcode are made for the test only...
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as Info
+
+                if (melding != other.melding) return false
+                if (tidsstempel != other.tidsstempel) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = melding.hashCode()
+                result = 31 * result + tidsstempel.hashCode()
+                return result
+            }
+
         }
 
         class Warn(
@@ -177,7 +197,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 }
             }
 
-            override fun accept(visitor: AktivitetsloggVisitor) {
+            override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitWarn(kontekster, this, melding, tidsstempel)
             }
         }
@@ -197,7 +217,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
             fun detaljer() = detaljer
 
-            override fun accept(visitor: AktivitetsloggVisitor) {
+            override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitBehov(kontekster, this, type, melding, detaljer, tidsstempel)
             }
 
@@ -221,7 +241,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 }
             }
 
-            override fun accept(visitor: AktivitetsloggVisitor) {
+            override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitError(kontekster, this, melding, tidsstempel)
             }
         }
@@ -237,11 +257,12 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 }
             }
 
-            override fun accept(visitor: AktivitetsloggVisitor) {
+            override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitSevere(kontekster, this, melding, tidsstempel)
             }
         }
     }
+
 }
 
 interface IAktivitetslogg {
@@ -263,7 +284,7 @@ interface IAktivitetslogg {
     fun kontekster(): List<IAktivitetslogg>
 }
 
-interface AktivitetsloggVisitor {
+interface IAktivitetsloggVisitor {
     fun preVisitAktivitetslogg(aktivitetslogg: Aktivitetslogg) {}
     fun visitInfo(
         kontekster: List<Kontekst>,
