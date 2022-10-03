@@ -1,5 +1,5 @@
 val ktorVersion = "2.1.2"
-val kotestVersion = "5.4.2"
+val kotestVersion = "5.5.0"
 val mockkVersion = "1.13.2"
 val testContainersVersion = "1.17.4"
 
@@ -18,7 +18,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
-    implementation("ch.qos.logback:logback-classic:1.4.1")
+    implementation("ch.qos.logback:logback-classic:1.4.3")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
