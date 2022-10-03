@@ -1,4 +1,5 @@
 @file:Suppress("LongParameterList")
+
 package no.nav.tiltakspenger.vedtak.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
@@ -134,6 +135,7 @@ fun nySøknadMedArenaTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+        introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,
@@ -174,6 +176,7 @@ fun nySøknadMedBrukerTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+        introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,

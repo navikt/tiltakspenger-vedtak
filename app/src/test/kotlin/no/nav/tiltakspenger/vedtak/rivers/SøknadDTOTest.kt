@@ -31,6 +31,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -83,6 +87,66 @@ internal class SøknadDTOTest {
     }
 
     @Test
+    fun mapIntroduksjonsprogrammetDetaljer() {
+        val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
+        val fom = LocalDate.of(2022, Month.SEPTEMBER, 12)
+        val tom = LocalDate.of(2022, Month.SEPTEMBER, 14)
+        val søknadDTO = SøknadDTO(
+            søknadId = "42",
+            journalpostId = "43",
+            dokumentInfoId = "44",
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
+            oppholdInstitusjon = true,
+            typeInstitusjon = "fengsel",
+            opprettet = tidsstempel,
+            barnetillegg = listOf(
+                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
+            ),
+            arenaTiltak = ArenaTiltakDTO(
+                arenaId = "7",
+                arrangoer = "Arrangør",
+                harSluttdatoFraArena = false,
+                tiltakskode = "JOBBK",
+                erIEndreStatus = false,
+                opprinneligSluttdato = null,
+                opprinneligStartdato = LocalDate.now(),
+                sluttdato = LocalDate.now(),
+                startdato = LocalDate.now()
+
+            ),
+            brukerregistrertTiltak = BrukerregistrertTiltakDTO(
+                tiltakskode = "JOBSOK",
+                arrangoernavn = "Arrangør",
+                beskrivelse = null,
+                fom = LocalDate.now(),
+                tom = LocalDate.now(),
+                adresse = null,
+                postnummer = null,
+                antallDager = 0
+            ),
+            trygdOgPensjon = listOf(
+                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
+            ),
+            fritekst = "hei"
+        )
+
+        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+
+        assertNotNull(søknad.introduksjonsprogrammetDetaljer)
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.fom, søknad.introduksjonsprogrammetDetaljer?.fom)
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.tom, søknad.introduksjonsprogrammetDetaljer?.tom)
+    }
+
+    @Test
     fun mapBarnetilleggFelter() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
@@ -94,6 +158,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -152,6 +220,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -209,6 +281,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -266,6 +342,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -326,6 +406,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
@@ -388,6 +472,10 @@ internal class SøknadDTOTest {
             ident = "123",
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,

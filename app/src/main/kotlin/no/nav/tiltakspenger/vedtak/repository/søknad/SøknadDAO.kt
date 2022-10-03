@@ -1,12 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.util.*
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
@@ -53,6 +54,8 @@ internal class SøknadDAO(
                     "ident" to søknad.ident,
                     "deltarKvp" to søknad.deltarKvp,
                     "deltarIntro" to søknad.deltarIntroduksjonsprogrammet,
+                    "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
+                    "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
                     "instOpphold" to søknad.oppholdInstitusjon,
                     "instType" to søknad.typeInstitusjon,
                     "fritekst" to søknad.fritekst,
@@ -77,6 +80,8 @@ internal class SøknadDAO(
                     "ident" to søknad.ident,
                     "deltarKvp" to søknad.deltarKvp,
                     "deltarIntro" to søknad.deltarIntroduksjonsprogrammet,
+                    "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
+                    "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
                     "instOpphold" to søknad.oppholdInstitusjon,
                     "instType" to søknad.typeInstitusjon,
                     "fritekst" to søknad.fritekst,
@@ -97,6 +102,8 @@ internal class SøknadDAO(
         val ident = string("ident")
         val deltarKvp = boolean("deltar_kvp")
         val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
+        val introduksjonsprogrammetFom = localDateOrNull("intro_fom")
+        val introduksjonsprogrammetTom = localDateOrNull("intro_tom")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
         val typeInstitusjon = stringOrNull("institusjon_type")
         val opprettet = localDateTimeOrNull("opprettet")
@@ -116,6 +123,12 @@ internal class SøknadDAO(
             ident = ident,
             deltarKvp = deltarKvp,
             deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+            introduksjonsprogrammetDetaljer = introduksjonsprogrammetFom?.let {
+                IntroduksjonsprogrammetDetaljer(
+                    introduksjonsprogrammetFom,
+                    introduksjonsprogrammetTom
+                )
+            },
             oppholdInstitusjon = oppholdInstitusjon,
             typeInstitusjon = typeInstitusjon,
             opprettet = opprettet,
@@ -139,7 +152,9 @@ internal class SøknadDAO(
             etternavn, 
             ident, 
             deltar_kvp, 
-            deltar_intro, 
+            deltar_intro,
+            intro_fom,
+            intro_tom,
             institusjon_opphold, 
             institusjon_type,
             fritekst,
@@ -156,6 +171,8 @@ internal class SøknadDAO(
             :ident,
             :deltarKvp,
             :deltarIntro,
+            :introFom,
+            :introTom,
             :instOpphold,
             :instType,
             :fritekst,
@@ -172,7 +189,9 @@ internal class SøknadDAO(
             etternavn = :etternavn, 
             ident = :ident, 
             deltar_kvp = :deltarKvp, 
-            deltar_intro = :deltarIntro, 
+            deltar_intro = :deltarIntro,
+            intro_fom = :introFom,
+            intro_tom = :introTom,
             institusjon_opphold = :instOpphold, 
             institusjon_type = :instType,
             fritekst = :fritekst,

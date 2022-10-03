@@ -16,6 +16,7 @@ data class Søknad(
     val ident: String,
     val deltarKvp: Boolean,
     val deltarIntroduksjonsprogrammet: Boolean?,
+    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
     val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime?,
@@ -33,6 +34,11 @@ data class Søknad(
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 }
+
+data class IntroduksjonsprogrammetDetaljer(
+    val fom: LocalDate,
+    val tom: LocalDate?
+)
 
 data class TrygdOgPensjon(
     val utbetaler: String,

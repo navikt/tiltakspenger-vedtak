@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -14,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -57,6 +59,7 @@ internal class SøknadDAOTest {
             ident = ident,
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = null,
+            introduksjonsprogrammetDetaljer = null,
             oppholdInstitusjon = null,
             typeInstitusjon = null,
             opprettet = null,
@@ -111,6 +114,7 @@ internal class SøknadDAOTest {
             ident = ident,
             deltarKvp = false,
             deltarIntroduksjonsprogrammet = null,
+            introduksjonsprogrammetDetaljer = null,
             oppholdInstitusjon = null,
             typeInstitusjon = null,
             opprettet = null,
@@ -162,6 +166,7 @@ internal class SøknadDAOTest {
         assertNotNull(hentet.first().tiltak)
         assertEquals(1, hentet.first().barnetillegg.size)
         assertEquals(1, hentet.first().trygdOgPensjon.size)
+        assertNull(hentet.first().introduksjonsprogrammetDetaljer)
     }
 
     @Test
@@ -192,6 +197,10 @@ internal class SøknadDAOTest {
             ident = ident,
             deltarKvp = true,
             deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
+                fom = LocalDate.of(2022, Month.AUGUST, 15),
+                tom = LocalDate.of(2022, Month.AUGUST, 30)
+            ),
             oppholdInstitusjon = true,
             typeInstitusjon = "Barnevernet",
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
@@ -241,6 +250,8 @@ internal class SøknadDAOTest {
         søknadHentet::class.declaredMemberProperties.forEach {
             assertNotNull(it.call(søknadHentet))
         }
+
+        assertEquals(søknad.introduksjonsprogrammetDetaljer, søknadHentet.introduksjonsprogrammetDetaljer)
 
         val barnetillegg = søknadHentet.barnetillegg.first()
         barnetillegg::class.declaredMemberProperties.forEach {

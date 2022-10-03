@@ -54,6 +54,7 @@ internal class ArenaYtelseMottattRiverTest {
                 ident = IDENT,
                 deltarKvp = false,
                 deltarIntroduksjonsprogrammet = null,
+                introduksjonsprogrammetDetaljer = null,
                 oppholdInstitusjon = null,
                 typeInstitusjon = null,
                 opprettet = null,
