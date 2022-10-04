@@ -61,9 +61,9 @@ internal class AktivitetsloggDAOTest {
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
         aktivitetslogg.warn("en warn melding til")
-        aktivitetslogg.warn("en warn melding til1")
+        aktivitetslogg.info("en warn melding til1")
         aktivitetslogg.warn("en warn melding til2")
-        aktivitetslogg.warn("en warn melding til3")
+        aktivitetslogg.info("en warn melding til3")
         aktivitetslogg.warn("en warn melding til4")
         aktivitetslogg.warn("en warn melding til5")
         aktivitetslogg.warn("en warn melding til6")
@@ -84,5 +84,51 @@ internal class AktivitetsloggDAOTest {
         }
 
         hentetAktivitetslogg.aktiviteter shouldContainExactly aktivitetslogg.aktiviteter
+    }
+
+    @Test
+    fun `skal kunne lagre og hente en aktivitetslogg flere ganger og legge til nye aktiviteter, men få riktig rekkefølge`() {
+        val søker = søkerRegistrert()
+        PostgresSøkerRepository().lagre(søker)
+
+        val aktivitetslogg = Aktivitetslogg()
+        aktivitetslogg.info("en liten melding")
+        aktivitetslogg.warn("en warn melding til")
+        aktivitetslogg.info("en warn melding til1")
+        aktivitetslogg.warn("en warn melding til2")
+
+        val dao = AktivitetsloggDAO()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, aktivitetslogg, txSession)
+            }
+        }
+
+        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        hentetAktivitetslogg.info("en warn melding til3")
+        hentetAktivitetslogg.warn("en warn melding til4")
+        hentetAktivitetslogg.warn("en warn melding til5")
+        hentetAktivitetslogg.warn("en warn melding til6")
+        hentetAktivitetslogg.warn("en warn melding til7")
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, hentetAktivitetslogg, txSession)
+            }
+        }
+
+        val hentetAktivitetslogg2 = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        hentetAktivitetslogg2.aktiviteter shouldContainExactly hentetAktivitetslogg.aktiviteter
     }
 }

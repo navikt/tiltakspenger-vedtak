@@ -169,5 +169,6 @@ CREATE TABLE aktivitet
     alvorlighetsgrad INT                      NOT NULL,
     label            CHAR(1)                  NOT NULL,
     melding          VARCHAR                  NOT NULL,
-    tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL,
+    detaljer JSONB null
 );
