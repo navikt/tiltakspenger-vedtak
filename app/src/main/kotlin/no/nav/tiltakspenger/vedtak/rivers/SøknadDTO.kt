@@ -3,6 +3,7 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -10,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
+import no.nav.tiltakspenger.vedtak.rivers.IntroduksjonsprogrammetDetaljerDTO.Companion.mapIntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,6 +25,7 @@ class SøknadDTO(
     val ident: String,
     val deltarKvp: Boolean,
     val deltarIntroduksjonsprogrammet: Boolean?,
+    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljerDTO?,
     val oppholdInstitusjon: Boolean,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime,
@@ -43,6 +46,7 @@ class SøknadDTO(
                 ident = dto.ident,
                 deltarKvp = dto.deltarKvp,
                 deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = mapIntroduksjonsprogrammetDetaljer(dto.introduksjonsprogrammetDetaljer),
                 oppholdInstitusjon = dto.oppholdInstitusjon,
                 typeInstitusjon = dto.typeInstitusjon,
                 opprettet = dto.opprettet,
@@ -110,6 +114,16 @@ class ArenaTiltakDTO(
     }
 }
 
+class IntroduksjonsprogrammetDetaljerDTO(
+    val fom: LocalDate,
+    val tom: LocalDate? = null,
+) {
+    companion object {
+        internal fun mapIntroduksjonsprogrammetDetaljer(dto: IntroduksjonsprogrammetDetaljerDTO?) =
+            dto?.let { IntroduksjonsprogrammetDetaljer(fom = dto.fom, tom = dto.tom) }
+    }
+}
+
 class TrygdOgPensjonDTO(
     val utbetaler: String, val prosent: Int? = null, val fom: LocalDate? = null, val tom: LocalDate? = null
 ) {
@@ -127,6 +141,7 @@ class BarnetilleggDTO(
     val fødselsdato: LocalDate? = null,
     val fornavn: String? = null,
     val etternavn: String? = null,
+    val søktBarnetillegg: Boolean? = null, //Er midlertidig at det er null, endres når alt er i sync
 ) {
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
@@ -136,6 +151,7 @@ class BarnetilleggDTO(
                 ident = dto.ident,
                 fornavn = dto.fornavn,
                 etternavn = dto.etternavn,
+                søktBarnetillegg = dto.søktBarnetillegg ?: true,
             ) else
                 Barnetillegg.UtenIdent(
                     alder = dto.alder,
@@ -143,6 +159,7 @@ class BarnetilleggDTO(
                     fødselsdato = dto.fødselsdato!!,
                     fornavn = dto.fornavn,
                     etternavn = dto.etternavn,
+                    søktBarnetillegg = dto.søktBarnetillegg ?: true
                 )
         }
     }

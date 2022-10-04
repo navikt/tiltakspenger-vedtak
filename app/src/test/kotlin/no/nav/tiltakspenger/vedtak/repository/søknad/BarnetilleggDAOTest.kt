@@ -54,7 +54,8 @@ internal class BarnetilleggDAOTest {
                 land = "SWE",
                 ident = "123",
                 fornavn = "fornavn",
-                etternavn = "etternavn"
+                etternavn = "etternavn",
+                søktBarnetillegg = true,
             )
         val barnetilleggUtenIdent =
             Barnetillegg.UtenIdent(
@@ -62,7 +63,8 @@ internal class BarnetilleggDAOTest {
                 land = "SWE",
                 fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
                 fornavn = "fornavn",
-                etternavn = "etternavn"
+                etternavn = "etternavn",
+                søktBarnetillegg = true,
             )
 
         val barnetilleggDAO = BarnetilleggDAO()
@@ -97,6 +99,7 @@ internal class BarnetilleggDAOTest {
         ident = ident,
         deltarKvp = false,
         deltarIntroduksjonsprogrammet = null,
+        introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = null,
         typeInstitusjon = null,
         opprettet = null,

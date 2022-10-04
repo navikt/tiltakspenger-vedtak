@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.objectmothers.søkerMedTiltak
 import no.nav.tiltakspenger.vedtak.objectmothers.tomYtelsesak
 import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
+import no.nav.tiltakspenger.vedtak.objectmothers.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -62,6 +63,45 @@ class YtelsesakDAOTest {
         søkerRepository.lagre(søker)
 
         val ytelseSak = ytelseSak()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                ytelsesakDAO.lagre(søker.id, listOf(ytelseSak), txSession)
+            }
+        }
+
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                ytelsesakDAO.hentForSøker(søkerId = søker.id, txSession = txSession)
+            }
+        }
+
+        hentet.size shouldBe 1
+        hentet.first() shouldBe ytelseSak
+    }
+
+    @Test
+    fun `lagre to ganger med vedtak og hente`() {
+        /*
+        Denne testen er innført for å avdekke og regresjonsteste følgende feil:
+        ERROR: update or delete on table "ytelsesak" violates foreign key constraint
+        "ytelsevedtak_ytelsesak_id_fkey" on table "ytelsevedtak"
+        Detail: Key (id)=(9d6ac352-5f55-411b-a091-8315bbaf06a6) is still referenced from table "ytelsevedtak".
+         */
+
+        val ytelsesakDAO = YtelsesakDAO()
+        val søkerRepository = PostgresSøkerRepository(ytelsesakDAO = ytelsesakDAO)
+        val ident = Random().nextInt().toString()
+        val søker = søkerMedTiltak(ident = ident)
+        søkerRepository.lagre(søker)
+
+        val ytelseSak = ytelseSak(vedtak = listOf(ytelseVedtak()))
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                ytelsesakDAO.lagre(søker.id, listOf(ytelseSak), txSession)
+            }
+        }
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->

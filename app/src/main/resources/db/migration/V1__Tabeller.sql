@@ -35,10 +35,12 @@ CREATE TABLE søknad
     fornavn             VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
     deltar_kvp          BOOLEAN                  NOT NULL,
-    deltar_intro        BOOLEAN                  NULL,
-    institusjon_opphold BOOLEAN                  NULL,
-    institusjon_type    VARCHAR                  NULL,
-    fritekst            VARCHAR                  NULL,
+    deltar_intro        BOOLEAN NULL,
+    intro_fom           DATE NULL,
+    intro_tom           DATE NULL,
+    institusjon_opphold BOOLEAN NULL,
+    institusjon_type    VARCHAR NULL,
+    fritekst            VARCHAR NULL,
     journalpost_id      VARCHAR                  NOT NULL,
     dokumentinfo_id     VARCHAR                  NOT NULL,
     opprettet           TIMESTAMP WITH TIME ZONE NULL,
@@ -47,14 +49,15 @@ CREATE TABLE søknad
 
 CREATE TABLE barnetillegg
 (
-    id          UUID PRIMARY KEY,
-    søknad_id   UUID    NOT NULL REFERENCES søknad (id),
-    ident       VARCHAR NULL,
-    fødselsdato DATE    NULL,
-    fornavn     VARCHAR NULL,
-    etternavn   VARCHAR NULL,
-    alder       INT     NOT NULL,
-    land        VARCHAR NOT NULL
+    id                UUID PRIMARY KEY,
+    søknad_id         UUID    NOT NULL REFERENCES søknad (id),
+    ident             VARCHAR NULL,
+    fødselsdato       DATE NULL,
+    fornavn           VARCHAR NULL,
+    etternavn         VARCHAR NULL,
+    alder             INT     NOT NULL,
+    land              VARCHAR NOT NULL,
+    søkt_barnetillegg BOOLEAN NOT NULL
 );
 
 CREATE TABLE brukertiltak
@@ -155,8 +158,8 @@ CREATE TABLE ytelsevedtak
     ytelsesak_id           UUID    NOT NULL REFERENCES ytelsesak (id),
     beslutnings_dato       DATE    NULL,
     periodetype_for_ytelse VARCHAR NULL,
-    vedtaksperiode_fom     DATE    NULL,
-    vedtaksperiode_tom     DATE    NULL,
+    vedtaksperiode_fom     DATE NULL,
+    vedtaksperiode_tom     DATE NULL,
     vedtaks_type           VARCHAR NULL,
     status                 VARCHAR NULL
 );

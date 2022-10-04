@@ -16,6 +16,7 @@ data class Søknad(
     val ident: String,
     val deltarKvp: Boolean,
     val deltarIntroduksjonsprogrammet: Boolean?,
+    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
     val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime?,
@@ -33,6 +34,11 @@ data class Søknad(
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 }
+
+data class IntroduksjonsprogrammetDetaljer(
+    val fom: LocalDate,
+    val tom: LocalDate?
+)
 
 data class TrygdOgPensjon(
     val utbetaler: String,
@@ -77,6 +83,7 @@ sealed class Barnetillegg {
     abstract val land: String
     abstract val fornavn: String?
     abstract val etternavn: String?
+    abstract val søktBarnetillegg: Boolean
 
     data class MedIdent(
         override val alder: Int,
@@ -84,6 +91,7 @@ sealed class Barnetillegg {
         override val fornavn: String?,
         override val etternavn: String?,
         val ident: String,
+        override val søktBarnetillegg: Boolean,
     ) : Barnetillegg()
 
     data class UtenIdent(
@@ -92,5 +100,6 @@ sealed class Barnetillegg {
         override val fornavn: String?,
         override val etternavn: String?,
         val fødselsdato: LocalDate,
+        override val søktBarnetillegg: Boolean,
     ) : Barnetillegg()
 }

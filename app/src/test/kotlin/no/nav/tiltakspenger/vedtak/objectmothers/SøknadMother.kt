@@ -1,4 +1,5 @@
 @file:Suppress("LongParameterList")
+
 package no.nav.tiltakspenger.vedtak.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
@@ -79,13 +80,15 @@ fun barnetilleggMedIdent(
     fornavn: String? = "Fornavn Barn",
     etternavn: String? = "Etternavn Barn",
     ident: String = Random().nextInt().toString(),
+    søktBarnetillegg: Boolean = true,
 ): Barnetillegg {
     return Barnetillegg.MedIdent(
         alder = alder,
         land = land,
         fornavn = fornavn,
         etternavn = etternavn,
-        ident = ident
+        ident = ident,
+        søktBarnetillegg = søktBarnetillegg,
     )
 }
 
@@ -95,6 +98,7 @@ fun barnetilleggUtenIdent(
     fornavn: String? = "Fornavn Barn",
     etternavn: String? = "Etternavn Barn",
     fødselsdato: LocalDate = 14.juni(2012),
+    søktBarnetillegg: Boolean = true,
 ): Barnetillegg {
     return Barnetillegg.UtenIdent(
         alder = alder,
@@ -102,6 +106,7 @@ fun barnetilleggUtenIdent(
         fornavn = fornavn,
         etternavn = etternavn,
         fødselsdato = fødselsdato,
+        søktBarnetillegg = søktBarnetillegg,
     )
 }
 
@@ -134,6 +139,7 @@ fun nySøknadMedArenaTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+        introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,
@@ -174,6 +180,7 @@ fun nySøknadMedBrukerTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
+        introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,

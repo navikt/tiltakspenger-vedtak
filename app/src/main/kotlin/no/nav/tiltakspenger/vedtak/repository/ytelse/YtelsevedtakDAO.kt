@@ -8,6 +8,7 @@ import org.intellij.lang.annotations.Language
 import java.util.*
 
 class YtelsevedtakDAO {
+
     fun hentForVedtak(ytelsesakId: UUID, txSession: TransactionalSession): List<YtelseVedtak> {
         return txSession.run(
             queryOf(hentYtelsevedtak, ytelsesakId)
@@ -18,9 +19,9 @@ class YtelsevedtakDAO {
     }
 
     fun lagre(ytelsesakId: UUID, ytelseVedtak: List<YtelseVedtak>, txSession: TransactionalSession) {
-        slettVedtak(ytelsesakId, txSession)
-        ytelseVedtak.forEach { ytelseVedtak ->
-            lagreVedtak(ytelsesakId, ytelseVedtak, txSession)
+        // slettVedtak(ytelsesakId, txSession)
+        ytelseVedtak.forEach { vedtak ->
+            lagreVedtak(ytelsesakId, vedtak, txSession)
         }
     }
 
@@ -44,6 +45,12 @@ class YtelsevedtakDAO {
     private fun slettVedtak(ytelsesakId: UUID, txSession: TransactionalSession) {
         txSession.run(
             queryOf(slettYtelsevedtak, ytelsesakId).asUpdate
+        )
+    }
+
+    fun slettVedtakForSøker(søkerId: UUID, txSession: TransactionalSession) {
+        txSession.run(
+            queryOf(slettYtelsevedtak, søkerId).asUpdate
         )
     }
 
@@ -93,7 +100,8 @@ class YtelsevedtakDAO {
         )""".trimIndent()
 
     @Language("SQL")
-    private val slettYtelsevedtak = "delete from ytelsevedtak where ytelsesak_id = ?"
+    private val slettYtelsevedtak =
+        "delete from ytelsevedtak where ytelsesak_id in (select id from ytelsesak where søker_id = ?)"
 
     @Language("SQL")
     private val hentYtelsevedtak = "select * from ytelsevedtak where ytelsesak_id = ?"

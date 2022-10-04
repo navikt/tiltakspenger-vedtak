@@ -50,6 +50,7 @@ class YtelsesakDAO(
     }
 
     private fun slettYtelser(søkerId: UUID, txSession: TransactionalSession) {
+        ytelsevedtakDAO.slettVedtakForSøker(søkerId, txSession)
         txSession.run(
             queryOf(slettYtelsesak, søkerId).asUpdate
         )
