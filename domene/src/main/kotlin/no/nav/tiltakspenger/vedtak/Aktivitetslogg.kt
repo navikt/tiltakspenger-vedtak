@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.domene.nå
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+
 
 // Understands issues that arose when analyzing a JSON message
 // Implements Collecting Parameter in Refactoring by Martin Fowler
@@ -171,7 +173,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Info(
             kontekster: List<Kontekst>,
             melding: String,
-            tidsstempel: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+            tidsstempel: LocalDateTime = nå(),
         ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Info> {
@@ -188,7 +190,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Warn(
             kontekster: List<Kontekst>,
             melding: String,
-            tidsstempel: LocalDateTime = LocalDateTime.now()
+            tidsstempel: LocalDateTime = nå()
         ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Warn> {
@@ -206,7 +208,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
             kontekster: List<Kontekst>,
             melding: String,
             val detaljer: Map<String, Any> = emptyMap(),
-            tidsstempel: LocalDateTime = LocalDateTime.now()
+            tidsstempel: LocalDateTime = nå(),
         ) : Aktivitet(50, 'N', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Behov> {
@@ -251,7 +253,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Error(
             kontekster: List<Kontekst>,
             melding: String,
-            tidsstempel: LocalDateTime = LocalDateTime.now()
+            tidsstempel: LocalDateTime = nå(),
         ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Error> {
@@ -267,7 +269,7 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Severe(
             kontekster: List<Kontekst>,
             melding: String,
-            tidsstempel: LocalDateTime = LocalDateTime.now()
+            tidsstempel: LocalDateTime = nå(),
         ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Severe> {

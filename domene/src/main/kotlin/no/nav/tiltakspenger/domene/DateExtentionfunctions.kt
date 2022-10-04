@@ -25,3 +25,6 @@ fun Int.januarDateTime(year: Int): LocalDateTime = LocalDateTime.of(
     0,
     0
 ).truncatedTo(ChronoUnit.MILLIS)
+
+fun nå() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+//fun LocalDateTime.Companion.nowTrunc() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)

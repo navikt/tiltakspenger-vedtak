@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
@@ -51,5 +52,31 @@ internal class AktivitetsloggDAOTest {
 
         aktivitetslogg.aktiviteter.first() shouldBe hentetAktivitetslogg!!
         //aktivitetslogg.aktiviteter shouldContainExactly listOf(hentetAktivitetslogg!!)
+    }
+
+    @Test
+    fun `skal kunne hente en aktivitetslogg med flere aktiviteter`() {
+        val søker = søkerRegistrert()
+        PostgresSøkerRepository().lagre(søker)
+
+        val aktivitetslogg = Aktivitetslogg()
+        aktivitetslogg.info("en liten melding")
+        aktivitetslogg.warn("en warn melding til")
+
+        val dao = AktivitetsloggDAO()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, aktivitetslogg, txSession)
+            }
+        }
+
+        val hentetAktivitetslogg: Aktivitetslogg.Aktivitet? = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        aktivitetslogg.aktiviteter shouldContainExactly listOf(hentetAktivitetslogg!!)
     }
 }

@@ -165,6 +165,7 @@ CREATE TABLE aktivitet
 (
     id               UUID PRIMARY KEY,
     søker_id         UUID                     NOT NULL REFERENCES søker (id),
+    type             VARCHAR                  NULL,
     alvorlighetsgrad INT                      NOT NULL,
     label            CHAR(1)                  NOT NULL,
     melding          VARCHAR                  NOT NULL,
