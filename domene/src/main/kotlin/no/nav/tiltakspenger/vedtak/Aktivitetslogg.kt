@@ -354,7 +354,7 @@ interface KontekstLogable {
     fun opprettKontekst(): Kontekst
 }
 
-class Kontekst(internal val kontekstType: String, internal val kontekstMap: Map<String, String> = mapOf()) {
+class Kontekst(val kontekstType: String, val kontekstMap: Map<String, String> = mapOf()) {
     internal fun melding() =
         kontekstType + kontekstMap.entries.joinToString(separator = ", ", prefix = " - ") { "${it.key}: ${it.value}" }
 

@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.objectMapper
 import no.nav.tiltakspenger.vedtak.db.readMap
+import no.nav.tiltakspenger.vedtak.db.serialize
 import org.intellij.lang.annotations.Language
 import java.util.*
 
@@ -19,7 +20,8 @@ class AktivitetsloggDAO {
         val tidsstempl = row.localDateTime("tidsstempel")
         val detaljer: Map<String, Any> = row.stringOrNull("detaljer")
             ?.let { objectMapper.readMap(it) } ?: emptyMap()
-        val kontekster: List<Kontekst> = deserializeList(row.string("kontekster"))
+        val konteksterString = row.string("kontekster")
+        val kontekster: List<Kontekst> = deserializeList(konteksterString)
 
         when (label) {
             "I" -> Aktivitetslogg.Aktivitet.Info(
@@ -108,7 +110,7 @@ class AktivitetsloggDAO {
                         "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
                             aktivitet.detaljer
                         ) else null,
-                        "kontekster" to objectMapper.writeValueAsString(aktivitet.kontekster)
+                        "kontekster" to aktivitet.kontekster.serialize()
                     )
                 ).asUpdate
             )
