@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 
+import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -7,7 +8,6 @@ import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.objectmothers.søkerRegistrert
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -34,6 +34,7 @@ internal class AktivitetsloggDAOTest {
         val aktivitetslogg = Aktivitetslogg()
 //        aktivitetslogg.addKontekst(søker)
         aktivitetslogg.info("en liten melding")
+
         val dao = AktivitetsloggDAO()
 
         sessionOf(DataSource.hikariDataSource).use {
@@ -42,12 +43,13 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
+        val hentetAktivitetslogg: Aktivitetslogg.Aktivitet? = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.hent(søker.id, txSession)
             }
         }
 
-        assertEquals(aktivitetslogg.getAktiviteter().first(), hentetAktivitetslogg)
+        aktivitetslogg.aktiviteter.first() shouldBe hentetAktivitetslogg!!
+        //aktivitetslogg.aktiviteter shouldContainExactly listOf(hentetAktivitetslogg!!)
     }
 }

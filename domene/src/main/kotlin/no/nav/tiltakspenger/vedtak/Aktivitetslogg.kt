@@ -7,13 +7,11 @@ import java.time.temporal.ChronoUnit
 // Implements Collecting Parameter in Refactoring by Martin Fowler
 // Implements Visitor pattern to traverse the messages
 class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitetslogg {
-    private val aktiviteter = mutableListOf<Aktivitet>()
+    var aktiviteter = mutableListOf<Aktivitet>()
+        private set
 
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
-
-    // TODO: får vi lov til å gjøre dette? omgår all encapsulation
-    fun getAktiviteter() = aktiviteter
 
     internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
     fun accept(visitor: IAktivitetsloggVisitor) {
@@ -108,29 +106,27 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
     class AktivitetException internal constructor(private val aktivitetslogg: Aktivitetslogg) :
         RuntimeException(aktivitetslogg.toString()) {
-        fun kontekst(): Map<String, String> =
-            aktivitetslogg.kontekster.fold(mutableMapOf()) { result, kontekst ->
-                result.apply { putAll(kontekst.opprettKontekst().kontekstMap) }
-            }
+        fun kontekst(): Map<String, String> = aktivitetslogg.kontekster.fold(mutableMapOf()) { result, kontekst ->
+            result.apply { putAll(kontekst.opprettKontekst().kontekstMap) }
+        }
 
         fun aktivitetslogg() = aktivitetslogg
     }
 
     sealed class Aktivitet(
-        private val alvorlighetsgrad: Int,
-        private val label: Char,
-        private var melding: String,
-        private val tidsstempel: LocalDateTime,
-        internal val kontekster: List<Kontekst>
+        val alvorlighetsgrad: Int,
+        val label: Char,
+        val melding: String,
+        val tidsstempel: LocalDateTime,
+        val kontekster: List<Kontekst>
     ) : Comparable<Aktivitet> {
 
+
         fun alleKonteksterAsMap(): Map<String, String> =
-            kontekster
-                .fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
+            kontekster.fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
 
         internal fun konteksterAvTypeAsMap(typer: List<String>): Map<String, String> =
-            kontekster
-                .let { spesifikkKontekst -> if (typer.isEmpty()) spesifikkKontekst else spesifikkKontekst.filter { it.kontekstType in typer } }
+            kontekster.let { spesifikkKontekst -> if (typer.isEmpty()) spesifikkKontekst else spesifikkKontekst.filter { it.kontekstType in typer } }
                 .fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
 
         override fun compareTo(other: Aktivitet) = this.tidsstempel.compareTo(other.tidsstempel)
@@ -147,10 +143,35 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         internal abstract fun accept(visitor: IAktivitetsloggVisitor)
 
         operator fun contains(kontekst: KontekstLogable) = kontekst.opprettKontekst() in kontekster
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Aktivitet
+
+            if (alvorlighetsgrad != other.alvorlighetsgrad) return false
+            if (label != other.label) return false
+            if (melding != other.melding) return false
+            if (tidsstempel != other.tidsstempel) return false
+            if (kontekster != other.kontekster) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = alvorlighetsgrad
+            result = 31 * result + label.hashCode()
+            result = 31 * result + melding.hashCode()
+            result = 31 * result + tidsstempel.hashCode()
+            result = 31 * result + kontekster.hashCode()
+            return result
+        }
+
+
         class Info(
             kontekster: List<Kontekst>,
-            private val melding: String,
-            private val tidsstempel: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+            melding: String,
+            tidsstempel: LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
         ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Info> {
@@ -162,31 +183,12 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 visitor.visitInfo(kontekster, this, melding, tidsstempel)
             }
 
-            // TODO: equals and hashcode are made for the test only...
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as Info
-
-                if (melding != other.melding) return false
-                if (tidsstempel != other.tidsstempel) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = melding.hashCode()
-                result = 31 * result + tidsstempel.hashCode()
-                return result
-            }
-
         }
 
         class Warn(
             kontekster: List<Kontekst>,
-            private val melding: String,
-            private val tidsstempel: LocalDateTime = LocalDateTime.now()
+            melding: String,
+            tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Warn> {
@@ -202,9 +204,9 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
         class Behov(
             val type: Behovtype,
             kontekster: List<Kontekst>,
-            private val melding: String,
-            private val detaljer: Map<String, Any> = emptyMap(),
-            private val tidsstempel: LocalDateTime = LocalDateTime.now()
+            melding: String,
+            val detaljer: Map<String, Any> = emptyMap(),
+            tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(50, 'N', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Behov> {
@@ -218,19 +220,38 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
                 visitor.visitBehov(kontekster, this, type, melding, detaljer, tidsstempel)
             }
 
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+                if (!super.equals(other)) return false
+
+                other as Behov
+
+                if (type != other.type) return false
+                if (detaljer != other.detaljer) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = super.hashCode()
+                result = 31 * result + type.hashCode()
+                result = 31 * result + detaljer.hashCode()
+                return result
+            }
+
             @Suppress("EnumNaming")
             enum class Behovtype {
-                personopplysninger,
-                skjerming,
-                arenatiltak,
-                arenaytelser,
+                personopplysninger, skjerming, arenatiltak, arenaytelser,
             }
+
+
         }
 
         class Error(
             kontekster: List<Kontekst>,
-            private val melding: String,
-            private val tidsstempel: LocalDateTime = LocalDateTime.now()
+            melding: String,
+            tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Error> {
@@ -245,8 +266,8 @@ class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitets
 
         class Severe(
             kontekster: List<Kontekst>,
-            private val melding: String,
-            private val tidsstempel: LocalDateTime = LocalDateTime.now()
+            melding: String,
+            tidsstempel: LocalDateTime = LocalDateTime.now()
         ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Severe> {
@@ -336,8 +357,7 @@ class Kontekst(internal val kontekstType: String, internal val kontekstMap: Map<
     internal fun melding() =
         kontekstType + kontekstMap.entries.joinToString(separator = ", ", prefix = " - ") { "${it.key}: ${it.value}" }
 
-    override fun equals(other: Any?) =
-        this === other || other is Kontekst && this.kontekstMap == other.kontekstMap
+    override fun equals(other: Any?) = this === other || other is Kontekst && this.kontekstMap == other.kontekstMap
 
     override fun hashCode() = kontekstMap.hashCode()
 }
