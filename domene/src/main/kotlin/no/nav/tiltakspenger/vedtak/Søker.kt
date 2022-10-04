@@ -58,6 +58,7 @@ class Søker private constructor(
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
             personopplysninger: Personopplysninger?,
+            aktivitetslogg: Aktivitetslogg,
         ): Søker {
             return Søker(
                 id = id,
@@ -68,7 +69,7 @@ class Søker private constructor(
                 barn = mutableListOf(),
                 tiltak = tiltak,
                 ytelser = ytelser,
-                aktivitetslogg = Aktivitetslogg(),
+                aktivitetslogg = aktivitetslogg,
             )
         }
 

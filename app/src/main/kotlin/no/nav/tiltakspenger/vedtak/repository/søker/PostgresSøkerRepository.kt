@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
@@ -23,6 +24,7 @@ internal class PostgresSøkerRepository(
     private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
+    private val aktivitetsloggDAO: AktivitetsloggDAO = AktivitetsloggDAO(),
 ) : SøkerRepository {
 
     override fun hent(ident: String): Søker? {
@@ -40,17 +42,26 @@ internal class PostgresSøkerRepository(
     override fun lagre(søker: Søker) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                if (brukerFinnes(søker.ident, txSession)) {
-                    oppdaterTilstand(søker, txSession)
+                if (brukerFinnes(ident = søker.ident, txSession = txSession)) {
+                    oppdaterTilstand(søker = søker, txSession = txSession)
                 } else {
-                    insert(søker, txSession)
+                    insert(søker = søker, txSession = txSession)
                 }
-                søknadDAO.lagre(søker.id, søker.søknader, txSession)
-                tiltaksaktivitetDAO.lagre(søker.id, søker.tiltak, txSession)
-                ytelsesakDAO.lagre(søker.id, søker.ytelser, txSession)
+                søknadDAO.lagre(søkerId = søker.id, søknader = søker.søknader, txSession = txSession)
+                tiltaksaktivitetDAO.lagre(søkerId = søker.id, tiltaksaktiviteter = søker.tiltak, txSession = txSession)
+                ytelsesakDAO.lagre(søkerId = søker.id, ytelsesaker = søker.ytelser, txSession = txSession)
                 if (søker.personopplysninger != null) {
-                    personopplysningerDAO.lagre(søker.id, søker.personopplysninger!!, txSession)
+                    personopplysningerDAO.lagre(
+                        søkerId = søker.id,
+                        personopplysninger = søker.personopplysninger!!,
+                        txSession = txSession
+                    )
                 }
+                aktivitetsloggDAO.lagre(
+                    søkerId = søker.id,
+                    aktivitetslogg = søker.aktivitetslogg,
+                    txSession = txSession
+                )
             }
         }
     }
@@ -65,6 +76,7 @@ internal class PostgresSøkerRepository(
             tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
             ytelser = ytelsesakDAO.hentForSøker(id, txSession),
             personopplysninger = personopplysningerDAO.hent(id, txSession),
+            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
         )
     }
 

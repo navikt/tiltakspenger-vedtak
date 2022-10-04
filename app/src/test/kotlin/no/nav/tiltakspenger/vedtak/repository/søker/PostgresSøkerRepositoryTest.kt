@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -79,6 +80,7 @@ internal class PostgresSøkerRepositoryTest {
             tiltak = listOf(tiltaksaktivitet),
             ytelser = listOf(ytelseSak),
             personopplysninger = null,
+            aktivitetslogg = Aktivitetslogg(),
         )
 
         søkerRepo.lagre(søker)
