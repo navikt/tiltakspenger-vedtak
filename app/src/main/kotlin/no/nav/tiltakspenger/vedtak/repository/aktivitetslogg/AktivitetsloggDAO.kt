@@ -1,57 +1,54 @@
 package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.db.objectMapper
+import no.nav.tiltakspenger.vedtak.db.readMap
 import org.intellij.lang.annotations.Language
 import java.util.*
 
 class AktivitetsloggDAO {
 
-    val objectMapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
     private val toAktivitet: (Row) -> Aktivitetslogg.Aktivitet = { row ->
         val label = row.string("label")
+        val melding = row.string("melding")
+        val tidsstempl = row.localDateTime("tidsstempel")
+        val detaljer: Map<String, Any> = row.stringOrNull("detaljer")
+            ?.let { objectMapper.readMap(it) } ?: emptyMap()
 
         when (label) {
             "I" -> Aktivitetslogg.Aktivitet.Info(
                 kontekster = listOf(),
-                melding = row.string("melding"),
-                tidsstempel = row.localDateTime("tidsstempel")
+                melding = melding,
+                tidsstempel = tidsstempl,
             )
 
             "W" -> Aktivitetslogg.Aktivitet.Warn(
                 kontekster = listOf(),
-                melding = row.string("melding"),
-                tidsstempel = row.localDateTime("tidsstempel")
+                melding = melding,
+                tidsstempel = tidsstempl,
             )
 
             "E" -> Aktivitetslogg.Aktivitet.Error(
                 kontekster = listOf(),
-                melding = row.string("melding"),
-                tidsstempel = row.localDateTime("tidsstempel")
+                melding = melding,
+                tidsstempel = tidsstempl,
             )
 
             "S" -> Aktivitetslogg.Aktivitet.Severe(
                 kontekster = listOf(),
-                melding = row.string("melding"),
-                tidsstempel = row.localDateTime("tidsstempel")
+                melding = melding,
+                tidsstempel = tidsstempl,
             )
 
-            "B" -> Aktivitetslogg.Aktivitet.Behov(
-                type = row.string("behovtype").let { Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
+            "N" -> Aktivitetslogg.Aktivitet.Behov(
+                type = row.string("type").let { Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
                 kontekster = listOf(),
-                melding = row.string("melding"),
-                detaljer = objectMapper.readTree(row.string("detaljer")).,
-                tidsstempel = row.localDateTime("tidsstempel")
+                melding = melding,
+                detaljer = detaljer,
+                tidsstempel = tidsstempl,
             )
 
             else -> throw IllegalStateException("Ukjent Labeltype")
@@ -78,7 +75,7 @@ class AktivitetsloggDAO {
         :label, 
         :melding, 
         :tidsstempel,
-        :detaljer
+        to_json(:detaljer::json)
         )
     """.trimIndent()
 
@@ -98,14 +95,13 @@ class AktivitetsloggDAO {
                     lagreAktivitetslogg, mapOf(
                         "id" to UUID.randomUUID(),
                         "sokerId" to søkerId,
-                        "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type else null,
+                        "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
                         "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
                         "label" to aktivitet.label,
                         "melding" to aktivitet.melding,
                         "tidsstempel" to aktivitet.tidsstempel,
                         "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
-                            aktivitet.detaljer
-                        ) else null,
+                            aktivitet.detaljer) else null,
                     )
                 ).asUpdate
             )

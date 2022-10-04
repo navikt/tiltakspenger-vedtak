@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.objectmothers.søkerRegistrert
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
+import no.nav.tiltakspenger.vedtak.routes.person.BarnDTO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -33,7 +34,6 @@ internal class AktivitetsloggDAOTest {
         PostgresSøkerRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
-//        aktivitetslogg.addKontekst(søker)
         aktivitetslogg.info("en liten melding")
 
         val dao = AktivitetsloggDAO()
@@ -50,7 +50,7 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        hentetAktivitetslogg shouldBeEqualToComparingFields hentetAktivitetslogg
+        hentetAktivitetslogg shouldBeEqualToComparingFields aktivitetslogg
     }
 
     @Test
@@ -130,5 +130,37 @@ internal class AktivitetsloggDAOTest {
         }
 
         hentetAktivitetslogg2.aktiviteter shouldContainExactly hentetAktivitetslogg.aktiviteter
+    }
+
+    @Test
+    fun `skal kunne lagre behov`() {
+        val søker = søkerRegistrert()
+        PostgresSøkerRepository().lagre(søker)
+
+        val aktivitetslogg = Aktivitetslogg()
+        aktivitetslogg.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            melding = "melding",
+            detaljer = mapOf(
+                "ident" to "1234",
+                "tall" to 32,
+            )
+        )
+
+        val dao = AktivitetsloggDAO()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, aktivitetslogg, txSession)
+            }
+        }
+
+        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        hentetAktivitetslogg shouldBeEqualToComparingFields aktivitetslogg
     }
 }
