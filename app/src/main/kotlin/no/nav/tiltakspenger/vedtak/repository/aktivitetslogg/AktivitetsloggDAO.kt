@@ -5,7 +5,6 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import org.intellij.lang.annotations.Language
-import java.lang.IllegalStateException
 import java.util.*
 
 class AktivitetsloggDAO {
@@ -14,25 +13,29 @@ class AktivitetsloggDAO {
 
         when (label) {
             "I" -> Aktivitetslogg.Aktivitet.Info(
-                        kontekster = listOf(),
-                        melding = row.string("melding"),
-                        tidsstempel = row.localDateTime("tidsstempel")
-                    )
+                kontekster = listOf(),
+                melding = row.string("melding"),
+                tidsstempel = row.localDateTime("tidsstempel")
+            )
+
             "W" -> Aktivitetslogg.Aktivitet.Warn(
                 kontekster = listOf(),
                 melding = row.string("melding"),
                 tidsstempel = row.localDateTime("tidsstempel")
             )
+
             "E" -> Aktivitetslogg.Aktivitet.Error(
                 kontekster = listOf(),
                 melding = row.string("melding"),
                 tidsstempel = row.localDateTime("tidsstempel")
             )
+
             "S" -> Aktivitetslogg.Aktivitet.Severe(
                 kontekster = listOf(),
                 melding = row.string("melding"),
                 tidsstempel = row.localDateTime("tidsstempel")
             )
+
             "B" -> Aktivitetslogg.Aktivitet.Behov(
                 type = row.string("behovtype").let { Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
                 kontekster = listOf(),
@@ -40,6 +43,7 @@ class AktivitetsloggDAO {
 //                detaljer = row.string("detaljer"),
                 tidsstempel = row.localDateTime("tidsstempel")
             )
+
             else -> throw IllegalStateException("Ukjent Labeltype")
         }
 
@@ -57,8 +61,8 @@ class AktivitetsloggDAO {
         tidsstempel
         ) values (
         :id, 
-        :type,
         :sokerId, 
+        :type,
         :alvorlighetsgrad, 
         :label, 
         :melding, 
@@ -67,7 +71,7 @@ class AktivitetsloggDAO {
     """.trimIndent()
 
     @Language("SQL")
-    private val hentAktivitetslogg = "select * from aktivitet where søker_id = ?"
+    private val hentAktivitetslogger = "select * from aktivitet where søker_id = ?"
 
     fun lagre(søkerId: UUID, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
         aktivitetslogg.aktiviteter.forEach { aktivitet ->
@@ -87,8 +91,8 @@ class AktivitetsloggDAO {
         }
     }
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession) = txSession.run(
-        queryOf(hentAktivitetslogg, søkerId).map(toAktivitet).asSingle
-    )
-
+    fun hent(søkerId: UUID, txSession: TransactionalSession) =
+        Aktivitetslogg(
+            aktiviteter = txSession.run(queryOf(hentAktivitetslogger, søkerId).map(toAktivitet).asList).toMutableList()
+        )
 }

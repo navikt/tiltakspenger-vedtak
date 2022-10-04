@@ -2,16 +2,15 @@ package no.nav.tiltakspenger.vedtak
 
 import no.nav.tiltakspenger.domene.nå
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 
 // Understands issues that arose when analyzing a JSON message
 // Implements Collecting Parameter in Refactoring by Martin Fowler
 // Implements Visitor pattern to traverse the messages
-class Aktivitetslogg(private var forelder: Aktivitetslogg? = null) : IAktivitetslogg {
-    var aktiviteter = mutableListOf<Aktivitet>()
-        private set
-
+class Aktivitetslogg(
+    private var forelder: Aktivitetslogg? = null,
+    val aktiviteter: MutableList<Aktivitet> = mutableListOf()
+) : IAktivitetslogg {
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
 

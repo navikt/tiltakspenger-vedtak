@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -44,14 +44,13 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        val hentetAktivitetslogg: Aktivitetslogg.Aktivitet? = sessionOf(DataSource.hikariDataSource).use {
+        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.hent(søker.id, txSession)
             }
         }
 
-        aktivitetslogg.aktiviteter.first() shouldBe hentetAktivitetslogg!!
-        //aktivitetslogg.aktiviteter shouldContainExactly listOf(hentetAktivitetslogg!!)
+        hentetAktivitetslogg shouldBeEqualToComparingFields hentetAktivitetslogg
     }
 
     @Test
@@ -62,6 +61,13 @@ internal class AktivitetsloggDAOTest {
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
         aktivitetslogg.warn("en warn melding til")
+        aktivitetslogg.warn("en warn melding til1")
+        aktivitetslogg.warn("en warn melding til2")
+        aktivitetslogg.warn("en warn melding til3")
+        aktivitetslogg.warn("en warn melding til4")
+        aktivitetslogg.warn("en warn melding til5")
+        aktivitetslogg.warn("en warn melding til6")
+        aktivitetslogg.warn("en warn melding til7")
 
         val dao = AktivitetsloggDAO()
 
@@ -71,12 +77,12 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        val hentetAktivitetslogg: Aktivitetslogg.Aktivitet? = sessionOf(DataSource.hikariDataSource).use {
+        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.hent(søker.id, txSession)
             }
         }
 
-        aktivitetslogg.aktiviteter shouldContainExactly listOf(hentetAktivitetslogg!!)
+        hentetAktivitetslogg.aktiviteter shouldContainExactly aktivitetslogg.aktiviteter
     }
 }
