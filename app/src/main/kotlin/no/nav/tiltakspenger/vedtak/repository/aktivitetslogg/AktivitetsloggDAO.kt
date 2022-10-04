@@ -4,6 +4,8 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Kontekst
+import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.objectMapper
 import no.nav.tiltakspenger.vedtak.db.readMap
 import org.intellij.lang.annotations.Language
@@ -17,35 +19,36 @@ class AktivitetsloggDAO {
         val tidsstempl = row.localDateTime("tidsstempel")
         val detaljer: Map<String, Any> = row.stringOrNull("detaljer")
             ?.let { objectMapper.readMap(it) } ?: emptyMap()
+        val kontekster: List<Kontekst> = deserializeList(row.string("kontekster"))
 
         when (label) {
             "I" -> Aktivitetslogg.Aktivitet.Info(
-                kontekster = listOf(),
+                kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
             )
 
             "W" -> Aktivitetslogg.Aktivitet.Warn(
-                kontekster = listOf(),
+                kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
             )
 
             "E" -> Aktivitetslogg.Aktivitet.Error(
-                kontekster = listOf(),
+                kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
             )
 
             "S" -> Aktivitetslogg.Aktivitet.Severe(
-                kontekster = listOf(),
+                kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
             )
 
             "N" -> Aktivitetslogg.Aktivitet.Behov(
                 type = row.string("type").let { Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
-                kontekster = listOf(),
+                kontekster = kontekster,
                 melding = melding,
                 detaljer = detaljer,
                 tidsstempel = tidsstempl,
@@ -66,7 +69,8 @@ class AktivitetsloggDAO {
         label, 
         melding, 
         tidsstempel,
-        detaljer
+        detaljer,
+        kontekster
         ) values (
         :id, 
         :sokerId, 
@@ -75,7 +79,8 @@ class AktivitetsloggDAO {
         :label, 
         :melding, 
         :tidsstempel,
-        to_json(:detaljer::json)
+        to_json(:detaljer::json),
+        to_json(:kontekster::json)
         )
     """.trimIndent()
 
@@ -101,7 +106,9 @@ class AktivitetsloggDAO {
                         "melding" to aktivitet.melding,
                         "tidsstempel" to aktivitet.tidsstempel,
                         "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
-                            aktivitet.detaljer) else null,
+                            aktivitet.detaljer
+                        ) else null,
+                        "kontekster" to objectMapper.writeValueAsString(aktivitet.kontekster)
                     )
                 ).asUpdate
             )

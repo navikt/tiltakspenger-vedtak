@@ -170,5 +170,6 @@ CREATE TABLE aktivitet
     label            CHAR(1)                  NOT NULL,
     melding          VARCHAR                  NOT NULL,
     tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL,
-    detaljer         JSONB                    NULL
+    detaljer         JSONB                    NULL,
+    kontekster       JSONB                    NOT NULL
 );

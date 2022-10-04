@@ -4,12 +4,13 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Kontekst
+import no.nav.tiltakspenger.vedtak.KontekstLogable
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.objectmothers.søkerRegistrert
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
-import no.nav.tiltakspenger.vedtak.routes.person.BarnDTO
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -146,6 +147,35 @@ internal class AktivitetsloggDAOTest {
                 "tall" to 32,
             )
         )
+
+        val dao = AktivitetsloggDAO()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, aktivitetslogg, txSession)
+            }
+        }
+
+        val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        hentetAktivitetslogg shouldBeEqualToComparingFields aktivitetslogg
+    }
+
+    @Test
+    fun `skal kunne lagre og hente kontekster`() {
+        val søker = søkerRegistrert()
+        PostgresSøkerRepository().lagre(søker)
+
+        val aktivitetslogg = Aktivitetslogg()
+        aktivitetslogg.addKontekst(søker)
+        aktivitetslogg.addKontekst(object : KontekstLogable {
+            override fun opprettKontekst() = Kontekst("testType", mapOf("foo" to "bar"))
+        })
+        aktivitetslogg.info("en melding")
 
         val dao = AktivitetsloggDAO()
 
