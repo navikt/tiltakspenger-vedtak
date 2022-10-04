@@ -238,12 +238,12 @@ internal class AktivitetsloggTest {
     private fun assertInfo(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitInfo(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Info,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
@@ -256,12 +256,12 @@ internal class AktivitetsloggTest {
     private fun assertWarn(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitWarn(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Warn,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
@@ -274,12 +274,12 @@ internal class AktivitetsloggTest {
     private fun assertError(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitError(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Error,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertTrue(message in aktivitet.toString(), aktivitetslogg.toString())
@@ -292,12 +292,12 @@ internal class AktivitetsloggTest {
     private fun assertSevere(message: String, aktivitetslogg: Aktivitetslogg = this.aktivitetslogg) {
         var visitorCalled = false
         aktivitetslogg.accept(
-            object : AktivitetsloggVisitor {
+            object : IAktivitetsloggVisitor {
                 override fun visitSevere(
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Severe,
                     melding: String,
-                    tidsstempel: String
+                    tidsstempel: LocalDateTime
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)

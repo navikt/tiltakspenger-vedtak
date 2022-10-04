@@ -13,7 +13,7 @@ interface SkjermingVisitor {
     fun visitSkjerming(skjerming: Skjerming?) {}
 }
 
-interface SøkerVisitor : SøknadVisitor, PersonopplysningerVisitor, AktivitetsloggVisitor, SkjermingVisitor {
+interface SøkerVisitor : SøknadVisitor, PersonopplysningerVisitor, IAktivitetsloggVisitor, SkjermingVisitor {
     fun preVisitSøker(søker: Søker, ident: String) {}
     fun visitTilstand(tilstandType: Søker.Tilstand) {}
 

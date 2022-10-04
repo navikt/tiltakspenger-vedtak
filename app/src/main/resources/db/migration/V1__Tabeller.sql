@@ -1,20 +1,20 @@
 DO
 $$
-BEGIN
+    BEGIN
         IF
-EXISTS
-            (SELECT 1 from pg_roles where rolname = 'cloudsqliamuser')
+            EXISTS
+                (SELECT 1 from pg_roles where rolname = 'cloudsqliamuser')
         THEN
             GRANT USAGE ON SCHEMA public TO cloudsqliamuser;
             GRANT
-SELECT
-ON ALL TABLES IN SCHEMA public TO cloudsqliamuser;
-ALTER
-DEFAULT PRIVILEGES IN SCHEMA public GRANT
-SELECT
-ON TABLES TO cloudsqliamuser;
-END IF;
-END
+                SELECT
+                ON ALL TABLES IN SCHEMA public TO cloudsqliamuser;
+            ALTER
+                DEFAULT PRIVILEGES IN SCHEMA public GRANT
+                SELECT
+                ON TABLES TO cloudsqliamuser;
+        END IF;
+    END
 $$;
 
 CREATE TABLE søker
@@ -32,8 +32,8 @@ CREATE TABLE søknad
     søker_id            UUID                     NOT NULL REFERENCES søker (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
-    fornavn             VARCHAR NULL,
-    etternavn           VARCHAR NULL,
+    fornavn             VARCHAR                  NULL,
+    etternavn           VARCHAR                  NULL,
     deltar_kvp          BOOLEAN                  NOT NULL,
     deltar_intro        BOOLEAN NULL,
     intro_fom           DATE NULL,
@@ -63,15 +63,15 @@ CREATE TABLE barnetillegg
 CREATE TABLE brukertiltak
 (
     id            UUID PRIMARY KEY,
-    søknad_id     UUID NOT NULL REFERENCES søknad (id),
+    søknad_id     UUID    NOT NULL REFERENCES søknad (id),
     tiltakskode   VARCHAR NULL,
     arrangoernavn VARCHAR NULL,
     beskrivelse   VARCHAR NULL,
-    startdato     DATE NOT NULL,
-    sluttdato     DATE NOT NULL,
+    startdato     DATE    NOT NULL,
+    sluttdato     DATE    NOT NULL,
     adresse       VARCHAR NULL,
     postnummer    VARCHAR NULL,
-    antall_dager  INT  NOT NULL
+    antall_dager  INT     NOT NULL
 );
 
 CREATE TABLE arenatiltak
@@ -84,9 +84,9 @@ CREATE TABLE arenatiltak
     tiltakskode             VARCHAR NOT NULL,
     er_i_endre_status       BOOLEAN NOT NULL,
     opprinnelig_startdato   DATE    NOT NULL,
-    opprinnelig_sluttdato   DATE NULL,
+    opprinnelig_sluttdato   DATE    NULL,
     startdato               DATE    NOT NULL,
-    sluttdato               DATE NULL
+    sluttdato               DATE    NULL
 );
 
 CREATE TABLE trygdogpensjon
@@ -94,9 +94,9 @@ CREATE TABLE trygdogpensjon
     id        UUID PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),
     utbetaler VARCHAR NOT NULL,
-    prosent   INT NULL,
-    fom       DATE NULL,
-    tom       DATE NULL
+    prosent   INT     NULL,
+    fom       DATE    NULL,
+    tom       DATE    NULL
 );
 
 CREATE TABLE personopplysninger
@@ -106,14 +106,14 @@ CREATE TABLE personopplysninger
     ident               VARCHAR                  NOT NULL UNIQUE,
     fødselsdato         DATE                     NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
-    mellomnavn          VARCHAR NULL,
+    mellomnavn          VARCHAR                  NULL,
     etternavn           VARCHAR                  NOT NULL,
     fortrolig           BOOLEAN                  NOT NULL,
     strengt_fortrolig   BOOLEAN                  NOT NULL,
-    skjermet            BOOLEAN NULL,
-    kommune             VARCHAR NULL,
-    bydel               VARCHAR NULL,
-    land                VARCHAR NULL,
+    skjermet            BOOLEAN                  NULL,
+    kommune             VARCHAR                  NULL,
+    bydel               VARCHAR                  NULL,
+    land                VARCHAR                  NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
@@ -123,16 +123,16 @@ CREATE TABLE tiltaksaktivitet
     søker_id               UUID                     NOT NULL REFERENCES søker (id),
     tiltak                 VARCHAR                  NOT NULL,
     aktivitet_id           VARCHAR                  NOT NULL,
-    tiltak_lokalt_navn     VARCHAR NULL,
-    arrangør               VARCHAR NULL,
-    bedriftsnummer         VARCHAR NULL,
-    deltakelse_periode_fom DATE NULL,
-    deltakelse_periode_tom DATE NULL,
-    deltakelse_prosent     FLOAT NULL,
+    tiltak_lokalt_navn     VARCHAR                  NULL,
+    arrangør               VARCHAR                  NULL,
+    bedriftsnummer         VARCHAR                  NULL,
+    deltakelse_periode_fom DATE                     NULL,
+    deltakelse_periode_tom DATE                     NULL,
+    deltakelse_prosent     FLOAT                    NULL,
     deltaker_status        VARCHAR                  NOT NULL,
-    status_sist_endret     DATE NULL,
-    begrunnelse_innsøking  VARCHAR NULL,
-    antall_dager_per_uke   FLOAT NULL,
+    status_sist_endret     DATE                     NULL,
+    begrunnelse_innsøking  VARCHAR                  NULL,
+    antall_dager_per_uke   FLOAT                    NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
@@ -142,24 +142,37 @@ CREATE TABLE ytelsesak
     søker_id              UUID                     NOT NULL REFERENCES søker (id),
     fom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
     tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NULL,
-    dato_krav_mottatt     DATE NULL,
-    data_krav_mottatt     VARCHAR NULL,
-    fagsystem_sak_id      INT NULL,
-    status                VARCHAR NULL,
-    ytelsestype           VARCHAR NULL,
-    antall_dager_igjen    INT NULL,
-    antall_uker_igjen     INT NULL,
+    dato_krav_mottatt     DATE                     NULL,
+    data_krav_mottatt     VARCHAR                  NULL,
+    fagsystem_sak_id      INT                      NULL,
+    status                VARCHAR                  NULL,
+    ytelsestype           VARCHAR                  NULL,
+    antall_dager_igjen    INT                      NULL,
+    antall_uker_igjen     INT                      NULL,
     tidsstempel_hos_oss   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE ytelsevedtak
 (
     id                     UUID PRIMARY KEY,
-    ytelsesak_id           UUID NOT NULL REFERENCES ytelsesak (id),
-    beslutnings_dato       DATE NULL,
+    ytelsesak_id           UUID    NOT NULL REFERENCES ytelsesak (id),
+    beslutnings_dato       DATE    NULL,
     periodetype_for_ytelse VARCHAR NULL,
     vedtaksperiode_fom     DATE NULL,
     vedtaksperiode_tom     DATE NULL,
     vedtaks_type           VARCHAR NULL,
     status                 VARCHAR NULL
+);
+
+CREATE TABLE aktivitet
+(
+    id               UUID PRIMARY KEY,
+    søker_id         UUID                     NOT NULL REFERENCES søker (id),
+    type             VARCHAR                  NULL,
+    alvorlighetsgrad INT                      NOT NULL,
+    label            CHAR(1)                  NOT NULL,
+    melding          VARCHAR                  NOT NULL,
+    tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL,
+    detaljer         JSONB                    NULL,
+    kontekster       JSONB                    NOT NULL
 );
