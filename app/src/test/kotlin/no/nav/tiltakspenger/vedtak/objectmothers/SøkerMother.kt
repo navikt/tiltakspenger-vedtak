@@ -40,28 +40,34 @@ fun søkerMedSøknad(
 fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,
-        søknad = søknad
+        søknad = søknad,
     )
-    søker.håndter(nyPersonopplysningHendelse(ident = ident))
+    søker.håndter(nyPersonopplysningHendelse(
+        ident = ident,
+        personopplysninger = personopplysninger,
+    ))
     return søker
 }
 
 fun søkerMedSkjerming(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Søker {
     val søker = søkerMedPersonopplysninger(
         ident = ident,
-        søknad = søknad
+        søknad = søknad,
+        personopplysninger = personopplysninger,
     )
     søker.håndter(
         nySkjermingHendelse(
             ident = ident,
-            skjerming = skjerming
+            skjerming = skjerming,
         )
     )
     return søker
@@ -70,27 +76,37 @@ fun søkerMedSkjerming(
 fun søkerMedTiltak(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
+    tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
 ): Søker {
     val søker = søkerMedSkjerming(
         ident = ident,
         søknad = søknad,
-        skjerming = skjerming
+        personopplysninger = personopplysninger,
+        skjerming = skjerming,
     )
-    søker.håndter(nyTiltakHendelse(ident = ident))
+    søker.håndter(nyTiltakHendelse(
+        ident = ident,
+        tiltaksaktivitet = tiltaksaktivitet,
+    ))
     return søker
 }
 
 fun søkerMedYtelse(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
     skjerming: Skjerming = skjermingFalse(ident = ident),
+    tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
 ): Søker {
     val søker = søkerMedTiltak(
         ident = ident,
         søknad = søknad,
-        skjerming = skjerming
+        personopplysninger = personopplysninger,
+        skjerming = skjerming,
+        tiltaksaktivitet = tiltaksaktivitet,
     )
     søker.håndter(
         nyYtelseHendelse(
@@ -137,6 +153,16 @@ fun skjermingFalse(
     return Skjerming(
         ident = ident,
         skjerming = false,
+        innhentet = 1.januarDateTime(2022),
+    )
+}
+
+fun skjermingTrue(
+    ident: String = Random().nextInt().toString(),
+): Skjerming {
+    return Skjerming(
+        ident = ident,
+        skjerming = true,
         innhentet = 1.januarDateTime(2022),
     )
 }

@@ -1,7 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import io.kotest.matchers.equality.shouldBeEqualToComparingFields
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -9,6 +10,10 @@ import no.nav.tiltakspenger.vedtak.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.vedtak.objectmothers.barnetilleggUtenIdent
 import no.nav.tiltakspenger.vedtak.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.objectmothers.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.vedtak.objectmothers.skjermingFalse
+import no.nav.tiltakspenger.vedtak.objectmothers.skjermingTrue
+import no.nav.tiltakspenger.vedtak.objectmothers.søkerMedYtelse
 import no.nav.tiltakspenger.vedtak.objectmothers.tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
@@ -48,39 +53,25 @@ internal class PostgresSøkerRepositoryTest {
     }
 
     @Test
-    fun `lagre og hente hele aggregatet`() {
+    fun `lagre og hente hele aggregatet med BrukerTiltak`() {
         val ident = Random().nextInt().toString()
 
-        val søknad1 = nySøknadMedBrukerTiltak(
-            ident = ident,
-        )
-
-        val søknad2 = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedBrukerTiltak(
             ident = ident,
             barnetillegg = listOf(barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon())
+            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+        val tiltaksaktivitet = listOf(tiltaksaktivitet())
+        val ytelseSak = listOf(ytelseSak())
 
-        val søknad3 = nySøknadMedBrukerTiltak(
+        val søker = søkerMedYtelse(
             ident = ident,
-            barnetillegg = listOf(barnetilleggUtenIdent(), barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon())
-        )
-
-        val tiltaksaktivitet = tiltaksaktivitet()
-        val ytelseSak = ytelseSak()
-
-        val søker = Søker.fromDb(
-            id = UUID.randomUUID(),
-            ident = ident,
-            tilstand = "AvventerPersonopplysninger",
-            søknader = listOf(
-                søknad1, søknad2, søknad3
-            ),
-            tiltak = listOf(tiltaksaktivitet),
-            ytelser = listOf(ytelseSak),
-            personopplysninger = null,
-            aktivitetslogg = Aktivitetslogg(),
+            søknad = søknad,
+            personopplysninger = personopplysninger,
+            skjerming = skjermingFalse(ident = ident),
+            tiltaksaktivitet = tiltaksaktivitet,
+            ytelseSak = ytelseSak,
         )
 
         søkerRepo.lagre(søker)
@@ -90,8 +81,46 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknader shouldContainExactly listOf(søknad1, søknad2, søknad3)
-        hentetSøker.tiltak shouldContainExactly listOf(tiltaksaktivitet)
-        hentetSøker.ytelser shouldContainExactly listOf(ytelseSak)
+        hentetSøker.søknader shouldContainExactly listOf(søknad)
+        hentetSøker.personopplysninger shouldBe personopplysninger.copy(skjermet = false)
+        hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
+        hentetSøker.ytelser shouldContainExactly ytelseSak
+        hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
+    }
+
+    @Test
+    fun `lagre og hente hele aggregatet med ArenaTiltak`() {
+        val ident = Random().nextInt().toString()
+
+        val søknad = nySøknadMedArenaTiltak(
+            ident = ident,
+            barnetillegg = listOf(barnetilleggUtenIdent()),
+            trygdOgPensjon = listOf(trygdOgPensjon()),
+        )
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+        val tiltaksaktivitet = listOf(tiltaksaktivitet())
+        val ytelseSak = listOf(ytelseSak())
+
+        val søker = søkerMedYtelse(
+            ident = ident,
+            søknad = søknad,
+            personopplysninger = personopplysninger,
+            skjerming = skjermingTrue(ident = ident),
+            tiltaksaktivitet = tiltaksaktivitet,
+            ytelseSak = ytelseSak,
+        )
+
+        søkerRepo.lagre(søker)
+
+        val hentetSøker = søkerRepo.hent(ident)!!
+
+        assertEquals(søker.ident, hentetSøker.ident)
+        assertEquals(søker.id, hentetSøker.id)
+        assertEquals(søker.tilstand, hentetSøker.tilstand)
+        hentetSøker.søknader shouldContainExactly listOf(søknad)
+        hentetSøker.personopplysninger shouldBe personopplysninger.copy(skjermet = true)
+        hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
+        hentetSøker.ytelser shouldContainExactly ytelseSak
+        hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
     }
 }
