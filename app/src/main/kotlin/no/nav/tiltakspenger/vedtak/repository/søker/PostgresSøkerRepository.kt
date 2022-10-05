@@ -74,8 +74,9 @@ internal class PostgresSøkerRepository(
             søknader = søknadDAO.hentAlle(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
             ytelser = ytelsesakDAO.hentForSøker(id, txSession),
-            personopplysninger = personopplysningerDAO.hent(id, txSession),
-            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
+            personopplysninger = personopplysningerDAO.hentPersonopplysningerForSøker(id, txSession),
+            barn = personopplysningerDAO.hentPersonopplysningerForBarn(id, txSession),
+            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
     }
 

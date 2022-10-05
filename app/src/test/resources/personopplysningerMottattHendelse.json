@@ -27,7 +27,16 @@
         "gtKommune": "Oslo",
         "gtBydel": "460105",
         "gtLand": "Norge",
-        "barn": [],
+        "barn": [
+          {
+            "ident": "07081812345",
+            "fornavn": "Fornem",
+            "mellomnavn": null,
+            "etternavn": "Jogger",
+            "fødselsdato": "2018-08-07",
+            "adressebeskyttelseGradering": "UGRADERT"
+          }
+        ],
         "barnUtenFolkeregisteridentifikator": []
       },
       "feil": null

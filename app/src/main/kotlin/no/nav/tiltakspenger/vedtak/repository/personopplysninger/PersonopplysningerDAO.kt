@@ -16,7 +16,7 @@ internal class PersonopplysningerDAO {
         Personopplysninger(
             row.string("ident"),
             row.localDate("fødselsdato"),
-            false,
+            row.boolean("er_barn"),
             row.string("fornavn"),
             row.stringOrNull("mellomnavn"),
             row.string("etternavn"),
@@ -41,7 +41,8 @@ internal class PersonopplysningerDAO {
     private val slettPersonopplysninger = "delete from personopplysninger where søker_id = ?"
 
     @Language("SQL")
-    private val hentPersonopplysninger = "select * from personopplysninger where søker_id = ?"
+    private val hentPersonopplysninger =
+        "select * from personopplysninger where søker_id = :sokerId AND er_barn = :erBarn"
 
     @Language("SQL")
     private val lagrePersonopplysninger = """
@@ -92,7 +93,7 @@ internal class PersonopplysningerDAO {
                         "sokerId" to søkerId,
                         "ident" to it.ident,
                         "fodselsdato" to it.fødselsdato,
-                        "erBarn" to false,
+                        "erBarn" to it.erBarn,
                         "fornavn" to it.fornavn,
                         "mellomnavn" to it.mellomnavn,
                         "etternavn" to it.etternavn,
@@ -109,7 +110,21 @@ internal class PersonopplysningerDAO {
         }
     }
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession): List<Personopplysninger> = txSession.run(
-        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asList  //TODO bare endret signaturen, denne leverer ikke en liste enda
+    fun hentPersonopplysningerForBarn(søkerId: UUID, txSession: TransactionalSession): List<Personopplysninger> =
+        txSession.run(
+            queryOf(
+                hentPersonopplysninger,
+                mapOf("sokerId" to søkerId, "erBarn" to true)
+            ).map(toPersonopplysninger).asList
+        )
+
+    fun hentPersonopplysningerForSøker(
+        søkerId: UUID,
+        txSession: TransactionalSession
+    ): Personopplysninger? = txSession.run(
+        queryOf(
+            hentPersonopplysninger,
+            mapOf("sokerId" to søkerId, "erBarn" to false)
+        ).map(toPersonopplysninger).asSingle
     )
 }

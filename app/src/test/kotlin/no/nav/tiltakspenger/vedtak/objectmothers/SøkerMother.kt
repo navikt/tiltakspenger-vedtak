@@ -41,7 +41,7 @@ fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
-    barn: List<Personopplysninger> = listOf(barn()),
+    barn: List<Personopplysninger> = listOf(barn(), barn()),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,

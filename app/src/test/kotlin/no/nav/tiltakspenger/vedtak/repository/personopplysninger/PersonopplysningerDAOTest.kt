@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.objectmothers.barn
 import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.vedtak.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -70,7 +69,7 @@ internal class PersonopplysningerDAOTest {
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -108,7 +107,7 @@ internal class PersonopplysningerDAOTest {
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -121,7 +120,7 @@ internal class PersonopplysningerDAOTest {
         // when
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(UUID.randomUUID(), txSession)
+                dao.hentPersonopplysningerForSøker(UUID.randomUUID(), txSession)
             }
         }
 
@@ -154,7 +153,7 @@ internal class PersonopplysningerDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -165,26 +164,34 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `lagre barn og hent opp igjen`() {
         val ident = Random().nextInt().toString()
-        val søker = søkerMedSøknad(ident = ident)
-        val barn = barn()
+        val søker = Søker(ident)
+        val barn1 = barn()
+        val barn2 = barn()
         val personopplysninger = personopplysningKjedeligFyr(ident = ident)
 
         søkerRepository.lagre(søker)
 
-        val personopplysningListe = listOf(personopplysninger, barn)
+        val personopplysningListe = listOf(personopplysninger, barn1, barn2)
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.lagre(søker.id, personopplysningListe, txSession)
             }
         }
 
-        val hentet = sessionOf(DataSource.hikariDataSource).use {
+        val hentetPersonopplysninger = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
-        hentet.filter { !it.erBarn } shouldContainExactly listOf(personopplysninger)
-        hentet.filter { it.erBarn } shouldContainExactly listOf(barn)
+        assertEquals(personopplysninger, hentetPersonopplysninger)
+
+        val hentetPersonopplysningerForBarn: List<Personopplysninger> = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hentPersonopplysningerForBarn(søker.id, txSession)
+            }
+        }
+
+        hentetPersonopplysningerForBarn shouldContainExactly listOf(barn1, barn2)
     }
 }
