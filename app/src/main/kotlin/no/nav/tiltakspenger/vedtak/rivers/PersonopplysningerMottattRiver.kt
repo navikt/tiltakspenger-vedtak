@@ -56,6 +56,10 @@ internal class PersonopplysningerMottattRiver(
                 dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
                 ident = packet["ident"].asText(),
+            ),
+            barn = mapBarn(
+                dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
+                innhentet = packet["@opprettet"].asLocalDateTime(),
             )
         )
 
@@ -73,6 +77,7 @@ internal class PersonopplysningerMottattRiver(
         return Personopplysninger(
             ident = ident,
             fødselsdato = dto.fødselsdato,
+            erBarn = false,
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
@@ -85,5 +90,45 @@ internal class PersonopplysningerMottattRiver(
             land = dto.gtLand,
             tidsstempelHosOss = innhentet,
         )
+    }
+
+    private fun mapBarn(
+        dto: PersonopplysningerDTO,
+        innhentet: LocalDateTime,
+    ): List<Personopplysninger> {
+        return dto.barn.map {
+            Personopplysninger(
+                ident = it.ident,
+                fødselsdato = it.fødselsdato,
+                erBarn = true,
+                fornavn = it.fornavn,
+                mellomnavn = it.mellomnavn,
+                etternavn = it.etternavn,
+                fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
+                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
+                        it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+                skjermet = null,
+                kommune = null,
+                bydel = null,
+                land = null,
+                tidsstempelHosOss = innhentet,
+            )
+        } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
+            Personopplysninger(
+                ident = null,
+                fødselsdato = barn.fødselsdato,
+                erBarn = true,
+                fornavn = barn.fornavn ?: "",
+                mellomnavn = barn.mellomnavn,
+                etternavn = barn.etternavn ?: "",
+                fortrolig = false,
+                strengtFortrolig = false,
+                skjermet = null,
+                kommune = null,
+                bydel = null,
+                land = null,
+                tidsstempelHosOss = innhentet,
+            )
+        }
     }
 }

@@ -28,12 +28,14 @@ fun nySøknadMottattHendelse(
 fun nyPersonopplysningHendelse(
     ident: String = Random().nextInt().toString(),
     personopplysninger: Personopplysninger = personopplysningKjedeligFyr(),
+    barn: List<Personopplysninger> = listOf(barn()),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
         ident = ident,
         personopplysninger = personopplysninger,
         aktivitetslogg = aktivitetslogg,
+        barn = barn,
     )
 }
 

@@ -42,7 +42,7 @@ internal class PostgresSøkerRepository(
     override fun lagre(søker: Søker) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                if (brukerFinnes(ident = søker.ident, txSession = txSession)) {
+                if (søkerFinnes(ident = søker.ident, txSession = txSession)) {
                     oppdaterTilstand(søker = søker, txSession = txSession)
                 } else {
                     insert(søker = søker, txSession = txSession)
@@ -50,13 +50,12 @@ internal class PostgresSøkerRepository(
                 søknadDAO.lagre(søkerId = søker.id, søknader = søker.søknader, txSession = txSession)
                 tiltaksaktivitetDAO.lagre(søkerId = søker.id, tiltaksaktiviteter = søker.tiltak, txSession = txSession)
                 ytelsesakDAO.lagre(søkerId = søker.id, ytelsesaker = søker.ytelser, txSession = txSession)
-                if (søker.personopplysninger != null) {
-                    personopplysningerDAO.lagre(
-                        søkerId = søker.id,
-                        personopplysninger = søker.personopplysninger!!,
-                        txSession = txSession
-                    )
-                }
+                personopplysningerDAO.lagre(
+                    søkerId = søker.id,
+                    personopplysninger = if (søker.personopplysninger != null) søker.barn + søker.personopplysninger!!
+                    else søker.barn,
+                    txSession = txSession
+                )
                 aktivitetsloggDAO.lagre(
                     søkerId = søker.id,
                     aktivitetslogg = søker.aktivitetslogg,
@@ -75,12 +74,13 @@ internal class PostgresSøkerRepository(
             søknader = søknadDAO.hentAlle(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
             ytelser = ytelsesakDAO.hentForSøker(id, txSession),
-            personopplysninger = personopplysningerDAO.hent(id, txSession),
-            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
+            personopplysninger = personopplysningerDAO.hentPersonopplysningerForSøker(id, txSession),
+            barn = personopplysningerDAO.hentPersonopplysningerForBarn(id, txSession),
+            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
     }
 
-    private fun brukerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
+    private fun søkerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw RuntimeException("Failed to check if person exists")
 

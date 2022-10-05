@@ -16,6 +16,7 @@ internal class PersonopplysningerDAO {
         Personopplysninger(
             row.string("ident"),
             row.localDate("fødselsdato"),
+            row.boolean("er_barn"),
             row.string("fornavn"),
             row.stringOrNull("mellomnavn"),
             row.string("etternavn"),
@@ -37,10 +38,11 @@ internal class PersonopplysningerDAO {
     private val finnes = "select exists(select 1 from personopplysninger where ident = ?)"
 
     @Language("SQL")
-    private val slettPersonopplysninger = "delete from personopplysninger where ident = ?"
+    private val slettPersonopplysninger = "delete from personopplysninger where søker_id = ?"
 
     @Language("SQL")
-    private val hentPersonopplysninger = "select * from personopplysninger where søker_id = ?"
+    private val hentPersonopplysninger =
+        "select * from personopplysninger where søker_id = :sokerId AND er_barn = :erBarn"
 
     @Language("SQL")
     private val lagrePersonopplysninger = """
@@ -49,6 +51,7 @@ internal class PersonopplysningerDAO {
             søker_id,        
             ident,           
             fødselsdato,     
+            er_barn,
             fornavn,         
             mellomnavn,      
             etternavn,       
@@ -63,7 +66,8 @@ internal class PersonopplysningerDAO {
             :id,
             :sokerId,
             :ident,             
-            :fodselsdato,       
+            :fodselsdato,   
+            :erBarn,
             :fornavn,           
             :mellomnavn,        
             :etternavn,         
@@ -76,36 +80,51 @@ internal class PersonopplysningerDAO {
             :tidsstempelHosOss
         )""".trimIndent()
 
-    fun lagre(søkerId: UUID, personopplysninger: Personopplysninger, txSession: TransactionalSession) {
-        if (personopplysningerFinnes(personopplysninger.ident, txSession)) {
-            log.info { "Sletter personopplysninger før lagring" }
-            txSession.run(queryOf(slettPersonopplysninger, personopplysninger.ident).asUpdate)
-        }
+    fun lagre(søkerId: UUID, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
+        log.info { "Sletter personopplysninger før lagring" }
+        txSession.run(queryOf(slettPersonopplysninger, søkerId).asUpdate)
         log.info { "Lagre personopplysninger" }
         securelog.info { "Lagre personopplysninger $søkerId" }
-        txSession.run(
-            queryOf(
-                lagrePersonopplysninger, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "sokerId" to søkerId,
-                    "ident" to personopplysninger.ident,
-                    "fodselsdato" to personopplysninger.fødselsdato,
-                    "fornavn" to personopplysninger.fornavn,
-                    "mellomnavn" to personopplysninger.mellomnavn,
-                    "etternavn" to personopplysninger.etternavn,
-                    "fortrolig" to personopplysninger.fortrolig,
-                    "strengtFortrolig" to personopplysninger.strengtFortrolig,
-                    "skjermet" to personopplysninger.skjermet,
-                    "kommune" to personopplysninger.kommune,
-                    "bydel" to personopplysninger.bydel,
-                    "land" to personopplysninger.land,
-                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
-                )
-            ).asUpdate
-        )
+        personopplysninger.forEach {
+            txSession.run(
+                queryOf(
+                    lagrePersonopplysninger, mapOf(
+                        "id" to UUID.randomUUID(),
+                        "sokerId" to søkerId,
+                        "ident" to it.ident,
+                        "fodselsdato" to it.fødselsdato,
+                        "erBarn" to it.erBarn,
+                        "fornavn" to it.fornavn,
+                        "mellomnavn" to it.mellomnavn,
+                        "etternavn" to it.etternavn,
+                        "fortrolig" to it.fortrolig,
+                        "strengtFortrolig" to it.strengtFortrolig,
+                        "skjermet" to it.skjermet,
+                        "kommune" to it.kommune,
+                        "bydel" to it.bydel,
+                        "land" to it.land,
+                        "tidsstempelHosOss" to it.tidsstempelHosOss
+                    )
+                ).asUpdate
+            )
+        }
     }
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession): Personopplysninger? = txSession.run(
-        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asSingle
+    fun hentPersonopplysningerForBarn(søkerId: UUID, txSession: TransactionalSession): List<Personopplysninger> =
+        txSession.run(
+            queryOf(
+                hentPersonopplysninger,
+                mapOf("sokerId" to søkerId, "erBarn" to true)
+            ).map(toPersonopplysninger).asList
+        )
+
+    fun hentPersonopplysningerForSøker(
+        søkerId: UUID,
+        txSession: TransactionalSession
+    ): Personopplysninger? = txSession.run(
+        queryOf(
+            hentPersonopplysninger,
+            mapOf("sokerId" to søkerId, "erBarn" to false)
+        ).map(toPersonopplysninger).asSingle
     )
 }

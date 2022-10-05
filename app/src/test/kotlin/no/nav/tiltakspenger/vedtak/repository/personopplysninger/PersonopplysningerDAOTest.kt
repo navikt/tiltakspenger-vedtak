@@ -1,11 +1,14 @@
 package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 
+import io.kotest.matchers.collections.shouldContainExactly
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.objectmothers.barn
+import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -37,6 +40,7 @@ internal class PersonopplysningerDAOTest {
     private fun personopplysninger(ident: String) = Personopplysninger(
         ident = ident,
         fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+        erBarn = false,
         fornavn = "Kjell",
         mellomnavn = "T.",
         etternavn = "Ring",
@@ -60,12 +64,12 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, personopplysninger, txSession)
+                dao.lagre(søker.id, listOf(personopplysninger), txSession)
             }
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -82,6 +86,7 @@ internal class PersonopplysningerDAOTest {
         val personopplysninger = Personopplysninger(
             ident = ident,
             fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+            erBarn = false,
             fornavn = "Kjell",
             mellomnavn = null,
             etternavn = "Ring",
@@ -97,12 +102,12 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, personopplysninger, txSession)
+                dao.lagre(søker.id, listOf(personopplysninger), txSession)
             }
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -115,7 +120,7 @@ internal class PersonopplysningerDAOTest {
         // when
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(UUID.randomUUID(), txSession)
+                dao.hentPersonopplysningerForSøker(UUID.randomUUID(), txSession)
             }
         }
 
@@ -134,7 +139,7 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, gamlePersonopplysninger, txSession)
+                dao.lagre(søker.id, listOf(gamlePersonopplysninger), txSession)
             }
         }
 
@@ -142,13 +147,13 @@ internal class PersonopplysningerDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, nyePersonopplysninger, txSession)
+                dao.lagre(søker.id, listOf(nyePersonopplysninger), txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
             }
         }
 
@@ -156,4 +161,37 @@ internal class PersonopplysningerDAOTest {
         assertEquals(nyePersonopplysninger, hentet)
     }
 
+    @Test
+    fun `lagre barn og hent opp igjen`() {
+        val ident = Random().nextInt().toString()
+        val søker = Søker(ident)
+        val barn1 = barn()
+        val barn2 = barn()
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+
+        søkerRepository.lagre(søker)
+
+        val personopplysningListe = listOf(personopplysninger, barn1, barn2)
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, personopplysningListe, txSession)
+            }
+        }
+
+        val hentetPersonopplysninger = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hentPersonopplysningerForSøker(søker.id, txSession)
+            }
+        }
+
+        assertEquals(personopplysninger, hentetPersonopplysninger)
+
+        val hentetPersonopplysningerForBarn: List<Personopplysninger> = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hentPersonopplysningerForBarn(søker.id, txSession)
+            }
+        }
+
+        hentetPersonopplysningerForBarn shouldContainExactly listOf(barn1, barn2)
+    }
 }

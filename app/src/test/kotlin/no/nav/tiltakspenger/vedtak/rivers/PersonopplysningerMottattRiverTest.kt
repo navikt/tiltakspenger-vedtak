@@ -104,6 +104,11 @@ internal class PersonopplysningerMottattRiverTest {
                         assertFalse(it.personopplysninger().fortrolig)
                         assertFalse(it.personopplysninger().strengtFortrolig)
                         assertNull(it.personopplysninger().skjermet)
+                        assertEquals(1, it.barnOpplysninger().size)
+                        assertEquals("Fornem", it.barnOpplysninger().first().fornavn)
+                        assertEquals("Jogger", it.barnOpplysninger().first().etternavn)
+                        assertEquals("07081812345", it.barnOpplysninger().first().ident)
+                        assertEquals(LocalDate.of(2018, Month.AUGUST, 7), it.barnOpplysninger().first().fødselsdato)
                     }
                 )
             }
