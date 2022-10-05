@@ -219,6 +219,7 @@ class Søker private constructor(
             personopplysningerMottattHendelse
                 .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
             søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
+            søker.barn = personopplysningerMottattHendelse.barnOpplysninger()
             søker.trengerSkjermingdata(personopplysningerMottattHendelse)
             søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }

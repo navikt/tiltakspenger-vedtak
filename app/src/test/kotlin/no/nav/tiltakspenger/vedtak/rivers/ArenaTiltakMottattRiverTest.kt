@@ -4,16 +4,15 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -74,25 +73,7 @@ internal class ArenaTiltakMottattRiverTest {
                 fritekst = null
             )
         )
-        val personopplysningerMottatthendelse = PersonopplysningerMottattHendelse(
-            aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
-            personopplysninger = Personopplysninger(
-                ident = "",
-                fødselsdato = LocalDate.MAX,
-                erBarn = false,
-                fornavn = "",
-                mellomnavn = null,
-                etternavn = "",
-                fortrolig = false,
-                strengtFortrolig = false,
-                skjermet = null,
-                kommune = null,
-                bydel = null,
-                land = null,
-                tidsstempelHosOss = LocalDateTime.now(),
-            )
-        )
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),

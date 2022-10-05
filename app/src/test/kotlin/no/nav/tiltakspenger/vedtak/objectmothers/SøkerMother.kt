@@ -41,6 +41,7 @@ fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
+    barn: List<Personopplysninger> = listOf(barn()),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,
@@ -50,6 +51,7 @@ fun søkerMedPersonopplysninger(
         nyPersonopplysningHendelse(
             ident = ident,
             personopplysninger = personopplysninger,
+            barn = barn,
         )
     )
     return søker
@@ -139,6 +141,37 @@ fun personopplysningKjedeligFyr(
         ident = ident,
         fødselsdato = fødselsdato,
         erBarn = false,
+        fornavn = fornavn,
+        mellomnavn = mellomnavn,
+        etternavn = etternavn,
+        fortrolig = fortrolig,
+        strengtFortrolig = strengtFortrolig,
+        skjermet = skjermet,
+        kommune = kommune,
+        bydel = bydel,
+        land = land,
+        tidsstempelHosOss = tidsstempelHosOss,
+    )
+}
+
+fun barn(
+    ident: String = Random().nextInt().toString(),
+    fødselsdato: LocalDate = 1.januar(2001),
+    fornavn: String = "Fornavn",
+    mellomnavn: String? = null,
+    etternavn: String = "Etternavn",
+    fortrolig: Boolean = false,
+    strengtFortrolig: Boolean = false,
+    kommune: String? = null,
+    bydel: String? = null,
+    land: String? = null,
+    skjermet: Boolean? = null,
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+): Personopplysninger {
+    return Personopplysninger(
+        ident = ident,
+        fødselsdato = fødselsdato,
+        erBarn = true,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,

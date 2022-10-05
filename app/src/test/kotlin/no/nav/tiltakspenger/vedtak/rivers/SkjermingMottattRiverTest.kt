@@ -4,14 +4,13 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -98,25 +97,7 @@ internal class SkjermingMottattRiverTest {
                 fritekst = null,
             )
         )
-        val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
-            aktivitetslogg = aktivitetslogg,
-            ident = ident,
-            personopplysninger = Personopplysninger(
-                ident = ident,
-                fødselsdato = LocalDate.now(),
-                erBarn = false,
-                fornavn = "",
-                mellomnavn = null,
-                etternavn = "",
-                fortrolig = false,
-                strengtFortrolig = false,
-                skjermet = null,
-                kommune = null,
-                bydel = null,
-                land = null,
-                tidsstempelHosOss = LocalDateTime.now()
-            )
-        )
+        val personopplysningerMottattHendelse = nyPersonopplysningHendelse(ident = ident)
         val søker = Søker(ident)
         every { søkerRepository.hent(ident) } returns søker
 

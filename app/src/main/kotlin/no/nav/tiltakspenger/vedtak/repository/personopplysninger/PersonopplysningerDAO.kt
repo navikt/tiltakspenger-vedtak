@@ -109,7 +109,7 @@ internal class PersonopplysningerDAO {
         }
     }
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession): Personopplysninger? = txSession.run(
-        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asSingle
+    fun hent(søkerId: UUID, txSession: TransactionalSession): List<Personopplysninger> = txSession.run(
+        queryOf(hentPersonopplysninger, søkerId).map(toPersonopplysninger).asList  //TODO bare endret signaturen, denne leverer ikke en liste enda
     )
 }

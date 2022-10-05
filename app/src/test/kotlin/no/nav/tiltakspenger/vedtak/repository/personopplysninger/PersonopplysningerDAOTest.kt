@@ -1,11 +1,15 @@
 package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 
+import io.kotest.matchers.collections.shouldContainExactly
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.objectmothers.barn
+import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.vedtak.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -158,4 +162,29 @@ internal class PersonopplysningerDAOTest {
         assertEquals(nyePersonopplysninger, hentet)
     }
 
+    @Test
+    fun `lagre barn og hent opp igjen`() {
+        val ident = Random().nextInt().toString()
+        val søker = søkerMedSøknad(ident = ident)
+        val barn = barn()
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+
+        søkerRepository.lagre(søker)
+
+        val personopplysningListe = listOf(personopplysninger, barn)
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.lagre(søker.id, personopplysningListe, txSession)
+            }
+        }
+
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                dao.hent(søker.id, txSession)
+            }
+        }
+
+        hentet.filter { !it.erBarn } shouldContainExactly listOf(personopplysninger)
+        hentet.filter { it.erBarn } shouldContainExactly listOf(barn)
+    }
 }
