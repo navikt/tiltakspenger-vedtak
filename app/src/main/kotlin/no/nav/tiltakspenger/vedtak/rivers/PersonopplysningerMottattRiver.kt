@@ -107,10 +107,10 @@ internal class PersonopplysningerMottattRiver(
                 fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
                 strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
                         it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
-                skjermet = null,
+                skjermet = null, // TODO: fix!
                 kommune = null,
                 bydel = null,
-                land = null,
+                land = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
         } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
@@ -121,12 +121,12 @@ internal class PersonopplysningerMottattRiver(
                 fornavn = barn.fornavn ?: "",
                 mellomnavn = barn.mellomnavn,
                 etternavn = barn.etternavn ?: "",
-                fortrolig = false,
-                strengtFortrolig = false,
-                skjermet = null,
+                fortrolig = false, //TODO: dette vet vi ikke
+                strengtFortrolig = false, //TODO: dette vet vi ikke
+                skjermet = null, // TODO: fix!
                 kommune = null,
                 bydel = null,
-                land = null,
+                land = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
         }
