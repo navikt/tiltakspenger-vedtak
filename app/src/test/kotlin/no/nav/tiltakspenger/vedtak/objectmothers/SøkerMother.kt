@@ -46,10 +46,12 @@ fun søkerMedPersonopplysninger(
         ident = ident,
         søknad = søknad,
     )
-    søker.håndter(nyPersonopplysningHendelse(
-        ident = ident,
-        personopplysninger = personopplysninger,
-    ))
+    søker.håndter(
+        nyPersonopplysningHendelse(
+            ident = ident,
+            personopplysninger = personopplysninger,
+        )
+    )
     return søker
 }
 
@@ -86,10 +88,12 @@ fun søkerMedTiltak(
         personopplysninger = personopplysninger,
         skjerming = skjerming,
     )
-    søker.håndter(nyTiltakHendelse(
-        ident = ident,
-        tiltaksaktivitet = tiltaksaktivitet,
-    ))
+    søker.håndter(
+        nyTiltakHendelse(
+            ident = ident,
+            tiltaksaktivitet = tiltaksaktivitet,
+        )
+    )
     return søker
 }
 
@@ -134,15 +138,16 @@ fun personopplysningKjedeligFyr(
     return Personopplysninger(
         ident = ident,
         fødselsdato = fødselsdato,
+        erBarn = false,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
+        skjermet = skjermet,
         kommune = kommune,
         bydel = bydel,
         land = land,
-        skjermet = skjermet,
         tidsstempelHosOss = tidsstempelHosOss,
     )
 }

@@ -73,6 +73,7 @@ internal class PersonopplysningerMottattRiver(
         return Personopplysninger(
             ident = ident,
             fødselsdato = dto.fødselsdato,
+            erBarn = false,
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,

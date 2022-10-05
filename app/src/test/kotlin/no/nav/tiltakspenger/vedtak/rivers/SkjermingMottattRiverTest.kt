@@ -104,6 +104,7 @@ internal class SkjermingMottattRiverTest {
             personopplysninger = Personopplysninger(
                 ident = ident,
                 fødselsdato = LocalDate.now(),
+                erBarn = false,
                 fornavn = "",
                 mellomnavn = null,
                 etternavn = "",

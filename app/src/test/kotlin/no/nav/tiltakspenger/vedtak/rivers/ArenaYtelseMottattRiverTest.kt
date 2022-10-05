@@ -81,6 +81,7 @@ internal class ArenaYtelseMottattRiverTest {
             personopplysninger = Personopplysninger(
                 ident = "",
                 fødselsdato = LocalDate.MAX,
+                erBarn = false,
                 fornavn = "",
                 mellomnavn = null,
                 etternavn = "",

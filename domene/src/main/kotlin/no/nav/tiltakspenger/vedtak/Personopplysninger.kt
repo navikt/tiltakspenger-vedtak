@@ -5,8 +5,9 @@ import java.time.LocalDateTime
 
 @Suppress("LongParameterList")
 data class Personopplysninger(
-    val ident: String,
-    val fødselsdato: LocalDate,
+    val ident: String?,
+    val fødselsdato: LocalDate?,
+    val erBarn: Boolean,
     val fornavn: String,
     val mellomnavn: String?,
     val etternavn: String,
@@ -16,7 +17,7 @@ data class Personopplysninger(
     val kommune: String?,
     val bydel: String?,
     val land: String?,
-    val tidsstempelHosOss: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)){}){}
+    val tidsstempelHosOss: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
 ) : Tidsstempler {
     fun accept(visitor: SøkerVisitor) {
         visitor.visitPersonopplysninger(this)

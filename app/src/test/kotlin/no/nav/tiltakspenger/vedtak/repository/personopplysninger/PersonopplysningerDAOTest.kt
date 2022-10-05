@@ -37,6 +37,7 @@ internal class PersonopplysningerDAOTest {
     private fun personopplysninger(ident: String) = Personopplysninger(
         ident = ident,
         fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+        erBarn = false,
         fornavn = "Kjell",
         mellomnavn = "T.",
         etternavn = "Ring",
@@ -60,7 +61,7 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, personopplysninger, txSession)
+                dao.lagre(søker.id, listOf(personopplysninger), txSession)
             }
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
@@ -82,6 +83,7 @@ internal class PersonopplysningerDAOTest {
         val personopplysninger = Personopplysninger(
             ident = ident,
             fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
+            erBarn = false,
             fornavn = "Kjell",
             mellomnavn = null,
             etternavn = "Ring",
@@ -97,7 +99,7 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, personopplysninger, txSession)
+                dao.lagre(søker.id, listOf(personopplysninger), txSession)
             }
         }
         val hentet = sessionOf(DataSource.hikariDataSource).use {
@@ -134,7 +136,7 @@ internal class PersonopplysningerDAOTest {
         // when
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, gamlePersonopplysninger, txSession)
+                dao.lagre(søker.id, listOf(gamlePersonopplysninger), txSession)
             }
         }
 
@@ -142,7 +144,7 @@ internal class PersonopplysningerDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, nyePersonopplysninger, txSession)
+                dao.lagre(søker.id, listOf(nyePersonopplysninger), txSession)
             }
         }
 

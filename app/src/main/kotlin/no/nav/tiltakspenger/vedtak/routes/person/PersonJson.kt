@@ -39,6 +39,7 @@ data class PeriodeDTO(
     val fra: LocalDate,
     val til: LocalDate,
 )
+
 data class TiltakDTO(
     val arrangør: String,
     val navn: String,
@@ -77,6 +78,6 @@ data class PersonopplysningerDTO(
 data class BarnDTO(
     val fornavn: String,
     val etternavn: String,
-    val ident: String,
+    val ident: String?,
     val bosted: String?
 )
