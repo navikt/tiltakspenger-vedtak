@@ -57,5 +57,5 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:2.13.0.Final")
+    testImplementation("io.quarkus:quarkus-junit4-mock:2.13.1.Final")
 }
