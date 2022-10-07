@@ -82,6 +82,7 @@ sealed class Barnetillegg {
     abstract val alder: Int
     abstract val land: String
     abstract val fornavn: String?
+    abstract val mellomnavn: String?
     abstract val etternavn: String?
     abstract val søktBarnetillegg: Boolean
 
@@ -89,6 +90,7 @@ sealed class Barnetillegg {
         override val alder: Int,
         override val land: String,
         override val fornavn: String?,
+        override val mellomnavn: String?,
         override val etternavn: String?,
         val ident: String,
         override val søktBarnetillegg: Boolean,
@@ -98,6 +100,7 @@ sealed class Barnetillegg {
         override val alder: Int,
         override val land: String,
         override val fornavn: String?,
+        override val mellomnavn: String?,
         override val etternavn: String?,
         val fødselsdato: LocalDate,
         override val søktBarnetillegg: Boolean,

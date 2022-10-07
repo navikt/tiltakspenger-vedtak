@@ -54,6 +54,7 @@ CREATE TABLE barnetillegg
     ident             VARCHAR NULL,
     fødselsdato       DATE    NULL,
     fornavn           VARCHAR NULL,
+    mellomnavn        VARCHAR NULL,
     etternavn         VARCHAR NULL,
     alder             INT     NOT NULL,
     land              VARCHAR NOT NULL,

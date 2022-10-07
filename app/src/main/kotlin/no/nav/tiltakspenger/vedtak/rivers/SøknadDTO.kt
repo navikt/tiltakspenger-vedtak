@@ -140,6 +140,7 @@ class BarnetilleggDTO(
     val ident: String? = null,
     val fødselsdato: LocalDate? = null,
     val fornavn: String? = null,
+    val mellomnavn: String? = null,
     val etternavn: String? = null,
     val søktBarnetillegg: Boolean? = null, //Er midlertidig at det er null, endres når alt er i sync
 ) {
@@ -150,6 +151,7 @@ class BarnetilleggDTO(
                 land = dto.land,
                 ident = dto.ident,
                 fornavn = dto.fornavn,
+                mellomnavn = dto.mellomnavn,
                 etternavn = dto.etternavn,
                 søktBarnetillegg = dto.søktBarnetillegg ?: true,
             ) else
@@ -158,6 +160,7 @@ class BarnetilleggDTO(
                     land = dto.land,
                     fødselsdato = dto.fødselsdato!!,
                     fornavn = dto.fornavn,
+                    mellomnavn = dto.mellomnavn,
                     etternavn = dto.etternavn,
                     søktBarnetillegg = dto.søktBarnetillegg ?: true
                 )

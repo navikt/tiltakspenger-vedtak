@@ -34,6 +34,7 @@ internal class BarnetilleggDAO {
                 "ident" to barnetillegg.ident,
                 "fodselsdato" to null,
                 "fornavn" to barnetillegg.fornavn,
+                "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
@@ -46,6 +47,7 @@ internal class BarnetilleggDAO {
                 "ident" to null,
                 "fodselsdato" to barnetillegg.fødselsdato,
                 "fornavn" to barnetillegg.fornavn,
+                "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
                 "land" to barnetillegg.land,
@@ -69,6 +71,7 @@ internal class BarnetilleggDAO {
         val alder = int("alder")
         val land = string("land")
         val fornavn = stringOrNull("fornavn")
+        val mellomnavn = stringOrNull("mellomnavn")
         val etternavn = stringOrNull("etternavn")
         val søktBarnetillegg = boolean("søkt_barnetillegg")
         return if (ident != null) {
@@ -77,6 +80,7 @@ internal class BarnetilleggDAO {
                 land = land,
                 ident = ident,
                 fornavn = fornavn,
+                mellomnavn = mellomnavn,
                 etternavn = etternavn,
                 søktBarnetillegg = søktBarnetillegg,
             )
@@ -86,6 +90,7 @@ internal class BarnetilleggDAO {
                 land = land,
                 fødselsdato = fødselsdato!!,
                 fornavn = fornavn,
+                mellomnavn = mellomnavn,
                 etternavn = etternavn,
                 søktBarnetillegg = søktBarnetillegg,
             )
@@ -100,6 +105,7 @@ internal class BarnetilleggDAO {
             ident,
             fødselsdato,
             fornavn,
+            mellomnavn,
             etternavn,
             alder,
             land,
@@ -110,6 +116,7 @@ internal class BarnetilleggDAO {
             :ident,
             :fodselsdato,
             :fornavn,
+            :mellomnavn,
             :etternavn,
             :alder,
             :land,

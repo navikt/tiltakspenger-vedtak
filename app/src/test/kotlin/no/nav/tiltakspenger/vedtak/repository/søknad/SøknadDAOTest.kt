@@ -124,6 +124,7 @@ internal class SøknadDAOTest {
                     ident = "1",
                     land = "NO",
                     fornavn = "fornavn",
+                    mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
                     søktBarnetillegg = true,
                 )
@@ -211,6 +212,7 @@ internal class SøknadDAOTest {
                     ident = "1",
                     land = "NO",
                     fornavn = "foranvn",
+                    mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
                     søktBarnetillegg = true,
                 )
