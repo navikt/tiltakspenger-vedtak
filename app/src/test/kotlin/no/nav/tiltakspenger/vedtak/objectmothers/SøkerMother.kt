@@ -51,7 +51,6 @@ fun søkerMedPersonopplysninger(
         nyPersonopplysningHendelse(
             ident = ident,
             personopplysninger = personopplysninger,
-            barn = barn,
         )
     )
     return søker
@@ -133,26 +132,21 @@ fun personopplysningKjedeligFyr(
     strengtFortrolig: Boolean = false,
     kommune: String? = null,
     bydel: String? = null,
-    land: String? = null,
     skjermet: Boolean? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-): Personopplysninger {
-    return Personopplysninger(
-        ident = ident,
-        fødselsdato = fødselsdato,
-        erBarn = false,
-        fornavn = fornavn,
-        mellomnavn = mellomnavn,
-        etternavn = etternavn,
-        fortrolig = fortrolig,
-        strengtFortrolig = strengtFortrolig,
-        skjermet = skjermet,
-        kommune = kommune,
-        bydel = bydel,
-        land = land,
-        tidsstempelHosOss = tidsstempelHosOss,
-    )
-}
+): Personopplysninger.Søker = Personopplysninger.Søker(
+    ident = ident,
+    fødselsdato = fødselsdato,
+    fornavn = fornavn,
+    mellomnavn = mellomnavn,
+    etternavn = etternavn,
+    fortrolig = fortrolig,
+    strengtFortrolig = strengtFortrolig,
+    skjermet = skjermet,
+    kommune = kommune,
+    bydel = bydel,
+    tidsstempelHosOss = tidsstempelHosOss,
+)
 
 fun barn(
     ident: String = Random().nextInt().toString(),
@@ -162,24 +156,17 @@ fun barn(
     etternavn: String = "Etternavn",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
-    kommune: String? = null,
-    bydel: String? = null,
     land: String? = null,
-    skjermet: Boolean? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-): Personopplysninger {
-    return Personopplysninger(
+): Personopplysninger.BarnMedIdent {
+    return Personopplysninger.BarnMedIdent(
         ident = ident,
         fødselsdato = fødselsdato,
-        erBarn = true,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
-        skjermet = skjermet,
-        kommune = kommune,
-        bydel = bydel,
         land = land,
         tidsstempelHosOss = tidsstempelHosOss,
     )

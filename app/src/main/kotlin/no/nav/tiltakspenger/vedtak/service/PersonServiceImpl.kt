@@ -36,8 +36,8 @@ class PersonServiceImpl(
                     )
                 } + søker.personopplysningerBarnUtenIdent.map { barn ->
                     BarnDTO(
-                        fornavn = barn.fornavn,
-                        etternavn = barn.etternavn,
+                        fornavn = barn.fornavn!!,
+                        etternavn = barn.etternavn!!,
                         ident = barn.fødselsdato.toString(), // TODO her må vi endre sammen med frontend
                         bosted = ""
                     )

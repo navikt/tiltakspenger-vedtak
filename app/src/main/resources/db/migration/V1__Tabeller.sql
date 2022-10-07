@@ -100,13 +100,12 @@ CREATE TABLE trygdogpensjon
     tom       DATE    NULL
 );
 
-CREATE TABLE personopplysninger
+CREATE TABLE personopplysninger_søker
 (
     id                  UUID PRIMARY KEY,
     søker_id            UUID                     NOT NULL REFERENCES søker (id),
-    ident               VARCHAR                  NULL,
-    fødselsdato         DATE                     NULL,
-    er_barn             BOOLEAN                  NOT NULL,
+    ident               VARCHAR                  NOT NULL,
+    fødselsdato         DATE                     NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
     mellomnavn          VARCHAR                  NULL,
     etternavn           VARCHAR                  NOT NULL,
@@ -115,7 +114,32 @@ CREATE TABLE personopplysninger
     skjermet            BOOLEAN                  NULL,
     kommune             VARCHAR                  NULL,
     bydel               VARCHAR                  NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE personopplysninger_barn_med_ident
+(
+    id                  UUID PRIMARY KEY,
+    søker_id            UUID                     NOT NULL REFERENCES søker (id),
+    ident               VARCHAR                  NOT NULL,
+    fødselsdato         DATE                     NOT NULL,
+    fornavn             VARCHAR                  NOT NULL,
+    mellomnavn          VARCHAR                  NULL,
+    etternavn           VARCHAR                  NOT NULL,
+    fortrolig           BOOLEAN                  NOT NULL,
+    strengt_fortrolig   BOOLEAN                  NOT NULL,
     land                VARCHAR                  NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE personopplysninger_barn_uten_ident
+(
+    id                  UUID PRIMARY KEY,
+    søker_id            UUID                     NOT NULL REFERENCES søker (id),
+    fødselsdato         DATE                     NULL,
+    fornavn             VARCHAR                  NULL,
+    mellomnavn          VARCHAR                  NULL,
+    etternavn           VARCHAR                  NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

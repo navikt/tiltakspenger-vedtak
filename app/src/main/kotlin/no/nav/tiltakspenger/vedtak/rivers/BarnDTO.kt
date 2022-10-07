@@ -16,5 +16,4 @@ data class BarnUtenFolkeregisteridentifikatorDTO(
     val mellomnavn: String?,
     val etternavn: String?,
     val fødselsdato: LocalDate?,
-    val statsborgerskap: String?,
 )

@@ -77,16 +77,18 @@ internal class PersonopplysningerMottattRiver(
                 fornavn = it.fornavn,
                 mellomnavn = it.mellomnavn,
                 etternavn = it.etternavn,
+                fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
+                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
+                        it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
                 land = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
         } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
             Personopplysninger.BarnUtenIdent(
                 fødselsdato = barn.fødselsdato,
-                fornavn = barn.fornavn ?: "",
+                fornavn = barn.fornavn,
                 mellomnavn = barn.mellomnavn,
-                etternavn = barn.etternavn ?: "",
-                land = null, // TODO: fix!
+                etternavn = barn.etternavn,
                 tidsstempelHosOss = innhentet,
             )
         } + Personopplysninger.Søker(

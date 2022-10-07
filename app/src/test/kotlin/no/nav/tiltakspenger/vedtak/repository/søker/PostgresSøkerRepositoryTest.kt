@@ -19,7 +19,6 @@ import no.nav.tiltakspenger.vedtak.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -53,7 +52,6 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
         assertNull(søker.personopplysninger)
-        assertTrue(søker.barn.isEmpty())
     }
 
     @Test
@@ -90,7 +88,6 @@ internal class PostgresSøkerRepositoryTest {
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
         hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
-        hentetSøker.barn shouldContainExactly søker.barn
     }
 
     @Test
@@ -127,6 +124,5 @@ internal class PostgresSøkerRepositoryTest {
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
         hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
-        hentetSøker.barn shouldContainExactly søker.barn
     }
 }

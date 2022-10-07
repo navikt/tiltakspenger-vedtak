@@ -37,10 +37,9 @@ internal class PersonopplysningerDAOTest {
 
     private val dao = PersonopplysningerDAO()
     private val søkerRepository = PostgresSøkerRepository()
-    private fun personopplysninger(ident: String) = Personopplysninger(
+    private fun personopplysninger(ident: String) = Personopplysninger.Søker(
         ident = ident,
         fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
-        erBarn = false,
         fornavn = "Kjell",
         mellomnavn = "T.",
         etternavn = "Ring",
@@ -49,7 +48,6 @@ internal class PersonopplysningerDAOTest {
         skjermet = true,
         kommune = "Oslo",
         bydel = "3440",
-        land = "Norge",
         tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
     )
 
@@ -83,10 +81,9 @@ internal class PersonopplysningerDAOTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
-        val personopplysninger = Personopplysninger(
+        val personopplysninger = Personopplysninger.Søker(
             ident = ident,
             fødselsdato = LocalDate.of(1970, Month.JANUARY, 1),
-            erBarn = false,
             fornavn = "Kjell",
             mellomnavn = null,
             etternavn = "Ring",
@@ -95,7 +92,6 @@ internal class PersonopplysningerDAOTest {
             skjermet = null,
             kommune = null,
             bydel = null,
-            land = null,
             tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
         )
 
@@ -171,7 +167,7 @@ internal class PersonopplysningerDAOTest {
 
         søkerRepository.lagre(søker)
 
-        val personopplysningListe = listOf(personopplysninger, barn1, barn2)
+        val personopplysningListe = listOf(personopplysninger) // + barn1 og barn2
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 dao.lagre(søker.id, personopplysningListe, txSession)
@@ -188,7 +184,7 @@ internal class PersonopplysningerDAOTest {
 
         val hentetPersonopplysningerForBarn: List<Personopplysninger> = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hentPersonopplysningerForBarn(søker.id, txSession)
+                dao.hentPersonopplysningerForBarnMedIdent(søker.id, txSession)
             }
         }
 
