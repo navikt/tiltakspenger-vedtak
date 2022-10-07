@@ -68,8 +68,8 @@ internal class BarnetilleggDAO {
         val fødselsdato = localDateOrNull("fødselsdato")
         val alder = int("alder")
         val land = string("land")
-        val fornavn = string("fornavn")
-        val etternavn = string("etternavn")
+        val fornavn = stringOrNull("fornavn")
+        val etternavn = stringOrNull("etternavn")
         val søktBarnetillegg = boolean("søkt_barnetillegg")
         return if (ident != null) {
             Barnetillegg.MedIdent(
