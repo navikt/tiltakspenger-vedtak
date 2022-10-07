@@ -57,10 +57,6 @@ internal class PersonopplysningerMottattRiver(
                 innhentet = packet["@opprettet"].asLocalDateTime(),
                 ident = packet["ident"].asText(),
             ),
-            barn = mapBarn(
-                dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
-                innhentet = packet["@opprettet"].asLocalDateTime(),
-            )
         )
 
         søkerMediator.håndter(personopplysningerMottattHendelse)
@@ -72,12 +68,30 @@ internal class PersonopplysningerMottattRiver(
     private fun mapPersonopplysninger(
         dto: PersonopplysningerDTO,
         innhentet: LocalDateTime,
-        ident: String
-    ): Personopplysninger {
-        return Personopplysninger(
+        ident: String,
+    ): List<Personopplysninger> {
+        return dto.barn.map {
+            Personopplysninger.BarnMedIdent(
+                ident = it.ident,
+                fødselsdato = it.fødselsdato,
+                fornavn = it.fornavn,
+                mellomnavn = it.mellomnavn,
+                etternavn = it.etternavn,
+                land = null, // TODO: fix!
+                tidsstempelHosOss = innhentet,
+            )
+        } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
+            Personopplysninger.BarnUtenIdent(
+                fødselsdato = barn.fødselsdato,
+                fornavn = barn.fornavn ?: "",
+                mellomnavn = barn.mellomnavn,
+                etternavn = barn.etternavn ?: "",
+                land = null, // TODO: fix!
+                tidsstempelHosOss = innhentet,
+            )
+        } + Personopplysninger.Søker(
             ident = ident,
             fødselsdato = dto.fødselsdato,
-            erBarn = false,
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
@@ -87,48 +101,7 @@ internal class PersonopplysningerMottattRiver(
             skjermet = null,
             kommune = dto.gtKommune,
             bydel = dto.gtBydel,
-            land = dto.gtLand,
             tidsstempelHosOss = innhentet,
         )
-    }
-
-    private fun mapBarn(
-        dto: PersonopplysningerDTO,
-        innhentet: LocalDateTime,
-    ): List<Personopplysninger> {
-        return dto.barn.map {
-            Personopplysninger(
-                ident = it.ident,
-                fødselsdato = it.fødselsdato,
-                erBarn = true,
-                fornavn = it.fornavn,
-                mellomnavn = it.mellomnavn,
-                etternavn = it.etternavn,
-                fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
-                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
-                        it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
-                skjermet = null, // TODO: fix!
-                kommune = null,
-                bydel = null,
-                land = null, // TODO: fix!
-                tidsstempelHosOss = innhentet,
-            )
-        } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
-            Personopplysninger(
-                ident = null,
-                fødselsdato = barn.fødselsdato,
-                erBarn = true,
-                fornavn = barn.fornavn ?: "",
-                mellomnavn = barn.mellomnavn,
-                etternavn = barn.etternavn ?: "",
-                fortrolig = false, //TODO: dette vet vi ikke
-                strengtFortrolig = false, //TODO: dette vet vi ikke
-                skjermet = null, // TODO: fix!
-                kommune = null,
-                bydel = null,
-                land = null, // TODO: fix!
-                tidsstempelHosOss = innhentet,
-            )
-        }
     }
 }

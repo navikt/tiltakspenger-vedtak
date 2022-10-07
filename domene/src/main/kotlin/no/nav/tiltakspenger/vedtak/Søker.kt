@@ -14,8 +14,7 @@ class Søker private constructor(
     val ident: String,
     tilstand: Tilstand,
     søknader: List<Søknad>,
-    personopplysninger: Personopplysninger?,
-    barn: List<Personopplysninger>,
+    personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
     val aktivitetslogg: Aktivitetslogg
@@ -24,9 +23,7 @@ class Søker private constructor(
         private set
     var søknader: List<Søknad> = søknader
         private set
-    var personopplysninger: Personopplysninger? = personopplysninger
-        private set
-    var barn: List<Personopplysninger> = barn
+    var personopplysninger: List<Personopplysninger> = personopplysninger
         private set
     var tiltak: List<Tiltaksaktivitet> = tiltak
         private set
@@ -35,6 +32,10 @@ class Søker private constructor(
 
     private val observers = mutableSetOf<SøkerObserver>()
 
+    val personopplysningerSøker = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()
+    val personopplysningerBarnUtenIdent = personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
+    val personopplysningerBarnMedIdent = personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
+
     constructor(
         ident: String
     ) : this(
@@ -42,8 +43,7 @@ class Søker private constructor(
         ident = ident,
         tilstand = SøkerRegistrert,
         søknader = mutableListOf(),
-        personopplysninger = null,
-        barn = mutableListOf(),
+        personopplysninger = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
         aktivitetslogg = Aktivitetslogg()
@@ -57,8 +57,7 @@ class Søker private constructor(
             søknader: List<Søknad>,
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
-            personopplysninger: Personopplysninger?,
-            barn: List<Personopplysninger>,
+            personopplysninger: List<Personopplysninger>,
             aktivitetslogg: Aktivitetslogg,
         ): Søker {
             return Søker(
@@ -67,7 +66,6 @@ class Søker private constructor(
                 tilstand = convertTilstand(tilstand),
                 søknader = søknader,
                 personopplysninger = personopplysninger,
-                barn = barn,
                 tiltak = tiltak,
                 ytelser = ytelser,
                 aktivitetslogg = aktivitetslogg,
@@ -220,7 +218,6 @@ class Søker private constructor(
             personopplysningerMottattHendelse
                 .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
             søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
-            søker.barn = personopplysningerMottattHendelse.barnOpplysninger()
             søker.trengerSkjermingdata(personopplysningerMottattHendelse)
             søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
@@ -234,12 +231,18 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            if (søker.personopplysninger == null) {
+            if (søker.personopplysningerSøker == null) {
                 skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
-            søker.personopplysninger = søker.personopplysninger!!.copy(
-                skjermet = skjermingMottattHendelse.skjerming().skjerming
-            )
+            søker.personopplysninger = søker.personopplysninger.map {
+                if (it is Personopplysninger.Søker) {
+                    it.copy(
+                        skjermet = skjermingMottattHendelse.skjerming().skjerming
+                    )
+                } else {
+                    it
+                }
+            }
             søker.trengerTiltak(skjermingMottattHendelse)
             søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }
