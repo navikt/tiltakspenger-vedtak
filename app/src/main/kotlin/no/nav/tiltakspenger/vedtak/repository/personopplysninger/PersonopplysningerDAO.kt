@@ -14,8 +14,8 @@ internal class PersonopplysningerDAO {
     private val securelog = KotlinLogging.logger("tjenestekall")
     private val toPersonopplysninger: (Row) -> Personopplysninger = { row ->
         Personopplysninger(
-            row.string("ident"),
-            row.localDate("fødselsdato"),
+            row.stringOrNull("ident"),
+            row.localDateOrNull("fødselsdato"),
             row.boolean("er_barn"),
             row.string("fornavn"),
             row.stringOrNull("mellomnavn"),
