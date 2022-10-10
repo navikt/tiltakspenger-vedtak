@@ -47,22 +47,15 @@ internal class PersonopplysningerDAO(
         log.info { "Lagre personopplysninger" }
     }
 
-    private fun hentPersonopplysningerForSøker(
-        søkerId: UUID,
-        txSession: TransactionalSession
-    ): Personopplysninger.Søker? = txSession.run(
-        queryOf(
-            hentSql,
-            mapOf("sokerId" to søkerId)
-        ).map(toPersonopplysninger).asSingle
-    )
+    private fun hentPersonopplysningerForSøker(søkerId: UUID, txSession: TransactionalSession) =
+        txSession.run(queryOf(hentSql, søkerId).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
         søkerId: UUID,
         personopplysninger: Personopplysninger.Søker,
         txSession: TransactionalSession
     ) {
-        securelog.info { "Lagre personopplysninger $personopplysninger" }
+        securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
         txSession.run(
             queryOf(
                 lagreSql, mapOf(
@@ -84,9 +77,8 @@ internal class PersonopplysningerDAO(
         )
     }
 
-    private fun slett(søkerId: UUID, txSession: TransactionalSession) {
+    private fun slett(søkerId: UUID, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, søkerId).asUpdate)
-    }
 
     private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
         Personopplysninger.Søker(
@@ -108,7 +100,7 @@ internal class PersonopplysningerDAO(
     private val slettSql = "delete from personopplysninger_søker where søker_id = ?"
 
     @Language("SQL")
-    private val hentSql = "select * from personopplysninger_søker where søker_id = :sokerId"
+    private val hentSql = "select * from personopplysninger_søker where søker_id = ?"
 
     @Language("SQL")
     private val lagreSql = """

@@ -9,18 +9,12 @@ import org.intellij.lang.annotations.Language
 import java.util.*
 
 internal class PersonopplysningerBarnMedIdentDAO {
-    private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    fun hent(søkerId: UUID, txSession: TransactionalSession) =
-        txSession.run(
-            queryOf(
-                hentSql,
-                mapOf("sokerId" to søkerId)
-            ).map(toPersonopplysninger).asList
-        )
+    internal fun hent(søkerId: UUID, txSession: TransactionalSession) =
+        txSession.run(queryOf(hentSql, søkerId).map(toPersonopplysninger).asList)
 
-    fun lagre(
+    internal fun lagre(
         søkerId: UUID,
         personopplysninger: Personopplysninger.BarnMedIdent,
         txSession: TransactionalSession
@@ -45,9 +39,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
         )
     }
 
-    fun slett(søkerId: UUID, txSession: TransactionalSession) {
+    internal fun slett(søkerId: UUID, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, søkerId).asUpdate)
-    }
 
     private val toPersonopplysninger: (Row) -> Personopplysninger.BarnMedIdent = { row ->
         Personopplysninger.BarnMedIdent(
@@ -67,7 +60,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
     private val slettSql = "delete from personopplysninger_barn_med_ident where søker_id = ?"
 
     @Language("SQL")
-    private val hentSql = "select * from personopplysninger_barn_med_ident where søker_id = :sokerId"
+    private val hentSql = "select * from personopplysninger_barn_med_ident where søker_id = ?"
 
     @Language("SQL")
     private val lagreSql = """
