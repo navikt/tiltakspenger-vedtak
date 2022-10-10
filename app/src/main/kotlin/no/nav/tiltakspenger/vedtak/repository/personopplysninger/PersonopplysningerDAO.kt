@@ -33,6 +33,7 @@ internal class PersonopplysningerDAO(
         barnMedIdentDAO.slett(søkerId, txSession)
         barnUtenIdentDAO.slett(søkerId, txSession)
 
+        log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
                 is Personopplysninger.Søker -> lagre(søkerId, it, txSession)
@@ -44,7 +45,6 @@ internal class PersonopplysningerDAO(
                 )
             }
         }
-        log.info { "Lagre personopplysninger" }
     }
 
     private fun hentPersonopplysningerForSøker(søkerId: UUID, txSession: TransactionalSession) =
