@@ -94,7 +94,8 @@ internal class PersonopplysningerMottattRiverTest {
                 mediatorSpy.håndter(
                     withArg<PersonopplysningerMottattHendelse> {
                         assertEquals(ident, it.ident())
-                        val søkerMedPersonoppl = it.personopplysninger().first() as Personopplysninger.Søker
+                        val søkerMedPersonoppl =
+                            it.personopplysninger().filterIsInstance<Personopplysninger.Søker>().first()
                         assertEquals(ident, søkerMedPersonoppl.ident)
                         assertEquals(LocalDate.of(1983, Month.JULY, 4), søkerMedPersonoppl.fødselsdato)
                         assertEquals("Knuslete", søkerMedPersonoppl.fornavn)
@@ -105,11 +106,13 @@ internal class PersonopplysningerMottattRiverTest {
                         assertFalse(søkerMedPersonoppl.fortrolig)
                         assertFalse(søkerMedPersonoppl.strengtFortrolig)
                         assertNull(søkerMedPersonoppl.skjermet)
-//                        assertEquals(1, it.barnOpplysninger().size)
-//                        assertEquals("Fornem", it.barnOpplysninger().first().fornavn)
-//                        assertEquals("Jogger", it.barnOpplysninger().first().etternavn)
-//                        assertEquals("07081812345", it.barnOpplysninger().first().ident)
-//                        assertEquals(LocalDate.of(2018, Month.AUGUST, 7), it.barnOpplysninger().first().fødselsdato)
+                        val barnOpplysninger =
+                            it.personopplysninger().filterIsInstance<Personopplysninger.BarnMedIdent>()
+                        assertEquals(1, barnOpplysninger.size)
+                        assertEquals("Fornem", barnOpplysninger.first().fornavn)
+                        assertEquals("Jogger", barnOpplysninger.first().etternavn)
+                        assertEquals("07081812345", barnOpplysninger.first().ident)
+                        assertEquals(LocalDate.of(2018, Month.AUGUST, 7), barnOpplysninger.first().fødselsdato)
                     }
                 )
             }

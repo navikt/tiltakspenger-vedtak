@@ -18,7 +18,6 @@ import no.nav.tiltakspenger.vedtak.objectmothers.tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -51,7 +50,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
-        assertNull(søker.personopplysninger)
+        søker.personopplysninger shouldBe emptyList()
     }
 
     @Test
@@ -70,7 +69,7 @@ internal class PostgresSøkerRepositoryTest {
         val søker = søkerMedYtelse(
             ident = ident,
             søknad = søknad,
-            personopplysninger = personopplysninger,
+            personopplysninger = listOf(personopplysninger),
             skjerming = skjermingFalse(ident = ident),
             tiltaksaktivitet = tiltaksaktivitet,
             ytelseSak = ytelseSak,
@@ -84,7 +83,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
         hentetSøker.søknader shouldContainExactly listOf(søknad)
-        hentetSøker.personopplysninger shouldBe personopplysninger.copy(skjermet = false)
+        hentetSøker.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
         hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
@@ -106,7 +105,7 @@ internal class PostgresSøkerRepositoryTest {
         val søker = søkerMedYtelse(
             ident = ident,
             søknad = søknad,
-            personopplysninger = personopplysninger,
+            personopplysninger = listOf(personopplysninger),
             skjerming = skjermingTrue(ident = ident),
             tiltaksaktivitet = tiltaksaktivitet,
             ytelseSak = ytelseSak,
@@ -120,7 +119,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
         hentetSøker.søknader shouldContainExactly listOf(søknad)
-        hentetSøker.personopplysninger shouldBe personopplysninger.copy(skjermet = true)
+        hentetSøker.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
         hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg

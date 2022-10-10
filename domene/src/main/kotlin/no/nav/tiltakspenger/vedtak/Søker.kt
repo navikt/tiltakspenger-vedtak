@@ -32,9 +32,9 @@ class Søker private constructor(
 
     private val observers = mutableSetOf<SøkerObserver>()
 
-    val personopplysningerSøker = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()
-    val personopplysningerBarnUtenIdent = personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
-    val personopplysningerBarnMedIdent = personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
+    fun personopplysningerSøker() = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()
+    fun personopplysningerBarnUtenIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
+    fun personopplysningerBarnMedIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
 
     constructor(
         ident: String
@@ -231,7 +231,7 @@ class Søker private constructor(
 
         override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            if (søker.personopplysningerSøker == null) {
+            if (søker.personopplysningerSøker() == null) {
                 skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
             søker.personopplysninger = søker.personopplysninger.map {
