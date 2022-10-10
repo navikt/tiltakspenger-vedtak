@@ -9,49 +9,114 @@ import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 import java.util.*
 
-internal class PersonopplysningerDAO {
+internal class PersonopplysningerDAO(
+    private val barnMedIdentDAO: PersonopplysningerBarnMedIdentDAO = PersonopplysningerBarnMedIdentDAO(),
+    private val barnUtenIdentDAO: PersonopplysningerBarnUtenIdentDAO = PersonopplysningerBarnUtenIdentDAO()
+) {
     private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
-    private val toPersonopplysninger: (Row) -> Personopplysninger = { row ->
-        Personopplysninger(
-            row.stringOrNull("ident"),
-            row.localDateOrNull("fødselsdato"),
-            row.boolean("er_barn"),
-            row.string("fornavn"),
-            row.stringOrNull("mellomnavn"),
-            row.string("etternavn"),
-            row.boolean("fortrolig"),
-            row.boolean("strengt_fortrolig"),
-            row.booleanOrNull("skjermet"),
-            row.stringOrNull("kommune"),
-            row.stringOrNull("bydel"),
-            row.stringOrNull("land"),
-            row.localDateTime("tidsstempel_hos_oss")
+
+    fun hent(
+        søkerId: UUID,
+        txSession: TransactionalSession,
+    ): List<Personopplysninger> {
+        val søker = hentPersonopplysningerForSøker(søkerId, txSession) ?: return emptyList()
+        val barnMedIdent = barnMedIdentDAO.hent(søkerId, txSession)
+        val barnUtenIdent = barnUtenIdentDAO.hent(søkerId, txSession)
+
+        return listOf(søker) + barnMedIdent + barnUtenIdent
+    }
+
+    fun lagre(søkerId: UUID, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
+        log.info { "Sletter personopplysninger før lagring" }
+        slett(søkerId, txSession)
+        barnMedIdentDAO.slett(søkerId, txSession)
+        barnUtenIdentDAO.slett(søkerId, txSession)
+
+        personopplysninger.forEach {
+            when (it) {
+                is Personopplysninger.Søker -> lagre(søkerId, it, txSession)
+                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(søkerId, it, txSession)
+                is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
+                    søkerId,
+                    it,
+                    txSession
+                )
+            }
+        }
+        log.info { "Lagre personopplysninger" }
+    }
+
+    private fun hentPersonopplysningerForSøker(
+        søkerId: UUID,
+        txSession: TransactionalSession
+    ): Personopplysninger.Søker? = txSession.run(
+        queryOf(
+            hentSql,
+            mapOf("sokerId" to søkerId)
+        ).map(toPersonopplysninger).asSingle
+    )
+
+    private fun lagre(
+        søkerId: UUID,
+        personopplysninger: Personopplysninger.Søker,
+        txSession: TransactionalSession
+    ) {
+        securelog.info { "Lagre personopplysninger $personopplysninger" }
+        txSession.run(
+            queryOf(
+                lagreSql, mapOf(
+                    "id" to UUID.randomUUID(),
+                    "sokerId" to søkerId,
+                    "ident" to personopplysninger.ident,
+                    "fodselsdato" to personopplysninger.fødselsdato,
+                    "fornavn" to personopplysninger.fornavn,
+                    "mellomnavn" to personopplysninger.mellomnavn,
+                    "etternavn" to personopplysninger.etternavn,
+                    "fortrolig" to personopplysninger.fortrolig,
+                    "strengtFortrolig" to personopplysninger.strengtFortrolig,
+                    "skjermet" to personopplysninger.skjermet,
+                    "kommune" to personopplysninger.kommune,
+                    "bydel" to personopplysninger.bydel,
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
+                )
+            ).asUpdate
         )
     }
 
-    private fun personopplysningerFinnes(ident: String, txSession: TransactionalSession): Boolean = txSession.run(
-        queryOf(finnes, ident).map { row -> row.boolean("exists") }.asSingle
-    ) ?: throw Exception("Failed to check if personopplysninger exists")
+    private fun slett(søkerId: UUID, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettSql, søkerId).asUpdate)
+    }
+
+    private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
+        Personopplysninger.Søker(
+            ident = row.string("ident"),
+            fødselsdato = row.localDate("fødselsdato"),
+            fornavn = row.string("fornavn"),
+            mellomnavn = row.stringOrNull("mellomnavn"),
+            etternavn = row.string("etternavn"),
+            fortrolig = row.boolean("fortrolig"),
+            strengtFortrolig = row.boolean("strengt_fortrolig"),
+            skjermet = row.booleanOrNull("skjermet"),
+            kommune = row.stringOrNull("kommune"),
+            bydel = row.stringOrNull("bydel"),
+            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
+        )
+    }
 
     @Language("SQL")
-    private val finnes = "select exists(select 1 from personopplysninger where ident = ?)"
+    private val slettSql = "delete from personopplysninger_søker where søker_id = ?"
 
     @Language("SQL")
-    private val slettPersonopplysninger = "delete from personopplysninger where søker_id = ?"
+    private val hentSql = "select * from personopplysninger_søker where søker_id = :sokerId"
 
     @Language("SQL")
-    private val hentPersonopplysninger =
-        "select * from personopplysninger where søker_id = :sokerId AND er_barn = :erBarn"
-
-    @Language("SQL")
-    private val lagrePersonopplysninger = """
-        insert into personopplysninger (
+    private val lagreSql = """
+        insert into personopplysninger_søker (
             id,
             søker_id,        
             ident,           
             fødselsdato,     
-            er_barn,
             fornavn,         
             mellomnavn,      
             etternavn,       
@@ -60,14 +125,12 @@ internal class PersonopplysningerDAO {
             skjermet,        
             kommune,         
             bydel,           
-            land,
             tidsstempel_hos_oss            
         ) values (
             :id,
             :sokerId,
             :ident,             
             :fodselsdato,   
-            :erBarn,
             :fornavn,           
             :mellomnavn,        
             :etternavn,         
@@ -76,55 +139,6 @@ internal class PersonopplysningerDAO {
             :skjermet,          
             :kommune,           
             :bydel,             
-            :land,              
             :tidsstempelHosOss
         )""".trimIndent()
-
-    fun lagre(søkerId: UUID, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
-        log.info { "Sletter personopplysninger før lagring" }
-        txSession.run(queryOf(slettPersonopplysninger, søkerId).asUpdate)
-        log.info { "Lagre personopplysninger" }
-        securelog.info { "Lagre personopplysninger $søkerId" }
-        personopplysninger.forEach {
-            txSession.run(
-                queryOf(
-                    lagrePersonopplysninger, mapOf(
-                        "id" to UUID.randomUUID(),
-                        "sokerId" to søkerId,
-                        "ident" to it.ident,
-                        "fodselsdato" to it.fødselsdato,
-                        "erBarn" to it.erBarn,
-                        "fornavn" to it.fornavn,
-                        "mellomnavn" to it.mellomnavn,
-                        "etternavn" to it.etternavn,
-                        "fortrolig" to it.fortrolig,
-                        "strengtFortrolig" to it.strengtFortrolig,
-                        "skjermet" to it.skjermet,
-                        "kommune" to it.kommune,
-                        "bydel" to it.bydel,
-                        "land" to it.land,
-                        "tidsstempelHosOss" to it.tidsstempelHosOss
-                    )
-                ).asUpdate
-            )
-        }
-    }
-
-    fun hentPersonopplysningerForBarn(søkerId: UUID, txSession: TransactionalSession): List<Personopplysninger> =
-        txSession.run(
-            queryOf(
-                hentPersonopplysninger,
-                mapOf("sokerId" to søkerId, "erBarn" to true)
-            ).map(toPersonopplysninger).asList
-        )
-
-    fun hentPersonopplysningerForSøker(
-        søkerId: UUID,
-        txSession: TransactionalSession
-    ): Personopplysninger? = txSession.run(
-        queryOf(
-            hentPersonopplysninger,
-            mapOf("sokerId" to søkerId, "erBarn" to false)
-        ).map(toPersonopplysninger).asSingle
-    )
 }

@@ -24,14 +24,21 @@ class PersonServiceImpl(
 
         return PersonDTO(
             personopplysninger = PersonopplysningerDTO(
-                fornavn = søker.personopplysninger!!.fornavn,
-                etternavn = søker.personopplysninger!!.etternavn,
+                fornavn = søker.personopplysningerSøker()!!.fornavn,
+                etternavn = søker.personopplysningerSøker()!!.etternavn,
                 ident = søker.ident,
-                barn = søker.barn.map { barn ->
+                barn = søker.personopplysningerBarnMedIdent().map { barn ->
                     BarnDTO(
                         fornavn = barn.fornavn,
                         etternavn = barn.etternavn,
                         ident = barn.ident,
+                        bosted = ""
+                    )
+                } + søker.personopplysningerBarnUtenIdent().map { barn ->
+                    BarnDTO(
+                        fornavn = barn.fornavn!!,
+                        etternavn = barn.etternavn!!,
+                        ident = barn.fødselsdato.toString(), // TODO her må vi endre sammen med frontend
                         bosted = ""
                     )
                 },
