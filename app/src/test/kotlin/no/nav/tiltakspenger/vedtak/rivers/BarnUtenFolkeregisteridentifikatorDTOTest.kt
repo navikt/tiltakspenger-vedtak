@@ -18,9 +18,15 @@ internal class BarnUtenFolkeregisteridentifikatorDTOTest {
         assertTrue(barn.kanGiRettPåBarnetillegg())
         assertTrue(barn.copy(fødselsdato = LocalDate.now()).kanGiRettPåBarnetillegg())
         assertTrue(barn.copy(fødselsdato = LocalDate.now().minusYears(5)).kanGiRettPåBarnetillegg())
-        assertTrue(barn.copy(fødselsdato = LocalDate.now().minusYears(16)).kanGiRettPåBarnetillegg())
-        assertTrue(barn.copy(fødselsdato = LocalDate.now().minusYears(16).plusDays(1)).kanGiRettPåBarnetillegg())
-        assertFalse(barn.copy(fødselsdato = LocalDate.now().minusYears(16).minusDays(2)).kanGiRettPåBarnetillegg())
+        assertTrue(barn.copy(fødselsdato = LocalDate.now().minusYears(ALDER_BARNETILLEGG)).kanGiRettPåBarnetillegg())
+        assertTrue(
+            barn.copy(fødselsdato = LocalDate.now().minusYears(ALDER_BARNETILLEGG).plusDays(1))
+                .kanGiRettPåBarnetillegg()
+        )
+        assertFalse(
+            barn.copy(fødselsdato = LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusDays(2))
+                .kanGiRettPåBarnetillegg()
+        )
         assertFalse(barn.copy(fødselsdato = LocalDate.now().minusYears(20)).kanGiRettPåBarnetillegg())
     }
 }
