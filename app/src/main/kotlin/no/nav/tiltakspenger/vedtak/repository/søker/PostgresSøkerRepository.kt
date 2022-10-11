@@ -52,8 +52,7 @@ internal class PostgresSøkerRepository(
                 ytelsesakDAO.lagre(søkerId = søker.id, ytelsesaker = søker.ytelser, txSession = txSession)
                 personopplysningerDAO.lagre(
                     søkerId = søker.id,
-                    personopplysninger = if (søker.personopplysninger != null) søker.barn + søker.personopplysninger!!
-                    else søker.barn,
+                    personopplysninger = søker.personopplysninger,
                     txSession = txSession
                 )
                 aktivitetsloggDAO.lagre(
@@ -74,8 +73,7 @@ internal class PostgresSøkerRepository(
             søknader = søknadDAO.hentAlle(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
             ytelser = ytelsesakDAO.hentForSøker(id, txSession),
-            personopplysninger = personopplysningerDAO.hentPersonopplysningerForSøker(id, txSession),
-            barn = personopplysningerDAO.hentPersonopplysningerForBarn(id, txSession),
+            personopplysninger = personopplysningerDAO.hent(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
     }

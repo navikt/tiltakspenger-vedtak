@@ -40,8 +40,7 @@ fun søkerMedSøknad(
 fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
-    barn: List<Personopplysninger> = listOf(barn(), barn()),
+    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,
@@ -51,7 +50,6 @@ fun søkerMedPersonopplysninger(
         nyPersonopplysningHendelse(
             ident = ident,
             personopplysninger = personopplysninger,
-            barn = barn,
         )
     )
     return søker
@@ -60,7 +58,7 @@ fun søkerMedPersonopplysninger(
 fun søkerMedSkjerming(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
+    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Søker {
     val søker = søkerMedPersonopplysninger(
@@ -80,7 +78,7 @@ fun søkerMedSkjerming(
 fun søkerMedTiltak(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
+    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
 ): Søker {
@@ -102,7 +100,7 @@ fun søkerMedTiltak(
 fun søkerMedYtelse(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: Personopplysninger = personopplysningKjedeligFyr(ident = ident),
+    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
@@ -133,26 +131,47 @@ fun personopplysningKjedeligFyr(
     strengtFortrolig: Boolean = false,
     kommune: String? = null,
     bydel: String? = null,
-    land: String? = null,
     skjermet: Boolean? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-): Personopplysninger {
-    return Personopplysninger(
-        ident = ident,
-        fødselsdato = fødselsdato,
-        erBarn = false,
-        fornavn = fornavn,
-        mellomnavn = mellomnavn,
-        etternavn = etternavn,
-        fortrolig = fortrolig,
-        strengtFortrolig = strengtFortrolig,
-        skjermet = skjermet,
-        kommune = kommune,
-        bydel = bydel,
-        land = land,
-        tidsstempelHosOss = tidsstempelHosOss,
-    )
-}
+): Personopplysninger.Søker = Personopplysninger.Søker(
+    ident = ident,
+    fødselsdato = fødselsdato,
+    fornavn = fornavn,
+    mellomnavn = mellomnavn,
+    etternavn = etternavn,
+    fortrolig = fortrolig,
+    strengtFortrolig = strengtFortrolig,
+    skjermet = skjermet,
+    kommune = kommune,
+    bydel = bydel,
+    tidsstempelHosOss = tidsstempelHosOss,
+)
+
+fun personopplysningMaxFyr(
+    ident: String = Random().nextInt().toString(),
+    fødselsdato: LocalDate = 1.januar(2001),
+    fornavn: String = "Kjell",
+    mellomnavn: String? = "T.",
+    etternavn: String = "Ring",
+    fortrolig: Boolean = false,
+    strengtFortrolig: Boolean = true,
+    kommune: String? = "Oslo",
+    bydel: String? = "3440",
+    skjermet: Boolean? = true,
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+): Personopplysninger.Søker = Personopplysninger.Søker(
+    ident = ident,
+    fødselsdato = fødselsdato,
+    fornavn = fornavn,
+    mellomnavn = mellomnavn,
+    etternavn = etternavn,
+    fortrolig = fortrolig,
+    strengtFortrolig = strengtFortrolig,
+    skjermet = skjermet,
+    kommune = kommune,
+    bydel = bydel,
+    tidsstempelHosOss = tidsstempelHosOss,
+)
 
 fun barn(
     ident: String = Random().nextInt().toString(),
@@ -162,24 +181,17 @@ fun barn(
     etternavn: String = "Etternavn",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
-    kommune: String? = null,
-    bydel: String? = null,
     land: String? = null,
-    skjermet: Boolean? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-): Personopplysninger {
-    return Personopplysninger(
+): Personopplysninger.BarnMedIdent {
+    return Personopplysninger.BarnMedIdent(
         ident = ident,
         fødselsdato = fødselsdato,
-        erBarn = true,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
-        skjermet = skjermet,
-        kommune = kommune,
-        bydel = bydel,
         land = land,
         tidsstempelHosOss = tidsstempelHosOss,
     )

@@ -7,13 +7,11 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 class PersonopplysningerMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
     private val ident: String,
-    private val personopplysninger: Personopplysninger,
-    private val barn: List<Personopplysninger>,
+    private val personopplysninger: List<Personopplysninger>,
 ) : Hendelse(aktivitetslogg) {
 
     override fun ident() = ident
 
     fun personopplysninger() = personopplysninger
 
-    fun barnOpplysninger() = barn
 }
