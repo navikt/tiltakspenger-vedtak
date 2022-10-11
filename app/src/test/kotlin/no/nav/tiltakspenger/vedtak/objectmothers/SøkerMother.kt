@@ -192,7 +192,7 @@ fun barn(
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
-        land = land,
+        oppholdsland = land,
         tidsstempelHosOss = tidsstempelHosOss,
     )
 }

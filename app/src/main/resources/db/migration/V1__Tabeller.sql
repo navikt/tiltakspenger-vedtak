@@ -128,7 +128,7 @@ CREATE TABLE personopplysninger_barn_med_ident
     etternavn           VARCHAR                  NOT NULL,
     fortrolig           BOOLEAN                  NOT NULL,
     strengt_fortrolig   BOOLEAN                  NOT NULL,
-    land                VARCHAR                  NULL,
+    oppholdsland        VARCHAR                  NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

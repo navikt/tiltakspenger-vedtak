@@ -80,7 +80,7 @@ internal class PersonopplysningerMottattRiver(
                 fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
                 strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
                         it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
-                land = null, // TODO: fix!
+                oppholdsland = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
         } + dto.barnUtenFolkeregisteridentifikator.map { barn ->

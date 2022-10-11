@@ -40,7 +40,7 @@ sealed class Personopplysninger {
         val etternavn: String,
         val fortrolig: Boolean,
         val strengtFortrolig: Boolean,
-        val land: String?,
+        val oppholdsland: String?,
         val tidsstempelHosOss: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
     ) : Tidsstempler, Personopplysninger() {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss

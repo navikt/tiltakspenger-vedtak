@@ -32,7 +32,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
                     "etternavn" to personopplysninger.etternavn,
                     "fortrolig" to personopplysninger.fortrolig,
                     "strengtFortrolig" to personopplysninger.strengtFortrolig,
-                    "land" to personopplysninger.land,
+                    "oppholdsland" to personopplysninger.oppholdsland,
                     "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
                 )
             ).asUpdate
@@ -51,7 +51,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             etternavn = row.string("etternavn"),
             fortrolig = row.boolean("fortrolig"),
             strengtFortrolig = row.boolean("strengt_fortrolig"),
-            land = row.stringOrNull("land"),
+            oppholdsland = row.stringOrNull("oppholdsland"),
             tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
         )
     }
@@ -74,7 +74,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             etternavn,       
             fortrolig,       
             strengt_fortrolig,
-            land,           
+            oppholdsland,           
             tidsstempel_hos_oss            
         ) values (
             :id,
@@ -86,7 +86,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             :etternavn,         
             :fortrolig,         
             :strengtFortrolig, 
-            :land,             
+            :oppholdsland,             
             :tidsstempelHosOss
         )""".trimIndent()
 }
