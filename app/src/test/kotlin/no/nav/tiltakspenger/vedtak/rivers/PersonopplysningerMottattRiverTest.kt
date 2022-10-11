@@ -111,8 +111,12 @@ internal class PersonopplysningerMottattRiverTest {
                         assertEquals(1, barnOpplysninger.size)
                         assertEquals("Fornem", barnOpplysninger.first().fornavn)
                         assertEquals("Jogger", barnOpplysninger.first().etternavn)
-                        assertEquals("07081812345", barnOpplysninger.first().ident)
-                        assertEquals(LocalDate.of(2018, Month.AUGUST, 7), barnOpplysninger.first().fødselsdato)
+                        assertEquals("07085512345", barnOpplysninger.first().ident)
+                        val barnUtenIden = it.personopplysninger().filterIsInstance<Personopplysninger.BarnUtenIdent>()
+                        assertEquals(1, barnUtenIden.size)
+                        assertEquals("Liten", barnUtenIden.first().fornavn)
+                        assertEquals("Opal", barnUtenIden.first().etternavn)
+                        assertEquals(LocalDate.of(2052, Month.JANUARY, 1), barnUtenIden.first().fødselsdato)
                     }
                 )
             }

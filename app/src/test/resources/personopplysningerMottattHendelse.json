@@ -29,15 +29,36 @@
         "gtLand": "Norge",
         "barn": [
           {
-            "ident": "07081812345",
+            "ident": "07085512345",
             "fornavn": "Fornem",
             "mellomnavn": null,
             "etternavn": "Jogger",
-            "fødselsdato": "2018-08-07",
+            "fødselsdato": "2055-08-07",
+            "adressebeskyttelseGradering": "UGRADERT"
+          },
+          {
+            "ident": "01019812345",
+            "fornavn": "Gammel",
+            "mellomnavn": null,
+            "etternavn": "Løk",
+            "fødselsdato": "1998-01-01",
             "adressebeskyttelseGradering": "UGRADERT"
           }
         ],
-        "barnUtenFolkeregisteridentifikator": []
+        "barnUtenFolkeregisteridentifikator": [
+          {
+            "fornavn": "Liten",
+            "mellomnavn": null,
+            "etternavn": "Opal",
+            "fødselsdato": "2052-01-01"
+          },
+          {
+            "fornavn": "Historisk",
+            "mellomnavn": null,
+            "etternavn": "Nepe",
+            "fødselsdato": "2000-01-01"
+          }
+        ]
       },
       "feil": null
     }

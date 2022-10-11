@@ -70,7 +70,7 @@ internal class PersonopplysningerMottattRiver(
         innhentet: LocalDateTime,
         ident: String,
     ): List<Personopplysninger> {
-        return dto.barn.map {
+        return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
             Personopplysninger.BarnMedIdent(
                 ident = it.ident,
                 fødselsdato = it.fødselsdato,
@@ -83,7 +83,7 @@ internal class PersonopplysningerMottattRiver(
                 oppholdsland = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
-        } + dto.barnUtenFolkeregisteridentifikator.map { barn ->
+        } + dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
             Personopplysninger.BarnUtenIdent(
                 fødselsdato = barn.fødselsdato,
                 fornavn = barn.fornavn,
