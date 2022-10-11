@@ -50,7 +50,6 @@ class PersonRoutesTest {
                 url {
                     protocol = URLProtocol.HTTPS
                     path("$personPath")
-                    parameters.append("ident", "1234")
                 }, setup = {}
             ).apply {
 
@@ -63,6 +62,49 @@ class PersonRoutesTest {
             }
         }
     }
+
+//    @Test
+//    fun `kalle med en ident i body burde svare ok`() {
+//        testApplication {
+//            application {
+////                vedtakTestApi()
+//                jacksonSerialization()
+//                routing {
+//                    personRoutes(
+//                        InnloggetBrukerProvider(),
+//                        PersonServiceImpl(
+//                            søkerRepository = InMemorySøkerRepository()
+//                        ),
+//                    )
+//                }
+//            }
+//
+//            defaultRequest(
+//                HttpMethod.Post,
+//                url {
+//                    protocol = URLProtocol.HTTPS
+//                    path("$personPath")
+//                },
+//            ) {
+//                setBody(
+//                    //language=JSON
+//                    """
+//                  {
+//                    "ident": "1234"
+//                  }
+//                """.trimIndent(),
+//                )
+//            }.apply {
+//                status shouldBe HttpStatusCode.OK
+//                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+//                JSONAssert.assertEquals(
+//                    expected,
+//                    bodyAsText(),
+//                    JSONCompareMode.LENIENT
+//                )
+//            }.bodyAsText()
+//        }
+//    }
 
     private val expected = """
      {

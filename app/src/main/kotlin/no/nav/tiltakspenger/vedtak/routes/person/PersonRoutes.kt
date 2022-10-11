@@ -18,41 +18,42 @@ private val LOG = KotlinLogging.logger {}
 
 internal const val personPath = "/saker/person"
 
+data class PersonIdent(
+    val ident: String
+)
+
 fun Route.personRoutes(
     innloggetBrukerProvider: InnloggetBrukerProvider,
     personService: PersonService,
 ) {
+//    route(personPath) {
+//        post {
+//            val personIdent = deserialize<PersonIdent>(call.receive())
+//
+//            call.auditHvisInnlogget(berørtBruker = "person")
+//
+//            if (personIdent.ident != null) {
+//                val person = personService.hentPerson(personIdent.ident)
+//                if (person == null) {
+//                    call.respond(message = "Vi fant ikke søker", status = HttpStatusCode.NotFound)
+//                } else {
+//                    LOG.info { "Vi har tenkt til å sende tilbake $person " }
+//                    call.respond(message = person, status = HttpStatusCode.OK)
+//                }
+//            } else {
+//                call.respond(message = "Vi trenger en ident", status = HttpStatusCode.NotFound)
+//            }
+//        }
+//    }
+
     route("$personPath") {
-        //route("/test") {
-        //    get {
-        //        call.auditHvisInnlogget(berørtBruker = "test")
-        //        LOG.info { "Vi har truffet /saker/person/test" }
-        //        call.respond(message = person(), status = HttpStatusCode.OK)
-        //    }
-        //}
         get {
-            LOG.info { "Vi har truffet /saker/person" }
-            val ident = call.request.queryParameters["ident"]
+            LOG.info { "Vi har truffet GET /saker/person" }
 
             call.auditHvisInnlogget(berørtBruker = "person")
 
-            if (ident == "1234") {
-                LOG.info("Vi har spurt etter testbruker 1234. Returnere dummydata")
-                call.respond(message = dummyPerson(), status = HttpStatusCode.OK)
-                return@get
-            }
-
-            if (ident != null) {
-                val person = personService.hentPerson(ident)
-                if (person == null) {
-                    call.respond(message = "Vi fant ikke søker", status = HttpStatusCode.NotFound)
-                } else {
-                    LOG.info { "Vi har tenkt til å sende tilbake $person " }
-                    call.respond(message = person, status = HttpStatusCode.OK)
-                }
-            } else {
-                call.respond(message = "Vi trenger en ident", status = HttpStatusCode.NotFound)
-            }
+            LOG.info("Returnere dummydata")
+            call.respond(message = dummyPerson(), status = HttpStatusCode.OK)
         }
     }
 }
