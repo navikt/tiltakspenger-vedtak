@@ -4,6 +4,7 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class SøknadMottattRiverTest {
@@ -23,6 +24,12 @@ internal class SøknadMottattRiverTest {
                 rapidsConnection = testRapid
             )
         )
+    }
+
+    @BeforeEach
+    fun reset() {
+        testRapid.reset()
+        søkerRepository.reset()
     }
 
     @Test

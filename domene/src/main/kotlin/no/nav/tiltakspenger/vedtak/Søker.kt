@@ -91,10 +91,12 @@ class Søker private constructor(
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(søknadMottattHendelse, "Registrert SøknadMottattHendelse")
+        /*
         if (erFerdigBehandlet()) {
             søknadMottattHendelse.error("ident ${søknadMottattHendelse.ident()} allerede ferdig behandlet")
             return
         }
+        */
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
@@ -163,7 +165,9 @@ class Søker private constructor(
         val timeout: Duration
 
         fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i ${type.name}")
+            søker.søknader += søknadMottattHendelse.søknad()
+            søker.trengerPersonopplysninger(søknadMottattHendelse)
+            søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
 
         fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
