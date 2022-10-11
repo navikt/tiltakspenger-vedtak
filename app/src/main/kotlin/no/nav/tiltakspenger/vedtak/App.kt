@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
@@ -54,7 +54,7 @@ fun main() {
                 object : RapidsConnection.StatusListener {
                     override fun onStartup(rapidsConnection: RapidsConnection) {
                         log.info("Skal kjøre flyway migrering")
-                        flywayMigrate()
+                        flywayCleanAndMigrate()
                         log.info("Har kjørt flyway migrering")
                     }
                 }
