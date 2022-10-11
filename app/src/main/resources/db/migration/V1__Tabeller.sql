@@ -47,7 +47,7 @@ CREATE TABLE søknad
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE barnetillegg
+CREATE TABLE søknad_barnetillegg
 (
     id                UUID PRIMARY KEY,
     søknad_id         UUID    NOT NULL REFERENCES søknad (id),
@@ -61,7 +61,7 @@ CREATE TABLE barnetillegg
     søkt_barnetillegg BOOLEAN NOT NULL
 );
 
-CREATE TABLE brukertiltak
+CREATE TABLE søknad_brukertiltak
 (
     id            UUID PRIMARY KEY,
     søknad_id     UUID    NOT NULL REFERENCES søknad (id),
@@ -75,7 +75,7 @@ CREATE TABLE brukertiltak
     antall_dager  INT     NOT NULL
 );
 
-CREATE TABLE arenatiltak
+CREATE TABLE søknad_arenatiltak
 (
     id                      UUID PRIMARY KEY,
     søknad_id               UUID    NOT NULL REFERENCES søknad (id),
@@ -90,7 +90,7 @@ CREATE TABLE arenatiltak
     sluttdato               DATE    NULL
 );
 
-CREATE TABLE trygdogpensjon
+CREATE TABLE søknad_trygdogpensjon
 (
     id        UUID PRIMARY KEY,
     søknad_id UUID    NOT NULL REFERENCES søknad (id),

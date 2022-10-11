@@ -99,7 +99,7 @@ internal class BarnetilleggDAO {
 
     @Language("SQL")
     private val lagreBarnetillegg = """
-        insert into barnetillegg (
+        insert into søknad_barnetillegg (
             id,
             søknad_id,
             ident,
@@ -124,10 +124,10 @@ internal class BarnetilleggDAO {
         )""".trimIndent()
 
     @Language("SQL")
-    private val slettBarnetillegg = "delete from barnetillegg where søknad_id = ?"
+    private val slettBarnetillegg = "delete from søknad_barnetillegg where søknad_id = ?"
 
     @Language("SQL")
-    private val hentBarnetillegg = "select * from barnetillegg where søknad_id = ?"
+    private val hentBarnetillegg = "select * from søknad_barnetillegg where søknad_id = ?"
 
 
 }

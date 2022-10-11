@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import java.util.*
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 internal class TrygdOgPensjonDAO {
 
@@ -61,14 +61,14 @@ internal class TrygdOgPensjonDAO {
     }
 
     @Language("SQL")
-    private val hentTrygdOgPensjon = "select * from trygdogpensjon where søknad_id = ?"
+    private val hentTrygdOgPensjon = "select * from søknad_trygdogpensjon where søknad_id = ?"
 
     @Language("SQL")
-    private val slettTrygdOgPensjon = "delete from trygdogpensjon where søknad_id = ?"
+    private val slettTrygdOgPensjon = "delete from søknad_trygdogpensjon where søknad_id = ?"
 
     @Language("SQL")
     private val lagreTrygdOgPensjon = """
-        insert into trygdogpensjon (
+        insert into søknad_trygdogpensjon (
             id,
             søknad_id,
             utbetaler,

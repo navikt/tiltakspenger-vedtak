@@ -144,20 +144,20 @@ internal class TiltakDAO {
     }
 
     @Language("SQL")
-    private val hentBrukerregistrertTiltak = "select * from brukertiltak where søknad_id = ?"
+    private val hentBrukerregistrertTiltak = "select * from søknad_brukertiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val hentArenaTiltak = "select * from arenatiltak where søknad_id = ?"
+    private val hentArenaTiltak = "select * from søknad_arenatiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val slettBrukerregistrertTiltak = "delete from brukertiltak where søknad_id = ?"
+    private val slettBrukerregistrertTiltak = "delete from søknad_brukertiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val slettArenaTiltak = "delete from arenatiltak where søknad_id = ?"
+    private val slettArenaTiltak = "delete from søknad_arenatiltak where søknad_id = ?"
 
     @Language("SQL")
     private val lagreBrukerTiltak = """
-        insert into brukertiltak (
+        insert into søknad_brukertiltak (
             id,
             søknad_id,
             tiltakskode,
@@ -183,7 +183,7 @@ internal class TiltakDAO {
 
     @Language("SQL")
     private val lagreArenaTiltak = """
-        insert into arenatiltak (
+        insert into søknad_arenatiltak (
             id,
             søknad_id,
             arena_id,
