@@ -80,6 +80,7 @@ class Søker private constructor(
                 SøkerTilstandType.AvventerTiltak -> AvventerTiltak
                 SøkerTilstandType.AvventerYtelser -> AvventerYtelser
                 SøkerTilstandType.SøkerFerdigstilt -> SøkerFerdigstiltType
+                SøkerTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
                 else -> throw IllegalStateException("Ukjent tilstand $tilstand")
             }
         }
@@ -259,11 +260,20 @@ class Søker private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            arenaTiltakMottattHendelse
-                .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-            søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()
-            søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
-            søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
+            when (arenaTiltakMottattHendelse.feilmelding()) {
+                ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet -> {
+                    arenaTiltakMottattHendelse.error("Fant ikke person i arenetiltak")
+                    søker.tilstand(arenaTiltakMottattHendelse, FaktainnhentingFeilet)
+                }
+
+                null -> {
+                    arenaTiltakMottattHendelse
+                        .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+                    søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!
+                    søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
+                    søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
+                }
+            }
         }
     }
 
@@ -285,8 +295,15 @@ class Søker private constructor(
             get() = SøkerTilstandType.SøkerFerdigstilt
         override val timeout: Duration
             get() = Duration.ofDays(1)
-
     }
+
+    internal object FaktainnhentingFeilet : Tilstand {
+        override val type: SøkerTilstandType
+            get() = SøkerTilstandType.FaktainnhentingFeilet
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+    }
+
 
     private fun trengerPersonopplysninger(hendelse: Hendelse) {
         hendelse.behov(

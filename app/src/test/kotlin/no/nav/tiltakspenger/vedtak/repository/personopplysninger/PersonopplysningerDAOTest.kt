@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.objectmothers.barn
+import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.personopplysningMaxFyr
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.objectmothers.barn
-import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.vedtak.objectmothers.personopplysningMaxFyr
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

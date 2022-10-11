@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.objectmothers
+package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -51,12 +51,14 @@ fun nySkjermingHendelse(
 
 fun nyTiltakHendelse(
     ident: String = Random().nextInt().toString(),
-    tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
+    tiltaksaktivitet: List<Tiltaksaktivitet>? = listOf(tiltaksaktivitet()),
+    feil: ArenaTiltakMottattHendelse.Feilmelding? = null,
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): ArenaTiltakMottattHendelse {
     return ArenaTiltakMottattHendelse(
         ident = ident,
         tiltaksaktivitet = tiltaksaktivitet,
+        feil = feil,
         aktivitetslogg = aktivitetslogg,
     )
 }

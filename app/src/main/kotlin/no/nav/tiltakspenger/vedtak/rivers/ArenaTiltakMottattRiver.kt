@@ -40,7 +40,8 @@ internal class ArenaTiltakMottattRiver(
                 it.demandKey("@løsning")
                 it.requireKey("ident")
                 it.requireKey("@opprettet")
-                it.interestedIn("@løsning.arenatiltak")
+                it.interestedIn("@løsning.arenatiltak.tiltaksaktiviteter")
+                it.interestedIn("@løsning.arenatiltak.feil")
             }
         }.register(this)
     }
@@ -51,11 +52,18 @@ internal class ArenaTiltakMottattRiver(
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 
+        val tiltak =
+            if (packet["@løsning.arenatiltak.tiltaksaktiviteter"].asText() == "null")
+                null
+            else packet["@løsning.arenatiltak.tiltaksaktiviteter"]
+
         val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             ident = packet["ident"].asText(),
+            feil = packet["@løsning.arenatiltak.feil"].asText(null)
+                ?.let { ArenaTiltakMottattHendelse.Feilmelding.valueOf(it) },
             tiltaksaktivitet = mapArenaTiltak(
-                tiltaksaktivitetDTO = packet["@løsning.arenatiltak"].asList(),
+                tiltaksaktivitetDTO = tiltak?.let { it.asList() },
                 innhentet = packet["@opprettet"].asLocalDateTime(),
             )
         )
@@ -71,10 +79,10 @@ internal class ArenaTiltakMottattRiver(
     }
 
     private fun mapArenaTiltak(
-        tiltaksaktivitetDTO: List<TiltaksaktivitetDTO>,
+        tiltaksaktivitetDTO: List<TiltaksaktivitetDTO>?,
         innhentet: LocalDateTime
-    ): List<Tiltaksaktivitet> {
-        return tiltaksaktivitetDTO.map {
+    ): List<Tiltaksaktivitet>? {
+        return tiltaksaktivitetDTO?.map {
             Tiltaksaktivitet(
                 tiltak = mapTiltaksnavn(it.tiltaksnavn),
                 aktivitetId = it.aktivitetId,
