@@ -35,7 +35,11 @@ data class YtelseSak(
             N("Annuller sanksjon"), // Gjelder ikke tiltakspenger
             O("Ny rettighet"),
             S("Stans"),
-            T("Tidsbegrenset bortfall") // Gjelder ikke tiltakspenger
+            A("Reaksjon"), // Står ikke listet opp i dokumentasjonen..
+            K("Kontroll"), // Står ikke listet opp i dokumentasjonen..
+            M("Omgjør reaksjon"), // Står ikke listet opp i dokumentasjonen..
+            R("Revurdering"), // Står ikke listet opp i dokumentasjonen..
+            T("Tidsbegrenset bortfall"); // Gjelder ikke tiltakspenger
         }
 
         enum class YtelseVedtakVedtakstype(val navn: String, val ytelseSakYtelsetype: YtelseSakYtelsetype) {
