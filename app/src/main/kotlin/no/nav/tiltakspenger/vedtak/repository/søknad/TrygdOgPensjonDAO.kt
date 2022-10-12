@@ -3,34 +3,38 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class TrygdOgPensjonDAO {
 
-    fun lagre(søknadId: UUID, trygdOgPensjon: List<TrygdOgPensjon>?, txSession: TransactionalSession) {
+    fun lagre(søknadId: SøknadId, trygdOgPensjon: List<TrygdOgPensjon>?, txSession: TransactionalSession) {
         slettTrygdOgPensjon(søknadId, txSession)
         trygdOgPensjon?.forEach {
             lagreTrygdOgPensjon(søknadId, it, txSession)
         }
     }
 
-    fun hentTrygdOgPensjonListe(søknadId: UUID, txSession: TransactionalSession): List<TrygdOgPensjon> {
+    fun hentTrygdOgPensjonListe(søknadId: SøknadId, txSession: TransactionalSession): List<TrygdOgPensjon> {
         return txSession.run(
-            queryOf(hentTrygdOgPensjon, søknadId)
-                .map { row ->
-                    row.toTrygdOgPensjon()
-                }.asList
+            queryOf(hentTrygdOgPensjon, søknadId.toString())
+                .map { row -> row.toTrygdOgPensjon() }
+                .asList
         )
     }
 
-    private fun lagreTrygdOgPensjon(søknadId: UUID, trygdOgPensjon: TrygdOgPensjon, txSession: TransactionalSession) {
+    private fun lagreTrygdOgPensjon(
+        søknadId: SøknadId,
+        trygdOgPensjon: TrygdOgPensjon,
+        txSession: TransactionalSession
+    ) {
         txSession.run(
             queryOf(
                 lagreTrygdOgPensjon, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "soknadId" to søknadId,
+                    "id" to UlidBase.new(ULID_PREFIX_TRYGDOGPENSJON).toString(),
+                    "soknadId" to søknadId.toString(),
                     "utbetaler" to trygdOgPensjon.utbetaler,
                     "prosent" to trygdOgPensjon.prosent,
                     "fom" to trygdOgPensjon.fom,
@@ -40,9 +44,9 @@ internal class TrygdOgPensjonDAO {
         )
     }
 
-    private fun slettTrygdOgPensjon(søknadId: UUID, txSession: TransactionalSession) {
+    private fun slettTrygdOgPensjon(søknadId: SøknadId, txSession: TransactionalSession) {
         txSession.run(
-            queryOf(slettTrygdOgPensjon, søknadId).asUpdate
+            queryOf(slettTrygdOgPensjon, søknadId.toString()).asUpdate
         )
     }
 
@@ -83,4 +87,8 @@ internal class TrygdOgPensjonDAO {
             :fom,
             :tom
         )""".trimIndent()
+
+    companion object {
+        private const val ULID_PREFIX_TRYGDOGPENSJON = "togp"
+    }
 }

@@ -3,36 +3,36 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 class YtelsesakDAO(
     private val ytelsevedtakDAO: YtelsevedtakDAO = YtelsevedtakDAO(),
 ) {
-    fun hentForSøker(søkerId: UUID, txSession: TransactionalSession): List<YtelseSak> {
+    fun hentForSøker(søkerId: SøkerId, txSession: TransactionalSession): List<YtelseSak> {
         return txSession.run(
-            queryOf(hentYtelsesak, søkerId)
-                .map { row ->
-                    row.toYtelsesak(txSession)
-                }.asList
+            queryOf(hentYtelsesak, søkerId.toString())
+                .map { row -> row.toYtelsesak(txSession) }
+                .asList
         )
     }
 
-    fun lagre(søkerId: UUID, ytelsesaker: List<YtelseSak>, txSession: TransactionalSession) {
+    fun lagre(søkerId: SøkerId, ytelsesaker: List<YtelseSak>, txSession: TransactionalSession) {
         slettYtelser(søkerId, txSession)
         ytelsesaker.forEach { ytelseSak ->
             lagreYtelse(søkerId, ytelseSak, txSession)
         }
     }
 
-    private fun lagreYtelse(søkerId: UUID, ytelseSak: YtelseSak, txSession: TransactionalSession) {
-        val id = UUID.randomUUID()
+    private fun lagreYtelse(søkerId: SøkerId, ytelseSak: YtelseSak, txSession: TransactionalSession) {
+        val id = UlidBase.new(ULID_PREFIX_YTELSE)
         txSession.run(
             queryOf(
                 lagreYtelseSak, mapOf(
-                    "id" to id,
-                    "sokerId" to søkerId,
+                    "id" to id.toString(),
+                    "sokerId" to søkerId.toString(),
                     "fomGyldighetsperiode" to ytelseSak.fomGyldighetsperiode,
                     "tomGyldighetsperiode" to ytelseSak.tomGyldighetsperiode,
                     "datoKravMottatt" to ytelseSak.datoKravMottatt,
@@ -49,11 +49,9 @@ class YtelsesakDAO(
         ytelsevedtakDAO.lagre(id, ytelseSak.vedtak, txSession)
     }
 
-    private fun slettYtelser(søkerId: UUID, txSession: TransactionalSession) {
+    private fun slettYtelser(søkerId: SøkerId, txSession: TransactionalSession) {
         ytelsevedtakDAO.slettVedtakForSøker(søkerId, txSession)
-        txSession.run(
-            queryOf(slettYtelsesak, søkerId).asUpdate
-        )
+        txSession.run(queryOf(slettYtelsesak, søkerId.toString()).asUpdate)
     }
 
     private fun Row.toYtelsesak(txSession: TransactionalSession): YtelseSak {
@@ -63,7 +61,7 @@ class YtelsesakDAO(
             datoKravMottatt = localDateOrNull("dato_krav_mottatt"),
             dataKravMottatt = stringOrNull("data_krav_mottatt"),
             fagsystemSakId = intOrNull("fagsystem_sak_id"),
-            vedtak = ytelsevedtakDAO.hentForVedtak(uuid("id"), txSession),
+            vedtak = ytelsevedtakDAO.hentForVedtak(UlidBase.fromDb(string("id")), txSession),
             status = stringOrNull("status")?.let { YtelseSak.YtelseSakStatus.valueOf(it) },
             ytelsestype = stringOrNull("ytelsestype")?.let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
             antallDagerIgjen = intOrNull("antall_dager_igjen"),
@@ -107,4 +105,8 @@ class YtelsesakDAO(
 
     @Language("SQL")
     private val hentYtelsesak = "select * from ytelsesak where søker_id = ?"
+
+    companion object {
+        private const val ULID_PREFIX_YTELSE = "ayt"
+    }
 }

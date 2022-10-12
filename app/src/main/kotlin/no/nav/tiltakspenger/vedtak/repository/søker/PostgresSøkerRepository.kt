@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
@@ -65,7 +66,7 @@ internal class PostgresSøkerRepository(
     }
 
     private fun Row.toSøker(txSession: TransactionalSession): Søker {
-        val id = uuid("id")
+        val id = SøkerId.fromDb(string("id"))
         return Søker.fromDb(
             id = id,
             ident = string("ident"),
@@ -89,7 +90,7 @@ internal class PostgresSøkerRepository(
             queryOf(
                 lagre,
                 mapOf(
-                    "id" to søker.id,
+                    "id" to søker.id.toString(),
                     "ident" to søker.ident,
                     "tilstand" to søker.tilstand.type.name,
                     "sist_endret" to LocalDateTime.now(),
@@ -106,7 +107,7 @@ internal class PostgresSøkerRepository(
             queryOf(
                 oppdater,
                 mapOf(
-                    "id" to søker.id,
+                    "id" to søker.id.toString(),
                     "tilstand" to søker.tilstand.type.name,
                     "sistEndret" to LocalDateTime.now()
                 )

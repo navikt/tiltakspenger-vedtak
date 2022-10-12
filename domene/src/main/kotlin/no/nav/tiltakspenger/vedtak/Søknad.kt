@@ -2,12 +2,12 @@
 
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 
 data class Søknad(
-    val id: UUID = UUID.randomUUID(),
+    val id: SøknadId = randomId(),
     val søknadId: String,
     val journalpostId: String,
     val dokumentInfoId: String,
@@ -26,6 +26,11 @@ data class Søknad(
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
 ) : Tidsstempler {
+
+    companion object {
+        fun randomId() = SøknadId.random()
+    }
+
     fun accept(visitor: SøkerVisitor) {
         visitor.visitSøknad(this)
     }

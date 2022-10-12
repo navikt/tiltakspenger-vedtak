@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -41,7 +42,7 @@ internal class BarnetilleggDAOTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
-        val søknadId = UUID.randomUUID()
+        val søknadId = Søknad.randomId()
         val søknad = enSøknad(søknadId, ident)
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -91,7 +92,7 @@ internal class BarnetilleggDAOTest {
         assertTrue(hentet.contains(barnetilleggUtenIdent))
     }
 
-    private fun enSøknad(id: UUID, ident: String) = Søknad(
+    private fun enSøknad(id: SøknadId, ident: String) = Søknad(
         id = id,
         søknadId = "41",
         journalpostId = "42",

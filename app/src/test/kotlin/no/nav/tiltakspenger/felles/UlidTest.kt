@@ -8,17 +8,15 @@ internal class UlidTest {
 
     @Test
     fun `test roundtrip`() {
-        val prefix = "HH"
-        val ulid = Ulid.new(prefix)
-        val ulid2 = Ulid.fromDb(ulid.asString())
+        val ulid = SøkerId.random()
+        val ulid2 = SøkerId.fromDb(ulid.toString())
         assertEquals(ulid, ulid2)
     }
 
     @Test
     fun `test prefixPart and ulidPart`() {
-        val prefix = "HH"
-        val ulid = Ulid.new(prefix)
-        val ulid2 = Ulid.fromDb("${ulid.prefixPart()}_${ulid.ulidPart()}")
+        val ulid = SøkerId.random()
+        val ulid2 = SøkerId.fromDb("${ulid.prefixPart()}_${ulid.ulidPart()}")
         assertEquals(ulid, ulid2)
     }
 
@@ -26,22 +24,22 @@ internal class UlidTest {
     fun `test fromDb negativ test`() {
         val utenGyldigSkilletegn = "HH"
         shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, skal bestå av to deler skilt med _") {
-            Ulid.fromDb(utenGyldigSkilletegn)
+            SøkerId.fromDb(utenGyldigSkilletegn)
         }
 
         val utenPrefiks = "_HH"
         shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, prefiks er tom") {
-            Ulid.fromDb(utenPrefiks)
+            SøkerId.fromDb(utenPrefiks)
         }
 
         val utenUlid = "HH_"
         shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, ulid er ugyldig") {
-            Ulid.fromDb(utenUlid)
+            SøkerId.fromDb(utenUlid)
         }
 
         val ugyldigUlid = "HH_UU_JJ"
         shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, skal bestå av prefiks + ulid") {
-            Ulid.fromDb(ugyldigUlid)
+            SøkerId.fromDb(ugyldigUlid)
         }
     }
 }

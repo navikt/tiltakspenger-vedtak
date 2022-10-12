@@ -3,34 +3,33 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class BarnetilleggDAO {
 
-
-    fun lagre(søknadId: UUID, barnetillegg: List<Barnetillegg>, txSession: TransactionalSession) {
+    fun lagre(søknadId: SøknadId, barnetillegg: List<Barnetillegg>, txSession: TransactionalSession) {
         slettBarnetillegg(søknadId, txSession)
         barnetillegg.forEach {
             lagreBarnetillegg(søknadId, it, txSession)
         }
     }
 
-    fun hentBarnetilleggListe(søknadId: UUID, txSession: TransactionalSession): List<Barnetillegg> {
+    fun hentBarnetilleggListe(søknadId: SøknadId, txSession: TransactionalSession): List<Barnetillegg> {
         return txSession.run(
-            queryOf(hentBarnetillegg, søknadId)
-                .map { row ->
-                    row.toBarnetillegg()
-                }.asList
+            queryOf(hentBarnetillegg, søknadId.toString())
+                .map { row -> row.toBarnetillegg() }
+                .asList
         )
     }
 
-    private fun lagreBarnetillegg(søknadId: UUID, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
+    private fun lagreBarnetillegg(søknadId: SøknadId, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
         val paramMap = when (barnetillegg) {
             is Barnetillegg.MedIdent -> mapOf(
-                "id" to UUID.randomUUID(),
-                "soknadId" to søknadId,
+                "id" to UlidBase.new(ULID_PREFIX_BARNETILLEGG).toString(),
+                "soknadId" to søknadId.toString(),
                 "ident" to barnetillegg.ident,
                 "fodselsdato" to null,
                 "fornavn" to barnetillegg.fornavn,
@@ -42,8 +41,8 @@ internal class BarnetilleggDAO {
             )
 
             is Barnetillegg.UtenIdent -> mapOf(
-                "id" to UUID.randomUUID(),
-                "soknadId" to søknadId,
+                "id" to UlidBase.new(ULID_PREFIX_BARNETILLEGG).toString(),
+                "soknadId" to søknadId.toString(),
                 "ident" to null,
                 "fodselsdato" to barnetillegg.fødselsdato,
                 "fornavn" to barnetillegg.fornavn,
@@ -59,9 +58,9 @@ internal class BarnetilleggDAO {
         )
     }
 
-    private fun slettBarnetillegg(søknadId: UUID, txSession: TransactionalSession) {
+    private fun slettBarnetillegg(søknadId: SøknadId, txSession: TransactionalSession) {
         txSession.run(
-            queryOf(slettBarnetillegg, søknadId).asUpdate
+            queryOf(slettBarnetillegg, søknadId.toString()).asUpdate
         )
     }
 
@@ -129,5 +128,7 @@ internal class BarnetilleggDAO {
     @Language("SQL")
     private val hentBarnetillegg = "select * from søknad_barnetillegg where søknad_id = ?"
 
-
+    companion object {
+        private const val ULID_PREFIX_BARNETILLEGG = "btil"
+    }
 }

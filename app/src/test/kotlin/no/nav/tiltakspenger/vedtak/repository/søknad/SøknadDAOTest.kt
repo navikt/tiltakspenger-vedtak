@@ -24,7 +24,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.temporal.ChronoUnit
-import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers
@@ -48,7 +47,7 @@ internal class SøknadDAOTest {
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
-        val uuid = UUID.randomUUID()
+        val uuid = Søknad.randomId()
         val søknad = Søknad(
             id = uuid,
             søknadId = "41",
@@ -103,7 +102,7 @@ internal class SøknadDAOTest {
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
-        val uuid = UUID.randomUUID()
+        val uuid = Søknad.randomId()
         val søknad = Søknad(
             id = uuid,
             søknadId = "41",
@@ -177,7 +176,7 @@ internal class SøknadDAOTest {
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
-        val uuid = UUID.randomUUID()
+        val uuid = Søknad.randomId()
         val tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Tiltaksbedriften AS",

@@ -3,34 +3,32 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 class YtelsevedtakDAO {
 
-    fun hentForVedtak(ytelsesakId: UUID, txSession: TransactionalSession): List<YtelseVedtak> {
+    fun hentForVedtak(ytelsesakId: UlidBase, txSession: TransactionalSession): List<YtelseVedtak> {
         return txSession.run(
-            queryOf(hentYtelsevedtak, ytelsesakId)
-                .map { row ->
-                    row.toYtelsevedtak()
-                }.asList
+            queryOf(hentYtelsevedtak, ytelsesakId.toString())
+                .map { row -> row.toYtelsevedtak() }
+                .asList
         )
     }
 
-    fun lagre(ytelsesakId: UUID, ytelseVedtak: List<YtelseVedtak>, txSession: TransactionalSession) {
+    fun lagre(ytelsesakId: UlidBase, ytelseVedtak: List<YtelseVedtak>, txSession: TransactionalSession) {
         // slettVedtak(ytelsesakId, txSession)
-        ytelseVedtak.forEach { vedtak ->
-            lagreVedtak(ytelsesakId, vedtak, txSession)
-        }
+        ytelseVedtak.forEach { vedtak -> lagreVedtak(ytelsesakId, vedtak, txSession) }
     }
 
-    private fun lagreVedtak(ytelsesakId: UUID, ytelseVedtak: YtelseVedtak, txSession: TransactionalSession) {
+    private fun lagreVedtak(ytelsesakId: UlidBase, ytelseVedtak: YtelseVedtak, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 lagreYtelseVedtak, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "ytelsesakId" to ytelsesakId,
+                    "id" to UlidBase.new(ULID_PREFIX_VEDTAK).toString(),
+                    "ytelsesakId" to ytelsesakId.toString(),
                     "beslutningsDato" to ytelseVedtak.beslutningsDato,
                     "periodetypeForYtelse" to ytelseVedtak.periodetypeForYtelse?.name,
                     "vedtaksperiodeFom" to ytelseVedtak.vedtaksperiodeFom,
@@ -42,37 +40,27 @@ class YtelsevedtakDAO {
         )
     }
 
-    private fun slettVedtak(ytelsesakId: UUID, txSession: TransactionalSession) {
-        txSession.run(
-            queryOf(slettYtelsevedtak, ytelsesakId).asUpdate
-        )
+    private fun slettVedtak(ytelsesakId: UlidBase, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettYtelsevedtak, ytelsesakId.toString()).asUpdate)
     }
 
-    fun slettVedtakForSøker(søkerId: UUID, txSession: TransactionalSession) {
-        txSession.run(
-            queryOf(slettYtelsevedtak, søkerId).asUpdate
-        )
+    fun slettVedtakForSøker(søkerId: SøkerId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettYtelsevedtak, søkerId.toString()).asUpdate)
     }
 
     private fun Row.toYtelsevedtak(): YtelseVedtak {
         return YtelseVedtak(
             beslutningsDato = localDateOrNull("beslutnings_dato"),
             periodetypeForYtelse = stringOrNull("periodetype_for_ytelse")?.let {
-                YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse.valueOf(
-                    it
-                )
+                YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse.valueOf(it)
             },
             vedtaksperiodeFom = localDateOrNull("vedtaksperiode_fom"),
             vedtaksperiodeTom = localDateOrNull("vedtaksperiode_tom"),
             vedtaksType = stringOrNull("vedtaks_type")?.let {
-                YtelseVedtak.YtelseVedtakVedtakstype.valueOf(
-                    it
-                )
+                YtelseVedtak.YtelseVedtakVedtakstype.valueOf(it)
             },
             status = stringOrNull("status")?.let {
-                YtelseVedtak.YtelseVedtakStatus.valueOf(
-                    it
-                )
+                YtelseVedtak.YtelseVedtakStatus.valueOf(it)
             },
         )
     }
@@ -105,4 +93,8 @@ class YtelsevedtakDAO {
 
     @Language("SQL")
     private val hentYtelsevedtak = "select * from ytelsevedtak where ytelsesak_id = ?"
+
+    companion object {
+        private const val ULID_PREFIX_VEDTAK = "aved"
+    }
 }

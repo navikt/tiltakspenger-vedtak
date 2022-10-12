@@ -15,7 +15,7 @@ fun main() {
         install(CORS) {
             anyHost()
         }
-        vedtakTestApi()()
+        apply { vedtakTestApi() }
     }.start(wait = true)
 }
 

@@ -4,10 +4,11 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
-import java.util.*
 
 internal class PersonopplysningerDAO(
     private val barnMedIdentDAO: PersonopplysningerBarnMedIdentDAO = PersonopplysningerBarnMedIdentDAO(),
@@ -17,7 +18,7 @@ internal class PersonopplysningerDAO(
     private val securelog = KotlinLogging.logger("tjenestekall")
 
     fun hent(
-        søkerId: UUID,
+        søkerId: SøkerId,
         txSession: TransactionalSession,
     ): List<Personopplysninger> {
         val søker = hentPersonopplysningerForSøker(søkerId, txSession) ?: return emptyList()
@@ -27,7 +28,7 @@ internal class PersonopplysningerDAO(
         return listOf(søker) + barnMedIdent + barnUtenIdent
     }
 
-    fun lagre(søkerId: UUID, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
+    fun lagre(søkerId: SøkerId, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
         log.info { "Sletter personopplysninger før lagring" }
         slett(søkerId, txSession)
         barnMedIdentDAO.slett(søkerId, txSession)
@@ -47,11 +48,11 @@ internal class PersonopplysningerDAO(
         }
     }
 
-    private fun hentPersonopplysningerForSøker(søkerId: UUID, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, søkerId).map(toPersonopplysninger).asSingle)
+    private fun hentPersonopplysningerForSøker(søkerId: SøkerId, txSession: TransactionalSession) =
+        txSession.run(queryOf(hentSql, søkerId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
-        søkerId: UUID,
+        søkerId: SøkerId,
         personopplysninger: Personopplysninger.Søker,
         txSession: TransactionalSession
     ) {
@@ -59,8 +60,8 @@ internal class PersonopplysningerDAO(
         txSession.run(
             queryOf(
                 lagreSql, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "sokerId" to søkerId,
+                    "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGER).toString(),
+                    "sokerId" to søkerId.toString(),
                     "ident" to personopplysninger.ident,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
@@ -77,8 +78,8 @@ internal class PersonopplysningerDAO(
         )
     }
 
-    private fun slett(søkerId: UUID, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, søkerId).asUpdate)
+    private fun slett(søkerId: SøkerId, txSession: TransactionalSession) =
+        txSession.run(queryOf(slettSql, søkerId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
         Personopplysninger.Søker(
@@ -133,4 +134,8 @@ internal class PersonopplysningerDAO(
             :bydel,             
             :tidsstempelHosOss
         )""".trimIndent()
+
+    companion object {
+        private const val ULID_PREFIX_PERSONOPPLYSNINGER = "poppl"
+    }
 }

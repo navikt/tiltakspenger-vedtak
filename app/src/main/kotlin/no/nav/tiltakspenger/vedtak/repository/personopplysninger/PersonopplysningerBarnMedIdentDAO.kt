@@ -4,18 +4,20 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import org.intellij.lang.annotations.Language
-import java.util.*
+
 
 internal class PersonopplysningerBarnMedIdentDAO {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    internal fun hent(søkerId: UUID, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, søkerId).map(toPersonopplysninger).asList)
+    internal fun hent(søkerId: SøkerId, txSession: TransactionalSession) =
+        txSession.run(queryOf(hentSql, søkerId.toString()).map(toPersonopplysninger).asList)
 
     internal fun lagre(
-        søkerId: UUID,
+        søkerId: SøkerId,
         personopplysninger: Personopplysninger.BarnMedIdent,
         txSession: TransactionalSession
     ) {
@@ -23,8 +25,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
         txSession.run(
             queryOf(
                 lagreSql, mapOf(
-                    "id" to UUID.randomUUID(),
-                    "sokerId" to søkerId,
+                    "id" to UlidBase.new(ULID_PREFIX_BARN_MED_IDENT).toString(),
+                    "sokerId" to søkerId.toString(),
                     "ident" to personopplysninger.ident,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
@@ -39,8 +41,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
         )
     }
 
-    internal fun slett(søkerId: UUID, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, søkerId).asUpdate)
+    internal fun slett(søkerId: SøkerId, txSession: TransactionalSession) =
+        txSession.run(queryOf(slettSql, søkerId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> Personopplysninger.BarnMedIdent = { row ->
         Personopplysninger.BarnMedIdent(
@@ -89,4 +91,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
             :oppholdsland,             
             :tidsstempelHosOss
         )""".trimIndent()
+
+    companion object {
+        private const val ULID_PREFIX_BARN_MED_IDENT = "barnm"
+    }
 }
