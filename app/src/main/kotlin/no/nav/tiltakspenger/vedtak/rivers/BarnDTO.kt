@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import java.time.LocalDate
 
-const val ALDER_BARNETILLEGG: Long = 16
+const val ALDER_BARNETILLEGG: Long = 18
 
 data class BarnDTO(
     val ident: String,

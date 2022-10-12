@@ -16,5 +16,6 @@ enum class SøkerTilstandType {
     AventerArenaOppgave,
     AvventerGosys,
     UkjentBruker,
-    AlleredeBehandlet
+    AlleredeBehandlet,
+    FaktainnhentingFeilet,
 }

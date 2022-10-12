@@ -2,13 +2,13 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.objectmothers.søkerMedTiltak
+import no.nav.tiltakspenger.objectmothers.tomYtelsesak
+import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.objectmothers.søkerMedTiltak
-import no.nav.tiltakspenger.vedtak.objectmothers.tomYtelsesak
-import no.nav.tiltakspenger.vedtak.objectmothers.ytelseSak
-import no.nav.tiltakspenger.vedtak.objectmothers.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

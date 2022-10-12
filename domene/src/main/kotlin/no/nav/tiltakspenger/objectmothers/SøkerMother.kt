@@ -1,6 +1,6 @@
 @file:Suppress("LongParameterList")
 
-package no.nav.tiltakspenger.vedtak.objectmothers
+package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
