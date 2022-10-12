@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
+
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.barn
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.personopplysningMaxFyr
@@ -85,7 +87,7 @@ internal class PersonopplysningerDAOTest {
         // when
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(UUID.randomUUID(), txSession)
+                dao.hent(SøkerId.random(), txSession)
             }
         }
 

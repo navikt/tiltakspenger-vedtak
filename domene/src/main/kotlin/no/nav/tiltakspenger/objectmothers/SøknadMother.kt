@@ -5,6 +5,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.domene.juni
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -115,7 +116,7 @@ fun barnetilleggUtenIdent(
 }
 
 fun nySøknadMedArenaTiltak(
-    id: UUID = UUID.randomUUID(),
+    id: SøknadId = Søknad.randomId(),
     søknadId: String = "søknadId",
     journalpostId: String = "journalpostId",
     dokumentInfoId: String = "dokumentInfoId",
@@ -156,7 +157,7 @@ fun nySøknadMedArenaTiltak(
 }
 
 fun nySøknadMedBrukerTiltak(
-    id: UUID = UUID.randomUUID(),
+    id: SøknadId = Søknad.randomId(),
     søknadId: String = "søknadId",
     journalpostId: String = "journalpostId",
     dokumentInfoId: String = "dokumentInfoId",

@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
-import java.util.*
 
 @Suppress("TooManyFunctions", "LongParameterList")
 class Søker private constructor(
-    val id: UUID,
+    val id: SøkerId,
     val ident: String,
     tilstand: Tilstand,
     søknader: List<Søknad>,
@@ -39,7 +39,7 @@ class Søker private constructor(
     constructor(
         ident: String
     ) : this(
-        id = UUID.randomUUID(),
+        id = randomId(),
         ident = ident,
         tilstand = SøkerRegistrert,
         søknader = mutableListOf(),
@@ -50,8 +50,11 @@ class Søker private constructor(
     )
 
     companion object {
+
+        fun randomId() = SøkerId.random()
+
         fun fromDb(
-            id: UUID,
+            id: SøkerId,
             ident: String,
             tilstand: String,
             søknader: List<Søknad>,
