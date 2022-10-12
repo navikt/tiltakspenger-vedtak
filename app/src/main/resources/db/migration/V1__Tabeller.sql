@@ -29,7 +29,7 @@ CREATE TABLE søker
 CREATE TABLE søknad
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NULL,
@@ -50,21 +50,21 @@ CREATE TABLE søknad
 CREATE TABLE søknad_barnetillegg
 (
     id                VARCHAR PRIMARY KEY,
-    søknad_id         VARCHAR    NOT NULL REFERENCES søknad (id),
+    søknad_id         VARCHAR NOT NULL REFERENCES søknad (id),
     ident             VARCHAR NULL,
     fødselsdato       DATE    NULL,
     fornavn           VARCHAR NULL,
     mellomnavn        VARCHAR NULL,
     etternavn         VARCHAR NULL,
     alder             INT     NOT NULL,
-    land              VARCHAR NOT NULL,
+    oppholdsland      VARCHAR NOT NULL,
     søkt_barnetillegg BOOLEAN NOT NULL
 );
 
 CREATE TABLE søknad_brukertiltak
 (
     id            VARCHAR PRIMARY KEY,
-    søknad_id     VARCHAR    NOT NULL REFERENCES søknad (id),
+    søknad_id     VARCHAR NOT NULL REFERENCES søknad (id),
     tiltakskode   VARCHAR NULL,
     arrangoernavn VARCHAR NULL,
     beskrivelse   VARCHAR NULL,
@@ -78,7 +78,7 @@ CREATE TABLE søknad_brukertiltak
 CREATE TABLE søknad_arenatiltak
 (
     id                      VARCHAR PRIMARY KEY,
-    søknad_id               VARCHAR    NOT NULL REFERENCES søknad (id),
+    søknad_id               VARCHAR NOT NULL REFERENCES søknad (id),
     arena_id                VARCHAR NOT NULL,
     arrangoernavn           VARCHAR NULL,
     har_sluttdato_fra_arena BOOLEAN NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE søknad_arenatiltak
 CREATE TABLE søknad_trygdogpensjon
 (
     id        VARCHAR PRIMARY KEY,
-    søknad_id VARCHAR    NOT NULL REFERENCES søknad (id),
+    søknad_id VARCHAR NOT NULL REFERENCES søknad (id),
     utbetaler VARCHAR NOT NULL,
     prosent   INT     NULL,
     fom       DATE    NULL,
@@ -103,7 +103,7 @@ CREATE TABLE søknad_trygdogpensjon
 CREATE TABLE personopplysninger_søker
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
     ident               VARCHAR                  NOT NULL,
     fødselsdato         DATE                     NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
@@ -120,7 +120,7 @@ CREATE TABLE personopplysninger_søker
 CREATE TABLE personopplysninger_barn_med_ident
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
     ident               VARCHAR                  NOT NULL,
     fødselsdato         DATE                     NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE personopplysninger_barn_med_ident
 CREATE TABLE personopplysninger_barn_uten_ident
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
     fødselsdato         DATE                     NULL,
     fornavn             VARCHAR                  NULL,
     mellomnavn          VARCHAR                  NULL,
@@ -146,7 +146,7 @@ CREATE TABLE personopplysninger_barn_uten_ident
 CREATE TABLE tiltaksaktivitet
 (
     id                     VARCHAR PRIMARY KEY,
-    søker_id               VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id               VARCHAR                  NOT NULL REFERENCES søker (id),
     tiltak                 VARCHAR                  NOT NULL,
     aktivitet_id           VARCHAR                  NOT NULL,
     tiltak_lokalt_navn     VARCHAR                  NULL,
@@ -165,7 +165,7 @@ CREATE TABLE tiltaksaktivitet
 CREATE TABLE ytelsesak
 (
     id                    VARCHAR PRIMARY KEY,
-    søker_id              VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id              VARCHAR                  NOT NULL REFERENCES søker (id),
     fom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
     tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NULL,
     dato_krav_mottatt     DATE                     NULL,
@@ -181,7 +181,7 @@ CREATE TABLE ytelsesak
 CREATE TABLE ytelsevedtak
 (
     id                     VARCHAR PRIMARY KEY,
-    ytelsesak_id           VARCHAR    NOT NULL REFERENCES ytelsesak (id),
+    ytelsesak_id           VARCHAR NOT NULL REFERENCES ytelsesak (id),
     beslutnings_dato       DATE    NULL,
     periodetype_for_ytelse VARCHAR NULL,
     vedtaksperiode_fom     DATE    NULL,
@@ -193,7 +193,7 @@ CREATE TABLE ytelsevedtak
 CREATE TABLE aktivitet
 (
     id               VARCHAR PRIMARY KEY,
-    søker_id         VARCHAR                     NOT NULL REFERENCES søker (id),
+    søker_id         VARCHAR                  NOT NULL REFERENCES søker (id),
     type             VARCHAR                  NULL,
     alvorlighetsgrad INT                      NOT NULL,
     label            CHAR(1)                  NOT NULL,

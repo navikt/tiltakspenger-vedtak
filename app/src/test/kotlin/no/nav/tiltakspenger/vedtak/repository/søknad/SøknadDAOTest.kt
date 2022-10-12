@@ -121,7 +121,7 @@ internal class SøknadDAOTest {
                 Barnetillegg.MedIdent(
                     alder = 0,
                     ident = "1",
-                    land = "NO",
+                    oppholdsland = "NO",
                     fornavn = "fornavn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
@@ -209,7 +209,7 @@ internal class SøknadDAOTest {
                 Barnetillegg.MedIdent(
                     alder = 16,
                     ident = "1",
-                    land = "NO",
+                    oppholdsland = "NO",
                     fornavn = "foranvn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",

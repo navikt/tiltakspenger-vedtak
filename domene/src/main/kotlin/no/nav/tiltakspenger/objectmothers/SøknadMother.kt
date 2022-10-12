@@ -77,7 +77,7 @@ fun trygdOgPensjon(
 
 fun barnetilleggMedIdent(
     alder: Int = 10,
-    land: String = "NOR",
+    oppholdsland: String = "NOR",
     fornavn: String? = "Fornavn Barn",
     mellomnavn: String? = "Mellomnavn Barn",
     etternavn: String? = "Etternavn Barn",
@@ -86,7 +86,7 @@ fun barnetilleggMedIdent(
 ): Barnetillegg {
     return Barnetillegg.MedIdent(
         alder = alder,
-        land = land,
+        oppholdsland = oppholdsland,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
@@ -97,7 +97,7 @@ fun barnetilleggMedIdent(
 
 fun barnetilleggUtenIdent(
     alder: Int = 10,
-    land: String = "NOR",
+    oppholdsland: String = "NOR",
     fornavn: String? = "Fornavn Barn",
     mellomnavn: String? = "Mellomnavn Barn",
     etternavn: String? = "Etternavn Barn",
@@ -106,7 +106,7 @@ fun barnetilleggUtenIdent(
 ): Barnetillegg {
     return Barnetillegg.UtenIdent(
         alder = alder,
-        land = land,
+        oppholdsland = oppholdsland,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,

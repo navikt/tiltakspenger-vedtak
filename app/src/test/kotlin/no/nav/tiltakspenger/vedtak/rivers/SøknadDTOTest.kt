@@ -39,8 +39,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
+                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -108,8 +108,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
+                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -166,8 +166,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
+                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -189,7 +189,7 @@ internal class SøknadDTOTest {
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
         søknadDTO.barnetillegg.forEach { barnetilleggDTO ->
             søknad.barnetillegg.forAtLeastOne {
-                it.land shouldBe barnetilleggDTO.land
+                it.oppholdsland shouldBe barnetilleggDTO.oppholdsland
                 it.alder shouldBe barnetilleggDTO.alder
                 it.fornavn shouldBe barnetilleggDTO.fornavn
                 it.etternavn shouldBe barnetilleggDTO.etternavn
@@ -480,8 +480,8 @@ internal class SøknadDTOTest {
             typeInstitusjon = "fengsel",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", land = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), land = "SWE")
+                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",

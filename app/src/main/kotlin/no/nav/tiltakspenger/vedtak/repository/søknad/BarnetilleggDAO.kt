@@ -36,7 +36,7 @@ internal class BarnetilleggDAO {
                 "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
-                "land" to barnetillegg.land,
+                "oppholdsland" to barnetillegg.oppholdsland,
                 "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
             )
 
@@ -49,7 +49,7 @@ internal class BarnetilleggDAO {
                 "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
                 "alder" to barnetillegg.alder,
-                "land" to barnetillegg.land,
+                "oppholdsland" to barnetillegg.oppholdsland,
                 "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
             )
         }
@@ -68,7 +68,7 @@ internal class BarnetilleggDAO {
         val ident = stringOrNull("ident")
         val fødselsdato = localDateOrNull("fødselsdato")
         val alder = int("alder")
-        val land = string("land")
+        val oppholdsland = string("oppholdsland")
         val fornavn = stringOrNull("fornavn")
         val mellomnavn = stringOrNull("mellomnavn")
         val etternavn = stringOrNull("etternavn")
@@ -76,7 +76,7 @@ internal class BarnetilleggDAO {
         return if (ident != null) {
             Barnetillegg.MedIdent(
                 alder = alder,
-                land = land,
+                oppholdsland = oppholdsland,
                 ident = ident,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
@@ -86,7 +86,7 @@ internal class BarnetilleggDAO {
         } else {
             Barnetillegg.UtenIdent(
                 alder = alder,
-                land = land,
+                oppholdsland = oppholdsland,
                 fødselsdato = fødselsdato!!,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
@@ -107,7 +107,7 @@ internal class BarnetilleggDAO {
             mellomnavn,
             etternavn,
             alder,
-            land,
+            oppholdsland,
             søkt_barnetillegg
         ) values (
             :id,
@@ -118,7 +118,7 @@ internal class BarnetilleggDAO {
             :mellomnavn,
             :etternavn,
             :alder,
-            :land,
+            :oppholdsland,
             :soktBarnetillegg
         )""".trimIndent()
 

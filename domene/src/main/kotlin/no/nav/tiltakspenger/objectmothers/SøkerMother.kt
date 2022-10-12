@@ -181,7 +181,7 @@ fun barn(
     etternavn: String = "Etternavn",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
-    land: String? = null,
+    oppholdsland: String? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
 ): Personopplysninger.BarnMedIdent {
     return Personopplysninger.BarnMedIdent(
@@ -192,7 +192,7 @@ fun barn(
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
-        oppholdsland = land,
+        oppholdsland = oppholdsland,
         tidsstempelHosOss = tidsstempelHosOss,
     )
 }

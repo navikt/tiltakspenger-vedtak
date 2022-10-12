@@ -52,7 +52,7 @@ internal class BarnetilleggDAOTest {
         val barnetilleggMedIdent =
             Barnetillegg.MedIdent(
                 alder = 42,
-                land = "SWE",
+                oppholdsland = "SWE",
                 ident = "123",
                 fornavn = "fornavn",
                 mellomnavn = "mellomnavn",
@@ -62,7 +62,7 @@ internal class BarnetilleggDAOTest {
         val barnetilleggUtenIdent =
             Barnetillegg.UtenIdent(
                 alder = 42,
-                land = "SWE",
+                oppholdsland = "SWE",
                 fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
                 fornavn = "fornavn",
                 mellomnavn = null,

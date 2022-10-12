@@ -255,7 +255,7 @@ internal class SøknadMottattRiverTest {
                     "fornavn": "fornavn",
                     "etternavn": "etternavn",
                     "alder": 0,
-                    "land": "NOR"
+                    "oppholdsland": "NOR"
                   }
                 ],
                 "arenaTiltak": {
@@ -329,7 +329,7 @@ internal class SøknadMottattRiverTest {
                     "ident": "123",
                     "fødselsdato": null,
                     "alder": 0,
-                    "land": "NOR"
+                    "oppholdsland": "NOR"
                   }
                 ],
                 "arenaTiltak": {

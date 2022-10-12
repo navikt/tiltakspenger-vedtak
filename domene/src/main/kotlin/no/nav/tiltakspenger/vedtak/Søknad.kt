@@ -85,7 +85,7 @@ sealed class Tiltak {
 
 sealed class Barnetillegg {
     abstract val alder: Int
-    abstract val land: String
+    abstract val oppholdsland: String
     abstract val fornavn: String?
     abstract val mellomnavn: String?
     abstract val etternavn: String?
@@ -93,7 +93,7 @@ sealed class Barnetillegg {
 
     data class MedIdent(
         override val alder: Int,
-        override val land: String,
+        override val oppholdsland: String,
         override val fornavn: String?,
         override val mellomnavn: String?,
         override val etternavn: String?,
@@ -103,7 +103,7 @@ sealed class Barnetillegg {
 
     data class UtenIdent(
         override val alder: Int,
-        override val land: String,
+        override val oppholdsland: String,
         override val fornavn: String?,
         override val mellomnavn: String?,
         override val etternavn: String?,

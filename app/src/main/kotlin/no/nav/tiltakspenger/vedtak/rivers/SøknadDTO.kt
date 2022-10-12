@@ -136,7 +136,7 @@ class TrygdOgPensjonDTO(
 
 class BarnetilleggDTO(
     val alder: Int,
-    val land: String,
+    val oppholdsland: String,
     val ident: String? = null,
     val fødselsdato: LocalDate? = null,
     val fornavn: String? = null,
@@ -148,7 +148,7 @@ class BarnetilleggDTO(
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
             return if (dto.ident != null) Barnetillegg.MedIdent(
                 alder = dto.alder,
-                land = dto.land,
+                oppholdsland = dto.oppholdsland,
                 ident = dto.ident,
                 fornavn = dto.fornavn,
                 mellomnavn = dto.mellomnavn,
@@ -157,7 +157,7 @@ class BarnetilleggDTO(
             ) else
                 Barnetillegg.UtenIdent(
                     alder = dto.alder,
-                    land = dto.land,
+                    oppholdsland = dto.oppholdsland,
                     fødselsdato = dto.fødselsdato!!,
                     fornavn = dto.fornavn,
                     mellomnavn = dto.mellomnavn,
