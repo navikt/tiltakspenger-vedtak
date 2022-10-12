@@ -17,11 +17,6 @@ data class UlidBase(private val stringValue: String) : Ulid {
             return UlidBase("${prefix}_${ULID.random()}")
         }
 
-        fun new(prefix: String): UlidBase {
-            require(prefix.isNotEmpty()) { "Prefiks er tom" }
-            return UlidBase("${prefix}_${ULID.random()}")
-        }
-
         fun fromDb(stringValue: String) = UlidBase(stringValue)
     }
 

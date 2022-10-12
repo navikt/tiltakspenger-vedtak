@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.intellij.lang.annotations.Language
 
@@ -27,7 +28,7 @@ class YtelsesakDAO(
     }
 
     private fun lagreYtelse(søkerId: SøkerId, ytelseSak: YtelseSak, txSession: TransactionalSession) {
-        val id = UlidBase.new(ULID_PREFIX_YTELSE)
+        val id = random(ULID_PREFIX_YTELSE)
         txSession.run(
             queryOf(
                 lagreYtelseSak, mapOf(

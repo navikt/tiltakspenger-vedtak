@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak
 import org.intellij.lang.annotations.Language
 
@@ -27,7 +28,7 @@ class YtelsevedtakDAO {
         txSession.run(
             queryOf(
                 lagreYtelseVedtak, mapOf(
-                    "id" to UlidBase.new(ULID_PREFIX_VEDTAK).toString(),
+                    "id" to random(ULID_PREFIX_VEDTAK).toString(),
                     "ytelsesakId" to ytelsesakId.toString(),
                     "beslutningsDato" to ytelseVedtak.beslutningsDato,
                     "periodetypeForYtelse" to ytelseVedtak.periodetypeForYtelse?.name,

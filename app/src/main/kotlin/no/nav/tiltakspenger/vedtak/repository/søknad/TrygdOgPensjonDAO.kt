@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import org.intellij.lang.annotations.Language
 
@@ -33,7 +33,7 @@ internal class TrygdOgPensjonDAO {
         txSession.run(
             queryOf(
                 lagreTrygdOgPensjon, mapOf(
-                    "id" to UlidBase.new(ULID_PREFIX_TRYGDOGPENSJON).toString(),
+                    "id" to random(ULID_PREFIX_TRYGDOGPENSJON).toString(),
                     "soknadId" to søknadId.toString(),
                     "utbetaler" to trygdOgPensjon.utbetaler,
                     "prosent" to trygdOgPensjon.prosent,

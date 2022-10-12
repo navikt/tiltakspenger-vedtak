@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import org.intellij.lang.annotations.Language
@@ -45,7 +45,7 @@ internal class TiltakDAO {
             txSession.run(
                 queryOf(
                     lagreArenaTiltak, mapOf(
-                        "id" to UlidBase.new(ULID_PREFIX_ARENATILTAK).toString(),
+                        "id" to random(ULID_PREFIX_ARENATILTAK).toString(),
                         "soknadId" to søknadId.toString(),
                         "arenaId" to arenaTiltak.arenaId,
                         "arrangoernavn" to arenaTiltak.arrangoernavn,
@@ -71,7 +71,7 @@ internal class TiltakDAO {
             txSession.run(
                 queryOf(
                     lagreBrukerTiltak, mapOf(
-                        "id" to UlidBase.new(ULID_PREFIX_BRUKERTILTAK).toString(),
+                        "id" to random(ULID_PREFIX_BRUKERTILTAK).toString(),
                         "soknadId" to søknadId.toString(),
                         "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,
                         "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,

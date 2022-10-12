@@ -5,7 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import org.intellij.lang.annotations.Language
 
@@ -25,7 +25,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
         txSession.run(
             queryOf(
                 lagreSql, mapOf(
-                    "id" to UlidBase.new(ULID_PREFIX_BARN_MED_IDENT).toString(),
+                    "id" to random(ULID_PREFIX_BARN_MED_IDENT).toString(),
                     "sokerId" to søkerId.toString(),
                     "ident" to personopplysninger.ident,
                     "fodselsdato" to personopplysninger.fødselsdato,

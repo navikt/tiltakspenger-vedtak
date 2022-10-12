@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import org.intellij.lang.annotations.Language
 
@@ -29,7 +29,7 @@ class TiltaksaktivitetDAO {
         txSession.run(
             queryOf(
                 lagreTiltaksaktivitet, mapOf(
-                    "id" to UlidBase.new(ULID_PREFIX_TILTAKSAKTIVITET).toString(),
+                    "id" to random(ULID_PREFIX_TILTAKSAKTIVITET).toString(),
                     "sokerId" to søkerId.toString(),
                     "tiltak" to tiltaksaktivitet.tiltak.name,
                     "aktivitetId" to tiltaksaktivitet.aktivitetId,

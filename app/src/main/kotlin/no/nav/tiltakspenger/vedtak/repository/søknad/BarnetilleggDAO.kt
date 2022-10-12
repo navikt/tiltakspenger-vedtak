@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import org.intellij.lang.annotations.Language
 
@@ -28,7 +28,7 @@ internal class BarnetilleggDAO {
     private fun lagreBarnetillegg(søknadId: SøknadId, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
         val paramMap = when (barnetillegg) {
             is Barnetillegg.MedIdent -> mapOf(
-                "id" to UlidBase.new(ULID_PREFIX_BARNETILLEGG).toString(),
+                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
                 "soknadId" to søknadId.toString(),
                 "ident" to barnetillegg.ident,
                 "fodselsdato" to null,
@@ -41,7 +41,7 @@ internal class BarnetilleggDAO {
             )
 
             is Barnetillegg.UtenIdent -> mapOf(
-                "id" to UlidBase.new(ULID_PREFIX_BARNETILLEGG).toString(),
+                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
                 "soknadId" to søknadId.toString(),
                 "ident" to null,
                 "fodselsdato" to barnetillegg.fødselsdato,
