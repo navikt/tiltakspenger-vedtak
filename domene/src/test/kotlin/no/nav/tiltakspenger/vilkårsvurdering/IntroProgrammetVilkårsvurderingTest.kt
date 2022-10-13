@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.SøknadId
@@ -101,20 +102,25 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
         val introProgrammetVilkårsvurdering = IntroProgrammetVilkårsvurdering(søknad = søknad)
 
-        introProgrammetVilkårsvurdering.manuellVurdering(
+        introProgrammetVilkårsvurdering.leggTilManuellVurdering(
             fom = 1.januar(2022),
             tom = 31.januar(2022),
             utfall = Utfall.IKKE_OPPFYLT
         )
 
-        introProgrammetVilkårsvurdering.vurderinger.first().kilde shouldBe "Søknad"
-        introProgrammetVilkårsvurdering.vurderinger.first().fom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger.first().tom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger.first().utfall shouldBe Utfall.OPPFYLT
+        val vurderingSøknad = Vurdering(kilde = "Søknad", fom = null, tom = null, utfall = Utfall.OPPFYLT)
+        val vurderingSaksbehandler =
+            Vurdering(
+                kilde = "Saksbehandler",
+                fom = 1.januar(2022),
+                tom = 31.januar(2022),
+                utfall = Utfall.IKKE_OPPFYLT
+            )
+        introProgrammetVilkårsvurdering.vurderinger shouldContainExactlyInAnyOrder listOf(
+            vurderingSøknad,
+            vurderingSaksbehandler
+        )
 
-        introProgrammetVilkårsvurdering.vurderinger.last().kilde shouldBe "Saksbehandler"
-        introProgrammetVilkårsvurdering.vurderinger.last().fom shouldBe 1.januar(2022)
-        introProgrammetVilkårsvurdering.vurderinger.last().tom shouldBe 31.januar(2022)
-        introProgrammetVilkårsvurdering.vurderinger.last().utfall shouldBe Utfall.IKKE_OPPFYLT
+        introProgrammetVilkårsvurdering.samletUtfall = SamletUtfall.IKKE_OPPFYLT
     }
 }

@@ -13,13 +13,20 @@ data class Vurdering(
 class IntroProgrammetVilkårsvurdering(
     søknad: Søknad
 ) {
-    val vurderinger: List<Vurdering> = listOf(
-        Vurdering(
-            kilde = "Søknad",
-            fom = søknad.introduksjonsprogrammetDetaljer?.fom,
-            tom = søknad.introduksjonsprogrammetDetaljer?.tom,
-            utfall = if (!søknad.deltarIntroduksjonsprogrammet) Utfall.OPPFYLT else Utfall.IKKE_OPPFYLT
-        )
-    )
+    val vurderinger: MutableList<Vurdering> = mutableListOf()
 
+    init {
+        vurderinger.add(
+            Vurdering(
+                kilde = "Søknad",
+                fom = søknad.introduksjonsprogrammetDetaljer?.fom,
+                tom = søknad.introduksjonsprogrammetDetaljer?.tom,
+                utfall = if (!søknad.deltarIntroduksjonsprogrammet) Utfall.OPPFYLT else Utfall.IKKE_OPPFYLT
+            )
+        )
+    }
+
+    fun leggTilManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall) {
+        vurderinger.add(Vurdering(kilde = "Saksbehandler", fom = fom, tom = tom, utfall = utfall))
+    }
 }
