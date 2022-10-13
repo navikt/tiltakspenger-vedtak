@@ -93,7 +93,7 @@ internal class TrygdOgPensjonDAOTest {
         etternavn = null,
         ident = ident,
         deltarKvp = false,
-        deltarIntroduksjonsprogrammet = null,
+        deltarIntroduksjonsprogrammet = false,
         introduksjonsprogrammetDetaljer = null,
         oppholdInstitusjon = null,
         typeInstitusjon = null,

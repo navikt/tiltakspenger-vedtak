@@ -45,7 +45,7 @@ class SøknadDTO(
                 etternavn = dto.etternavn,
                 ident = dto.ident,
                 deltarKvp = dto.deltarKvp,
-                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet,
+                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet ?: false,
                 introduksjonsprogrammetDetaljer = mapIntroduksjonsprogrammetDetaljer(dto.introduksjonsprogrammetDetaljer),
                 oppholdInstitusjon = dto.oppholdInstitusjon,
                 typeInstitusjon = dto.typeInstitusjon,

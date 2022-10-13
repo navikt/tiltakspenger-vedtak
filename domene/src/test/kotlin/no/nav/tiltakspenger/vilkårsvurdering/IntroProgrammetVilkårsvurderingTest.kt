@@ -76,4 +76,45 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger.first().utfall shouldBe Utfall.OPPFYLT
     }
 
+    @Test
+    fun `Kunne sende inn en manuell vurdering`() {
+        val søknad = Søknad(
+            id = SøknadId.random(),
+            søknadId = "1234",
+            journalpostId = "123",
+            dokumentInfoId = "123",
+            fornavn = null,
+            etternavn = null,
+            ident = "",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = false,
+            introduksjonsprogrammetDetaljer = null,
+            oppholdInstitusjon = null,
+            typeInstitusjon = null,
+            opprettet = null,
+            barnetillegg = listOf(),
+            tidsstempelHosOss = LocalDateTime.now(),
+            tiltak = arenaTiltak(),
+            trygdOgPensjon = listOf(),
+            fritekst = null
+        )
+
+        val introProgrammetVilkårsvurdering = IntroProgrammetVilkårsvurdering(søknad = søknad)
+
+        introProgrammetVilkårsvurdering.manuellVurdering(
+            fom = 1.januar(2022),
+            tom = 31.januar(2022),
+            utfall = Utfall.IKKE_OPPFYLT
+        )
+
+        introProgrammetVilkårsvurdering.vurderinger.first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger.first().fom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger.first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger.first().utfall shouldBe Utfall.OPPFYLT
+
+        introProgrammetVilkårsvurdering.vurderinger.last().kilde shouldBe "Saksbehandler"
+        introProgrammetVilkårsvurdering.vurderinger.last().fom shouldBe 1.januar(2022)
+        introProgrammetVilkårsvurdering.vurderinger.last().tom shouldBe 31.januar(2022)
+        introProgrammetVilkårsvurdering.vurderinger.last().utfall shouldBe Utfall.IKKE_OPPFYLT
+    }
 }

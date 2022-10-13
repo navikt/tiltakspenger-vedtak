@@ -18,7 +18,7 @@ class IntroProgrammetVilkårsvurdering(
             kilde = "Søknad",
             fom = søknad.introduksjonsprogrammetDetaljer?.fom,
             tom = søknad.introduksjonsprogrammetDetaljer?.tom,
-            utfall = Utfall.IKKE_OPPFYLT,
+            utfall = if (!søknad.deltarIntroduksjonsprogrammet) Utfall.OPPFYLT else Utfall.IKKE_OPPFYLT
         )
     )
 
