@@ -45,4 +45,35 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger.first().utfall shouldBe Utfall.IKKE_OPPFYLT
     }
 
+    @Test
+    fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
+        val søknad = Søknad(
+            id = SøknadId.random(),
+            søknadId = "1234",
+            journalpostId = "123",
+            dokumentInfoId = "123",
+            fornavn = null,
+            etternavn = null,
+            ident = "",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = false,
+            introduksjonsprogrammetDetaljer = null,
+            oppholdInstitusjon = null,
+            typeInstitusjon = null,
+            opprettet = null,
+            barnetillegg = listOf(),
+            tidsstempelHosOss = LocalDateTime.now(),
+            tiltak = arenaTiltak(),
+            trygdOgPensjon = listOf(),
+            fritekst = null
+        )
+
+        val introProgrammetVilkårsvurdering = IntroProgrammetVilkårsvurdering(søknad = søknad)
+
+        introProgrammetVilkårsvurdering.vurderinger.first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger.first().fom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger.first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger.first().utfall shouldBe Utfall.OPPFYLT
+    }
+
 }

@@ -6,9 +6,9 @@ import java.time.LocalDate
 data class Vurdering(
     val kilde: String,
     val fom: LocalDate?,
-    val tom: LocalDate?
+    val tom: LocalDate?,
+    val utfall: Utfall,
 )
-
 
 class IntroProgrammetVilkårsvurdering(
     søknad: Søknad
@@ -18,6 +18,7 @@ class IntroProgrammetVilkårsvurdering(
             kilde = "Søknad",
             fom = søknad.introduksjonsprogrammetDetaljer?.fom,
             tom = søknad.introduksjonsprogrammetDetaljer?.tom,
+            utfall = Utfall.IKKE_OPPFYLT,
         )
     )
 
