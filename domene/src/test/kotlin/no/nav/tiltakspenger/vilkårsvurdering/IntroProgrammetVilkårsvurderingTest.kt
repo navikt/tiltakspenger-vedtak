@@ -171,8 +171,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
-        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
+        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
