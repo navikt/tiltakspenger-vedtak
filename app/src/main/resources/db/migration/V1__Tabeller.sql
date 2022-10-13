@@ -35,7 +35,7 @@ CREATE TABLE søknad
     fornavn             VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
     deltar_kvp          BOOLEAN                  NOT NULL,
-    deltar_intro        BOOLEAN                  NULL,
+    deltar_intro        BOOLEAN                  NOT NULL,
     intro_fom           DATE                     NULL,
     intro_tom           DATE                     NULL,
     institusjon_opphold BOOLEAN                  NULL,

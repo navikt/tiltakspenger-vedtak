@@ -15,7 +15,7 @@ data class Søknad(
     val etternavn: String?,
     val ident: String,
     val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
+    val deltarIntroduksjonsprogrammet: Boolean,
     val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
     val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: String?,
