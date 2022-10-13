@@ -1,22 +1,24 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import no.nav.tiltakspenger.vedtak.Søknad
-
-//enum class Utfall {
-//    VURDERT_OK,
-//    VURDERT_IKKE_OK,
-//    IKKE_VURDERDT
-//}
+import java.time.LocalDate
 
 data class Vurdering(
-//    val utfall: Utfall,
-//    val periode: Periode,
     val kilde: String,
+    val fom: LocalDate?,
+    val tom: LocalDate?
 )
+
 
 class IntroProgrammetVilkårsvurdering(
     søknad: Søknad
 ) {
-    val vurderinger: List<Vurdering> = listOf(Vurdering(kilde = "Søknad"))
+    val vurderinger: List<Vurdering> = listOf(
+        Vurdering(
+            kilde = "Søknad",
+            fom = søknad.introduksjonsprogrammetDetaljer?.fom,
+            tom = søknad.introduksjonsprogrammetDetaljer?.tom,
+        )
+    )
 
 }
