@@ -5,16 +5,15 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 
 class KommunaleYtelserVilkårsvurdering(
-    private val introProgrammetVilkårsvurdering: IntroProgrammetVilkårsvurdering,
-    private val kvpVilkårsvurdering: KVPVilkårsvurdering
+    private val intro: IntroProgrammetVilkårsvurdering,
+    private val kvp: KVPVilkårsvurdering
 ) {
     fun samletUtfall(): Utfall {
         return when {
-            introProgrammetVilkårsvurdering.samletUtfall() == IKKE_OPPFYLT ||
-                    kvpVilkårsvurdering.samletUtfall() == IKKE_OPPFYLT -> IKKE_OPPFYLT
+            intro.samletUtfall() == IKKE_OPPFYLT || kvp.samletUtfall() == IKKE_OPPFYLT -> IKKE_OPPFYLT
 
-            introProgrammetVilkårsvurdering.samletUtfall() == KREVER_MANUELL_VURDERING ||
-                    kvpVilkårsvurdering.samletUtfall() == KREVER_MANUELL_VURDERING -> KREVER_MANUELL_VURDERING
+            intro.samletUtfall() == KREVER_MANUELL_VURDERING ||
+                    kvp.samletUtfall() == KREVER_MANUELL_VURDERING -> KREVER_MANUELL_VURDERING
 
             else -> OPPFYLT
         }
