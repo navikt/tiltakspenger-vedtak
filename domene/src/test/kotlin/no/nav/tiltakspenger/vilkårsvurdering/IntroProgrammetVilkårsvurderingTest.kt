@@ -15,8 +15,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
         val forventetPeriode = Periode(
-            fra = 1 januar(2022),
-            til = 31 januar(2022),
+            fra = 1 januar (2022),
+            til = 31 januar (2022),
         )
 
         val søknad = Søknad(
