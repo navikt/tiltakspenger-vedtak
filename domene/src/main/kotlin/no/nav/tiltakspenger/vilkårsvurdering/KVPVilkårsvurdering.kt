@@ -6,20 +6,17 @@ import java.time.LocalDate
 
 class KVPVilkårsvurdering(
     private val søknad: Søknad,
-    private val vurderingsperiode: Periode
+    private val vurderingsperiode: Periode //TODO: ikke i bruk, fjerne?
 ) {
-    val søknadVurdering = Vurdering(
+    private val søknadVurdering = Vurdering(
         kilde = "Søknad",
         fom = null,
         tom = null,
         utfall = avgjørUtfall()
     )
+    private var manuellVurdering: Vurdering? = null
 
-    private fun avgjørUtfall(): Utfall {
-        return if (søknad.deltarKvp) return Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
-    }
-
-    var manuellVurdering: Vurdering? = null
+    private fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 
     fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
 
@@ -27,8 +24,5 @@ class KVPVilkårsvurdering(
         manuellVurdering = Vurdering(kilde = "Saksbehandler", fom = fom, tom = tom, utfall = utfall)
     }
 
-    fun samletUtfall(): Utfall {
-        return manuellVurdering?.utfall ?: søknadVurdering.utfall
-    }
-
+    fun samletUtfall() = manuellVurdering?.utfall ?: søknadVurdering.utfall
 }

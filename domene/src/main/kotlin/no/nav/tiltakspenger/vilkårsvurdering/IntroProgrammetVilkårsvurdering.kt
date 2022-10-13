@@ -8,12 +8,13 @@ class IntroProgrammetVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode
 ) {
-    val søknadVurdering = Vurdering(
+    private val søknadVurdering = Vurdering(
         kilde = "Søknad",
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
         utfall = avgjørUtfall()
     )
+    private var manuellVurdering: Vurdering? = null
 
     private fun avgjørUtfall(): Utfall {
         if (!søknad.deltarIntroduksjonsprogrammet) return Utfall.OPPFYLT
@@ -25,16 +26,11 @@ class IntroProgrammetVilkårsvurdering(
         }
     }
 
-    var manuellVurdering: Vurdering? = null
-
     fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
 
     fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall) {
         manuellVurdering = Vurdering(kilde = "Saksbehandler", fom = fom, tom = tom, utfall = utfall)
     }
 
-    fun samletUtfall(): Utfall {
-        return manuellVurdering?.utfall ?: søknadVurdering.utfall
-    }
-
+    fun samletUtfall() = manuellVurdering?.utfall ?: søknadVurdering.utfall
 }

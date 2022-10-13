@@ -9,12 +9,10 @@ class KommunaleYtelserVilkårsvurdering(
     private val kvp: KVPVilkårsvurdering
 ) {
     fun samletUtfall(): Utfall {
+        val kommunaleUtfall = listOf(intro.samletUtfall(), kvp.samletUtfall())
         return when {
-            intro.samletUtfall() == IKKE_OPPFYLT || kvp.samletUtfall() == IKKE_OPPFYLT -> IKKE_OPPFYLT
-
-            intro.samletUtfall() == KREVER_MANUELL_VURDERING ||
-                    kvp.samletUtfall() == KREVER_MANUELL_VURDERING -> KREVER_MANUELL_VURDERING
-
+            kommunaleUtfall.any { it == IKKE_OPPFYLT } -> IKKE_OPPFYLT
+            kommunaleUtfall.any { it == KREVER_MANUELL_VURDERING } -> KREVER_MANUELL_VURDERING
             else -> OPPFYLT
         }
     }
