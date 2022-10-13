@@ -51,4 +51,4 @@ spec:
           cluster: {{ cluster }}
         - application: tiltakspenger-assistent
           namespace: tpts
-          cluster: { { cluster } }
+          cluster: {{ cluster }}
