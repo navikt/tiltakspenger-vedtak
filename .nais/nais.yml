@@ -49,3 +49,6 @@ spec:
         - application: tiltakspenger-flate
           namespace: tpts
           cluster: {{ cluster }}
+        - application: tiltakspenger-assistent
+          namespace: tpts
+          cluster: { { cluster } }
