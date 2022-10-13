@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.objectmothers.arenaTiltak
