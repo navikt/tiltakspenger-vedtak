@@ -22,7 +22,7 @@ class AAPVilkårsvurdering(
                 ).overlapperMed(vurderingsperiode)
             }
             .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
-            .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA}
+            .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA }
             .map {
                 Vurdering(
                     kilde = "Arena",
