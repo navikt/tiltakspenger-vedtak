@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun ytelseSakAAP(): List<YtelseSak> {
-    TODO("Må implementeres")
+    return listOf(ytelseSak(ytelsestype = YtelseSakYtelsetype.AA))
 }
 
 fun ytelseSak(
