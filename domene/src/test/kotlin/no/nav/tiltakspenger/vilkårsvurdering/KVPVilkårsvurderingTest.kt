@@ -47,6 +47,10 @@ internal class KVPVilkårsvurderingTest {
         kvpVilkårsvurdering.vurderinger().first().tom shouldBe null
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
+        kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
+        kvpVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
+        kvpVilkårsvurdering.lovReferanse.ledd shouldBe "3"
+
         kvpVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
@@ -82,15 +86,23 @@ internal class KVPVilkårsvurderingTest {
         kvpVilkårsvurdering.settManuellVurdering(
             fom = 1.januar(2022),
             tom = 31.oktober(2022),
-            utfall = Utfall.IKKE_OPPFYLT
+            utfall = Utfall.IKKE_OPPFYLT,
+            detaljer = "",
         )
         val vurderingSøknad =
-            Vurdering(kilde = "Søknad", fom = null, tom = null, utfall = Utfall.KREVER_MANUELL_VURDERING)
+            Vurdering(
+                kilde = "Søknad",
+                fom = null,
+                tom = null,
+                utfall = Utfall.KREVER_MANUELL_VURDERING,
+                detaljer = "",
+            )
         val vurderingSaksbehandler = Vurdering(
             kilde = "Saksbehandler",
             fom = 1.januar(2022),
             tom = 31.oktober(2022),
-            utfall = Utfall.IKKE_OPPFYLT
+            utfall = Utfall.IKKE_OPPFYLT,
+            detaljer = "",
         )
         kvpVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             vurderingSøknad,

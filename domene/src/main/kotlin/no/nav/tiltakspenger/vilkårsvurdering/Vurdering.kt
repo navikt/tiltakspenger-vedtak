@@ -7,4 +7,5 @@ data class Vurdering(
     val fom: LocalDate?,
     val tom: LocalDate?,
     val utfall: Utfall,
+    val detaljer: String,
 )

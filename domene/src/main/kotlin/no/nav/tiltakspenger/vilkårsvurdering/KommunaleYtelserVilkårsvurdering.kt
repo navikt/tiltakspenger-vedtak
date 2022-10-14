@@ -8,6 +8,8 @@ class KommunaleYtelserVilkårsvurdering(
     private val intro: IntroProgrammetVilkårsvurdering,
     private val kvp: KVPVilkårsvurdering
 ) {
+    val lovReferanse: Lovreferanse = Lovreferanse.KOMMUNALE_YTELSER
+
     fun samletUtfall(): Utfall {
         val kommunaleUtfall = listOf(intro.samletUtfall(), kvp.samletUtfall())
         return when {

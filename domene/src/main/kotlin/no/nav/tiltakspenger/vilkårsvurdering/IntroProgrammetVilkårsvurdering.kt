@@ -4,10 +4,17 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import java.time.LocalDate
 
+enum class Lovreferanse(val paragraf: String, val ledd: String?, val beskrivelse: String, val lovverk: String) {
+    INTROPROGRAMMET("§7", "3", "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
+    KVP("§7", "3", "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
+    KOMMUNALE_YTELSER("§7", null, "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
+}
+
 class IntroProgrammetVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode
 ) {
+    val lovReferanse: Lovreferanse = Lovreferanse.INTROPROGRAMMET
     private val søknadVurdering = lagSøknadvurdering()
 
     private var manuellVurdering: Vurdering? = null
@@ -16,7 +23,8 @@ class IntroProgrammetVilkårsvurdering(
         kilde = "Søknad",
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
-        utfall = avgjørUtfall()
+        utfall = avgjørUtfall(),
+        detaljer = "",
     )
 
     private fun avgjørUtfall(): Utfall {
@@ -31,8 +39,14 @@ class IntroProgrammetVilkårsvurdering(
 
     fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
 
-    fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall) {
-        manuellVurdering = Vurdering(kilde = "Saksbehandler", fom = fom, tom = tom, utfall = utfall)
+    fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String) {
+        manuellVurdering = Vurdering(
+            kilde = "Saksbehandler",
+            fom = fom,
+            tom = tom,
+            utfall = utfall,
+            detaljer = detaljer
+        )
     }
 
     fun samletUtfall() = manuellVurdering?.utfall ?: søknadVurdering.utfall
