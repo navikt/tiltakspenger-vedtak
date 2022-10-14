@@ -8,13 +8,16 @@ class KVPVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode //TODO: ikke i bruk, fjerne?
 ) {
-    private val søknadVurdering = Vurdering(
+    private val søknadVurdering = lagSøknadVurdering()
+
+    private var manuellVurdering: Vurdering? = null
+
+    private fun lagSøknadVurdering() = Vurdering(
         kilde = "Søknad",
         fom = null,
         tom = null,
         utfall = avgjørUtfall()
     )
-    private var manuellVurdering: Vurdering? = null
 
     private fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 

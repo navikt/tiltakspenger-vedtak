@@ -8,13 +8,16 @@ class IntroProgrammetVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode
 ) {
-    private val søknadVurdering = Vurdering(
+    private val søknadVurdering = lagSøknadvurdering()
+
+    private var manuellVurdering: Vurdering? = null
+
+    private fun lagSøknadvurdering() = Vurdering(
         kilde = "Søknad",
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
         utfall = avgjørUtfall()
     )
-    private var manuellVurdering: Vurdering? = null
 
     private fun avgjørUtfall(): Utfall {
         if (!søknad.deltarIntroduksjonsprogrammet) return Utfall.OPPFYLT
