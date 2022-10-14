@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 class KVPVilkårsvurdering(
     private val søknad: Søknad,
-    private val vurderingsperiode: Periode //TODO: ikke i bruk, fjerne?
+    private val vurderingsperiode: Periode, //TODO: ikke i bruk, fjerne?
 ) {
     val lovReferanse: Lovreferanse = Lovreferanse.KVP
     private val søknadVurdering = lagSøknadVurdering()

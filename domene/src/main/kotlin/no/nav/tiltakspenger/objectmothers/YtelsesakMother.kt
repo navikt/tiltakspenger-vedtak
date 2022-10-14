@@ -12,6 +12,10 @@ import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTyp
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+fun ytelseSakAAP(): List<YtelseSak> {
+    TODO("Må implementeres")
+}
+
 fun ytelseSak(
     fomGyldighetsperiode: LocalDateTime = 1.januarDateTime(2022),
     tomGyldighetsperiode: LocalDateTime? = 31.januarDateTime(2022),
