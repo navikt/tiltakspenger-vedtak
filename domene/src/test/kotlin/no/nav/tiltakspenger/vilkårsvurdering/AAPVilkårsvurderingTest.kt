@@ -33,6 +33,7 @@ internal class AAPVilkårsvurderingTest {
         val aapVilkårsvurdering =
             AAPVilkårsvurdering(ytelser = ytelser, vurderingsperiode = vurderingsperiode)
 
+        aapVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         aapVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
         aapVilkårsvurdering.vurderinger().first().fom shouldBe null
         aapVilkårsvurdering.vurderinger().first().tom shouldBe null
@@ -76,6 +77,7 @@ internal class AAPVilkårsvurderingTest {
                 detaljer = ""
             ),
         )
+        aapVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
         aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
         aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
     }
@@ -115,21 +117,21 @@ internal class AAPVilkårsvurderingTest {
                 detaljer = ""
             ),
             Vurdering(
-                kilde = "Saksbehandler",
+                kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
                 utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = ""
             ),
             Vurdering(
-                kilde = "Arena",
+                kilde = "Saksbehandler",
                 fom = 19.januar(2022),
                 tom = 28.mars(2022),
                 utfall = Utfall.OPPFYLT,
                 detaljer = ""
             )
         )
-        aapVilkårsvurdering.samletVurdering shouldBe Utfall.OPPFYLT
+        aapVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
         aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
     }

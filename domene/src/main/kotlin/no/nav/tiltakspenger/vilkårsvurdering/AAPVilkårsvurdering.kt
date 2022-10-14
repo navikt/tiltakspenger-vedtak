@@ -11,6 +11,8 @@ class AAPVilkårsvurdering(
     val lovReferanse: Lovreferanse = Lovreferanse.AAP
     private val ytelseVurderinger = lagYtelseVurderinger()
 
+    private var manuellVurdering: Vurdering? = null
+
     private fun lagYtelseVurderinger(): List<Vurdering> =
         ytelser
             .filter {
@@ -18,7 +20,9 @@ class AAPVilkårsvurdering(
                     it.fomGyldighetsperiode.toLocalDate(),
                     (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
                 ).overlapperMed(vurderingsperiode)
-            }.filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA }
+            }
+            .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
+            .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA}
             .map {
                 Vurdering(
                     kilde = "Arena",
@@ -39,5 +43,26 @@ class AAPVilkårsvurdering(
                 )
             }
 
-    fun vurderinger(): List<Vurdering> = ytelseVurderinger
+    fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
+
+    fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String) {
+        manuellVurdering = Vurdering(
+            kilde = "Saksbehandler",
+            fom = fom,
+            tom = tom,
+            utfall = utfall,
+            detaljer = detaljer
+        )
+    }
+
+    private fun samletUtfallYtelser(): Utfall {
+        val utfall = ytelseVurderinger.map { it.utfall }
+        return when {
+            utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
+            utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
+            else -> Utfall.OPPFYLT
+        }
+    }
+
+    fun samletUtfall() = manuellVurdering?.utfall ?: samletUtfallYtelser()
 }
