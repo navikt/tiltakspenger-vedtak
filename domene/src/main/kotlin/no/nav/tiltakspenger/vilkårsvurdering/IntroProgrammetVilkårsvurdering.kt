@@ -4,10 +4,10 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import java.time.LocalDate
 
-enum class Lovreferanse(val paragraf: String, val ledd: String?, val beskrivelse: String, val lovverk: String) {
-    INTROPROGRAMMET("§7", "3", "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
-    KVP("§7", "3", "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
-    KOMMUNALE_YTELSER("§7", null, "Forholdet til andre ytelser", "Tiltakspengeforskriften"),
+enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: String?, val beskrivelse: String) {
+    INTROPROGRAMMET("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
+    KVP("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
+    KOMMUNALE_YTELSER("Tiltakspengeforskriften", "§7", null, "Forholdet til andre ytelser"),
 }
 
 class IntroProgrammetVilkårsvurdering(
