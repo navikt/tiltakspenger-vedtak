@@ -6,11 +6,7 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.domene.juni
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -125,6 +121,7 @@ fun nySøknadMedArenaTiltak(
     ident: String = Random().nextInt().toString(),
     deltarKvp: Boolean = false,
     deltarIntroduksjonsprogrammet: Boolean = false,
+    introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
     oppholdInstitusjon: Boolean? = false,
     typeInstitusjon: String? = null,
     opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -132,7 +129,8 @@ fun nySøknadMedArenaTiltak(
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     tiltak: Tiltak = arenaTiltak(),
     trygdOgPensjon: List<TrygdOgPensjon> = emptyList(),
-    fritekst: String? = "fritekst"
+    fritekst: String? = "fritekst",
+    vedlegg: List<Vedlegg> = emptyList(),
 ): Søknad {
     return Søknad(
         id = id,
@@ -144,7 +142,7 @@ fun nySøknadMedArenaTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
-        introduksjonsprogrammetDetaljer = null,
+        introduksjonsprogrammetDetaljer = introduksjonsprogrammetDetaljer,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,
@@ -153,6 +151,7 @@ fun nySøknadMedArenaTiltak(
         tiltak = tiltak,
         trygdOgPensjon = trygdOgPensjon,
         fritekst = fritekst,
+        vedlegg = vedlegg,
     )
 }
 
@@ -166,6 +165,7 @@ fun nySøknadMedBrukerTiltak(
     ident: String = Random().nextInt().toString(),
     deltarKvp: Boolean = false,
     deltarIntroduksjonsprogrammet: Boolean = false,
+    introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
     oppholdInstitusjon: Boolean? = false,
     typeInstitusjon: String? = null,
     opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -173,7 +173,8 @@ fun nySøknadMedBrukerTiltak(
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     tiltak: Tiltak = brukerTiltak(),
     trygdOgPensjon: List<TrygdOgPensjon> = emptyList(),
-    fritekst: String? = "fritekst"
+    fritekst: String? = "fritekst",
+    vedlegg: List<Vedlegg> = emptyList(),
 ): Søknad {
     return Søknad(
         id = id,
@@ -185,7 +186,7 @@ fun nySøknadMedBrukerTiltak(
         ident = ident,
         deltarKvp = deltarKvp,
         deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
-        introduksjonsprogrammetDetaljer = null,
+        introduksjonsprogrammetDetaljer = introduksjonsprogrammetDetaljer,
         oppholdInstitusjon = oppholdInstitusjon,
         typeInstitusjon = typeInstitusjon,
         opprettet = opprettet,
@@ -194,5 +195,6 @@ fun nySøknadMedBrukerTiltak(
         tiltak = tiltak,
         trygdOgPensjon = trygdOgPensjon,
         fritekst = fritekst,
+        vedlegg = vedlegg,
     )
 }

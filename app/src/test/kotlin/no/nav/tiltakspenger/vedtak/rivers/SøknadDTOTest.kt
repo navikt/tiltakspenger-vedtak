@@ -7,9 +7,7 @@ import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -67,7 +65,14 @@ internal class SøknadDTOTest {
             trygdOgPensjon = listOf(
                 TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
             ),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = listOf(
+                VedleggDTO(
+                    journalpostId = "journalpostId",
+                    dokumentInfoId = "dokumentInfoId",
+                    filnavn = "filnavn",
+                )
+            )
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -84,6 +89,9 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.typeInstitusjon, søknad.typeInstitusjon)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.fritekst, søknad.fritekst)
+        assertEquals(søknadDTO.vedlegg?.first()?.journalpostId, søknad.vedlegg.first().journalpostId)
+        assertEquals(søknadDTO.vedlegg?.first()?.dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
+        assertEquals(søknadDTO.vedlegg?.first()?.filnavn, søknad.vedlegg.first().filnavn)
     }
 
     @Test
@@ -136,7 +144,8 @@ internal class SøknadDTOTest {
             trygdOgPensjon = listOf(
                 TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
             ),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = emptyList(),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -183,7 +192,8 @@ internal class SøknadDTOTest {
             ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = null,
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -242,7 +252,8 @@ internal class SøknadDTOTest {
             ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = null,
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -303,7 +314,8 @@ internal class SøknadDTOTest {
             ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = emptyList(),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -362,7 +374,8 @@ internal class SøknadDTOTest {
                 antallDager = 4
             ),
             trygdOgPensjon = listOf(),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = emptyList(),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -426,7 +439,8 @@ internal class SøknadDTOTest {
                 antallDager = 4
             ),
             trygdOgPensjon = listOf(),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = emptyList(),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -501,7 +515,8 @@ internal class SøknadDTOTest {
                 TrygdOgPensjonDTO(utbetaler = "Storebrand", prosent = 100, fom = null, tom = null),
                 TrygdOgPensjonDTO(utbetaler = "Storebrand", prosent = null, fom = null, tom = null),
             ),
-            fritekst = "hei"
+            fritekst = "hei",
+            vedlegg = emptyList(),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)

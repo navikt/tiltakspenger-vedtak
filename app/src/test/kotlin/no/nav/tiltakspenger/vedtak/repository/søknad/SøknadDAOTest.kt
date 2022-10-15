@@ -2,20 +2,12 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
-import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.*
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -77,6 +69,7 @@ internal class SøknadDAOTest {
             ),
             trygdOgPensjon = emptyList(),
             fritekst = null,
+            vedlegg = emptyList(),
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -146,6 +139,13 @@ internal class SøknadDAOTest {
                 )
             ),
             fritekst = null,
+            vedlegg = listOf(
+                Vedlegg(
+                    journalpostId = "journalpostId",
+                    dokumentInfoId = "dokumentId",
+                    filnavn = "filnavn",
+                )
+            )
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -167,6 +167,7 @@ internal class SøknadDAOTest {
         assertNotNull(hentet.first().tiltak)
         assertEquals(1, hentet.first().barnetillegg.size)
         assertEquals(1, hentet.first().trygdOgPensjon.size)
+        assertEquals(1, hentet.first().vedlegg.size)
         assertNull(hentet.first().introduksjonsprogrammetDetaljer)
     }
 
@@ -227,6 +228,13 @@ internal class SøknadDAOTest {
                 )
             ),
             fritekst = "Fritekst",
+            vedlegg = listOf(
+                Vedlegg(
+                    journalpostId = "journalpostId",
+                    dokumentInfoId = "dokumentId",
+                    filnavn = "filnavn",
+                )
+            )
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -281,5 +289,9 @@ internal class SøknadDAOTest {
             (hentet.first().tiltak as Tiltak.ArenaTiltak).sluttdato
         )
         assertEquals(søknad.trygdOgPensjon.first().fom, hentet.first().trygdOgPensjon.first().fom)
+
+        assertEquals(søknad.vedlegg.first().journalpostId, hentet.first().vedlegg.first().journalpostId)
+        assertEquals(søknad.vedlegg.first().dokumentInfoId, hentet.first().vedlegg.first().dokumentInfoId)
+        assertEquals(søknad.vedlegg.first().filnavn, hentet.first().vedlegg.first().filnavn)
     }
 }

@@ -5,39 +5,20 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.objectmothers.arenaTiltak
+import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
-import no.nav.tiltakspenger.vedtak.Søknad
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
-        val søknad = Søknad(
-            id = SøknadId.random(),
-            søknadId = "1234",
-            journalpostId = "123",
-            dokumentInfoId = "123",
-            fornavn = null,
-            etternavn = null,
-            ident = "",
-            deltarKvp = false,
+        val søknad = nySøknadMedArenaTiltak(
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
                 fom = 1 januar (2022),
                 tom = 31 januar (2022),
             ),
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = listOf(),
-            tidsstempelHosOss = LocalDateTime.now(),
-            tiltak = arenaTiltak(),
-            trygdOgPensjon = listOf(),
-            fritekst = null
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -55,25 +36,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
-        val søknad = Søknad(
-            id = SøknadId.random(),
-            søknadId = "1234",
-            journalpostId = "123",
-            dokumentInfoId = "123",
-            fornavn = null,
-            etternavn = null,
-            ident = "",
-            deltarKvp = false,
+        val søknad = nySøknadMedArenaTiltak(
             deltarIntroduksjonsprogrammet = false,
             introduksjonsprogrammetDetaljer = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = listOf(),
-            tidsstempelHosOss = LocalDateTime.now(),
-            tiltak = arenaTiltak(),
-            trygdOgPensjon = listOf(),
-            fritekst = null
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -91,25 +56,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en manuell vurdering`() {
-        val søknad = Søknad(
-            id = SøknadId.random(),
-            søknadId = "1234",
-            journalpostId = "123",
-            dokumentInfoId = "123",
-            fornavn = null,
-            etternavn = null,
-            ident = "",
-            deltarKvp = false,
+        val søknad = nySøknadMedArenaTiltak(
             deltarIntroduksjonsprogrammet = false,
             introduksjonsprogrammetDetaljer = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = listOf(),
-            tidsstempelHosOss = LocalDateTime.now(),
-            tiltak = arenaTiltak(),
-            trygdOgPensjon = listOf(),
-            fritekst = null
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -149,28 +98,12 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
-        val søknad = Søknad(
-            id = SøknadId.random(),
-            søknadId = "1234",
-            journalpostId = "123",
-            dokumentInfoId = "123",
-            fornavn = null,
-            etternavn = null,
-            ident = "",
-            deltarKvp = false,
+        val søknad = nySøknadMedArenaTiltak(
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
                 fom = 1 januar (2022),
                 tom = 31 januar (2022),
             ),
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
-            barnetillegg = listOf(),
-            tidsstempelHosOss = LocalDateTime.now(),
-            tiltak = arenaTiltak(),
-            trygdOgPensjon = listOf(),
-            fritekst = null
         )
 
         val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))

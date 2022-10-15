@@ -14,6 +14,7 @@ internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
+    private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
     fun hentAlle(søkerId: SøkerId, txSession: TransactionalSession): List<Søknad> {
         return txSession.run(
@@ -40,6 +41,7 @@ internal class SøknadDAO(
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
         trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon, txSession)
+        vedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
     }
 
     private fun oppdaterSøknad(søknad: Søknad, txSession: TransactionalSession) {
@@ -112,6 +114,7 @@ internal class SøknadDAO(
         val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
         val tiltak = tiltakDAO.hent(id, txSession)
         val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id, txSession)
+        val vedlegg = vedleggDAO.hentVedleggListe(id, txSession)
 
         return Søknad(
             id = id,
@@ -137,6 +140,7 @@ internal class SøknadDAO(
             fritekst = fritekst,
             dokumentInfoId = dokumentInfoId,
             journalpostId = journalpostId,
+            vedlegg = vedlegg,
         )
     }
 

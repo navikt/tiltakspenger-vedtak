@@ -100,6 +100,15 @@ CREATE TABLE søknad_trygdogpensjon
     tom       DATE    NULL
 );
 
+CREATE TABLE søknad_vedlegg
+(
+    id              VARCHAR PRIMARY KEY,
+    søknad_id       VARCHAR NOT NULL REFERENCES søknad (id),
+    journalpost_id  VARCHAR NOT NULL,
+    dokumentinfo_id VARCHAR NOT NULL,
+    filnavn         VARCHAR NULL
+);
+
 CREATE TABLE personopplysninger_søker
 (
     id                  VARCHAR PRIMARY KEY,

@@ -2,17 +2,13 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
-import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.*
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
 import no.nav.tiltakspenger.vedtak.rivers.IntroduksjonsprogrammetDetaljerDTO.Companion.mapIntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.rivers.VedleggDTO.Companion.mapVedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -34,6 +30,7 @@ class SøknadDTO(
     val brukerregistrertTiltak: BrukerregistrertTiltakDTO?,
     val trygdOgPensjon: List<TrygdOgPensjonDTO>? = emptyList(),
     val fritekst: String?,
+    val vedlegg: List<VedleggDTO>? = emptyList(),
 ) {
     companion object {
         internal fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
@@ -54,7 +51,8 @@ class SøknadDTO(
                 tidsstempelHosOss = innhentet,
                 tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
                 trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
-                fritekst = dto.fritekst
+                fritekst = dto.fritekst,
+                vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
             )
         }
     }
@@ -131,6 +129,22 @@ class TrygdOgPensjonDTO(
         internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
             utbetaler = dto.utbetaler, prosent = dto.prosent, fom = dto.fom, tom = dto.tom
         )
+    }
+}
+
+data class VedleggDTO(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
+) {
+    companion object {
+        internal fun mapVedlegg(dto: VedleggDTO): Vedlegg {
+            return Vedlegg(
+                journalpostId = dto.journalpostId,
+                dokumentInfoId = dto.dokumentInfoId,
+                filnavn = dto.filnavn,
+            )
+        }
     }
 }
 

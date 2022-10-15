@@ -4,18 +4,14 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
+import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class SkjermingMottattRiverTest {
 
@@ -67,34 +63,8 @@ internal class SkjermingMottattRiverTest {
         val mottattSøknadHendelse = SøknadMottattHendelse(
             aktivitetslogg = aktivitetslogg,
             ident = ident,
-            søknad = Søknad(
-                søknadId = "42",
-                journalpostId = "43",
-                dokumentInfoId = "44",
-                fornavn = null,
-                etternavn = null,
+            søknad = nySøknadMedArenaTiltak(
                 ident = ident,
-                deltarKvp = false,
-                deltarIntroduksjonsprogrammet = false,
-                introduksjonsprogrammetDetaljer = null,
-                oppholdInstitusjon = null,
-                typeInstitusjon = null,
-                opprettet = null,
-                barnetillegg = emptyList(),
-                tidsstempelHosOss = LocalDateTime.now(),
-                tiltak = Tiltak.ArenaTiltak(
-                    arenaId = "123",
-                    arrangoernavn = "Tiltaksarrangør AS",
-                    harSluttdatoFraArena = false,
-                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                    erIEndreStatus = false,
-                    opprinneligSluttdato = LocalDate.now(),
-                    opprinneligStartdato = LocalDate.now(),
-                    sluttdato = LocalDate.now(),
-                    startdato = LocalDate.now()
-                ),
-                trygdOgPensjon = emptyList(),
-                fritekst = null,
             )
         )
         val personopplysningerMottattHendelse = nyPersonopplysningHendelse(ident = ident)

@@ -4,13 +4,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.vedtak.*
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
@@ -70,7 +65,8 @@ internal class ArenaTiltakMottattRiverTest {
                     startdato = LocalDate.now()
                 ),
                 trygdOgPensjon = emptyList(),
-                fritekst = null
+                fritekst = null,
+                vedlegg = emptyList(),
             )
         )
         val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
@@ -105,36 +101,11 @@ internal class ArenaTiltakMottattRiverTest {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
             ident = IDENT,
-            søknad = Søknad(
-                søknadId = "42",
-                journalpostId = "43",
-                dokumentInfoId = "44",
-                fornavn = null,
-                etternavn = null,
+            søknad = nySøknadMedArenaTiltak(
                 ident = IDENT,
-                deltarKvp = false,
-                deltarIntroduksjonsprogrammet = false,
-                introduksjonsprogrammetDetaljer = null,
-                oppholdInstitusjon = null,
-                typeInstitusjon = null,
-                opprettet = null,
-                barnetillegg = emptyList(),
-                tidsstempelHosOss = LocalDateTime.now(),
-                tiltak = Tiltak.ArenaTiltak(
-                    arenaId = "123",
-                    arrangoernavn = "Tiltaksarrangør AS",
-                    harSluttdatoFraArena = false,
-                    tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                    erIEndreStatus = false,
-                    opprinneligSluttdato = LocalDate.now(),
-                    opprinneligStartdato = LocalDate.now(),
-                    sluttdato = LocalDate.now(),
-                    startdato = LocalDate.now()
-                ),
-                trygdOgPensjon = emptyList(),
-                fritekst = null
             )
         )
+
         val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(

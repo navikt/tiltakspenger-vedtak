@@ -3,11 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.*
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -113,5 +109,6 @@ internal class TrygdOgPensjonDAOTest {
         ),
         trygdOgPensjon = emptyList(),
         fritekst = null,
+        vedlegg = emptyList(),
     )
 }

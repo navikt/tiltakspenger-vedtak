@@ -162,7 +162,8 @@ internal class SøknadMottattRiverTest {
             "brukerRegistrertSluttDato": "2022-06-30",
             "systemRegistrertStartDato": null,
             "systemRegistrertSluttDato": null,
-            "barnetillegg": []
+            "barnetillegg": [],
+            "vedlegg": []
           },
           "@id": "369bf01c-f46f-4cb9-ba0d-01beb0905edc",
           "@opprettet": "2022-06-29T16:25:33.598375671",
@@ -208,7 +209,8 @@ internal class SøknadMottattRiverTest {
                   "antallDager": 3
                 },
                 "trygdOgPensjon": [],
-                "fritekst": null
+                "fritekst": null,
+                "vedlegg": []
               },
               "@id": "0b9bd6e5-f155-4112-ba01-c39b1f00fb14",
               "@opprettet": "2022-09-19T11:15:51.345478133",
@@ -284,7 +286,8 @@ internal class SøknadMottattRiverTest {
                     "tom": "2022-09-23"
                   }
                 ],
-                "fritekst": "test"
+                "fritekst": "test",
+                "vedlegg": []
               },
               "@id": "0dbdb45b-62ac-45fe-9d47-b50aecb339c0",
               "@opprettet": "2022-09-19T10:44:27.281195318",
@@ -358,7 +361,8 @@ internal class SøknadMottattRiverTest {
                     "tom": "2022-09-23"
                   }
                 ],
-                "fritekst": "test"
+                "fritekst": "test",
+                "vedlegg": []
               },
               "@id": "0dbdb45b-62ac-45fe-9d47-b50aecb339c0",
               "@opprettet": "2022-09-19T10:44:27.281195318",
@@ -425,7 +429,8 @@ internal class SøknadMottattRiverTest {
                     "tom": "2022-09-23"
                   }
                 ],
-                "fritekst": "test"
+                "fritekst": "test",
+                "vedlegg": []
               },
               "@id": "0dbdb45b-62ac-45fe-9d47-b50aecb339c0",
               "@opprettet": "2022-09-19T10:44:27.281195318",
@@ -482,7 +487,8 @@ internal class SøknadMottattRiverTest {
             "brukerRegistrertSluttDato": "2022-06-30",
             "systemRegistrertStartDato": null,
             "systemRegistrertSluttDato": null,
-            "barnetillegg": []
+            "barnetillegg": [],
+            "vedlegg": []
           },
           "@id": "369bf01c-f46f-4cb9-ba0d-01beb0905edc",
           "@opprettet": "2022-06-29T16:25:33.598375671",

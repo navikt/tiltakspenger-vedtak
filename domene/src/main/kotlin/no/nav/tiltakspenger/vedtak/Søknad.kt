@@ -25,6 +25,7 @@ data class Søknad(
     val tiltak: Tiltak,
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
+    val vedlegg: List<Vedlegg>
 ) : Tidsstempler {
 
     companion object {
@@ -39,6 +40,12 @@ data class Søknad(
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 }
+
+data class Vedlegg(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
+)
 
 data class IntroduksjonsprogrammetDetaljer(
     val fom: LocalDate,
