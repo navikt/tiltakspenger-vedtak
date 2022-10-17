@@ -27,8 +27,8 @@ internal class KVPVilkårsvurderingTest {
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
         kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
-        kvpVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        kvpVilkårsvurdering.lovReferanse.ledd shouldBe "3"
+        kvpVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        kvpVilkårsvurdering.lovreferanse.ledd shouldBe "3"
 
         kvpVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }

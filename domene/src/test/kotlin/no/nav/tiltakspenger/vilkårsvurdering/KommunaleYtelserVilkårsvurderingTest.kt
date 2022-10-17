@@ -23,10 +23,10 @@ class KommunaleYtelserVilkårsvurderingTest {
         val kvpVilkårsvurdering =
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        val kommunaleYtelserVilkårsvurdering =
-            KommunaleYtelserVilkårsvurdering(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
-        kommunaleYtelserVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
-        kommunaleYtelserVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
+        val kommunaleYtelserVilkårsvurderinger =
+            KommunaleYtelserVilkårsvurderinger(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
+        kommunaleYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.OPPFYLT
+        kommunaleYtelserVilkårsvurderinger.lovReferanse.paragraf shouldBe "§7"
     }
 
     @Test
@@ -43,8 +43,8 @@ class KommunaleYtelserVilkårsvurderingTest {
         val kvpVilkårsvurdering =
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        val kommunaleYtelserVilkårsvurdering =
-            KommunaleYtelserVilkårsvurdering(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
-        kommunaleYtelserVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
+        val kommunaleYtelserVilkårsvurderinger =
+            KommunaleYtelserVilkårsvurderinger(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
+        kommunaleYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 }
