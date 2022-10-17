@@ -1,12 +1,9 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
-import no.nav.tiltakspenger.domene.mars
 import no.nav.tiltakspenger.domene.marsDateTime
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
