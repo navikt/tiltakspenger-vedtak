@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.IKKE_OPPFYLT
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 
-class KommunaleYtelserVilkårsvurdering(
+class KommunaleYtelserVilkårsvurderinger(
     private val intro: IntroProgrammetVilkårsvurdering,
     private val kvp: KVPVilkårsvurdering
 ) {
