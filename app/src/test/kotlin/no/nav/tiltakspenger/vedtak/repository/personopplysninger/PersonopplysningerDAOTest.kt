@@ -101,7 +101,7 @@ internal class PersonopplysningerDAOTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         søkerRepository.lagre(søker)
-        val gamlePersonopplysninger = personopplysningKjedeligFyr(ident)
+        val gamlePersonopplysninger = personopplysningKjedeligFyr(ident, strengtFortroligUtland = false)
 
         // when
         sessionOf(DataSource.hikariDataSource).use {

@@ -111,34 +111,36 @@ CREATE TABLE søknad_vedlegg
 
 CREATE TABLE personopplysninger_søker
 (
-    id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
-    ident               VARCHAR                  NOT NULL,
-    fødselsdato         DATE                     NOT NULL,
-    fornavn             VARCHAR                  NOT NULL,
-    mellomnavn          VARCHAR                  NULL,
-    etternavn           VARCHAR                  NOT NULL,
-    fortrolig           BOOLEAN                  NOT NULL,
-    strengt_fortrolig   BOOLEAN                  NOT NULL,
-    skjermet            BOOLEAN                  NULL,
-    kommune             VARCHAR                  NULL,
-    bydel               VARCHAR                  NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+    id                       VARCHAR PRIMARY KEY,
+    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
+    ident                    VARCHAR                  NOT NULL,
+    fødselsdato              DATE                     NOT NULL,
+    fornavn                  VARCHAR                  NOT NULL,
+    mellomnavn               VARCHAR                  NULL,
+    etternavn                VARCHAR                  NOT NULL,
+    fortrolig                BOOLEAN                  NOT NULL,
+    strengt_fortrolig        BOOLEAN                  NOT NULL,
+    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
+    skjermet                 BOOLEAN                  NULL,
+    kommune                  VARCHAR                  NULL,
+    bydel                    VARCHAR                  NULL,
+    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE personopplysninger_barn_med_ident
 (
-    id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
-    ident               VARCHAR                  NOT NULL,
-    fødselsdato         DATE                     NOT NULL,
-    fornavn             VARCHAR                  NOT NULL,
-    mellomnavn          VARCHAR                  NULL,
-    etternavn           VARCHAR                  NOT NULL,
-    fortrolig           BOOLEAN                  NOT NULL,
-    strengt_fortrolig   BOOLEAN                  NOT NULL,
-    oppholdsland        VARCHAR                  NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+    id                       VARCHAR PRIMARY KEY,
+    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
+    ident                    VARCHAR                  NOT NULL,
+    fødselsdato              DATE                     NOT NULL,
+    fornavn                  VARCHAR                  NOT NULL,
+    mellomnavn               VARCHAR                  NULL,
+    etternavn                VARCHAR                  NOT NULL,
+    fortrolig                BOOLEAN                  NOT NULL,
+    strengt_fortrolig        BOOLEAN                  NOT NULL,
+    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
+    oppholdsland             VARCHAR                  NULL,
+    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE personopplysninger_barn_uten_ident

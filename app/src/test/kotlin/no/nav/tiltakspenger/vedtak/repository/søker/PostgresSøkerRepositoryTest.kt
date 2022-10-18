@@ -62,7 +62,7 @@ internal class PostgresSøkerRepositoryTest {
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 
@@ -98,7 +98,7 @@ internal class PostgresSøkerRepositoryTest {
             barnetillegg = listOf(barnetilleggUtenIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val personopplysninger = personopplysningKjedeligFyr(ident = ident)
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 

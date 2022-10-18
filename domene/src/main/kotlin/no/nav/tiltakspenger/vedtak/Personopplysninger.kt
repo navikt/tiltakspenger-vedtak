@@ -12,6 +12,7 @@ sealed class Personopplysninger {
         val etternavn: String,
         val fortrolig: Boolean,
         val strengtFortrolig: Boolean,
+        val strengtFortroligUtland: Boolean,
         val skjermet: Boolean?,
         val kommune: String?,
         val bydel: String?,
@@ -40,6 +41,7 @@ sealed class Personopplysninger {
         val etternavn: String,
         val fortrolig: Boolean,
         val strengtFortrolig: Boolean,
+        val strengtFortroligUtland: Boolean,
         val oppholdsland: String?,
         val tidsstempelHosOss: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
     ) : Tidsstempler, Personopplysninger() {

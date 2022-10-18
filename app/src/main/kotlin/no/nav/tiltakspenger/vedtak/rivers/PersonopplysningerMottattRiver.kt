@@ -78,8 +78,8 @@ internal class PersonopplysningerMottattRiver(
                 mellomnavn = it.mellomnavn,
                 etternavn = it.etternavn,
                 fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
-                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
-                        it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
+                strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
                 oppholdsland = null, // TODO: fix!
                 tidsstempelHosOss = innhentet,
             )
@@ -98,8 +98,8 @@ internal class PersonopplysningerMottattRiver(
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
             fortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
-            strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG ||
-                    dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+            strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
+            strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
             skjermet = null,
             kommune = dto.gtKommune,
             bydel = dto.gtBydel,

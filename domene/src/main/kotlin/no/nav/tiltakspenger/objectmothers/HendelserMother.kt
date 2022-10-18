@@ -27,7 +27,7 @@ fun nySøknadMottattHendelse(
 
 fun nyPersonopplysningHendelse(
     ident: String = Random().nextInt().toString(),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr()),
+    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(

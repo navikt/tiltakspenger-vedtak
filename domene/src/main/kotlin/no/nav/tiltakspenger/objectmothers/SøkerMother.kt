@@ -40,7 +40,12 @@ fun søkerMedSøknad(
 fun søkerMedPersonopplysninger(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false
+        )
+    ),
 ): Søker {
     val søker = søkerMedSøknad(
         ident = ident,
@@ -58,7 +63,12 @@ fun søkerMedPersonopplysninger(
 fun søkerMedSkjerming(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false
+        )
+    ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Søker {
     val søker = søkerMedPersonopplysninger(
@@ -78,7 +88,12 @@ fun søkerMedSkjerming(
 fun søkerMedTiltak(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false
+        )
+    ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
 ): Søker {
@@ -100,7 +115,12 @@ fun søkerMedTiltak(
 fun søkerMedYtelse(
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false
+        )
+    ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
@@ -129,6 +149,7 @@ fun personopplysningKjedeligFyr(
     etternavn: String = "Etternavn",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
+    strengtFortroligUtland: Boolean = false,
     kommune: String? = null,
     bydel: String? = null,
     skjermet: Boolean? = null,
@@ -141,6 +162,7 @@ fun personopplysningKjedeligFyr(
     etternavn = etternavn,
     fortrolig = fortrolig,
     strengtFortrolig = strengtFortrolig,
+    strengtFortroligUtland = strengtFortroligUtland,
     skjermet = skjermet,
     kommune = kommune,
     bydel = bydel,
@@ -155,6 +177,7 @@ fun personopplysningMaxFyr(
     etternavn: String = "Ring",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = true,
+    strengtFortroligUtland: Boolean = false,
     kommune: String? = "Oslo",
     bydel: String? = "3440",
     skjermet: Boolean? = true,
@@ -167,6 +190,7 @@ fun personopplysningMaxFyr(
     etternavn = etternavn,
     fortrolig = fortrolig,
     strengtFortrolig = strengtFortrolig,
+    strengtFortroligUtland = strengtFortroligUtland,
     skjermet = skjermet,
     kommune = kommune,
     bydel = bydel,
@@ -181,6 +205,7 @@ fun barn(
     etternavn: String = "Etternavn",
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
+    strengtFortroligUtland: Boolean = false,
     oppholdsland: String? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
 ): Personopplysninger.BarnMedIdent {
@@ -192,6 +217,7 @@ fun barn(
         etternavn = etternavn,
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
+        strengtFortroligUtland = strengtFortroligUtland,
         oppholdsland = oppholdsland,
         tidsstempelHosOss = tidsstempelHosOss,
     )
