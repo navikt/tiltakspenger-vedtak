@@ -31,7 +31,7 @@ internal class DagpengerVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.februar(2022), 28.februar(2022))
 
         val dagpengerVilkårsvurdering =
-            Vilkårsvurdering.StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
+            StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
                 ytelser = ytelser,
                 vurderingsperiode = vurderingsperiode
             )
@@ -62,7 +62,7 @@ internal class DagpengerVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.januar(2022), 28.mars(2022))
 
         val aapVilkårsvurdering =
-            Vilkårsvurdering.StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
+            StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
                 ytelser = ytelser,
                 vurderingsperiode = vurderingsperiode
             )
@@ -105,7 +105,7 @@ internal class DagpengerVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.januar(2022), 28.mars(2022))
 
         val aapVilkårsvurdering =
-            Vilkårsvurdering.StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
+            StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(
                 ytelser = ytelser,
                 vurderingsperiode = vurderingsperiode
             )
