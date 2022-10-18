@@ -10,7 +10,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
 
     override fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
 
-    override fun samletUtfallYtelser(): Utfall {
+    override fun detIkkeManuelleUtfallet(): Utfall {
         val utfall = ytelseVurderinger.map { it.utfall }
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
@@ -57,7 +57,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
         private val ytelser: List<YtelseSak>,
         private val vurderingsperiode: Periode,
     ) : StatligYtelseVilkårsvurdering() {
-        override val lovReferanse: Lovreferanse = Lovreferanse.AAP
+        override val lovreferanse: Lovreferanse = Lovreferanse.AAP
         override var manuellVurdering: Vurdering? = null
 
         override val ytelseVurderinger: List<Vurdering> =
@@ -68,7 +68,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
         private val ytelser: List<YtelseSak>,
         private val vurderingsperiode: Periode,
     ) : StatligYtelseVilkårsvurdering() {
-        override val lovReferanse: Lovreferanse = Lovreferanse.DAGPENGER
+        override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER
         override var manuellVurdering: Vurdering? = null
 
         override val ytelseVurderinger: List<Vurdering> =

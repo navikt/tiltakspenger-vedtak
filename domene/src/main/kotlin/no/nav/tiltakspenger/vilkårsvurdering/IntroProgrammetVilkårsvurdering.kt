@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import java.time.LocalDate
 
 class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
-    KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode, Lovreferanse.INTROPROGRAMMET) {
+    KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
     override fun lagVurderingFraSøknad() = Vurdering(
         kilde = KILDE,
@@ -24,4 +24,6 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
             Utfall.OPPFYLT
         }
     }
+
+    override val lovreferanse = Lovreferanse.INTROPROGRAMMET
 }

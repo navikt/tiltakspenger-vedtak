@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 
 class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
-    KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode, Lovreferanse.KVP) {
+    KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
     override fun lagVurderingFraSøknad() = Vurdering(
         kilde = KILDE,
@@ -15,4 +15,6 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     )
 
     override fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
+
+    override val lovreferanse = Lovreferanse.KVP
 }

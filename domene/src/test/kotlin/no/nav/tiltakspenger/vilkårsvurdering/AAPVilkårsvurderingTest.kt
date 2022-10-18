@@ -41,8 +41,8 @@ internal class AAPVilkårsvurderingTest {
         aapVilkårsvurdering.vurderinger().first().fom shouldBe null
         aapVilkårsvurdering.vurderinger().first().tom shouldBe null
         aapVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
-        aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        aapVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        aapVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 
     @Test
@@ -84,8 +84,8 @@ internal class AAPVilkårsvurderingTest {
             ),
         )
         aapVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        aapVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        aapVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 
     @Test
@@ -141,7 +141,7 @@ internal class AAPVilkårsvurderingTest {
             )
         )
         aapVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
-        aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        aapVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        aapVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 }

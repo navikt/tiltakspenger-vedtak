@@ -41,8 +41,8 @@ internal class DagpengerVilkårsvurderingTest {
         dagpengerVilkårsvurdering.vurderinger().first().fom shouldBe null
         dagpengerVilkårsvurdering.vurderinger().first().tom shouldBe null
         dagpengerVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
-        dagpengerVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        dagpengerVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        dagpengerVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        dagpengerVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 
     @Test
@@ -84,8 +84,8 @@ internal class DagpengerVilkårsvurderingTest {
             ),
         )
         aapVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        aapVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        aapVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 
     @Test
@@ -141,7 +141,7 @@ internal class DagpengerVilkårsvurderingTest {
             )
         )
         aapVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
-        aapVilkårsvurdering.lovReferanse.paragraf shouldBe "§7"
-        aapVilkårsvurdering.lovReferanse.ledd shouldBe "1"
+        aapVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
+        aapVilkårsvurdering.lovreferanse.ledd shouldBe "1"
     }
 }

@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import java.time.LocalDate
 
 sealed class Vilkårsvurdering {
-    abstract val lovReferanse: Lovreferanse
+    abstract val lovreferanse: Lovreferanse
     abstract var manuellVurdering: Vurdering?
 
     abstract fun vurderinger(): List<Vurdering>
-    abstract fun samletUtfallYtelser(): Utfall
+    abstract fun detIkkeManuelleUtfallet(): Utfall
 
-    fun samletUtfall() = manuellVurdering?.utfall ?: samletUtfallYtelser()
+    fun samletUtfall() = manuellVurdering?.utfall ?: detIkkeManuelleUtfallet()
 
     fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String) {
         manuellVurdering = Vurdering(
@@ -20,6 +20,4 @@ sealed class Vilkårsvurdering {
             detaljer = detaljer
         )
     }
-
-
 }
