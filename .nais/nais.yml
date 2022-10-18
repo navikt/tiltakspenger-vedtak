@@ -21,6 +21,8 @@ spec:
     pool: {{ kafka.pool }}
   secureLogs:
     enabled: true
+  tokenx:
+    enabled: true
   azure:
     application:
       enabled: true
