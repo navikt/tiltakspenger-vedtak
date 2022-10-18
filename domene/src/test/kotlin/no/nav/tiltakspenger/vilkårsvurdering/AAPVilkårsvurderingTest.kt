@@ -31,7 +31,10 @@ internal class AAPVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.februar(2022), 28.februar(2022))
 
         val aapVilkårsvurdering =
-            Vilkårsvurderinger.StatligeYtelser.AAP(ytelser = ytelser, vurderingsperiode = vurderingsperiode)
+            Vilkårsvurdering.StatligYtelseVilkårsvurdering.AAPVilkårsvurdering(
+                ytelser = ytelser,
+                vurderingsperiode = vurderingsperiode
+            )
 
         aapVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         aapVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
@@ -59,7 +62,10 @@ internal class AAPVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.januar(2022), 28.mars(2022))
 
         val aapVilkårsvurdering =
-            Vilkårsvurderinger.StatligeYtelser.AAP(ytelser = ytelser, vurderingsperiode = vurderingsperiode)
+            Vilkårsvurdering.StatligYtelseVilkårsvurdering.AAPVilkårsvurdering(
+                ytelser = ytelser,
+                vurderingsperiode = vurderingsperiode
+            )
 
         aapVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
@@ -99,7 +105,10 @@ internal class AAPVilkårsvurderingTest {
         val vurderingsperiode = Periode(19.januar(2022), 28.mars(2022))
 
         val aapVilkårsvurdering =
-            Vilkårsvurderinger.StatligeYtelser.AAP(ytelser = ytelser, vurderingsperiode = vurderingsperiode)
+            Vilkårsvurdering.StatligYtelseVilkårsvurdering.AAPVilkårsvurdering(
+                ytelser = ytelser,
+                vurderingsperiode = vurderingsperiode
+            )
 
         aapVilkårsvurdering.settManuellVurdering(
             fom = 19.januar(2022),

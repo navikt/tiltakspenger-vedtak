@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 
-sealed class Vilkårsvurderinger {
+sealed class Vilkårsvurdering {
     abstract val lovReferanse: Lovreferanse
     abstract var manuellVurdering: Vurdering?
 
@@ -23,7 +23,7 @@ sealed class Vilkårsvurderinger {
         )
     }
 
-    sealed class StatligeYtelser : Vilkårsvurderinger() {
+    sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
         abstract val ytelseVurderinger: List<Vurdering>
         abstract override var manuellVurdering: Vurdering?
 
@@ -72,10 +72,10 @@ sealed class Vilkårsvurderinger {
                     )
                 }
 
-        data class AAP(
+        data class AAPVilkårsvurdering(
             private val ytelser: List<YtelseSak>,
             private val vurderingsperiode: Periode,
-        ) : StatligeYtelser() {
+        ) : StatligYtelseVilkårsvurdering() {
             override val lovReferanse: Lovreferanse = Lovreferanse.AAP
             override var manuellVurdering: Vurdering? = null
 
@@ -83,10 +83,10 @@ sealed class Vilkårsvurderinger {
                 lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.AA)
         }
 
-        data class Dagpenger(
+        data class DagpengerVilkårsvurdering(
             private val ytelser: List<YtelseSak>,
             private val vurderingsperiode: Periode,
-        ) : StatligeYtelser() {
+        ) : StatligYtelseVilkårsvurdering() {
             override val lovReferanse: Lovreferanse = Lovreferanse.DAGPENGER
             override var manuellVurdering: Vurdering? = null
 
