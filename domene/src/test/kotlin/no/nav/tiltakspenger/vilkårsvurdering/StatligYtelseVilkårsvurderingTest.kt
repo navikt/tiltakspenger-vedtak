@@ -20,13 +20,13 @@ internal class StatligYtelseVilkårsvurderingTest {
     companion object {
         @Suppress("UnusedPrivateMember")
         @JvmStatic
-        private fun utenOverlapp() = arguments(vurderingsperiode = Periode(19.februar(2022), 28.februar(2022)))
+        private fun utenOverlapp() = testdata(vurderingsperiode = Periode(19.februar(2022), 28.februar(2022)))
 
         @Suppress("UnusedPrivateMember")
         @JvmStatic
-        private fun medOverlapp() = arguments(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
+        private fun medOverlapp() = testdata(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
 
-        private fun arguments(vurderingsperiode: Periode) = listOf(
+        private fun testdata(vurderingsperiode: Periode) = listOf(
             Arguments.of(StatligYtelseVilkårsvurdering.AAPVilkårsvurdering(ytelser(AA), vurderingsperiode)),
             Arguments.of(StatligYtelseVilkårsvurdering.DagpengerVilkårsvurdering(ytelser(DAGP), vurderingsperiode))
         )
