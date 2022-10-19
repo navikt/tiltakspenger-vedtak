@@ -20,11 +20,11 @@ internal class StatligYtelseVilkårsvurderingTest {
     companion object {
         @Suppress("UnusedPrivateMember")
         @JvmStatic
-        private fun statligYtelseKort() = arguments(Periode(19.februar(2022), 28.februar(2022)))
+        private fun utenOverlapp() = arguments(vurderingsperiode = Periode(19.februar(2022), 28.februar(2022)))
 
         @Suppress("UnusedPrivateMember")
         @JvmStatic
-        private fun statligYtelseLang() = arguments(Periode(19.januar(2022), 28.mars(2022)))
+        private fun medOverlapp() = arguments(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
 
         private fun arguments(vurderingsperiode: Periode) = listOf(
             Arguments.of(StatligYtelseVilkårsvurdering.AAPVilkårsvurdering(ytelser(AA), vurderingsperiode)),
@@ -46,8 +46,10 @@ internal class StatligYtelseVilkårsvurderingTest {
     }
 
     @ParameterizedTest
-    @MethodSource("statligYtelseKort")
-    fun `skal bli oppfylt`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
+    @MethodSource("utenOverlapp")
+    fun `vilkåret er oppfylt når vurderingsperioden ikke overlapper med perioden for ytelsen`(
+        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
+    ) {
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
         statligVilkårsvurdering.vurderinger().first().fom shouldBe null
@@ -58,8 +60,10 @@ internal class StatligYtelseVilkårsvurderingTest {
     }
 
     @ParameterizedTest
-    @MethodSource("statligYtelseLang")
-    fun `skal ikke bli oppfylt i begge ender`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
+    @MethodSource("medOverlapp")
+    fun `vilkåret er ikke oppfylt når vurderingsperioden overlapper med perioden for ytelsen`(
+        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
+    ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
                 kilde = "Arena",
@@ -82,8 +86,8 @@ internal class StatligYtelseVilkårsvurderingTest {
     }
 
     @ParameterizedTest
-    @MethodSource("statligYtelseLang")
-    fun `skal bli oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
+    @MethodSource("medOverlapp")
+    fun `vilkåret er oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
         statligVilkårsvurdering.settManuellVurdering(
             fom = 19.januar(2022),
             tom = 28.mars(2022),
