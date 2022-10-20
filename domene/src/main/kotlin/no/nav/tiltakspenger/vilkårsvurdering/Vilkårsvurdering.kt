@@ -67,3 +67,13 @@ class BaseManuellVilkårsvurdering : IManuellVilkårsvurdering {
         )
     }
 }
+
+class KunManuellVilkårsvurderinger(
+    private val manuellVilkårsvurdering: BaseManuellVilkårsvurdering
+) : IVilkårsvurdering,
+    IManuellVilkårsvurdering by manuellVilkårsvurdering {
+
+    override fun samletUtfall(): Utfall = manuellVurdering()?.utfall ?: Utfall.KREVER_MANUELL_VURDERING // ?
+
+    override fun vurderinger(): List<Vurdering> = listOfNotNull(manuellVurdering())
+}
