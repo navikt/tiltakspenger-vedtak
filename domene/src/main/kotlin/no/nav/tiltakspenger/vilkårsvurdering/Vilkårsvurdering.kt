@@ -2,16 +2,60 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import java.time.LocalDate
 
-sealed class Vilkårsvurdering {
-    abstract val lovreferanse: Lovreferanse
-    abstract var manuellVurdering: Vurdering?
+interface IVilkårsvurderingerKategori : ILovreferanse {
+    fun samletUtfall(): Utfall
+}
 
-    abstract fun vurderinger(): List<Vurdering>
-    abstract fun detIkkeManuelleUtfallet(): Utfall
+sealed class Vilkårsvurdering() : IVilkårsvurdering, ILovreferanse
 
-    fun samletUtfall() = manuellVurdering?.utfall ?: detIkkeManuelleUtfallet()
+interface ILovreferanse {
+    val lovreferanse: Lovreferanse
+}
 
-    fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String) {
+interface IVilkårsvurdering {
+
+    fun samletUtfall(): Utfall
+
+    fun vurderinger(): List<Vurdering>
+}
+
+interface IStatligVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
+
+class BaseManuellOgAutomatiskVilkårsvurdering(
+    private val manuellVilkårsvurdering: IManuellVilkårsvurdering = BaseManuellVilkårsvurdering(),
+    private val automatiskVilkårsvurdering: IAutomatiskVilkårsvurdering,
+) : IVilkårsvurdering,
+    IAutomatiskVilkårsvurdering by automatiskVilkårsvurdering,
+    IManuellVilkårsvurdering by manuellVilkårsvurdering {
+
+    override fun samletUtfall(): Utfall =
+        manuellVilkårsvurdering.manuellVurdering()?.utfall ?: automatiskVilkårsvurdering.detIkkeManuelleUtfallet()
+
+    override fun vurderinger(): List<Vurdering> =
+        (automatiskVilkårsvurdering.vurderinger() + manuellVilkårsvurdering.manuellVurdering()).filterNotNull()
+
+}
+
+
+interface IAutomatiskVilkårsvurdering {
+    fun vurderinger(): List<Vurdering>
+
+    fun detIkkeManuelleUtfallet(): Utfall
+}
+
+
+interface IManuellVilkårsvurdering {
+
+    fun manuellVurdering(): Vurdering?
+
+    fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String)
+}
+
+class BaseManuellVilkårsvurdering : IManuellVilkårsvurdering {
+    private var manuellVurdering: Vurdering? = null
+    override fun manuellVurdering(): Vurdering? = manuellVurdering
+
+    override fun settManuellVurdering(fom: LocalDate, tom: LocalDate, utfall: Utfall, detaljer: String) {
         manuellVurdering = Vurdering(
             kilde = "Saksbehandler",
             fom = fom,

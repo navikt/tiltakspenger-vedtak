@@ -4,14 +4,17 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 
-sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
-    abstract val ytelseVurderinger: List<Vurdering>
-    abstract override var manuellVurdering: Vurdering?
+class BaseStatligYtelseVilkårsvurdering(
+    private val ytelser: List<YtelseSak>,
+    private val vurderingsperiode: Periode,
+    private val type: YtelseSak.YtelseSakYtelsetype,
+) : IAutomatiskVilkårsvurdering {
 
-    override fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
+    override fun vurderinger(): List<Vurdering> =
+        lagYtelseVurderinger()
 
     override fun detIkkeManuelleUtfallet(): Utfall {
-        val utfall = ytelseVurderinger.map { it.utfall }
+        val utfall = lagYtelseVurderinger().map { it.utfall }
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
             utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
@@ -19,11 +22,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
         }
     }
 
-    fun lagYtelseVurderinger(
-        ytelser: List<YtelseSak>,
-        vurderingsperiode: Periode,
-        type: YtelseSak.YtelseSakYtelsetype
-    ): List<Vurdering> =
+    private fun lagYtelseVurderinger(): List<Vurdering> =
         ytelser
             .filter {
                 Periode(
@@ -52,26 +51,4 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
                     )
                 )
             }
-
-    data class AAP(
-        private val ytelser: List<YtelseSak>,
-        private val vurderingsperiode: Periode,
-    ) : StatligYtelseVilkårsvurdering() {
-        override val lovreferanse: Lovreferanse = Lovreferanse.AAP
-        override var manuellVurdering: Vurdering? = null
-
-        override val ytelseVurderinger: List<Vurdering> =
-            lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.AA)
-    }
-
-    data class Dagpenger(
-        private val ytelser: List<YtelseSak>,
-        private val vurderingsperiode: Periode,
-    ) : StatligYtelseVilkårsvurdering() {
-        override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER
-        override var manuellVurdering: Vurdering? = null
-
-        override val ytelseVurderinger: List<Vurdering> =
-            lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.DAGP)
-    }
 }
