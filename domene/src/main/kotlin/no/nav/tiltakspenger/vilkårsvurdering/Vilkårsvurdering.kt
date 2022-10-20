@@ -6,7 +6,7 @@ interface IVilkårsvurderingerKategori : ILovreferanse {
     fun samletUtfall(): Utfall
 }
 
-sealed class Vilkårsvurdering() : IVilkårsvurdering, ILovreferanse
+sealed class Vilkårsvurdering : IVilkårsvurdering, ILovreferanse
 
 interface ILovreferanse {
     val lovreferanse: Lovreferanse
