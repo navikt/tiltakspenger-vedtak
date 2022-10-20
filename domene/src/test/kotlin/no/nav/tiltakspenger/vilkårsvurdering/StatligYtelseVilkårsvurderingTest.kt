@@ -29,8 +29,8 @@ internal class StatligYtelseVilkårsvurderingTest {
         private fun medOverlapp() = testdata(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
 
         private fun testdata(vurderingsperiode: Periode) = listOf(
-            Arguments.of(AAP(ytelser(AA), vurderingsperiode)),
-            Arguments.of(Dagpenger(ytelser(DAGP), vurderingsperiode))
+            Arguments.of(AAPVilkårsvurdering(ytelser(AA), vurderingsperiode)),
+            Arguments.of(DagpengerVilkårsvurdering(ytelser(DAGP), vurderingsperiode))
         )
 
         private fun ytelser(type: YtelseSak.YtelseSakYtelsetype) = listOf(
@@ -128,7 +128,7 @@ internal class StatligYtelseVilkårsvurderingTest {
     @Test
     fun `Samlet utfall for statlige ytelser, hvis 1 er ikke godkjent er ingen godkjent`() {
         val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAP(
+        val aapVilkårsvurdering = AAPVilkårsvurdering(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.januarDateTime(2022),
@@ -138,7 +138,7 @@ internal class StatligYtelseVilkårsvurderingTest {
             ),
             vurderingsperiode = vurderingsperiode,
         )
-        val dagpengerVilkårsvurdering = Dagpenger(
+        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.februarDateTime(2022),
@@ -161,11 +161,11 @@ internal class StatligYtelseVilkårsvurderingTest {
     @Test
     fun `Samlet utfall for statlige ytelser, hvis begge er godkjent er alle godkjent`() {
         val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAP(
+        val aapVilkårsvurdering = AAPVilkårsvurdering(
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )
-        val dagpengerVilkårsvurdering = Dagpenger(
+        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )

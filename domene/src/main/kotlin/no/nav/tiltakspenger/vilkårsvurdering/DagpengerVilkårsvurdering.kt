@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 
-data class Dagpenger(
+data class DagpengerVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
 ) : StatligYtelseVilkårsvurdering() {
