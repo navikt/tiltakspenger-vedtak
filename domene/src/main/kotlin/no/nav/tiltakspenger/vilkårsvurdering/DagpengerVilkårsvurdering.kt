@@ -15,7 +15,7 @@ class DagpengerVilkårsvurdering(
     )
 ) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
     IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IStatligVilkårsvurdering,
+    StatligYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER

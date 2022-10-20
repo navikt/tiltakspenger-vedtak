@@ -51,7 +51,7 @@ internal class StatligYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("utenOverlapp")
     fun `vilkåret er oppfylt når vurderingsperioden ikke overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: IStatligVilkårsvurdering
+        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
     ) {
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
@@ -65,7 +65,7 @@ internal class StatligYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("medOverlapp")
     fun `vilkåret er ikke oppfylt når vurderingsperioden overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: IStatligVilkårsvurdering
+        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
     ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
@@ -90,7 +90,7 @@ internal class StatligYtelseVilkårsvurderingTest {
 
     @ParameterizedTest
     @MethodSource("medOverlapp")
-    fun `vilkåret er oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: IStatligVilkårsvurdering) {
+    fun `vilkåret er oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
         statligVilkårsvurdering.settManuellVurdering(
             fom = 19.januar(2022),
             tom = 28.mars(2022),

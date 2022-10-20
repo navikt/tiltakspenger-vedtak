@@ -15,7 +15,7 @@ class IntroProgrammetVilkårsvurdering(
     )
 ) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
     IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IKommunalVilkårsvurdering,
+    KommunalYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse = Lovreferanse.INTROPROGRAMMET

@@ -19,9 +19,9 @@ interface IVilkårsvurdering {
     fun vurderinger(): List<Vurdering>
 }
 
-interface IStatligVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
+interface StatligYtelseVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
 
-interface IKommunalVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
+interface KommunalYtelseVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
 
 class BaseManuellOgAutomatiskVilkårsvurdering(
     private val manuellVilkårsvurdering: IManuellVilkårsvurdering = BaseManuellVilkårsvurdering(),

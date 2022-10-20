@@ -16,7 +16,7 @@ class AAPVilkårsvurdering(
     )
 ) : IVilkårsvurdering,
     IManuellVilkårsvurdering,
-    IStatligVilkårsvurdering,
+    StatligYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse: Lovreferanse = Lovreferanse.AAP
