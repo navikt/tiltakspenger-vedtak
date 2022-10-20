@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 
-data class AAPVilkårsvurdering(
+class AAPVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
 ) : StatligYtelseVilkårsvurdering() {

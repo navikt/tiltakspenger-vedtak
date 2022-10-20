@@ -23,34 +23,32 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
         ytelser: List<YtelseSak>,
         vurderingsperiode: Periode,
         type: YtelseSak.YtelseSakYtelsetype
-    ): List<Vurdering> =
-        ytelser
-            .filter {
-                Periode(
-                    it.fomGyldighetsperiode.toLocalDate(),
-                    (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
-                ).overlapperMed(vurderingsperiode)
-            }
-            .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
-            .filter { it.ytelsestype == type }
-            .map {
+    ): List<Vurdering> = ytelser
+        .filter {
+            Periode(
+                it.fomGyldighetsperiode.toLocalDate(),
+                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
+            ).overlapperMed(vurderingsperiode)
+        }
+        .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
+        .filter { it.ytelsestype == type }
+        .map {
+            Vurdering(
+                kilde = "Arena",
+                fom = it.fomGyldighetsperiode.toLocalDate(),
+                tom = it.tomGyldighetsperiode?.toLocalDate(),
+                utfall = Utfall.IKKE_OPPFYLT,
+                detaljer = "",
+            )
+        }.ifEmpty {
+            listOf(
                 Vurdering(
                     kilde = "Arena",
-                    fom = it.fomGyldighetsperiode.toLocalDate(),
-                    tom = it.tomGyldighetsperiode?.toLocalDate(),
-                    utfall = Utfall.IKKE_OPPFYLT,
+                    fom = null,
+                    tom = null,
+                    utfall = Utfall.OPPFYLT,
                     detaljer = "",
                 )
-            }.ifEmpty {
-                listOf(
-                    Vurdering(
-                        kilde = "Arena",
-                        fom = null,
-                        tom = null,
-                        utfall = Utfall.OPPFYLT,
-                        detaljer = "",
-                    )
-                )
-            }
-
+            )
+        }
 }
