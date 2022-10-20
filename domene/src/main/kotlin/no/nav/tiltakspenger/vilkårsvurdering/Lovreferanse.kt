@@ -6,4 +6,5 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     INTROPROGRAMMET("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KVP("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KOMMUNALE_YTELSER("Tiltakspengeforskriften", "§7", null, "Forholdet til andre ytelser"),
+    STATLIGE_YTELSER("Tiltakspengeforskriften", "§7", null, "Forholdet til andre ytelser"),
 }

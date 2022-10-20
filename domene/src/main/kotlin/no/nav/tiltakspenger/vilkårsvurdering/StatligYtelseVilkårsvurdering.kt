@@ -53,7 +53,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
                 )
             }
 
-    data class AAPVilkårsvurdering(
+    data class AAP(
         private val ytelser: List<YtelseSak>,
         private val vurderingsperiode: Periode,
     ) : StatligYtelseVilkårsvurdering() {
@@ -64,7 +64,7 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
             lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.AA)
     }
 
-    data class DagpengerVilkårsvurdering(
+    data class Dagpenger(
         private val ytelser: List<YtelseSak>,
         private val vurderingsperiode: Periode,
     ) : StatligYtelseVilkårsvurdering() {
