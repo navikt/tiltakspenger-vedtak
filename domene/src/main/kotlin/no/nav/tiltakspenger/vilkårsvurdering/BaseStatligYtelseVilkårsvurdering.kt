@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 
-class BaseStatligYtelseVilkårsvurdering(
+open class BaseStatligYtelseVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
     private val type: YtelseSak.YtelseSakYtelsetype,
