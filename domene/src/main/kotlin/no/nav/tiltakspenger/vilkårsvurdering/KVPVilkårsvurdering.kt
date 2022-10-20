@@ -11,7 +11,7 @@ class KVPVilkårsvurdering(
     )
 ) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
     IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    ILovreferanse,
+    IKommunalVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse = Lovreferanse.KVP

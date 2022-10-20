@@ -21,6 +21,8 @@ interface IVilkårsvurdering {
 
 interface IStatligVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
 
+interface IKommunalVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
+
 class BaseManuellOgAutomatiskVilkårsvurdering(
     private val manuellVilkårsvurdering: IManuellVilkårsvurdering = BaseManuellVilkårsvurdering(),
     private val automatiskVilkårsvurdering: IAutomatiskVilkårsvurdering,
