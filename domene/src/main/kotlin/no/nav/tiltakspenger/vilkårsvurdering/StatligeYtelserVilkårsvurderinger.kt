@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-import no.nav.tiltakspenger.vilkårsvurdering.StatligYtelseVilkårsvurdering.AAP
-import no.nav.tiltakspenger.vilkårsvurdering.StatligYtelseVilkårsvurdering.Dagpenger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.IKKE_OPPFYLT
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT

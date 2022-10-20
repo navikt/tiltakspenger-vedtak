@@ -53,25 +53,4 @@ sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
                 )
             }
 
-    data class AAP(
-        private val ytelser: List<YtelseSak>,
-        private val vurderingsperiode: Periode,
-    ) : StatligYtelseVilkårsvurdering() {
-        override val lovreferanse: Lovreferanse = Lovreferanse.AAP
-        override var manuellVurdering: Vurdering? = null
-
-        override val ytelseVurderinger: List<Vurdering> =
-            lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.AA)
-    }
-
-    data class Dagpenger(
-        private val ytelser: List<YtelseSak>,
-        private val vurderingsperiode: Periode,
-    ) : StatligYtelseVilkårsvurdering() {
-        override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER
-        override var manuellVurdering: Vurdering? = null
-
-        override val ytelseVurderinger: List<Vurdering> =
-            lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.DAGP)
-    }
 }
