@@ -66,6 +66,8 @@ enum class UtfallDTO {
     Oppfylt,
     Uavklart,
     IkkeOppfylt,
+    KreverManuellVurdering,
+    IkkeImplementert
 }
 
 data class PersonopplysningerDTO(

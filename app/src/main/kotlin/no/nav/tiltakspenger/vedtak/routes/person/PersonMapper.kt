@@ -102,7 +102,7 @@ private fun Utfall.mapToUtfallDTO(): UtfallDTO {
     return when (this) {
         Utfall.OPPFYLT -> UtfallDTO.Oppfylt
         Utfall.IKKE_OPPFYLT -> UtfallDTO.IkkeOppfylt
-        Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.Uavklart
-        Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.Uavklart
+        Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.KreverManuellVurdering
+        Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.IkkeImplementert
     }
 }
