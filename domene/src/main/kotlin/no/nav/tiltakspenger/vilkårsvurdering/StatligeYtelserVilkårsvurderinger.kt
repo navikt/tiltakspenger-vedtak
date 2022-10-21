@@ -8,10 +8,10 @@ class StatligeYtelserVilkårsvurderinger(
     val aap: AAPVilkårsvurdering,
     val dagpenger: DagpengerVilkårsvurdering,
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
-) {
-    val lovreferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
+) : VilkårsvurderingKategori {
+    override fun lovreferanse(): Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 
-    fun samletUtfall(): Utfall {
+    override fun samletUtfall(): Utfall {
         val utfall = listOf(aap.samletUtfall(), dagpenger.samletUtfall(), sykepenger.samletUtfall())
         return when {
             utfall.any { it == IKKE_OPPFYLT } -> IKKE_OPPFYLT
@@ -20,6 +20,6 @@ class StatligeYtelserVilkårsvurderinger(
         }
     }
 
-    fun vurderinger(): List<Vurdering> =
+    override fun vurderinger(): List<Vurdering> =
         listOf(aap.vurderinger(), dagpenger.vurderinger(), sykepenger.vurderinger()).flatten()
 }

@@ -72,47 +72,27 @@ class PersonMapper {
                         til = tiltak.deltakelsePeriode.tom ?: søknad.tiltak.sluttdato ?: LocalDate.MAX
                     ),
                     vurderinger = listOf(
-                        //TODO: Her trenger vi et interface!
-                        vilkårsvurderinger.statligeYtelserVilkårsvurderinger.let {
-                            VilkårsVurderingsKategori(
-                                tittel = it.lovreferanse.paragraf,
-                                utfall = it.samletUtfall().mapToUtfallDTO(),
-                                vilkårsvurderinger = it.vurderinger().map { vurdering ->
-                                    VilkårsvurderingDTO(
-                                        utfall = vurdering.utfall.mapToUtfallDTO(),
-                                        periode = PeriodeDTO(
-                                            fra = vurdering.fom ?: LocalDate.MIN,
-                                            til = vurdering.tom ?: LocalDate.MAX
-                                        ),
-                                        vilkår = vurdering.lovreferanse.paragraf,
-                                        kilde = vurdering.kilde
-                                    )
-                                }
-                            )
-                        },
-                        vilkårsvurderinger.kommunaleYtelserVilkårsvurderinger.let {
-                            VilkårsVurderingsKategori(
-                                tittel = it.lovreferanse.paragraf,
-                                utfall = it.samletUtfall().mapToUtfallDTO(),
-                                vilkårsvurderinger = it.vurderinger().map { vurdering ->
-                                    VilkårsvurderingDTO(
-                                        utfall = vurdering.utfall.mapToUtfallDTO(),
-                                        periode = PeriodeDTO(
-                                            fra = vurdering.fom ?: LocalDate.MIN,
-                                            til = vurdering.tom ?: LocalDate.MAX
-                                        ),
-                                        vilkår = vurdering.lovreferanse.paragraf,
-                                        kilde = vurdering.kilde
-                                    )
-                                }
-                            )
-                        },
-                    )
-
+                        vilkårsvurderinger.statligeYtelserVilkårsvurderinger,
+                        vilkårsvurderinger.kommunaleYtelserVilkårsvurderinger
+                    ).map {
+                        VilkårsVurderingsKategori(
+                            tittel = it.lovreferanse().paragraf,
+                            utfall = it.samletUtfall().mapToUtfallDTO(),
+                            vilkårsvurderinger = it.vurderinger().map { vurdering ->
+                                VilkårsvurderingDTO(
+                                    utfall = vurdering.utfall.mapToUtfallDTO(),
+                                    periode = PeriodeDTO(
+                                        fra = vurdering.fom ?: LocalDate.MIN,
+                                        til = vurdering.tom ?: LocalDate.MAX
+                                    ),
+                                    vilkår = vurdering.lovreferanse.paragraf,
+                                    kilde = vurdering.kilde
+                                )
+                            }
+                        )
+                    }
                 )
             )
-
-
         )
         return personDto
     }
