@@ -43,7 +43,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.21.2")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.4.0")
+    implementation("org.flywaydb:flyway-core:9.5.1")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -62,5 +62,5 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:2.13.2.Final")
+    testImplementation("io.quarkus:quarkus-junit4-mock:2.13.3.Final")
 }
