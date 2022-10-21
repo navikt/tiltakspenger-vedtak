@@ -23,22 +23,6 @@ interface StatligYtelseVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IM
 
 interface KommunalYtelseVilkårsvurdering : IVilkårsvurdering, ILovreferanse, IManuellVilkårsvurdering
 
-class BaseManuellOgAutomatiskVilkårsvurdering(
-    private val manuellVilkårsvurdering: IManuellVilkårsvurdering = BaseManuellVilkårsvurdering(),
-    private val automatiskVilkårsvurdering: IAutomatiskVilkårsvurdering,
-) : IVilkårsvurdering,
-    IAutomatiskVilkårsvurdering by automatiskVilkårsvurdering,
-    IManuellVilkårsvurdering by manuellVilkårsvurdering {
-
-    override fun samletUtfall(): Utfall =
-        manuellVilkårsvurdering.manuellVurdering()?.utfall ?: automatiskVilkårsvurdering.detIkkeManuelleUtfallet()
-
-    override fun vurderinger(): List<Vurdering> =
-        (automatiskVilkårsvurdering.vurderinger() + manuellVilkårsvurdering.manuellVurdering()).filterNotNull()
-
-}
-
-
 interface IAutomatiskVilkårsvurdering {
     fun vurderinger(): List<Vurdering>
 
@@ -76,4 +60,19 @@ class KunManuellVilkårsvurderinger(
     override fun samletUtfall(): Utfall = manuellVurdering()?.utfall ?: Utfall.KREVER_MANUELL_VURDERING // ?
 
     override fun vurderinger(): List<Vurdering> = listOfNotNull(manuellVurdering())
+}
+
+class BaseManuellOgAutomatiskVilkårsvurdering(
+    private val manuellVilkårsvurdering: IManuellVilkårsvurdering = BaseManuellVilkårsvurdering(),
+    private val automatiskVilkårsvurdering: IAutomatiskVilkårsvurdering,
+) : IVilkårsvurdering,
+    IAutomatiskVilkårsvurdering by automatiskVilkårsvurdering,
+    IManuellVilkårsvurdering by manuellVilkårsvurdering {
+
+    override fun samletUtfall(): Utfall =
+        manuellVilkårsvurdering.manuellVurdering()?.utfall ?: automatiskVilkårsvurdering.detIkkeManuelleUtfallet()
+
+    override fun vurderinger(): List<Vurdering> =
+        (automatiskVilkårsvurdering.vurderinger() + manuellVilkårsvurdering.manuellVurdering()).filterNotNull()
+
 }
