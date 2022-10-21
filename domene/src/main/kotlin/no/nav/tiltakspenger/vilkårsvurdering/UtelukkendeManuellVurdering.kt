@@ -6,14 +6,14 @@ abstract class UtelukkendeManuellVurdering : Vilkårsvurdering() {
         .ifEmpty {
             listOf(
                 Vurdering(
-                    kilde = "Infotrygd",
+                    kilde = "N/A",
                     fom = null,
                     tom = null,
-                    utfall = Utfall.KREVER_MANUELL_VURDERING,
+                    utfall = Utfall.IKKE_IMPLEMENTERT,
                     detaljer = ""
                 )
             )
         }
 
-    override fun detIkkeManuelleUtfallet(): Utfall = Utfall.KREVER_MANUELL_VURDERING
+    override fun detIkkeManuelleUtfallet(): Utfall = Utfall.IKKE_IMPLEMENTERT
 }

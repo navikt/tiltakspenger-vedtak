@@ -7,10 +7,10 @@ import java.time.LocalDate
 internal class SykepengerVilkårsvurderingTest {
 
     @Test
-    fun `En vilkårsvurdering uten manuell vurdering skal ha utfall KREVER_MANUELL_VURDERING`() {
+    fun `En vilkårsvurdering uten manuell vurdering skal ha utfall IKKE_IMPLEMENTERT`() {
         val vv = SykepengerVilkårsvurdering()
         val utfall = vv.samletUtfall()
-        utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
+        utfall shouldBe Utfall.IKKE_IMPLEMENTERT
     }
 
     @Test
@@ -27,10 +27,10 @@ internal class SykepengerVilkårsvurderingTest {
         val vurderinger = vv.vurderinger()
         vurderinger.size shouldBe 1
         vurderinger.first() shouldBe Vurdering(
-            kilde = "Infotrygd",
+            kilde = "N/A",
             fom = null,
             tom = null,
-            utfall = Utfall.KREVER_MANUELL_VURDERING,
+            utfall = Utfall.IKKE_IMPLEMENTERT,
             detaljer = ""
         )
     }
