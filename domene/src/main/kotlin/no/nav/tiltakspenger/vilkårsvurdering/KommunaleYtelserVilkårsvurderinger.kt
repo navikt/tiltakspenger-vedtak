@@ -18,4 +18,7 @@ class KommunaleYtelserVilkårsvurderinger(
             else -> OPPFYLT
         }
     }
+
+    fun vurderinger(): List<Vurdering> =
+        listOf(intro.vurderinger(), kvp.vurderinger()).flatten()
 }

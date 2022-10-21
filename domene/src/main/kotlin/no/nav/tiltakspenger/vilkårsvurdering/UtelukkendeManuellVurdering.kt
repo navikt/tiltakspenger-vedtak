@@ -6,6 +6,7 @@ abstract class UtelukkendeManuellVurdering : Vilkårsvurdering() {
         .ifEmpty {
             listOf(
                 Vurdering(
+                    lovreferanse = lovreferanse(),
                     kilde = "N/A",
                     fom = null,
                     tom = null,

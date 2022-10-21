@@ -14,4 +14,12 @@ class Vilkårsvurderinger(
             else -> Utfall.OPPFYLT
         }
     }
+
+    fun vurderinger(): List<Vurdering> =
+        listOf(
+            statligeYtelserVilkårsvurderinger.vurderinger(),
+            kommunaleYtelserVilkårsvurderinger.vurderinger()
+        ).flatten()
 }
+
+fun List<Vurdering>.ikkeOppfylte() = this.filter { it.utfall == Utfall.IKKE_OPPFYLT }

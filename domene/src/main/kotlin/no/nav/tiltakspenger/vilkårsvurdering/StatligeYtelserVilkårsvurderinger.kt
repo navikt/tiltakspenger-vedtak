@@ -19,4 +19,7 @@ class StatligeYtelserVilkårsvurderinger(
             else -> OPPFYLT
         }
     }
+
+    fun vurderinger(): List<Vurdering> =
+        listOf(aap.vurderinger(), dagpenger.vurderinger(), sykepenger.vurderinger()).flatten()
 }

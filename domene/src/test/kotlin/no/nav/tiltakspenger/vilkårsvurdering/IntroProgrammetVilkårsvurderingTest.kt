@@ -74,6 +74,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         )
 
         val vurderingSøknad = Vurdering(
+            lovreferanse = Lovreferanse.INTROPROGRAMMET,
             kilde = "Søknad",
             fom = null,
             tom = null,
@@ -82,6 +83,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         )
         val vurderingSaksbehandler =
             Vurdering(
+                lovreferanse = Lovreferanse.INTROPROGRAMMET,
                 kilde = "Saksbehandler",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -115,8 +117,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
-        introProgrammetVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
-        introProgrammetVilkårsvurdering.lovreferanse.ledd shouldBe "3"
+        introProgrammetVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
+        introProgrammetVilkårsvurdering.lovreferanse().ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT

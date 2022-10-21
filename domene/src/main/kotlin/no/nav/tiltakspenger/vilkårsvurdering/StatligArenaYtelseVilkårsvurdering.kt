@@ -34,6 +34,7 @@ sealed class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
         .filter { it.ytelsestype == type }
         .map {
             Vurdering(
+                lovreferanse = lovreferanse(),
                 kilde = "Arena",
                 fom = it.fomGyldighetsperiode.toLocalDate(),
                 tom = it.tomGyldighetsperiode?.toLocalDate(),
@@ -43,6 +44,7 @@ sealed class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
         }.ifEmpty {
             listOf(
                 Vurdering(
+                    lovreferanse = lovreferanse(),
                     kilde = "Arena",
                     fom = null,
                     tom = null,

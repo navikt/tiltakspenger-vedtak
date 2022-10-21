@@ -27,8 +27,8 @@ internal class KVPVilkårsvurderingTest {
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
         kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
-        kvpVilkårsvurdering.lovreferanse.paragraf shouldBe "§7"
-        kvpVilkårsvurdering.lovreferanse.ledd shouldBe "3"
+        kvpVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
+        kvpVilkårsvurdering.lovreferanse().ledd shouldBe "3"
 
         kvpVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
@@ -52,6 +52,7 @@ internal class KVPVilkårsvurderingTest {
         )
         val vurderingSøknad =
             Vurdering(
+                lovreferanse = Lovreferanse.KVP,
                 kilde = "Søknad",
                 fom = null,
                 tom = null,
@@ -59,6 +60,7 @@ internal class KVPVilkårsvurderingTest {
                 detaljer = "",
             )
         val vurderingSaksbehandler = Vurdering(
+            lovreferanse = Lovreferanse.KVP,
             kilde = "Saksbehandler",
             fom = 1.januar(2022),
             tom = 31.oktober(2022),

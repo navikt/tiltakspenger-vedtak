@@ -27,6 +27,7 @@ internal class SykepengerVilkårsvurderingTest {
         val vurderinger = vv.vurderinger()
         vurderinger.size shouldBe 1
         vurderinger.first() shouldBe Vurdering(
+            lovreferanse = Lovreferanse.SYKEPENGER,
             kilde = "N/A",
             fom = null,
             tom = null,

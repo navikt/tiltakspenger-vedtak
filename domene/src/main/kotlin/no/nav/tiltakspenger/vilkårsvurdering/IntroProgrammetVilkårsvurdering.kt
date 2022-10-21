@@ -8,6 +8,7 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
     override fun lagVurderingFraSøknad() = Vurdering(
+        lovreferanse = lovreferanse(),
         kilde = KILDE,
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
@@ -25,5 +26,5 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
         }
     }
 
-    override val lovreferanse = Lovreferanse.INTROPROGRAMMET
+    override fun lovreferanse() = Lovreferanse.INTROPROGRAMMET
 }

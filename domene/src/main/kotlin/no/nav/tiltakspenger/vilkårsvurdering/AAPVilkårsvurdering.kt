@@ -7,7 +7,7 @@ class AAPVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
 ) : StatligArenaYtelseVilkårsvurdering() {
-    override val lovreferanse: Lovreferanse = Lovreferanse.AAP
+    override fun lovreferanse(): Lovreferanse = Lovreferanse.AAP
     override var manuellVurdering: Vurdering? = null
     override val ytelseVurderinger: List<Vurdering> =
         lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.AA)

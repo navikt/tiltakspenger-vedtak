@@ -7,6 +7,7 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
     override fun lagVurderingFraSøknad() = Vurdering(
+        lovreferanse = lovreferanse(),
         kilde = KILDE,
         fom = null,
         tom = null,
@@ -16,5 +17,5 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
 
     override fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 
-    override val lovreferanse = Lovreferanse.KVP
+    override fun lovreferanse() = Lovreferanse.KVP
 }

@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
 
 class VilkårsvurderingerTest {
@@ -31,8 +32,7 @@ class VilkårsvurderingerTest {
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
-        vilkårsvurderinger.ikkeOppfylteVurderinger.first().periode shouldBe vurderingsperiode
-
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().size shouldBe 0
     }
 
     @Test
@@ -59,8 +59,8 @@ class VilkårsvurderingerTest {
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        vilkårsvurderinger.ikkeOppfylteVurderinger.first().periode shouldBe vurderingsperiode
-
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().fom shouldBe vurderingsperiode.fra
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().tom shouldBe vurderingsperiode.til
     }
 
     @Test
@@ -81,6 +81,7 @@ class VilkårsvurderingerTest {
                 dagpenger = DagpengerVilkårsvurdering(
                     ytelser = listOf(
                         ytelseSak(
+                            ytelsestype = YtelseSak.YtelseSakYtelsetype.DAGP,
                             fomGyldighetsperiode = 3.februarDateTime(2022),
                             tomGyldighetsperiode = 15.februarDateTime(2022),
                         )
@@ -94,8 +95,9 @@ class VilkårsvurderingerTest {
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        vilkårsvurderinger.ikkeOppfylteVurderinger.first().periode shouldBe Periode(3.februar(2022), 15.februar(2022))
-        vilkårsvurderinger.ikkeOppfylteVurderinger.first().lovreferanse shouldBe Lovreferanse.DAGPENGER
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().fom shouldBe 3.februar(2022)
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().tom shouldBe 15.februar(2022)
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().lovreferanse shouldBe Lovreferanse.DAGPENGER
 
     }
 
