@@ -6,22 +6,22 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 class DagpengerVilkårsvurdering(
     ytelser: List<YtelseSak>,
     vurderingsperiode: Periode,
-    private val baseManuellOgAutomatiskVilkårsvurdering: BaseManuellOgAutomatiskVilkårsvurdering =
-        BaseManuellOgAutomatiskVilkårsvurdering(
+    private val manuellOgAutomatiskVilkårsvurdering: KomplettManuellOgAutomatiskVilkårsvurderingKomponent =
+        KomplettManuellOgAutomatiskVilkårsvurderingKomponent(
             automatiskVilkårsvurdering = AutomatiskDagpengerVilkårsvurdering(
                 ytelser = ytelser,
                 vurderingsperiode = vurderingsperiode
             )
         )
-) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
+) : IKomplettVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
     StatligYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER
 
     class AutomatiskDagpengerVilkårsvurdering(ytelser: List<YtelseSak>, vurderingsperiode: Periode) :
-        BaseStatligYtelseVilkårsvurdering(
+        StatligYtelseVilkårsvurderingKomponent(
             ytelser = ytelser,
             vurderingsperiode = vurderingsperiode,
             type = YtelseSak.YtelseSakYtelsetype.DAGP

@@ -4,9 +4,9 @@ import no.nav.tiltakspenger.domene.Periode
 
 class SykepengerVilkårsvurdering(
     private val vurderingsperiode: Periode,
-    private val manuellVilkårsvurdering: KunManuellVilkårsvurderinger
-) : IVilkårsvurdering by manuellVilkårsvurdering,
-    IManuellVilkårsvurdering by manuellVilkårsvurdering,
+    private val manuellVilkårsvurdering: KomplettManuellVilkårsvurderingerKomponent
+) : IKomplettVilkårsvurdering by manuellVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse = Lovreferanse.KVP
@@ -14,9 +14,9 @@ class SykepengerVilkårsvurdering(
 
 class UføretrygdVilkårsvurdering(
     private val vurderingsperiode: Periode,
-    private val manuellVilkårsvurdering: KunManuellVilkårsvurderinger
-) : IVilkårsvurdering by manuellVilkårsvurdering,
-    IManuellVilkårsvurdering by manuellVilkårsvurdering,
+    private val manuellVilkårsvurdering: KomplettManuellVilkårsvurderingerKomponent
+) : IKomplettVilkårsvurdering by manuellVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse = Lovreferanse.KVP

@@ -6,18 +6,18 @@ import no.nav.tiltakspenger.vedtak.Søknad
 class KVPVilkårsvurdering(
     søknad: Søknad,
     vurderingsperiode: Periode,
-    baseManuellOgAutomatiskVilkårsvurdering: BaseManuellOgAutomatiskVilkårsvurdering = BaseManuellOgAutomatiskVilkårsvurdering(
+    manuellOgAutomatiskVilkårsvurdering: KomplettManuellOgAutomatiskVilkårsvurderingKomponent = KomplettManuellOgAutomatiskVilkårsvurderingKomponent(
         automatiskVilkårsvurdering = AutomatiskKVPVilkårsvurdering(søknad, vurderingsperiode)
     )
-) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
+) : IKomplettVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
     KommunalYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
     override val lovreferanse = Lovreferanse.KVP
 
     class AutomatiskKVPVilkårsvurdering(private val søknad: Søknad, private val vurderingsperiode: Periode) :
-        IAutomatiskVilkårsvurdering {
+        IDelvisAutomatiskVilkårsvurdering {
         override fun vurderinger(): List<Vurdering> = listOf(
             Vurdering(
                 kilde = KILDE,

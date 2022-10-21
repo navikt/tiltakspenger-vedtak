@@ -7,14 +7,14 @@ import java.time.LocalDate
 class IntroProgrammetVilkårsvurdering(
     søknad: Søknad,
     vurderingsperiode: Periode,
-    baseManuellOgAutomatiskVilkårsvurdering: BaseManuellOgAutomatiskVilkårsvurdering = BaseManuellOgAutomatiskVilkårsvurdering(
+    manuellOgAutomatiskVilkårsvurdering: KomplettManuellOgAutomatiskVilkårsvurderingKomponent = KomplettManuellOgAutomatiskVilkårsvurderingKomponent(
         automatiskVilkårsvurdering = AutomatiskIntroProgrammetVilkårsvurdering(
             søknad,
             vurderingsperiode
         )
     )
-) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
+) : IKomplettVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
     KommunalYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
@@ -24,7 +24,7 @@ class IntroProgrammetVilkårsvurdering(
         private val søknad: Søknad,
         private val vurderingsperiode: Periode
     ) :
-        IAutomatiskVilkårsvurdering {
+        IDelvisAutomatiskVilkårsvurdering {
         override fun vurderinger(): List<Vurdering> =
             listOf(
                 Vurdering(

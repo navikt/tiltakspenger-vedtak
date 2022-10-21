@@ -6,15 +6,15 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 class AAPVilkårsvurdering(
     ytelser: List<YtelseSak>,
     vurderingsperiode: Periode,
-    private val baseManuellOgAutomatiskVilkårsvurdering: BaseManuellOgAutomatiskVilkårsvurdering = BaseManuellOgAutomatiskVilkårsvurdering(
-        automatiskVilkårsvurdering = BaseStatligYtelseVilkårsvurdering(
+    private val manuellOgAutomatiskVilkårsvurdering: KomplettManuellOgAutomatiskVilkårsvurderingKomponent = KomplettManuellOgAutomatiskVilkårsvurderingKomponent(
+        automatiskVilkårsvurdering = StatligYtelseVilkårsvurderingKomponent(
             ytelser = ytelser,
             vurderingsperiode = vurderingsperiode,
             type = YtelseSak.YtelseSakYtelsetype.AA,
         )
     )
-) : IVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
-    IManuellVilkårsvurdering by baseManuellOgAutomatiskVilkårsvurdering,
+) : IKomplettVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
+    IDelvisManuellVilkårsvurdering by manuellOgAutomatiskVilkårsvurdering,
     StatligYtelseVilkårsvurdering,
     Vilkårsvurdering() {
 
