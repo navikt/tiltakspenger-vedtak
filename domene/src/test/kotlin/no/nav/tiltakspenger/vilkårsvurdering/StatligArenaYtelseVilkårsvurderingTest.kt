@@ -11,13 +11,14 @@ import no.nav.tiltakspenger.domene.mars
 import no.nav.tiltakspenger.domene.marsDateTime
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.*
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.AA
+import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.DAGP
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-internal class StatligYtelseVilkårsvurderingTest {
+internal class StatligArenaYtelseVilkårsvurderingTest {
 
     companion object {
         @Suppress("UnusedPrivateMember")
@@ -50,7 +51,7 @@ internal class StatligYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("utenOverlapp")
     fun `vilkåret er oppfylt når vurderingsperioden ikke overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
+        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering
     ) {
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
@@ -64,7 +65,7 @@ internal class StatligYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("medOverlapp")
     fun `vilkåret er ikke oppfylt når vurderingsperioden overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: StatligYtelseVilkårsvurdering
+        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering
     ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
@@ -89,7 +90,7 @@ internal class StatligYtelseVilkårsvurderingTest {
 
     @ParameterizedTest
     @MethodSource("medOverlapp")
-    fun `vilkåret er oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: StatligYtelseVilkårsvurdering) {
+    fun `vilkåret er oppfylt fordi den overstyres manuelt`(statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering) {
         statligVilkårsvurdering.settManuellVurdering(
             fom = 19.januar(2022),
             tom = 28.mars(2022),

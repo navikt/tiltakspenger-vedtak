@@ -1,7 +1,5 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-class SykepengerVilkårsvurdering : StatligYtelseVilkårsvurdering() {
-    override val ytelseVurderinger: List<Vurdering> = emptyList()
-    override var manuellVurdering: Vurdering? = null
+class SykepengerVilkårsvurdering : UtelukkendeManuellVurdering() {
     override val lovreferanse: Lovreferanse = Lovreferanse.SYKEPENGER
 }

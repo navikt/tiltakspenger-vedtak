@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 
-sealed class StatligYtelseVilkårsvurdering : Vilkårsvurdering() {
+sealed class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
     abstract val ytelseVurderinger: List<Vurdering>
     abstract override var manuellVurdering: Vurdering?
 

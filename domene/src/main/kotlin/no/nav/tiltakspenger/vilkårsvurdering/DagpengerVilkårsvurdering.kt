@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 class DagpengerVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
-) : StatligYtelseVilkårsvurdering() {
+) : StatligArenaYtelseVilkårsvurdering() {
     override val lovreferanse: Lovreferanse = Lovreferanse.DAGPENGER
     override var manuellVurdering: Vurdering? = null
     override val ytelseVurderinger: List<Vurdering> =

@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 
 class StatligeYtelserVilkårsvurderinger(
     private val aap: AAPVilkårsvurdering,
-    private val dagpenger: DagpengerVilkårsvurdering
+    private val dagpenger: DagpengerVilkårsvurdering,
 ) {
     val lovReferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 
