@@ -20,4 +20,18 @@ internal class SykepengerVilkårsvurderingTest {
         val utfall = vv.samletUtfall()
         utfall shouldBe Utfall.IKKE_OPPFYLT
     }
+
+    @Test
+    fun `En vilkårsvurdering uten manuell vurdering skal ha to vurderinger med kilder`() {
+        val vv = SykepengerVilkårsvurdering()
+        val vurderinger = vv.vurderinger()
+        vurderinger.size shouldBe 1
+        vurderinger.first() shouldBe Vurdering(
+            kilde = "Infotrygd",
+            fom = null,
+            tom = null,
+            utfall = Utfall.KREVER_MANUELL_VURDERING,
+            detaljer = ""
+        )
+    }
 }
