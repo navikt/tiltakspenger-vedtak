@@ -36,6 +36,12 @@ class Søker private constructor(
     fun personopplysningerBarnUtenIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
     fun personopplysningerBarnMedIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
 
+    fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
+        if (søknad.tiltak is Tiltak.ArenaTiltak) {
+            this.tiltak.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
+        } else null
+
+
     constructor(
         ident: String
     ) : this(

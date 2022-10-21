@@ -1,19 +1,23 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
-import no.nav.tiltakspenger.domene.Søknad
-import no.nav.tiltakspenger.domene.Tiltak
+
 import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak.ArenaTiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import java.time.LocalDate
 import java.util.*
+import no.nav.tiltakspenger.domene.Søknad as DomeneSøknad // TODO: Denne må man ha en DTO-versjon av!
+import no.nav.tiltakspenger.domene.Tiltak as DomeneTiltak // TODO: Denne må man ha en DTO-versjon av!
 
 class PersonMapper {
     fun mapPerson(søker: Søker, vilkårsvurderinger: Vilkårsvurderinger): PersonDTO {
         //TODO: Må velge de riktige..
-        val søknad = søker.søknader.first()
-        val tiltak = søker.tiltak.first()
+        val søknad: Søknad = søker.søknader.first()
+        val tiltak: Tiltaksaktivitet =
+            søker.arenaTiltaksaktivitetForSøknad(søknad) ?: søker.tiltak.first() // TODO: Må takle å være null
 
         val personDto = PersonDTO(
             personopplysninger = PersonopplysningerDTO(
@@ -39,11 +43,11 @@ class PersonMapper {
             behandlinger = listOf(
                 BehandlingDTO(
                     id = UUID.randomUUID().toString(),
-                    søknad = Søknad(
+                    søknad = DomeneSøknad(
                         id = søknad.søknadId,
                         ident = søker.personopplysningerSøker()!!.ident,
                         opprettet = søknad.opprettet ?: søknad.tidsstempelHosOss,
-                        tiltak = Tiltak(
+                        tiltak = DomeneTiltak(
                             id = if (søknad.tiltak is ArenaTiltak) {
                                 (søknad.tiltak as ArenaTiltak).arenaId
                             } else {
