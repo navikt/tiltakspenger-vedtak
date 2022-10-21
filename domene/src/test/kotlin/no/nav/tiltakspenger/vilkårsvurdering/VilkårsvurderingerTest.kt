@@ -4,12 +4,9 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.februarDateTime
-import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.objectmothers.nyYtelseHendelse
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
-import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
 
 class VilkårsvurderingerTest {
@@ -81,12 +78,14 @@ class VilkårsvurderingerTest {
         val vilkårsvurderinger = Vilkårsvurderinger(
             statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
                 aap = AAPVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = listOf(
-                    ytelseSak(
-                        fomGyldighetsperiode = 3.februarDateTime(2022),
-                        tomGyldighetsperiode = 15.februarDateTime(2022),
-                    )
-                ), vurderingsperiode = vurderingsperiode),
+                dagpenger = DagpengerVilkårsvurdering(
+                    ytelser = listOf(
+                        ytelseSak(
+                            fomGyldighetsperiode = 3.februarDateTime(2022),
+                            tomGyldighetsperiode = 15.februarDateTime(2022),
+                        )
+                    ), vurderingsperiode = vurderingsperiode
+                ),
             ),
             kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
                 intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
