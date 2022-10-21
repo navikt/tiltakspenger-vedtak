@@ -61,7 +61,7 @@ class YtelsesakDAO(
             tomGyldighetsperiode = localDateTimeOrNull("tom_gyldighetsperiode"),
             datoKravMottatt = localDateOrNull("dato_krav_mottatt"),
             dataKravMottatt = stringOrNull("data_krav_mottatt"),
-            fagsystemSakId = intOrNull("fagsystem_sak_id"),
+            fagsystemSakId = stringOrNull("fagsystem_sak_id"),
             vedtak = ytelsevedtakDAO.hentForVedtak(UlidBase.fromDb(string("id")), txSession),
             status = stringOrNull("status")?.let { YtelseSak.YtelseSakStatus.valueOf(it) },
             ytelsestype = stringOrNull("ytelsestype")?.let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
