@@ -5,10 +5,10 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 
 class KommunaleYtelserVilkårsvurderinger(
-    private val intro: IntroProgrammetVilkårsvurdering,
-    private val kvp: KVPVilkårsvurdering
+    val intro: IntroProgrammetVilkårsvurdering,
+    val kvp: KVPVilkårsvurdering
 ) {
-    val lovReferanse: Lovreferanse = Lovreferanse.KOMMUNALE_YTELSER
+    val lovreferanse: Lovreferanse = Lovreferanse.KOMMUNALE_YTELSER
 
     fun samletUtfall(): Utfall {
         val kommunaleUtfall = listOf(intro.samletUtfall(), kvp.samletUtfall())

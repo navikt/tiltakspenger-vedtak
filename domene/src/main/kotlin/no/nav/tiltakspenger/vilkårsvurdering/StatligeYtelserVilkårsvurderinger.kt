@@ -5,11 +5,11 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 
 class StatligeYtelserVilkårsvurderinger(
-    private val aap: AAPVilkårsvurdering,
-    private val dagpenger: DagpengerVilkårsvurdering,
-    private val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
+    val aap: AAPVilkårsvurdering,
+    val dagpenger: DagpengerVilkårsvurdering,
+    val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
 ) {
-    val lovReferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
+    val lovreferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 
     fun samletUtfall(): Utfall {
         val utfall = listOf(aap.samletUtfall(), dagpenger.samletUtfall(), sykepenger.samletUtfall())

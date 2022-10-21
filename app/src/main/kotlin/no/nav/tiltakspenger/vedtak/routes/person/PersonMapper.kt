@@ -1,0 +1,128 @@
+package no.nav.tiltakspenger.vedtak.routes.person
+
+import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.Tiltak
+import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Tiltak.ArenaTiltak
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
+import java.time.LocalDate
+import java.util.*
+
+class PersonMapper {
+    fun mapPerson(søker: Søker, vilkårsvurderinger: Vilkårsvurderinger): PersonDTO {
+        //TODO: Må velge de riktige..
+        val søknad = søker.søknader.first()
+        val tiltak = søker.tiltak.first()
+
+        val personDto = PersonDTO(
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = søker.personopplysningerSøker()!!.fornavn,
+                etternavn = søker.personopplysningerSøker()!!.etternavn,
+                ident = søker.personopplysningerSøker()!!.ident,
+                barn = søker.personopplysningerBarnMedIdent().map {
+                    BarnDTO(
+                        fornavn = it.fornavn,
+                        etternavn = it.etternavn,
+                        ident = it.ident,
+                        bosted = it.oppholdsland,
+                    )
+                } + søker.personopplysningerBarnUtenIdent().map {
+                    BarnDTO(
+                        fornavn = it.fornavn!!,
+                        etternavn = it.etternavn!!,
+                        ident = null, // TODO
+                        bosted = null, // TODO
+                    )
+                }
+            ),
+            behandlinger = listOf(
+                BehandlingDTO(
+                    id = UUID.randomUUID().toString(),
+                    søknad = Søknad(
+                        id = søknad.søknadId,
+                        ident = søker.personopplysningerSøker()!!.ident,
+                        opprettet = søknad.opprettet ?: søknad.tidsstempelHosOss,
+                        tiltak = Tiltak(
+                            id = if (søknad.tiltak is ArenaTiltak) {
+                                (søknad.tiltak as ArenaTiltak).arenaId
+                            } else {
+                                "?"
+                            },
+                            arrangør = søknad.tiltak.arrangoernavn ?: "?",
+                            navn = søknad.tiltak.tiltakskode?.navn ?: "?",
+                            startDato = søknad.tiltak.startdato,
+                            sluttDato = søknad.tiltak.sluttdato ?: LocalDate.MAX
+                        ),
+                        deltarKvp = søknad.deltarKvp,
+                    ),
+                    tiltak = TiltakDTO(
+                        arrangør = tiltak.arrangør ?: "?",
+                        navn = tiltak.tiltak.navn,
+                        periode = PeriodeDTO(
+                            fra = tiltak.deltakelsePeriode.fom ?: LocalDate.MIN,
+                            til = tiltak.deltakelsePeriode.tom ?: LocalDate.MAX
+                        ),
+                        prosent = tiltak.deltakelseProsent?.toInt() ?: 0,
+                        dagerIUken = tiltak.antallDagerPerUke?.toInt() ?: 0,
+                        status = tiltak.deltakerStatus.tekst,
+                    ),
+                    periode = PeriodeDTO(
+                        fra = tiltak.deltakelsePeriode.fom ?: søknad.tiltak.startdato,
+                        til = tiltak.deltakelsePeriode.tom ?: søknad.tiltak.sluttdato ?: LocalDate.MAX
+                    ),
+                    vurderinger = listOf(
+                        //TODO: Her trenger vi et interface!
+                        vilkårsvurderinger.statligeYtelserVilkårsvurderinger.let {
+                            VilkårsVurderingsKategori(
+                                tittel = it.lovreferanse.paragraf,
+                                utfall = it.samletUtfall().mapToUtfallDTO(),
+                                vilkårsvurderinger = it.vurderinger().map { vurdering ->
+                                    VilkårsvurderingDTO(
+                                        utfall = vurdering.utfall.mapToUtfallDTO(),
+                                        periode = PeriodeDTO(
+                                            fra = vurdering.fom ?: LocalDate.MIN,
+                                            til = vurdering.tom ?: LocalDate.MAX
+                                        ),
+                                        vilkår = vurdering.lovreferanse.paragraf,
+                                        kilde = vurdering.kilde
+                                    )
+                                }
+                            )
+                        },
+                        vilkårsvurderinger.kommunaleYtelserVilkårsvurderinger.let {
+                            VilkårsVurderingsKategori(
+                                tittel = it.lovreferanse.paragraf,
+                                utfall = it.samletUtfall().mapToUtfallDTO(),
+                                vilkårsvurderinger = it.vurderinger().map { vurdering ->
+                                    VilkårsvurderingDTO(
+                                        utfall = vurdering.utfall.mapToUtfallDTO(),
+                                        periode = PeriodeDTO(
+                                            fra = vurdering.fom ?: LocalDate.MIN,
+                                            til = vurdering.tom ?: LocalDate.MAX
+                                        ),
+                                        vilkår = vurdering.lovreferanse.paragraf,
+                                        kilde = vurdering.kilde
+                                    )
+                                }
+                            )
+                        },
+                    )
+
+                )
+            )
+
+
+        )
+        return personDto
+    }
+}
+
+private fun Utfall.mapToUtfallDTO(): UtfallDTO {
+    return when (this) {
+        Utfall.OPPFYLT -> UtfallDTO.Oppfylt
+        Utfall.IKKE_OPPFYLT -> UtfallDTO.IkkeOppfylt
+        Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.Uavklart
+        Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.Uavklart
+    }
+}
