@@ -7,11 +7,12 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
 class StatligeYtelserVilkårsvurderinger(
     private val aap: AAPVilkårsvurdering,
     private val dagpenger: DagpengerVilkårsvurdering,
+    private val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
 ) {
     val lovReferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 
     fun samletUtfall(): Utfall {
-        val utfall = listOf(aap.samletUtfall(), dagpenger.samletUtfall())
+        val utfall = listOf(aap.samletUtfall(), dagpenger.samletUtfall(), sykepenger.samletUtfall())
         return when {
             utfall.any { it == IKKE_OPPFYLT } -> IKKE_OPPFYLT
             utfall.any { it == KREVER_MANUELL_VURDERING } -> KREVER_MANUELL_VURDERING
