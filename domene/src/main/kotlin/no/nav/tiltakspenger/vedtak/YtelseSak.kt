@@ -9,7 +9,7 @@ data class YtelseSak(
     val tomGyldighetsperiode: LocalDateTime?,
     val datoKravMottatt: LocalDate?,
     val dataKravMottatt: String? = null,
-    val fagsystemSakId: Int? = null,
+    val fagsystemSakId: String? = null,
     val status: YtelseSakStatus? = null,
     val ytelsestype: YtelseSakYtelsetype? = null,
     val vedtak: List<YtelseVedtak> = emptyList(),

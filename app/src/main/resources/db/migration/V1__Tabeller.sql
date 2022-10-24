@@ -181,7 +181,7 @@ CREATE TABLE ytelsesak
     tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NULL,
     dato_krav_mottatt     DATE                     NULL,
     data_krav_mottatt     VARCHAR                  NULL,
-    fagsystem_sak_id      INT                      NULL,
+    fagsystem_sak_id      VARCHAR                  NULL,
     status                VARCHAR                  NULL,
     ytelsestype           VARCHAR                  NULL,
     antall_dager_igjen    INT                      NULL,
