@@ -1,5 +1,5 @@
 val jacksonVersion = "2.13.4"
-val kotestVersion = "5.5.1"
+val kotestVersion = "5.5.2"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
