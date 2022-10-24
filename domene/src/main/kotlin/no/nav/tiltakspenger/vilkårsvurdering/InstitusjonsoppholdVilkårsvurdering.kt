@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
+import java.time.LocalDate
 
 class InstitusjonsoppholdVilkårsvurdering(
     private val søknad: Søknad,
@@ -47,9 +48,9 @@ class InstitusjonsoppholdVilkårsvurdering(
             )
         } else {
             institusjonsopphold
-                .filter { Periode(it.startdato, it.faktiskSluttdato).overlapperMed(vurderingsperiode) }
-                .filter { it.institusjonstype == "FO" }
-                .filter { it.kategori in listOf("R", "S") }
+                .filter { Periode(it.startdato, it.faktiskSluttdato ?: LocalDate.MAX).overlapperMed(vurderingsperiode) }
+                .filter { it.institusjonstype == "FO" } // TODO: Hva hvis den er null?
+                .filter { it.kategori in listOf("R", "S") } // TODO: Hva hvis den er null?
                 .map {
                     Vurdering(
                         lovreferanse = lovreferanse(),
