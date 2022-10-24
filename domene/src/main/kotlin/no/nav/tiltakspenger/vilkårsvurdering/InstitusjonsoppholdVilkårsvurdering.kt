@@ -15,7 +15,14 @@ class InstitusjonsoppholdVilkårsvurdering(
     private val inst2Vurderinger = lagVurderingerFraInst2()
     override var manuellVurdering: Vurdering? = null
 
-    override fun detIkkeManuelleUtfallet() = søknadVurdering.utfall
+    override fun detIkkeManuelleUtfallet(): Utfall {
+        val utfall = inst2Vurderinger.map { it.utfall } + søknadVurdering.utfall
+        return when {
+            utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
+            utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
+            else -> Utfall.OPPFYLT
+        }
+    }
 
     /*
     Institusjonstype:
