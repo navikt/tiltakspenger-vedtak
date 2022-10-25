@@ -107,6 +107,10 @@ class Søker private constructor(
             return
         }
         */
+        if (erMottattTidligere(søknadMottattHendelse.søknad())) {
+            søknadMottattHendelse.info("søknad ${søknadMottattHendelse.søknad().søknadId} er motttatt og lagret tidligere")
+            return
+        }
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
@@ -390,6 +394,9 @@ class Søker private constructor(
             SøkerTilstandType.SøkerFerdigstilt,
             SøkerTilstandType.AlleredeBehandlet
         )
+
+    private fun erMottattTidligere(søknad: Søknad) =
+        this.søknader.find { it.søknadId == søknad.søknadId } != null
 
     override fun opprettKontekst(): Kontekst = Kontekst(
         "Søker",
