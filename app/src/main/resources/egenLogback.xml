@@ -38,6 +38,7 @@
     </appender>
 
     <logger name="no.nav.helse.rapids_rivers" level="INFO"/>
+    <logger name="io.ktor.server.auth" level="DEBUG"/>
 
     <logger name="tjenestekall" level="DEBUG" additivity="false">
         <appender-ref ref="secureLog"/>
