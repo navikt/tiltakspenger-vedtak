@@ -50,7 +50,7 @@ object Configuration {
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
-            RoleName.SAKSBEHANDLER.name to "ensuperbrukerGroupId",
+            RoleName.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
             RoleName.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
             RoleName.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
             RoleName.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
@@ -78,8 +78,10 @@ object Configuration {
     private fun config() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
         "dev-gcp" ->
             systemProperties() overriding EnvironmentVariables overriding devProperties overriding defaultProperties
+
         "prod-gcp" ->
             systemProperties() overriding EnvironmentVariables overriding prodProperties overriding defaultProperties
+
         else -> {
             systemProperties() overriding EnvironmentVariables overriding localProperties overriding defaultProperties
         }
