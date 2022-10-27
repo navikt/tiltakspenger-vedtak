@@ -1,15 +1,21 @@
 package no.nav.tiltakspenger.vedtak.routes.person
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.PersonService
 import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
@@ -22,21 +28,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 import java.time.Month
-
-suspend fun ApplicationTestBuilder.defaultRequest(
-    method: HttpMethod,
-    uri: String,
-    setup: HttpRequestBuilder.() -> Unit = {},
-): HttpResponse {
-    return this.client.request(uri) {
-        this.method = method
-        this.headers {
-            append(HttpHeaders.XCorrelationId, "DEFAULT_CALL_ID")
-            append(HttpHeaders.ContentType, ContentType.Application.Json)
-        }
-        setup()
-    }
-}
 
 class PersonRoutesTest {
 

@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
+import no.nav.tiltakspenger.vedtak.service.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 fun main() {
@@ -27,6 +28,7 @@ fun main() {
 
     val søkerRepository = SøkerRepositoryBuilder.build()
     val søkerService = PersonServiceImpl(søkerRepository)
+    val søknadService = SøknadServiceImpl(søkerRepository)
 
     RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
@@ -36,6 +38,7 @@ fun main() {
                 config = Configuration.TokenVerificationConfig(),
                 innloggetBrukerProvider = InnloggetBrukerProvider(),
                 personService = søkerService,
+                søknadService = søknadService,
             )
         )
         .build()

@@ -4,23 +4,30 @@ import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.callid.*
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callIdMdc
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
+import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.Role
 import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
+import no.nav.tiltakspenger.vedtak.routes.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.service.PersonService
+import no.nav.tiltakspenger.vedtak.service.SøknadService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.net.URI
 import java.util.*
@@ -32,6 +39,7 @@ internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetBrukerProvider: InnloggetBrukerProvider,
     personService: PersonService,
+    søknadService: SøknadService,
 ): Application.() -> Unit {
     return {
         install(CallId)
@@ -49,6 +57,7 @@ internal fun vedtakApi(
         routing {
             authenticate("saksbehandling") {
                 personRoutes(innloggetBrukerProvider, personService)
+                søknadRoutes(innloggetBrukerProvider, søknadService)
             }
             naisRoutes()
         }
