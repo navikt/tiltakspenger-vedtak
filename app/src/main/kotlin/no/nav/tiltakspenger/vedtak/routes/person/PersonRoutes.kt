@@ -63,12 +63,12 @@ fun Route.personRoutes(
 
     route(søknaderPath) {
         post {
-            val personIdent: PersonIdent = call.receive()
+            val personIdent = call.receive<PersonIdent>()
             call.auditHvisInnlogget(berørtBruker = personIdent.ident)
 
             val response: SøkerDTO? = personService.hentSøkerOgSøknader(personIdent.ident)
             if (response == null) {
-                call.respond(message = "Vi fant ikke søker", status = HttpStatusCode.NotFound)
+                call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
             } else {
                 call.respond(message = response, status = HttpStatusCode.OK)
             }

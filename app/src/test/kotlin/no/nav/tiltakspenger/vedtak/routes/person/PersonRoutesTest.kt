@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
 import no.nav.tiltakspenger.vedtak.service.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.SøknadDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -130,7 +131,46 @@ class PersonRoutesTest {
     }
 
     @Test
-    fun `kalle uten ident i body burde svare`() {
+    fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
+
+        every { personServiceMock.hentSøkerOgSøknader("1234") } returns null
+
+        testApplication {
+            application {
+                //vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    personRoutes(
+                        InnloggetBrukerProvider(),
+                        personServiceMock,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknaderPath")
+                },
+            ) {
+                setBody(
+                    //language=JSON
+                    """
+                  {
+                    "ident": "1234"
+                  }
+                """.trimIndent(),
+                )
+            }.apply {
+                status shouldBe HttpStatusCode.NotFound
+                assertEquals("Søker ikke funnet", bodyAsText())
+            }
+        }
+    }
+
+    @Test
+    fun `kalle uten ident i body burde svare med 400 Bad Request`() {
 
         testApplication {
             application {
