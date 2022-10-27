@@ -113,4 +113,20 @@ class PersonServiceImpl(
             ),
         )
     }
+
+    override fun hentSøkerOgSøknader(ident: String): SøkerDTO? {
+        val søker = søkerRepository.hent(ident) ?: return null
+        return SøkerDTO(
+            ident = søker.ident,
+            søknader = søker.søknader.map {
+                SøknadDTO(
+                    søknadId = it.søknadId,
+                    arrangoernavn = it.tiltak.arrangoernavn ?: "Ukjent",
+                    tiltakskode = it.tiltak.tiltakskode?.navn ?: "Ukjent",
+                    startdato = it.tiltak.startdato,
+                    sluttdato = it.tiltak.sluttdato,
+                )
+            }
+        )
+    }
 }

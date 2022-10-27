@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.person
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
@@ -9,6 +10,7 @@ import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
 import no.nav.tiltakspenger.vedtak.service.PersonService
+import no.nav.tiltakspenger.vedtak.service.SøkerDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,6 +19,8 @@ import java.time.Month
 private val LOG = KotlinLogging.logger {}
 
 internal const val personPath = "/saker/person"
+
+internal const val søknaderPath = "/person/søknader"
 
 data class PersonIdent(
     val ident: String
@@ -54,6 +58,20 @@ fun Route.personRoutes(
 
             LOG.info("Returnere dummydata")
             call.respond(message = dummyPerson(), status = HttpStatusCode.OK)
+        }
+    }
+
+    route(søknaderPath) {
+        post {
+            val personIdent: PersonIdent = call.receive()
+            call.auditHvisInnlogget(berørtBruker = personIdent.ident)
+
+            val response: SøkerDTO? = personService.hentSøkerOgSøknader(personIdent.ident)
+            if (response == null) {
+                call.respond(message = "Vi fant ikke søker", status = HttpStatusCode.NotFound)
+            } else {
+                call.respond(message = response, status = HttpStatusCode.OK)
+            }
         }
     }
 }

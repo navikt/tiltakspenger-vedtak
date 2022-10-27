@@ -7,13 +7,20 @@ import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import io.ktor.server.util.*
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.PersonService
 import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
+import no.nav.tiltakspenger.vedtak.service.SøkerDTO
+import no.nav.tiltakspenger.vedtak.service.SøknadDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.time.LocalDate
+import java.time.Month
 
 suspend fun ApplicationTestBuilder.defaultRequest(
     method: HttpMethod,
@@ -24,12 +31,16 @@ suspend fun ApplicationTestBuilder.defaultRequest(
         this.method = method
         this.headers {
             append(HttpHeaders.XCorrelationId, "DEFAULT_CALL_ID")
+            append(HttpHeaders.ContentType, ContentType.Application.Json)
         }
         setup()
     }
 }
 
 class PersonRoutesTest {
+
+    private val personServiceMock = mockk<PersonService>()
+
     @Test
     fun `should answer 10-4`() {
         testApplication {
@@ -63,48 +74,104 @@ class PersonRoutesTest {
         }
     }
 
-//    @Test
-//    fun `kalle med en ident i body burde svare ok`() {
-//        testApplication {
-//            application {
-////                vedtakTestApi()
-//                jacksonSerialization()
-//                routing {
-//                    personRoutes(
-//                        InnloggetBrukerProvider(),
-//                        PersonServiceImpl(
-//                            søkerRepository = InMemorySøkerRepository()
-//                        ),
-//                    )
-//                }
-//            }
-//
-//            defaultRequest(
-//                HttpMethod.Post,
-//                url {
-//                    protocol = URLProtocol.HTTPS
-//                    path("$personPath")
-//                },
-//            ) {
-//                setBody(
-//                    //language=JSON
-//                    """
-//                  {
-//                    "ident": "1234"
-//                  }
-//                """.trimIndent(),
-//                )
-//            }.apply {
-//                status shouldBe HttpStatusCode.OK
-//                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-//                JSONAssert.assertEquals(
-//                    expected,
-//                    bodyAsText(),
-//                    JSONCompareMode.LENIENT
-//                )
-//            }.bodyAsText()
-//        }
-//    }
+    @Test
+    fun `kalle med en ident i body burde svare ok`() {
+
+        every { personServiceMock.hentSøkerOgSøknader("1234") } returns SøkerDTO(
+            ident = "1234",
+            søknader = listOf(
+                SøknadDTO(
+                    søknadId = "1234",
+                    arrangoernavn = "Ukjent",
+                    tiltakskode = "tiltak",
+                    startdato = LocalDate.of(2022, Month.DECEMBER, 1),
+                    sluttdato = null,
+                )
+            )
+        )
+
+        testApplication {
+            application {
+                //vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    personRoutes(
+                        InnloggetBrukerProvider(),
+                        personServiceMock,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknaderPath")
+                },
+            ) {
+                setBody(
+                    //language=JSON
+                    """
+                  {
+                    "ident": "1234"
+                  }
+                """.trimIndent(),
+                )
+            }.apply {
+                status shouldBe HttpStatusCode.OK
+                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                JSONAssert.assertEquals(
+                    expectedSøkerMedSøknader,
+                    bodyAsText(),
+                    JSONCompareMode.LENIENT
+                )
+            }.bodyAsText()
+        }
+    }
+
+    @Test
+    fun `kalle uten ident i body burde svare`() {
+
+        testApplication {
+            application {
+                //vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    personRoutes(
+                        InnloggetBrukerProvider(),
+                        personServiceMock,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknaderPath")
+                },
+            ) {
+                setBody("{}")
+            }.apply {
+                status shouldBe HttpStatusCode.BadRequest
+            }
+        }
+    }
+
+    private val expectedSøkerMedSøknader = """
+        {
+            "ident": "1234",
+            søknader: [
+                {
+                    "søknadId": "1234",
+                    "arrangoernavn": "Ukjent",
+                    "tiltakskode": "tiltak",
+                    "startdato": "2022-12-01",
+                    "sluttdato": null
+                }
+            ]
+        }
+    """.trimIndent()
 
     private val expected = """
      {
