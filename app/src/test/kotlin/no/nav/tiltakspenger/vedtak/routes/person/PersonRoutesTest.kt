@@ -29,7 +29,54 @@ class PersonRoutesTest {
     private val personServiceMock = mockk<PersonService>()
 
     @Test
-    fun `should respond with bad request`() {
+    fun `should respond with ok`() {
+
+        every { personServiceMock.hentBehandlingAvSøknad("1234") } returns BehandlingDTO(
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = null,
+                etternavn = null,
+                ident = "",
+                barn = listOf()
+            ),
+            søknad = SøknadDTO(
+                søknadId = "",
+                søknadsdato = LocalDate.now(),
+                arrangoernavn = null,
+                tiltakskode = null,
+                startdato = LocalDate.now(),
+                sluttdato = null,
+                antallDager = 0
+            ),
+            registrerteTiltak = listOf(),
+            vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
+            vurderinger = listOf()
+
+        )
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    personRoutes(
+                        InnloggetBrukerProvider(),
+                        personServiceMock
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknadPath/1234")
+                }
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+            }
+        }
+    }
+
+    @Test
+    fun `should respond with not found`() {
         testApplication {
             application {
                 jacksonSerialization()
@@ -50,7 +97,7 @@ class PersonRoutesTest {
                     path("$søknadPath")
                 }, setup = {}
             ).apply {
-                status shouldBe HttpStatusCode.BadRequest
+                status shouldBe HttpStatusCode.NotFound
             }
         }
     }

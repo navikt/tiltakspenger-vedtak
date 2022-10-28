@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.skjermingTrue
+import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.objectmothers.søkerMedYtelse
 import no.nav.tiltakspenger.objectmothers.tiltaksaktivitet
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
@@ -18,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -87,6 +89,31 @@ internal class PostgresSøkerRepositoryTest {
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
         hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
+    }
+
+    @Test
+    fun `lagre og hente basert på søknadId`() {
+        val ident = Random().nextInt().toString()
+
+        val søknad = nySøknadMedBrukerTiltak(
+            ident = ident,
+            barnetillegg = listOf(barnetilleggMedIdent()),
+            trygdOgPensjon = listOf(trygdOgPensjon()),
+        )
+
+        val søker = søkerMedSøknad(
+            ident = ident,
+            søknad = søknad,
+        )
+
+        søkerRepo.lagre(søker)
+
+        val hentetSøker = søkerRepo.findBySøknadId(søknad.søknadId)
+        assertNotNull(hentetSøker)
+        assertEquals(søker.ident, hentetSøker!!.ident)
+        assertEquals(søker.id, hentetSøker.id)
+        assertEquals(søker.tilstand, hentetSøker.tilstand)
+        hentetSøker.søknader shouldContainExactly listOf(søknad)
     }
 
     @Test
