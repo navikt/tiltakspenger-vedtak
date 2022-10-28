@@ -12,7 +12,7 @@ import io.ktor.server.testing.*
 import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 
 fun main() {
     embeddedServer(Netty, 8080) {
@@ -32,7 +32,7 @@ internal fun vedtakTestApi(
         jacksonSerialization()
         routing {
             søkerRoutes(
-                innloggetBrukerProvider = InnloggetBrukerProvider(),
+                innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 søkerService = SøkerServiceImpl(
                     søkerRepository = InMemorySøkerRepository(),
                 ),

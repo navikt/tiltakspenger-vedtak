@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadServiceImpl
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 
 fun main() {
     System.setProperty("logback.configurationFile", "egenLogback.xml")
@@ -36,7 +36,7 @@ fun main() {
         .withKtorModule(
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
-                innloggetBrukerProvider = InnloggetBrukerProvider(),
+                innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 søkerService = søkerService,
                 søknadService = søknadService,
             )

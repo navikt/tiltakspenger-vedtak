@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.vedtak.audit
 
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
-import io.ktor.server.plugins.callid.callId
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.callid.*
+import mu.KotlinLogging
+import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.lang.String.join
 import java.util.*
-import mu.KotlinLogging
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 data class AuditLogEvent(
     val navIdent: String,
@@ -193,7 +193,7 @@ internal suspend fun ApplicationCall.auditHvisInnlogget(
     this.principal<JWTPrincipal>()?.let {
         AuditLogger.log(
             AuditLogEvent(
-                navIdent = InnloggetBrukerProvider().hentInnloggetBruker(it).navIdent,
+                navIdent = JWTInnloggetSaksbehandlerProvider().hentSaksbehandler(it).navIdent,
                 berørtBrukerId = berørtBruker,
                 action = action,
                 behandlingId = behandlingId,

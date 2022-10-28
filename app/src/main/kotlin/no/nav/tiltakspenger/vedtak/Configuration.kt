@@ -7,6 +7,7 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
+import no.nav.tiltakspenger.felles.Rolle
 import java.util.*
 
 private const val applicationName = "tiltakspenger-vedtak"
@@ -15,14 +16,10 @@ enum class Profile {
     LOCAL, DEV, PROD
 }
 
-data class Role(
-    val name: RoleName,
+data class AdRolle(
+    val name: Rolle,
     val objectId: UUID,
 )
-
-enum class RoleName {
-    SAKSBEHANDLER, FORTROLIG_ADRESSE, STRENGT_FORTROLIG_ADRESSE, SKJERMING
-}
 
 object Configuration {
 
@@ -50,28 +47,28 @@ object Configuration {
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
-            RoleName.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
-            RoleName.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
-            RoleName.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
-            RoleName.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
+            Rolle.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
+            Rolle.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
+            Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
+            Rolle.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
         )
     )
     private val devProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.DEV.toString(),
-            RoleName.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
-            RoleName.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
-            RoleName.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
-            RoleName.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
+            Rolle.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
+            Rolle.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
+            Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
+            Rolle.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
         )
     )
     private val prodProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.PROD.toString(),
-            RoleName.SAKSBEHANDLER.name to "6c6ce2e8-b2e2-4c4b-8194-215c8e27a5c7",
-            RoleName.FORTROLIG_ADRESSE.name to "9ec6487d-f37a-4aad-a027-cd221c1ac32b",
-            RoleName.STRENGT_FORTROLIG_ADRESSE.name to "ad7b87a6-9180-467c-affc-20a566b0fec0",
-            RoleName.SKJERMING.name to "ff5b9d0d-3948-4a9d-b4bb-7a97fec3041c"
+            Rolle.SAKSBEHANDLER.name to "6c6ce2e8-b2e2-4c4b-8194-215c8e27a5c7",
+            Rolle.FORTROLIG_ADRESSE.name to "9ec6487d-f37a-4aad-a027-cd221c1ac32b",
+            Rolle.STRENGT_FORTROLIG_ADRESSE.name to "ad7b87a6-9180-467c-affc-20a566b0fec0",
+            Rolle.SKJERMING.name to "ff5b9d0d-3948-4a9d-b4bb-7a97fec3041c"
         )
     )
 
@@ -93,14 +90,14 @@ object Configuration {
         else -> Profile.LOCAL
     }
 
-    fun allRoles(): List<Role> = listOf(
-        Role(RoleName.SAKSBEHANDLER, UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)])),
-        Role(RoleName.FORTROLIG_ADRESSE, UUID.fromString(config()[Key(RoleName.FORTROLIG_ADRESSE.name, stringType)])),
-        Role(
-            RoleName.STRENGT_FORTROLIG_ADRESSE,
-            UUID.fromString(config()[Key(RoleName.STRENGT_FORTROLIG_ADRESSE.name, stringType)])
+    fun alleAdRoller(): List<AdRolle> = listOf(
+        AdRolle(Rolle.SAKSBEHANDLER, UUID.fromString(config()[Key(Rolle.SAKSBEHANDLER.name, stringType)])),
+        AdRolle(Rolle.FORTROLIG_ADRESSE, UUID.fromString(config()[Key(Rolle.FORTROLIG_ADRESSE.name, stringType)])),
+        AdRolle(
+            Rolle.STRENGT_FORTROLIG_ADRESSE,
+            UUID.fromString(config()[Key(Rolle.STRENGT_FORTROLIG_ADRESSE.name, stringType)])
         ),
-        Role(RoleName.SKJERMING, UUID.fromString(config()[Key(RoleName.SKJERMING.name, stringType)]))
+        AdRolle(Rolle.SKJERMING, UUID.fromString(config()[Key(Rolle.SKJERMING.name, stringType)]))
     )
 
     data class TokenVerificationConfig(
@@ -108,6 +105,6 @@ object Configuration {
         val issuer: String = config()[Key("AZURE_OPENID_CONFIG_ISSUER", stringType)],
         val clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         val leeway: Long = 1000,
-        val roles: List<Role> = allRoles()
+        val roles: List<AdRolle> = alleAdRoller()
     )
 }

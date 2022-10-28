@@ -1,9 +1,10 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
+import no.nav.tiltakspenger.felles.Saksbehandler
 import java.time.LocalDate
 
 interface SøkerService {
-    fun hentSøkerOgSøknader(ident: String): SøkerDTO?
+    fun hentSøkerOgSøknader(ident: String, saksbehandler: Saksbehandler): SøkerDTO?
 }
 
 data class SøkerDTO(

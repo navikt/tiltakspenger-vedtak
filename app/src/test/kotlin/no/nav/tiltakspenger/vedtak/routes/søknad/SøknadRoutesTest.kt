@@ -9,7 +9,9 @@ import io.ktor.server.testing.*
 import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søknad.BehandlingDTO
@@ -18,7 +20,7 @@ import no.nav.tiltakspenger.vedtak.service.søknad.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.StorSøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -28,11 +30,13 @@ import java.time.LocalDate
 class SøknadRoutesTest {
 
     private val søknadServiceMock = mockk<SøknadService>()
+    private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
 
     @Test
     fun `should respond with ok`() {
 
-        every { søknadServiceMock.hentBehandlingAvSøknad("1234") } returns BehandlingDTO(
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every { søknadServiceMock.hentBehandlingAvSøknad("1234", any()) } returns BehandlingDTO(
             personopplysninger = PersonopplysningerDTO(
                 fornavn = null,
                 etternavn = null,
@@ -58,7 +62,7 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søknadServiceMock
                     )
                 }
@@ -77,13 +81,43 @@ class SøknadRoutesTest {
     }
 
     @Test
-    fun `should respond with not found`() {
+    fun `at saksbebandler ikke har tilgang burde gi forbidden`() {
+
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every { søknadServiceMock.hentBehandlingAvSøknad("1234", any()) } throws TilgangException("test")
+
         testApplication {
             application {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
+                        søknadServiceMock
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknadPath/1234")
+                }
+            ).apply {
+                status shouldBe HttpStatusCode.Forbidden
+            }
+        }
+    }
+
+    @Test
+    fun `should respond with not found`() {
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    søknadRoutes(
+                        innloggetSaksbehandlerProviderMock,
                         søknadServiceMock
                     )
                 }
@@ -105,6 +139,7 @@ class SøknadRoutesTest {
     fun `kalle med en ident i body burde svare ok`() {
         val søknadId = SøknadId.random()
 
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
             søknadServiceMock.hentSøknad(
                 ident = "1234",
@@ -126,7 +161,7 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søknadServiceMock,
                     )
                 }
@@ -163,6 +198,8 @@ class SøknadRoutesTest {
     fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
 
         val søknadId = SøknadId.random()
+
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
             søknadServiceMock.hentSøknad(
                 ident = "1234",
@@ -176,7 +213,7 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søknadServiceMock,
                     )
                 }
@@ -208,13 +245,14 @@ class SøknadRoutesTest {
     fun `kalle uten ident i body burde svare med 400 Bad Request`() {
         val søknadId = SøknadId.random()
 
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         testApplication {
             application {
                 //vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søknadServiceMock,
                     )
                 }

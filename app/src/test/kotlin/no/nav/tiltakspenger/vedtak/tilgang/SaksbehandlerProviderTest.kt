@@ -5,16 +5,16 @@ import io.kotest.matchers.shouldBe
 import io.ktor.server.auth.jwt.*
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.vedtak.RoleName
+import no.nav.tiltakspenger.felles.Rolle
 import org.junit.jupiter.api.Test
 import java.util.*
 
-internal class InnloggetBrukerProviderTest {
+internal class SaksbehandlerProviderTest {
 
     @Test
     fun `sjekk rolle-mapping`() {
         System.setProperty("NAIS_CLUSTER_NAME", "dev-gcp")
-        val innloggetBrukerProvider = InnloggetBrukerProvider()
+        val innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider()
 
         val principal = mockk<JWTPrincipal>()
         every { principal.getClaim("NAVident", String::class) } returns "H12345"
@@ -24,13 +24,13 @@ internal class InnloggetBrukerProviderTest {
             "5ef775f2-61f8-4283-bf3d-8d03f428aa14"
         ).map { UUID.fromString(it) }
 
-        val innloggetBruker = innloggetBrukerProvider.hentInnloggetBruker(principal)
+        val innloggetBruker = innloggetSaksbehandlerProvider.hentSaksbehandler(principal)
         innloggetBruker.epost shouldBe "test.user@nav.no"
         innloggetBruker.brukernavn shouldBe "test user"
         innloggetBruker.navIdent shouldBe "H12345"
         innloggetBruker.roller shouldContainExactlyInAnyOrder listOf(
-            RoleName.SAKSBEHANDLER,
-            RoleName.STRENGT_FORTROLIG_ADRESSE
+            Rolle.SAKSBEHANDLER,
+            Rolle.STRENGT_FORTROLIG_ADRESSE
         )
     }
 }

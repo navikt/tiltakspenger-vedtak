@@ -9,12 +9,14 @@ import io.ktor.server.testing.*
 import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søker.ListeSøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -25,11 +27,15 @@ import java.time.Month
 class SøkerRoutesTest {
 
     private val søkerServiceMock = mockk<SøkerService>()
+    private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
 
     @Test
     fun `kalle med en ident i body burde svare ok`() {
 
-        every { søkerServiceMock.hentSøkerOgSøknader("1234") } returns SøkerDTO(
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every {
+            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+        } returns SøkerDTO(
             ident = "1234",
             søknader = listOf(
                 ListeSøknadDTO(
@@ -48,7 +54,7 @@ class SøkerRoutesTest {
                 jacksonSerialization()
                 routing {
                     søkerRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søkerServiceMock,
                     )
                 }
@@ -77,14 +83,17 @@ class SøkerRoutesTest {
                     bodyAsText(),
                     JSONCompareMode.LENIENT
                 )
-            }.bodyAsText()
+            }
         }
     }
 
     @Test
-    fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
+    fun `at saksbehandler ikke har tilgang burde svare forbidden`() {
 
-        every { søkerServiceMock.hentSøkerOgSøknader("1234") } returns null
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every {
+            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+        } throws TilgangException("Test")
 
         testApplication {
             application {
@@ -92,7 +101,48 @@ class SøkerRoutesTest {
                 jacksonSerialization()
                 routing {
                     søkerRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
+                        søkerServiceMock,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknaderPath")
+                },
+            ) {
+                setBody(
+                    //language=JSON
+                    """
+                  {
+                    "ident": "1234"
+                  }
+                """.trimIndent(),
+                )
+            }.apply {
+                status shouldBe HttpStatusCode.Forbidden
+            }
+        }
+    }
+
+    @Test
+    fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
+
+        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every {
+            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+        } returns null
+
+        testApplication {
+            application {
+                //vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    søkerRoutes(
+                        innloggetSaksbehandlerProviderMock,
                         søkerServiceMock,
                     )
                 }
@@ -129,7 +179,7 @@ class SøkerRoutesTest {
                 jacksonSerialization()
                 routing {
                     søkerRoutes(
-                        InnloggetBrukerProvider(),
+                        innloggetSaksbehandlerProviderMock,
                         søkerServiceMock,
                     )
                 }

@@ -16,14 +16,14 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.Role
-import no.nav.tiltakspenger.vedtak.RoleName
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.net.URI
 import java.util.*
 
@@ -32,7 +32,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal fun vedtakApi(
     config: Configuration.TokenVerificationConfig,
-    innloggetBrukerProvider: InnloggetBrukerProvider,
+    innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     søkerService: SøkerService,
     søknadService: SøknadService,
 ): Application.() -> Unit {
@@ -51,8 +51,8 @@ internal fun vedtakApi(
         auth(config)
         routing {
             authenticate("saksbehandling") {
-                søkerRoutes(innloggetBrukerProvider, søkerService)
-                søknadRoutes(innloggetBrukerProvider, søknadService)
+                søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
+                søknadRoutes(innloggetSaksbehandlerProvider, søknadService)
             }
             naisRoutes()
         }
@@ -71,7 +71,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
 
     install(Authentication) {
-        fun AuthenticationConfig.jwt(name: String, realm: String, roles: List<RoleName>? = null) =
+        fun AuthenticationConfig.jwt(name: String, realm: String, roles: List<Rolle>? = null) =
             jwt(name) {
                 SECURELOG.info { "config : $config" }
                 this.realm = realm
@@ -98,7 +98,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
                     }
 
                     val claimedRoles: List<UUID> = cred.getListClaim("groups", UUID::class)
-                    val configRoles: List<Role> = config.roles
+                    val configRoles: List<AdRolle> = config.roles
                     val authorizedRoles = configRoles
                         .filter { roles?.contains(it.name) ?: true }
                         .map { it.objectId }
@@ -110,7 +110,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
                     JWTPrincipal(cred.payload)
                 }
             }
-        jwt("saksbehandling", "saksbehandling", listOf(RoleName.SAKSBEHANDLER))
+        jwt("saksbehandling", "saksbehandling", listOf(Rolle.SAKSBEHANDLER))
     }
 }
 

@@ -1,5 +1,8 @@
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
@@ -404,6 +407,26 @@ class Søker private constructor(
             "ident" to ident
         )
     )
+
+    // TODO: Denne er litt simplere enn den burde være. Sjekk klage-api for mer detaljer
+    // TODO: Skal vi kanskje ha en egen exception? Eller skal den heller returnere true/false ?
+    fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
+        if (personopplysningerSøker() == null) {
+            throw TilgangException("Umulig å vurdere tilgang")
+        }
+        if (personopplysningerSøker()!!.strengtFortrolig && !(saksbehandler.roller.contains(Rolle.STRENGT_FORTROLIG_ADRESSE))) {
+            throw TilgangException("Saksbehandler har ikke tilgang")
+        }
+        if (personopplysningerSøker()!!.strengtFortroligUtland && !(saksbehandler.roller.contains(Rolle.STRENGT_FORTROLIG_ADRESSE))) {
+            throw TilgangException("Saksbehandler har ikke tilgang")
+        }
+        if (personopplysningerSøker()!!.fortrolig && !(saksbehandler.roller.contains(Rolle.FORTROLIG_ADRESSE))) {
+            throw TilgangException("Saksbehandler har ikke tilgang")
+        }
+        if (personopplysningerSøker()!!.skjermet == true && !(saksbehandler.roller.contains(Rolle.SKJERMING))) {
+            throw TilgangException("Saksbehandler har ikke tilgang")
+        }
+    }
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene
