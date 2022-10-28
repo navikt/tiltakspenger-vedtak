@@ -22,7 +22,7 @@ class PersonServiceImpl(
     override fun hentPerson(ident: String): PersonDTO? {
         val søker = søkerRepository.hent(ident) ?: return null
 
-        return PersonDTO(
+        return BehandlingDTO(
             personopplysninger = PersonopplysningerDTO(
                 fornavn = søker.personopplysningerSøker()!!.fornavn,
                 etternavn = søker.personopplysningerSøker()!!.etternavn,
@@ -43,10 +43,8 @@ class PersonServiceImpl(
                     )
                 },
             ),
-            behandlinger = listOf(
-                BehandlingDTO(
-                    id = "behandlingId",
-                    søknad = Søknad(
+
+                    søknad = no.nav.tiltakspenger.vedtak.routes.person.SøknadDTO(
                         id = "søknadId",
                         ident = "personIdent?",
                         opprettet = LocalDateTime.of(2022, 5, 30, 20, 0, 0),
@@ -59,7 +57,7 @@ class PersonServiceImpl(
                         ),
                         deltarKvp = false
                     ),
-                    tiltak = TiltakDTO(
+                    registrerteTiltak = listOf(TiltakDTO(
                         arrangør = "Joblearn",
                         navn = "Gruppe AMO",
                         periode = PeriodeDTO(
@@ -69,8 +67,8 @@ class PersonServiceImpl(
                         prosent = 80,
                         dagerIUken = 4,
                         status = "Godkjent"
-                    ),
-                    periode = PeriodeDTO(
+                    )),
+                    vurderingsperiode = PeriodeDTO(
                         fra = LocalDate.of(2022, Month.APRIL, 1),
                         til = LocalDate.of(2022, Month.APRIL, 20),
                     ),

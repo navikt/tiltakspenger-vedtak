@@ -71,7 +71,7 @@ class PersonMapper {
                         dagerIUken = tiltak.antallDagerPerUke?.toInt() ?: 0,
                         status = tiltak.deltakerStatus.tekst,
                     ),
-                    periode = PeriodeDTO(
+                    vurderingsperiode = PeriodeDTO(
                         fra = tiltak.deltakelsePeriode.fom ?: søknad.tiltak.startdato,
                         til = tiltak.deltakelsePeriode.tom ?: søknad.tiltak.sluttdato ?: LocalDate.MAX
                     ),

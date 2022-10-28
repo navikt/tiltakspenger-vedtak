@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.tiltakspenger.domene.Søknad
 import java.time.LocalDate
 
 val objectMapper: ObjectMapper = JsonMapper.builder()
@@ -22,17 +21,23 @@ val objectMapper: ObjectMapper = JsonMapper.builder()
 
 fun serialize(value: Any): String = objectMapper.writeValueAsString(value)
 
-data class PersonDTO(
+data class BehandlingDTO(
     val personopplysninger: PersonopplysningerDTO,
-    val behandlinger: List<BehandlingDTO>,
+    val søknad: SøknadDTO,
+    val registrerteTiltak: List<TiltakDTO>,
+    val vurderingsperiode: PeriodeDTO,
+    val vurderinger: List<VilkårsVurderingsKategori>,
 )
 
-data class BehandlingDTO(
-    val id: String,
-    val søknad: Søknad,
-    val tiltak: TiltakDTO,
-    val periode: PeriodeDTO,
-    val vurderinger: List<VilkårsVurderingsKategori>,
+data class SøknadDTO(
+    val søknadId: String,
+    val søknadsdato: LocalDate,
+    val arrangoernavn: String,
+    val tiltakskode: String,
+    val startdato: LocalDate,
+    val sluttdato: LocalDate?,
+    val antallDager: Float,
+    val prosent: Float,
 )
 
 data class PeriodeDTO(
@@ -41,7 +46,7 @@ data class PeriodeDTO(
 )
 
 data class TiltakDTO(
-    val arrangør: String,
+    val arrangør: String?,
     val navn: String,
     val periode: PeriodeDTO,
     val prosent: Int,
@@ -51,15 +56,18 @@ data class TiltakDTO(
 
 data class VilkårsVurderingsKategori(
     val tittel: String,
+    val lovreferanse: String,
     val utfall: UtfallDTO,
+    val detaljer: String,
     val vilkårsvurderinger: List<VilkårsvurderingDTO>,
 )
 
 data class VilkårsvurderingDTO(
     val utfall: UtfallDTO,
-    val periode: PeriodeDTO?,
     val vilkår: String,
+    val periode: PeriodeDTO?,
     val kilde: String,
+    val detaljer: String,
 )
 
 enum class UtfallDTO {

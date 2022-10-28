@@ -123,7 +123,7 @@ fun dummyPerson(): PersonDTO = PersonDTO(
                 dagerIUken = 4,
                 status = "Godkjent"
             ),
-            periode = PeriodeDTO(
+            vurderingsperiode = PeriodeDTO(
                 fra = LocalDate.of(2022, Month.APRIL, 1),
                 til = LocalDate.of(2022, Month.APRIL, 20),
             ),
