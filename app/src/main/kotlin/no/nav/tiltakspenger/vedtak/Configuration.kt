@@ -87,6 +87,12 @@ object Configuration {
         }
     }
 
+    fun applicationProfile() = when (System.getenv("NAIS_CLUSTER_NAME") ?: System.getProperty("NAIS_CLUSTER_NAME")) {
+        "dev-gcp" -> Profile.DEV
+        "prod-gcp" -> Profile.PROD
+        else -> Profile.LOCAL
+    }
+
     fun allRoles(): List<Role> = listOf(
         Role(RoleName.SAKSBEHANDLER, UUID.fromString(config()[Key(RoleName.SAKSBEHANDLER.name, stringType)])),
         Role(RoleName.FORTROLIG_ADRESSE, UUID.fromString(config()[Key(RoleName.FORTROLIG_ADRESSE.name, stringType)])),
