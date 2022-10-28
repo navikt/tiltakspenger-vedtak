@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 interface PersonService {
     fun hentSøkerOgSøknader(ident: String): SøkerDTO?
-    fun hentSøknad(søknadId: String): BehandlingDTO?
+    fun hentBehandlingAvSøknad(søknadId: String): BehandlingDTO?
 }
 
 data class SøkerDTO(

@@ -24,8 +24,8 @@ class PersonServiceImpl(
         )
     }
 
-    override fun hentSøknad(søknadId: String): BehandlingDTO? {
+    override fun hentBehandlingAvSøknad(søknadId: String): BehandlingDTO? {
         val mapper = PersonMapper()
-        return søkerRepository.findBySøknadId(søknadId)?.let { mapper.mapPerson(it, søknadId) }
+        return søkerRepository.findBySøknadId(søknadId)?.let { mapper.mapSøkerMedSøknad(it, søknadId) }
     }
 }

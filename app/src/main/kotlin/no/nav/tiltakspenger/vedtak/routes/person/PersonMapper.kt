@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import java.time.LocalDate
 
 class PersonMapper {
-    fun mapPerson(søker: Søker, søknadId: String): BehandlingDTO? {
+    fun mapSøkerMedSøknad(søker: Søker, søknadId: String): BehandlingDTO? {
         val søknad = søker.søknader.firstOrNull { it.søknadId == søknadId } ?: return null
         val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
         val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)

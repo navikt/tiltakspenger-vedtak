@@ -53,12 +53,12 @@ fun Route.personRoutes(
             if (søknadId == null) {
                 call.respond(message = "Mangler soknadId", status = HttpStatusCode.BadRequest)
             } else {
-                val søknad = personService.hentSøknad(søknadId)
-                if (søknad == null) {
+                val behandlingAvSøknad = personService.hentBehandlingAvSøknad(søknadId)
+                if (behandlingAvSøknad == null) {
                     call.respond(message = "Søknad ikke funnet", status = HttpStatusCode.NotFound)
                 } else {
-                    call.auditHvisInnlogget(berørtBruker = søknad.personopplysninger.ident)
-                    call.respond(message = søknad, status = HttpStatusCode.OK)
+                    call.auditHvisInnlogget(berørtBruker = behandlingAvSøknad.personopplysninger.ident)
+                    call.respond(message = behandlingAvSøknad, status = HttpStatusCode.OK)
                 }
             }
         }
@@ -78,4 +78,3 @@ fun Route.personRoutes(
         }
     }
 }
-
