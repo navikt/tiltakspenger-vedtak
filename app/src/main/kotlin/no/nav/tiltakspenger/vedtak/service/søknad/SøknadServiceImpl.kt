@@ -1,11 +1,13 @@
-package no.nav.tiltakspenger.vedtak.service
+package no.nav.tiltakspenger.vedtak.service.søknad
 
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 
 class SøknadServiceImpl(
-    val søkerRepository: SøkerRepository
+    private val søkerRepository: SøkerRepository,
+    private val behandlingMapper: BehandlingMapper = BehandlingMapper()
 ) : SøknadService {
+
     override fun hentSøknad(ident: String, søknadId: SøknadId): StorSøknadDTO? {
         val søker = søkerRepository.hent(ident) ?: return null
 
@@ -17,5 +19,9 @@ class SøknadServiceImpl(
             søknadId = søknad.id.toString()
         )
     }
+
+
+    override fun hentBehandlingAvSøknad(søknadId: String): BehandlingDTO? =
+        søkerRepository.findBySøknadId(søknadId)?.let { behandlingMapper.mapSøkerMedSøknad(it, søknadId) }
 
 }

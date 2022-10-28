@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.person
+package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
@@ -9,13 +9,11 @@ import io.ktor.server.testing.*
 import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.PersonService
-import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
-import no.nav.tiltakspenger.vedtak.service.SøkerDTO
-import no.nav.tiltakspenger.vedtak.service.SøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.ListeSøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -24,91 +22,17 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 import java.time.Month
 
-class PersonRoutesTest {
+class SøkerRoutesTest {
 
-    private val personServiceMock = mockk<PersonService>()
-
-    @Test
-    fun `should respond with ok`() {
-
-        every { personServiceMock.hentBehandlingAvSøknad("1234") } returns BehandlingDTO(
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = null,
-                etternavn = null,
-                ident = "",
-                barn = listOf()
-            ),
-            søknad = SøknadDTO(
-                søknadId = "",
-                søknadsdato = LocalDate.now(),
-                arrangoernavn = null,
-                tiltakskode = null,
-                startdato = LocalDate.now(),
-                sluttdato = null,
-                antallDager = 0
-            ),
-            registrerteTiltak = listOf(),
-            vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
-            vurderinger = listOf()
-
-        )
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    personRoutes(
-                        InnloggetBrukerProvider(),
-                        personServiceMock
-                    )
-                }
-            }
-
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknadPath/1234")
-                }
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-            }
-        }
-    }
-
-    @Test
-    fun `should respond with not found`() {
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    personRoutes(
-                        InnloggetBrukerProvider(),
-                        PersonServiceImpl(
-                            søkerRepository = InMemorySøkerRepository()
-                        ),
-                    )
-                }
-            }
-
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknadPath")
-                }, setup = {}
-            ).apply {
-                status shouldBe HttpStatusCode.NotFound
-            }
-        }
-    }
+    private val søkerServiceMock = mockk<SøkerService>()
 
     @Test
     fun `kalle med en ident i body burde svare ok`() {
 
-        every { personServiceMock.hentSøkerOgSøknader("1234") } returns SøkerDTO(
+        every { søkerServiceMock.hentSøkerOgSøknader("1234") } returns SøkerDTO(
             ident = "1234",
             søknader = listOf(
-                SøknadDTO(
+                ListeSøknadDTO(
                     søknadId = "1234",
                     arrangoernavn = "Ukjent",
                     tiltakskode = "tiltak",
@@ -123,9 +47,9 @@ class PersonRoutesTest {
                 //vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    personRoutes(
+                    søkerRoutes(
                         InnloggetBrukerProvider(),
-                        personServiceMock,
+                        søkerServiceMock,
                     )
                 }
             }
@@ -160,16 +84,16 @@ class PersonRoutesTest {
     @Test
     fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
 
-        every { personServiceMock.hentSøkerOgSøknader("1234") } returns null
+        every { søkerServiceMock.hentSøkerOgSøknader("1234") } returns null
 
         testApplication {
             application {
                 //vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    personRoutes(
+                    søkerRoutes(
                         InnloggetBrukerProvider(),
-                        personServiceMock,
+                        søkerServiceMock,
                     )
                 }
             }
@@ -204,9 +128,9 @@ class PersonRoutesTest {
                 //vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    personRoutes(
+                    søkerRoutes(
                         InnloggetBrukerProvider(),
-                        personServiceMock,
+                        søkerServiceMock,
                     )
                 }
             }

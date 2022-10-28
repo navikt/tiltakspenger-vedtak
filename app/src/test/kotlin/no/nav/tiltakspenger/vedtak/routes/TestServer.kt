@@ -1,23 +1,17 @@
 package no.nav.tiltakspenger.vedtak.routes
 
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.headers
-import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.append
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import io.ktor.server.plugins.cors.routing.CORS
-import io.ktor.server.routing.routing
-import io.ktor.server.testing.ApplicationTestBuilder
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
+import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.routing.*
+import io.ktor.server.testing.*
 import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
-import no.nav.tiltakspenger.vedtak.routes.person.personRoutes
-import no.nav.tiltakspenger.vedtak.service.PersonServiceImpl
+import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 
 fun main() {
@@ -37,9 +31,9 @@ internal fun vedtakTestApi(
     return {
         jacksonSerialization()
         routing {
-            personRoutes(
+            søkerRoutes(
                 innloggetBrukerProvider = InnloggetBrukerProvider(),
-                personService = PersonServiceImpl(
+                søkerService = SøkerServiceImpl(
                     søkerRepository = InMemorySøkerRepository(),
                 ),
             )

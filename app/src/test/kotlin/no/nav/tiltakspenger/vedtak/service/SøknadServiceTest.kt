@@ -7,14 +7,15 @@ import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.service.søknad.SøknadServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.util.*
 
-internal class PersonServiceTest {
+internal class SøknadServiceTest {
 
     private val repo = mockk<SøkerRepository>()
-    private val service = PersonServiceImpl(repo)
+    private val service = SøknadServiceImpl(repo)
 
     @Test
     fun `hentBehandlingAvSøknad`() {

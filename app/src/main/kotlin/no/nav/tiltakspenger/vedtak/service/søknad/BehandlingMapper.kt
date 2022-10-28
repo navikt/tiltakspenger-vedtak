@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.person
+package no.nav.tiltakspenger.vedtak.service.søknad
 
 
 import no.nav.tiltakspenger.domene.Periode
@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import java.time.LocalDate
 
-class PersonMapper {
+class BehandlingMapper {
     fun mapSøkerMedSøknad(søker: Søker, søknadId: String): BehandlingDTO? {
         val søknad = søker.søknader.firstOrNull { it.søknadId == søknadId } ?: return null
         val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
@@ -59,7 +59,7 @@ class PersonMapper {
                 vilkårsvurderinger.statligeYtelserVilkårsvurderinger,
                 vilkårsvurderinger.kommunaleYtelserVilkårsvurderinger
             ).map {
-                VilkårsVurderingsKategori(
+                VilkårsVurderingsKategoriDTO(
                     tittel = it.lovreferanse().paragraf,
                     utfall = it.samletUtfall().mapToUtfallDTO(),
                     vilkårsvurderinger = it.vurderinger().map { vurdering ->

@@ -1,33 +1,105 @@
 package no.nav.tiltakspenger.vedtak.routes.søknad
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.http.path
-import io.ktor.server.routing.routing
-import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.routing.*
+import io.ktor.server.testing.*
+import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.StorSøknadDTO
-import no.nav.tiltakspenger.vedtak.service.SøknadService
+import no.nav.tiltakspenger.vedtak.service.søknad.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.StorSøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.SøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetBrukerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.time.LocalDate
 
 class SøknadRoutesTest {
 
     private val søknadServiceMock = mockk<SøknadService>()
+
+    @Test
+    fun `should respond with ok`() {
+
+        every { søknadServiceMock.hentBehandlingAvSøknad("1234") } returns BehandlingDTO(
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = null,
+                etternavn = null,
+                ident = "",
+                barn = listOf()
+            ),
+            søknad = SøknadDTO(
+                søknadId = "",
+                søknadsdato = LocalDate.now(),
+                arrangoernavn = null,
+                tiltakskode = null,
+                startdato = LocalDate.now(),
+                sluttdato = null,
+                antallDager = 0
+            ),
+            registrerteTiltak = listOf(),
+            vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
+            vurderinger = listOf()
+
+        )
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    søknadRoutes(
+                        InnloggetBrukerProvider(),
+                        søknadServiceMock
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknadPath/1234")
+                }
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+            }
+        }
+    }
+
+    @Test
+    fun `should respond with not found`() {
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    søknadRoutes(
+                        InnloggetBrukerProvider(),
+                        søknadServiceMock
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$søknadPath")
+                }, setup = {}
+            ).apply {
+                status shouldBe HttpStatusCode.NotFound
+            }
+        }
+    }
 
     @Test
     fun `kalle med en ident i body burde svare ok`() {
@@ -64,7 +136,7 @@ class SøknadRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknadPath/$søknadId")
+                    path("$personsøknadPath/$søknadId")
                 },
             ) {
                 setBody(
@@ -114,7 +186,7 @@ class SøknadRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknadPath/$søknadId")
+                    path("$personsøknadPath/$søknadId")
                 },
             ) {
                 setBody(
@@ -152,7 +224,7 @@ class SøknadRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknadPath/$søknadId")
+                    path("$personsøknadPath/$søknadId")
                 },
             ) {
                 setBody("{}")
