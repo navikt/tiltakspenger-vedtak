@@ -65,6 +65,14 @@ internal class PostgresSøkerRepository(
         }
     }
 
+    override fun findBySøknadId(søknadId: String): Søker? {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                return søknadDAO.finnIdent(søknadId, txSession)?.let { ident -> this.hent(ident) }
+            }
+        }
+    }
+
     private fun Row.toSøker(txSession: TransactionalSession): Søker {
         val id = SøkerId.fromDb(string("id"))
         return Søker.fromDb(

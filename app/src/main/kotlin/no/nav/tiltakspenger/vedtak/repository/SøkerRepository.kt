@@ -5,4 +5,5 @@ import no.nav.tiltakspenger.vedtak.Søker
 interface SøkerRepository {
     fun hent(ident: String): Søker?
     fun lagre(søker: Søker)
+    fun findBySøknadId(søknadId: String): Søker?
 }

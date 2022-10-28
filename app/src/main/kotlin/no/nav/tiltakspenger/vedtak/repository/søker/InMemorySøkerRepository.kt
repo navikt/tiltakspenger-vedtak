@@ -13,5 +13,9 @@ class InMemorySøkerRepository : SøkerRepository {
         this[søker.ident] = søker
     }
 
+    override fun findBySøknadId(søknadId: String): Søker? {
+        return null
+    }
+
     fun reset() = søkere.clear()
 }

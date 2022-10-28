@@ -16,6 +16,14 @@ internal class SøknadDAO(
     private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
     private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
+    fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {
+        return txSession.run(
+            queryOf(hentIdent, søknadId)
+                .map { row -> row.toIdent() }
+                .asSingle
+        )
+    }
+
     fun hentAlle(søkerId: SøkerId, txSession: TransactionalSession): List<Søknad> {
         return txSession.run(
             queryOf(hentAlle, søkerId.toString())
@@ -92,6 +100,10 @@ internal class SøknadDAO(
                 )
             ).asUpdate
         )
+    }
+
+    private fun Row.toIdent(): String {
+        return string("søknad_id")
     }
 
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
@@ -209,4 +221,7 @@ internal class SøknadDAO(
 
     @Language("SQL")
     private val hentAlle = "select * from søknad where søker_id = ?"
+
+    @Language("SQL")
+    private val hentIdent = "select * from søknad where søknad_id = ?"
 }

@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.service
 
-import no.nav.tiltakspenger.vedtak.routes.person.PersonDTO
+import no.nav.tiltakspenger.vedtak.routes.person.BehandlingDTO
 import java.time.LocalDate
 
 interface PersonService {
-    fun hentPerson(ident: String): PersonDTO?
     fun hentSøkerOgSøknader(ident: String): SøkerDTO?
+    fun hentSøknad(søknadId: String): BehandlingDTO?
 }
 
 data class SøkerDTO(

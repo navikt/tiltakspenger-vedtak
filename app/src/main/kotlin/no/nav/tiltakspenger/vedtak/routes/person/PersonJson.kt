@@ -32,25 +32,24 @@ data class BehandlingDTO(
 data class SøknadDTO(
     val søknadId: String,
     val søknadsdato: LocalDate,
-    val arrangoernavn: String,
-    val tiltakskode: String,
+    val arrangoernavn: String?,
+    val tiltakskode: String?,
     val startdato: LocalDate,
     val sluttdato: LocalDate?,
-    val antallDager: Float,
-    val prosent: Float,
+    val antallDager: Int,
 )
 
 data class PeriodeDTO(
     val fra: LocalDate,
-    val til: LocalDate,
+    val til: LocalDate?,
 )
 
 data class TiltakDTO(
     val arrangør: String?,
     val navn: String,
-    val periode: PeriodeDTO,
-    val prosent: Int,
-    val dagerIUken: Int,
+    val periode: PeriodeDTO?,
+    val prosent: Float?,
+    val dagerIUken: Float?,
     val status: String,
 )
 
