@@ -78,8 +78,8 @@ enum class UtfallDTO {
 }
 
 data class PersonopplysningerDTO(
-    val fornavn: String,
-    val etternavn: String,
+    val fornavn: String?,
+    val etternavn: String?,
     val ident: String,
     val barn: List<BarnDTO>,
 )

@@ -4,45 +4,28 @@ package no.nav.tiltakspenger.vedtak.routes.person
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.*
+import no.nav.tiltakspenger.vilkårsvurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.KommunaleYtelserVilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.StatligeYtelserVilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import java.time.LocalDate
 
 class PersonMapper {
-    fun mapPerson(søker: Søker, søknadId: String): BehandlingDTO {
-        //TODO: Må velge de riktige..
-        val søknad: Søknad = søker.søknader.first { it.søknadId == søknadId }
-        val vurderingsperiode = Periode(LocalDate.now(), LocalDate.now())
-        val vilkårsvurderinger = Vilkårsvurderinger(
-            statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-                aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
-            ),
-            kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-            )
-        )
+    fun mapPerson(søker: Søker, søknadId: String): BehandlingDTO? {
+        val søknad = søker.søknader.firstOrNull { it.søknadId == søknadId } ?: return null
+        val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
+        val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)
 
-        val behandlingDTO = BehandlingDTO(
+        return BehandlingDTO(
             personopplysninger = PersonopplysningerDTO(
-                fornavn = søker.personopplysningerSøker()!!.fornavn,
-                etternavn = søker.personopplysningerSøker()!!.etternavn,
-                ident = søker.personopplysningerSøker()!!.ident,
-                barn = søker.personopplysningerBarnMedIdent().map {
-                    BarnDTO(
-                        fornavn = it.fornavn,
-                        etternavn = it.etternavn,
-                        ident = it.ident,
-                        bosted = it.oppholdsland,
-                    )
-                } + søker.personopplysningerBarnUtenIdent().map {
-                    BarnDTO(
-                        fornavn = it.fornavn!!,
-                        etternavn = it.etternavn!!,
-                        ident = null, // TODO
-                        bosted = null, // TODO
-                    )
-                }
+                fornavn = søker.personopplysningerSøker()?.fornavn,
+                etternavn = søker.personopplysningerSøker()?.etternavn,
+                ident = søker.personopplysningerSøker()?.ident ?: søknad.ident,
+                barn = mapBarn(søker)
             ),
             søknad = SøknadDTO(
                 søknadId = søknad.søknadId,
@@ -82,29 +65,64 @@ class PersonMapper {
                     vilkårsvurderinger = it.vurderinger().map { vurdering ->
                         VilkårsvurderingDTO(
                             utfall = vurdering.utfall.mapToUtfallDTO(),
-                            periode = PeriodeDTO(
-                                fra = vurdering.fom ?: LocalDate.MIN,
-                                til = vurdering.tom ?: LocalDate.MAX
-                            ),
+                            periode = vurdering.fom?.let { fom ->
+                                PeriodeDTO(
+                                    fra = fom,
+                                    til = vurdering.tom
+                                )
+                            },
                             vilkår = vurdering.lovreferanse.paragraf,
                             kilde = vurdering.kilde,
-                            detaljer = "Testdetaljer"
+                            detaljer = vurdering.detaljer,
                         )
                     },
-                    detaljer = "Testdetaljer",
-                    lovreferanse = "§ 7"
+                    detaljer = it.samletUtfall().mapToUtfallDTO().name, // TODO
+                    lovreferanse = it.lovreferanse().paragraf
                 )
             }
         )
-        return behandlingDTO
     }
-}
 
-private fun Utfall.mapToUtfallDTO(): UtfallDTO {
-    return when (this) {
-        Utfall.OPPFYLT -> UtfallDTO.Oppfylt
-        Utfall.IKKE_OPPFYLT -> UtfallDTO.IkkeOppfylt
-        Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.KreverManuellVurdering
-        Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.IkkeImplementert
+    private fun mapBarn(søker: Søker) = listOf<BarnDTO>()
+    /*
+    søker.personopplysningerBarnMedIdent().map {
+        BarnDTO(
+            fornavn = it.fornavn,
+            etternavn = it.etternavn,
+            ident = it.ident,
+            bosted = it.oppholdsland,
+        )
+    } + søker.personopplysningerBarnUtenIdent().map {
+        BarnDTO(
+            fornavn = it.fornavn!!,
+            etternavn = it.etternavn!!,
+            ident = null, // TODO
+            bosted = null, // TODO
+        )
+    }
+     */
+
+    private fun vilkårsvurderinger(
+        søker: Søker,
+        vurderingsperiode: Periode,
+        søknad: Søknad
+    ) = Vilkårsvurderinger(
+        statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
+            aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
+            dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
+        ),
+        kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
+            intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+            kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+        )
+    )
+
+    private fun Utfall.mapToUtfallDTO(): UtfallDTO {
+        return when (this) {
+            Utfall.OPPFYLT -> UtfallDTO.Oppfylt
+            Utfall.IKKE_OPPFYLT -> UtfallDTO.IkkeOppfylt
+            Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.KreverManuellVurdering
+            Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.IkkeImplementert
+        }
     }
 }
