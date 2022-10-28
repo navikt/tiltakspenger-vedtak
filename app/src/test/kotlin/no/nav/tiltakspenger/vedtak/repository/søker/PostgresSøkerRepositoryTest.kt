@@ -110,7 +110,10 @@ internal class PostgresSøkerRepositoryTest {
 
         val hentetSøker = søkerRepo.findBySøknadId(søknad.søknadId)
         assertNotNull(hentetSøker)
-        assertEquals(søker.ident, hentetSøker!!.ident)
+        assertEquals(ident, søker.ident)
+        assertEquals(ident, søker.søknader.first().ident)
+        assertEquals(ident, hentetSøker!!.ident)
+        assertEquals(ident, hentetSøker!!.søknader.first().ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
         hentetSøker.søknader shouldContainExactly listOf(søknad)

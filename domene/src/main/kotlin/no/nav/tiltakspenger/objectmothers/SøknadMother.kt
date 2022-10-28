@@ -6,7 +6,13 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.domene.juni
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -157,7 +163,7 @@ fun nySøknadMedArenaTiltak(
 
 fun nySøknadMedBrukerTiltak(
     id: SøknadId = Søknad.randomId(),
-    søknadId: String = "søknadId",
+    søknadId: String = Random().nextInt().toString(),
     journalpostId: String = "journalpostId",
     dokumentInfoId: String = "dokumentInfoId",
     fornavn: String? = "Fornavn",
