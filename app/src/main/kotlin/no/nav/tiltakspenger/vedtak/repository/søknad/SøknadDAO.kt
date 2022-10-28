@@ -102,9 +102,7 @@ internal class SøknadDAO(
         )
     }
 
-    private fun Row.toIdent(): String {
-        return string("søknad_id")
-    }
+    private fun Row.toIdent() = string("ident")
 
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = SøknadId.fromDb(string("id"))

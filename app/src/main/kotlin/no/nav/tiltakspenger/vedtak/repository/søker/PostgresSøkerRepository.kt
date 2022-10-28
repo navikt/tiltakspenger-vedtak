@@ -31,13 +31,20 @@ internal class PostgresSøkerRepository(
     override fun hent(ident: String): Søker? {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                return txSession.run(
-                    queryOf(hent, ident).map { row ->
-                        row.toSøker(txSession)
-                    }.asSingle
-                )
+                return hentMedTxSession(ident, txSession)
             }
         }
+    }
+
+    private fun hentMedTxSession(
+        ident: String,
+        txSession: TransactionalSession
+    ): Søker? {
+        return txSession.run(
+            queryOf(hent, ident).map { row ->
+                row.toSøker(txSession)
+            }.asSingle
+        )
     }
 
     override fun lagre(søker: Søker) {
@@ -68,7 +75,8 @@ internal class PostgresSøkerRepository(
     override fun findBySøknadId(søknadId: String): Søker? {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                return søknadDAO.finnIdent(søknadId, txSession)?.let { ident -> this.hent(ident) }
+                return søknadDAO.finnIdent(søknadId, txSession)
+                    ?.let { ident -> this.hentMedTxSession(ident, txSession) }
             }
         }
     }
