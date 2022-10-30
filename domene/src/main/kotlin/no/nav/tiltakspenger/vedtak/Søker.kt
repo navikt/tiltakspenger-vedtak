@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -10,6 +11,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
+
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 @Suppress("TooManyFunctions", "LongParameterList")
 class Søker private constructor(
@@ -408,25 +411,47 @@ class Søker private constructor(
         )
     )
 
-    // TODO: Denne er litt simplere enn den burde være. Sjekk klage-api for mer detaljer
-    // TODO: Skal vi kanskje ha en egen exception? Eller skal den heller returnere true/false ?
     fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
-        if (personopplysningerSøker() == null) {
-            throw TilgangException("Umulig å vurdere tilgang")
+        val personopplysninger = personopplysningerSøker()
+            ?: throw TilgangException("Umulig å vurdere tilgang")
+
+        val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
+        val harBeskyttelsesbehovStrengtFortrolig =
+            personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
+        val erEgenAnsatt = personopplysninger.skjermet ?: false
+
+        if (harBeskyttelsesbehovStrengtFortrolig) {
+            SECURELOG.info("erStrengtFortrolig")
+            //Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
+            if (Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller) {
+                SECURELOG.info("Access granted to strengt fortrolig for $ident")
+            } else {
+                SECURELOG.info("Access denied to strengt fortrolig for $ident")
+                throw TilgangException("Saksbehandler har ikke tilgang")
+            }
         }
-        if (personopplysningerSøker()!!.strengtFortrolig && !(saksbehandler.roller.contains(Rolle.STRENGT_FORTROLIG_ADRESSE))) {
-            throw TilgangException("Saksbehandler har ikke tilgang")
+        if (harBeskyttelsesbehovFortrolig) {
+            SECURELOG.info("erFortrolig")
+            //Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
+            if (Rolle.FORTROLIG_ADRESSE in saksbehandler.roller) {
+                SECURELOG.info("Access granted to fortrolig for $ident")
+            } else {
+                SECURELOG.info("Access denied to fortrolig for $ident")
+                throw TilgangException("Saksbehandler har ikke tilgang")
+            }
         }
-        if (personopplysningerSøker()!!.strengtFortroligUtland && !(saksbehandler.roller.contains(Rolle.STRENGT_FORTROLIG_ADRESSE))) {
-            throw TilgangException("Saksbehandler har ikke tilgang")
-        }
-        if (personopplysningerSøker()!!.fortrolig && !(saksbehandler.roller.contains(Rolle.FORTROLIG_ADRESSE))) {
-            throw TilgangException("Saksbehandler har ikke tilgang")
-        }
-        if (personopplysningerSøker()!!.skjermet == true && !(saksbehandler.roller.contains(Rolle.SKJERMING))) {
-            throw TilgangException("Saksbehandler har ikke tilgang")
+        if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
+            SECURELOG.info("erEgenAnsatt")
+            //Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
+            if (Rolle.SKJERMING in saksbehandler.roller) {
+                SECURELOG.info("Access granted to egen ansatt for $ident")
+            } else {
+                SECURELOG.info("Access denied to egen ansatt for $ident")
+                throw TilgangException("Saksbehandler har ikke tilgang")
+            }
         }
     }
+
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene

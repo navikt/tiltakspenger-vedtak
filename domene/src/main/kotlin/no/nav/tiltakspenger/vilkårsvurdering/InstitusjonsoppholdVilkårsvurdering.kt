@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import java.time.LocalDate
 
+// TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !
 class InstitusjonsoppholdVilkårsvurdering(
     private val søknad: Søknad,
     private val institusjonsopphold: List<Institusjonsopphold>?,
