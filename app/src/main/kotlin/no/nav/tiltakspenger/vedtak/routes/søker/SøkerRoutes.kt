@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
 
-internal const val søknaderPath = "/person/søknader"
+internal const val søknaderPath = "/person/soknader"
 
 data class PersonIdent(
     val ident: String

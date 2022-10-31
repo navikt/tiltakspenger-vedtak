@@ -12,8 +12,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
 
-internal const val personsøknadPath = "/person/søknad"
-internal const val søknadPath = "/søknad"
+internal const val søknadPath = "/soknad"
 
 data class SøknadBody(
     val ident: String
