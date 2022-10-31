@@ -1,11 +1,9 @@
 package no.nav.tiltakspenger.vedtak.service.søknad
 
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
 
 interface SøknadService {
-    fun hentSøknad(ident: String, søknadId: SøknadId): StorSøknadDTO?
 
     fun hentBehandlingAvSøknad(søknadId: String, saksbehandler: Saksbehandler): BehandlingDTO?
 }
@@ -78,8 +76,4 @@ data class BarnDTO(
     val etternavn: String,
     val ident: String?,
     val bosted: String?
-)
-
-data class StorSøknadDTO(
-    val søknadId: String,
 )
