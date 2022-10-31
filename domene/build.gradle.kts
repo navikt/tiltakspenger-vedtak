@@ -1,5 +1,5 @@
 val jacksonVersion = "2.13.4"
-val kotestVersion = "5.5.2"
+val kotestVersion = "5.5.3"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -10,7 +10,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.github.guepardoapps:kulid:2.0.0.0")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.2")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.3")
     
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
