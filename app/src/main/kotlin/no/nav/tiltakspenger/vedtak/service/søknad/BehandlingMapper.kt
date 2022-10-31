@@ -6,12 +6,20 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.KommunaleYtelserVilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.StatligeYtelserVilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 class BehandlingMapper {
@@ -55,33 +63,50 @@ class BehandlingMapper {
                 fra = vurderingsperiode.fra,
                 til = vurderingsperiode.til
             ),
-            vurderinger = listOf(
-                vilkårsvurderinger.statligeYtelserVilkårsvurderinger,
-                vilkårsvurderinger.kommunaleYtelserVilkårsvurderinger
-            ).map {
-                VilkårsVurderingsKategoriDTO(
-                    tittel = it.lovreferanse().paragraf,
-                    utfall = it.samletUtfall().mapToUtfallDTO(),
-                    vilkårsvurderinger = it.vurderinger().map { vurdering ->
-                        VilkårsvurderingDTO(
-                            utfall = vurdering.utfall.mapToUtfallDTO(),
-                            periode = vurdering.fom?.let { fom ->
-                                PeriodeDTO(
-                                    fra = fom,
-                                    til = vurdering.tom
-                                )
-                            },
-                            vilkår = vurdering.lovreferanse.paragraf,
-                            kilde = vurdering.kilde,
-                            detaljer = vurdering.detaljer,
-                        )
-                    },
-                    detaljer = it.samletUtfall().mapToUtfallDTO().name, // TODO
-                    lovreferanse = it.lovreferanse().paragraf
-                )
-            }
+            statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
+            kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
+            pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
+            lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
+            institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
         )
     }
+
+    private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderinger: KommunaleYtelserVilkårsvurderinger): KommunaleVilkårsVurderingsKategoriDTO {
+        return KommunaleVilkårsVurderingsKategoriDTO(
+            tittel = kommunaleYtelserVilkårsvurderinger.lovreferanse().paragraf,
+            lovreferanse = kommunaleYtelserVilkårsvurderinger.lovreferanse().paragraf,
+            utfall = kommunaleYtelserVilkårsvurderinger.samletUtfall().mapToUtfallDTO(),
+            detaljer = kommunaleYtelserVilkårsvurderinger.samletUtfall().mapToUtfallDTO().name,
+            introProgrammet = kommunaleYtelserVilkårsvurderinger.intro.vurderinger().map { mapVilkårsvurderingDTO(it) },
+            kvp = kommunaleYtelserVilkårsvurderinger.kvp.vurderinger().map { mapVilkårsvurderingDTO(it) },
+        )
+    }
+
+
+    private fun mapVilkårsvurderingKategori(v: VilkårsvurderingKategori): VilkårsVurderingsKategoriDTO =
+        VilkårsVurderingsKategoriDTO(
+            tittel = v.lovreferanse().paragraf,
+            lovreferanse = v.lovreferanse().paragraf,
+            utfall = v.samletUtfall().mapToUtfallDTO(),
+            detaljer = v.samletUtfall().mapToUtfallDTO().name,
+            vilkårsvurderinger = v.vurderinger().map { vurdering ->
+                mapVilkårsvurderingDTO(vurdering)
+            }
+        )
+
+    private fun mapVilkårsvurderingDTO(vurdering: Vurdering) =
+        VilkårsvurderingDTO(
+            utfall = vurdering.utfall.mapToUtfallDTO(),
+            periode = vurdering.fom?.let { fom ->
+                PeriodeDTO(
+                    fra = fom,
+                    til = vurdering.tom
+                )
+            },
+            vilkår = vurdering.lovreferanse.paragraf,
+            kilde = vurdering.kilde,
+            detaljer = vurdering.detaljer,
+        )
 
     private fun mapBarn(søker: Søker) = listOf<BarnDTO>()
     /*
@@ -107,13 +132,32 @@ class BehandlingMapper {
         vurderingsperiode: Periode,
         søknad: Søknad
     ) = Vilkårsvurderinger(
-        statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
+        statligeYtelser = StatligeYtelserVilkårsvurderinger(
             aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
             dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
         ),
-        kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
+        kommunaleYtelser = KommunaleYtelserVilkårsvurderinger(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
             kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+        ),
+        pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
+            pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
+                søknad = søknad,
+                vurderingsperiode = vurderingsperiode,
+            )
+        ),
+        lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
+            lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
+                søknad = søknad,
+                vurderingsperiode = vurderingsperiode,
+            )
+        ),
+        institusjonopphold = InstitusjonVilkårsvurderingKategori(
+            institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
+                søknad = søknad,
+                vurderingsperiode = vurderingsperiode,
+                institusjonsopphold = emptyList(),
+            )
         )
     )
 

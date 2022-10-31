@@ -2,12 +2,21 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 
 class Vilkårsvurderinger(
-    val statligeYtelserVilkårsvurderinger: StatligeYtelserVilkårsvurderinger,
-    val kommunaleYtelserVilkårsvurderinger: KommunaleYtelserVilkårsvurderinger,
+    val statligeYtelser: StatligeYtelserVilkårsvurderinger,
+    val kommunaleYtelser: KommunaleYtelserVilkårsvurderinger,
+    val pensjonsordninger: VilkårsvurderingKategori,
+    val lønnsinntekt: VilkårsvurderingKategori,
+    val institusjonopphold: VilkårsvurderingKategori,
 ) {
     fun samletUtfall(): Utfall {
         val utfall =
-            listOf(statligeYtelserVilkårsvurderinger.samletUtfall(), kommunaleYtelserVilkårsvurderinger.samletUtfall())
+            listOf(
+                statligeYtelser.samletUtfall(),
+                kommunaleYtelser.samletUtfall(),
+                pensjonsordninger.samletUtfall(),
+                lønnsinntekt.samletUtfall(),
+                institusjonopphold.samletUtfall(),
+            )
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
             utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
@@ -17,8 +26,11 @@ class Vilkårsvurderinger(
 
     fun vurderinger(): List<Vurdering> =
         listOf(
-            statligeYtelserVilkårsvurderinger.vurderinger(),
-            kommunaleYtelserVilkårsvurderinger.vurderinger()
+            statligeYtelser.vurderinger(),
+            kommunaleYtelser.vurderinger(),
+            pensjonsordninger.vurderinger(),
+            lønnsinntekt.vurderinger(),
+            institusjonopphold.vurderinger(),
         ).flatten()
 }
 

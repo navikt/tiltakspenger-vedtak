@@ -14,7 +14,10 @@ data class BehandlingDTO(
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
     val statligeYtelser: VilkårsVurderingsKategoriDTO,
-    val kommunaleYtelser: VilkårsVurderingsKategoriDTO,
+    val kommunaleYtelser: KommunaleVilkårsVurderingsKategoriDTO,
+    val pensjonsordninger: VilkårsVurderingsKategoriDTO,
+    val lønnsinntekt: VilkårsVurderingsKategoriDTO,
+    val institusjonsopphold: VilkårsVurderingsKategoriDTO,
 )
 
 data class SøknadDTO(
@@ -47,6 +50,15 @@ data class VilkårsVurderingsKategoriDTO(
     val utfall: UtfallDTO,
     val detaljer: String,
     val vilkårsvurderinger: List<VilkårsvurderingDTO>,
+)
+
+data class KommunaleVilkårsVurderingsKategoriDTO(
+    val tittel: String,
+    val lovreferanse: String,
+    val utfall: UtfallDTO,
+    val detaljer: String,
+    val introProgrammet: List<VilkårsvurderingDTO>,
+    val kvp: List<VilkårsvurderingDTO>,
 )
 
 data class VilkårsvurderingDTO(

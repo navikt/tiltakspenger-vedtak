@@ -12,10 +12,13 @@ import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søknad.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.KommunaleVilkårsVurderingsKategoriDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
+import no.nav.tiltakspenger.vedtak.service.søknad.UtfallDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.VilkårsVurderingsKategoriDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -31,10 +34,7 @@ class SøknadRoutesTest {
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every { søknadServiceMock.hentBehandlingAvSøknad("1234", any()) } returns BehandlingDTO(
             personopplysninger = PersonopplysningerDTO(
-                fornavn = null,
-                etternavn = null,
-                ident = "",
-                barn = listOf()
+                fornavn = null, etternavn = null, ident = "", barn = listOf()
             ),
             søknad = SøknadDTO(
                 søknadId = "",
@@ -47,27 +47,57 @@ class SøknadRoutesTest {
             ),
             registrerteTiltak = listOf(),
             vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
-            vurderinger = listOf()
-
+            statligeYtelser = VilkårsVurderingsKategoriDTO(
+                tittel = "",
+                lovreferanse = "",
+                utfall = UtfallDTO.Uavklart,
+                detaljer = "",
+                vilkårsvurderinger = listOf()
+            ),
+            kommunaleYtelser = KommunaleVilkårsVurderingsKategoriDTO(
+                tittel = "",
+                lovreferanse = "",
+                utfall = UtfallDTO.Uavklart,
+                detaljer = "",
+                introProgrammet = emptyList(),
+                kvp = emptyList(),
+            ),
+            pensjonsordninger = VilkårsVurderingsKategoriDTO(
+                tittel = "",
+                lovreferanse = "",
+                utfall = UtfallDTO.Uavklart,
+                detaljer = "",
+                vilkårsvurderinger = listOf()
+            ),
+            lønnsinntekt = VilkårsVurderingsKategoriDTO(
+                tittel = "",
+                lovreferanse = "",
+                utfall = UtfallDTO.Uavklart,
+                detaljer = "",
+                vilkårsvurderinger = listOf()
+            ),
+            institusjonsopphold = VilkårsVurderingsKategoriDTO(
+                tittel = "",
+                lovreferanse = "",
+                utfall = UtfallDTO.Uavklart,
+                detaljer = "",
+                vilkårsvurderinger = listOf()
+            ),
         )
         testApplication {
             application {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        søknadServiceMock
+                        innloggetSaksbehandlerProviderMock, søknadServiceMock
                     )
                 }
             }
 
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknadPath/1234")
-                }
-            ).apply {
+            defaultRequest(HttpMethod.Get, url {
+                protocol = URLProtocol.HTTPS
+                path("$søknadPath/1234")
+            }).apply {
                 status shouldBe HttpStatusCode.OK
             }
         }
@@ -84,19 +114,15 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        søknadServiceMock
+                        innloggetSaksbehandlerProviderMock, søknadServiceMock
                     )
                 }
             }
 
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknadPath/1234")
-                }
-            ).apply {
+            defaultRequest(HttpMethod.Get, url {
+                protocol = URLProtocol.HTTPS
+                path("$søknadPath/1234")
+            }).apply {
                 status shouldBe HttpStatusCode.Forbidden
             }
         }
@@ -110,19 +136,15 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        søknadServiceMock
+                        innloggetSaksbehandlerProviderMock, søknadServiceMock
                     )
                 }
             }
 
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknadPath")
-                }, setup = {}
-            ).apply {
+            defaultRequest(HttpMethod.Get, url {
+                protocol = URLProtocol.HTTPS
+                path("$søknadPath")
+            }, setup = {}).apply {
                 status shouldBe HttpStatusCode.NotFound
             }
         }

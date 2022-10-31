@@ -4,7 +4,13 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.februarDateTime
+import no.nav.tiltakspenger.objectmothers.nyDagpengerVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.nyIntroprogrammetVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.nyKommunaleYtelserVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.nyKvpVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.nyStatligeYtelserVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.nyVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -14,20 +20,13 @@ class VilkårsvurderingerTest {
 
     @Test
     fun `en vilkårsvurdering med kvp skal gi manuell vurdering`() {
-
-        val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
-        val søknad = nySøknadMedArenaTiltak(
-            deltarKvp = true,
-        )
-
-        val vilkårsvurderinger = Vilkårsvurderinger(
-            statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-                aap = AAPVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-            ),
-            kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+        val vilkårsvurderinger = nyVilkårsvurdering(
+            kommunaleYtelserVilkårsvurderinger = nyKommunaleYtelserVilkårsvurdering(
+                kvpVilkårsvurdering = nyKvpVilkårsvurdering(
+                    søknad = nySøknadMedArenaTiltak(
+                        deltarKvp = true,
+                    )
+                )
             )
         )
 
@@ -37,24 +36,21 @@ class VilkårsvurderingerTest {
 
     @Test
     fun `en vilkårsvurdering med intro skal gi manuell vurdering`() {
-
         val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = vurderingsperiode.fra,
-                tom = vurderingsperiode.til,
-            ),
-        )
-
-        val vilkårsvurderinger = Vilkårsvurderinger(
-            statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-                aap = AAPVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-            ),
-            kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+        val vilkårsvurderinger = nyVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            kommunaleYtelserVilkårsvurderinger = nyKommunaleYtelserVilkårsvurdering(
+                vurderingsperiode = vurderingsperiode,
+                introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
+                    vurderingsperiode = vurderingsperiode,
+                    søknad = nySøknadMedArenaTiltak(
+                        deltarIntroduksjonsprogrammet = true,
+                        introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
+                            fom = vurderingsperiode.fra,
+                            tom = vurderingsperiode.til,
+                        ),
+                    )
+                )
             )
         )
 
@@ -67,30 +63,19 @@ class VilkårsvurderingerTest {
     fun `en vilkårsvurdering med dagpenger skal gi ikke oppfylt og riktig periode`() {
 
         val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = vurderingsperiode.fra,
-                tom = vurderingsperiode.til,
-            ),
-        )
 
-        val vilkårsvurderinger = Vilkårsvurderinger(
-            statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-                aap = AAPVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(
+        val vilkårsvurderinger = nyVilkårsvurdering(
+            statligeYtelserVilkårsvurderinger = nyStatligeYtelserVilkårsvurdering(
+                dagpengerVilkårsvurdering = nyDagpengerVilkårsvurdering(
+                    vurderingsperiode = vurderingsperiode,
                     ytelser = listOf(
                         ytelseSak(
                             ytelsestype = YtelseSak.YtelseSakYtelsetype.DAGP,
                             fomGyldighetsperiode = 3.februarDateTime(2022),
                             tomGyldighetsperiode = 15.februarDateTime(2022),
                         )
-                    ), vurderingsperiode = vurderingsperiode
-                ),
-            ),
-            kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+                    )
+                )
             )
         )
 
@@ -103,24 +88,7 @@ class VilkårsvurderingerTest {
 
     @Test
     fun `en oppfylt vilkårsvurdering`() {
-
-        val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-        )
-
-        val vilkårsvurderinger = Vilkårsvurderinger(
-            statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-                aap = AAPVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = emptyList(), vurderingsperiode = vurderingsperiode),
-            ),
-            kommunaleYtelserVilkårsvurderinger = KommunaleYtelserVilkårsvurderinger(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-            )
-        )
-
+        val vilkårsvurderinger = nyVilkårsvurdering()
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.OPPFYLT
-
     }
 }

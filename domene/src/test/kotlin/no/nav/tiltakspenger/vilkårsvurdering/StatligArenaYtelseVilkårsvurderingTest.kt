@@ -4,7 +4,6 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.domene.mars
@@ -14,7 +13,6 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.AA
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.DAGP
 import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -131,59 +129,5 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
         statligVilkårsvurdering.lovreferanse().ledd shouldBe "1"
-    }
-
-    @Test
-    fun `Samlet utfall for statlige ytelser, hvis 1 er ikke godkjent er ingen godkjent`() {
-        val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAPVilkårsvurdering(
-            ytelser = listOf(
-                ytelseSak(
-                    fomGyldighetsperiode = 1.januarDateTime(2022),
-                    tomGyldighetsperiode = 31.januarDateTime(2022),
-                    ytelsestype = AA,
-                )
-            ),
-            vurderingsperiode = vurderingsperiode,
-        )
-        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
-            ytelser = listOf(
-                ytelseSak(
-                    fomGyldighetsperiode = 1.februarDateTime(2022),
-                    tomGyldighetsperiode = 28.februarDateTime(2022),
-                    ytelsestype = DAGP,
-                )
-            ),
-            vurderingsperiode = vurderingsperiode,
-        )
-
-        val statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-            aap = aapVilkårsvurdering,
-            dagpenger = dagpengerVilkårsvurdering,
-        )
-
-        statligeYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-
-    }
-
-    @Test
-    fun `Samlet utfall for statlige ytelser, hvis begge er godkjent er alle godkjent`() {
-        val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAPVilkårsvurdering(
-            ytelser = emptyList(),
-            vurderingsperiode = vurderingsperiode,
-        )
-        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
-            ytelser = emptyList(),
-            vurderingsperiode = vurderingsperiode,
-        )
-
-        val statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
-            aap = aapVilkårsvurdering,
-            dagpenger = dagpengerVilkårsvurdering,
-        )
-
-        statligeYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.OPPFYLT
-
     }
 }

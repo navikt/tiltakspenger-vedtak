@@ -22,7 +22,21 @@ class StatligeYtelserVilkårsvurderinger(
     override fun lovreferanse(): Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 
     override fun samletUtfall(): Utfall {
-        val utfall = listOf(aap.samletUtfall(), dagpenger.samletUtfall(), sykepenger.samletUtfall())
+        val utfall = listOf(
+            aap.samletUtfall(),
+            dagpenger.samletUtfall(),
+            sykepenger.samletUtfall(),
+            uføretrygd.samletUtfall(),
+            overgangsstønad.samletUtfall(),
+            pleiepenger.samletUtfall(),
+            foreldrepenger.samletUtfall(),
+            svangerskapspenger.samletUtfall(),
+            gjenlevendepensjon.samletUtfall(),
+            supplerendeStønad.samletUtfall(),
+            alderspensjon.samletUtfall(),
+            opplæringspenger.samletUtfall(),
+            omsorgspenger.samletUtfall(),
+        )
         return when {
             utfall.any { it == IKKE_OPPFYLT } -> IKKE_OPPFYLT
             utfall.any { it == KREVER_MANUELL_VURDERING } -> KREVER_MANUELL_VURDERING
@@ -31,5 +45,19 @@ class StatligeYtelserVilkårsvurderinger(
     }
 
     override fun vurderinger(): List<Vurdering> =
-        listOf(aap.vurderinger(), dagpenger.vurderinger(), sykepenger.vurderinger()).flatten()
+        listOf(
+            aap.vurderinger(),
+            dagpenger.vurderinger(),
+            sykepenger.vurderinger(),
+            uføretrygd.vurderinger(),
+            overgangsstønad.vurderinger(),
+            pleiepenger.vurderinger(),
+            foreldrepenger.vurderinger(),
+            svangerskapspenger.vurderinger(),
+            gjenlevendepensjon.vurderinger(),
+            supplerendeStønad.vurderinger(),
+            alderspensjon.vurderinger(),
+            opplæringspenger.vurderinger(),
+            omsorgspenger.vurderinger(),
+        ).flatten()
 }
