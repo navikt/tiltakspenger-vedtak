@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-abstract class UtelukkendeManuellVurdering : Vilkårsvurdering() {
+abstract class IkkeImplementertVurdering : Vilkårsvurdering() {
     override var manuellVurdering: Vurdering? = null
     override fun vurderinger(): List<Vurdering> = listOfNotNull(manuellVurdering)
         .ifEmpty {
             listOf(
                 Vurdering(
                     lovreferanse = lovreferanse(),
-                    kilde = "N/A",
+                    kilde = kilde(),
                     fom = null,
                     tom = null,
                     utfall = Utfall.IKKE_IMPLEMENTERT,
@@ -17,4 +17,6 @@ abstract class UtelukkendeManuellVurdering : Vilkårsvurdering() {
         }
 
     override fun detIkkeManuelleUtfallet(): Utfall = Utfall.IKKE_IMPLEMENTERT
+
+    abstract fun kilde(): String
 }

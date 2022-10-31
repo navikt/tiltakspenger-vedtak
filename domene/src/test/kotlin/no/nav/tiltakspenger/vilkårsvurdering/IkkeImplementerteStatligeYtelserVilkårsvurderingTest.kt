@@ -4,7 +4,7 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class SykepengerVilkårsvurderingTest {
+internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
 
     @Test
     fun `En vilkårsvurdering uten manuell vurdering skal ha utfall IKKE_IMPLEMENTERT`() {
@@ -28,7 +28,7 @@ internal class SykepengerVilkårsvurderingTest {
         vurderinger.size shouldBe 1
         vurderinger.first() shouldBe Vurdering(
             lovreferanse = Lovreferanse.SYKEPENGER,
-            kilde = "N/A",
+            kilde = "Infotrygd/Speil",
             fom = null,
             tom = null,
             utfall = Utfall.IKKE_IMPLEMENTERT,

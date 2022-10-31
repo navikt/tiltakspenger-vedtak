@@ -6,6 +6,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -27,7 +28,7 @@ fun Route.søknadRoutes(
             ?: return@get call.respond(message = "Mangler soknadId", status = HttpStatusCode.NotFound)
         LOG.info { "Vi har truffet GET /søknad" }
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
         val behandlingAvSøknad = try {

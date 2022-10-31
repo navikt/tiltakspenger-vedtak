@@ -8,6 +8,16 @@ class StatligeYtelserVilkårsvurderinger(
     val aap: AAPVilkårsvurdering,
     val dagpenger: DagpengerVilkårsvurdering,
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
+    val uføretrygd: UføretrygdVilkårsvurdering = UføretrygdVilkårsvurdering(),
+    val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
+    val pleiepenger: PleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(),
+    val foreldrepenger: ForeldrepengerVilkårsvurdering = ForeldrepengerVilkårsvurdering(),
+    val svangerskapspenger: SvangerskapspengerVilkårsvurdering = SvangerskapspengerVilkårsvurdering(),
+    val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering = GjenlevendepensjonVilkårsvurdering(),
+    val supplerendeStønad: SupplerendeStønadVilkårsvurdering = SupplerendeStønadVilkårsvurdering(),
+    val alderspensjon: AlderspensjonVilkårsvurdering = AlderspensjonVilkårsvurdering(),
+    val opplæringspenger: OpplæringspengerVilkårsvurdering = OpplæringspengerVilkårsvurdering(),
+    val omsorgspenger: OmsorgspengerVilkårsvurdering = OmsorgspengerVilkårsvurdering(),
 ) : VilkårsvurderingKategori {
     override fun lovreferanse(): Lovreferanse = Lovreferanse.STATLIGE_YTELSER
 

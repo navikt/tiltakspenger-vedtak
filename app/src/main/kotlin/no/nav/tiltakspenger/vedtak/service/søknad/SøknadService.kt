@@ -13,7 +13,8 @@ data class BehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
-    val vurderinger: List<VilkårsVurderingsKategoriDTO>,
+    val statligeYtelser: VilkårsVurderingsKategoriDTO,
+    val kommunaleYtelser: VilkårsVurderingsKategoriDTO,
 )
 
 data class SøknadDTO(
