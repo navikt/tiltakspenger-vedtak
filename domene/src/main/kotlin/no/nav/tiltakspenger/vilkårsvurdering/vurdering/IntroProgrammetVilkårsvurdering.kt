@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.KommunalYtelseVilkårsvurdering
 import java.time.LocalDate
@@ -12,7 +12,7 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
     override fun lagVurderingFraSøknad() = Vurdering(
-        lovreferanse = lovreferanse(),
+        vilkår = lovreferanse(),
         kilde = KILDE,
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
@@ -30,5 +30,5 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
         }
     }
 
-    override fun lovreferanse() = Lovreferanse.INTROPROGRAMMET
+    override fun lovreferanse() = Vilkår.INTROPROGRAMMET
 }

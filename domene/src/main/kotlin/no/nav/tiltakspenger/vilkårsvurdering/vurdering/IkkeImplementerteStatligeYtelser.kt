@@ -1,75 +1,75 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.IkkeImplementertVurdering
 
 class SykepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Infotrygd/Speil"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.SYKEPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.SYKEPENGER
 }
 
 class UføretrygdVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.UFØRETRYGD
+    override fun lovreferanse(): Vilkår = Vilkår.UFØRETRYGD
 }
 
 class OvergangsstønadVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "[ny løsning]"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.OVERGANGSSTØNAD
+    override fun lovreferanse(): Vilkår = Vilkår.OVERGANGSSTØNAD
 }
 
 class PleiepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "K9"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.PLEIEPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.PLEIEPENGER
 }
 
 class ForeldrepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "FP-Sak"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.FORELDREPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.FORELDREPENGER
 }
 
 
 class SvangerskapspengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "FP-Sak"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.SVANGERSKAPSPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.SVANGERSKAPSPENGER
 }
 
 
 class GjenlevendepensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.GJENLEVENDEPENSJON
+    override fun lovreferanse(): Vilkår = Vilkår.GJENLEVENDEPENSJON
 }
 
 
 class SupplerendeStønadVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "SupStønad"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD
+    override fun lovreferanse(): Vilkår = Vilkår.SUPPLERENDESTØNAD
 }
 
 
 class AlderspensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.ALDERSPENSJON
+    override fun lovreferanse(): Vilkår = Vilkår.ALDERSPENSJON
 }
 
 
 class OpplæringspengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "K9"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.OPPLÆRINGSPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.OPPLÆRINGSPENGER
 }
 
 class OmsorgspengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "K9"
 
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.OMSORGSPENGER
+    override fun lovreferanse(): Vilkår = Vilkår.OMSORGSPENGER
 }

@@ -1,14 +1,14 @@
 package no.nav.tiltakspenger.vilkårsvurdering.kategori
 
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
 
 class InstitusjonVilkårsvurderingKategori(
     val institusjonsoppholdVilkårsvurdering: InstitusjonsoppholdVilkårsvurdering,
 ) : VilkårsvurderingKategori {
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
+    override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
 
     override fun samletUtfall(): Utfall =
         institusjonsoppholdVilkårsvurdering.samletUtfall()

@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
@@ -14,7 +14,7 @@ class InstitusjonsoppholdVilkårsvurdering(
     private val institusjonsopphold: List<Institusjonsopphold>?,
     private val vurderingsperiode: Periode
 ) : Vilkårsvurdering() {
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
+    override fun lovreferanse(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
 
     private val søknadVurdering = lagVurderingFraSøknad()
     private val inst2Vurderinger = lagVurderingerFraInst2()
@@ -42,7 +42,7 @@ class InstitusjonsoppholdVilkårsvurdering(
         if (institusjonsopphold == null) {
             listOf(
                 Vurdering(
-                    lovreferanse = lovreferanse(),
+                    vilkår = lovreferanse(),
                     kilde = INST2KILDE,
                     fom = null,
                     tom = null,
@@ -57,7 +57,7 @@ class InstitusjonsoppholdVilkårsvurdering(
                 .filter { it.kategori in listOf("R", "S") } // TODO: Hva hvis den er null?
                 .map {
                     Vurdering(
-                        lovreferanse = lovreferanse(),
+                        vilkår = lovreferanse(),
                         kilde = INST2KILDE,
                         fom = it.startdato,
                         tom = it.faktiskSluttdato,
@@ -67,7 +67,7 @@ class InstitusjonsoppholdVilkårsvurdering(
                 }.ifEmpty {
                     listOf(
                         Vurdering(
-                            lovreferanse = lovreferanse(),
+                            vilkår = lovreferanse(),
                             kilde = INST2KILDE,
                             fom = null,
                             tom = null,
@@ -80,7 +80,7 @@ class InstitusjonsoppholdVilkårsvurdering(
 
 
     private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
-        lovreferanse = lovreferanse(),
+        vilkår = lovreferanse(),
         kilde = SØKNADKILDE,
         fom = null,
         tom = null,

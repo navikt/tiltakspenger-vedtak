@@ -29,7 +29,7 @@ class KommunaleYtelserVilkårsvurderingTest {
         val kommunaleYtelserVilkårsvurderingKategori =
             KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
         kommunaleYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
-        kommunaleYtelserVilkårsvurderingKategori.lovreferanse().paragraf shouldBe "§7"
+        kommunaleYtelserVilkårsvurderingKategori.vilkår().lovreferanse.paragraf shouldBe "§7"
     }
 
     @Test

@@ -82,7 +82,7 @@ class VilkårsvurderingerTest {
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
         vilkårsvurderinger.vurderinger().ikkeOppfylte().first().fom shouldBe 3.februar(2022)
         vilkårsvurderinger.vurderinger().ikkeOppfylte().first().tom shouldBe 15.februar(2022)
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().lovreferanse shouldBe Lovreferanse.DAGPENGER
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().vilkår shouldBe Vilkår.DAGPENGER
 
     }
 

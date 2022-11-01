@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFraSøknadVilkårsvurdering
 
@@ -12,7 +12,7 @@ class PensjonsinntektVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode
 ) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.PENSJONSINNTEKT
+    override fun lovreferanse(): Vilkår = Vilkår.PENSJONSINNTEKT
 
     override var manuellVurdering: Vurdering? = null
 

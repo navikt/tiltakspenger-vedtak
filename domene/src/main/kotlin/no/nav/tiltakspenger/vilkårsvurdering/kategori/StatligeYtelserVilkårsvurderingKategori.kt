@@ -1,11 +1,16 @@
 package no.nav.tiltakspenger.vilkårsvurdering.kategori
 
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall.IKKE_OPPFYLT
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
@@ -14,11 +19,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføretrygdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall.IKKE_OPPFYLT
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 class StatligeYtelserVilkårsvurderingKategori(
     val aap: AAPVilkårsvurdering,
@@ -35,7 +35,7 @@ class StatligeYtelserVilkårsvurderingKategori(
     val opplæringspenger: OpplæringspengerVilkårsvurdering = OpplæringspengerVilkårsvurdering(),
     val omsorgspenger: OmsorgspengerVilkårsvurdering = OmsorgspengerVilkårsvurdering(),
 ) : VilkårsvurderingKategori {
-    override fun lovreferanse(): Lovreferanse = Lovreferanse.STATLIGE_YTELSER
+    override fun vilkår(): Vilkår = Vilkår.STATLIGEYTELSER
 
     override fun samletUtfall(): Utfall {
         val utfall = listOf(

@@ -28,7 +28,7 @@ internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
         val vurderinger = vv.vurderinger()
         vurderinger.size shouldBe 1
         vurderinger.first() shouldBe Vurdering(
-            lovreferanse = Lovreferanse.SYKEPENGER,
+            vilkår = Vilkår.SYKEPENGER,
             kilde = "Infotrygd/Speil",
             fom = null,
             tom = null,

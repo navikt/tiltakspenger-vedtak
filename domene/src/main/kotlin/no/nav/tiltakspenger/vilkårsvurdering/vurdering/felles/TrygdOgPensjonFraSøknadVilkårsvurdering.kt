@@ -19,7 +19,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
             // TODO: Filter på utbetaler?
             .map {
                 Vurdering(
-                    lovreferanse = lovreferanse(),
+                    vilkår = lovreferanse(),
                     kilde = SØKNADKILDE,
                     fom = it.fom,
                     tom = it.tom,
@@ -30,7 +30,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
                 // TODO: Hva hvis det er oppgitt noe i søknaden, men det ikke har overlappende periode?
                 listOf(
                     Vurdering(
-                        lovreferanse = lovreferanse(),
+                        vilkår = lovreferanse(),
                         kilde = SØKNADKILDE,
                         fom = null,
                         tom = null,

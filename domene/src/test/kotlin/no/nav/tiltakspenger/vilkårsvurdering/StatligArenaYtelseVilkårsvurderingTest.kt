@@ -61,8 +61,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger().first().fom shouldBe null
         statligVilkårsvurdering.vurderinger().first().tom shouldBe null
         statligVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
-        statligVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().ledd shouldBe "1"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
     }
 
     @ParameterizedTest
@@ -72,7 +72,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
     ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
-                lovreferanse = Lovreferanse.SYKEPENGER,
+                vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -80,7 +80,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 detaljer = ""
             ),
             Vurdering(
-                lovreferanse = Lovreferanse.SYKEPENGER,
+                vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
@@ -89,8 +89,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             ),
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        statligVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().ledd shouldBe "1"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
     }
 
     @ParameterizedTest
@@ -105,7 +105,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
 
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
-                lovreferanse = Lovreferanse.SYKEPENGER,
+                vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -113,7 +113,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 detaljer = ""
             ),
             Vurdering(
-                lovreferanse = Lovreferanse.SYKEPENGER,
+                vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
@@ -121,7 +121,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 detaljer = ""
             ),
             Vurdering(
-                lovreferanse = Lovreferanse.SYKEPENGER,
+                vilkår = Vilkår.SYKEPENGER,
                 kilde = "Saksbehandler",
                 fom = 19.januar(2022),
                 tom = 28.mars(2022),
@@ -130,7 +130,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             )
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
-        statligVilkårsvurdering.lovreferanse().paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().ledd shouldBe "1"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
     }
 }
