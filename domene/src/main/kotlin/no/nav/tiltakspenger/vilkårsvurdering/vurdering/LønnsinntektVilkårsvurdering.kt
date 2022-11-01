@@ -1,7 +1,11 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFraSøknadVilkårsvurdering
 
 // TODO: Logikken her må kvalitetssikres
 class LønnsinntektVilkårsvurdering(

@@ -5,20 +5,20 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vilkårsvurdering.AAPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.DagpengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonsoppholdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.IntroProgrammetVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.KommunaleYtelserVilkårsvurderinger
-import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.StatligeYtelserVilkårsvurderinger
-import no.nav.tiltakspenger.vilkårsvurdering.VilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 
 private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 
@@ -88,8 +88,8 @@ fun nyStatligeYtelserVilkårsvurdering(
     dagpengerVilkårsvurdering: DagpengerVilkårsvurdering = nyDagpengerVilkårsvurdering(
         vurderingsperiode = vurderingsperiode
     ),
-): StatligeYtelserVilkårsvurderinger {
-    return StatligeYtelserVilkårsvurderinger(
+): StatligeYtelserVilkårsvurderingKategori {
+    return StatligeYtelserVilkårsvurderingKategori(
         aap = aapVilkårsvurdering,
         dagpenger = dagpengerVilkårsvurdering,
     )
@@ -123,8 +123,8 @@ fun nyKommunaleYtelserVilkårsvurdering(
     kvpVilkårsvurdering: KVPVilkårsvurdering = nyKvpVilkårsvurdering(
         vurderingsperiode = vurderingsperiode,
     ),
-): KommunaleYtelserVilkårsvurderinger {
-    return KommunaleYtelserVilkårsvurderinger(
+): KommunaleYtelserVilkårsvurderingKategori {
+    return KommunaleYtelserVilkårsvurderingKategori(
         intro = introProgrammetVilkårsvurdering,
         kvp = kvpVilkårsvurdering,
     )
@@ -132,10 +132,10 @@ fun nyKommunaleYtelserVilkårsvurdering(
 
 fun nyVilkårsvurdering(
     vurderingsperiode: Periode = defaultPeriode,
-    statligeYtelserVilkårsvurderinger: StatligeYtelserVilkårsvurderinger = nyStatligeYtelserVilkårsvurdering(
+    statligeYtelserVilkårsvurderingKategori: StatligeYtelserVilkårsvurderingKategori = nyStatligeYtelserVilkårsvurdering(
         vurderingsperiode = vurderingsperiode
     ),
-    kommunaleYtelserVilkårsvurderinger: KommunaleYtelserVilkårsvurderinger = nyKommunaleYtelserVilkårsvurdering(
+    kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
         vurderingsperiode = vurderingsperiode,
     ),
     pensjonsinntektVilkårsvurdering: VilkårsvurderingKategori = nyPensjonsinntektVilkårsvurdering(
@@ -149,8 +149,8 @@ fun nyVilkårsvurdering(
     ),
 ): Vilkårsvurderinger {
     return Vilkårsvurderinger(
-        statligeYtelser = statligeYtelserVilkårsvurderinger,
-        kommunaleYtelser = kommunaleYtelserVilkårsvurderinger,
+        statligeYtelser = statligeYtelserVilkårsvurderingKategori,
+        kommunaleYtelser = kommunaleYtelserVilkårsvurderingKategori,
         pensjonsordninger = pensjonsinntektVilkårsvurdering,
         lønnsinntekt = lønnsinntektVilkårsvurdering,
         institusjonopphold = institusjonsoppholdVilkårsvurdering,

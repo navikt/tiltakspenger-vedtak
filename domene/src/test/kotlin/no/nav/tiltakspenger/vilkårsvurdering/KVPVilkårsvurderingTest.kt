@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.oktober
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import org.junit.jupiter.api.Test
 
 internal class KVPVilkårsvurderingTest {

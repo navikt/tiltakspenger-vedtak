@@ -1,10 +1,12 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
-sealed class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
+abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
     abstract val ytelseVurderinger: List<Vurdering>
     abstract override var manuellVurdering: Vurdering?
 

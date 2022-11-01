@@ -21,7 +21,7 @@ class VilkårsvurderingerTest {
     @Test
     fun `en vilkårsvurdering med kvp skal gi manuell vurdering`() {
         val vilkårsvurderinger = nyVilkårsvurdering(
-            kommunaleYtelserVilkårsvurderinger = nyKommunaleYtelserVilkårsvurdering(
+            kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
                     søknad = nySøknadMedArenaTiltak(
                         deltarKvp = true,
@@ -39,7 +39,7 @@ class VilkårsvurderingerTest {
         val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
         val vilkårsvurderinger = nyVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            kommunaleYtelserVilkårsvurderinger = nyKommunaleYtelserVilkårsvurdering(
+            kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 vurderingsperiode = vurderingsperiode,
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
@@ -65,7 +65,7 @@ class VilkårsvurderingerTest {
         val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
 
         val vilkårsvurderinger = nyVilkårsvurdering(
-            statligeYtelserVilkårsvurderinger = nyStatligeYtelserVilkårsvurdering(
+            statligeYtelserVilkårsvurderingKategori = nyStatligeYtelserVilkårsvurdering(
                 dagpengerVilkårsvurdering = nyDagpengerVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
                     ytelser = listOf(

@@ -4,22 +4,22 @@ package no.nav.tiltakspenger.vedtak.service.søknad
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.AAPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.DagpengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.InstitusjonsoppholdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.IntroProgrammetVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.KommunaleYtelserVilkårsvurderinger
-import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.LønnsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.PensjonsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.StatligeYtelserVilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import java.time.LocalDate
 
 class BehandlingMapper {
@@ -71,14 +71,15 @@ class BehandlingMapper {
         )
     }
 
-    private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderinger: KommunaleYtelserVilkårsvurderinger): KommunaleVilkårsVurderingsKategoriDTO {
+    private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori): KommunaleVilkårsVurderingsKategoriDTO {
         return KommunaleVilkårsVurderingsKategoriDTO(
-            tittel = kommunaleYtelserVilkårsvurderinger.lovreferanse().paragraf,
-            lovreferanse = kommunaleYtelserVilkårsvurderinger.lovreferanse().paragraf,
-            utfall = kommunaleYtelserVilkårsvurderinger.samletUtfall().mapToUtfallDTO(),
-            detaljer = kommunaleYtelserVilkårsvurderinger.samletUtfall().mapToUtfallDTO().name,
-            introProgrammet = kommunaleYtelserVilkårsvurderinger.intro.vurderinger().map { mapVilkårsvurderingDTO(it) },
-            kvp = kommunaleYtelserVilkårsvurderinger.kvp.vurderinger().map { mapVilkårsvurderingDTO(it) },
+            tittel = kommunaleYtelserVilkårsvurderingKategori.lovreferanse().paragraf,
+            lovreferanse = kommunaleYtelserVilkårsvurderingKategori.lovreferanse().paragraf,
+            utfall = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO(),
+            detaljer = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO().name,
+            introProgrammet = kommunaleYtelserVilkårsvurderingKategori.intro.vurderinger()
+                .map { mapVilkårsvurderingDTO(it) },
+            kvp = kommunaleYtelserVilkårsvurderingKategori.kvp.vurderinger().map { mapVilkårsvurderingDTO(it) },
         )
     }
 
@@ -132,11 +133,11 @@ class BehandlingMapper {
         vurderingsperiode: Periode,
         søknad: Søknad
     ) = Vilkårsvurderinger(
-        statligeYtelser = StatligeYtelserVilkårsvurderinger(
+        statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
             aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
             dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
         ),
-        kommunaleYtelser = KommunaleYtelserVilkårsvurderinger(
+        kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
             kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
         ),

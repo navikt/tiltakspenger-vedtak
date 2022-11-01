@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

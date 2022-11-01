@@ -12,6 +12,9 @@ import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.AA
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.DAGP
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.StatligArenaYtelseVilkårsvurdering
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments

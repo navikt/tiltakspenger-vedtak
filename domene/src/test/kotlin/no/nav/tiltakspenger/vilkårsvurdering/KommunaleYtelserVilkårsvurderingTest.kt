@@ -4,6 +4,9 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import org.junit.jupiter.api.Test
 
 class KommunaleYtelserVilkårsvurderingTest {
@@ -23,10 +26,10 @@ class KommunaleYtelserVilkårsvurderingTest {
         val kvpVilkårsvurdering =
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        val kommunaleYtelserVilkårsvurderinger =
-            KommunaleYtelserVilkårsvurderinger(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
-        kommunaleYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.OPPFYLT
-        kommunaleYtelserVilkårsvurderinger.lovreferanse().paragraf shouldBe "§7"
+        val kommunaleYtelserVilkårsvurderingKategori =
+            KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
+        kommunaleYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
+        kommunaleYtelserVilkårsvurderingKategori.lovreferanse().paragraf shouldBe "§7"
     }
 
     @Test
@@ -43,8 +46,8 @@ class KommunaleYtelserVilkårsvurderingTest {
         val kvpVilkårsvurdering =
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        val kommunaleYtelserVilkårsvurderinger =
-            KommunaleYtelserVilkårsvurderinger(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
-        kommunaleYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
+        val kommunaleYtelserVilkårsvurderingKategori =
+            KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
+        kommunaleYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 }

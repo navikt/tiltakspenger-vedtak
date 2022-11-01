@@ -1,9 +1,11 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
-sealed class KommunalYtelseVilkårsvurdering(
+abstract class KommunalYtelseVilkårsvurdering(
     protected val søknad: Søknad,
     protected val vurderingsperiode: Periode,
 ) : Vilkårsvurdering() {

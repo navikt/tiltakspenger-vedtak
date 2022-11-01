@@ -1,4 +1,9 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.kategori
+
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 class LønnsinntektVilkårsvurderingKategori(
     val lønnsinntektVilkårsvurdering: LønnsinntektVilkårsvurdering,

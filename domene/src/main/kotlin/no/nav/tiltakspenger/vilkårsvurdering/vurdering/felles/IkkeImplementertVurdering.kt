@@ -1,4 +1,7 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
+
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 abstract class IkkeImplementertVurdering : Vilkårsvurdering() {
     override var manuellVurdering: Vurdering? = null

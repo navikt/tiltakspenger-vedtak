@@ -1,8 +1,11 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
-sealed class Vilkårsvurdering {
+abstract class Vilkårsvurdering {
     abstract fun lovreferanse(): Lovreferanse
     abstract var manuellVurdering: Vurdering?
 

@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
 
 internal class IntroProgrammetVilkårsvurderingTest {

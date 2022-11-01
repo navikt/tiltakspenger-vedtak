@@ -1,10 +1,15 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.kategori
 
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.IKKE_OPPFYLT
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.KREVER_MANUELL_VURDERING
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall.OPPFYLT
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
-class KommunaleYtelserVilkårsvurderinger(
+class KommunaleYtelserVilkårsvurderingKategori(
     val intro: IntroProgrammetVilkårsvurdering,
     val kvp: KVPVilkårsvurdering
 ) : VilkårsvurderingKategori {

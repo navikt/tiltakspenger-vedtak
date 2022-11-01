@@ -1,8 +1,11 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 // TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !

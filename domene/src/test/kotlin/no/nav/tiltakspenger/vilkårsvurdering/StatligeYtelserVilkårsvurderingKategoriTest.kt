@@ -7,9 +7,12 @@ import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import org.junit.jupiter.api.Test
 
-internal class StatligeYtelserVilkårsvurderingerTest {
+internal class StatligeYtelserVilkårsvurderingKategoriTest {
 
     @Test
     fun `skal ha med alle`() {
@@ -35,13 +38,13 @@ internal class StatligeYtelserVilkårsvurderingerTest {
             vurderingsperiode = vurderingsperiode,
         )
 
-        val statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
+        val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
         )
 
-        statligeYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        statligeYtelserVilkårsvurderinger.vurderinger().size shouldBe 13
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.vurderinger().size shouldBe 13
     }
 
     @Test
@@ -68,12 +71,12 @@ internal class StatligeYtelserVilkårsvurderingerTest {
             vurderingsperiode = vurderingsperiode,
         )
 
-        val statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
+        val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
         )
 
-        statligeYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
 
     }
 
@@ -89,12 +92,12 @@ internal class StatligeYtelserVilkårsvurderingerTest {
             vurderingsperiode = vurderingsperiode,
         )
 
-        val statligeYtelserVilkårsvurderinger = StatligeYtelserVilkårsvurderinger(
+        val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
         )
 
-        statligeYtelserVilkårsvurderinger.samletUtfall() shouldBe Utfall.OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
 
     }
 }

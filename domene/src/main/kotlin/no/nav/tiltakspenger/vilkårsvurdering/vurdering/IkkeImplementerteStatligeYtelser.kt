@@ -1,4 +1,7 @@
-package no.nav.tiltakspenger.vilkårsvurdering
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering
+
+import no.nav.tiltakspenger.vilkårsvurdering.Lovreferanse
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.IkkeImplementertVurdering
 
 class SykepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Infotrygd/Speil"
