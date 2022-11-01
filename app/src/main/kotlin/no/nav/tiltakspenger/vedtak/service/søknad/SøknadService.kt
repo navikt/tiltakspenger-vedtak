@@ -62,11 +62,13 @@ data class KommunaleVilkårsVurderingsKategoriDTO(
 )
 
 data class VilkårsvurderingDTO(
+    val tittel: String,
+    val lovreferanse: String,
     val utfall: UtfallDTO,
-    val vilkår: String,
+    val detaljer: String,
     val periode: PeriodeDTO?,
     val kilde: String,
-    val detaljer: String,
+    val vilkår: String,
 )
 
 enum class UtfallDTO {

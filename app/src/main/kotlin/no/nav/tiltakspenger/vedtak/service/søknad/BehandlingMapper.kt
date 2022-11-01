@@ -97,6 +97,8 @@ class BehandlingMapper {
 
     private fun mapVilkårsvurderingDTO(vurdering: Vurdering) =
         VilkårsvurderingDTO(
+            tittel = vurdering.vilkår.tittel,
+            lovreferanse = vurdering.vilkår.lovreferanse.paragraf,
             utfall = vurdering.utfall.mapToUtfallDTO(),
             periode = vurdering.fom?.let { fom ->
                 PeriodeDTO(
