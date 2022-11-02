@@ -46,6 +46,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Run Snyk to check Docker images for vulnerabilities
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: your/image-to-test
+          args: --severity-threshold=high
+          
       - name: Notify Slack in case of build failure
         if: failure() && github.ref == 'refs/heads/main'
         run: |
