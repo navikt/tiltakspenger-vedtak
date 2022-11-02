@@ -51,9 +51,9 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: your/image-to-test
+          image: ${{ env.IMAGE }}
           args: --severity-threshold=high
-          
+
       - name: Notify Slack in case of build failure
         if: failure() && github.ref == 'refs/heads/main'
         run: |
