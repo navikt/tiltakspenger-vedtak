@@ -9,7 +9,7 @@ abstract class IkkeImplementertVurdering : Vilkårsvurdering() {
         .ifEmpty {
             listOf(
                 Vurdering(
-                    vilkår = lovreferanse(),
+                    vilkår = vilkår(),
                     kilde = kilde(),
                     fom = null,
                     tom = null,

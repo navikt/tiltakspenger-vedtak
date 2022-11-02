@@ -12,7 +12,7 @@ class PensjonsinntektVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode
 ) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
-    override fun lovreferanse(): Vilkår = Vilkår.PENSJONSINNTEKT
+    override fun vilkår(): Vilkår = Vilkår.PENSJONSINNTEKT
 
     override var manuellVurdering: Vurdering? = null
 

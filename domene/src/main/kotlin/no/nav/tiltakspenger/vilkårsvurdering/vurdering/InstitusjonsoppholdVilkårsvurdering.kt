@@ -1,27 +1,28 @@
-package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
+package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import java.time.LocalDate
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 // TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !
 class InstitusjonsoppholdVilkårsvurdering(
     private val søknad: Søknad,
-    private val institusjonsopphold: List<Institusjonsopphold>?,
+    // private val institusjonsopphold: List<Institusjonsopphold>?,
     private val vurderingsperiode: Periode
 ) : Vilkårsvurdering() {
-    override fun lovreferanse(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
+    override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
 
     private val søknadVurdering = lagVurderingFraSøknad()
-    private val inst2Vurderinger = lagVurderingerFraInst2()
+
+    // private val inst2Vurderinger = lagVurderingerFraInst2()
     override var manuellVurdering: Vurdering? = null
 
     override fun detIkkeManuelleUtfallet(): Utfall {
-        val utfall = inst2Vurderinger.map { it.utfall } + søknadVurdering.utfall
+        // val utfall = inst2Vurderinger.map { it.utfall } + søknadVurdering.utfall
+        val utfall = listOf(søknadVurdering.utfall)
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
             utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
@@ -38,6 +39,7 @@ class InstitusjonsoppholdVilkårsvurdering(
     H (Heldøgnpasient), P (Fødsel), R (Opptreningsinstitusjon), S (Soningsfange) eller V (Varetektsfange)
      */
     // TODO: Logikken her må kvalitetssikres
+    /*
     private fun lagVurderingerFraInst2(): List<Vurdering> =
         if (institusjonsopphold == null) {
             listOf(
@@ -77,22 +79,22 @@ class InstitusjonsoppholdVilkårsvurdering(
                     )
                 }
         }
-
+     */
 
     private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
-        vilkår = lovreferanse(),
+        vilkår = vilkår(),
         kilde = SØKNADKILDE,
         fom = null,
         tom = null,
-        utfall = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT,
-        detaljer = "",
+        utfall = if (søknad.oppholdInstitusjon == true) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT,
+        detaljer = "Opphold på ${søknad.typeInstitusjon}", //TODO Skal typeInstitusjon bety noe for utfallet?
     )
 
-    override fun vurderinger(): List<Vurdering> =
-        (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
+    override fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
+    // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
 
     companion object {
         private const val SØKNADKILDE = "SØKNAD"
-        private const val INST2KILDE = "Inst2"
+        // private const val INST2KILDE = "Inst2"
     }
 }

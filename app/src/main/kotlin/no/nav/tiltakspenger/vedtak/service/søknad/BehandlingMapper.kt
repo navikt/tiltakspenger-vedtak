@@ -15,11 +15,11 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
 import java.time.LocalDate
 
 class BehandlingMapper {
@@ -159,7 +159,7 @@ class BehandlingMapper {
             institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
-                institusjonsopphold = emptyList(),
+                // institusjonsopphold = emptyList(),
             )
         )
     )

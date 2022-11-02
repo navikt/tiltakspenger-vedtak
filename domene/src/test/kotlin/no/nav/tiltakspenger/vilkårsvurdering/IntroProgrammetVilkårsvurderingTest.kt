@@ -118,8 +118,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
-        introProgrammetVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
-        introProgrammetVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "3"
+        introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
+        introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT

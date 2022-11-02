@@ -61,8 +61,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger().first().fom shouldBe null
         statligVilkårsvurdering.vurderinger().first().tom shouldBe null
         statligVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
-        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
+        statligVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "1"
     }
 
     @ParameterizedTest
@@ -89,8 +89,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             ),
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
+        statligVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "1"
     }
 
     @ParameterizedTest
@@ -130,7 +130,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             )
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
-        statligVilkårsvurdering.lovreferanse().lovreferanse.paragraf shouldBe "§7"
-        statligVilkårsvurdering.lovreferanse().lovreferanse.ledd shouldBe "1"
+        statligVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
+        statligVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "1"
     }
 }

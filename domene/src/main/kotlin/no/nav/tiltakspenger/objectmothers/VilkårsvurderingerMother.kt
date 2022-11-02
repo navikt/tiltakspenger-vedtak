@@ -5,13 +5,6 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.InstitusjonsoppholdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
@@ -19,6 +12,13 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurd
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 
 private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 
@@ -55,7 +55,7 @@ fun nyInstitusjonsVilkårsvurdering(
         institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
             søknad = søknad,
-            institusjonsopphold = institusjonsopphold,
+            // institusjonsopphold = institusjonsopphold,
         )
     )
 }

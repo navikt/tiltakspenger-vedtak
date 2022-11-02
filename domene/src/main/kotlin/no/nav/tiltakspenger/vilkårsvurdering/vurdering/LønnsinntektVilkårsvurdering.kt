@@ -12,7 +12,7 @@ class LønnsinntektVilkårsvurdering(
     søknad: Søknad,
     vurderingsperiode: Periode
 ) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
-    override fun lovreferanse(): Vilkår = Vilkår.LØNNSINNTEKT
+    override fun vilkår(): Vilkår = Vilkår.LØNNSINNTEKT
 
     private val aInntektVurderinger: List<Vurdering> = lagVurderingerFraAInntekt()
     override var manuellVurdering: Vurdering? = null
@@ -29,7 +29,7 @@ class LønnsinntektVilkårsvurdering(
     private fun lagVurderingerFraAInntekt(): List<Vurdering> =
         listOf(
             Vurdering(
-                vilkår = lovreferanse(),
+                vilkår = vilkår(),
                 kilde = AINNTEKTKILDE,
                 fom = null,
                 tom = null,

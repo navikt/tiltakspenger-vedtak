@@ -10,7 +10,7 @@ class DagpengerVilkårsvurdering(
     private val ytelser: List<YtelseSak>,
     private val vurderingsperiode: Periode,
 ) : StatligArenaYtelseVilkårsvurdering() {
-    override fun lovreferanse(): Vilkår = Vilkår.DAGPENGER
+    override fun vilkår(): Vilkår = Vilkår.DAGPENGER
     override var manuellVurdering: Vurdering? = null
     override val ytelseVurderinger: List<Vurdering> =
         lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.DAGP)

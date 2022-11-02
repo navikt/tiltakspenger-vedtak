@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 abstract class Vilkårsvurdering {
-    abstract fun lovreferanse(): Vilkår
+    abstract fun vilkår(): Vilkår
     abstract var manuellVurdering: Vurdering?
 
     abstract fun vurderinger(): List<Vurdering>
@@ -21,7 +21,7 @@ abstract class Vilkårsvurdering {
         detaljer: String
     ) {
         manuellVurdering = Vurdering(
-            vilkår = lovreferanse(),
+            vilkår = vilkår(),
             kilde = "Saksbehandler",
             fom = fom,
             tom = tom,
