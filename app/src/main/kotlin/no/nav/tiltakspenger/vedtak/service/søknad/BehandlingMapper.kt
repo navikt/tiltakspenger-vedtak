@@ -73,7 +73,7 @@ class BehandlingMapper {
 
     private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori): KommunaleVilkårsVurderingsKategoriDTO {
         return KommunaleVilkårsVurderingsKategoriDTO(
-            tittel = kommunaleYtelserVilkårsvurderingKategori.vilkår().tittel,
+            ytelse = kommunaleYtelserVilkårsvurderingKategori.vilkår().tittel,
             lovreferanse = kommunaleYtelserVilkårsvurderingKategori.vilkår().lovreferanse.paragraf,
             utfall = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO(),
             detaljer = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO().name,
@@ -86,7 +86,7 @@ class BehandlingMapper {
 
     private fun mapVilkårsvurderingKategori(v: VilkårsvurderingKategori): VilkårsVurderingsKategoriDTO =
         VilkårsVurderingsKategoriDTO(
-            tittel = v.vilkår().tittel,
+            ytelse = v.vilkår().tittel,
             lovreferanse = v.vilkår().lovreferanse.paragraf,
             utfall = v.samletUtfall().mapToUtfallDTO(),
             detaljer = v.samletUtfall().mapToUtfallDTO().name,
@@ -97,7 +97,7 @@ class BehandlingMapper {
 
     private fun mapVilkårsvurderingDTO(vurdering: Vurdering) =
         VilkårsvurderingDTO(
-            tittel = vurdering.vilkår.tittel,
+            ytelse = vurdering.vilkår.tittel,
             lovreferanse = vurdering.vilkår.lovreferanse.paragraf,
             utfall = vurdering.utfall.mapToUtfallDTO(),
             periode = vurdering.fom?.let { fom ->

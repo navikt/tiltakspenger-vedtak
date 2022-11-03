@@ -56,7 +56,11 @@ internal fun vedtakApi(
                 søknadRoutes(innloggetSaksbehandlerProvider, søknadService)
             }
             naisRoutes()
-            static("resources/static") {}
+            static("/") {
+                staticBasePackage = "static"
+                resource("index.html")
+                defaultResource("index.html")
+            }
         }
     }
 }
