@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import java.time.LocalDate
 
 abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
     private val søknad: Søknad,
@@ -15,19 +14,16 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
 
     private fun lagVurderingerFraSøknad(): List<Vurdering> =
         søknad.trygdOgPensjon
-            .filter { Periode(it.fom ?: LocalDate.MIN, it.tom ?: LocalDate.MAX).overlapperMed(vurderingsperiode) }
-            // TODO: Filter på utbetaler?
             .map {
                 Vurdering(
                     vilkår = vilkår(),
                     kilde = SØKNADKILDE,
                     fom = it.fom,
                     tom = it.tom,
-                    utfall = Utfall.IKKE_OPPFYLT,
+                    utfall = Utfall.KREVER_MANUELL_VURDERING,
                     detaljer = "${it.prosent} utbetaling fra ${it.utbetaler}",
                 )
             }.ifEmpty {
-                // TODO: Hva hvis det er oppgitt noe i søknaden, men det ikke har overlappende periode?
                 listOf(
                     Vurdering(
                         vilkår = vilkår(),
