@@ -53,7 +53,7 @@ data class VilkårsVurderingsKategoriDTO(
 )
 
 data class KommunaleVilkårsVurderingsKategoriDTO(
-    val tittel: String,
+    val ytelse: String,
     val lovreferanse: String,
     val utfall: UtfallDTO,
     val detaljer: String,
@@ -62,7 +62,7 @@ data class KommunaleVilkårsVurderingsKategoriDTO(
 )
 
 data class VilkårsvurderingDTO(
-    val tittel: String,
+    val ytelse: String,
     val lovreferanse: String,
     val utfall: UtfallDTO,
     val detaljer: String,

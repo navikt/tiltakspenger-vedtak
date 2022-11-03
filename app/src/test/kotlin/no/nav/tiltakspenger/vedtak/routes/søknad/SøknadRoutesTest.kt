@@ -58,7 +58,7 @@ class SøknadRoutesTest {
                 vilkårsvurderinger = listOf()
             ),
             kommunaleYtelser = KommunaleVilkårsVurderingsKategoriDTO(
-                tittel = "",
+                ytelse = "",
                 lovreferanse = "",
                 utfall = UtfallDTO.Uavklart,
                 detaljer = "",
