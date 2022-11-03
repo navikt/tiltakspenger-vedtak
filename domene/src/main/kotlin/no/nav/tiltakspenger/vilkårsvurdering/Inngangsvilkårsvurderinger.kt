@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 
 
-class Vilkårsvurderinger(
+class Inngangsvilkårsvurderinger(
     val statligeYtelser: StatligeYtelserVilkårsvurderingKategori,
     val kommunaleYtelser: KommunaleYtelserVilkårsvurderingKategori,
     val pensjonsordninger: VilkårsvurderingKategori,

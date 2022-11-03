@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
 
-class VilkårsvurderingerTest {
+class InngangsvilkårsvurderingerTest {
 
     @Test
     fun `en vilkårsvurdering med kvp skal gi manuell vurdering`() {

@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
@@ -147,8 +147,8 @@ fun nyVilkårsvurdering(
     institusjonsoppholdVilkårsvurdering: InstitusjonVilkårsvurderingKategori = nyInstitusjonsVilkårsvurdering(
         vurderingsperiode = vurderingsperiode,
     ),
-): Vilkårsvurderinger {
-    return Vilkårsvurderinger(
+): Inngangsvilkårsvurderinger {
+    return Inngangsvilkårsvurderinger(
         statligeYtelser = statligeYtelserVilkårsvurderingKategori,
         kommunaleYtelser = kommunaleYtelserVilkårsvurderingKategori,
         pensjonsordninger = pensjonsinntektVilkårsvurdering,

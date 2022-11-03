@@ -4,8 +4,8 @@ package no.nav.tiltakspenger.vedtak.service.søknad
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
@@ -134,7 +134,7 @@ class BehandlingMapper {
         søker: Søker,
         vurderingsperiode: Periode,
         søknad: Søknad
-    ) = Vilkårsvurderinger(
+    ) = Inngangsvilkårsvurderinger(
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
             aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
             dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
