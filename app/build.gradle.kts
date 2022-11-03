@@ -43,7 +43,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.21.2")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.6.0")
+    implementation("org.flywaydb:flyway-core:9.7.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
