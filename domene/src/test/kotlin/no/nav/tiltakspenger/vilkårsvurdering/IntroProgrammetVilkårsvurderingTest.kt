@@ -124,4 +124,27 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
     }
+
+    @Test
+    fun `Kunne vurdere en søknad med mangelfulle data`() {
+        val søknad = nySøknadMedArenaTiltak(
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = null,
+        )
+
+        val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
+
+        val introProgrammetVilkårsvurdering =
+            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+
+        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
+        introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
+        introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
+        introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
+
+        introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
+    }
 }

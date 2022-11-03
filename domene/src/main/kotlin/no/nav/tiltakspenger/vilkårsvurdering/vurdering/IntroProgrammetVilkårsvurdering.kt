@@ -22,8 +22,15 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
 
     override fun avgjørUtfall(): Utfall {
         if (!søknad.deltarIntroduksjonsprogrammet) return Utfall.OPPFYLT
-        val tom = søknad.introduksjonsprogrammetDetaljer?.tom ?: LocalDate.MAX
-        return if (vurderingsperiode.overlapperMed(Periode(søknad.introduksjonsprogrammetDetaljer!!.fom, tom))) {
+        if (søknad.introduksjonsprogrammetDetaljer == null) {
+            //Dette skal vel ikke skje
+            return Utfall.KREVER_MANUELL_VURDERING
+        }
+        val søknadsperiode = Periode(
+            søknad.introduksjonsprogrammetDetaljer.fom,
+            søknad.introduksjonsprogrammetDetaljer.tom ?: LocalDate.MAX
+        )
+        return if (vurderingsperiode.overlapperMed(søknadsperiode)) {
             Utfall.IKKE_OPPFYLT
         } else {
             Utfall.OPPFYLT
