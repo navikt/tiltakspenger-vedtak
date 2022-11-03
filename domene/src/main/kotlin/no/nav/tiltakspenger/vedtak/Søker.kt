@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -11,6 +12,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit.MONTHS
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
@@ -47,6 +50,40 @@ class Søker private constructor(
             this.tiltak.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
         } else null
 
+    private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate, LocalDate?> {
+        fun tidligsteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
+            (datoer.toList() + dato).filterNotNull().min()
+
+        fun senesteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
+            (datoer.toList() + dato).filterNotNull().max()
+
+        fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
+
+        val søknadsdato: LocalDate = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate()
+        val treMånederFørSøknadsdato: LocalDate = søknadsdato.minus(3, MONTHS)
+
+        val søknadFom: LocalDate = søknad.tiltak.startdato
+        val søknadTom: LocalDate? = søknad.tiltak.sluttdato
+
+        val tiltakFom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.fom
+        val tiltakTom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.tom
+
+        val tidligsteFom: LocalDate = tidligsteDato(søknadFom, tiltakFom)
+
+        val tidligsteFomJustertForLovligTilbakedatering: LocalDate = senesteDato(tidligsteFom, treMånederFørSøknadsdato)
+        val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
+        return Pair(tidligsteFomJustertForLovligTilbakedatering, senesteTom)
+    }
+
+    fun vurderingsperiodeForSøknad(søknad: Søknad): Periode? {
+        val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
+        return senesteTom?.let { Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom) }
+    }
+
+    fun innsamlingsperiodeForSøknad(søknad: Søknad): Periode {
+        val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
+        return Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom ?: LocalDate.MAX)
+    }
 
     constructor(
         ident: String
