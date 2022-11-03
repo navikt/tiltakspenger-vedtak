@@ -86,7 +86,7 @@ class BehandlingMapper {
 
     private fun mapVilkårsvurderingKategori(v: VilkårsvurderingKategori): VilkårsVurderingsKategoriDTO =
         VilkårsVurderingsKategoriDTO(
-            tittel = v.vilkår().tittel,
+            ytelse = v.vilkår().tittel,
             lovreferanse = v.vilkår().lovreferanse.paragraf,
             utfall = v.samletUtfall().mapToUtfallDTO(),
             detaljer = v.samletUtfall().mapToUtfallDTO().name,

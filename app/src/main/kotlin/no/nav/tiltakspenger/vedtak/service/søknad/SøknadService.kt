@@ -45,7 +45,7 @@ data class TiltakDTO(
 )
 
 data class VilkårsVurderingsKategoriDTO(
-    val tittel: String,
+    val ytelse: String,
     val lovreferanse: String,
     val utfall: UtfallDTO,
     val detaljer: String,

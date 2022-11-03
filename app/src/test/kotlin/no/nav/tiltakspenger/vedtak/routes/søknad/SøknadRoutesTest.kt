@@ -1,10 +1,13 @@
 package no.nav.tiltakspenger.vedtak.routes.søknad
 
 import io.kotest.matchers.shouldBe
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
@@ -48,7 +51,7 @@ class SøknadRoutesTest {
             registrerteTiltak = listOf(),
             vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
             statligeYtelser = VilkårsVurderingsKategoriDTO(
-                tittel = "",
+                ytelse = "",
                 lovreferanse = "",
                 utfall = UtfallDTO.Uavklart,
                 detaljer = "",
@@ -63,21 +66,21 @@ class SøknadRoutesTest {
                 kvp = emptyList(),
             ),
             pensjonsordninger = VilkårsVurderingsKategoriDTO(
-                tittel = "",
+                ytelse = "",
                 lovreferanse = "",
                 utfall = UtfallDTO.Uavklart,
                 detaljer = "",
                 vilkårsvurderinger = listOf()
             ),
             lønnsinntekt = VilkårsVurderingsKategoriDTO(
-                tittel = "",
+                ytelse = "",
                 lovreferanse = "",
                 utfall = UtfallDTO.Uavklart,
                 detaljer = "",
                 vilkårsvurderinger = listOf()
             ),
             institusjonsopphold = VilkårsVurderingsKategoriDTO(
-                tittel = "",
+                ytelse = "",
                 lovreferanse = "",
                 utfall = UtfallDTO.Uavklart,
                 detaljer = "",
