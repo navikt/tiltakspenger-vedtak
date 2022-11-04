@@ -36,21 +36,23 @@ class InstitusjonsoppholdVilkårsvurdering(
         fom = null,
         tom = null,
         utfall = if (søknad.oppholdInstitusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
-        detaljer = "Opphold på ${søknad.typeInstitusjon}", //TODO Skal typeInstitusjon bety noe for utfallet?
+        detaljer = "Opphold på ${søknad.typeInstitusjon}",
     )
 
-
-    // TODO typeInstitusjon skal bli en enum
+    // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:
+    // Mulig verdier er "barneverninstitusjon", "overgangsbolig" og "annet".
+    // Regler hentet fra https://confluence.adeo.no/display/POAO/Avklaringsbehov+som+dukker+opp+mens+utviklerne+koder:
     // typeInstitusjon == null -> Manuell behandling
     // Overgangsbolig = oppfylt
     // Barneverninstitusjon = oppfylt
     // Annen type institusjon med fri kost og losji = Manuell behandling
+    // TODO typeInstitusjon bør bli en enum
     private fun utfallFraTypeInstitusjon(typeInstitusjon: String?): Utfall =
         when (typeInstitusjon) {
             null -> Utfall.KREVER_MANUELL_VURDERING
-            "Overgangsbolig" -> Utfall.OPPFYLT
-            "Barneverninstitusjon" -> Utfall.OPPFYLT
-            "Annen type" -> Utfall.KREVER_MANUELL_VURDERING
+            "overgangsbolig" -> Utfall.OPPFYLT
+            "barneverninstitusjon" -> Utfall.OPPFYLT
+            "annet" -> Utfall.KREVER_MANUELL_VURDERING
             else -> Utfall.KREVER_MANUELL_VURDERING
         }
 
