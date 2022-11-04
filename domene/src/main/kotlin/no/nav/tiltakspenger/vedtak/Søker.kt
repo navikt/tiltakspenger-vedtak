@@ -11,6 +11,20 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.vilkårsvurdering.Behandling
+import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.MONTHS
@@ -38,6 +52,7 @@ class Søker private constructor(
         private set
     var ytelser: List<YtelseSak> = ytelser
         private set
+    var behandlinger: List<Behandling> = emptyList()
 
     private val observers = mutableSetOf<SøkerObserver>()
 
@@ -84,6 +99,43 @@ class Søker private constructor(
         val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
         return Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom ?: LocalDate.MAX)
     }
+
+    fun vilkårsvurderinger(søknadId: String): Inngangsvilkårsvurderinger? {
+        val søknad = this.søknader.firstOrNull { it.søknadId == søknadId }
+        val vurderingsperiode = søknad?.let { Periode(it.tiltak.startdato, it.tiltak.sluttdato ?: LocalDate.MAX) }
+        return vurderingsperiode?.let { vilkårsvurderinger(it, søknad) }
+    }
+
+    fun vilkårsvurderinger(vurderingsperiode: Periode, søknad: Søknad): Inngangsvilkårsvurderinger =
+        Inngangsvilkårsvurderinger(
+            statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
+                aap = AAPVilkårsvurdering(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
+                dagpenger = DagpengerVilkårsvurdering(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
+            ),
+            kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
+                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+            ),
+            pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
+                pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
+                    søknad = søknad,
+                    vurderingsperiode = vurderingsperiode,
+                )
+            ),
+            lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
+                lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
+                    søknad = søknad,
+                    vurderingsperiode = vurderingsperiode,
+                )
+            ),
+            institusjonopphold = InstitusjonVilkårsvurderingKategori(
+                institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
+                    søknad = søknad,
+                    vurderingsperiode = vurderingsperiode,
+                    // institusjonsopphold = emptyList(),
+                )
+            )
+        )
 
     constructor(
         ident: String

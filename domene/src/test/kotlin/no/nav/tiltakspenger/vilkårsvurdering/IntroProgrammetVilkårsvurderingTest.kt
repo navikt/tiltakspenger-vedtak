@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
@@ -91,10 +91,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
                 utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             )
-        introProgrammetVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
-            vurderingSøknad,
-            vurderingSaksbehandler
-        )
+        introProgrammetVilkårsvurdering.vurderinger().size shouldBe 2
+        introProgrammetVilkårsvurdering.vurderinger().first { it.kilde == "Søknad" }
+            .shouldBeEqualToIgnoringFields(vurderingSøknad, Vurdering::tidspunkt)
+        introProgrammetVilkårsvurdering.vurderinger().first { it.kilde == "Saksbehandler" }
+            .shouldBeEqualToIgnoringFields(vurderingSaksbehandler, Vurdering::tidspunkt)
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
     }

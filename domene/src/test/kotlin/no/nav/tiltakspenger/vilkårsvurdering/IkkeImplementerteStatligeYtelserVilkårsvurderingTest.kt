@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
+import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import org.junit.jupiter.api.Test
@@ -27,13 +28,15 @@ internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
         val vv = SykepengerVilkårsvurdering()
         val vurderinger = vv.vurderinger()
         vurderinger.size shouldBe 1
-        vurderinger.first() shouldBe Vurdering(
-            vilkår = Vilkår.SYKEPENGER,
-            kilde = "Infotrygd/Speil",
-            fom = null,
-            tom = null,
-            utfall = Utfall.IKKE_IMPLEMENTERT,
-            detaljer = ""
+        vurderinger.first().shouldBeEqualToIgnoringFields(
+            Vurdering(
+                vilkår = Vilkår.SYKEPENGER,
+                kilde = "Infotrygd/Speil",
+                fom = null,
+                tom = null,
+                utfall = Utfall.IKKE_IMPLEMENTERT,
+                detaljer = ""
+            ), Vurdering::tidspunkt
         )
     }
 }

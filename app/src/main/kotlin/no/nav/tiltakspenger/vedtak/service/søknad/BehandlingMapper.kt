@@ -4,22 +4,10 @@ package no.nav.tiltakspenger.vedtak.service.søknad
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import java.time.LocalDate
 
 class BehandlingMapper {
@@ -134,35 +122,7 @@ class BehandlingMapper {
         søker: Søker,
         vurderingsperiode: Periode,
         søknad: Søknad
-    ) = Inngangsvilkårsvurderinger(
-        statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
-            aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
-            dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
-        ),
-        kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
-            intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-            kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-        ),
-        pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
-            pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
-                søknad = søknad,
-                vurderingsperiode = vurderingsperiode,
-            )
-        ),
-        lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
-            lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
-                søknad = søknad,
-                vurderingsperiode = vurderingsperiode,
-            )
-        ),
-        institusjonopphold = InstitusjonVilkårsvurderingKategori(
-            institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
-                søknad = søknad,
-                vurderingsperiode = vurderingsperiode,
-                // institusjonsopphold = emptyList(),
-            )
-        )
-    )
+    ) = søker.vilkårsvurderinger(vurderingsperiode, søknad)
 
     private fun Utfall.mapToUtfallDTO(): UtfallDTO {
         return when (this) {
