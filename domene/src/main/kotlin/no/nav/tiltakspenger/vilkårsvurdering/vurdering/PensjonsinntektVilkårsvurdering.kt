@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFraSøknadVilkårsvurdering
 
-// TODO: Logikken her må kvalitetssikres
 class PensjonsinntektVilkårsvurdering(
     private val søknad: Søknad,
     private val vurderingsperiode: Periode

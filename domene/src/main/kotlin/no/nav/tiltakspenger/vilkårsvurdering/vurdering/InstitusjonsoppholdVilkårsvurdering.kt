@@ -30,6 +30,30 @@ class InstitusjonsoppholdVilkårsvurdering(
         }
     }
 
+    private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
+        vilkår = vilkår(),
+        kilde = SØKNADKILDE,
+        fom = null,
+        tom = null,
+        utfall = if (søknad.oppholdInstitusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
+        detaljer = "Opphold på ${søknad.typeInstitusjon}", //TODO Skal typeInstitusjon bety noe for utfallet?
+    )
+
+
+    // TODO typeInstitusjon skal bli en enum
+    // typeInstitusjon == null -> Manuell behandling
+    // Overgangsbolig = oppfylt
+    // Barneverninstitusjon = oppfylt
+    // Annen type institusjon med fri kost og losji = Manuell behandling
+    private fun utfallFraTypeInstitusjon(typeInstitusjon: String?): Utfall =
+        when (typeInstitusjon) {
+            null -> Utfall.KREVER_MANUELL_VURDERING
+            "Overgangsbolig" -> Utfall.OPPFYLT
+            "Barneverninstitusjon" -> Utfall.OPPFYLT
+            "Annen type" -> Utfall.KREVER_MANUELL_VURDERING
+            else -> Utfall.KREVER_MANUELL_VURDERING
+        }
+
     /*
     Institusjonstype:
     Hvilken type institusjon oppholdet var registrert på.
@@ -80,15 +104,6 @@ class InstitusjonsoppholdVilkårsvurdering(
                 }
         }
      */
-
-    private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
-        vilkår = vilkår(),
-        kilde = SØKNADKILDE,
-        fom = null,
-        tom = null,
-        utfall = if (søknad.oppholdInstitusjon == true) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT,
-        detaljer = "Opphold på ${søknad.typeInstitusjon}", //TODO Skal typeInstitusjon bety noe for utfallet?
-    )
 
     override fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
     // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
