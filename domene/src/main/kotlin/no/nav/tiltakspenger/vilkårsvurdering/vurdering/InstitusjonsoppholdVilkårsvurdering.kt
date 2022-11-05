@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -9,8 +8,9 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 // TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !
 class InstitusjonsoppholdVilkårsvurdering(
-    private val søknad: Søknad,
+    private val oppholdInstitusjon: Boolean?,
     // private val institusjonsopphold: List<Institusjonsopphold>?,
+    private val typeInstitusjon: String?,
     private val vurderingsperiode: Periode
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
@@ -35,8 +35,8 @@ class InstitusjonsoppholdVilkårsvurdering(
         kilde = SØKNADKILDE,
         fom = null,
         tom = null,
-        utfall = if (søknad.oppholdInstitusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
-        detaljer = "Opphold på ${søknad.typeInstitusjon}",
+        utfall = if (oppholdInstitusjon == true) utfallFraTypeInstitusjon(typeInstitusjon) else Utfall.OPPFYLT,
+        detaljer = "Opphold på ${typeInstitusjon}",
     )
 
     // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:

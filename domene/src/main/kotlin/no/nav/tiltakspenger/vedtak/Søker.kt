@@ -113,8 +113,15 @@ class Søker private constructor(
                 dagpenger = DagpengerVilkårsvurdering(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
             ),
             kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+                intro = IntroProgrammetVilkårsvurdering(
+                    deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                    introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                    vurderingsperiode = vurderingsperiode
+                ),
+                kvp = KVPVilkårsvurdering(
+                    deltarKvp = søknad.deltarKvp,
+                    vurderingsperiode = vurderingsperiode
+                ),
             ),
             pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
                 pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
@@ -124,13 +131,14 @@ class Søker private constructor(
             ),
             lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
                 lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
-                    søknad = søknad,
+                    trygdOgPensjon = søknad.trygdOgPensjon,
                     vurderingsperiode = vurderingsperiode,
                 )
             ),
             institusjonopphold = InstitusjonVilkårsvurderingKategori(
                 institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
-                    søknad = søknad,
+                    oppholdInstitusjon = søknad.oppholdInstitusjon,
+                    typeInstitusjon = søknad.typeInstitusjon,
                     vurderingsperiode = vurderingsperiode,
                     // institusjonsopphold = emptyList(),
                 )

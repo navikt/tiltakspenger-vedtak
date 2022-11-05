@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -44,7 +45,10 @@ internal class LagreBehandlingTest {
             utfall = Utfall.OPPFYLT,
             detaljer = "detaljer"
         )
-        val behandling = Behandling(søker.vilkårsvurderinger(søknad.søknadId)!!)
+        val behandling = Behandling(
+            id = BehandlingId.random(),
+            inngangsvilkårsvurderinger = søker.vilkårsvurderinger(søknad.søknadId)!!
+        )
         søker.behandlinger = listOf(behandling)
 
         søkerRepo.lagre(søker)

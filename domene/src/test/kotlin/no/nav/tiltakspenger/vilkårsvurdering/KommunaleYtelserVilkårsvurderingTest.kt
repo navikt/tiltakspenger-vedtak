@@ -21,10 +21,17 @@ class KommunaleYtelserVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering(
+                deltarKvp = søknad.deltarKvp,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         val kommunaleYtelserVilkårsvurderingKategori =
             KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
@@ -41,10 +48,17 @@ class KommunaleYtelserVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering(
+                deltarKvp = søknad.deltarKvp,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         val kommunaleYtelserVilkårsvurderingKategori =
             KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)

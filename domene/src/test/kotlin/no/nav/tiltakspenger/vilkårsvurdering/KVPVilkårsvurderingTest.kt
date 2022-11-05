@@ -20,7 +20,10 @@ internal class KVPVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering(
+                deltarKvp = søknad.deltarKvp,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         kvpVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         kvpVilkårsvurdering.vurderinger().first().fom shouldBe null
@@ -43,7 +46,10 @@ internal class KVPVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering(
+                deltarKvp = søknad.deltarKvp,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         kvpVilkårsvurdering.settManuellVurdering(
             fom = 1.januar(2022),

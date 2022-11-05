@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFraSøknadVilkårsvurdering
 
 class LønnsinntektVilkårsvurdering(
-    søknad: Søknad,
+    trygdOgPensjon: List<TrygdOgPensjon>,
     vurderingsperiode: Periode
-) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
+) : TrygdOgPensjonFraSøknadVilkårsvurdering(trygdOgPensjon, vurderingsperiode) {
     override fun vilkår(): Vilkår = Vilkår.LØNNSINNTEKT
 
     private val aInntektVurderinger: List<Vurdering> = lagVurderingerFraAInntekt()

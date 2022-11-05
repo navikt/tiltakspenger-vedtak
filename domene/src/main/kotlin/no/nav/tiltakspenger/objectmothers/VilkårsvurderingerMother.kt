@@ -41,7 +41,7 @@ fun nyLønnsinntektVilkårsvurdering(
     return LønnsinntektVilkårsvurderingKategori(
         lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
+            trygdOgPensjon = søknad.trygdOgPensjon,
         )
     )
 }
@@ -53,8 +53,9 @@ fun nyInstitusjonsVilkårsvurdering(
 ): InstitusjonVilkårsvurderingKategori {
     return InstitusjonVilkårsvurderingKategori(
         institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
+            oppholdInstitusjon = søknad.oppholdInstitusjon,
+            typeInstitusjon = søknad.typeInstitusjon,
             vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
             // institusjonsopphold = institusjonsopphold,
         )
     )
@@ -100,7 +101,8 @@ fun nyIntroprogrammetVilkårsvurdering(
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): IntroProgrammetVilkårsvurdering {
     return IntroProgrammetVilkårsvurdering(
-        søknad = søknad,
+        deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+        introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
         vurderingsperiode = vurderingsperiode,
     )
 }
@@ -110,7 +112,7 @@ fun nyKvpVilkårsvurdering(
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): KVPVilkårsvurdering {
     return KVPVilkårsvurdering(
-        søknad = søknad,
+        deltarKvp = søknad.deltarKvp,
         vurderingsperiode = vurderingsperiode,
     )
 }

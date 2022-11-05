@@ -1,12 +1,11 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 abstract class KommunalYtelseVilkårsvurdering(
-    protected val søknad: Søknad,
+//    protected val søknad: Søknad,
     protected val vurderingsperiode: Periode,
 ) : Vilkårsvurdering() {
     companion object {

@@ -1,19 +1,19 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
-    private val søknad: Søknad,
+    private val trygdOgPensjon: List<TrygdOgPensjon>,
     private val vurderingsperiode: Periode
 ) : Vilkårsvurdering() {
 
     protected val søknadVurderinger: List<Vurdering> = lagVurderingerFraSøknad()
 
     private fun lagVurderingerFraSøknad(): List<Vurdering> =
-        søknad.trygdOgPensjon
+        trygdOgPensjon
             .map {
                 Vurdering(
                     vilkår = vilkår(),

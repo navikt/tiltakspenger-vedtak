@@ -25,7 +25,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
@@ -45,7 +49,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode
+            )
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
@@ -65,7 +73,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         introProgrammetVilkårsvurdering.settManuellVurdering(
             fom = 1.januar(2022),
@@ -113,7 +125,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
@@ -136,7 +152,11 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering(
+                deltarIntroduksjonsprogrammet = søknad.deltarIntroduksjonsprogrammet,
+                introduksjonsprogrammetDetaljer = søknad.introduksjonsprogrammetDetaljer,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
