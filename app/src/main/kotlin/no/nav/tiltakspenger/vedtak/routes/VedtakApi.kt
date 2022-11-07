@@ -20,6 +20,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
@@ -54,6 +55,7 @@ internal fun vedtakApi(
             authenticate("saksbehandling") {
                 søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
                 søknadRoutes(innloggetSaksbehandlerProvider, søknadService)
+                saksbehandlerRoutes(innloggetSaksbehandlerProvider)
             }
             naisRoutes()
             static("/") {
