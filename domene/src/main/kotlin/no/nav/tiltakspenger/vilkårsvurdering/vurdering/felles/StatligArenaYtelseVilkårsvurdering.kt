@@ -32,7 +32,7 @@ abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
                 (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
             ).overlapperMed(vurderingsperiode)
         }
-        .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
+        //.filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
         .filter { it.ytelsestype == type }
         .map {
             Vurdering(
@@ -40,7 +40,7 @@ abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
                 kilde = "Arena",
                 fom = it.fomGyldighetsperiode.toLocalDate(),
                 tom = it.tomGyldighetsperiode?.toLocalDate(),
-                utfall = Utfall.IKKE_OPPFYLT,
+                utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "",
             )
         }.ifEmpty {

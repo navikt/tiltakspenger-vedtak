@@ -1,16 +1,18 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 
 
 class Inngangsvilkårsvurderinger(
     val statligeYtelser: StatligeYtelserVilkårsvurderingKategori,
     val kommunaleYtelser: KommunaleYtelserVilkårsvurderingKategori,
-    val pensjonsordninger: VilkårsvurderingKategori,
-    val lønnsinntekt: VilkårsvurderingKategori,
-    val institusjonopphold: VilkårsvurderingKategori,
+    val pensjonsordninger: PensjonsinntektVilkårsvurderingKategori,
+    val lønnsinntekt: LønnsinntektVilkårsvurderingKategori,
+    val institusjonopphold: InstitusjonVilkårsvurderingKategori,
 ) {
     fun samletUtfall(): Utfall {
         val utfall =

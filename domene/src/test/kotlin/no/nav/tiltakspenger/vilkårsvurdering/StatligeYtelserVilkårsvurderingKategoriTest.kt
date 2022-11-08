@@ -43,7 +43,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             dagpenger = dagpengerVilkårsvurdering,
         )
 
-        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
         statligeYtelserVilkårsvurderingKategori.vurderinger().size shouldBe 13
     }
 
@@ -76,7 +76,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             dagpenger = dagpengerVilkårsvurdering,
         )
 
-        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
 
     }
 

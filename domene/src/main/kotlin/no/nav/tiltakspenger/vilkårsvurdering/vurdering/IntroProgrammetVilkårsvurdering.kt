@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.KommunalYtelseVilkårsvurdering
-import java.time.LocalDate
 
 class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
@@ -20,22 +19,8 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
         detaljer = "",
     )
 
-    override fun avgjørUtfall(): Utfall {
-        if (!søknad.deltarIntroduksjonsprogrammet) return Utfall.OPPFYLT
-        if (søknad.introduksjonsprogrammetDetaljer == null) {
-            //Dette skal vel ikke skje
-            return Utfall.KREVER_MANUELL_VURDERING
-        }
-        val søknadsperiode = Periode(
-            søknad.introduksjonsprogrammetDetaljer.fom,
-            søknad.introduksjonsprogrammetDetaljer.tom ?: LocalDate.MAX
-        )
-        return if (vurderingsperiode.overlapperMed(søknadsperiode)) {
-            Utfall.IKKE_OPPFYLT
-        } else {
-            Utfall.OPPFYLT
-        }
-    }
+    override fun avgjørUtfall(): Utfall =
+        if (!søknad.deltarIntroduksjonsprogrammet) Utfall.OPPFYLT else Utfall.KREVER_MANUELL_VURDERING
 
     override fun vilkår() = Vilkår.INTROPROGRAMMET
 }

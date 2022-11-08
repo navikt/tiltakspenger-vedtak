@@ -54,9 +54,8 @@ class InngangsvilkårsvurderingerTest {
             )
         )
 
-        vilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().fom shouldBe vurderingsperiode.fra
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().tom shouldBe vurderingsperiode.til
+        vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().size shouldBe 0
     }
 
     @Test
@@ -79,11 +78,8 @@ class InngangsvilkårsvurderingerTest {
             )
         )
 
-        vilkårsvurderinger.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().fom shouldBe 3.februar(2022)
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().tom shouldBe 15.februar(2022)
-        vilkårsvurderinger.vurderinger().ikkeOppfylte().first().vilkår shouldBe Vilkår.DAGPENGER
-
+        vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
+        vilkårsvurderinger.vurderinger().ikkeOppfylte().size shouldBe 0
     }
 
     @Test
