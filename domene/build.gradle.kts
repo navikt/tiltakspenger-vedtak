@@ -1,4 +1,4 @@
-val jacksonVersion = "2.13.4"
+val jacksonVersion = "2.14.0"
 val kotestVersion = "5.5.4"
 
 dependencies {
