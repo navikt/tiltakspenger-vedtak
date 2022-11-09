@@ -1,3 +1,8 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-data class Behandling(val inngangsvilkårsvurderinger: Inngangsvilkårsvurderinger)
+import no.nav.tiltakspenger.felles.BehandlingId
+
+data class Behandling(
+    val id: BehandlingId,
+    val inngangsvilkårsvurderinger: Inngangsvilkårsvurderinger,
+)

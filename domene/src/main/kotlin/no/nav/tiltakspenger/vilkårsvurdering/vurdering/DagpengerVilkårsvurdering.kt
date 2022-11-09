@@ -7,11 +7,12 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.StatligArenaYtelseVilkårsvurdering
 
 class DagpengerVilkårsvurdering(
-    private val ytelser: List<YtelseSak>,
-    private val vurderingsperiode: Periode,
+    override var vurderinger: List<Vurdering> = emptyList(),
 ) : StatligArenaYtelseVilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.DAGPENGER
-    override var manuellVurdering: Vurdering? = null
-    override val ytelseVurderinger: List<Vurdering> =
-        lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.DAGP)
+
+    fun leggTilFakta(ytelser: List<YtelseSak>, vurderingsperiode: Periode): DagpengerVilkårsvurdering {
+        vurderinger = lagYtelseVurderinger(ytelser, vurderingsperiode, YtelseSak.YtelseSakYtelsetype.DAGP)
+        return this
+    }
 }

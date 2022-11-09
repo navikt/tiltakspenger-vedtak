@@ -40,6 +40,7 @@ class Søker private constructor(
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
+    behandlinger: List<Behandling>,
     val aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
     var tilstand: Tilstand = tilstand
@@ -52,7 +53,7 @@ class Søker private constructor(
         private set
     var ytelser: List<YtelseSak> = ytelser
         private set
-    var behandlinger: List<Behandling> = emptyList()
+    var behandlinger: List<Behandling> = behandlinger
 
     private val observers = mutableSetOf<SøkerObserver>()
 
@@ -109,31 +110,25 @@ class Søker private constructor(
     fun vilkårsvurderinger(vurderingsperiode: Periode, søknad: Søknad): Inngangsvilkårsvurderinger =
         Inngangsvilkårsvurderinger(
             statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
-                aap = AAPVilkårsvurdering(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
-                dagpenger = DagpengerVilkårsvurdering(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
+                aap = AAPVilkårsvurdering().leggTilFakta(ytelser = this.ytelser, vurderingsperiode = vurderingsperiode),
+                dagpenger = DagpengerVilkårsvurdering().leggTilFakta(
+                    ytelser = this.ytelser,
+                    vurderingsperiode = vurderingsperiode
+                ),
             ),
             kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
-                intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
-                kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
+                intro = IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad),
+                kvp = KVPVilkårsvurdering().leggTilSøknad(søknad),
             ),
             pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
-                pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
-                    søknad = søknad,
-                    vurderingsperiode = vurderingsperiode,
-                )
+                pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering().leggTilSøknad(søknad)
             ),
             lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
-                lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
-                    søknad = søknad,
-                    vurderingsperiode = vurderingsperiode,
-                )
+                lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering().leggTilSøknad(søknad)
             ),
             institusjonopphold = InstitusjonVilkårsvurderingKategori(
-                institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
-                    søknad = søknad,
-                    vurderingsperiode = vurderingsperiode,
-                    // institusjonsopphold = emptyList(),
-                )
+                institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering()
+                    .leggTilSøknad(søknad)
             )
         )
 
@@ -147,6 +142,7 @@ class Søker private constructor(
         personopplysninger = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
+        behandlinger = mutableListOf(),
         aktivitetslogg = Aktivitetslogg()
     )
 
@@ -162,6 +158,7 @@ class Søker private constructor(
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
             personopplysninger: List<Personopplysninger>,
+            behandlinger: List<Behandling>,
             aktivitetslogg: Aktivitetslogg,
         ): Søker {
             return Søker(
@@ -172,6 +169,7 @@ class Søker private constructor(
                 personopplysninger = personopplysninger,
                 tiltak = tiltak,
                 ytelser = ytelser,
+                behandlinger = behandlinger,
                 aktivitetslogg = aktivitetslogg,
             )
         }

@@ -4,22 +4,11 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.VurderingType
 import java.time.LocalDate
 
 abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
-    abstract val ytelseVurderinger: List<Vurdering>
-    abstract override var manuellVurdering: Vurdering?
-
-    override fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
-
-    override fun detIkkeManuelleUtfallet(): Utfall {
-        val utfall = ytelseVurderinger.map { it.utfall }
-        return when {
-            utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
-            utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
-            else -> Utfall.OPPFYLT
-        }
-    }
+    abstract override var vurderinger: List<Vurdering>
 
     fun lagYtelseVurderinger(
         ytelser: List<YtelseSak>,
@@ -37,6 +26,7 @@ abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
         .map {
             Vurdering(
                 vilkår = vilkår(),
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Arena",
                 fom = it.fomGyldighetsperiode.toLocalDate(),
                 tom = it.tomGyldighetsperiode?.toLocalDate(),
@@ -47,6 +37,7 @@ abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
             listOf(
                 Vurdering(
                     vilkår = vilkår(),
+                    vurderingType = VurderingType.AUTOMATISK,
                     kilde = "Arena",
                     fom = null,
                     tom = null,
@@ -55,4 +46,15 @@ abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
                 )
             )
         }
+
+    fun ikkeImplementertVurdering(kilde: String) =
+        Vurdering(
+            vilkår = vilkår(),
+            vurderingType = VurderingType.AUTOMATISK,
+            kilde = kilde,
+            fom = null,
+            tom = null,
+            utfall = Utfall.IKKE_IMPLEMENTERT,
+            detaljer = ""
+        )
 }

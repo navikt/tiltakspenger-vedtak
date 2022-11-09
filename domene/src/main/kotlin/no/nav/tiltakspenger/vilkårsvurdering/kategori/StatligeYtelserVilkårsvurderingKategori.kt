@@ -20,20 +20,32 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføretrygdVilkårsvurdering
 
+@Suppress("LongParameterList")
 class StatligeYtelserVilkårsvurderingKategori(
     val aap: AAPVilkårsvurdering,
     val dagpenger: DagpengerVilkårsvurdering,
-    val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
-    val uføretrygd: UføretrygdVilkårsvurdering = UføretrygdVilkårsvurdering(),
-    val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
-    val pleiepenger: PleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(),
-    val foreldrepenger: ForeldrepengerVilkårsvurdering = ForeldrepengerVilkårsvurdering(),
-    val svangerskapspenger: SvangerskapspengerVilkårsvurdering = SvangerskapspengerVilkårsvurdering(),
-    val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering = GjenlevendepensjonVilkårsvurdering(),
-    val supplerendeStønad: SupplerendeStønadVilkårsvurdering = SupplerendeStønadVilkårsvurdering(),
-    val alderspensjon: AlderspensjonVilkårsvurdering = AlderspensjonVilkårsvurdering(),
-    val opplæringspenger: OpplæringspengerVilkårsvurdering = OpplæringspengerVilkårsvurdering(),
-    val omsorgspenger: OmsorgspengerVilkårsvurdering = OmsorgspengerVilkårsvurdering(),
+    val sykepenger: SykepengerVilkårsvurdering =
+        SykepengerVilkårsvurdering().leggTilIkkeImplementert(),
+    val uføretrygd: UføretrygdVilkårsvurdering =
+        UføretrygdVilkårsvurdering().leggTilIkkeImplementert(),
+    val overgangsstønad: OvergangsstønadVilkårsvurdering =
+        OvergangsstønadVilkårsvurdering().leggTilIkkeImplementert(),
+    val pleiepenger: PleiepengerVilkårsvurdering =
+        PleiepengerVilkårsvurdering().leggTilIkkeImplementert(),
+    val foreldrepenger: ForeldrepengerVilkårsvurdering =
+        ForeldrepengerVilkårsvurdering().leggTilIkkeImplementert(),
+    val svangerskapspenger: SvangerskapspengerVilkårsvurdering =
+        SvangerskapspengerVilkårsvurdering().leggTilIkkeImplementert(),
+    val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering =
+        GjenlevendepensjonVilkårsvurdering().leggTilIkkeImplementert(),
+    val supplerendeStønad: SupplerendeStønadVilkårsvurdering =
+        SupplerendeStønadVilkårsvurdering().leggTilIkkeImplementert(),
+    val alderspensjon: AlderspensjonVilkårsvurdering =
+        AlderspensjonVilkårsvurdering().leggTilIkkeImplementert(),
+    val opplæringspenger: OpplæringspengerVilkårsvurdering =
+        OpplæringspengerVilkårsvurdering().leggTilIkkeImplementert(),
+    val omsorgspenger: OmsorgspengerVilkårsvurdering =
+        OmsorgspengerVilkårsvurdering().leggTilIkkeImplementert(),
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.STATLIGEYTELSER
 

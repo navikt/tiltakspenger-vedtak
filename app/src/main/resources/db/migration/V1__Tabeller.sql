@@ -213,3 +213,22 @@ CREATE TABLE aktivitet
     detaljer         JSONB                    NULL,
     kontekster       JSONB                    NOT NULL
 );
+
+CREATE TABLE behandling
+(
+    id       VARCHAR PRIMARY KEY,
+    søker_id VARCHAR NOT NULL REFERENCES søker (id)
+);
+
+CREATE TABLE vurdering
+(
+    behandling_id VARCHAR                  NOT NULL REFERENCES behandling (id),
+    vilkår        VARCHAR                  NOT NULL,
+    vurderingtype VARCHAR                  NOT NULL,
+    kilde         VARCHAR                  NOT NULL,
+    fom           DATE                     NULL,
+    tom           DATE                     NULL,
+    utfall        VARCHAR                  NOT NULL,
+    detaljer      VARCHAR                  NOT NULL,
+    tidsstempel   TIMESTAMP WITH TIME ZONE NOT NULL
+);

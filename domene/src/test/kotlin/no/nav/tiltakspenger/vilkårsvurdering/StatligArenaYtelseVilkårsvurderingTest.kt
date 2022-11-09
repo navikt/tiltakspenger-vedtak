@@ -33,8 +33,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         private fun medOverlapp() = testdata(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
 
         private fun testdata(vurderingsperiode: Periode) = listOf(
-            Arguments.of(AAPVilkårsvurdering(ytelser(AA), vurderingsperiode)),
-            Arguments.of(DagpengerVilkårsvurdering(ytelser(DAGP), vurderingsperiode))
+            Arguments.of(AAPVilkårsvurdering().leggTilFakta(ytelser(AA), vurderingsperiode)),
+            Arguments.of(DagpengerVilkårsvurdering().leggTilFakta(ytelser(DAGP), vurderingsperiode))
         )
 
         private fun ytelser(type: YtelseSak.YtelseSakYtelsetype) = listOf(
@@ -73,6 +73,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -81,6 +82,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
@@ -106,6 +108,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -114,6 +117,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
@@ -122,6 +126,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Saksbehandler",
                 fom = 19.januar(2022),
                 tom = 28.mars(2022),

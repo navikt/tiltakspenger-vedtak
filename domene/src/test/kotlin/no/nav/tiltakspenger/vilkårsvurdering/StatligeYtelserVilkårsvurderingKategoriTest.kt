@@ -17,7 +17,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
     @Test
     fun `skal ha med alle`() {
         val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAPVilkårsvurdering(
+        val aapVilkårsvurdering = AAPVilkårsvurdering().leggTilFakta(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.januarDateTime(2022),
@@ -27,7 +27,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
             vurderingsperiode = vurderingsperiode,
         )
-        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
+        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering().leggTilFakta(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.februarDateTime(2022),
@@ -50,7 +50,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
     @Test
     fun `Samlet utfall for statlige ytelser, hvis 1 er ikke godkjent er ingen godkjent`() {
         val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAPVilkårsvurdering(
+        val aapVilkårsvurdering = AAPVilkårsvurdering().leggTilFakta(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.januarDateTime(2022),
@@ -60,7 +60,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
             vurderingsperiode = vurderingsperiode,
         )
-        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
+        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering().leggTilFakta(
             ytelser = listOf(
                 ytelseSak(
                     fomGyldighetsperiode = 1.februarDateTime(2022),
@@ -83,11 +83,11 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
     @Test
     fun `Samlet utfall for statlige ytelser, hvis begge er godkjent er alle godkjent`() {
         val vurderingsperiode = Periode(1.februar(2022), 20.februar(2022))
-        val aapVilkårsvurdering = AAPVilkårsvurdering(
+        val aapVilkårsvurdering = AAPVilkårsvurdering().leggTilFakta(
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )
-        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering(
+        val dagpengerVilkårsvurdering = DagpengerVilkårsvurdering().leggTilFakta(
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )

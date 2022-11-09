@@ -2,8 +2,6 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
@@ -22,10 +20,13 @@ internal class IntroProgrammetVilkårsvurderingTest {
             ),
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(
+                søknad = søknad,
+//                vurderingsperiode = vurderingsperiode,
+            )
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
@@ -42,10 +43,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
             introduksjonsprogrammetDetaljer = null,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
@@ -62,10 +63,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
             introduksjonsprogrammetDetaljer = null,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         introProgrammetVilkårsvurdering.settManuellVurdering(
             fom = 1.januar(2022),
@@ -76,6 +77,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
         val vurderingSøknad = Vurdering(
             vilkår = Vilkår.INTROPROGRAMMET,
+            vurderingType = VurderingType.AUTOMATISK,
             kilde = "Søknad",
             fom = null,
             tom = null,
@@ -85,6 +87,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingSaksbehandler =
             Vurdering(
                 vilkår = Vilkår.INTROPROGRAMMET,
+                vurderingType = VurderingType.MANUELL,
                 kilde = "Saksbehandler",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -110,10 +113,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
             ),
         )
 
-        val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
+//        val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
@@ -133,10 +136,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
             introduksjonsprogrammetDetaljer = null,
         )
 
-        val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
+//        val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null

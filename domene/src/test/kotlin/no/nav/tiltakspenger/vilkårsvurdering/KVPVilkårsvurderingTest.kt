@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.oktober
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
@@ -17,10 +16,10 @@ internal class KVPVilkårsvurderingTest {
             deltarKvp = true,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering().leggTilSøknad(søknad)
 
         kvpVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         kvpVilkårsvurdering.vurderinger().first().fom shouldBe null
@@ -40,10 +39,10 @@ internal class KVPVilkårsvurderingTest {
             deltarKvp = true,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering().leggTilSøknad(søknad)
 
         kvpVilkårsvurdering.settManuellVurdering(
             fom = 1.januar(2022),
@@ -54,6 +53,7 @@ internal class KVPVilkårsvurderingTest {
         val vurderingSøknad =
             Vurdering(
                 vilkår = Vilkår.KVP,
+                vurderingType = VurderingType.AUTOMATISK,
                 kilde = "Søknad",
                 fom = null,
                 tom = null,
@@ -62,6 +62,7 @@ internal class KVPVilkårsvurderingTest {
             )
         val vurderingSaksbehandler = Vurdering(
             vilkår = Vilkår.KVP,
+            vurderingType = VurderingType.MANUELL,
             kilde = "Saksbehandler",
             fom = 1.januar(2022),
             tom = 31.oktober(2022),

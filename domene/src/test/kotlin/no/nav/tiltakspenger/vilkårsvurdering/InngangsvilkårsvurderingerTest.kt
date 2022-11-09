@@ -40,9 +40,9 @@ class InngangsvilkårsvurderingerTest {
         val vilkårsvurderinger = nyVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
-                vurderingsperiode = vurderingsperiode,
+//                vurderingsperiode = vurderingsperiode,
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
-                    vurderingsperiode = vurderingsperiode,
+//                    vurderingsperiode = vurderingsperiode,
                     søknad = nySøknadMedArenaTiltak(
                         deltarIntroduksjonsprogrammet = true,
                         introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(

@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -12,7 +14,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.time.LocalDate
 import java.util.*
 
 @Testcontainers
@@ -39,12 +40,15 @@ internal class LagreBehandlingTest {
         val søker = søkerMedSøknad(ident = ident, søknad = søknad)
         val vilkårsvurderinger = søker.vilkårsvurderinger(søknad.søknadId)!!
         vilkårsvurderinger.statligeYtelser.sykepenger.settManuellVurdering(
-            fom = LocalDate.MIN,
-            tom = LocalDate.MAX,
+            fom = 1.januar(2022),
+            tom = 31.januar(2022),
             utfall = Utfall.OPPFYLT,
             detaljer = "detaljer"
         )
-        val behandling = Behandling(søker.vilkårsvurderinger(søknad.søknadId)!!)
+        val behandling = Behandling(
+            id = BehandlingId.random(),
+            inngangsvilkårsvurderinger = vilkårsvurderinger // søker.vilkårsvurderinger(søknad.søknadId)!!
+        )
         søker.behandlinger = listOf(behandling)
 
         søkerRepo.lagre(søker)

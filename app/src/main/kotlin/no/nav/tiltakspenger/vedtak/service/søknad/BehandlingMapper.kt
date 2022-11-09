@@ -21,7 +21,7 @@ class BehandlingMapper {
                 fornavn = søker.personopplysningerSøker()?.fornavn,
                 etternavn = søker.personopplysningerSøker()?.etternavn,
                 ident = søker.personopplysningerSøker()?.ident ?: søknad.ident,
-                barn = mapBarn(søker)
+                barn = mapBarn()
             ),
             søknad = SøknadDTO(
                 søknadId = søknad.søknadId,
@@ -99,7 +99,7 @@ class BehandlingMapper {
             detaljer = vurdering.detaljer,
         )
 
-    private fun mapBarn(søker: Søker) = listOf<BarnDTO>()
+    private fun mapBarn() = listOf<BarnDTO>()
     /*
     søker.personopplysningerBarnMedIdent().map {
         BarnDTO(

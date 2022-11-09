@@ -1,37 +1,26 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.VurderingType
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 // TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !
 class InstitusjonsoppholdVilkårsvurdering(
-    private val søknad: Søknad,
-    // private val institusjonsopphold: List<Institusjonsopphold>?,
-    private val vurderingsperiode: Periode
+    override var vurderinger: List<Vurdering> = emptyList(),
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
 
-    private val søknadVurdering = lagVurderingFraSøknad()
-
-    // private val inst2Vurderinger = lagVurderingerFraInst2()
-    override var manuellVurdering: Vurdering? = null
-
-    override fun detIkkeManuelleUtfallet(): Utfall {
-        // val utfall = inst2Vurderinger.map { it.utfall } + søknadVurdering.utfall
-        val utfall = listOf(søknadVurdering.utfall)
-        return when {
-            utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
-            utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
-            else -> Utfall.OPPFYLT
-        }
+    fun leggTilSøknad(søknad: Søknad): InstitusjonsoppholdVilkårsvurdering {
+        vurderinger += lagVurderingFraSøknad(søknad)
+        return this
     }
 
-    private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
+    private fun lagVurderingFraSøknad(søknad: Søknad): Vurdering = Vurdering(
         vilkår = vilkår(),
+        vurderingType = VurderingType.AUTOMATISK,
         kilde = SØKNADKILDE,
         fom = null,
         tom = null,
@@ -106,9 +95,6 @@ class InstitusjonsoppholdVilkårsvurdering(
                 }
         }
      */
-
-    override fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
-    // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
 
     companion object {
         private const val SØKNADKILDE = "SØKNAD"

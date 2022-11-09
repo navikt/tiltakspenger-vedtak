@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
@@ -22,40 +21,31 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsv
 private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 
 fun nyPensjonsinntektVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): PensjonsinntektVilkårsvurderingKategori {
     return PensjonsinntektVilkårsvurderingKategori(
-        pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
-            vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
-        )
+        pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering().leggTilSøknad(søknad)
     )
 }
 
 fun nyLønnsinntektVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): LønnsinntektVilkårsvurderingKategori {
     return LønnsinntektVilkårsvurderingKategori(
-        lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
-            vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
-        )
+        lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering().leggTilSøknad(søknad)
     )
 }
 
 fun nyInstitusjonsVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     søknad: Søknad = nySøknadMedArenaTiltak(),
-    institusjonsopphold: List<Institusjonsopphold> = emptyList(),
+//    institusjonsopphold: List<Institusjonsopphold> = emptyList(),
 ): InstitusjonVilkårsvurderingKategori {
     return InstitusjonVilkårsvurderingKategori(
-        institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering(
-            vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
-            // institusjonsopphold = institusjonsopphold,
-        )
+        institusjonsoppholdVilkårsvurdering = InstitusjonsoppholdVilkårsvurdering()
+            .leggTilSøknad(søknad)
     )
 }
 
@@ -63,20 +53,17 @@ fun nyAapVilkårsvurdering(
     vurderingsperiode: Periode = defaultPeriode,
     ytelser: List<YtelseSak> = emptyList(),
 ): AAPVilkårsvurdering {
-    return AAPVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
-        ytelser = ytelser,
-    )
+    return AAPVilkårsvurdering().leggTilFakta(ytelser, vurderingsperiode)
+//        vurderingsperiode = vurderingsperiode,
+//        ytelser = ytelser,
+//    )
 }
 
 fun nyDagpengerVilkårsvurdering(
     vurderingsperiode: Periode = defaultPeriode,
     ytelser: List<YtelseSak> = emptyList(),
 ): DagpengerVilkårsvurdering {
-    return DagpengerVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
-        ytelser = ytelser,
-    )
+    return DagpengerVilkårsvurdering().leggTilFakta(ytelser, vurderingsperiode)
 }
 
 fun nyStatligeYtelserVilkårsvurdering(
@@ -95,32 +82,26 @@ fun nyStatligeYtelserVilkårsvurdering(
 }
 
 fun nyIntroprogrammetVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): IntroProgrammetVilkårsvurdering {
-    return IntroProgrammetVilkårsvurdering(
-        søknad = søknad,
-        vurderingsperiode = vurderingsperiode,
-    )
+    return IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 }
 
 fun nyKvpVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     søknad: Søknad = nySøknadMedArenaTiltak(),
 ): KVPVilkårsvurdering {
-    return KVPVilkårsvurdering(
-        søknad = søknad,
-        vurderingsperiode = vurderingsperiode,
-    )
+    return KVPVilkårsvurdering().leggTilSøknad(søknad)
 }
 
 fun nyKommunaleYtelserVilkårsvurdering(
-    vurderingsperiode: Periode = defaultPeriode,
+//    vurderingsperiode: Periode = defaultPeriode,
     introProgrammetVilkårsvurdering: IntroProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
+//        vurderingsperiode = vurderingsperiode,
     ),
     kvpVilkårsvurdering: KVPVilkårsvurdering = nyKvpVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
+//        vurderingsperiode = vurderingsperiode,
     ),
 ): KommunaleYtelserVilkårsvurderingKategori {
     return KommunaleYtelserVilkårsvurderingKategori(
@@ -129,22 +110,23 @@ fun nyKommunaleYtelserVilkårsvurdering(
     )
 }
 
+@Suppress("LongParameterList")
 fun nyVilkårsvurdering(
     vurderingsperiode: Periode = defaultPeriode,
-    statligeYtelserVilkårsvurderingKategori: StatligeYtelserVilkårsvurderingKategori = nyStatligeYtelserVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode
-    ),
-    kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
-    ),
+    statligeYtelserVilkårsvurderingKategori: StatligeYtelserVilkårsvurderingKategori =
+        nyStatligeYtelserVilkårsvurdering(vurderingsperiode = vurderingsperiode),
+    kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori =
+        nyKommunaleYtelserVilkårsvurdering(
+//        vurderingsperiode = vurderingsperiode,
+        ),
     pensjonsinntektVilkårsvurdering: PensjonsinntektVilkårsvurderingKategori = nyPensjonsinntektVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
+//        vurderingsperiode = vurderingsperiode,
     ),
     lønnsinntektVilkårsvurdering: LønnsinntektVilkårsvurderingKategori = nyLønnsinntektVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
+//        vurderingsperiode = vurderingsperiode,
     ),
     institusjonsoppholdVilkårsvurdering: InstitusjonVilkårsvurderingKategori = nyInstitusjonsVilkårsvurdering(
-        vurderingsperiode = vurderingsperiode,
+//        vurderingsperiode = vurderingsperiode,
     ),
 ): Inngangsvilkårsvurderinger {
     return Inngangsvilkårsvurderinger(

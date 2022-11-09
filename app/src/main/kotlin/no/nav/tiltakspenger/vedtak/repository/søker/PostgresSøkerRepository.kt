@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
@@ -25,6 +26,7 @@ internal class PostgresSøkerRepository(
     private val tiltaksaktivitetDAO: TiltaksaktivitetDAO = TiltaksaktivitetDAO(),
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
+    private val behandlingDAO: BehandlingDAO = BehandlingDAO(),
     private val aktivitetsloggDAO: AktivitetsloggDAO = AktivitetsloggDAO(),
 ) : SøkerRepository {
 
@@ -63,6 +65,11 @@ internal class PostgresSøkerRepository(
                     personopplysninger = søker.personopplysninger,
                     txSession = txSession
                 )
+                behandlingDAO.lagre(
+                    søkerId = søker.id,
+                    behandlinger = søker.behandlinger,
+                    txSession = txSession,
+                )
                 aktivitetsloggDAO.lagre(
                     søkerId = søker.id,
                     aktivitetslogg = søker.aktivitetslogg,
@@ -91,6 +98,7 @@ internal class PostgresSøkerRepository(
             tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
             ytelser = ytelsesakDAO.hentForSøker(id, txSession),
             personopplysninger = personopplysningerDAO.hent(id, txSession),
+            behandlinger = behandlingDAO.hentForSøker(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
     }

@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
@@ -18,13 +16,13 @@ class KommunaleYtelserVilkårsvurderingTest {
             introduksjonsprogrammetDetaljer = null,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering().leggTilSøknad(søknad)
 
         val kommunaleYtelserVilkårsvurderingKategori =
             KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
@@ -38,13 +36,13 @@ class KommunaleYtelserVilkårsvurderingTest {
             deltarKvp = true,
         )
 
-        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+//        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
 
         val introProgrammetVilkårsvurdering =
-            IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            IntroProgrammetVilkårsvurdering().leggTilSøknad(søknad)
 
         val kvpVilkårsvurdering =
-            KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
+            KVPVilkårsvurdering().leggTilSøknad(søknad)
 
         val kommunaleYtelserVilkårsvurderingKategori =
             KommunaleYtelserVilkårsvurderingKategori(introProgrammetVilkårsvurdering, kvpVilkårsvurdering)
