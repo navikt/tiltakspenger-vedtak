@@ -6,9 +6,15 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
-abstract class StatligArenaYtelseVilkårsvurdering : Vilkårsvurdering() {
-    abstract val ytelseVurderinger: List<Vurdering>
-    abstract override var manuellVurdering: Vurdering?
+abstract class StatligArenaYtelseVilkårsvurdering(
+    val ytelser: List<YtelseSak>,
+    val vurderingsperiode: Periode
+) : Vilkårsvurdering() {
+    val ytelseVurderinger: List<Vurdering> = lagYtelseVurderinger(ytelser, vurderingsperiode, ytelseType())
+
+    override var manuellVurdering: Vurdering? = null
+
+    abstract fun ytelseType(): YtelseSak.YtelseSakYtelsetype
 
     override fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
 
