@@ -50,7 +50,7 @@ class InstitusjonsoppholdVilkårsvurdering(
     private fun utfallFraTypeInstitusjon(typeInstitusjon: String?): Utfall =
         when (typeInstitusjon) {
             null -> Utfall.KREVER_MANUELL_VURDERING
-            "overgangsbolig" -> Utfall.OPPFYLT
+            "overgangsbolig" -> Utfall.KREVER_MANUELL_VURDERING
             "barneverninstitusjon" -> Utfall.OPPFYLT
             "annet" -> Utfall.KREVER_MANUELL_VURDERING
             else -> Utfall.KREVER_MANUELL_VURDERING

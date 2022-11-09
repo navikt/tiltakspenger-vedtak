@@ -30,9 +30,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
-        introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.IKKE_OPPFYLT
+        introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
-        introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
     @Test
@@ -121,9 +121,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
-        introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
+        introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
-        introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
+        introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
     @Test
