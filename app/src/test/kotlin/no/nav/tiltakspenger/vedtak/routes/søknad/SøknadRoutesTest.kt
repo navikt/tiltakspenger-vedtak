@@ -1,27 +1,17 @@
 package no.nav.tiltakspenger.vedtak.routes.søknad
 
 import io.kotest.matchers.shouldBe
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
-import io.ktor.server.routing.routing
-import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
+import io.ktor.http.*
+import io.ktor.server.routing.*
+import io.ktor.server.testing.*
+import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.søknad.BehandlingDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.KommunaleVilkårsVurderingsKategoriDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.PersonopplysningerDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.SøknadDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.SøknadService
-import no.nav.tiltakspenger.vedtak.service.søknad.UtfallDTO
-import no.nav.tiltakspenger.vedtak.service.søknad.VilkårsVurderingsKategoriDTO
+import no.nav.tiltakspenger.vedtak.service.søknad.*
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -86,6 +76,7 @@ class SøknadRoutesTest {
                 detaljer = "",
                 vilkårsvurderinger = listOf()
             ),
+            barnetillegg = emptyList()
         )
         testApplication {
             application {

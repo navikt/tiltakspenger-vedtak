@@ -18,6 +18,16 @@ data class BehandlingDTO(
     val pensjonsordninger: VilkårsVurderingsKategoriDTO,
     val lønnsinntekt: VilkårsVurderingsKategoriDTO,
     val institusjonsopphold: VilkårsVurderingsKategoriDTO,
+    val barnetillegg: List<BarnetilleggDTO>
+)
+
+data class BarnetilleggDTO(
+    val navn: String,
+    val alder: Int,
+    val bosatt: String,
+    val kilde: String,
+    val utfall: UtfallDTO,
+    val søktBarnetillegg: Boolean
 )
 
 data class SøknadDTO(
