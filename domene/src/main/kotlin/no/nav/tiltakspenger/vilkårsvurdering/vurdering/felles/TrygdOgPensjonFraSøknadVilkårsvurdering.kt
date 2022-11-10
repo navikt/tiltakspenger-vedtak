@@ -21,7 +21,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
                     fom = it.fom,
                     tom = it.tom,
                     utfall = Utfall.KREVER_MANUELL_VURDERING,
-                    detaljer = "${it.prosent} utbetaling fra ${it.utbetaler}",
+                    detaljer = detaljer(it.prosent, it.utbetaler),
                 )
             }.ifEmpty {
                 listOf(
@@ -35,6 +35,14 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
                     )
                 )
             }
+
+    private fun detaljer(prosent: Int?, utbetaler: String): String {
+        return if (prosent == null) {
+            "Ukjent prosent utbetaling fra $utbetaler"
+        } else {
+            "$prosent prosent utbetaling fra $utbetaler"
+        }
+    }
 
     companion object {
         private const val SØKNADKILDE = "SØKNAD"
