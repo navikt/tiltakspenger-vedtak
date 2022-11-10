@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -42,7 +43,9 @@ class BehandlingMapper {
                 tiltakskode = søknad.tiltak.tiltakskode?.navn,
                 startdato = søknad.tiltak.startdato,
                 sluttdato = søknad.tiltak.sluttdato,
-                antallDager = 2, // TODO
+                antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
+                    (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+                } else null,
             ),
             registrerteTiltak = søker.tiltak.map {
                 TiltakDTO(

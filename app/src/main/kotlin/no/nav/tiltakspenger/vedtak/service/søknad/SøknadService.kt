@@ -37,7 +37,7 @@ data class SøknadDTO(
     val tiltakskode: String?,
     val startdato: LocalDate,
     val sluttdato: LocalDate?,
-    val antallDager: Int,
+    val antallDager: Int?,
 )
 
 data class PeriodeDTO(
