@@ -9,6 +9,6 @@ class DagpengerVilkårsvurdering(
     ytelser: List<YtelseSak>,
     vurderingsperiode: Periode,
 ) : StatligArenaYtelseVilkårsvurdering(ytelser, vurderingsperiode) {
-    override fun vilkår(): Vilkår = Vilkår.AAP
+    override fun vilkår(): Vilkår = Vilkår.DAGPENGER
     override fun ytelseType() = YtelseSak.YtelseSakYtelsetype.DAGP
 }
