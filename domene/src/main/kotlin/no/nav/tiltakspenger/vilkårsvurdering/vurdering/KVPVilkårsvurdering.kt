@@ -16,8 +16,12 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
         fom = null,
         tom = null,
         utfall = avgjørUtfall(),
-        detaljer = "",
+        detaljer = detaljer(),
     )
+
+    private fun detaljer(): String =
+        if (søknad.deltarKvp) "Svart JA i søknaden" else "Svart NEI i søknaden"
+
 
     override fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 

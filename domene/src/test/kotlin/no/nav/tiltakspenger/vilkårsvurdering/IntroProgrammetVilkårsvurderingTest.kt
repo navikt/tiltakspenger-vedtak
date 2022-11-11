@@ -80,7 +80,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
             fom = null,
             tom = null,
             utfall = Utfall.OPPFYLT,
-            detaljer = ""
+            detaljer = "Svart NEI i søknaden"
         )
         val vurderingSaksbehandler =
             Vurdering(
@@ -117,7 +117,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
-        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
+        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -140,7 +140,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
+        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING

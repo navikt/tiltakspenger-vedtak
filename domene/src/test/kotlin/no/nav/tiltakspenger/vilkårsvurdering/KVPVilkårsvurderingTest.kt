@@ -27,7 +27,7 @@ internal class KVPVilkårsvurderingTest {
         kvpVilkårsvurdering.vurderinger().first().tom shouldBe null
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
-        kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe ""
+        kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
         kvpVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         kvpVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
 
@@ -58,7 +58,7 @@ internal class KVPVilkårsvurderingTest {
                 fom = null,
                 tom = null,
                 utfall = Utfall.KREVER_MANUELL_VURDERING,
-                detaljer = "",
+                detaljer = "Svart JA i søknaden",
             )
         val vurderingSaksbehandler = Vurdering(
             vilkår = Vilkår.KVP,

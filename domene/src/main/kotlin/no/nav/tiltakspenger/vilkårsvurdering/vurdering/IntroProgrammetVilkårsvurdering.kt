@@ -16,11 +16,14 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
         fom = søknad.introduksjonsprogrammetDetaljer?.fom,
         tom = søknad.introduksjonsprogrammetDetaljer?.tom,
         utfall = avgjørUtfall(),
-        detaljer = "",
+        detaljer = detaljer(),
     )
 
+    private fun detaljer(): String =
+        if (søknad.deltarIntroduksjonsprogrammet) "Svart JA i søknaden" else "Svart NEI i søknaden"
+
     override fun avgjørUtfall(): Utfall =
-        if (!søknad.deltarIntroduksjonsprogrammet) Utfall.OPPFYLT else Utfall.KREVER_MANUELL_VURDERING
+        if (søknad.deltarIntroduksjonsprogrammet) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 
     override fun vilkår() = Vilkår.INTROPROGRAMMET
 }
