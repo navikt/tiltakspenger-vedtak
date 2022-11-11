@@ -44,7 +44,7 @@ class InstitusjonsoppholdVilkårsvurdering(
         else when (typeInstitusjon) {
             "overgangsbolig" -> "Opphold på overgangsbolig"
             "barneverninstitusjon" -> "Opphold på barneverninstitusjon"
-            "annet" -> "Opphold på annet type instisjon"
+            "annet" -> "Opphold på annen type instisjon"
             else -> "Opphold på ukjent institusjon"
         }
 
