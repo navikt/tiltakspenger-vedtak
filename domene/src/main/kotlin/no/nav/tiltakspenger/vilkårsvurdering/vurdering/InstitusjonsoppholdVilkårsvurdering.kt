@@ -40,11 +40,11 @@ class InstitusjonsoppholdVilkårsvurdering(
     )
 
     private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: String?): String =
-        if (oppholdInstitusjon == null || oppholdInstitusjon == false) ""
+        if (oppholdInstitusjon == null || oppholdInstitusjon == false) "Svart NEI i søknaden"
         else when (typeInstitusjon) {
             "overgangsbolig" -> "Opphold på overgangsbolig"
             "barneverninstitusjon" -> "Opphold på barneverninstitusjon"
-            "annet" -> "Opphold på annen type instisjon"
+            "annet" -> "Opphold på annen type institusjon"
             else -> "Opphold på ukjent institusjon"
         }
 

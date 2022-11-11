@@ -31,16 +31,16 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
                         fom = null,
                         tom = null,
                         utfall = Utfall.OPPFYLT,
-                        detaljer = "",
+                        detaljer = "Svart NEI i søknaden",
                     )
                 )
             }
 
     private fun detaljer(prosent: Int?, utbetaler: String): String {
         return if (prosent == null) {
-            "Ukjent prosent utbetaling fra $utbetaler"
+            "$utbetaler, ukjent %"
         } else {
-            "$prosent prosent utbetaling fra $utbetaler"
+            "$utbetaler, $prosent %"
         }
     }
 
