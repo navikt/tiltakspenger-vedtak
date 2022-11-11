@@ -40,7 +40,11 @@ class BehandlingMapper {
                 søknadId = søknad.søknadId,
                 søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
                 arrangoernavn = søknad.tiltak.arrangoernavn,
-                tiltakskode = søknad.tiltak.tiltakskode?.navn,
+                tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
+                beskrivelse = when (søknad.tiltak) {
+                    is Tiltak.ArenaTiltak -> null
+                    is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+                },
                 startdato = søknad.tiltak.startdato,
                 sluttdato = søknad.tiltak.sluttdato,
                 antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
