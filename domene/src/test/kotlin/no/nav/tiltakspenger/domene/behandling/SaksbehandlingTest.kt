@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 internal class SaksbehandlingTest {
 
@@ -18,7 +18,7 @@ internal class SaksbehandlingTest {
         val søknad = Søknad(
             id = "1212",
             ident = "123",
-            opprettet = LocalDateTime.now(),
+            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             deltarKvp = false,
             tiltak = Tiltak("", "", "", LocalDate.now(), LocalDate.now())
         )

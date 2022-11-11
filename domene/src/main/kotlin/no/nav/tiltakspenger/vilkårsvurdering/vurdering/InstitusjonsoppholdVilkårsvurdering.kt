@@ -25,8 +25,17 @@ class InstitusjonsoppholdVilkårsvurdering(
         fom = null,
         tom = null,
         utfall = if (søknad.oppholdInstitusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
-        detaljer = "Opphold på ${søknad.typeInstitusjon}",
+        detaljer = detaljer(søknad.oppholdInstitusjon, søknad.typeInstitusjon),
     )
+
+    private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: String?): String =
+        if (oppholdInstitusjon == null || oppholdInstitusjon == false) ""
+        else when (typeInstitusjon) {
+            "overgangsbolig" -> "Opphold på overgangsbolig"
+            "barneverninstitusjon" -> "Opphold på barneverninstitusjon"
+            "annet" -> "Opphold på annen type instisjon"
+            else -> "Opphold på ukjent institusjon"
+        }
 
     // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:
     // Mulig verdier er "barneverninstitusjon", "overgangsbolig" og "annet".

@@ -3,7 +3,11 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -16,6 +20,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Testcontainers
@@ -95,7 +100,7 @@ internal class TrygdOgPensjonDAOTest {
         typeInstitusjon = null,
         opprettet = null,
         barnetillegg = emptyList(),
-        tidsstempelHosOss = LocalDateTime.now(),
+        tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
         tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Fest og morro",

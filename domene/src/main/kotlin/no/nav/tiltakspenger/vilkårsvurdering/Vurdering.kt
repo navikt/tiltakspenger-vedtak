@@ -16,5 +16,5 @@ data class Vurdering(
     val tom: LocalDate?,
     val utfall: Utfall,
     val detaljer: String,
-    val tidspunkt: LocalDateTime = LocalDateTime.now()
+    val tidspunkt: LocalDateTime = LocalDateTime.now() //.truncatedTo(ChronoUnit.MILLIS),
 )

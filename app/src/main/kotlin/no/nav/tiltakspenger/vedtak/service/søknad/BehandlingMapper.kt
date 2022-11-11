@@ -1,9 +1,11 @@
 package no.nav.tiltakspenger.vedtak.service.søknad
 
-
 import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
@@ -27,10 +29,16 @@ class BehandlingMapper {
                 søknadId = søknad.søknadId,
                 søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
                 arrangoernavn = søknad.tiltak.arrangoernavn,
-                tiltakskode = søknad.tiltak.tiltakskode?.navn,
+                tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
+                beskrivelse = when (søknad.tiltak) {
+                    is Tiltak.ArenaTiltak -> null
+                    is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+                },
                 startdato = søknad.tiltak.startdato,
                 sluttdato = søknad.tiltak.sluttdato,
-                antallDager = 2, // TODO
+                antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
+                    (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+                } else null,
             ),
             registrerteTiltak = søker.tiltak.map {
                 TiltakDTO(
@@ -56,7 +64,23 @@ class BehandlingMapper {
             pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
             lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
             institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
+            barnetillegg = mapBarnetillegg(søknad.barnetillegg)
         )
+    }
+
+    private fun mapBarnetillegg(
+        barnetillegg: List<Barnetillegg>
+    ): List<BarnetilleggDTO> {
+        return barnetillegg.map {
+            BarnetilleggDTO(
+                navn = it.fornavn + " " + it.etternavn,
+                alder = it.alder,
+                bosatt = it.oppholdsland,
+                kilde = "Søknad",
+                utfall = UtfallDTO.Oppfylt,
+                søktBarnetillegg = it.søktBarnetillegg
+            )
+        }
     }
 
     private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori): KommunaleVilkårsVurderingsKategoriDTO {

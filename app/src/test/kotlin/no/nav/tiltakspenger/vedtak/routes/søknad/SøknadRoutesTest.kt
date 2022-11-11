@@ -44,6 +44,7 @@ class SøknadRoutesTest {
                 søknadsdato = LocalDate.now(),
                 arrangoernavn = null,
                 tiltakskode = null,
+                beskrivelse = null,
                 startdato = LocalDate.now(),
                 sluttdato = null,
                 antallDager = 0
@@ -86,6 +87,7 @@ class SøknadRoutesTest {
                 detaljer = "",
                 vilkårsvurderinger = listOf()
             ),
+            barnetillegg = emptyList()
         )
         testApplication {
             application {

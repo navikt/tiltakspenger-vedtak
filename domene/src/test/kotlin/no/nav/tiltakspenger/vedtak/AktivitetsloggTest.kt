@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 internal class AktivitetsloggTest {
@@ -208,7 +209,7 @@ internal class AktivitetsloggTest {
 
             mutableMapOf(
                 "@event_name" to "behov",
-                "@opprettet" to LocalDateTime.now(),
+                "@opprettet" to LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
                 "@id" to id,
                 "@behov" to behovsliste
             )

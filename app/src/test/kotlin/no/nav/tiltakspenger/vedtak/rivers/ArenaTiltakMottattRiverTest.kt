@@ -5,7 +5,13 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
@@ -13,6 +19,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 internal class ArenaTiltakMottattRiverTest {
 
@@ -52,7 +59,7 @@ internal class ArenaTiltakMottattRiverTest {
                 typeInstitusjon = null,
                 opprettet = null,
                 barnetillegg = emptyList(),
-                tidsstempelHosOss = LocalDateTime.now(),
+                tidsstempelHosOss = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
                 tiltak = Tiltak.ArenaTiltak(
                     arenaId = "123",
                     arrangoernavn = "Tiltaksarrangør AS",
@@ -77,7 +84,7 @@ internal class ArenaTiltakMottattRiverTest {
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
-                innhentet = LocalDateTime.now()
+                innhentet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             )
         )
         val søker = Søker(IDENT)
@@ -114,7 +121,7 @@ internal class ArenaTiltakMottattRiverTest {
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
-                innhentet = LocalDateTime.now()
+                innhentet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             )
         )
         val søker = Søker(IDENT)
