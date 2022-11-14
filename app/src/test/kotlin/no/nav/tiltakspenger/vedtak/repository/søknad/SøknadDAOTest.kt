@@ -2,12 +2,22 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -204,7 +214,7 @@ internal class SøknadDAOTest {
                 tom = LocalDate.of(2022, Month.AUGUST, 30)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "Barnevernet",
+            typeInstitusjon = TypeInstitusjon.BARNEVERN,
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
                 Barnetillegg.MedIdent(

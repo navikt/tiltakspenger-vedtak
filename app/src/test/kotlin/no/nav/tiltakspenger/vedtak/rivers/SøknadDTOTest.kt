@@ -6,8 +6,11 @@ import io.kotest.matchers.types.shouldBeTypeOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,7 +37,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
@@ -86,7 +89,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.deltarKvp, søknad.deltarKvp)
         assertEquals(søknadDTO.deltarIntroduksjonsprogrammet, søknad.deltarIntroduksjonsprogrammet)
         assertEquals(søknadDTO.oppholdInstitusjon, søknad.oppholdInstitusjon)
-        assertEquals(søknadDTO.typeInstitusjon, søknad.typeInstitusjon)
+        assertEquals(TypeInstitusjon.ANNET, søknad.typeInstitusjon)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.fritekst, søknad.fritekst)
         assertEquals(søknadDTO.vedlegg?.first()?.journalpostId, søknad.vedlegg.first().journalpostId)
@@ -113,7 +116,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
@@ -172,7 +175,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
@@ -235,7 +238,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(),
             arenaTiltak = ArenaTiltakDTO(
@@ -297,7 +300,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(),
             arenaTiltak = ArenaTiltakDTO(
@@ -359,7 +362,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(),
             arenaTiltak = null,
@@ -424,7 +427,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(),
             arenaTiltak = null,
@@ -491,7 +494,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10)
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "fengsel",
+            typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),

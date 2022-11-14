@@ -18,7 +18,7 @@ data class Søknad(
     val deltarIntroduksjonsprogrammet: Boolean,
     val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
     val oppholdInstitusjon: Boolean?,
-    val typeInstitusjon: String?,
+    val typeInstitusjon: TypeInstitusjon?,
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
     val tidsstempelHosOss: LocalDateTime,
@@ -117,4 +117,10 @@ sealed class Barnetillegg {
         val fødselsdato: LocalDate,
         override val søktBarnetillegg: Boolean,
     ) : Barnetillegg()
+}
+
+enum class TypeInstitusjon(val type: String) {
+    BARNEVERN("barneverninstitusjon"),
+    OVERGANGSBOLIG("overgangsbolig"),
+    ANNET("annet"),
 }

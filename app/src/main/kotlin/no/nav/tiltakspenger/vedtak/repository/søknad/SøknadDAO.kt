@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
@@ -65,7 +66,7 @@ internal class SøknadDAO(
                     "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
                     "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
                     "instOpphold" to søknad.oppholdInstitusjon,
-                    "instType" to søknad.typeInstitusjon,
+                    "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
@@ -91,7 +92,7 @@ internal class SøknadDAO(
                     "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
                     "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
                     "instOpphold" to søknad.oppholdInstitusjon,
-                    "instType" to søknad.typeInstitusjon,
+                    "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
@@ -115,7 +116,7 @@ internal class SøknadDAO(
         val introduksjonsprogrammetFom = localDateOrNull("intro_fom")
         val introduksjonsprogrammetTom = localDateOrNull("intro_tom")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
-        val typeInstitusjon = stringOrNull("institusjon_type")
+        val typeInstitusjon = stringOrNull("institusjon_type")?.let { TypeInstitusjon.valueOf(it) }
         val opprettet = localDateTimeOrNull("opprettet")
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")

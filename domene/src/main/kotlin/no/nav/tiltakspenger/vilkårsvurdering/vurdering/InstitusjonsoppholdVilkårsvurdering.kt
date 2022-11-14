@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -39,12 +40,12 @@ class InstitusjonsoppholdVilkårsvurdering(
         detaljer = detaljer(søknad.oppholdInstitusjon, søknad.typeInstitusjon),
     )
 
-    private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: String?): String =
+    private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: TypeInstitusjon?): String =
         if (oppholdInstitusjon == null || oppholdInstitusjon == false) "Svart NEI i søknaden"
         else when (typeInstitusjon) {
-            "overgangsbolig" -> "Opphold på overgangsbolig"
-            "barneverninstitusjon" -> "Opphold på barneverninstitusjon"
-            "annet" -> "Opphold på annen type institusjon"
+            TypeInstitusjon.OVERGANGSBOLIG -> "Opphold på overgangsbolig"
+            TypeInstitusjon.BARNEVERN -> "Opphold på barneverninstitusjon"
+            TypeInstitusjon.ANNET -> "Opphold på annen type institusjon"
             else -> "Opphold på ukjent institusjon"
         }
 
@@ -56,13 +57,12 @@ class InstitusjonsoppholdVilkårsvurdering(
     // Barneverninstitusjon = oppfylt
     // Annen type institusjon med fri kost og losji = Manuell behandling
     // TODO typeInstitusjon bør bli en enum
-    private fun utfallFraTypeInstitusjon(typeInstitusjon: String?): Utfall =
+    private fun utfallFraTypeInstitusjon(typeInstitusjon: TypeInstitusjon?): Utfall =
         when (typeInstitusjon) {
             null -> Utfall.KREVER_MANUELL_VURDERING
-            "overgangsbolig" -> Utfall.KREVER_MANUELL_VURDERING
-            "barneverninstitusjon" -> Utfall.OPPFYLT
-            "annet" -> Utfall.KREVER_MANUELL_VURDERING
-            else -> Utfall.KREVER_MANUELL_VURDERING
+            TypeInstitusjon.OVERGANGSBOLIG -> Utfall.KREVER_MANUELL_VURDERING
+            TypeInstitusjon.BARNEVERN -> Utfall.OPPFYLT
+            TypeInstitusjon.ANNET -> Utfall.KREVER_MANUELL_VURDERING
         }
 
     /*

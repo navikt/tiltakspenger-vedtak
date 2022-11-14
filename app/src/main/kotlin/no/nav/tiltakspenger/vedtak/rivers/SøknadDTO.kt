@@ -45,7 +45,14 @@ class SøknadDTO(
                 deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet ?: false,
                 introduksjonsprogrammetDetaljer = mapIntroduksjonsprogrammetDetaljer(dto.introduksjonsprogrammetDetaljer),
                 oppholdInstitusjon = dto.oppholdInstitusjon,
-                typeInstitusjon = dto.typeInstitusjon,
+                typeInstitusjon = dto.typeInstitusjon?.let { TypeInstitusjonDTO.valueOf(it) }.let {
+                    when (it) {
+                        TypeInstitusjonDTO.barneverninstitusjon -> TypeInstitusjon.BARNEVERN
+                        TypeInstitusjonDTO.overgangsbolig -> TypeInstitusjon.OVERGANGSBOLIG
+                        TypeInstitusjonDTO.annet -> TypeInstitusjon.ANNET
+                        null -> null
+                    }
+                },
                 opprettet = dto.opprettet,
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
@@ -180,4 +187,10 @@ class BarnetilleggDTO(
                 )
         }
     }
+}
+
+enum class TypeInstitusjonDTO(val type: String) {
+    barneverninstitusjon("barneverninstitusjon"),
+    overgangsbolig("overgangsbolig"),
+    annet("annet"),
 }

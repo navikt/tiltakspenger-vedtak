@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -129,7 +130,7 @@ fun nySøknadMedArenaTiltak(
     deltarIntroduksjonsprogrammet: Boolean = false,
     introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
     oppholdInstitusjon: Boolean? = false,
-    typeInstitusjon: String? = null,
+    typeInstitusjon: TypeInstitusjon? = null,
     opprettet: LocalDateTime? = 1.januarDateTime(2022),
     barnetillegg: List<Barnetillegg> = listOf(),
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
@@ -173,7 +174,7 @@ fun nySøknadMedBrukerTiltak(
     deltarIntroduksjonsprogrammet: Boolean = false,
     introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
     oppholdInstitusjon: Boolean? = false,
-    typeInstitusjon: String? = null,
+    typeInstitusjon: TypeInstitusjon? = null,
     opprettet: LocalDateTime? = 1.januarDateTime(2022),
     barnetillegg: List<Barnetillegg> = listOf(),
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
