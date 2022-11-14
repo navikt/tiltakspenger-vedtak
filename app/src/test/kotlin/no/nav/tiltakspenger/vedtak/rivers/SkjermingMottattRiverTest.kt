@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class SkjermingMottattRiverTest {
-
-
+    
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
+    private val journalpostId = "wolla"
     private val ident = "05906398291"
     private val løsning = """
             {
@@ -26,6 +26,7 @@ internal class SkjermingMottattRiverTest {
               ],
               "@id": "test",
               "@behovId": "behovId",
+              "journalpostId": "wolla",
               "ident": "05906398291",
               "fom": "2019-10-01",
               "tom": "2022-06-01",
@@ -62,14 +63,15 @@ internal class SkjermingMottattRiverTest {
         val aktivitetslogg = Aktivitetslogg(forelder = null)
         val mottattSøknadHendelse = SøknadMottattHendelse(
             aktivitetslogg = aktivitetslogg,
-            journalpostId = ident,
+            journalpostId = journalpostId,
             søknad = nySøknadMedArenaTiltak(
+                journalpostId = journalpostId,
                 ident = ident,
             )
         )
-        val personopplysningerMottattHendelse = nyPersonopplysningHendelse(journalpostId = ident)
-        val innsending = Innsending(ident)
-        every { innsendingRepository.hent(ident) } returns innsending
+        val personopplysningerMottattHendelse = nyPersonopplysningHendelse(journalpostId = journalpostId)
+        val innsending = Innsending(journalpostId)
+        every { innsendingRepository.hent(journalpostId) } returns innsending
 
         // when
         innsending.håndter(mottattSøknadHendelse)
@@ -81,6 +83,7 @@ internal class SkjermingMottattRiverTest {
             assertEquals(1, this.size)
             assertEquals("behov", field(0, "@event_name").asText())
             assertEquals(ident, field(0, "ident").asText())
+            assertEquals(journalpostId, field(0, "journalpostId").asText())
             assertEquals("arenatiltak", field(0, "@behov")[0].asText())
         }
     }

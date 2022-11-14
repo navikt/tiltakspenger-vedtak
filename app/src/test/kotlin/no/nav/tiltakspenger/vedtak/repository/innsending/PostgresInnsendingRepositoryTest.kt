@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.søker
+package no.nav.tiltakspenger.vedtak.repository.innsending
 
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
@@ -42,14 +42,14 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `lagre og hente bare søker`() {
-        val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val journalpostId = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId)
 
         søkerRepo.lagre(innsending)
 
-        val hentetSøker = søkerRepo.hent(ident)!!
+        val hentetSøker = søkerRepo.hent(journalpostId)!!
 
-        assertEquals(innsending.ident, hentetSøker.ident)
+        assertEquals(innsending.journalpostId, hentetSøker.journalpostId)
         assertEquals(innsending.id, hentetSøker.id)
         assertEquals(innsending.tilstand, hentetSøker.tilstand)
         innsending.personopplysninger shouldBe emptyList()
@@ -57,10 +57,12 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `lagre og hente hele aggregatet med BrukerTiltak`() {
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
 
         val søknad = nySøknadMedBrukerTiltak(
             ident = ident,
+            journalpostId = journalpostId,
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
@@ -69,6 +71,7 @@ internal class PostgresInnsendingRepositoryTest {
         val ytelseSak = listOf(ytelseSak())
 
         val søker = innsendingMedYtelse(
+            journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
@@ -79,8 +82,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         søkerRepo.lagre(søker)
 
-        val hentetSøker = søkerRepo.hent(ident)!!
+        val hentetSøker = søkerRepo.hent(journalpostId)!!
 
+        assertEquals(søker.journalpostId, hentetSøker.journalpostId)
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
@@ -93,15 +97,18 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `lagre og hente basert på søknadId`() {
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
 
         val søknad = nySøknadMedBrukerTiltak(
+            journalpostId = journalpostId,
             ident = ident,
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
 
         val søker = innsendingMedSøknad(
+            journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
         )
@@ -122,8 +129,10 @@ internal class PostgresInnsendingRepositoryTest {
     @Test
     fun `lagre og hente hele aggregatet med ArenaTiltak`() {
         val ident = Random().nextInt().toString()
+        val journalpostId = Random().nextInt().toString()
 
         val søknad = nySøknadMedArenaTiltak(
+            journalpostId = journalpostId,
             ident = ident,
             barnetillegg = listOf(barnetilleggUtenIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
@@ -133,6 +142,7 @@ internal class PostgresInnsendingRepositoryTest {
         val ytelseSak = listOf(ytelseSak())
 
         val søker = innsendingMedYtelse(
+            journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
@@ -143,8 +153,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         søkerRepo.lagre(søker)
 
-        val hentetSøker = søkerRepo.hent(ident)!!
+        val hentetSøker = søkerRepo.hent(journalpostId)!!
 
+        assertEquals(søker.journalpostId, hentetSøker.journalpostId)
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)

@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.objectmothers.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -43,7 +43,7 @@ class YtelsevedtakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
             }
         }
 
@@ -71,7 +71,7 @@ class YtelsevedtakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
             }
         }
 
@@ -93,7 +93,7 @@ class YtelsevedtakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
             }
         }
 

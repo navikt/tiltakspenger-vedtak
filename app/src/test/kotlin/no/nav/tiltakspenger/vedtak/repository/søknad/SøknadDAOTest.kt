@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -87,16 +87,16 @@ internal class SøknadDAOTest {
             }
         }
 
-        val hentet = sessionOf(DataSource.hikariDataSource).use {
+        val hentet: Søknad? = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 søknadDAO.hent(innsending.id, txSession)
             }
         }
 
-        assertEquals(1, hentet.size)
-        assertEquals(uuid, hentet.first().id)
-        assertEquals(ident, hentet.first().ident)
-        assertEquals(innhentet, hentet.first().tidsstempelHosOss)
+        assertNotNull(hentet)
+        assertEquals(uuid, hentet!!.id)
+        assertEquals(ident, hentet.ident)
+        assertEquals(innhentet, hentet.tidsstempelHosOss)
     }
 
     @Test
@@ -159,26 +159,26 @@ internal class SøknadDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
 
-        val hentet = sessionOf(DataSource.hikariDataSource).use {
+        val hentet: Søknad? = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 søknadDAO.hent(innsending.id, txSession)
             }
         }
 
-        assertEquals(1, hentet.size)
-        assertEquals(uuid, hentet.first().id)
-        assertEquals(ident, hentet.first().ident)
-        assertEquals(innhentet, hentet.first().tidsstempelHosOss)
+        assertNotNull(hentet)
+        assertEquals(uuid, hentet!!.id)
+        assertEquals(ident, hentet.ident)
+        assertEquals(innhentet, hentet.tidsstempelHosOss)
 
-        assertNotNull(hentet.first().tiltak)
-        assertEquals(1, hentet.first().barnetillegg.size)
-        assertEquals(1, hentet.first().trygdOgPensjon.size)
-        assertEquals(1, hentet.first().vedlegg.size)
-        assertNull(hentet.first().introduksjonsprogrammetDetaljer)
+        assertNotNull(hentet.tiltak)
+        assertEquals(1, hentet.barnetillegg.size)
+        assertEquals(1, hentet.trygdOgPensjon.size)
+        assertEquals(1, hentet.vedlegg.size)
+        assertNull(hentet.introduksjonsprogrammetDetaljer)
     }
 
     @Test
@@ -248,7 +248,7 @@ internal class SøknadDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
 
@@ -258,50 +258,49 @@ internal class SøknadDAOTest {
             }
         }
 
-        assertEquals(1, hentet.size)
-        assertEquals(uuid, hentet.first().id)
-        assertEquals(ident, hentet.first().ident)
-        assertEquals(innhentet, hentet.first().tidsstempelHosOss)
+        assertNotNull(hentet)
+        assertEquals(uuid, hentet!!.id)
+        assertEquals(ident, hentet.ident)
+        assertEquals(innhentet, hentet.tidsstempelHosOss)
 
-        assertNotNull(hentet.first().tiltak)
-        assertEquals(1, hentet.first().barnetillegg.size)
-        assertEquals(1, hentet.first().trygdOgPensjon.size)
+        assertNotNull(hentet.tiltak)
+        assertEquals(1, hentet.barnetillegg.size)
+        assertEquals(1, hentet.trygdOgPensjon.size)
 
-        val søknadHentet: Søknad = hentet.first()
-        søknadHentet::class.declaredMemberProperties.forEach {
-            assertNotNull(it.call(søknadHentet))
+        hentet::class.declaredMemberProperties.forEach {
+            assertNotNull(it.call(hentet))
         }
 
-        assertEquals(søknad.introduksjonsprogrammetDetaljer, søknadHentet.introduksjonsprogrammetDetaljer)
+        assertEquals(søknad.introduksjonsprogrammetDetaljer, hentet.introduksjonsprogrammetDetaljer)
 
-        val barnetillegg = søknadHentet.barnetillegg.first()
+        val barnetillegg = hentet.barnetillegg.first()
         barnetillegg::class.declaredMemberProperties.forEach {
             assertNotNull(it.call(barnetillegg))
         }
 
-        søknadHentet.tiltak shouldBe tiltak
-        assertEquals(tiltak, søknadHentet.tiltak)
+        hentet.tiltak shouldBe tiltak
+        assertEquals(tiltak, hentet.tiltak)
 
-        val trygdOgPensjon = søknadHentet.trygdOgPensjon.first()
+        val trygdOgPensjon = hentet.trygdOgPensjon.first()
         trygdOgPensjon::class.declaredMemberProperties.forEach {
             assertNotNull(it.call(trygdOgPensjon))
         }
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
-        assertEquals(søknad.opprettet, hentet.first().opprettet)
+        assertEquals(søknad.opprettet, hentet.opprettet)
         println(søknad.opprettet)
-        assertEquals(søknad.opprettet, hentet.first().opprettet)
-        assertEquals(søknad.tidsstempelHosOss, hentet.first().tidsstempelHosOss)
-        assertEquals(søknad.deltarKvp, hentet.first().deltarKvp)
+        assertEquals(søknad.opprettet, hentet.opprettet)
+        assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
+        assertEquals(søknad.deltarKvp, hentet.deltarKvp)
 
         assertEquals(
             (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,
-            (hentet.first().tiltak as Tiltak.ArenaTiltak).sluttdato
+            (hentet.tiltak as Tiltak.ArenaTiltak).sluttdato
         )
-        assertEquals(søknad.trygdOgPensjon.first().fom, hentet.first().trygdOgPensjon.first().fom)
+        assertEquals(søknad.trygdOgPensjon.first().fom, hentet.trygdOgPensjon.first().fom)
 
-        assertEquals(søknad.vedlegg.first().journalpostId, hentet.first().vedlegg.first().journalpostId)
-        assertEquals(søknad.vedlegg.first().dokumentInfoId, hentet.first().vedlegg.first().dokumentInfoId)
-        assertEquals(søknad.vedlegg.first().filnavn, hentet.first().vedlegg.first().filnavn)
+        assertEquals(søknad.vedlegg.first().journalpostId, hentet.vedlegg.first().journalpostId)
+        assertEquals(søknad.vedlegg.first().dokumentInfoId, hentet.vedlegg.first().dokumentInfoId)
+        assertEquals(søknad.vedlegg.first().filnavn, hentet.vedlegg.first().filnavn)
     }
 }

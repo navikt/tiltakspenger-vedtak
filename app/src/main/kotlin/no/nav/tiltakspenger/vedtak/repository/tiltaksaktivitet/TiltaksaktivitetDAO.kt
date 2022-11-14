@@ -10,7 +10,7 @@ import org.intellij.lang.annotations.Language
 
 class TiltaksaktivitetDAO {
 
-    fun hentForSøker(innsendingId: InnsendingId, txSession: TransactionalSession): List<Tiltaksaktivitet> {
+    fun hentForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession): List<Tiltaksaktivitet> {
         return txSession.run(
             queryOf(hentTiltaksaktivitet, innsendingId.toString())
                 .map { row -> row.toTiltaksaktivitet() }
@@ -34,7 +34,7 @@ class TiltaksaktivitetDAO {
             queryOf(
                 lagreTiltaksaktivitet, mapOf(
                     "id" to random(ULID_PREFIX_TILTAKSAKTIVITET).toString(),
-                    "sokerId" to innsendingId.toString(),
+                    "innsendingId" to innsendingId.toString(),
                     "tiltak" to tiltaksaktivitet.tiltak.name,
                     "aktivitetId" to tiltaksaktivitet.aktivitetId,
                     "tiltakLokaltNavn" to tiltaksaktivitet.tiltakLokaltNavn,
@@ -81,7 +81,7 @@ class TiltaksaktivitetDAO {
     private val lagreTiltaksaktivitet = """
         insert into tiltaksaktivitet (
             id,
-            søker_id,
+            innsending_id,
             tiltak,
             aktivitet_id,
             tiltak_lokalt_navn,
@@ -97,7 +97,7 @@ class TiltaksaktivitetDAO {
             tidsstempel_hos_oss
         ) values (
             :id, 
-            :sokerId,
+            :innsendingId,
             :tiltak,
             :aktivitetId,
             :tiltakLokaltNavn,
@@ -114,10 +114,10 @@ class TiltaksaktivitetDAO {
         )""".trimIndent()
 
     @Language("SQL")
-    private val slettTiltaksaktivitet = "delete from tiltaksaktivitet where søker_id = ?"
+    private val slettTiltaksaktivitet = "delete from tiltaksaktivitet where innsending_id = ?"
 
     @Language("SQL")
-    private val hentTiltaksaktivitet = "select * from tiltaksaktivitet where søker_id = ?"
+    private val hentTiltaksaktivitet = "select * from tiltaksaktivitet where innsending_id = ?"
 
     companion object {
         private const val ULID_PREFIX_TILTAKSAKTIVITET = "takt"

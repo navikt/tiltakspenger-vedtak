@@ -24,6 +24,7 @@ internal class ArenaTiltakMottattRiverTest {
 
     private companion object {
         const val IDENT = "04927799109"
+        const val JOURNALPOSTID = "foobar2"
     }
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
@@ -43,7 +44,7 @@ internal class ArenaTiltakMottattRiverTest {
     fun `Når ArenaTiltak får en løsning på skjerming, skal den sende en behovsmelding etter ytelser`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
             søknad = Søknad(
                 søknadId = "42",
                 journalpostId = "43",
@@ -75,23 +76,23 @@ internal class ArenaTiltakMottattRiverTest {
                 vedlegg = emptyList(),
             )
         )
-        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = IDENT)
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = JOURNALPOSTID)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
                 innhentet = LocalDateTime.now()
             )
         )
-        val innsending = Innsending(IDENT)
+        val innsending = Innsending(JOURNALPOSTID)
         innsending.håndter(søknadMottatthendelse)
         innsending.håndter(personopplysningerMottatthendelse)
         innsending.håndter(skjermingMottattHendelse)
 
-        every { innsendingRepository.hent(IDENT) } returns innsending
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsending
         testRapid.sendTestMessage(arenaTiltakMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
@@ -106,8 +107,9 @@ internal class ArenaTiltakMottattRiverTest {
     fun `Når vi får en løsning på ArenaTiltak med feil skal vi ikke sende noen melding`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
             søknad = nySøknadMedArenaTiltak(
+                journalpostId = JOURNALPOSTID,
                 ident = IDENT,
             )
         )
@@ -116,19 +118,19 @@ internal class ArenaTiltakMottattRiverTest {
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
                 innhentet = LocalDateTime.now()
             )
         )
-        val innsending = Innsending(IDENT)
+        val innsending = Innsending(JOURNALPOSTID)
         innsending.håndter(søknadMottatthendelse)
         innsending.håndter(personopplysningerMottatthendelse)
         innsending.håndter(skjermingMottattHendelse)
 
-        every { innsendingRepository.hent(IDENT) } returns innsending
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsending
         testRapid.sendTestMessage(arenaTiltakMottattMedFeilEvent())
         with(testRapid.inspektør) {
             assertEquals(0, size)
@@ -144,6 +146,7 @@ internal class ArenaTiltakMottattRiverTest {
              "@id": "test",
              "@behovId": "behovId",
              "ident": "$IDENT",
+             "journalpostId": "$JOURNALPOSTID",
              "testmelding": true,
              "@opprettet": "2022-08-22T14:59:46.491437009",
              "system_read_count": 0,
@@ -194,6 +197,7 @@ internal class ArenaTiltakMottattRiverTest {
              "@id": "test",
              "@behovId": "behovId",
              "ident": "$IDENT",
+             "journalpostId": "$JOURNALPOSTID",
              "testmelding": true,
              "@opprettet": "2022-08-22T14:59:46.491437009",
              "system_read_count": 0,

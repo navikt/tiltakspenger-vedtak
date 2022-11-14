@@ -27,11 +27,11 @@ fun innsendingRegistrert(
 fun innsendingMedSøknad(
     journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
 ): Innsending {
     val innsending = innsendingRegistrert(journalpostId)
     val hendelse = nySøknadMottattHendelse(
-        journalpostId = ident,
+        journalpostId = journalpostId,
         søknad = søknad,
     )
     innsending.håndter(hendelse)
@@ -41,7 +41,7 @@ fun innsendingMedSøknad(
 fun innsendingMedPersonopplysninger(
     journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
@@ -56,7 +56,7 @@ fun innsendingMedPersonopplysninger(
     )
     innsending.håndter(
         nyPersonopplysningHendelse(
-            journalpostId = ident,
+            journalpostId = journalpostId,
             personopplysninger = personopplysninger,
         )
     )
@@ -66,7 +66,7 @@ fun innsendingMedPersonopplysninger(
 fun innsendingMedSkjerming(
     journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
@@ -83,7 +83,7 @@ fun innsendingMedSkjerming(
     )
     søker.håndter(
         nySkjermingHendelse(
-            journalpostId = ident,
+            journalpostId = journalpostId,
             skjerming = skjerming,
         )
     )
@@ -143,7 +143,7 @@ fun innsendingMedYtelse(
     )
     innsending.håndter(
         nyYtelseHendelse(
-            journalpostId = ident,
+            journalpostId = journalpostId,
             ytelseSak = ytelseSak,
         )
     )

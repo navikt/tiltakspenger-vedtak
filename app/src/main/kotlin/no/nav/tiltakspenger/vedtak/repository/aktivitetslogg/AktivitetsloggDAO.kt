@@ -66,7 +66,7 @@ class AktivitetsloggDAO {
     private val lagreAktivitetslogg = """
         insert into aktivitet (
         id, 
-        søker_id, 
+        innsending_id, 
         type,
         alvorlighetsgrad, 
         label, 
@@ -76,7 +76,7 @@ class AktivitetsloggDAO {
         kontekster
         ) values (
         :id, 
-        :sokerId, 
+        :innsendingId, 
         :type,
         :alvorlighetsgrad, 
         :label, 
@@ -89,10 +89,10 @@ class AktivitetsloggDAO {
 
 
     @Language("SQL")
-    private val slettAktiviteter = "delete from aktivitet where søker_id = ?"
+    private val slettAktiviteter = "delete from aktivitet where innsending_id = ?"
 
     @Language("SQL")
-    private val hentAktivitetslogger = "select * from aktivitet where søker_id = ?"
+    private val hentAktivitetslogger = "select * from aktivitet where innsending_id = ?"
 
     fun lagre(innsendingId: InnsendingId, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
         slettAktiviteter(innsendingId, txSession)
@@ -101,7 +101,7 @@ class AktivitetsloggDAO {
                 queryOf(
                     lagreAktivitetslogg, mapOf(
                         "id" to UUID.randomUUID(),
-                        "sokerId" to innsendingId.toString(),
+                        "innsendingId" to innsendingId.toString(),
                         "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
                         "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
                         "label" to aktivitet.label,

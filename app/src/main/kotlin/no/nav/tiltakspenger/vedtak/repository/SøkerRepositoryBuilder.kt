@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository
 
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.TiltakDAO

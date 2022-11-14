@@ -22,6 +22,7 @@ internal class ArenaYtelseMottattRiverTest {
 
     private companion object {
         const val IDENT = "04927799109"
+        const val JOURNALPOSTID = "foobar"
     }
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
@@ -43,6 +44,7 @@ internal class ArenaYtelseMottattRiverTest {
             aktivitetslogg = Aktivitetslogg(forelder = null),
             journalpostId = IDENT,
             søknad = nySøknadMedArenaTiltak(
+                journalpostId = JOURNALPOSTID,
                 ident = IDENT,
             )
         )
@@ -61,7 +63,7 @@ internal class ArenaYtelseMottattRiverTest {
 
         val tiltakMottattHendelse = ArenaTiltakMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = JOURNALPOSTID,
             tiltaksaktivitet = listOf(
                 Tiltaksaktivitet(
                     tiltak = Tiltaksaktivitet.Tiltak.ARBRRHDAG,
@@ -100,6 +102,7 @@ internal class ArenaYtelseMottattRiverTest {
              ],
              "@id": "test",
              "@behovId": "behovId",
+             "journalpostId": "$JOURNALPOSTID",
              "ident": "$IDENT",
              "fom": "2019-10-01",
              "tom": "2022-06-01",

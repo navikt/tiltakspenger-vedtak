@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.repository.søker.InMemoryInnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.innsending.InMemoryInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 internal class SøknadMottattRiverTest {
 
     private companion object {
+        const val JOURNALPOSTID = "foobar4"
         const val IDENT = "04927799109"
     }
 
@@ -42,8 +43,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -58,8 +60,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -74,8 +77,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -90,8 +94,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -106,8 +111,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -122,8 +128,9 @@ internal class SøknadMottattRiverTest {
             // De følgende feiler hvis feltet ikke er satt
             field(0, "@id").asText()
             field(0, "ident").asText()
+            field(0, "journalpostId").asText()
             field(0, "@behovId").asText()
-            assertEquals("SøkerRegistrert", field(0, "tilstandtype").asText())
+            assertEquals("InnsendingRegistrert", field(0, "tilstandtype").asText())
             assertEquals(IDENT, field(0, "ident").asText())
         }
     }
@@ -134,7 +141,7 @@ internal class SøknadMottattRiverTest {
           "@event_name": "søknad_mottatt",
           "søknad": {
             "søknadId": "whatever",
-            "journalpostId": "whatever2",
+            "journalpostId": "$JOURNALPOSTID",
             "dokumentInfoId": "whatever3",
             "id": "13306",
             "fornavn": "LEVENDE",
@@ -186,7 +193,7 @@ internal class SøknadMottattRiverTest {
               "@event_name": "søknad_mottatt",
               "søknad": {
                 "søknadId": "13524",
-                "journalpostId": "573780649",
+                "journalpostId": "$JOURNALPOSTID",
                 "dokumentInfoId": "599042477",
                 "fornavn": "UNYTTIG",
                 "etternavn": "FILTER",
@@ -240,7 +247,7 @@ internal class SøknadMottattRiverTest {
               "@event_name": "søknad_mottatt",
               "søknad": {
                 "søknadId": "13521",
-                "journalpostId": "573780628",
+                "journalpostId": "$JOURNALPOSTID",
                 "dokumentInfoId": "599042454",
                 "fornavn": "DYPSINDIG",
                 "etternavn": "IDÉ",
@@ -317,7 +324,7 @@ internal class SøknadMottattRiverTest {
               "@event_name": "søknad_mottatt",
               "søknad": {
                 "søknadId": "13521",
-                "journalpostId": "573780628",
+                "journalpostId": "$JOURNALPOSTID",
                 "dokumentInfoId": "599042454",
                 "fornavn": "DYPSINDIG",
                 "etternavn": "IDÉ",
@@ -392,7 +399,7 @@ internal class SøknadMottattRiverTest {
               "@event_name": "søknad_mottatt",
               "søknad": {
                 "søknadId": "13521",
-                "journalpostId": "573780628",
+                "journalpostId": "$JOURNALPOSTID",
                 "dokumentInfoId": "599042454",
                 "fornavn": "DYPSINDIG",
                 "etternavn": "IDÉ",
@@ -460,7 +467,7 @@ internal class SøknadMottattRiverTest {
           "@event_name": "søknad_mottatt",
           "søknad": {
             "søknadId": "whatever",
-            "journalpostId": "whatever2",
+            "journalpostId": "$JOURNALPOSTID",
             "dokumentInfoId": "whatever3",
             "id": "13306",
             "fornavn": "LEVENDE",
@@ -513,6 +520,7 @@ internal class SøknadMottattRiverTest {
             "@opprettet" : "2022-06-27T11:36:31.346814",
             "@id": "ed2fc977-2188-4bac-be16-7226dba5b9ea", 
             "@behov" : [ "Journalpost "],
+            "journalpostId" : "whatever",
             "ident" : "124567",
             "tilstand" : "MottattType", 
             "system_read_count" : 0,

@@ -25,12 +25,12 @@ internal class InnsendingTest {
 
         innsending.aktivitetslogg.aktiviteter.size shouldBe 2
         innsending.aktivitetslogg.aktiviteter.first().melding shouldBe "Registrert SøknadMottattHendelse"
-        innsending.aktivitetslogg.aktiviteter.last().melding shouldBe "søknad ${søknad.søknadId} er motttatt og lagret tidligere"
-        innsending.aktivitetslogg.aktiviteter.last().alvorlighetsgrad shouldBe 0
-        innsending.aktivitetslogg.aktiviteter.last().label shouldBe 'I'
+        innsending.aktivitetslogg.aktiviteter.last().melding shouldBe "Forventet ikke SøknadMottattHendelse i AvventerPersonopplysninger"
+        innsending.aktivitetslogg.aktiviteter.last().alvorlighetsgrad shouldBe 25
+        innsending.aktivitetslogg.aktiviteter.last().label shouldBe 'W'
         innsending.aktivitetslogg.aktiviteter.last().kontekster.map { it.melding() } shouldContainExactly listOf(
-            "SøknadMottattHendelse - ident: ${innsending.ident}",
-            "Søker - ident: ${innsending.ident}",
+            "SøknadMottattHendelse - journalpostId: ${innsending.journalpostId}",
+            "Innsending - journalpostId: ${innsending.journalpostId}",
             "Tilstand - tilstandtype: AvventerPersonopplysninger"
         )
         innsending.aktivitetslogg.aktiviteter.filter { it.alvorlighetsgrad == 50 }.size shouldBe 0

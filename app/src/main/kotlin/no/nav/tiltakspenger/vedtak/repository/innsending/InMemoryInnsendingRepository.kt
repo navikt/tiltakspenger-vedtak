@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.søker
+package no.nav.tiltakspenger.vedtak.repository.innsending
 
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository

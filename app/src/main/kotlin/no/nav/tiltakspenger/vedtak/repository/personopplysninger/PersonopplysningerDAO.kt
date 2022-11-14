@@ -65,7 +65,7 @@ internal class PersonopplysningerDAO(
             queryOf(
                 lagreSql, mapOf(
                     "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGER).toString(),
-                    "sokerId" to innsendingId.toString(),
+                    "innsendingId" to innsendingId.toString(),
                     "ident" to personopplysninger.ident,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
@@ -104,16 +104,16 @@ internal class PersonopplysningerDAO(
     }
 
     @Language("SQL")
-    private val slettSql = "delete from personopplysninger_søker where søker_id = ?"
+    private val slettSql = "delete from personopplysninger_søker where innsending_id = ?"
 
     @Language("SQL")
-    private val hentSql = "select * from personopplysninger_søker where søker_id = ?"
+    private val hentSql = "select * from personopplysninger_søker where innsending_id = ?"
 
     @Language("SQL")
     private val lagreSql = """
         insert into personopplysninger_søker (
             id,
-            søker_id,        
+            innsending_id,        
             ident,           
             fødselsdato,     
             fornavn,         
@@ -128,7 +128,7 @@ internal class PersonopplysningerDAO(
             tidsstempel_hos_oss            
         ) values (
             :id,
-            :sokerId,
+            :innsendingId,
             :ident,             
             :fodselsdato,   
             :fornavn,           

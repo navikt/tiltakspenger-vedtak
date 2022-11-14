@@ -26,7 +26,7 @@ internal class PersonopplysningerBarnUtenIdentDAO {
             queryOf(
                 lagreSql, mapOf(
                     "id" to random(ULID_PREFIX_BARN_UTEN_IDENT).toString(),
-                    "sokerId" to innsendingId.toString(),
+                    "innsendingId" to innsendingId.toString(),
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
                     "mellomnavn" to personopplysninger.mellomnavn,
@@ -51,16 +51,16 @@ internal class PersonopplysningerBarnUtenIdentDAO {
     }
 
     @Language("SQL")
-    private val slettSql = "delete from personopplysninger_barn_uten_ident where søker_id = ?"
+    private val slettSql = "delete from personopplysninger_barn_uten_ident where innsending_id = ?"
 
     @Language("SQL")
-    private val hentSql = "select * from personopplysninger_barn_uten_ident where søker_id = ?"
+    private val hentSql = "select * from personopplysninger_barn_uten_ident where innsending_id = ?"
 
     @Language("SQL")
     private val lagreSql = """
         insert into personopplysninger_barn_uten_ident (
             id,
-            søker_id,        
+            innsending_id,        
             fødselsdato,     
             fornavn,         
             mellomnavn,      
@@ -68,7 +68,7 @@ internal class PersonopplysningerBarnUtenIdentDAO {
             tidsstempel_hos_oss            
         ) values (
             :id,
-            :sokerId,
+            :innsendingId,
             :fodselsdato,   
             :fornavn,           
             :mellomnavn,        

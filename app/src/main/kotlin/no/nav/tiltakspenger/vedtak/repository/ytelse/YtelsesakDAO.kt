@@ -12,7 +12,7 @@ import org.intellij.lang.annotations.Language
 class YtelsesakDAO(
     private val ytelsevedtakDAO: YtelsevedtakDAO = YtelsevedtakDAO(),
 ) {
-    fun hentForSøker(innsendingId: InnsendingId, txSession: TransactionalSession): List<YtelseSak> {
+    fun hentForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession): List<YtelseSak> {
         return txSession.run(
             queryOf(hentYtelsesak, innsendingId.toString())
                 .map { row -> row.toYtelsesak(txSession) }
@@ -33,7 +33,7 @@ class YtelsesakDAO(
             queryOf(
                 lagreYtelseSak, mapOf(
                     "id" to id.toString(),
-                    "sokerId" to innsendingId.toString(),
+                    "innsendingId" to innsendingId.toString(),
                     "fomGyldighetsperiode" to ytelseSak.fomGyldighetsperiode,
                     "tomGyldighetsperiode" to ytelseSak.tomGyldighetsperiode,
                     "datoKravMottatt" to ytelseSak.datoKravMottatt,
@@ -75,7 +75,7 @@ class YtelsesakDAO(
     private val lagreYtelseSak = """
         insert into ytelsesak (
             id,
-            søker_id,
+            innsending_id,
             fom_gyldighetsperiode,
             tom_gyldighetsperiode,
             dato_krav_mottatt,
@@ -88,7 +88,7 @@ class YtelsesakDAO(
             tidsstempel_hos_oss
         ) values (
             :id, 
-            :sokerId,
+            :innsendingId,
             :fomGyldighetsperiode,
             :tomGyldighetsperiode,
             :datoKravMottatt,
@@ -102,10 +102,10 @@ class YtelsesakDAO(
         )""".trimIndent()
 
     @Language("SQL")
-    private val slettYtelsesak = "delete from ytelsesak where søker_id = ?"
+    private val slettYtelsesak = "delete from ytelsesak where innsending_id = ?"
 
     @Language("SQL")
-    private val hentYtelsesak = "select * from ytelsesak where søker_id = ?"
+    private val hentYtelsesak = "select * from ytelsesak where innsending_id = ?"
 
     companion object {
         private const val ULID_PREFIX_YTELSE = "ayt"

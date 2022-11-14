@@ -109,7 +109,7 @@ class Innsending private constructor(
         fun fromDb(
             id: InnsendingId,
             journalpostId: String,
-            ident: String,
+            ident: String?,
             tilstand: String,
             søknad: Søknad?,
             tiltak: List<Tiltaksaktivitet>,
@@ -145,66 +145,66 @@ class Innsending private constructor(
     }
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
-        if (ident != søknadMottattHendelse.journalpostId()) return
+        if (journalpostId != søknadMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(søknadMottattHendelse, "Registrert SøknadMottattHendelse")
         if (erFerdigBehandlet()) {
-            søknadMottattHendelse.error("ident ${søknadMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            søknadMottattHendelse.error("journalpostId ${søknadMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
     fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-        if (ident != personopplysningerMottattHendelse.journalpostId()) return
+        if (journalpostId != personopplysningerMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
             personopplysningerMottattHendelse
-                .error("ident ${personopplysningerMottattHendelse.journalpostId()} allerede ferdig behandlet")
+                .error("journalpostId ${personopplysningerMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, personopplysningerMottattHendelse)
     }
 
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
-        if (ident != skjermingMottattHendelse.journalpostId()) return
+        if (journalpostId != skjermingMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(skjermingMottattHendelse, "Registrert SkjermingMottattHendelse")
         if (erFerdigBehandlet()) {
-            skjermingMottattHendelse.error("ident ${skjermingMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            skjermingMottattHendelse.error("journalpostId ${skjermingMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, skjermingMottattHendelse)
     }
 
     fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-        if (ident != arenaTiltakMottattHendelse.journalpostId()) return
+        if (journalpostId != arenaTiltakMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(arenaTiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
         if (erFerdigBehandlet()) {
-            arenaTiltakMottattHendelse.error("ident ${arenaTiltakMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            arenaTiltakMottattHendelse.error("journalpostId ${arenaTiltakMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, arenaTiltakMottattHendelse)
     }
 
     fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
-        if (ident != ytelserMottattHendelse.journalpostId()) return
+        if (journalpostId != ytelserMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(ytelserMottattHendelse, "Registrert YtelserMottattHendelse")
         if (erFerdigBehandlet()) {
-            ytelserMottattHendelse.error("ident ${ytelserMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            ytelserMottattHendelse.error("journalpostId ${ytelserMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, ytelserMottattHendelse)

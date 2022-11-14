@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.søker
+package no.nav.tiltakspenger.vedtak.repository.innsending
 
 import kotliquery.Row
 import kotliquery.TransactionalSession
@@ -37,11 +37,11 @@ internal class PostgresInnsendingRepository(
     }
 
     private fun hentMedTxSession(
-        ident: String,
+        journalpostId: String,
         txSession: TransactionalSession
     ): Innsending? {
         return txSession.run(
-            queryOf(hent, ident).map { row ->
+            queryOf(hent, journalpostId).map { row ->
                 row.toInnsending(txSession)
             }.asSingle
         )
@@ -83,8 +83,8 @@ internal class PostgresInnsendingRepository(
     override fun findBySøknadId(søknadId: String): Innsending? {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                return søknadDAO.finnIdent(søknadId, txSession)
-                    ?.let { ident -> this.hentMedTxSession(ident, txSession) }
+                return søknadDAO.finnJournalpostId(søknadId, txSession)
+                    ?.let { journalpostId -> this.hentMedTxSession(journalpostId, txSession) }
             }
         }
     }
@@ -98,11 +98,11 @@ internal class PostgresInnsendingRepository(
         return Innsending.fromDb(
             id = id,
             journalpostId = string("journalpost_id"),
-            ident = string("ident"),
+            ident = stringOrNull("ident"),
             tilstand = string("tilstand"),
             søknad = søknadDAO.hent(id, txSession),
-            tiltak = tiltaksaktivitetDAO.hentForSøker(id, txSession),
-            ytelser = ytelsesakDAO.hentForSøker(id, txSession),
+            tiltak = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
+            ytelser = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysninger = personopplysningerDAO.hent(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
@@ -151,7 +151,7 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val oppdater =
-        """update søker set 
+        """update innsending set 
               tilstand = :tilstand, 
               sist_endret = :sistEndret
            where id = :id
@@ -161,5 +161,5 @@ internal class PostgresInnsendingRepository(
     private val finnes = "select exists(select 1 from innsending where journalpost_id = ?)"
 
     @Language("SQL")
-    private val hent = "select * from søker where journalpost_id = ?"
+    private val hent = "select * from innsending where journalpost_id = ?"
 }

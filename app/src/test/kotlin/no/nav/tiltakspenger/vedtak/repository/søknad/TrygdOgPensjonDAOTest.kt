@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -46,7 +46,7 @@ internal class TrygdOgPensjonDAOTest {
         val søknad = enSøknad(søknadId, ident)
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
         val trygdOgPensjonMedNull = TrygdOgPensjon(

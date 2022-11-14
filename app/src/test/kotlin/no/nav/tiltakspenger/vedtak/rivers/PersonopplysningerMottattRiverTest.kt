@@ -38,18 +38,20 @@ internal class PersonopplysningerMottattRiverTest {
     @Suppress("LongMethod")
     @Test
     fun `Når PersonopplysningerRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
+        val journalpostId = "foobar3"
         val ident = "04927799109"
         val personopplysningerMottattHendelse =
             File("src/test/resources/personopplysningerMottattHendelse.json").readText()
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = ident,
+            journalpostId = journalpostId,
             søknad = nySøknadMedArenaTiltak(
                 ident = ident,
+                journalpostId = journalpostId,
             )
         )
-        val innsending = Innsending(ident)
-        every { innsendingRepository.hent(ident) } returns innsending
+        val innsending = Innsending(journalpostId)
+        every { innsendingRepository.hent(journalpostId) } returns innsending
 
         innsending.håndter(søknadMottattHendelse)
         testRapid.sendTestMessage(personopplysningerMottattHendelse)
@@ -60,11 +62,11 @@ internal class PersonopplysningerMottattRiverTest {
             assertEquals("behov", field(0, "@event_name").asText())
             assertEquals("skjerming", field(0, "@behov")[0].asText())
             assertEquals(InnsendingTilstandType.AvventerPersonopplysninger.name, field(0, "tilstandtype").asText())
-            assertEquals(ident, field(0, "ident").asText())
+            assertEquals(journalpostId, field(0, "journalpostId").asText())
             verify {
                 mediatorSpy.håndter(
                     withArg<PersonopplysningerMottattHendelse> {
-                        assertEquals(ident, it.journalpostId())
+                        assertEquals(journalpostId, it.journalpostId())
                         val søkerMedPersonoppl =
                             it.personopplysninger().filterIsInstance<Personopplysninger.Søker>().first()
                         assertEquals(ident, søkerMedPersonoppl.ident)

@@ -90,7 +90,7 @@ class YtelsevedtakDAO {
 
     @Language("SQL")
     private val slettYtelsevedtak =
-        "delete from ytelsevedtak where ytelsesak_id in (select id from ytelsesak where søker_id = ?)"
+        "delete from ytelsevedtak where ytelsesak_id in (select id from ytelsesak where innsending_id = ?)"
 
     @Language("SQL")
     private val hentYtelsevedtak = "select * from ytelsevedtak where ytelsesak_id = ?"

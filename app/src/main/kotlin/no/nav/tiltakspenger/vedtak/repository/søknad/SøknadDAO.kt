@@ -25,6 +25,14 @@ internal class SøknadDAO(
         )
     }
 
+    fun finnJournalpostId(søknadId: String, txSession: TransactionalSession): String? {
+        return txSession.run(
+            queryOf(hentIdent, søknadId)
+                .map { row -> row.toJournalpostId() }
+                .asSingle
+        )
+    }
+
     fun hent(innsendingId: InnsendingId, txSession: TransactionalSession): Søknad? {
         return txSession.run(
             queryOf(hent, innsendingId.toString())
@@ -104,6 +112,8 @@ internal class SøknadDAO(
     }
 
     private fun Row.toIdent() = string("ident")
+
+    private fun Row.toJournalpostId() = string("journalpost_id")
 
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = SøknadId.fromDb(string("id"))
