@@ -14,14 +14,14 @@ internal class SøknadMottattRiverTest {
         const val IDENT = "04927799109"
     }
 
-    private val søkerRepository = InMemoryInnsendingRepository()
+    private val repository = InMemoryInnsendingRepository()
     private val testRapid = TestRapid()
 
     init {
         SøknadMottattRiver(
             rapidsConnection = testRapid,
             innsendingMediator = InnsendingMediator(
-                innsendingRepository = søkerRepository,
+                innsendingRepository = repository,
                 rapidsConnection = testRapid
             )
         )
@@ -30,7 +30,7 @@ internal class SøknadMottattRiverTest {
     @BeforeEach
     fun reset() {
         testRapid.reset()
-        søkerRepository.reset()
+        repository.reset()
     }
 
     @Test

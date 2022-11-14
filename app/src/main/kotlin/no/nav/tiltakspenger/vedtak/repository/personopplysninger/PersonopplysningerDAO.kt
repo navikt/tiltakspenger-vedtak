@@ -21,7 +21,7 @@ internal class PersonopplysningerDAO(
         innsendingId: InnsendingId,
         txSession: TransactionalSession,
     ): List<Personopplysninger> {
-        val søker = hentPersonopplysningerForSøker(innsendingId, txSession) ?: return emptyList()
+        val søker = hentPersonopplysningerForInnsending(innsendingId, txSession) ?: return emptyList()
         val barnMedIdent = barnMedIdentDAO.hent(innsendingId, txSession)
         val barnUtenIdent = barnUtenIdentDAO.hent(innsendingId, txSession)
 
@@ -52,7 +52,7 @@ internal class PersonopplysningerDAO(
         }
     }
 
-    private fun hentPersonopplysningerForSøker(innsendingId: InnsendingId, txSession: TransactionalSession) =
+    private fun hentPersonopplysningerForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession) =
         txSession.run(queryOf(hentSql, innsendingId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(

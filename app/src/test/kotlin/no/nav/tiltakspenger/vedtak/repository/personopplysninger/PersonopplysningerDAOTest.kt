@@ -33,14 +33,14 @@ internal class PersonopplysningerDAOTest {
     }
 
     private val dao = PersonopplysningerDAO()
-    private val søkerRepository = PostgresInnsendingRepository()
+    private val repository = PostgresInnsendingRepository()
 
     @Test
     fun `lagre og hent`() {
         // given
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningMaxFyr(ident))
 
         // when
@@ -63,7 +63,7 @@ internal class PersonopplysningerDAOTest {
         // given
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningKjedeligFyr(ident = ident))
 
         // when
@@ -100,7 +100,7 @@ internal class PersonopplysningerDAOTest {
         // given
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val gamlePersonopplysninger = personopplysningKjedeligFyr(ident, strengtFortroligUtland = false)
 
         // when
@@ -136,7 +136,7 @@ internal class PersonopplysningerDAOTest {
         val barn2 = barn()
         val personopplysninger = personopplysningKjedeligFyr(ident = ident)
 
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
 
         val personopplysningListe = listOf(personopplysninger, barn1, barn2)
         sessionOf(DataSource.hikariDataSource).use {

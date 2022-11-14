@@ -32,10 +32,6 @@ data class Søknad(
         fun randomId() = SøknadId.random()
     }
 
-    fun accept(visitor: SøkerVisitor) {
-        visitor.visitSøknad(this)
-    }
-
     override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss

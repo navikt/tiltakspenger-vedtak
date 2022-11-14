@@ -75,19 +75,19 @@ fun innsendingMedSkjerming(
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Innsending {
-    val søker = innsendingMedPersonopplysninger(
+    val innsending = innsendingMedPersonopplysninger(
         journalpostId = journalpostId,
         ident = ident,
         søknad = søknad,
         personopplysninger = personopplysninger,
     )
-    søker.håndter(
+    innsending.håndter(
         nySkjermingHendelse(
             journalpostId = journalpostId,
             skjerming = skjerming,
         )
     )
-    return søker
+    return innsending
 }
 
 fun innsendingMedTiltak(

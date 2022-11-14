@@ -31,7 +31,7 @@ import kotlin.reflect.full.declaredMemberProperties
 @Testcontainers
 internal class SøknadDAOTest {
     private val søknadDAO = SøknadDAO()
-    private val søkerRepository = PostgresInnsendingRepository(søknadDAO)
+    private val repository = PostgresInnsendingRepository(søknadDAO)
 
     companion object {
         @Container
@@ -47,7 +47,7 @@ internal class SøknadDAOTest {
     fun `lagre og hente med null-felter`() {
         val ident = "3"
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val søknad = Søknad(
@@ -103,7 +103,7 @@ internal class SøknadDAOTest {
     fun `lagre og hente med null-felter og underliggende klasser`() {
         val ident = "4"
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val søknad = Søknad(
@@ -185,7 +185,7 @@ internal class SøknadDAOTest {
     fun `lagre og hente med fyllte felter og underliggende klasser`() {
         val ident = "5"
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val tiltak = Tiltak.ArenaTiltak(

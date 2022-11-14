@@ -30,34 +30,34 @@ class YtelsevedtakDAOTest {
     }
 
     @Test
-    fun `lagre hele søker med ytelser og vedtak med null verdier og hente den ut igjen`() {
+    fun `lagre hele innsending med ytelser og vedtak med null verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
+        val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = innsendingMedYtelse(
+        val innsending = innsendingMedYtelse(
             ident = ident,
             ytelseSak = listOf(ytelseSak(vedtak = listOf(tomYtelsevedtak())))
         )
 
-        søkerRepository.lagre(søker)
+        repository.lagre(innsending)
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
             }
         }
 
         hentet.size shouldBe 1
-        hentet.first() shouldBe søker.ytelser.first()
+        hentet.first() shouldBe innsending.ytelser.first()
     }
 
     @Test
-    fun `lagre søker med ytelser og vedtak med null verdier og hente den ut igjen`() {
+    fun `lagre innsending med ytelser og vedtak med null verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
+        val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = innsendingMedTiltak(ident = ident)
-        søkerRepository.lagre(søker)
+        val innsending = innsendingMedTiltak(ident = ident)
+        repository.lagre(innsending)
 
         val ytelseSak = ytelseSak(
             vedtak = listOf(tomYtelsevedtak())
@@ -65,13 +65,13 @@ class YtelsevedtakDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.lagre(søker.id, listOf(ytelseSak), txSession)
+                ytelsesakDAO.lagre(innsending.id, listOf(ytelseSak), txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
             }
         }
 
@@ -80,24 +80,24 @@ class YtelsevedtakDAOTest {
     }
 
     @Test
-    fun `lagre søker med ytelser og vedtak med verdier og hente den ut igjen`() {
+    fun `lagre innsending med ytelser og vedtak med verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
+        val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = innsendingMedYtelse(
+        val innsending = innsendingMedYtelse(
             ident = ident,
             ytelseSak = listOf(ytelseSak(vedtak = listOf(ytelseVedtak())))
         )
 
-        søkerRepository.lagre(søker)
+        repository.lagre(innsending)
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForInnsending(innsendingId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
             }
         }
 
         hentet.size shouldBe 1
-        hentet.first() shouldBe søker.ytelser.first()
+        hentet.first() shouldBe innsending.ytelser.first()
     }
 }

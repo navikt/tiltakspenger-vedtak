@@ -30,12 +30,12 @@ internal class SøknadServiceTest {
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val søker = innsendingMedPersonopplysninger(
+        val innsending = innsendingMedPersonopplysninger(
             ident = ident,
             søknad = søknad,
         )
 
-        every { repo.findBySøknadId(søknad.søknadId) } returns søker
+        every { repo.findBySøknadId(søknad.søknadId) } returns innsending
 
         val behandlingDTO = service.hentBehandlingAvSøknad(søknad.søknadId, saksbehandler())
 
@@ -51,12 +51,12 @@ internal class SøknadServiceTest {
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val søker = innsendingMedSøknad(
+        val innsending = innsendingMedSøknad(
             ident = ident,
             søknad = søknad,
         )
 
-        every { repo.findBySøknadId(søknad.søknadId) } returns søker
+        every { repo.findBySøknadId(søknad.søknadId) } returns innsending
 
         assertThrows<TilgangException> {
             service.hentBehandlingAvSøknad(søknad.søknadId, saksbehandler())

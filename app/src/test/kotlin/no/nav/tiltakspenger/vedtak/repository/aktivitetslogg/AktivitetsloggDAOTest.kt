@@ -31,8 +31,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre`() {
-        val søker = innsendingRegistrert()
-        PostgresInnsendingRepository().lagre(søker)
+        val innsending = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(innsending)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -41,13 +41,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, aktivitetslogg, txSession)
+                dao.lagre(innsending.id, aktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 
@@ -56,8 +56,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne hente en aktivitetslogg med flere aktiviteter`() {
-        val søker = innsendingRegistrert()
-        PostgresInnsendingRepository().lagre(søker)
+        val innsending = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(innsending)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -74,13 +74,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, aktivitetslogg, txSession)
+                dao.lagre(innsending.id, aktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 
@@ -89,8 +89,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre og hente en aktivitetslogg flere ganger og legge til nye aktiviteter, men få riktig rekkefølge`() {
-        val søker = innsendingRegistrert()
-        PostgresInnsendingRepository().lagre(søker)
+        val innsending = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(innsending)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -102,13 +102,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, aktivitetslogg, txSession)
+                dao.lagre(innsending.id, aktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 
@@ -120,13 +120,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, hentetAktivitetslogg, txSession)
+                dao.lagre(innsending.id, hentetAktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg2 = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 
@@ -135,8 +135,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre behov`() {
-        val søker = innsendingRegistrert()
-        PostgresInnsendingRepository().lagre(søker)
+        val innsending = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(innsending)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.behov(
@@ -152,13 +152,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, aktivitetslogg, txSession)
+                dao.lagre(innsending.id, aktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 
@@ -167,11 +167,11 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre og hente kontekster`() {
-        val søker = innsendingRegistrert()
-        PostgresInnsendingRepository().lagre(søker)
+        val innsending = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(innsending)
 
         val aktivitetslogg = Aktivitetslogg()
-        aktivitetslogg.addKontekst(søker)
+        aktivitetslogg.addKontekst(innsending)
         aktivitetslogg.addKontekst(object : KontekstLogable {
             override fun opprettKontekst() = Kontekst("testType", mapOf("foo" to "bar"))
         })
@@ -181,13 +181,13 @@ internal class AktivitetsloggDAOTest {
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.lagre(søker.id, aktivitetslogg, txSession)
+                dao.lagre(innsending.id, aktivitetslogg, txSession)
             }
         }
 
         val hentetAktivitetslogg = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                dao.hent(søker.id, txSession)
+                dao.hent(innsending.id, txSession)
             }
         }
 

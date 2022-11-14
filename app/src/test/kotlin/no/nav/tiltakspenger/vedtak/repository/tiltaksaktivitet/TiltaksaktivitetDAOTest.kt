@@ -33,10 +33,10 @@ internal class TiltaksaktivitetDAOTest {
     @Test
     fun `lagre og hente med null felter`() {
         val tiltaksaktivitetDAO = TiltaksaktivitetDAO()
-        val søkerRepository = PostgresInnsendingRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
+        val repository = PostgresInnsendingRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
 
         val tidspunkt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
@@ -74,10 +74,10 @@ internal class TiltaksaktivitetDAOTest {
     @Test
     fun `lagre og hente med non-null felter`() {
         val tiltaksaktivitetDAO = TiltaksaktivitetDAO()
-        val søkerRepository = PostgresInnsendingRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
+        val repository = PostgresInnsendingRepository(tiltaksaktivitetDAO = tiltaksaktivitetDAO)
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
 
         val tidspunkt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 

@@ -36,12 +36,12 @@ internal class BarnetilleggDAOTest {
     }
 
     @Test
-    fun `lagre barnetillegg og hente de ut igjen (må dessverre lagre både søker og søknad pga foreign keys)`() {
+    fun `lagre barnetillegg og hente de ut igjen (må dessverre lagre både innsending og søknad pga foreign keys)`() {
         val søknadDAO = SøknadDAO()
-        val søkerRepository = PostgresInnsendingRepository(søknadDAO)
+        val repository = PostgresInnsendingRepository(søknadDAO)
         val ident = Random().nextInt().toString()
         val innsending = Innsending(ident)
-        søkerRepository.lagre(innsending)
+        repository.lagre(innsending)
         val søknadId = Søknad.randomId()
         val søknad = enSøknad(søknadId, ident)
         sessionOf(DataSource.hikariDataSource).use {

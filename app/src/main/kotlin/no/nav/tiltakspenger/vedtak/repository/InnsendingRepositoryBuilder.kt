@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.TiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.TrygdOgPensjonDAO
 
-object SøkerRepositoryBuilder {
+object InnsendingRepositoryBuilder {
     internal fun build(): PostgresInnsendingRepository {
         return PostgresInnsendingRepository(
             søknadDAO = SøknadDAO(

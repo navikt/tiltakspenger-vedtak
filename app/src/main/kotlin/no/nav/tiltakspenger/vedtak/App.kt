@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepositoryBuilder
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
@@ -26,9 +26,9 @@ fun main() {
         securelog.error(e) { e.message }
     }
 
-    val søkerRepository = SøkerRepositoryBuilder.build()
-    val søkerService = SøkerServiceImpl(søkerRepository)
-    val søknadService = SøknadServiceImpl(søkerRepository)
+    val innsendingRepository = InnsendingRepositoryBuilder.build()
+    val søkerService = SøkerServiceImpl(innsendingRepository)
+    val søknadService = SøknadServiceImpl(innsendingRepository)
 
     RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
@@ -44,7 +44,7 @@ fun main() {
         .build()
         .also {
             val innsendingMediator = InnsendingMediator(
-                innsendingRepository = søkerRepository,
+                innsendingRepository = innsendingRepository,
                 rapidsConnection = it,
                 observatører = listOf()
             )

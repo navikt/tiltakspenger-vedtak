@@ -45,7 +45,7 @@ class YtelsevedtakDAO {
         txSession.run(queryOf(slettYtelsevedtak, ytelsesakId.toString()).asUpdate)
     }
 
-    fun slettVedtakForSøker(innsendingId: InnsendingId, txSession: TransactionalSession) {
+    fun slettVedtakForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession) {
         txSession.run(queryOf(slettYtelsevedtak, innsendingId.toString()).asUpdate)
     }
 
