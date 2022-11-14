@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.service.søknad
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
@@ -24,17 +24,17 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsv
 import java.time.LocalDate
 
 class BehandlingMapper {
-    fun mapSøkerMedSøknad(søker: Søker, søknadId: String): BehandlingDTO? {
-        val søknad = søker.søknader.firstOrNull { it.søknadId == søknadId } ?: return null
+    fun mapInnsendingMedSøknad(innsending: Innsending): BehandlingDTO? {
+        val søknad = innsending.søknad ?: return null
         val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
-        val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)
+        val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
 
         return BehandlingDTO(
             personopplysninger = PersonopplysningerDTO(
-                fornavn = søker.personopplysningerSøker()?.fornavn,
-                etternavn = søker.personopplysningerSøker()?.etternavn,
-                ident = søker.personopplysningerSøker()?.ident ?: søknad.ident,
-                barn = mapBarn(søker)
+                fornavn = innsending.personopplysningerSøker()?.fornavn,
+                etternavn = innsending.personopplysningerSøker()?.etternavn,
+                ident = innsending.personopplysningerSøker()?.ident ?: søknad.ident,
+                barn = mapBarn(innsending)
             ),
             søknad = SøknadDTO(
                 søknadId = søknad.søknadId,
@@ -51,7 +51,7 @@ class BehandlingMapper {
                     (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
                 } else null,
             ),
-            registrerteTiltak = søker.tiltak.map {
+            registrerteTiltak = innsending.tiltak.map {
                 TiltakDTO(
                     arrangør = it.arrangør,
                     navn = it.tiltak.navn,
@@ -134,7 +134,7 @@ class BehandlingMapper {
             detaljer = vurdering.detaljer,
         )
 
-    private fun mapBarn(søker: Søker) = listOf<BarnDTO>()
+    private fun mapBarn(innsending: Innsending) = listOf<BarnDTO>()
     /*
     søker.personopplysningerBarnMedIdent().map {
         BarnDTO(
@@ -154,13 +154,13 @@ class BehandlingMapper {
      */
 
     private fun vilkårsvurderinger(
-        søker: Søker,
+        innsending: Innsending,
         vurderingsperiode: Periode,
         søknad: Søknad
     ) = Inngangsvilkårsvurderinger(
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
-            aap = AAPVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
-            dagpenger = DagpengerVilkårsvurdering(ytelser = søker.ytelser, vurderingsperiode = vurderingsperiode),
+            aap = AAPVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
+            dagpenger = DagpengerVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
         ),
         kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),

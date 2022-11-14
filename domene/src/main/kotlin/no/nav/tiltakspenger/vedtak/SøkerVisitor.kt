@@ -14,11 +14,11 @@ interface SkjermingVisitor {
 }
 
 interface SøkerVisitor : SøknadVisitor, PersonopplysningerVisitor, IAktivitetsloggVisitor, SkjermingVisitor {
-    fun preVisitSøker(søker: Søker, ident: String) {}
-    fun visitTilstand(tilstandType: Søker.Tilstand) {}
+    fun preVisitSøker(innsending: Innsending, ident: String) {}
+    fun visitTilstand(tilstandType: Innsending.Tilstand) {}
 
     //Skal såvidt jeg har skjønt ha dataene som er rett på Søker, men det er ingenting pt
     //fun visitSøker() {}
     fun visitSøkerAktivitetslogg(aktivitetslogg: Aktivitetslogg) {}
-    fun postVisitSøker(søker: Søker, ident: String) {}
+    fun postVisitSøker(innsending: Innsending, ident: String) {}
 }

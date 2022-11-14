@@ -13,7 +13,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakStatus
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype
@@ -27,7 +27,7 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class ArenaYtelserMottattRiver(
-    private val søkerMediator: SøkerMediator,
+    private val innsendingMediator: InnsendingMediator,
     rapidsConnection: RapidsConnection,
 ) : River.PacketListener {
 
@@ -44,6 +44,7 @@ internal class ArenaYtelserMottattRiver(
                 it.demandAllOrAny("@behov", listOf("arenaytelser"))
                 it.demandKey("@løsning")
                 it.requireKey("ident")
+                it.requireKey("journalpostId")
                 it.requireKey("@opprettet")
                 it.interestedIn("@løsning.arenaytelser")
             }
@@ -58,14 +59,14 @@ internal class ArenaYtelserMottattRiver(
 
         val ytelserMottattHendelse = YtelserMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            ident = packet["ident"].asText(),
+            journalpostId = packet["journalpostId"].asText(),
             ytelseSak = mapYtelser(
                 ytelseSakDTO = packet["@løsning.arenaytelser"].asList(),
                 tidsstempelHosOss = packet["@opprettet"].asLocalDateTime(),
             )
         )
 
-        søkerMediator.håndter(ytelserMottattHendelse)
+        innsendingMediator.håndter(ytelserMottattHendelse)
     }
 
     fun JsonNode?.asList(): List<YtelseSakDTO> {

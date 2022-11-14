@@ -7,15 +7,15 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.slf4j.MDC
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class SøkerMediator(
-    private val søkerRepository: SøkerRepository,
-    private val observatører: List<SøkerObserver> = emptyList(),
+internal class InnsendingMediator(
+    private val innsendingRepository: InnsendingRepository,
+    private val observatører: List<InnsendingObserver> = emptyList(),
     rapidsConnection: RapidsConnection
 ) {
 
@@ -24,65 +24,65 @@ internal class SøkerMediator(
     )
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
-        håndter(søknadMottattHendelse) { søker ->
-            søker.håndter(søknadMottattHendelse)
+        håndter(søknadMottattHendelse) { innsending ->
+            innsending.håndter(søknadMottattHendelse)
         }
     }
 
     fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-        håndter(personopplysningerMottattHendelse) { søker ->
-            søker.håndter(personopplysningerMottattHendelse)
+        håndter(personopplysningerMottattHendelse) { innsending ->
+            innsending.håndter(personopplysningerMottattHendelse)
         }
     }
 
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
-        håndter(skjermingMottattHendelse) { søker ->
-            søker.håndter(skjermingMottattHendelse)
+        håndter(skjermingMottattHendelse) { innsending ->
+            innsending.håndter(skjermingMottattHendelse)
         }
     }
 
     fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-        håndter(arenaTiltakMottattHendelse) { søker ->
-            søker.håndter(arenaTiltakMottattHendelse)
+        håndter(arenaTiltakMottattHendelse) { innsending ->
+            innsending.håndter(arenaTiltakMottattHendelse)
         }
     }
 
     fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
-        håndter(ytelserMottattHendelse) { søker ->
-            søker.håndter(ytelserMottattHendelse)
+        håndter(ytelserMottattHendelse) { innsending ->
+            innsending.håndter(ytelserMottattHendelse)
         }
     }
 
-    private fun håndter(hendelse: Hendelse, handler: (Søker) -> Unit) {
+    private fun håndter(hendelse: Hendelse, handler: (Innsending) -> Unit) {
         try {
-            hentEllerOpprettSøker(hendelse).also { søker ->
-                observatører.forEach { søker.addObserver(it) }
-                handler(søker)
-                finalize(søker, hendelse)
+            hentEllerOpprettInnsending(hendelse).also { innsending ->
+                observatører.forEach { innsending.addObserver(it) }
+                handler(innsending)
+                finalize(innsending, hendelse)
             }
         } finally {
             MDC.clear()
         }
     }
 
-    private fun hentEllerOpprettSøker(hendelse: Hendelse): Søker {
-        return when (val søker = søkerRepository.hent(hendelse.ident())) {
-            is Søker -> {
-                SECURELOG.debug { "Fant Søker for ${hendelse.ident()}" }
-                søker
+    private fun hentEllerOpprettInnsending(hendelse: Hendelse): Innsending {
+        return when (val innsending = innsendingRepository.hent(hendelse.journalpostId())) {
+            is Innsending -> {
+                SECURELOG.debug { "Fant Innsending for ${hendelse.journalpostId()}" }
+                innsending
             }
 
             else -> {
-                val nySøker = Søker(hendelse.ident())
-                søkerRepository.lagre(nySøker)
-                SECURELOG.info { "Opprettet Søker for ${hendelse.ident()}" }
-                nySøker
+                val nyInnsending = Innsending(hendelse.journalpostId())
+                innsendingRepository.lagre(nyInnsending)
+                SECURELOG.info { "Opprettet Innsending for ${hendelse.journalpostId()}" }
+                nyInnsending
             }
         }
     }
 
-    private fun finalize(søker: Søker, hendelse: Hendelse) {
-        søkerRepository.lagre(søker)
+    private fun finalize(innsending: Innsending, hendelse: Hendelse) {
+        innsendingRepository.lagre(innsending)
         if (!hendelse.hasMessages()) return
         if (hendelse.hasErrors()) {
             LOG.warn("aktivitetslogg inneholder errors, se securelog for detaljer")

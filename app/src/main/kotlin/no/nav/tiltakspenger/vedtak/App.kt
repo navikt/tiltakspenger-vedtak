@@ -43,16 +43,16 @@ fun main() {
         )
         .build()
         .also {
-            val søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
+            val innsendingMediator = InnsendingMediator(
+                innsendingRepository = søkerRepository,
                 rapidsConnection = it,
                 observatører = listOf()
             )
-            SøknadMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
-            PersonopplysningerMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
-            SkjermingMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
-            ArenaTiltakMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
-            ArenaYtelserMottattRiver(søkerMediator = søkerMediator, rapidsConnection = it)
+            SøknadMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
+            PersonopplysningerMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
+            SkjermingMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
+            ArenaTiltakMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
+            ArenaYtelserMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
             it.register(
                 object : RapidsConnection.StatusListener {
                     override fun onStartup(rapidsConnection: RapidsConnection) {

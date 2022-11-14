@@ -5,17 +5,17 @@ import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
+import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
+import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.skjermingTrue
-import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
-import no.nav.tiltakspenger.objectmothers.søkerMedYtelse
 import no.nav.tiltakspenger.objectmothers.tiltaksaktivitet
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.objectmothers.ytelseSak
-import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -27,8 +27,8 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.*
 
 @Testcontainers
-internal class PostgresSøkerRepositoryTest {
-    private val søkerRepo = PostgresSøkerRepository()
+internal class PostgresInnsendingRepositoryTest {
+    private val søkerRepo = PostgresInnsendingRepository()
 
     companion object {
         @Container
@@ -43,16 +43,16 @@ internal class PostgresSøkerRepositoryTest {
     @Test
     fun `lagre og hente bare søker`() {
         val ident = Random().nextInt().toString()
-        val søker = Søker(ident)
+        val innsending = Innsending(ident)
 
-        søkerRepo.lagre(søker)
+        søkerRepo.lagre(innsending)
 
         val hentetSøker = søkerRepo.hent(ident)!!
 
-        assertEquals(søker.ident, hentetSøker.ident)
-        assertEquals(søker.id, hentetSøker.id)
-        assertEquals(søker.tilstand, hentetSøker.tilstand)
-        søker.personopplysninger shouldBe emptyList()
+        assertEquals(innsending.ident, hentetSøker.ident)
+        assertEquals(innsending.id, hentetSøker.id)
+        assertEquals(innsending.tilstand, hentetSøker.tilstand)
+        innsending.personopplysninger shouldBe emptyList()
     }
 
     @Test
@@ -68,7 +68,7 @@ internal class PostgresSøkerRepositoryTest {
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 
-        val søker = søkerMedYtelse(
+        val søker = innsendingMedYtelse(
             ident = ident,
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
@@ -84,7 +84,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknader shouldContainExactly listOf(søknad)
+        hentetSøker.søknad shouldBe søknad
         hentetSøker.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak
@@ -101,7 +101,7 @@ internal class PostgresSøkerRepositoryTest {
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
 
-        val søker = søkerMedSøknad(
+        val søker = innsendingMedSøknad(
             ident = ident,
             søknad = søknad,
         )
@@ -111,12 +111,12 @@ internal class PostgresSøkerRepositoryTest {
         val hentetSøker = søkerRepo.findBySøknadId(søknad.søknadId)
         assertNotNull(hentetSøker)
         assertEquals(ident, søker.ident)
-        assertEquals(ident, søker.søknader.first().ident)
+        assertEquals(ident, søker.søknad!!.ident)
         assertEquals(ident, hentetSøker!!.ident)
-        assertEquals(ident, hentetSøker.søknader.first().ident)
+        assertEquals(ident, hentetSøker.søknad!!.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknader shouldContainExactly listOf(søknad)
+        hentetSøker.søknad shouldBe søknad
     }
 
     @Test
@@ -132,7 +132,7 @@ internal class PostgresSøkerRepositoryTest {
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 
-        val søker = søkerMedYtelse(
+        val søker = innsendingMedYtelse(
             ident = ident,
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
@@ -148,7 +148,7 @@ internal class PostgresSøkerRepositoryTest {
         assertEquals(søker.ident, hentetSøker.ident)
         assertEquals(søker.id, hentetSøker.id)
         assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknader shouldContainExactly listOf(søknad)
+        hentetSøker.søknad shouldBe søknad
         hentetSøker.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
         hentetSøker.ytelser shouldContainExactly ytelseSak

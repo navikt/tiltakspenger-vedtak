@@ -3,14 +3,14 @@ package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.søkerRegistrert
+import no.nav.tiltakspenger.objectmothers.innsendingRegistrert
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.KontekstLogable
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -31,8 +31,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre`() {
-        val søker = søkerRegistrert()
-        PostgresSøkerRepository().lagre(søker)
+        val søker = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -56,8 +56,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne hente en aktivitetslogg med flere aktiviteter`() {
-        val søker = søkerRegistrert()
-        PostgresSøkerRepository().lagre(søker)
+        val søker = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -89,8 +89,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre og hente en aktivitetslogg flere ganger og legge til nye aktiviteter, men få riktig rekkefølge`() {
-        val søker = søkerRegistrert()
-        PostgresSøkerRepository().lagre(søker)
+        val søker = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
@@ -135,8 +135,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre behov`() {
-        val søker = søkerRegistrert()
-        PostgresSøkerRepository().lagre(søker)
+        val søker = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.behov(
@@ -167,8 +167,8 @@ internal class AktivitetsloggDAOTest {
 
     @Test
     fun `skal kunne lagre og hente kontekster`() {
-        val søker = søkerRegistrert()
-        PostgresSøkerRepository().lagre(søker)
+        val søker = innsendingRegistrert()
+        PostgresInnsendingRepository().lagre(søker)
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.addKontekst(søker)

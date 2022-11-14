@@ -6,11 +6,11 @@ import no.nav.tiltakspenger.vedtak.Søknad
 
 class SøknadMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
-    private val ident: String,
+    private val journalpostId: String,
     private val søknad: Søknad
 ) : Hendelse(aktivitetslogg) {
 
-    override fun ident() = ident
+    override fun journalpostId() = journalpostId
 
     fun søknad() = søknad
 }

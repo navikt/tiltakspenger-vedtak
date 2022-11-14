@@ -68,13 +68,13 @@ class Aktivitetslogg(
         kontekster.add(kontekst)
     }
 
-    private fun setForelder(søker: Søker) {
-        forelder = søker.aktivitetslogg
+    private fun setForelder(innsending: Innsending) {
+        forelder = innsending.aktivitetslogg
     }
 
-    override fun setForelderAndAddKontekst(søker: Søker) {
-        setForelder(søker)
-        addKontekst(søker)
+    override fun setForelderAndAddKontekst(innsending: Innsending) {
+        setForelder(innsending)
+        addKontekst(innsending)
     }
 
     internal fun logg(kontekst: KontekstLogable): Aktivitetslogg {
@@ -299,7 +299,7 @@ interface IAktivitetslogg {
     fun behov(): List<Aktivitetslogg.Aktivitet.Behov>
     fun barn(): Aktivitetslogg
     fun addKontekst(kontekst: KontekstLogable)
-    fun setForelderAndAddKontekst(søker: Søker)
+    fun setForelderAndAddKontekst(innsending: Innsending)
     fun kontekster(): List<IAktivitetslogg>
 }
 

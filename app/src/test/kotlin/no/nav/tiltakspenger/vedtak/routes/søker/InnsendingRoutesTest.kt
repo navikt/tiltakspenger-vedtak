@@ -24,7 +24,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
 import java.time.Month
 
-class SøkerRoutesTest {
+class InnsendingRoutesTest {
 
     private val søkerServiceMock = mockk<SøkerService>()
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()

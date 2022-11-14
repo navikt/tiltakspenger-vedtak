@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
 import no.nav.tiltakspenger.objectmothers.nyTiltakHendelse
-import no.nav.tiltakspenger.objectmothers.søkerMedSkjerming
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -10,18 +10,18 @@ import java.util.*
 class ArenaTiltakMottattHendelseTest {
     @Test
     fun `lagre og hente en med feil i tiltak fra Arena`() {
-        val ident = Random().nextInt().toString()
-        val søker = søkerMedSkjerming(ident = ident)
+        val journalpostId = Random().nextInt().toString()
+        val innsending = innsendingMedSkjerming(journalpostId = journalpostId)
 
-        søker.håndter(
+        innsending.håndter(
             nyTiltakHendelse(
-                ident = ident,
+                journalpostId = journalpostId,
                 tiltaksaktivitet = null,
                 feil = ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet,
             )
         )
 
-        søker.aktivitetslogg.aktiviteter.filter { it.melding == "Fant ikke person i arenetiltak" }.size shouldBe 1
-        søker.tilstand shouldBe Søker.FaktainnhentingFeilet
+        innsending.aktivitetslogg.aktiviteter.filter { it.melding == "Fant ikke person i arenetiltak" }.size shouldBe 1
+        innsending.tilstand shouldBe Innsending.FaktainnhentingFeilet
     }
 }

@@ -5,11 +5,15 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -20,14 +24,14 @@ internal class ArenaYtelseMottattRiverTest {
         const val IDENT = "04927799109"
     }
 
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
 
     init {
         ArenaYtelserMottattRiver(
             rapidsConnection = testRapid,
-            søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
+            innsendingMediator = InnsendingMediator(
+                innsendingRepository = innsendingRepository,
                 rapidsConnection = testRapid
             )
         )
@@ -37,17 +41,17 @@ internal class ArenaYtelseMottattRiverTest {
     fun `Når ArenaYtelser får en løsning på tiltak, skal den ikke sende noen nye behov`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             søknad = nySøknadMedArenaTiltak(
                 ident = IDENT,
             )
         )
 
-        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = IDENT)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
@@ -75,13 +79,13 @@ internal class ArenaYtelseMottattRiverTest {
                 )
             )
         )
-        val søker = Søker(IDENT)
-        søker.håndter(søknadMottatthendelse)
-        søker.håndter(personopplysningerMottatthendelse)
-        søker.håndter(skjermingMottattHendelse)
-        søker.håndter(tiltakMottattHendelse)
+        val innsending = Innsending(IDENT)
+        innsending.håndter(søknadMottatthendelse)
+        innsending.håndter(personopplysningerMottatthendelse)
+        innsending.håndter(skjermingMottattHendelse)
+        innsending.håndter(tiltakMottattHendelse)
 
-        every { søkerRepository.hent(IDENT) } returns søker
+        every { innsendingRepository.hent(IDENT) } returns innsending
         testRapid.sendTestMessage(ytelserMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(0, size)

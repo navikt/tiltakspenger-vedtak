@@ -14,17 +14,17 @@ import java.util.*
 
 internal class BehovMediatorTest {
     private companion object {
-        private const val ident = "ident"
+        private const val journalpostId = "journalpostId"
         private lateinit var behovMediator: BehovMediator
     }
 
     private val testRapid = TestRapid()
     private lateinit var aktivitetslogg: Aktivitetslogg
-    private lateinit var søker: Søker
+    private lateinit var innsending: Innsending
 
     @BeforeEach
     fun setup() {
-        søker = Søker(ident = ident)
+        innsending = Innsending(journalpostId = journalpostId)
         aktivitetslogg = Aktivitetslogg()
         behovMediator = BehovMediator(
             rapidsConnection = testRapid
@@ -36,7 +36,7 @@ internal class BehovMediatorTest {
     internal fun `grupperer behov`() {
 
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.setForelderAndAddKontekst(søker)
+        hendelse.setForelderAndAddKontekst(innsending)
         hendelse.behov(
             Behovtype.personopplysninger,
             "Trenger personopplysninger",
@@ -52,7 +52,7 @@ internal class BehovMediatorTest {
         val inspektør = testRapid.inspektør
 
         assertEquals(1, inspektør.size)
-        assertEquals(ident, inspektør.key(0))
+        assertEquals(journalpostId, inspektør.key(0))
 
         inspektør.message(0).also {
             assertEquals("behov", it["@event_name"].asText())
@@ -63,14 +63,14 @@ internal class BehovMediatorTest {
             assertEquals(listOf("personopplysninger", "arenatiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
             assertEquals("behov", it["@event_name"].asText())
             assertEquals("12344", it["aktørId"].asText())
-            assertEquals(ident, it["ident"].asText())
+            assertEquals(journalpostId, it["journalpostId"].asText())
         }
     }
 
     @Test
     internal fun `sjekker etter duplikatverdier`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.setForelderAndAddKontekst(søker)
+        hendelse.setForelderAndAddKontekst(innsending)
         hendelse.behov(
             Behovtype.personopplysninger,
             "Trenger personopplysninger",
@@ -92,7 +92,7 @@ internal class BehovMediatorTest {
     @Test
     internal fun `kan ikke produsere samme behov`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
-        hendelse.setForelderAndAddKontekst(søker)
+        hendelse.setForelderAndAddKontekst(innsending)
         hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
         hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
 
@@ -113,7 +113,7 @@ internal class BehovMediatorTest {
             logg.addKontekst(this)
         }
 
-        override fun ident(): String = ident
+        override fun journalpostId(): String = journalpostId
 
         override fun opprettKontekst() = Kontekst("TestHendelse")
         override fun addKontekst(kontekst: KontekstLogable) {

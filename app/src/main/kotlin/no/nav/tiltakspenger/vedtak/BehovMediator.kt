@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak
 
-import java.time.LocalDateTime
-import java.util.*
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
+import java.time.LocalDateTime
+import java.util.*
 
 
 private val LOG = KotlinLogging.logger {}
@@ -56,7 +56,7 @@ class BehovMediator(
                 .let { JsonMessage.newMessage(it) }
                 .also { message ->
                     SECURELOG.info { "Sender $id som ${message.toJson()}" }
-                    rapidsConnection.publish(hendelse.ident(), message.toJson())
+                    rapidsConnection.publish(hendelse.journalpostId(), message.toJson())
                     LOG.info { "Sender behov ${behovsliste.joinToString { it }}" }
                 }
         }

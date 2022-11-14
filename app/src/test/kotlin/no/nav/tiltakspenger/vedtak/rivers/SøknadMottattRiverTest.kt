@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.repository.søker.InMemoryInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,14 +13,14 @@ internal class SøknadMottattRiverTest {
         const val IDENT = "04927799109"
     }
 
-    private val søkerRepository = InMemorySøkerRepository()
+    private val søkerRepository = InMemoryInnsendingRepository()
     private val testRapid = TestRapid()
 
     init {
         SøknadMottattRiver(
             rapidsConnection = testRapid,
-            søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
+            innsendingMediator = InnsendingMediator(
+                innsendingRepository = søkerRepository,
                 rapidsConnection = testRapid
             )
         )

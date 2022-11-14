@@ -6,12 +6,12 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 
 class ArenaTiltakMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
-    private val ident: String,
+    private val journalpostId: String,
     private val tiltaksaktivitet: List<Tiltaksaktivitet>?,
     private val feil: Feilmelding? = null,
 ) : Hendelse(aktivitetslogg) {
 
-    override fun ident() = ident
+    override fun journalpostId() = journalpostId
 
     fun tiltaksaktivitet() = tiltaksaktivitet
 

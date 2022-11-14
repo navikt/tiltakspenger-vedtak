@@ -4,12 +4,12 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
+import no.nav.tiltakspenger.objectmothers.innsendingMedPersonopplysninger
+import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.saksbehandler
-import no.nav.tiltakspenger.objectmothers.søkerMedPersonopplysninger
-import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.service.søknad.SøknadServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -18,7 +18,7 @@ import java.util.*
 
 internal class SøknadServiceTest {
 
-    private val repo = mockk<SøkerRepository>()
+    private val repo = mockk<InnsendingRepository>()
     private val service = SøknadServiceImpl(repo)
 
     @Test
@@ -30,7 +30,7 @@ internal class SøknadServiceTest {
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val søker = søkerMedPersonopplysninger(
+        val søker = innsendingMedPersonopplysninger(
             ident = ident,
             søknad = søknad,
         )
@@ -51,7 +51,7 @@ internal class SøknadServiceTest {
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
-        val søker = søkerMedSøknad(
+        val søker = innsendingMedSøknad(
             ident = ident,
             søknad = søknad,
         )

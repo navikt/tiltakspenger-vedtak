@@ -3,34 +3,38 @@ package no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import org.intellij.lang.annotations.Language
 
 class TiltaksaktivitetDAO {
 
-    fun hentForSøker(søkerId: SøkerId, txSession: TransactionalSession): List<Tiltaksaktivitet> {
+    fun hentForSøker(innsendingId: InnsendingId, txSession: TransactionalSession): List<Tiltaksaktivitet> {
         return txSession.run(
-            queryOf(hentTiltaksaktivitet, søkerId.toString())
+            queryOf(hentTiltaksaktivitet, innsendingId.toString())
                 .map { row -> row.toTiltaksaktivitet() }
                 .asList
         )
     }
 
-    fun lagre(søkerId: SøkerId, tiltaksaktiviteter: List<Tiltaksaktivitet>, txSession: TransactionalSession) {
-        slettTiltak(søkerId, txSession)
+    fun lagre(innsendingId: InnsendingId, tiltaksaktiviteter: List<Tiltaksaktivitet>, txSession: TransactionalSession) {
+        slettTiltak(innsendingId, txSession)
         tiltaksaktiviteter.forEach { tiltaksaktivitet ->
-            lagreTiltak(søkerId, tiltaksaktivitet, txSession)
+            lagreTiltak(innsendingId, tiltaksaktivitet, txSession)
         }
     }
 
-    private fun lagreTiltak(søkerId: SøkerId, tiltaksaktivitet: Tiltaksaktivitet, txSession: TransactionalSession) {
+    private fun lagreTiltak(
+        innsendingId: InnsendingId,
+        tiltaksaktivitet: Tiltaksaktivitet,
+        txSession: TransactionalSession
+    ) {
         txSession.run(
             queryOf(
                 lagreTiltaksaktivitet, mapOf(
                     "id" to random(ULID_PREFIX_TILTAKSAKTIVITET).toString(),
-                    "sokerId" to søkerId.toString(),
+                    "sokerId" to innsendingId.toString(),
                     "tiltak" to tiltaksaktivitet.tiltak.name,
                     "aktivitetId" to tiltaksaktivitet.aktivitetId,
                     "tiltakLokaltNavn" to tiltaksaktivitet.tiltakLokaltNavn,
@@ -49,8 +53,8 @@ class TiltaksaktivitetDAO {
         )
     }
 
-    private fun slettTiltak(søkerId: SøkerId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettTiltaksaktivitet, søkerId.toString()).asUpdate)
+    private fun slettTiltak(innsendingId: InnsendingId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettTiltaksaktivitet, innsendingId.toString()).asUpdate)
     }
 
     private fun Row.toTiltaksaktivitet(): Tiltaksaktivitet {

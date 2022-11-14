@@ -1,16 +1,16 @@
 package no.nav.tiltakspenger.vedtak.service.søknad
 
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 class SøknadServiceImpl(
-    private val søkerRepository: SøkerRepository,
+    private val innsendingRepository: InnsendingRepository,
     private val behandlingMapper: BehandlingMapper = BehandlingMapper()
 ) : SøknadService {
 
     override fun hentBehandlingAvSøknad(søknadId: String, saksbehandler: Saksbehandler): BehandlingDTO? =
-        søkerRepository.findBySøknadId(søknadId)?.let {
+        innsendingRepository.findBySøknadId(søknadId)?.let {
             it.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
-            behandlingMapper.mapSøkerMedSøknad(it, søknadId)
+            behandlingMapper.mapInnsendingMedSøknad(it)
         }
 }

@@ -12,8 +12,8 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import java.time.LocalDateTime
 
@@ -21,7 +21,7 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PersonopplysningerMottattRiver(
-    private val søkerMediator: SøkerMediator,
+    private val innsendingMediator: InnsendingMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
@@ -37,6 +37,7 @@ internal class PersonopplysningerMottattRiver(
                 it.demandAllOrAny("@behov", listOf("personopplysninger"))
                 it.demandKey("@løsning")
                 it.requireKey("ident")
+                it.requireKey("journalpostId")
                 it.requireKey("@opprettet")
                 it.interestedIn("@løsning.personopplysninger.person")
             }
@@ -51,7 +52,7 @@ internal class PersonopplysningerMottattRiver(
 
         val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            ident = packet["ident"].asText(),
+            journalpostId = packet["journalpostId"].asText(),
             personopplysninger = mapPersonopplysninger(
                 dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
@@ -59,7 +60,7 @@ internal class PersonopplysningerMottattRiver(
             ),
         )
 
-        søkerMediator.håndter(personopplysningerMottattHendelse)
+        innsendingMediator.håndter(personopplysningerMottattHendelse)
     }
 
     //Hvorfor finnes ikke dette i r&r?

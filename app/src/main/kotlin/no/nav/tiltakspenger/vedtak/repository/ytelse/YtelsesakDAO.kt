@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -12,28 +12,28 @@ import org.intellij.lang.annotations.Language
 class YtelsesakDAO(
     private val ytelsevedtakDAO: YtelsevedtakDAO = YtelsevedtakDAO(),
 ) {
-    fun hentForSøker(søkerId: SøkerId, txSession: TransactionalSession): List<YtelseSak> {
+    fun hentForSøker(innsendingId: InnsendingId, txSession: TransactionalSession): List<YtelseSak> {
         return txSession.run(
-            queryOf(hentYtelsesak, søkerId.toString())
+            queryOf(hentYtelsesak, innsendingId.toString())
                 .map { row -> row.toYtelsesak(txSession) }
                 .asList
         )
     }
 
-    fun lagre(søkerId: SøkerId, ytelsesaker: List<YtelseSak>, txSession: TransactionalSession) {
-        slettYtelser(søkerId, txSession)
+    fun lagre(innsendingId: InnsendingId, ytelsesaker: List<YtelseSak>, txSession: TransactionalSession) {
+        slettYtelser(innsendingId, txSession)
         ytelsesaker.forEach { ytelseSak ->
-            lagreYtelse(søkerId, ytelseSak, txSession)
+            lagreYtelse(innsendingId, ytelseSak, txSession)
         }
     }
 
-    private fun lagreYtelse(søkerId: SøkerId, ytelseSak: YtelseSak, txSession: TransactionalSession) {
+    private fun lagreYtelse(innsendingId: InnsendingId, ytelseSak: YtelseSak, txSession: TransactionalSession) {
         val id = random(ULID_PREFIX_YTELSE)
         txSession.run(
             queryOf(
                 lagreYtelseSak, mapOf(
                     "id" to id.toString(),
-                    "sokerId" to søkerId.toString(),
+                    "sokerId" to innsendingId.toString(),
                     "fomGyldighetsperiode" to ytelseSak.fomGyldighetsperiode,
                     "tomGyldighetsperiode" to ytelseSak.tomGyldighetsperiode,
                     "datoKravMottatt" to ytelseSak.datoKravMottatt,
@@ -50,9 +50,9 @@ class YtelsesakDAO(
         ytelsevedtakDAO.lagre(id, ytelseSak.vedtak, txSession)
     }
 
-    private fun slettYtelser(søkerId: SøkerId, txSession: TransactionalSession) {
-        ytelsevedtakDAO.slettVedtakForSøker(søkerId, txSession)
-        txSession.run(queryOf(slettYtelsesak, søkerId.toString()).asUpdate)
+    private fun slettYtelser(innsendingId: InnsendingId, txSession: TransactionalSession) {
+        ytelsevedtakDAO.slettVedtakForSøker(innsendingId, txSession)
+        txSession.run(queryOf(slettYtelsesak, innsendingId.toString()).asUpdate)
     }
 
     private fun Row.toYtelsesak(txSession: TransactionalSession): YtelseSak {

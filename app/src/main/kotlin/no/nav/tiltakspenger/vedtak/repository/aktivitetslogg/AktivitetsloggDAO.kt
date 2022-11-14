@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.db.deserializeList
@@ -94,14 +94,14 @@ class AktivitetsloggDAO {
     @Language("SQL")
     private val hentAktivitetslogger = "select * from aktivitet where søker_id = ?"
 
-    fun lagre(søkerId: SøkerId, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
-        slettAktiviteter(søkerId, txSession)
+    fun lagre(innsendingId: InnsendingId, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
+        slettAktiviteter(innsendingId, txSession)
         aktivitetslogg.aktiviteter.forEach { aktivitet ->
             txSession.run(
                 queryOf(
                     lagreAktivitetslogg, mapOf(
                         "id" to UUID.randomUUID(),
-                        "sokerId" to søkerId.toString(),
+                        "sokerId" to innsendingId.toString(),
                         "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
                         "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
                         "label" to aktivitet.label,
@@ -117,13 +117,13 @@ class AktivitetsloggDAO {
         }
     }
 
-    private fun slettAktiviteter(søkerId: SøkerId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettAktiviteter, søkerId.toString()).asUpdate)
+    private fun slettAktiviteter(innsendingId: InnsendingId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettAktiviteter, innsendingId.toString()).asUpdate)
     }
 
-    fun hent(søkerId: SøkerId, txSession: TransactionalSession) =
+    fun hent(innsendingId: InnsendingId, txSession: TransactionalSession) =
         Aktivitetslogg(
-            aktiviteter = txSession.run(queryOf(hentAktivitetslogger, søkerId.toString()).map(toAktivitet).asList)
+            aktiviteter = txSession.run(queryOf(hentAktivitetslogger, innsendingId.toString()).map(toAktivitet).asList)
                 .sorted()
                 .toMutableList()
         )

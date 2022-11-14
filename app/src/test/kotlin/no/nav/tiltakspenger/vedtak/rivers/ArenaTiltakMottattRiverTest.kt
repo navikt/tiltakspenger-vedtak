@@ -5,10 +5,16 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -20,14 +26,14 @@ internal class ArenaTiltakMottattRiverTest {
         const val IDENT = "04927799109"
     }
 
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
 
     init {
         ArenaTiltakMottattRiver(
             rapidsConnection = testRapid,
-            søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
+            innsendingMediator = InnsendingMediator(
+                innsendingRepository = innsendingRepository,
                 rapidsConnection = testRapid
             )
         )
@@ -37,7 +43,7 @@ internal class ArenaTiltakMottattRiverTest {
     fun `Når ArenaTiltak får en løsning på skjerming, skal den sende en behovsmelding etter ytelser`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             søknad = Søknad(
                 søknadId = "42",
                 journalpostId = "43",
@@ -69,23 +75,23 @@ internal class ArenaTiltakMottattRiverTest {
                 vedlegg = emptyList(),
             )
         )
-        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = IDENT)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
                 innhentet = LocalDateTime.now()
             )
         )
-        val søker = Søker(IDENT)
-        søker.håndter(søknadMottatthendelse)
-        søker.håndter(personopplysningerMottatthendelse)
-        søker.håndter(skjermingMottattHendelse)
+        val innsending = Innsending(IDENT)
+        innsending.håndter(søknadMottatthendelse)
+        innsending.håndter(personopplysningerMottatthendelse)
+        innsending.håndter(skjermingMottattHendelse)
 
-        every { søkerRepository.hent(IDENT) } returns søker
+        every { innsendingRepository.hent(IDENT) } returns innsending
         testRapid.sendTestMessage(arenaTiltakMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(1, size)
@@ -100,29 +106,29 @@ internal class ArenaTiltakMottattRiverTest {
     fun `Når vi får en løsning på ArenaTiltak med feil skal vi ikke sende noen melding`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             søknad = nySøknadMedArenaTiltak(
                 ident = IDENT,
             )
         )
 
-        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(ident = IDENT)
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = IDENT)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = IDENT,
+            journalpostId = IDENT,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,
                 innhentet = LocalDateTime.now()
             )
         )
-        val søker = Søker(IDENT)
-        søker.håndter(søknadMottatthendelse)
-        søker.håndter(personopplysningerMottatthendelse)
-        søker.håndter(skjermingMottattHendelse)
+        val innsending = Innsending(IDENT)
+        innsending.håndter(søknadMottatthendelse)
+        innsending.håndter(personopplysningerMottatthendelse)
+        innsending.håndter(skjermingMottattHendelse)
 
-        every { søkerRepository.hent(IDENT) } returns søker
+        every { innsendingRepository.hent(IDENT) } returns innsending
         testRapid.sendTestMessage(arenaTiltakMottattMedFeilEvent())
         with(testRapid.inspektør) {
             assertEquals(0, size)

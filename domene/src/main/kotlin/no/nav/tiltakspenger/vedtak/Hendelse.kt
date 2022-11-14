@@ -4,7 +4,7 @@ abstract class Hendelse protected constructor(
     internal val aktivitetslogg: Aktivitetslogg = Aktivitetslogg()
 ) : IAktivitetslogg by aktivitetslogg, KontekstLogable {
 
-    abstract fun ident(): String
+    abstract fun journalpostId(): String
 
     init {
         aktivitetslogg.addKontekst(this)
@@ -12,7 +12,7 @@ abstract class Hendelse protected constructor(
 
     override fun opprettKontekst(): Kontekst {
         return this.javaClass.canonicalName.split('.').last().let {
-            Kontekst(it, mapOf("ident" to ident()))
+            Kontekst(it, mapOf("journalpostId" to journalpostId()))
         }
     }
 

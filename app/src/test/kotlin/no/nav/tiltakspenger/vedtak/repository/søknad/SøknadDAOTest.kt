@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
-import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -31,7 +31,7 @@ import kotlin.reflect.full.declaredMemberProperties
 @Testcontainers
 internal class SøknadDAOTest {
     private val søknadDAO = SøknadDAO()
-    private val søkerRepository = PostgresSøkerRepository(søknadDAO)
+    private val søkerRepository = PostgresInnsendingRepository(søknadDAO)
 
     companion object {
         @Container
@@ -46,8 +46,8 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med null-felter`() {
         val ident = "3"
-        val søker = Søker(ident)
-        søkerRepository.lagre(søker)
+        val innsending = Innsending(ident)
+        søkerRepository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val søknad = Søknad(
@@ -83,13 +83,13 @@ internal class SøknadDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(søker.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.hentAlle(søker.id, txSession)
+                søknadDAO.hent(innsending.id, txSession)
             }
         }
 
@@ -102,8 +102,8 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med null-felter og underliggende klasser`() {
         val ident = "4"
-        val søker = Søker(ident)
-        søkerRepository.lagre(søker)
+        val innsending = Innsending(ident)
+        søkerRepository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val søknad = Søknad(
@@ -159,13 +159,13 @@ internal class SøknadDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(søker.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.hentAlle(søker.id, txSession)
+                søknadDAO.hent(innsending.id, txSession)
             }
         }
 
@@ -184,8 +184,8 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med fyllte felter og underliggende klasser`() {
         val ident = "5"
-        val søker = Søker(ident)
-        søkerRepository.lagre(søker)
+        val innsending = Innsending(ident)
+        søkerRepository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
         val tiltak = Tiltak.ArenaTiltak(
@@ -248,13 +248,13 @@ internal class SøknadDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(søker.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.hentAlle(søker.id, txSession)
+                søknadDAO.hent(innsending.id, txSession)
             }
         }
 

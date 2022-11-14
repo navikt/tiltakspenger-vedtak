@@ -6,17 +6,17 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Søker
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class SkjermingMottattRiverTest {
 
 
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
     private val ident = "05906398291"
     private val løsning = """
@@ -49,8 +49,8 @@ internal class SkjermingMottattRiverTest {
     init {
         SkjermingMottattRiver(
             rapidsConnection = testRapid,
-            søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
+            innsendingMediator = InnsendingMediator(
+                innsendingRepository = innsendingRepository,
                 rapidsConnection = testRapid
             )
         )
@@ -62,18 +62,18 @@ internal class SkjermingMottattRiverTest {
         val aktivitetslogg = Aktivitetslogg(forelder = null)
         val mottattSøknadHendelse = SøknadMottattHendelse(
             aktivitetslogg = aktivitetslogg,
-            ident = ident,
+            journalpostId = ident,
             søknad = nySøknadMedArenaTiltak(
                 ident = ident,
             )
         )
-        val personopplysningerMottattHendelse = nyPersonopplysningHendelse(ident = ident)
-        val søker = Søker(ident)
-        every { søkerRepository.hent(ident) } returns søker
+        val personopplysningerMottattHendelse = nyPersonopplysningHendelse(journalpostId = ident)
+        val innsending = Innsending(ident)
+        every { innsendingRepository.hent(ident) } returns innsending
 
         // when
-        søker.håndter(mottattSøknadHendelse)
-        søker.håndter(personopplysningerMottattHendelse)
+        innsending.håndter(mottattSøknadHendelse)
+        innsending.håndter(personopplysningerMottattHendelse)
         testRapid.sendTestMessage(løsning)
 
         // then

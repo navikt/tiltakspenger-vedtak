@@ -4,9 +4,9 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakelsesPeriode
@@ -16,28 +16,30 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-fun søkerRegistrert(
-    ident: String = Random().nextInt().toString(),
-): Søker {
-    return Søker(
-        ident = ident,
+fun innsendingRegistrert(
+    journalpostId: String = Random().nextInt().toString(),
+): Innsending {
+    return Innsending(
+        journalpostId = journalpostId,
     )
 }
 
-fun søkerMedSøknad(
+fun innsendingMedSøknad(
+    journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-): Søker {
-    val søker = søkerRegistrert(ident)
+): Innsending {
+    val innsending = innsendingRegistrert(journalpostId)
     val hendelse = nySøknadMottattHendelse(
-        ident = ident,
+        journalpostId = ident,
         søknad = søknad,
     )
-    søker.håndter(hendelse)
-    return søker
+    innsending.håndter(hendelse)
+    return innsending
 }
 
-fun søkerMedPersonopplysninger(
+fun innsendingMedPersonopplysninger(
+    journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: List<Personopplysninger> = listOf(
@@ -46,21 +48,23 @@ fun søkerMedPersonopplysninger(
             strengtFortroligUtland = false
         )
     ),
-): Søker {
-    val søker = søkerMedSøknad(
+): Innsending {
+    val innsending = innsendingMedSøknad(
+        journalpostId = journalpostId,
         ident = ident,
         søknad = søknad,
     )
-    søker.håndter(
+    innsending.håndter(
         nyPersonopplysningHendelse(
-            ident = ident,
+            journalpostId = ident,
             personopplysninger = personopplysninger,
         )
     )
-    return søker
+    return innsending
 }
 
-fun søkerMedSkjerming(
+fun innsendingMedSkjerming(
+    journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: List<Personopplysninger> = listOf(
@@ -70,22 +74,24 @@ fun søkerMedSkjerming(
         )
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
-): Søker {
-    val søker = søkerMedPersonopplysninger(
+): Innsending {
+    val søker = innsendingMedPersonopplysninger(
+        journalpostId = journalpostId,
         ident = ident,
         søknad = søknad,
         personopplysninger = personopplysninger,
     )
     søker.håndter(
         nySkjermingHendelse(
-            ident = ident,
+            journalpostId = ident,
             skjerming = skjerming,
         )
     )
     return søker
 }
 
-fun søkerMedTiltak(
+fun innsendingMedTiltak(
+    journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: List<Personopplysninger> = listOf(
@@ -96,23 +102,25 @@ fun søkerMedTiltak(
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
-): Søker {
-    val søker = søkerMedSkjerming(
+): Innsending {
+    val innsending = innsendingMedSkjerming(
+        journalpostId = journalpostId,
         ident = ident,
         søknad = søknad,
         personopplysninger = personopplysninger,
         skjerming = skjerming,
     )
-    søker.håndter(
+    innsending.håndter(
         nyTiltakHendelse(
-            ident = ident,
+            journalpostId = journalpostId,
             tiltaksaktivitet = tiltaksaktivitet,
         )
     )
-    return søker
+    return innsending
 }
 
-fun søkerMedYtelse(
+fun innsendingMedYtelse(
+    journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     personopplysninger: List<Personopplysninger> = listOf(
@@ -124,21 +132,22 @@ fun søkerMedYtelse(
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-): Søker {
-    val søker = søkerMedTiltak(
+): Innsending {
+    val innsending = innsendingMedTiltak(
+        journalpostId = journalpostId,
         ident = ident,
         søknad = søknad,
         personopplysninger = personopplysninger,
         skjerming = skjerming,
         tiltaksaktivitet = tiltaksaktivitet,
     )
-    søker.håndter(
+    innsending.håndter(
         nyYtelseHendelse(
-            ident = ident,
+            journalpostId = ident,
             ytelseSak = ytelseSak,
         )
     )
-    return søker
+    return innsending
 }
 
 fun personopplysningKjedeligFyr(

@@ -14,49 +14,49 @@ import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.util.*
 
 fun nySøknadMottattHendelse(
-    ident: String = Random().nextInt().toString(),
+    journalpostId: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SøknadMottattHendelse {
     return SøknadMottattHendelse(
         aktivitetslogg = aktivitetslogg,
-        ident = ident,
+        journalpostId = journalpostId,
         søknad = søknad,
     )
 }
 
 fun nyPersonopplysningHendelse(
-    ident: String = Random().nextInt().toString(),
+    journalpostId: String = Random().nextInt().toString(),
     personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
-        ident = ident,
+        journalpostId = journalpostId,
         personopplysninger = personopplysninger,
         aktivitetslogg = aktivitetslogg,
     )
 }
 
 fun nySkjermingHendelse(
-    ident: String = Random().nextInt().toString(),
-    skjerming: Skjerming = skjermingFalse(ident = ident),
+    journalpostId: String = Random().nextInt().toString(),
+    skjerming: Skjerming = skjermingFalse(ident = journalpostId),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SkjermingMottattHendelse {
     return SkjermingMottattHendelse(
-        ident = ident,
+        journalpostId = journalpostId,
         skjerming = skjerming,
         aktivitetslogg = aktivitetslogg,
     )
 }
 
 fun nyTiltakHendelse(
-    ident: String = Random().nextInt().toString(),
+    journalpostId: String = Random().nextInt().toString(),
     tiltaksaktivitet: List<Tiltaksaktivitet>? = listOf(tiltaksaktivitet()),
     feil: ArenaTiltakMottattHendelse.Feilmelding? = null,
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): ArenaTiltakMottattHendelse {
     return ArenaTiltakMottattHendelse(
-        ident = ident,
+        journalpostId = journalpostId,
         tiltaksaktivitet = tiltaksaktivitet,
         feil = feil,
         aktivitetslogg = aktivitetslogg,
@@ -64,12 +64,12 @@ fun nyTiltakHendelse(
 }
 
 fun nyYtelseHendelse(
-    ident: String = Random().nextInt().toString(),
+    journalpostId: String = Random().nextInt().toString(),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): YtelserMottattHendelse {
     return YtelserMottattHendelse(
-        ident = ident,
+        journalpostId = journalpostId,
         ytelseSak = ytelseSak,
         aktivitetslogg = aktivitetslogg,
     )

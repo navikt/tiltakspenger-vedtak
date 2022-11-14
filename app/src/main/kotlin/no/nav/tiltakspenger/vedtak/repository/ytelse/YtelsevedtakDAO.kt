@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak
@@ -45,8 +45,8 @@ class YtelsevedtakDAO {
         txSession.run(queryOf(slettYtelsevedtak, ytelsesakId.toString()).asUpdate)
     }
 
-    fun slettVedtakForSøker(søkerId: SøkerId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettYtelsevedtak, søkerId.toString()).asUpdate)
+    fun slettVedtakForSøker(innsendingId: InnsendingId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettYtelsevedtak, innsendingId.toString()).asUpdate)
     }
 
     private fun Row.toYtelsevedtak(): YtelseVedtak {

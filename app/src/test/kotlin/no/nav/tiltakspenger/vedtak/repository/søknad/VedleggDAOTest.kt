@@ -2,13 +2,13 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -33,10 +33,10 @@ internal class VedleggDAOTest {
     @Test
     fun `lagre vedlegg og hente de ut igjen`() {
         val søknadDAO = SøknadDAO()
-        val søkerRepository = PostgresSøkerRepository(søknadDAO)
+        val søkerRepository = PostgresInnsendingRepository(søknadDAO)
         val ident = Random().nextInt().toString()
-        val søker = Søker(ident)
-        søkerRepository.lagre(søker)
+        val innsending = Innsending(ident)
+        søkerRepository.lagre(innsending)
         val søknadId = Søknad.randomId()
         val søknad = nySøknadMedArenaTiltak(
             id = søknadId,
@@ -44,7 +44,7 @@ internal class VedleggDAOTest {
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                søknadDAO.lagre(søker.id, listOf(søknad), txSession)
+                søknadDAO.lagre(innsending.id, listOf(søknad), txSession)
             }
         }
         val vedleggMedNull = Vedlegg(

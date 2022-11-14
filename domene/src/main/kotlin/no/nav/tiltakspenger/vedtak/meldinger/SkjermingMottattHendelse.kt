@@ -6,11 +6,11 @@ import no.nav.tiltakspenger.vedtak.Skjerming
 
 class SkjermingMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
-    private val ident: String,
+    private val journalpostId: String,
     private val skjerming: Skjerming
 ) : Hendelse(aktivitetslogg) {
 
-    override fun ident() = ident
+    override fun journalpostId() = journalpostId
 
     fun skjerming() = skjerming
 }

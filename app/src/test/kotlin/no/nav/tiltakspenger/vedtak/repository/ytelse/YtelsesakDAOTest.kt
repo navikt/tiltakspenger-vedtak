@@ -2,14 +2,14 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.søkerMedTiltak
+import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
 import no.nav.tiltakspenger.objectmothers.tomYtelsesak
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.objectmothers.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.søker.PostgresSøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -31,9 +31,9 @@ class YtelsesakDAOTest {
     @Test
     fun `lagre og hente med null felter`() {
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresSøkerRepository(ytelsesakDAO = ytelsesakDAO)
+        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = søkerMedTiltak(ident = ident)
+        val søker = innsendingMedTiltak(ident = ident)
         søkerRepository.lagre(søker)
 
         val ytelseSak = tomYtelsesak()
@@ -46,7 +46,7 @@ class YtelsesakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(søkerId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
             }
         }
 
@@ -57,9 +57,9 @@ class YtelsesakDAOTest {
     @Test
     fun `lagre og hente med non-null felter`() {
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresSøkerRepository(ytelsesakDAO = ytelsesakDAO)
+        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = søkerMedTiltak(ident = ident)
+        val søker = innsendingMedTiltak(ident = ident)
         søkerRepository.lagre(søker)
 
         val ytelseSak = ytelseSak()
@@ -72,7 +72,7 @@ class YtelsesakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(søkerId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
             }
         }
 
@@ -90,9 +90,9 @@ class YtelsesakDAOTest {
          */
 
         val ytelsesakDAO = YtelsesakDAO()
-        val søkerRepository = PostgresSøkerRepository(ytelsesakDAO = ytelsesakDAO)
+        val søkerRepository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val søker = søkerMedTiltak(ident = ident)
+        val søker = innsendingMedTiltak(ident = ident)
         søkerRepository.lagre(søker)
 
         val ytelseSak = ytelseSak(vedtak = listOf(ytelseVedtak()))
@@ -111,7 +111,7 @@ class YtelsesakDAOTest {
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                ytelsesakDAO.hentForSøker(søkerId = søker.id, txSession = txSession)
+                ytelsesakDAO.hentForSøker(innsendingId = søker.id, txSession = txSession)
             }
         }
 

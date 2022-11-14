@@ -6,25 +6,32 @@ import io.mockk.spyk
 import io.mockk.verify
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
-import org.junit.jupiter.api.Assertions.*
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
 import java.time.Month
 
 internal class PersonopplysningerMottattRiverTest {
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
-    private val mediatorSpy = spyk(SøkerMediator(søkerRepository = søkerRepository, rapidsConnection = testRapid))
+    private val mediatorSpy =
+        spyk(InnsendingMediator(innsendingRepository = innsendingRepository, rapidsConnection = testRapid))
 
     init {
         PersonopplysningerMottattRiver(
             rapidsConnection = testRapid,
-            søkerMediator = mediatorSpy
+            innsendingMediator = mediatorSpy
         )
     }
 
@@ -36,28 +43,28 @@ internal class PersonopplysningerMottattRiverTest {
             File("src/test/resources/personopplysningerMottattHendelse.json").readText()
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            ident = ident,
+            journalpostId = ident,
             søknad = nySøknadMedArenaTiltak(
                 ident = ident,
             )
         )
-        val søker = Søker(ident)
-        every { søkerRepository.hent(ident) } returns søker
+        val innsending = Innsending(ident)
+        every { innsendingRepository.hent(ident) } returns innsending
 
-        søker.håndter(søknadMottattHendelse)
+        innsending.håndter(søknadMottattHendelse)
         testRapid.sendTestMessage(personopplysningerMottattHendelse)
 
-        assertEquals(SøkerTilstandType.AvventerSkjermingdata, søker.tilstand.type)
+        assertEquals(InnsendingTilstandType.AvventerSkjermingdata, innsending.tilstand.type)
         with(testRapid.inspektør) {
             assertEquals(1, size)
             assertEquals("behov", field(0, "@event_name").asText())
             assertEquals("skjerming", field(0, "@behov")[0].asText())
-            assertEquals(SøkerTilstandType.AvventerPersonopplysninger.name, field(0, "tilstandtype").asText())
+            assertEquals(InnsendingTilstandType.AvventerPersonopplysninger.name, field(0, "tilstandtype").asText())
             assertEquals(ident, field(0, "ident").asText())
             verify {
                 mediatorSpy.håndter(
                     withArg<PersonopplysningerMottattHendelse> {
-                        assertEquals(ident, it.ident())
+                        assertEquals(ident, it.journalpostId())
                         val søkerMedPersonoppl =
                             it.personopplysninger().filterIsInstance<Personopplysninger.Søker>().first()
                         assertEquals(ident, søkerMedPersonoppl.ident)

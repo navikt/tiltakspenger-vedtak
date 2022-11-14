@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -25,27 +25,27 @@ internal class SøknadDAO(
         )
     }
 
-    fun hentAlle(søkerId: SøkerId, txSession: TransactionalSession): List<Søknad> {
+    fun hent(innsendingId: InnsendingId, txSession: TransactionalSession): Søknad? {
         return txSession.run(
-            queryOf(hentAlle, søkerId.toString())
+            queryOf(hent, innsendingId.toString())
                 .map { row -> row.toSøknad(txSession) }
-                .asList
+                .asSingle
         )
     }
 
-    fun lagre(søkerId: SøkerId, søknader: List<Søknad>, txSession: TransactionalSession) {
-        søknader.forEach { lagreHeleSøknaden(søkerId, it, txSession) }
+    fun lagre(innsendingId: InnsendingId, søknad: Søknad?, txSession: TransactionalSession) {
+        søknad?.let { lagreHeleSøknaden(innsendingId, it, txSession) } //TODO: Burde vel egentlig slette søknaden..
     }
 
     private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(finnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle
-    ) ?: throw RuntimeException("Failed to check if person exists")
+    ) ?: throw RuntimeException("Failed to check if søknad exists")
 
-    private fun lagreHeleSøknaden(søkerId: SøkerId, søknad: Søknad, txSession: TransactionalSession) {
+    private fun lagreHeleSøknaden(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
         if (søknadFinnes(søknad.id, txSession)) {
             oppdaterSøknad(søknad, txSession)
         } else {
-            lagreSøknad(søkerId, søknad, txSession)
+            lagreSøknad(innsendingId, søknad, txSession)
         }
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
@@ -77,12 +77,12 @@ internal class SøknadDAO(
         )
     }
 
-    private fun lagreSøknad(søkerId: SøkerId, søknad: Søknad, txSession: TransactionalSession) {
+    private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 lagreSøknad, mapOf(
                     "id" to søknad.id.toString(),
-                    "sokerId" to søkerId.toString(),
+                    "innsendingId" to innsendingId.toString(),
                     "eksternSoknadId" to søknad.søknadId,
                     "fornavn" to søknad.fornavn,
                     "etternavn" to søknad.etternavn,
@@ -159,7 +159,7 @@ internal class SøknadDAO(
     private val lagreSøknad = """
         insert into søknad (
             id,
-            søker_id,
+            innsending_id,
             søknad_id,
             fornavn, 
             etternavn, 
@@ -177,7 +177,7 @@ internal class SøknadDAO(
             tidsstempel_hos_oss
         ) values (
             :id, 
-            :sokerId,
+            :innsendingId,
             :eksternSoknadId,
             :fornavn, 
             :etternavn,
@@ -219,7 +219,7 @@ internal class SøknadDAO(
     private val finnes = "select exists(select 1 from søknad where id = ?)"
 
     @Language("SQL")
-    private val hentAlle = "select * from søknad where søker_id = ?"
+    private val hent = "select * from søknad where innsending_id = ?"
 
     @Language("SQL")
     private val hentIdent = "select * from søknad where søknad_id = ?"

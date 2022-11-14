@@ -1,29 +1,29 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 class SøkerServiceImpl(
-    val søkerRepository: SøkerRepository
+    val innsendingRepository: InnsendingRepository
 ) : SøkerService {
 
     override fun hentSøkerOgSøknader(ident: String, saksbehandler: Saksbehandler): SøkerDTO? {
-        val søker = søkerRepository.hent(ident) ?: return null
-        søker.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
+        val innsendinger = innsendingRepository.findByIdent(ident)
+        innsendinger.forEach { it.sjekkOmSaksbehandlerHarTilgang(saksbehandler) }
 
         return SøkerDTO(
-            ident = søker.ident,
-            søknader = søker.søknader.map {
-                ListeSøknadDTO(
-                    søknadId = it.søknadId,
-                    arrangoernavn = it.tiltak.arrangoernavn,
-                    tiltakskode = it.tiltak.tiltakskode?.navn,
-                    startdato = it.tiltak.startdato,
-                    sluttdato = it.tiltak.sluttdato,
-                )
-            }
+            ident = ident,
+            søknader = innsendinger
+                .mapNotNull { it.søknad }
+                .map {
+                    ListeSøknadDTO(
+                        søknadId = it.søknadId,
+                        arrangoernavn = it.tiltak.arrangoernavn,
+                        tiltakskode = it.tiltak.tiltakskode?.navn,
+                        startdato = it.tiltak.startdato,
+                        sluttdato = it.tiltak.sluttdato,
+                    )
+                }
         )
     }
-
-
 }

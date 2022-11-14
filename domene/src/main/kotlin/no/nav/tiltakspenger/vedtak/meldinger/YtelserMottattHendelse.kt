@@ -6,11 +6,11 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 
 class YtelserMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
-    private val ident: String,
+    private val journalpostId: String,
     private val ytelseSak: List<YtelseSak>,
 ) : Hendelse(aktivitetslogg) {
 
-    override fun ident() = ident
+    override fun journalpostId() = journalpostId
 
     fun ytelseSak() = ytelseSak
 }

@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.vedtak
 
-enum class SøkerTilstandType {
-    SøkerRegistrert,
+enum class InnsendingTilstandType {
+    InnsendingRegistrert,
     AvventerPersonopplysninger,
     AvventerSkjermingdata,
     AvventerTiltak,
     AvventerYtelser,
-    SøkerFerdigstilt,
+    InnsendingFerdigstilt,
     AlleredeBehandlet,
     FaktainnhentingFeilet,
 }

@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -18,29 +18,33 @@ internal class PersonopplysningerDAO(
     private val securelog = KotlinLogging.logger("tjenestekall")
 
     fun hent(
-        søkerId: SøkerId,
+        innsendingId: InnsendingId,
         txSession: TransactionalSession,
     ): List<Personopplysninger> {
-        val søker = hentPersonopplysningerForSøker(søkerId, txSession) ?: return emptyList()
-        val barnMedIdent = barnMedIdentDAO.hent(søkerId, txSession)
-        val barnUtenIdent = barnUtenIdentDAO.hent(søkerId, txSession)
+        val søker = hentPersonopplysningerForSøker(innsendingId, txSession) ?: return emptyList()
+        val barnMedIdent = barnMedIdentDAO.hent(innsendingId, txSession)
+        val barnUtenIdent = barnUtenIdentDAO.hent(innsendingId, txSession)
 
         return listOf(søker) + barnMedIdent + barnUtenIdent
     }
 
-    fun lagre(søkerId: SøkerId, personopplysninger: List<Personopplysninger>, txSession: TransactionalSession) {
+    fun lagre(
+        innsendingId: InnsendingId,
+        personopplysninger: List<Personopplysninger>,
+        txSession: TransactionalSession
+    ) {
         log.info { "Sletter personopplysninger før lagring" }
-        slett(søkerId, txSession)
-        barnMedIdentDAO.slett(søkerId, txSession)
-        barnUtenIdentDAO.slett(søkerId, txSession)
+        slett(innsendingId, txSession)
+        barnMedIdentDAO.slett(innsendingId, txSession)
+        barnUtenIdentDAO.slett(innsendingId, txSession)
 
         log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
-                is Personopplysninger.Søker -> lagre(søkerId, it, txSession)
-                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(søkerId, it, txSession)
+                is Personopplysninger.Søker -> lagre(innsendingId, it, txSession)
+                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(innsendingId, it, txSession)
                 is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
-                    søkerId,
+                    innsendingId,
                     it,
                     txSession
                 )
@@ -48,11 +52,11 @@ internal class PersonopplysningerDAO(
         }
     }
 
-    private fun hentPersonopplysningerForSøker(søkerId: SøkerId, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, søkerId.toString()).map(toPersonopplysninger).asSingle)
+    private fun hentPersonopplysningerForSøker(innsendingId: InnsendingId, txSession: TransactionalSession) =
+        txSession.run(queryOf(hentSql, innsendingId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
-        søkerId: SøkerId,
+        innsendingId: InnsendingId,
         personopplysninger: Personopplysninger.Søker,
         txSession: TransactionalSession
     ) {
@@ -61,7 +65,7 @@ internal class PersonopplysningerDAO(
             queryOf(
                 lagreSql, mapOf(
                     "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGER).toString(),
-                    "sokerId" to søkerId.toString(),
+                    "sokerId" to innsendingId.toString(),
                     "ident" to personopplysninger.ident,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
@@ -79,8 +83,8 @@ internal class PersonopplysningerDAO(
         )
     }
 
-    private fun slett(søkerId: SøkerId, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, søkerId.toString()).asUpdate)
+    private fun slett(innsendingId: InnsendingId, txSession: TransactionalSession) =
+        txSession.run(queryOf(slettSql, innsendingId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
         Personopplysninger.Søker(

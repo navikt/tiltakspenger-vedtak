@@ -13,7 +13,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import java.time.LocalDateTime
@@ -22,7 +22,7 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class ArenaTiltakMottattRiver(
-    private val søkerMediator: SøkerMediator,
+    private val innsendingMediator: InnsendingMediator,
     rapidsConnection: RapidsConnection,
 ) : River.PacketListener {
 
@@ -39,6 +39,7 @@ internal class ArenaTiltakMottattRiver(
                 it.demandAllOrAny("@behov", listOf("arenatiltak"))
                 it.demandKey("@løsning")
                 it.requireKey("ident")
+                it.requireKey("journalpostId")
                 it.requireKey("@opprettet")
                 it.interestedIn("@løsning.arenatiltak.tiltaksaktiviteter")
                 it.interestedIn("@løsning.arenatiltak.feil")
@@ -59,7 +60,7 @@ internal class ArenaTiltakMottattRiver(
 
         val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            ident = packet["ident"].asText(),
+            journalpostId = packet["journalpostId"].asText(),
             feil = packet["@løsning.arenatiltak.feil"].asText(null)
                 ?.let { ArenaTiltakMottattHendelse.Feilmelding.valueOf(it) },
             tiltaksaktivitet = mapArenaTiltak(
@@ -68,7 +69,7 @@ internal class ArenaTiltakMottattRiver(
             )
         )
 
-        søkerMediator.håndter(arenaTiltakMottattHendelse)
+        innsendingMediator.håndter(arenaTiltakMottattHendelse)
     }
 
     fun JsonNode?.asList(): List<TiltaksaktivitetDTO> {

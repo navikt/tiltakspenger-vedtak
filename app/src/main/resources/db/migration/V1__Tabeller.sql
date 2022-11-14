@@ -17,19 +17,20 @@ $$
     END
 $$;
 
-CREATE TABLE søker
+CREATE TABLE innsending
 (
-    id          VARCHAR PRIMARY KEY,
-    ident       VARCHAR                  NOT NULL UNIQUE,
-    tilstand    VARCHAR                  NOT NULL,
-    sist_endret TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet   TIMESTAMP WITH TIME ZONE NOT NULL
+    id                      VARCHAR                  PRIMARY KEY,
+    journalpost_id          VARCHAR                  NOT NULL UNIQUE,
+    ident                   VARCHAR                  NULL,
+    tilstand                VARCHAR                  NOT NULL,
+    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE søknad
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NULL,
@@ -112,7 +113,7 @@ CREATE TABLE søknad_vedlegg
 CREATE TABLE personopplysninger_søker
 (
     id                       VARCHAR PRIMARY KEY,
-    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id            VARCHAR                  NOT NULL REFERENCES innsending (id),
     ident                    VARCHAR                  NOT NULL,
     fødselsdato              DATE                     NOT NULL,
     fornavn                  VARCHAR                  NOT NULL,
@@ -130,7 +131,7 @@ CREATE TABLE personopplysninger_søker
 CREATE TABLE personopplysninger_barn_med_ident
 (
     id                       VARCHAR PRIMARY KEY,
-    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id            VARCHAR                  NOT NULL REFERENCES innsending (id),
     ident                    VARCHAR                  NOT NULL,
     fødselsdato              DATE                     NOT NULL,
     fornavn                  VARCHAR                  NOT NULL,
@@ -146,7 +147,7 @@ CREATE TABLE personopplysninger_barn_med_ident
 CREATE TABLE personopplysninger_barn_uten_ident
 (
     id                  VARCHAR PRIMARY KEY,
-    søker_id            VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
     fødselsdato         DATE                     NULL,
     fornavn             VARCHAR                  NULL,
     mellomnavn          VARCHAR                  NULL,
@@ -157,7 +158,7 @@ CREATE TABLE personopplysninger_barn_uten_ident
 CREATE TABLE tiltaksaktivitet
 (
     id                     VARCHAR PRIMARY KEY,
-    søker_id               VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id          VARCHAR                  NOT NULL REFERENCES innsending (id),
     tiltak                 VARCHAR                  NOT NULL,
     aktivitet_id           VARCHAR                  NOT NULL,
     tiltak_lokalt_navn     VARCHAR                  NULL,
@@ -176,7 +177,7 @@ CREATE TABLE tiltaksaktivitet
 CREATE TABLE ytelsesak
 (
     id                    VARCHAR PRIMARY KEY,
-    søker_id              VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id         VARCHAR                  NOT NULL REFERENCES innsending (id),
     fom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NOT NULL,
     tom_gyldighetsperiode TIMESTAMP WITH TIME ZONE NULL,
     dato_krav_mottatt     DATE                     NULL,
@@ -204,7 +205,7 @@ CREATE TABLE ytelsevedtak
 CREATE TABLE aktivitet
 (
     id               VARCHAR PRIMARY KEY,
-    søker_id         VARCHAR                  NOT NULL REFERENCES søker (id),
+    innsending_id    VARCHAR                  NOT NULL REFERENCES innsending (id),
     type             VARCHAR                  NULL,
     alvorlighetsgrad INT                      NOT NULL,
     label            CHAR(1)                  NOT NULL,

@@ -9,7 +9,7 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
-import no.nav.tiltakspenger.vedtak.repository.søker.InMemorySøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.InMemoryInnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
@@ -34,7 +34,7 @@ internal fun vedtakTestApi(
             søkerRoutes(
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 søkerService = SøkerServiceImpl(
-                    søkerRepository = InMemorySøkerRepository(),
+                    innsendingRepository = InMemoryInnsendingRepository(),
                 ),
             )
         }

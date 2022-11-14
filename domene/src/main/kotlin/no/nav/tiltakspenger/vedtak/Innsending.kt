@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -18,19 +18,22 @@ import java.time.temporal.ChronoUnit.MONTHS
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 @Suppress("TooManyFunctions", "LongParameterList")
-class Søker private constructor(
-    val id: SøkerId,
-    val ident: String,
+class Innsending private constructor(
+    val id: InnsendingId,
+    val journalpostId: String,
+    ident: String?,
     tilstand: Tilstand,
-    søknader: List<Søknad>,
+    søknad: Søknad?,
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
     val aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
+    var ident: String? = ident
+        private set
     var tilstand: Tilstand = tilstand
         private set
-    var søknader: List<Søknad> = søknader
+    var søknad: Søknad? = søknad
         private set
     var personopplysninger: List<Personopplysninger> = personopplysninger
         private set
@@ -39,7 +42,7 @@ class Søker private constructor(
     var ytelser: List<YtelseSak> = ytelser
         private set
 
-    private val observers = mutableSetOf<SøkerObserver>()
+    private val observers = mutableSetOf<InnsendingObserver>()
 
     fun personopplysningerSøker() = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()
     fun personopplysningerBarnUtenIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
@@ -86,12 +89,13 @@ class Søker private constructor(
     }
 
     constructor(
-        ident: String
+        journalpostId: String
     ) : this(
         id = randomId(),
-        ident = ident,
-        tilstand = SøkerRegistrert,
-        søknader = mutableListOf(),
+        ident = null,
+        journalpostId = journalpostId,
+        tilstand = InnsendingRegistrert,
+        søknad = null,
         personopplysninger = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
@@ -100,23 +104,25 @@ class Søker private constructor(
 
     companion object {
 
-        fun randomId() = SøkerId.random()
+        fun randomId() = InnsendingId.random()
 
         fun fromDb(
-            id: SøkerId,
+            id: InnsendingId,
+            journalpostId: String,
             ident: String,
             tilstand: String,
-            søknader: List<Søknad>,
+            søknad: Søknad?,
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
             personopplysninger: List<Personopplysninger>,
             aktivitetslogg: Aktivitetslogg,
-        ): Søker {
-            return Søker(
+        ): Innsending {
+            return Innsending(
                 id = id,
+                journalpostId = journalpostId,
                 ident = ident,
                 tilstand = convertTilstand(tilstand),
-                søknader = søknader,
+                søknad = søknad,
                 personopplysninger = personopplysninger,
                 tiltak = tiltak,
                 ytelser = ytelser,
@@ -125,86 +131,80 @@ class Søker private constructor(
         }
 
         private fun convertTilstand(tilstand: String): Tilstand {
-            return when (SøkerTilstandType.valueOf(tilstand)) {
-                SøkerTilstandType.SøkerRegistrert -> SøkerRegistrert
-                SøkerTilstandType.AvventerPersonopplysninger -> AvventerPersonopplysninger
-                SøkerTilstandType.AvventerSkjermingdata -> AvventerSkjermingdata
-                SøkerTilstandType.AvventerTiltak -> AvventerTiltak
-                SøkerTilstandType.AvventerYtelser -> AvventerYtelser
-                SøkerTilstandType.SøkerFerdigstilt -> SøkerFerdigstiltType
-                SøkerTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
+            return when (InnsendingTilstandType.valueOf(tilstand)) {
+                InnsendingTilstandType.InnsendingRegistrert -> InnsendingRegistrert
+                InnsendingTilstandType.AvventerPersonopplysninger -> AvventerPersonopplysninger
+                InnsendingTilstandType.AvventerSkjermingdata -> AvventerSkjermingdata
+                InnsendingTilstandType.AvventerTiltak -> AvventerTiltak
+                InnsendingTilstandType.AvventerYtelser -> AvventerYtelser
+                InnsendingTilstandType.InnsendingFerdigstilt -> SøkerFerdigstiltType
+                InnsendingTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
                 else -> throw IllegalStateException("Ukjent tilstand $tilstand")
             }
         }
     }
 
     fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
-        if (ident != søknadMottattHendelse.ident()) return
+        if (ident != søknadMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(søknadMottattHendelse, "Registrert SøknadMottattHendelse")
-        /*
         if (erFerdigBehandlet()) {
-            søknadMottattHendelse.error("ident ${søknadMottattHendelse.ident()} allerede ferdig behandlet")
-            return
-        }
-        */
-        if (erMottattTidligere(søknadMottattHendelse.søknad())) {
-            søknadMottattHendelse.info("søknad ${søknadMottattHendelse.søknad().søknadId} er motttatt og lagret tidligere")
+            søknadMottattHendelse.error("ident ${søknadMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, søknadMottattHendelse)
     }
 
     fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-        if (ident != personopplysningerMottattHendelse.ident()) return
+        if (ident != personopplysningerMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
             personopplysningerMottattHendelse
-                .error("ident ${personopplysningerMottattHendelse.ident()} allerede ferdig behandlet")
+                .error("ident ${personopplysningerMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, personopplysningerMottattHendelse)
     }
 
     fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
-        if (ident != skjermingMottattHendelse.ident()) return
+        if (ident != skjermingMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(skjermingMottattHendelse, "Registrert SkjermingMottattHendelse")
         if (erFerdigBehandlet()) {
-            skjermingMottattHendelse.error("ident ${skjermingMottattHendelse.ident()} allerede ferdig behandlet")
+            skjermingMottattHendelse.error("ident ${skjermingMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, skjermingMottattHendelse)
     }
 
     fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-        if (ident != arenaTiltakMottattHendelse.ident()) return
+        if (ident != arenaTiltakMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(arenaTiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
         if (erFerdigBehandlet()) {
-            arenaTiltakMottattHendelse.error("ident ${arenaTiltakMottattHendelse.ident()} allerede ferdig behandlet")
+            arenaTiltakMottattHendelse.error("ident ${arenaTiltakMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, arenaTiltakMottattHendelse)
     }
 
     fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
-        if (ident != ytelserMottattHendelse.ident()) return
+        if (ident != ytelserMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(ytelserMottattHendelse, "Registrert YtelserMottattHendelse")
         if (erFerdigBehandlet()) {
-            ytelserMottattHendelse.error("ident ${ytelserMottattHendelse.ident()} allerede ferdig behandlet")
+            ytelserMottattHendelse.error("ident ${ytelserMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, ytelserMottattHendelse)
@@ -218,33 +218,31 @@ class Søker private constructor(
 
     // Gang of four State pattern
     interface Tilstand : KontekstLogable {
-        val type: SøkerTilstandType
+        val type: InnsendingTilstandType
         val timeout: Duration
 
-        fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søker.søknader += søknadMottattHendelse.søknad()
-            søker.trengerPersonopplysninger(søknadMottattHendelse)
-            søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
+        fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
+            søknadMottattHendelse.warn("Forventet ikke SøknadMottattHendelse i ${type.name}")
         }
 
-        fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+        fun håndter(innsending: Innsending, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
             personopplysningerMottattHendelse.warn("Forventet ikke PersonopplysningerMottattHendelse i ${type.name}")
         }
 
-        fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
+        fun håndter(innsending: Innsending, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.warn("Forventet ikke SkjermingMottattHendelse i ${type.name}")
         }
 
-        fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+        fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
             arenaTiltakMottattHendelse.warn("Forventet ikke ArenaTiltakMottattHendelse i ${type.name}")
         }
 
-        fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
+        fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
             ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i ${type.name}")
         }
 
-        fun leaving(søker: Søker, hendelse: Hendelse) {}
-        fun entering(søker: Søker, hendelse: Hendelse) {}
+        fun leaving(innsending: Innsending, hendelse: Hendelse) {}
+        fun entering(innsending: Innsending, hendelse: Hendelse) {}
 
         override fun opprettKontekst(): Kontekst {
             return Kontekst(
@@ -256,46 +254,50 @@ class Søker private constructor(
         }
     }
 
-    internal object SøkerRegistrert : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.SøkerRegistrert
+    internal object InnsendingRegistrert : Tilstand {
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.InnsendingRegistrert
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, søknadMottattHendelse: SøknadMottattHendelse) {
-            søker.søknader += søknadMottattHendelse.søknad()
-            søker.trengerPersonopplysninger(søknadMottattHendelse)
-            søker.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
+        override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
+            innsending.søknad = søknadMottattHendelse.søknad()
+            innsending.ident = søknadMottattHendelse.søknad().ident
+            innsending.trengerPersonopplysninger(søknadMottattHendelse)
+            innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
     }
 
     internal object AvventerPersonopplysninger : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerPersonopplysninger
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerPersonopplysninger
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
+        override fun håndter(
+            innsending: Innsending,
+            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse
+        ) {
             personopplysningerMottattHendelse
                 .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
-            søker.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
-            søker.trengerSkjermingdata(personopplysningerMottattHendelse)
-            søker.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
+            innsending.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
+            innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
+            innsending.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
 
     internal object AvventerSkjermingdata : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerSkjermingdata
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerSkjermingdata
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, skjermingMottattHendelse: SkjermingMottattHendelse) {
+        override fun håndter(innsending: Innsending, skjermingMottattHendelse: SkjermingMottattHendelse) {
             skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-            if (søker.personopplysningerSøker() == null) {
+            if (innsending.personopplysningerSøker() == null) {
                 skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
-            søker.personopplysninger = søker.personopplysninger.map {
+            innsending.personopplysninger = innsending.personopplysninger.map {
                 if (it is Personopplysninger.Søker) {
                     it.copy(
                         skjermet = skjermingMottattHendelse.skjerming().skjerming
@@ -304,81 +306,93 @@ class Søker private constructor(
                     it
                 }
             }
-            søker.trengerTiltak(skjermingMottattHendelse)
-            søker.tilstand(skjermingMottattHendelse, AvventerTiltak)
+            innsending.trengerTiltak(skjermingMottattHendelse)
+            innsending.tilstand(skjermingMottattHendelse, AvventerTiltak)
         }
     }
 
     internal object AvventerTiltak : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerTiltak
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerTiltak
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+        override fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
             when (arenaTiltakMottattHendelse.feilmelding()) {
                 ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet -> {
                     arenaTiltakMottattHendelse.error("Fant ikke person i arenetiltak")
-                    søker.tilstand(arenaTiltakMottattHendelse, FaktainnhentingFeilet)
+                    innsending.tilstand(arenaTiltakMottattHendelse, FaktainnhentingFeilet)
                 }
 
                 null -> {
                     arenaTiltakMottattHendelse
                         .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-                    søker.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!
-                    søker.trengerArenaYtelse(arenaTiltakMottattHendelse)
-                    søker.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
+                    innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!
+                    innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
+                    innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
                 }
             }
         }
     }
 
     internal object AvventerYtelser : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.AvventerYtelser
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerYtelser
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(søker: Søker, ytelserMottattHendelse: YtelserMottattHendelse) {
+        override fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
             ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
-            søker.ytelser = ytelserMottattHendelse.ytelseSak()
-            søker.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
+            innsending.ytelser = ytelserMottattHendelse.ytelseSak()
+            innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
         }
     }
 
     internal object SøkerFerdigstiltType : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.SøkerFerdigstilt
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.InnsendingFerdigstilt
         override val timeout: Duration
             get() = Duration.ofDays(1)
     }
 
     internal object FaktainnhentingFeilet : Tilstand {
-        override val type: SøkerTilstandType
-            get() = SøkerTilstandType.FaktainnhentingFeilet
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.FaktainnhentingFeilet
         override val timeout: Duration
             get() = Duration.ofDays(1)
     }
 
 
-    private fun trengerPersonopplysninger(hendelse: Hendelse) {
+    private fun trengerPersonopplysninger(hendelse: SøknadMottattHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
             melding = "Trenger personopplysninger",
-            detaljer = mapOf("ident" to this.ident)
+            detaljer = mapOf("ident" to this.ident!!)
         )
     }
 
     private fun trengerSkjermingdata(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming, "Trenger skjermingdata")
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
+            melding = "Trenger skjermingdata",
+            detaljer = mapOf("ident" to this.ident!!)
+        )
     }
 
     private fun trengerTiltak(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak, "Trenger arenatiltak")
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
+            melding = "Trenger arenatiltak",
+            detaljer = mapOf("ident" to this.ident!!)
+        )
     }
 
     private fun trengerArenaYtelse(hendelse: Hendelse) {
-        hendelse.behov(Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser, "Trenger arenaytelser")
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
+            melding = "Trenger arenaytelser",
+            detaljer = mapOf("ident" to this.ident!!)
+        )
     }
 
     private fun tilstand(
@@ -399,15 +413,15 @@ class Søker private constructor(
     }
 
     private fun emitTilstandEndret(
-        gjeldendeTilstand: SøkerTilstandType,
+        gjeldendeTilstand: InnsendingTilstandType,
         aktivitetslogg: Aktivitetslogg,
-        forrigeTilstand: SøkerTilstandType,
+        forrigeTilstand: InnsendingTilstandType,
         timeout: Duration
     ) {
         observers.forEach {
             it.tilstandEndret(
-                SøkerObserver.SøkerEndretTilstandEvent(
-                    ident = ident,
+                InnsendingObserver.InnendingEndretTilstandEvent(
+                    journalpostId = journalpostId,
                     gjeldendeTilstand = gjeldendeTilstand,
                     forrigeTilstand = forrigeTilstand,
                     aktivitetslogg = aktivitetslogg,
@@ -417,35 +431,19 @@ class Søker private constructor(
         }
     }
 
-    //Har jeg kåla det til her? Når bruker man accept og når bruker man visit??
-    fun accept(visitor: SøkerVisitor) {
-        visitor.preVisitSøker(this, ident)
-        visitor.visitTilstand(tilstand)
-        //journalpost?.accept(visitor)
-//        søknader.accept(visitor)
-        visitor.visitSøkerAktivitetslogg(aktivitetslogg)
-        aktivitetslogg.accept(visitor)
-        visitor.postVisitSøker(this, ident)
-    }
-
-    fun addObserver(observer: SøkerObserver) {
+    fun addObserver(observer: InnsendingObserver) {
         observers.add(observer)
     }
 
     private fun erFerdigBehandlet() =
         this.tilstand.type in setOf(
-            SøkerTilstandType.SøkerFerdigstilt,
-            SøkerTilstandType.AlleredeBehandlet
+            InnsendingTilstandType.InnsendingFerdigstilt,
+            InnsendingTilstandType.AlleredeBehandlet
         )
-
-    private fun erMottattTidligere(søknad: Søknad) =
-        this.søknader.find { it.søknadId == søknad.søknadId } != null
 
     override fun opprettKontekst(): Kontekst = Kontekst(
-        "Søker",
-        mapOf(
-            "ident" to ident
-        )
+        "Innsending",
+        mapOf("journalpostId" to journalpostId)
     )
 
     fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
