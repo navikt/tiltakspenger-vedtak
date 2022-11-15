@@ -22,8 +22,9 @@ data class BehandlingDTO(
 )
 
 data class BarnetilleggDTO(
-    val navn: String,
+    val navn: String?,
     val alder: Int,
+    val fødselsdato: LocalDate?,
     val bosatt: String,
     val kilde: String,
     val utfall: UtfallDTO,

@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.service.søknad
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -75,17 +76,20 @@ class BehandlingMapper {
             pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
             lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
             institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
-            barnetillegg = mapBarnetillegg(søknad.barnetillegg)
+            barnetillegg = mapBarnetillegg(søknad.barnetillegg, søker.personopplysningerBarnMedIdent())
         )
     }
 
     private fun mapBarnetillegg(
-        barnetillegg: List<Barnetillegg>
+        barnetillegg: List<Barnetillegg>,
+        barnMedIdent: List<Personopplysninger.BarnMedIdent>,
     ): List<BarnetilleggDTO> {
         return barnetillegg.map {
             BarnetilleggDTO(
-                navn = it.fornavn + " " + it.etternavn,
+                navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
                 alder = it.alder,
+                fødselsdato = if (it is Barnetillegg.UtenIdent) it.fødselsdato
+                else barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato,
                 bosatt = it.oppholdsland,
                 kilde = "Søknad",
                 utfall = UtfallDTO.Oppfylt,
