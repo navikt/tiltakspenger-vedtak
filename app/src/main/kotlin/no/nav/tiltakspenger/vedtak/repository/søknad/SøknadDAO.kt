@@ -112,7 +112,7 @@ internal class SøknadDAO(
         val etternavn = stringOrNull("etternavn")
         val ident = string("ident")
         val deltarKvp = boolean("deltar_kvp")
-        val deltarIntroduksjonsprogrammet = boolean("deltar_intro")
+        val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
         val introduksjonsprogrammetFom = localDateOrNull("intro_fom")
         val introduksjonsprogrammetTom = localDateOrNull("intro_tom")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
