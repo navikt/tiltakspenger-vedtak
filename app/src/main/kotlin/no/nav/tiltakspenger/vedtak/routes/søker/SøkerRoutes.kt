@@ -1,12 +1,15 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerIdDTO
@@ -46,40 +49,25 @@ fun Route.søkerRoutes(
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
-    get(søknaderPath) {
+    get("$søknaderPath/{sokerId}") {
         LOG.debug("Mottatt request på $søknaderPath")
-        val personIdent = call.receive<PersonIdent>()
-        call.auditHvisInnlogget(berørtBruker = personIdent.ident)
+        val søkerId = call.parameters["sokerId"]?.let { SøkerId.fromDb(it) }
+        if (søkerId == null) {
+            return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
+        }
+        // TODO:
+//        call.auditHvisInnlogget(berørtBruker = personIdent.ident)
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
         val response: SøkerDTO =
             try {
-                søkerService.hentSøkerOgSøknader(personIdent.ident, saksbehandler)
-                    ?: return@post call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
+                søkerService.hentSøkerOgSøknader(søkerId, saksbehandler)
+                    ?: return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
             } catch (tex: TilgangException) {
                 LOG.warn("Saksbehandler har ikke tilgang", tex)
-                return@post call.respond(message = "Saksbehandler har ikke tilgang", status = HttpStatusCode.Forbidden)
-            }
-        call.respond(message = response, status = HttpStatusCode.OK)
-    }
-
-    post(søknaderPath) {
-        LOG.debug("Mottatt request på $søknaderPath")
-        val personIdent = call.receive<PersonIdent>()
-        call.auditHvisInnlogget(berørtBruker = personIdent.ident)
-
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val response: SøkerDTO =
-            try {
-                søkerService.hentSøkerOgSøknader(personIdent.ident, saksbehandler)
-                    ?: return@post call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
-            } catch (tex: TilgangException) {
-                LOG.warn("Saksbehandler har ikke tilgang", tex)
-                return@post call.respond(message = "Saksbehandler har ikke tilgang", status = HttpStatusCode.Forbidden)
+                return@get call.respond(message = "Saksbehandler har ikke tilgang", status = HttpStatusCode.Forbidden)
             }
         call.respond(message = response, status = HttpStatusCode.OK)
     }

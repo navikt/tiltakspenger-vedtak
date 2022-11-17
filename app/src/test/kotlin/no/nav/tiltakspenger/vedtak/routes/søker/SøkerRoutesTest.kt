@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
@@ -15,6 +14,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -41,17 +41,20 @@ class SøkerRoutesTest {
 
     @Test
     fun `kalle med en ident i body burde svare ok`() {
-
+        val søkerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(søkerId, saksbehandler())
         } returns SøkerDTO(
             ident = "1234",
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Foo",
+                etternavn = "Bar",
+                ident = "",
+                barn = listOf(),
+            ),
             behandlinger = listOf(
                 BehandlingDTO(
-                    personopplysninger = PersonopplysningerDTO(
-                        fornavn = null, etternavn = null, ident = "", barn = listOf()
-                    ),
                     søknad = SøknadDTO(
                         søknadId = "",
                         søknadsdato = LocalDate.now(),
@@ -118,21 +121,12 @@ class SøkerRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$søkerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.OK
                 contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
                 println(bodyAsText())
@@ -147,10 +141,10 @@ class SøkerRoutesTest {
 
     @Test
     fun `at saksbehandler ikke har tilgang burde svare forbidden`() {
-
+        val søkerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(søkerId, saksbehandler())
         } throws TilgangException("Test")
 
         testApplication {
@@ -166,21 +160,12 @@ class SøkerRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$søkerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.Forbidden
             }
         }
@@ -188,10 +173,10 @@ class SøkerRoutesTest {
 
     @Test
     fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
-
+        val sokerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(sokerId, saksbehandler())
         } returns null
 
         testApplication {
@@ -207,52 +192,14 @@ class SøkerRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$sokerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.NotFound
                 assertEquals("Søker ikke funnet", bodyAsText())
-            }
-        }
-    }
-
-    @Test
-    fun `kalle uten ident i body burde svare med 400 Bad Request`() {
-
-        testApplication {
-            application {
-                //vedtakTestApi()
-                jacksonSerialization()
-                routing {
-                    søkerRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        søkerServiceMock,
-                    )
-                }
-            }
-
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
-                },
-            ) {
-                setBody("{}")
-            }.apply {
-                status shouldBe HttpStatusCode.BadRequest
             }
         }
     }
@@ -260,14 +207,14 @@ class SøkerRoutesTest {
     private val expectedSøkerMedSøknader = """
         {
           "ident": "1234",
+          "personopplysninger": {
+            "fornavn": "Foo",
+            "etternavn": "Bar",
+            "ident": "",
+            "barn": []
+          },
           "behandlinger": [
             {
-              "personopplysninger": {
-                "fornavn": null,
-                "etternavn": null,
-                "ident": "",
-                "barn": []
-              },
               "søknad": {
                 "søknadId": "",
                 "søknadsdato": "2022-11-17",

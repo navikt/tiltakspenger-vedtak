@@ -35,9 +35,9 @@ internal class SøkerServiceTest {
             søknad = søknad,
         )
 
-        every { repo.hent(ident) } returns søker
+        every { repo.hentBySøkerId(søker.id) } returns søker
 
-        val behandlingDTO = service.hentSøkerOgSøknader(ident, saksbehandler())
+        val behandlingDTO = service.hentSøkerOgSøknader(søker.id, saksbehandler())
 
         assertNotNull(behandlingDTO)
     }
@@ -56,10 +56,10 @@ internal class SøkerServiceTest {
             søknad = søknad,
         )
 
-        every { repo.hent(ident) } returns søker
+        every { repo.hentBySøkerId(søker.id) } returns søker
 
         assertThrows<TilgangException> {
-            service.hentSøkerOgSøknader(ident, saksbehandler())
+            service.hentSøkerOgSøknader(søker.id, saksbehandler())
         }
 
     }

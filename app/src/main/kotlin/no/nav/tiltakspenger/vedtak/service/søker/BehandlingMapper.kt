@@ -6,17 +6,6 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.service.søker.BarnDTO
-import no.nav.tiltakspenger.vedtak.service.søker.BarnetilleggDTO
-import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
-import no.nav.tiltakspenger.vedtak.service.søker.KommunaleVilkårsVurderingsKategoriDTO
-import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.service.søker.PersonopplysningerDTO
-import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
-import no.nav.tiltakspenger.vedtak.service.søker.TiltakDTO
-import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
-import no.nav.tiltakspenger.vedtak.service.søker.VilkårsVurderingsKategoriDTO
-import no.nav.tiltakspenger.vedtak.service.søker.VilkårsvurderingDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -42,12 +31,6 @@ class BehandlingMapper {
             val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)
 
             BehandlingDTO(
-                personopplysninger = PersonopplysningerDTO(
-                    fornavn = søker.personopplysningerSøker()?.fornavn,
-                    etternavn = søker.personopplysningerSøker()?.etternavn,
-                    ident = søker.personopplysningerSøker()?.ident ?: søknad.ident,
-                    barn = mapBarn(søker)
-                ),
                 søknad = SøknadDTO(
                     søknadId = søknad.søknadId,
                     søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),

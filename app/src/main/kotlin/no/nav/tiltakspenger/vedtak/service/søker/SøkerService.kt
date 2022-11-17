@@ -1,24 +1,25 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.SøkerId
 import java.time.LocalDate
 
 interface SøkerService {
     fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
-    fun hentSøkerOgSøknader(ident: String, saksbehandler: Saksbehandler): SøkerDTO?
+    fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO?
 }
 
 data class SøkerIdDTO(
-    val id: String,
+    val id: String
 )
 
 data class SøkerDTO(
     val ident: String,
-    val behandlinger: List<BehandlingDTO>
+    val behandlinger: List<BehandlingDTO>,
+    val personopplysninger: PersonopplysningerDTO?
 )
 
 data class BehandlingDTO(
-    val personopplysninger: PersonopplysningerDTO,
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
