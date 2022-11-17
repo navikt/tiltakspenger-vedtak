@@ -7,6 +7,14 @@ class SøkerServiceImpl(
     val søkerRepository: SøkerRepository,
     private val behandlingMapper: BehandlingMapper = BehandlingMapper()
 ) : SøkerService {
+    override fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO? {
+        val søker = søkerRepository.hent(ident) ?: return null
+        søker.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
+
+        return SøkerIdDTO(
+            id = søker.id.toString(),
+        )
+    }
 
     override fun hentSøkerOgSøknader(ident: String, saksbehandler: Saksbehandler): SøkerDTO? {
         val søker = søkerRepository.hent(ident) ?: return null

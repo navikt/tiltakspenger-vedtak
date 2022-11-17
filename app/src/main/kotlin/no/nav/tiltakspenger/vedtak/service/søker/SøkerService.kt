@@ -4,8 +4,13 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import java.time.LocalDate
 
 interface SøkerService {
+    fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
     fun hentSøkerOgSøknader(ident: String, saksbehandler: Saksbehandler): SøkerDTO?
 }
+
+data class SøkerIdDTO(
+    val id: String,
+)
 
 data class SøkerDTO(
     val ident: String,
