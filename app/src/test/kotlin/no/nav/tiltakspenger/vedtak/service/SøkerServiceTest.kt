@@ -10,16 +10,16 @@ import no.nav.tiltakspenger.objectmothers.søkerMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.søkerMedSøknad
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.repository.SøkerRepository
-import no.nav.tiltakspenger.vedtak.service.søknad.SøknadServiceImpl
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-internal class SøknadServiceTest {
+internal class SøkerServiceTest {
 
     private val repo = mockk<SøkerRepository>()
-    private val service = SøknadServiceImpl(repo)
+    private val service = SøkerServiceImpl(repo)
 
     @Test
     fun `skal kunne hente behandlingDTO`() {
@@ -35,9 +35,9 @@ internal class SøknadServiceTest {
             søknad = søknad,
         )
 
-        every { repo.findBySøknadId(søknad.søknadId) } returns søker
+        every { repo.hent(ident) } returns søker
 
-        val behandlingDTO = service.hentBehandlingAvSøknad(søknad.søknadId, saksbehandler())
+        val behandlingDTO = service.hentSøkerOgSøknader(ident, saksbehandler())
 
         assertNotNull(behandlingDTO)
     }
@@ -56,10 +56,10 @@ internal class SøknadServiceTest {
             søknad = søknad,
         )
 
-        every { repo.findBySøknadId(søknad.søknadId) } returns søker
+        every { repo.hent(ident) } returns søker
 
         assertThrows<TilgangException> {
-            service.hentBehandlingAvSøknad(søknad.søknadId, saksbehandler())
+            service.hentSøkerOgSøknader(ident, saksbehandler())
         }
 
     }

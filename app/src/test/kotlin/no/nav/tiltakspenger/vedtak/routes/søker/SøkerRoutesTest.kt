@@ -1,28 +1,38 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.søker.ListeSøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.service.søker.KommunaleVilkårsVurderingsKategoriDTO
+import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.service.søker.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
+import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
+import no.nav.tiltakspenger.vedtak.service.søker.VilkårsVurderingsKategoriDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import java.time.LocalDate
-import java.time.Month
 
 class SøkerRoutesTest {
 
@@ -37,13 +47,60 @@ class SøkerRoutesTest {
             søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
         } returns SøkerDTO(
             ident = "1234",
-            søknader = listOf(
-                ListeSøknadDTO(
-                    søknadId = "1234",
-                    arrangoernavn = "Ukjent",
-                    tiltakskode = "tiltak",
-                    startdato = LocalDate.of(2022, Month.DECEMBER, 1),
-                    sluttdato = null,
+            behandlinger = listOf(
+                BehandlingDTO(
+                    personopplysninger = PersonopplysningerDTO(
+                        fornavn = null, etternavn = null, ident = "", barn = listOf()
+                    ),
+                    søknad = SøknadDTO(
+                        søknadId = "",
+                        søknadsdato = LocalDate.now(),
+                        arrangoernavn = null,
+                        tiltakskode = null,
+                        beskrivelse = null,
+                        startdato = LocalDate.now(),
+                        sluttdato = null,
+                        antallDager = 0
+                    ),
+                    registrerteTiltak = listOf(),
+                    vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
+                    statligeYtelser = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    kommunaleYtelser = KommunaleVilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        introProgrammet = emptyList(),
+                        kvp = emptyList(),
+                    ),
+                    pensjonsordninger = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    lønnsinntekt = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    institusjonsopphold = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    barnetillegg = emptyList()
                 )
             )
         )
@@ -78,6 +135,7 @@ class SøkerRoutesTest {
             }.apply {
                 status shouldBe HttpStatusCode.OK
                 contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                println(bodyAsText())
                 JSONAssert.assertEquals(
                     expectedSøkerMedSøknader,
                     bodyAsText(),
@@ -201,96 +259,69 @@ class SøkerRoutesTest {
 
     private val expectedSøkerMedSøknader = """
         {
-            "ident": "1234",
-            søknader: [
-                {
-                    "søknadId": "1234",
-                    "arrangoernavn": "Ukjent",
-                    "tiltakskode": "tiltak",
-                    "startdato": "2022-12-01",
-                    "sluttdato": null
-                }
-            ]
-        }
-    """.trimIndent()
-
-    private val expected = """
-     {
-      "personopplysninger": {
-        "fornavn": "Fornavn",
-        "etternavn": "Etternavn",
-        "ident": "123454",
-        "barn": [
-          {
-            "fornavn": "Emil",
-            "etternavn": "Flaks",
-            "ident": "987654",
-            "bosted": ""
-          },
-          {
-            "fornavn": "Emma",
-            "etternavn": "Flaks",
-            "ident": "987655",
-            "bosted": ""
-          }
-        ]
-      },
-      "behandlinger": [
-        {
-          "id": "behandlingId",
-          "søknad": {},
-          "tiltak": {
-            "arrangør": "Joblearn",
-            "navn": "Gruppe AMO",
-            "periode": {
-              "fra": "2022-04-01",
-              "til": "2022-04-20"
-            },
-            "prosent": 80,
-            "dagerIUken": 4,
-            "status": "Godkjent"
-          },
-          "periode": {
-            "fra": "2022-04-01",
-            "til": "2022-04-20"
-          },
-          "vurderinger": [
+          "ident": "1234",
+          "behandlinger": [
             {
-              "tittel": "Statlige ytelser",
-              "utfall": "Uavklart",
-              "vilkårsvurderinger": [
-                {
-                  "utfall": "Oppfylt",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "Dagpenger",
-                  "kilde": "Arena"
-                },
-                {
-                  "utfall": "Oppfylt",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "AAP",
-                  "kilde": "Arena"
-                },
-                {
-                  "utfall": "Uavklart",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "Tiltakspenger",
-                  "kilde": "Arena"
-                }
-              ]
+              "personopplysninger": {
+                "fornavn": null,
+                "etternavn": null,
+                "ident": "",
+                "barn": []
+              },
+              "søknad": {
+                "søknadId": "",
+                "søknadsdato": "2022-11-17",
+                "arrangoernavn": null,
+                "tiltakskode": null,
+                "beskrivelse": null,
+                "startdato": "2022-11-17",
+                "sluttdato": null,
+                "antallDager": 0
+              },
+              "registrerteTiltak": [],
+              "vurderingsperiode": {
+                "fra": "2022-11-17",
+                "til": null
+              },
+              "statligeYtelser": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "kommunaleYtelser": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "introProgrammet": [],
+                "kvp": []
+              },
+              "pensjonsordninger": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "lønnsinntekt": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "institusjonsopphold": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "barnetillegg": []
             }
           ]
         }
-      ]
-    }
-    """.trimMargin()
+    """.trimIndent()
 }
