@@ -42,6 +42,7 @@ data class BarnetilleggDTO(
 )
 
 data class SøknadDTO(
+    val id: String,
     val søknadId: String,
     val søknadsdato: LocalDate,
     val arrangoernavn: String?,

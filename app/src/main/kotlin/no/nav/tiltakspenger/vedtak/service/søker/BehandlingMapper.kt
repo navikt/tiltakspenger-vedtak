@@ -32,6 +32,7 @@ class BehandlingMapper {
 
             BehandlingDTO(
                 søknad = SøknadDTO(
+                    id = søknad.id.toString(),
                     søknadId = søknad.søknadId,
                     søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
                     arrangoernavn = søknad.tiltak.arrangoernavn,

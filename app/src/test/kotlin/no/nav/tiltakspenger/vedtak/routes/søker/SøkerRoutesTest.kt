@@ -51,6 +51,7 @@ class SøkerRoutesTest {
             behandlinger = listOf(
                 BehandlingDTO(
                     søknad = SøknadDTO(
+                        id = "",
                         søknadId = "",
                         søknadsdato = 18.november(2022),
                         arrangoernavn = null,
@@ -205,6 +206,7 @@ class SøkerRoutesTest {
           "behandlinger": [
             {
               "søknad": {
+                "id": "",
                 "søknadId": "",
                 "søknadsdato": "2022-11-18",
                 "arrangoernavn": null,
