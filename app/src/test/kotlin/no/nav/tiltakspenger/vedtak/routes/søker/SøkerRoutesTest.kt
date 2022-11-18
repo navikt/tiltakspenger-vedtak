@@ -1,18 +1,14 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLProtocol
-import io.ktor.http.contentType
-import io.ktor.http.path
-import io.ktor.server.routing.routing
-import io.ktor.server.testing.testApplication
-import io.ktor.server.util.url
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.server.routing.*
+import io.ktor.server.testing.*
+import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.domene.november
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.saksbehandler
@@ -32,7 +28,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import java.time.LocalDate
 
 class SøkerRoutesTest {
 
@@ -57,16 +52,16 @@ class SøkerRoutesTest {
                 BehandlingDTO(
                     søknad = SøknadDTO(
                         søknadId = "",
-                        søknadsdato = LocalDate.now(),
+                        søknadsdato = 18.november(2022),
                         arrangoernavn = null,
                         tiltakskode = null,
                         beskrivelse = null,
-                        startdato = LocalDate.now(),
+                        startdato = 18.november(2022),
                         sluttdato = null,
                         antallDager = 0
                     ),
                     registrerteTiltak = listOf(),
-                    vurderingsperiode = PeriodeDTO(fra = LocalDate.now(), til = null),
+                    vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
                     statligeYtelser = VilkårsVurderingsKategoriDTO(
                         ytelse = "",
                         lovreferanse = "",
@@ -207,27 +202,21 @@ class SøkerRoutesTest {
     private val expectedSøkerMedSøknader = """
         {
           "ident": "1234",
-          "personopplysninger": {
-            "fornavn": "Foo",
-            "etternavn": "Bar",
-            "ident": "",
-            "barn": []
-          },
           "behandlinger": [
             {
               "søknad": {
                 "søknadId": "",
-                "søknadsdato": "2022-11-17",
+                "søknadsdato": "2022-11-18",
                 "arrangoernavn": null,
                 "tiltakskode": null,
                 "beskrivelse": null,
-                "startdato": "2022-11-17",
+                "startdato": "2022-11-18",
                 "sluttdato": null,
                 "antallDager": 0
               },
               "registrerteTiltak": [],
               "vurderingsperiode": {
-                "fra": "2022-11-17",
+                "fra": "2022-11-18",
                 "til": null
               },
               "statligeYtelser": {
@@ -268,7 +257,13 @@ class SøkerRoutesTest {
               },
               "barnetillegg": []
             }
-          ]
+          ],
+        "personopplysninger": {
+          "fornavn": "Foo",
+          "etternavn": "Bar",
+          "ident": "",
+          "barn": []
+        }
         }
     """.trimIndent()
 }
