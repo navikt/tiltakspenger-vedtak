@@ -48,9 +48,6 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tiltakspenger-flate
-          namespace: tpts
-          cluster: {{ cluster }}
-        - application: tiltakspenger-assistent
+        - application: tiltakspenger-saksbehandler
           namespace: tpts
           cluster: {{ cluster }}
