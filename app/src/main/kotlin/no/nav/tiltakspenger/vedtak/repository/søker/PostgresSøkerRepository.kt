@@ -36,6 +36,25 @@ internal class PostgresSøkerRepository(
         }
     }
 
+    override fun hentBySøkerId(søkerId: SøkerId): Søker? {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                return hentMedTxSession(søkerId, txSession)
+            }
+        }
+    }
+
+    private fun hentMedTxSession(
+        søkerId: SøkerId,
+        txSession: TransactionalSession
+    ): Søker? {
+        return txSession.run(
+            queryOf(hentById, søkerId.toString()).map { row ->
+                row.toSøker(txSession)
+            }.asSingle
+        )
+    }
+
     private fun hentMedTxSession(
         ident: String,
         txSession: TransactionalSession
@@ -148,4 +167,7 @@ internal class PostgresSøkerRepository(
 
     @Language("SQL")
     private val hent = "select * from søker where ident = ?"
+
+    @Language("SQL")
+    private val hentById = "select * from søker where id = ?"
 }

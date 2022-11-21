@@ -12,7 +12,6 @@ import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
-import no.nav.tiltakspenger.vedtak.service.søknad.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 
 fun main() {
@@ -28,7 +27,6 @@ fun main() {
 
     val søkerRepository = SøkerRepositoryBuilder.build()
     val søkerService = SøkerServiceImpl(søkerRepository)
-    val søknadService = SøknadServiceImpl(søkerRepository)
 
     RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
@@ -37,8 +35,7 @@ fun main() {
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
-                søkerService = søkerService,
-                søknadService = søknadService,
+                søkerService = søkerService
             )
         )
         .build()

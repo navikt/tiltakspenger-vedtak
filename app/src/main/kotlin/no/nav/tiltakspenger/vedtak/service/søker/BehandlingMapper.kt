@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.service.søknad
+package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
@@ -25,59 +25,55 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsv
 import java.time.LocalDate
 
 class BehandlingMapper {
-    fun mapSøkerMedSøknad(søker: Søker, søknadId: String): BehandlingDTO? {
-        val søknad = søker.søknader.firstOrNull { it.søknadId == søknadId } ?: return null
-        val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
-        val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)
+    fun mapSøkerMedSøknad(søker: Søker): List<BehandlingDTO> {
+        return søker.søknader.map { søknad ->
+            val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
+            val vilkårsvurderinger = vilkårsvurderinger(søker, vurderingsperiode, søknad)
 
-        return BehandlingDTO(
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = søker.personopplysningerSøker()?.fornavn,
-                etternavn = søker.personopplysningerSøker()?.etternavn,
-                ident = søker.personopplysningerSøker()?.ident ?: søknad.ident,
-                barn = mapBarn(søker)
-            ),
-            søknad = SøknadDTO(
-                søknadId = søknad.søknadId,
-                søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
-                arrangoernavn = søknad.tiltak.arrangoernavn,
-                tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
-                beskrivelse = when (søknad.tiltak) {
-                    is Tiltak.ArenaTiltak -> null
-                    is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
-                },
-                startdato = søknad.tiltak.startdato,
-                sluttdato = søknad.tiltak.sluttdato,
-                antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
-                    (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
-                } else null,
-            ),
-            registrerteTiltak = søker.tiltak.map {
-                TiltakDTO(
-                    arrangør = it.arrangør,
-                    navn = it.tiltak.navn,
-                    periode = it.deltakelsePeriode.fom?.let { fom ->
-                        PeriodeDTO(
-                            fra = fom,
-                            til = it.deltakelsePeriode.tom
-                        )
+            BehandlingDTO(
+                søknad = SøknadDTO(
+                    id = søknad.id.toString(),
+                    søknadId = søknad.søknadId,
+                    søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
+                    arrangoernavn = søknad.tiltak.arrangoernavn,
+                    tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
+                    beskrivelse = when (søknad.tiltak) {
+                        is Tiltak.ArenaTiltak -> null
+                        is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
                     },
-                    prosent = it.deltakelseProsent,
-                    dagerIUken = it.antallDagerPerUke,
-                    status = it.deltakerStatus.tekst,
-                )
-            },
-            vurderingsperiode = PeriodeDTO(
-                fra = vurderingsperiode.fra,
-                til = vurderingsperiode.til
-            ),
-            statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
-            kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
-            pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
-            lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
-            institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
-            barnetillegg = mapBarnetillegg(søknad.barnetillegg, søker.personopplysningerBarnMedIdent())
-        )
+                    startdato = søknad.tiltak.startdato,
+                    sluttdato = søknad.tiltak.sluttdato,
+                    antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
+                        (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+                    } else null,
+                ),
+                registrerteTiltak = søker.tiltak.map {
+                    TiltakDTO(
+                        arrangør = it.arrangør,
+                        navn = it.tiltak.navn,
+                        periode = it.deltakelsePeriode.fom?.let { fom ->
+                            PeriodeDTO(
+                                fra = fom,
+                                til = it.deltakelsePeriode.tom
+                            )
+                        },
+                        prosent = it.deltakelseProsent,
+                        dagerIUken = it.antallDagerPerUke,
+                        status = it.deltakerStatus.tekst,
+                    )
+                },
+                vurderingsperiode = PeriodeDTO(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til
+                ),
+                statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
+                kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
+                pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
+                lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
+                institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
+                barnetillegg = mapBarnetillegg(søknad.barnetillegg, søker.personopplysningerBarnMedIdent())
+            )
+        }
     }
 
     private fun mapBarnetillegg(
