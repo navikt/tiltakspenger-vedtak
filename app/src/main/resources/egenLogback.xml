@@ -37,6 +37,10 @@
         </syslogConfig>
     </appender>
 
+    <logger level="INFO" name="audit" additivity="false">
+        <appender-ref ref="audit"/>
+    </logger>
+
     <logger name="no.nav.helse.rapids_rivers" level="INFO"/>
     <logger name="io.ktor.auth.jwt" level="TRACE"/>
 
