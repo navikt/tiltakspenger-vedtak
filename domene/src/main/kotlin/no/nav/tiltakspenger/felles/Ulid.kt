@@ -35,7 +35,7 @@ data class UlidBase(private val stringValue: String) : Ulid {
 
 data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
     companion object {
-        private const val PREFIX = "soker"
+        private const val PREFIX = "ins"
         fun random() = InnsendingId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
 
         fun fromDb(stringValue: String) = InnsendingId(ulid = UlidBase(stringValue))

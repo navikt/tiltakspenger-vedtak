@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.routing.*
@@ -9,20 +8,26 @@ import io.ktor.server.testing.*
 import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.domene.november
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.søker.ListeSøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
+import no.nav.tiltakspenger.vedtak.service.søker.KommunaleVilkårsVurderingsKategoriDTO
+import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.service.søker.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
+import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
+import no.nav.tiltakspenger.vedtak.service.søker.VilkårsVurderingsKategoriDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import java.time.LocalDate
-import java.time.Month
 
 class InnsendingRoutesTest {
 
@@ -31,19 +36,70 @@ class InnsendingRoutesTest {
 
     @Test
     fun `kalle med en ident i body burde svare ok`() {
-
+        val søkerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(søkerId, saksbehandler())
         } returns SøkerDTO(
             ident = "1234",
-            søknader = listOf(
-                ListeSøknadDTO(
-                    søknadId = "1234",
-                    arrangoernavn = "Ukjent",
-                    tiltakskode = "tiltak",
-                    startdato = LocalDate.of(2022, Month.DECEMBER, 1),
-                    sluttdato = null,
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Foo",
+                etternavn = "Bar",
+                ident = "",
+                barn = listOf(),
+            ),
+            behandlinger = listOf(
+                BehandlingDTO(
+                    søknad = SøknadDTO(
+                        id = "",
+                        søknadId = "",
+                        søknadsdato = 18.november(2022),
+                        arrangoernavn = null,
+                        tiltakskode = null,
+                        beskrivelse = null,
+                        startdato = 18.november(2022),
+                        sluttdato = null,
+                        antallDager = 0
+                    ),
+                    registrerteTiltak = listOf(),
+                    vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
+                    statligeYtelser = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    kommunaleYtelser = KommunaleVilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        introProgrammet = emptyList(),
+                        kvp = emptyList(),
+                    ),
+                    pensjonsordninger = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    lønnsinntekt = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    institusjonsopphold = VilkårsVurderingsKategoriDTO(
+                        ytelse = "",
+                        lovreferanse = "",
+                        utfall = UtfallDTO.Uavklart,
+                        detaljer = "",
+                        vilkårsvurderinger = listOf()
+                    ),
+                    barnetillegg = emptyList()
                 )
             )
         )
@@ -61,23 +117,15 @@ class InnsendingRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$søkerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.OK
                 contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                println(bodyAsText())
                 JSONAssert.assertEquals(
                     expectedSøkerMedSøknader,
                     bodyAsText(),
@@ -89,10 +137,10 @@ class InnsendingRoutesTest {
 
     @Test
     fun `at saksbehandler ikke har tilgang burde svare forbidden`() {
-
+        val søkerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(søkerId, saksbehandler())
         } throws TilgangException("Test")
 
         testApplication {
@@ -108,21 +156,12 @@ class InnsendingRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$søkerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.Forbidden
             }
         }
@@ -130,10 +169,10 @@ class InnsendingRoutesTest {
 
     @Test
     fun `kalle med en ident i body som ikke finnes i db burde svare med 404 Not Found`() {
-
+        val sokerId = SøkerId.random()
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every {
-            søkerServiceMock.hentSøkerOgSøknader("1234", saksbehandler())
+            søkerServiceMock.hentSøkerOgSøknader(sokerId, saksbehandler())
         } returns null
 
         testApplication {
@@ -149,148 +188,84 @@ class InnsendingRoutesTest {
             }
 
             defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
+                    path("$søknaderPath/$sokerId")
                 },
-            ) {
-                setBody(
-                    //language=JSON
-                    """
-                  {
-                    "ident": "1234"
-                  }
-                """.trimIndent(),
-                )
-            }.apply {
+            ).apply {
                 status shouldBe HttpStatusCode.NotFound
                 assertEquals("Søker ikke funnet", bodyAsText())
             }
         }
     }
 
-    @Test
-    fun `kalle uten ident i body burde svare med 400 Bad Request`() {
-
-        testApplication {
-            application {
-                //vedtakTestApi()
-                jacksonSerialization()
-                routing {
-                    søkerRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        søkerServiceMock,
-                    )
-                }
-            }
-
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$søknaderPath")
-                },
-            ) {
-                setBody("{}")
-            }.apply {
-                status shouldBe HttpStatusCode.BadRequest
-            }
-        }
-    }
-
     private val expectedSøkerMedSøknader = """
         {
-            "ident": "1234",
-            søknader: [
-                {
-                    "søknadId": "1234",
-                    "arrangoernavn": "Ukjent",
-                    "tiltakskode": "tiltak",
-                    "startdato": "2022-12-01",
-                    "sluttdato": null
-                }
-            ]
+          "ident": "1234",
+          "behandlinger": [
+            {
+              "søknad": {
+                "id": "",
+                "søknadId": "",
+                "søknadsdato": "2022-11-18",
+                "arrangoernavn": null,
+                "tiltakskode": null,
+                "beskrivelse": null,
+                "startdato": "2022-11-18",
+                "sluttdato": null,
+                "antallDager": 0
+              },
+              "registrerteTiltak": [],
+              "vurderingsperiode": {
+                "fra": "2022-11-18",
+                "til": null
+              },
+              "statligeYtelser": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "kommunaleYtelser": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "introProgrammet": [],
+                "kvp": []
+              },
+              "pensjonsordninger": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "lønnsinntekt": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "institusjonsopphold": {
+                "ytelse": "",
+                "lovreferanse": "",
+                "utfall": "Uavklart",
+                "detaljer": "",
+                "vilkårsvurderinger": []
+              },
+              "barnetillegg": []
+            }
+          ],
+        "personopplysninger": {
+          "fornavn": "Foo",
+          "etternavn": "Bar",
+          "ident": "",
+          "barn": []
+        }
         }
     """.trimIndent()
-
-    private val expected = """
-     {
-      "personopplysninger": {
-        "fornavn": "Fornavn",
-        "etternavn": "Etternavn",
-        "ident": "123454",
-        "barn": [
-          {
-            "fornavn": "Emil",
-            "etternavn": "Flaks",
-            "ident": "987654",
-            "bosted": ""
-          },
-          {
-            "fornavn": "Emma",
-            "etternavn": "Flaks",
-            "ident": "987655",
-            "bosted": ""
-          }
-        ]
-      },
-      "behandlinger": [
-        {
-          "id": "behandlingId",
-          "søknad": {},
-          "tiltak": {
-            "arrangør": "Joblearn",
-            "navn": "Gruppe AMO",
-            "periode": {
-              "fra": "2022-04-01",
-              "til": "2022-04-20"
-            },
-            "prosent": 80,
-            "dagerIUken": 4,
-            "status": "Godkjent"
-          },
-          "periode": {
-            "fra": "2022-04-01",
-            "til": "2022-04-20"
-          },
-          "vurderinger": [
-            {
-              "tittel": "Statlige ytelser",
-              "utfall": "Uavklart",
-              "vilkårsvurderinger": [
-                {
-                  "utfall": "Oppfylt",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "Dagpenger",
-                  "kilde": "Arena"
-                },
-                {
-                  "utfall": "Oppfylt",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "AAP",
-                  "kilde": "Arena"
-                },
-                {
-                  "utfall": "Uavklart",
-                  "periode": {
-                    "fra": "2022-04-01",
-                    "til": "2022-04-20"
-                  },
-                  "vilkår": "Tiltakspenger",
-                  "kilde": "Arena"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-    """.trimMargin()
 }

@@ -1,8 +1,11 @@
-package no.nav.tiltakspenger.vedtak.service.søknad
+package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+
 import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
@@ -24,68 +27,83 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsv
 import java.time.LocalDate
 
 class BehandlingMapper {
-    fun mapInnsendingMedSøknad(innsending: Innsending): BehandlingDTO? {
-        val søknad = innsending.søknad ?: return null
-        val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
-        val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
 
-        return BehandlingDTO(
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = innsending.personopplysningerSøker()?.fornavn,
-                etternavn = innsending.personopplysningerSøker()?.etternavn,
-                ident = innsending.personopplysningerSøker()?.ident ?: søknad.ident,
-                barn = mapBarn(innsending)
-            ),
-            søknad = SøknadDTO(
-                søknadId = søknad.søknadId,
-                søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
-                arrangoernavn = søknad.tiltak.arrangoernavn,
-                tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
-                beskrivelse = when (søknad.tiltak) {
-                    is Tiltak.ArenaTiltak -> null
-                    is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
-                },
-                startdato = søknad.tiltak.startdato,
-                sluttdato = søknad.tiltak.sluttdato,
-                antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
-                    (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
-                } else null,
-            ),
-            registrerteTiltak = innsending.tiltak.map {
-                TiltakDTO(
-                    arrangør = it.arrangør,
-                    navn = it.tiltak.navn,
-                    periode = it.deltakelsePeriode.fom?.let { fom ->
-                        PeriodeDTO(
-                            fra = fom,
-                            til = it.deltakelsePeriode.tom
-                        )
-                    },
-                    prosent = it.deltakelseProsent,
-                    dagerIUken = it.antallDagerPerUke,
-                    status = it.deltakerStatus.tekst,
+    fun mapSøkerOgInnsendinger(søker: Søker, innsendinger: List<Innsending>): SøkerDTO {
+        return SøkerDTO(
+            ident = søker.ident,
+            personopplysninger = innsendinger.firstOrNull()?.personopplysningerSøker()?.let {
+                PersonopplysningerDTO(
+                    fornavn = it.fornavn,
+                    etternavn = it.etternavn,
+                    ident = it.ident,
+                    barn = listOf()
                 )
             },
-            vurderingsperiode = PeriodeDTO(
-                fra = vurderingsperiode.fra,
-                til = vurderingsperiode.til
-            ),
-            statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
-            kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
-            pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
-            lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
-            institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
-            barnetillegg = mapBarnetillegg(søknad.barnetillegg)
-        )
+            behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) })
+    }
+
+    fun mapInnsendingMedSøknad(innsending: Innsending): BehandlingDTO? {
+        val søknaden = innsending.søknad ?: return null
+        return søknaden.let { søknad ->
+            val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
+            val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
+
+            BehandlingDTO(
+                søknad = SøknadDTO(
+                    id = søknad.id.toString(),
+                    søknadId = søknad.søknadId,
+                    søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
+                    arrangoernavn = søknad.tiltak.arrangoernavn,
+                    tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
+                    beskrivelse = when (søknad.tiltak) {
+                        is Tiltak.ArenaTiltak -> null
+                        is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+                    },
+                    startdato = søknad.tiltak.startdato,
+                    sluttdato = søknad.tiltak.sluttdato,
+                    antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
+                        (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+                    } else null,
+                ),
+                registrerteTiltak = innsending.tiltak.map {
+                    TiltakDTO(
+                        arrangør = it.arrangør,
+                        navn = it.tiltak.navn,
+                        periode = it.deltakelsePeriode.fom?.let { fom ->
+                            PeriodeDTO(
+                                fra = fom,
+                                til = it.deltakelsePeriode.tom
+                            )
+                        },
+                        prosent = it.deltakelseProsent,
+                        dagerIUken = it.antallDagerPerUke,
+                        status = it.deltakerStatus.tekst,
+                    )
+                },
+                vurderingsperiode = PeriodeDTO(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til
+                ),
+                statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
+                kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
+                pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
+                lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
+                institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
+                barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
+            )
+        }
     }
 
     private fun mapBarnetillegg(
-        barnetillegg: List<Barnetillegg>
+        barnetillegg: List<Barnetillegg>,
+        barnMedIdent: List<Personopplysninger.BarnMedIdent>,
     ): List<BarnetilleggDTO> {
         return barnetillegg.map {
             BarnetilleggDTO(
-                navn = it.fornavn + " " + it.etternavn,
+                navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
                 alder = it.alder,
+                fødselsdato = if (it is Barnetillegg.UtenIdent) it.fødselsdato
+                else barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato,
                 bosatt = it.oppholdsland,
                 kilde = "Søknad",
                 utfall = UtfallDTO.Oppfylt,

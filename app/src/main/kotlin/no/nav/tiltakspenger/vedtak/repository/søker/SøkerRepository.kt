@@ -9,7 +9,20 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
-internal class SøkerRepository {
+class SøkerRepository {
+
+    fun findByIdent(ident: String): Søker? {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                return txSession.run(
+                    queryOf(findByIdent, ident).map { row ->
+                        row.toSøker()
+                    }.asSingle
+                )
+            }
+        }
+    }
+
     fun hent(søkerId: SøkerId): Søker? {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -28,7 +41,7 @@ internal class SøkerRepository {
                 if (søkerFinnes(søker.søkerId, txSession)) {
                     oppdaterSøker(søker, txSession)
                 } else {
-                    lagreInitSøker(søker, txSession)
+                    lagreSøker(søker, txSession)
                 }
             }
         }
@@ -43,20 +56,20 @@ internal class SøkerRepository {
             queryOf(
                 oppdaterSøker, mapOf(
                     "ident" to søker.ident,
-                    "tidsstempel" to søker.tidsstempel,
+                    "sistEndret" to søker.sistEndret,
                 )
             ).asUpdate
         )
     }
 
-    private fun lagreInitSøker(søker: Søker, txSession: TransactionalSession) {
+    private fun lagreSøker(søker: Søker, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                lagreInitSøker, mapOf(
+                lagreSøker, mapOf(
                     "id" to søker.søkerId.toString(),
                     "ident" to søker.ident,
                     "opprettet" to søker.opprettet,
-                    "tidsstempel" to søker.tidsstempel,
+                    "sistEndret" to søker.sistEndret,
                 )
             ).asUpdate
         )
@@ -66,27 +79,27 @@ internal class SøkerRepository {
     private fun Row.toSøker(): Søker {
         val id = SøkerId.fromDb(string("id"))
         val ident = string("ident")
-        val tidsstempel = localDateTime("tidsstempel")
+        val sistEndret = localDateTime("sist_endret")
         val opprettet = localDateTime("opprettet")
-        return Søker(
+        return Søker.fromDb(
             søkerId = id,
             ident = ident,
-            tidsstempel = tidsstempel,
+            sistEndret = sistEndret,
             opprettet = opprettet,
         )
     }
 
     @Language("SQL")
-    private val lagreInitSøker = """
+    private val lagreSøker = """
         insert into søker (
             id,
             ident,
-            tidsstempel,
+            sist_endret,
             opprettet
         ) values (
             :id, 
             :ident,
-            :tidsstempel,
+            :sistEndret,
             :opprettet
         )""".trimIndent()
 
@@ -95,7 +108,7 @@ internal class SøkerRepository {
     private val oppdaterSøker = """
         update søker set  
             ident = :ident,
-            tidsstempel = :tidsstempel
+            sist_endret = :sistEndret
         where id = :id
         """.trimIndent()
 
@@ -104,4 +117,7 @@ internal class SøkerRepository {
 
     @Language("SQL")
     private val hent = "select * from søker where id = ?"
+
+    @Language("SQL")
+    private val findByIdent = "select * from søker where ident = ?"
 }

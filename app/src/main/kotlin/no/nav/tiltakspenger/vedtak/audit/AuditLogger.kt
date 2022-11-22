@@ -9,6 +9,9 @@ import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.lang.String.join
 import java.util.*
 
+
+private val LOG = KotlinLogging.logger {}
+
 data class AuditLogEvent(
     val navIdent: String,
     val berørtBrukerId: String,
@@ -191,6 +194,7 @@ internal suspend fun ApplicationCall.auditHvisInnlogget(
     behandlingId: UUID? = null,
 ) {
     this.principal<JWTPrincipal>()?.let {
+        LOG.debug { "Auditlogger" }
         AuditLogger.log(
             AuditLogEvent(
                 navIdent = JWTInnloggetSaksbehandlerProvider().hentSaksbehandler(it).navIdent,

@@ -20,10 +20,17 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
     )
 
     private fun detaljer(): String =
-        if (søknad.deltarIntroduksjonsprogrammet) "Svart JA i søknaden" else "Svart NEI i søknaden"
+        when (søknad.deltarIntroduksjonsprogrammet) {
+            true -> "Svart JA i søknaden"
+            false -> "Svart NEI i søknaden"
+            else -> "Ikke relevant"
+        }
 
     override fun avgjørUtfall(): Utfall =
-        if (søknad.deltarIntroduksjonsprogrammet) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
+        when (søknad.deltarIntroduksjonsprogrammet) {
+            true -> Utfall.KREVER_MANUELL_VURDERING
+            else -> Utfall.OPPFYLT
+        }
 
     override fun vilkår() = Vilkår.INTROPROGRAMMET
 }

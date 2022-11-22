@@ -2,7 +2,14 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
-import no.nav.tiltakspenger.vedtak.*
+import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
+import no.nav.tiltakspenger.vedtak.TypeInstitusjon
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
@@ -42,7 +49,7 @@ class SøknadDTO(
                 etternavn = dto.etternavn,
                 ident = dto.ident,
                 deltarKvp = dto.deltarKvp,
-                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet ?: false,
+                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet,
                 introduksjonsprogrammetDetaljer = mapIntroduksjonsprogrammetDetaljer(dto.introduksjonsprogrammetDetaljer),
                 oppholdInstitusjon = dto.oppholdInstitusjon,
                 typeInstitusjon = dto.typeInstitusjon?.let { TypeInstitusjonDTO.valueOf(it) }.let {

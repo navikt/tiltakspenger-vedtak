@@ -13,7 +13,9 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
 
 private val LOG = KotlinLogging.logger {}
@@ -21,6 +23,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class SøknadMottattRiver(
     private val innsendingMediator: InnsendingMediator,
+    private val søkerRepository: SøkerRepository,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
@@ -48,16 +51,19 @@ internal class SøknadMottattRiver(
 
         //Metrics.mottakskanalInc(packet["mottaksKanal"].asText())
 
+        val søknad = mapSøknad(
+            dto = packet["søknad"].asObject(SøknadDTO::class.java),
+            innhentet = packet["@opprettet"].asLocalDateTime()
+        )
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = packet["søknad.journalpostId"].asText(),
-            søknad = mapSøknad(
-                dto = packet["søknad"].asObject(SøknadDTO::class.java),
-                innhentet = packet["@opprettet"].asLocalDateTime()
-            )
+            søknad = søknad
         )
 
         innsendingMediator.håndter(søknadMottattHendelse)
+        // TODO: Dette er et hack:
+        søkerRepository.lagre(Søker(ident = søknad.ident))
     }
 
     //Hvorfor finnes ikke dette i r&r?

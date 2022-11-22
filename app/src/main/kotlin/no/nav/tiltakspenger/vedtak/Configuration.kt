@@ -50,7 +50,7 @@ object Configuration {
             Rolle.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
             Rolle.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
-            Rolle.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
+            Rolle.SKJERMING.name to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
         )
     )
     private val devProperties = ConfigurationMap(
@@ -59,7 +59,7 @@ object Configuration {
             Rolle.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
             Rolle.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
-            Rolle.SKJERMING.name to "b523b8a7-a103-41a6-8a88-becc3be0f499"
+            Rolle.SKJERMING.name to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
         )
     )
     private val prodProperties = ConfigurationMap(
@@ -68,7 +68,7 @@ object Configuration {
             Rolle.SAKSBEHANDLER.name to "6c6ce2e8-b2e2-4c4b-8194-215c8e27a5c7",
             Rolle.FORTROLIG_ADRESSE.name to "9ec6487d-f37a-4aad-a027-cd221c1ac32b",
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "ad7b87a6-9180-467c-affc-20a566b0fec0",
-            Rolle.SKJERMING.name to "ff5b9d0d-3948-4a9d-b4bb-7a97fec3041c"
+            Rolle.SKJERMING.name to "e750ceb5-b70b-4d94-b4fa-9d22467b786b"
         )
     )
 
