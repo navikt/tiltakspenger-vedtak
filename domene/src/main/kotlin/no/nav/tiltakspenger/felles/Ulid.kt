@@ -50,12 +50,3 @@ data class SøknadId private constructor(private val ulid: UlidBase) : Ulid by u
         fun fromDb(stringValue: String) = SøknadId(ulid = UlidBase(stringValue))
     }
 }
-
-data class SøkerId private constructor(private val ulid: UlidBase) : Ulid by ulid {
-    companion object {
-        private const val PREFIX = "soker"
-        fun random() = SøkerId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
-
-        fun fromDb(stringValue: String) = SøkerId(ulid = UlidBase(stringValue))
-    }
-}
