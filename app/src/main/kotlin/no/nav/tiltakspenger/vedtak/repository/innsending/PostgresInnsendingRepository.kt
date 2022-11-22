@@ -47,6 +47,18 @@ internal class PostgresInnsendingRepository(
         )
     }
 
+    override fun findByIdent(ident: String): List<Innsending> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(findByIdent, ident).map { row ->
+                        row.toInnsending(txSession)
+                    }.asList
+                )
+            }
+        }
+    }
+
     override fun lagre(innsending: Innsending) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -87,10 +99,6 @@ internal class PostgresInnsendingRepository(
                     ?.let { journalpostId -> this.hentMedTxSession(journalpostId, txSession) }
             }
         }
-    }
-
-    override fun findByIdent(ident: String): List<Innsending> {
-        TODO("Not yet implemented")
     }
 
     private fun Row.toInnsending(txSession: TransactionalSession): Innsending {
@@ -162,4 +170,7 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val hent = "select * from innsending where journalpost_id = ?"
+
+    @Language("SQL")
+    private val findByIdent = "select * from innsending where ident = ?"
 }

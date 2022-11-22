@@ -27,7 +27,7 @@ class SøkerRepository {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 return txSession.run(
-                    queryOf(hent, søkerId).map { row ->
+                    queryOf(hent, søkerId.toString()).map { row ->
                         row.toSøker()
                     }.asSingle
                 )

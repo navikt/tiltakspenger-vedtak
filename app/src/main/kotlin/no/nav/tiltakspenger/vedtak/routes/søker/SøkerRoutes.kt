@@ -1,12 +1,10 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
@@ -52,11 +50,9 @@ fun Route.søkerRoutes(
     get("$søknaderPath/{sokerId}") {
         LOG.debug("Mottatt request på $søknaderPath")
         val søkerId = call.parameters["sokerId"]?.let { SøkerId.fromDb(it) }
-        if (søkerId == null) {
-            return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
-        }
+            ?: return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
         // TODO:
-//        call.auditHvisInnlogget(berørtBruker = personIdent.ident)
+        // call.auditHvisInnlogget(berørtBruker = personIdent.ident)
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
