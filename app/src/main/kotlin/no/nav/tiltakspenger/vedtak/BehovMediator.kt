@@ -14,7 +14,7 @@ class BehovMediator(
     private val rapidsConnection: RapidsConnection
 ) {
 
-    internal fun håndter(hendelse: Hendelse) {
+    internal fun håndter(hendelse: InnsendingHendelse) {
         // Hvorfor ikke bare
         // hendelse.aktivitetslogg.let { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
         // ?? Hva er det hendelse.kontekster() gjør som er så lurt?
@@ -22,7 +22,7 @@ class BehovMediator(
     }
 
     private fun håndter(
-        hendelse: Hendelse,
+        hendelse: InnsendingHendelse,
         behov: List<Aktivitetslogg.Aktivitet.Behov>
     ) {
         // Denne linja sørger for at alle behov som har lik kontekst (Map<String, String>) behandles sammen

@@ -48,9 +48,13 @@ fun main() {
                 rapidsConnection = it,
                 observatører = listOf()
             )
+            val søkerMediator = SøkerMediator(
+                søkerRepository = søkerRepository,
+                rapidsConnection = it,
+            )
             SøknadMottattRiver(
                 innsendingMediator = innsendingMediator,
-                søkerRepository = søkerRepository,
+                søkerMediator = søkerMediator,
                 rapidsConnection = it
             )
             PersonopplysningerMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)

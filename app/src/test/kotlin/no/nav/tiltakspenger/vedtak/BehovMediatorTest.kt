@@ -108,7 +108,7 @@ internal class BehovMediatorTest {
     private class TestHendelse(
         private val melding: String,
         internal val logg: Aktivitetslogg
-    ) : Hendelse(logg), KontekstLogable {
+    ) : InnsendingHendelse(logg), KontekstLogable {
         init {
             logg.addKontekst(this)
         }

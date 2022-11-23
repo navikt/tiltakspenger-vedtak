@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.rivers
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.innsending.InMemoryInnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,7 +18,7 @@ internal class SøknadMottattRiverTest {
 
     private val repository = InMemoryInnsendingRepository()
     private val testRapid = TestRapid()
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val søkerMediator = mockk<SøkerMediator>(relaxed = true)
 
     init {
         SøknadMottattRiver(
@@ -27,7 +27,7 @@ internal class SøknadMottattRiverTest {
                 innsendingRepository = repository,
                 rapidsConnection = testRapid
             ),
-            søkerRepository = søkerRepository
+            søkerMediator = søkerMediator
         )
     }
 

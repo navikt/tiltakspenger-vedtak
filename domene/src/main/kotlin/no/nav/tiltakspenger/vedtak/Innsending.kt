@@ -210,7 +210,7 @@ class Innsending private constructor(
         tilstand.håndter(this, ytelserMottattHendelse)
     }
 
-    private fun kontekst(hendelse: Hendelse, melding: String) {
+    private fun kontekst(hendelse: InnsendingHendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)
         hendelse.info(melding)
@@ -241,8 +241,8 @@ class Innsending private constructor(
             ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i ${type.name}")
         }
 
-        fun leaving(innsending: Innsending, hendelse: Hendelse) {}
-        fun entering(innsending: Innsending, hendelse: Hendelse) {}
+        fun leaving(innsending: Innsending, hendelse: InnsendingHendelse) {}
+        fun entering(innsending: Innsending, hendelse: InnsendingHendelse) {}
 
         override fun opprettKontekst(): Kontekst {
             return Kontekst(
@@ -371,7 +371,7 @@ class Innsending private constructor(
         )
     }
 
-    private fun trengerSkjermingdata(hendelse: Hendelse) {
+    private fun trengerSkjermingdata(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
             melding = "Trenger skjermingdata",
@@ -379,7 +379,7 @@ class Innsending private constructor(
         )
     }
 
-    private fun trengerTiltak(hendelse: Hendelse) {
+    private fun trengerTiltak(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
             melding = "Trenger arenatiltak",
@@ -387,7 +387,7 @@ class Innsending private constructor(
         )
     }
 
-    private fun trengerArenaYtelse(hendelse: Hendelse) {
+    private fun trengerArenaYtelse(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
             melding = "Trenger arenaytelser",
@@ -396,7 +396,7 @@ class Innsending private constructor(
     }
 
     private fun tilstand(
-        event: Hendelse,
+        event: InnsendingHendelse,
         nyTilstand: Tilstand,
         block: () -> Unit = {}
     ) {

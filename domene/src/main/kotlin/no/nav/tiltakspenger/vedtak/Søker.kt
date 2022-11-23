@@ -1,12 +1,13 @@
 package no.nav.tiltakspenger.vedtak
 
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import java.time.LocalDateTime
 
 class Søker private constructor(
     val søkerId: SøkerId,
     val ident: String,
-    val sistEndret: LocalDateTime,
+    var sistEndret: LocalDateTime,
     val opprettet: LocalDateTime,
 ) {
     constructor(
@@ -18,6 +19,11 @@ class Søker private constructor(
         opprettet = LocalDateTime.now()
     )
 
+    fun håndter(hendelse: IdentMottattHendelse) {
+        sistEndret = LocalDateTime.now()
+    }
+
+
     companion object {
         fun randomId() = SøkerId.random()
 
@@ -27,6 +33,5 @@ class Søker private constructor(
             sistEndret: LocalDateTime,
             opprettet: LocalDateTime
         ) = Søker(søkerId, ident, sistEndret, opprettet)
-        
     }
 }

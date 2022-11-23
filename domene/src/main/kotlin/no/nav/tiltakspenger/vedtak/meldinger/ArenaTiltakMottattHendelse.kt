@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.meldinger
 
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Hendelse
+import no.nav.tiltakspenger.vedtak.InnsendingHendelse
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 
 class ArenaTiltakMottattHendelse(
@@ -9,7 +9,7 @@ class ArenaTiltakMottattHendelse(
     private val journalpostId: String,
     private val tiltaksaktivitet: List<Tiltaksaktivitet>?,
     private val feil: Feilmelding? = null,
-) : Hendelse(aktivitetslogg) {
+) : InnsendingHendelse(aktivitetslogg) {
 
     override fun journalpostId() = journalpostId
 

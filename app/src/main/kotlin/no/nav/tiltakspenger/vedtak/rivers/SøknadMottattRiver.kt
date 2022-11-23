@@ -13,9 +13,9 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
 
 private val LOG = KotlinLogging.logger {}
@@ -23,7 +23,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class SøknadMottattRiver(
     private val innsendingMediator: InnsendingMediator,
-    private val søkerRepository: SøkerRepository,
+    private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
@@ -41,6 +41,7 @@ internal class SøknadMottattRiver(
                 it.requireKey("@opprettet")
                 it.requireKey("søknad")
                 it.requireKey("søknad.journalpostId")
+                it.requireKey("søknad.ident")
             }
         }.register(this)
     }
@@ -62,8 +63,12 @@ internal class SøknadMottattRiver(
         )
 
         innsendingMediator.håndter(søknadMottattHendelse)
-        // TODO: Dette er et hack:
-        søkerRepository.lagre(Søker(ident = søknad.ident))
+
+        val identMottattHendelse = IdentMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(),
+            ident = packet["søknad.ident"].asText(),
+        )
+        søkerMediator.håndter(identMottattHendelse)
     }
 
     //Hvorfor finnes ikke dette i r&r?

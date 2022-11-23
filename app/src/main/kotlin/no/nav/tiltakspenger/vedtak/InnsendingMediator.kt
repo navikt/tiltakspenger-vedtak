@@ -23,41 +23,18 @@ internal class InnsendingMediator(
         rapidsConnection = rapidsConnection
     )
 
-    fun håndter(søknadMottattHendelse: SøknadMottattHendelse) {
-        håndter(søknadMottattHendelse) { innsending ->
-            innsending.håndter(søknadMottattHendelse)
-        }
-    }
-
-    fun håndter(personopplysningerMottattHendelse: PersonopplysningerMottattHendelse) {
-        håndter(personopplysningerMottattHendelse) { innsending ->
-            innsending.håndter(personopplysningerMottattHendelse)
-        }
-    }
-
-    fun håndter(skjermingMottattHendelse: SkjermingMottattHendelse) {
-        håndter(skjermingMottattHendelse) { innsending ->
-            innsending.håndter(skjermingMottattHendelse)
-        }
-    }
-
-    fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-        håndter(arenaTiltakMottattHendelse) { innsending ->
-            innsending.håndter(arenaTiltakMottattHendelse)
-        }
-    }
-
-    fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
-        håndter(ytelserMottattHendelse) { innsending ->
-            innsending.håndter(ytelserMottattHendelse)
-        }
-    }
-
-    private fun håndter(hendelse: Hendelse, handler: (Innsending) -> Unit) {
+    fun håndter(hendelse: InnsendingHendelse) {
         try {
             hentEllerOpprettInnsending(hendelse).also { innsending ->
                 observatører.forEach { innsending.addObserver(it) }
-                handler(innsending)
+                when (hendelse) {
+                    is SøknadMottattHendelse -> innsending.håndter(hendelse)
+                    is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
+                    is YtelserMottattHendelse -> innsending.håndter(hendelse)
+                    is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
+                    is SkjermingMottattHendelse -> innsending.håndter(hendelse)
+                    else -> throw RuntimeException("Ukjent hendelse")
+                }
                 finalize(innsending, hendelse)
             }
         } finally {
@@ -65,7 +42,7 @@ internal class InnsendingMediator(
         }
     }
 
-    private fun hentEllerOpprettInnsending(hendelse: Hendelse): Innsending {
+    private fun hentEllerOpprettInnsending(hendelse: InnsendingHendelse): Innsending {
         return when (val innsending = innsendingRepository.hent(hendelse.journalpostId())) {
             is Innsending -> {
                 SECURELOG.debug { "Fant Innsending for ${hendelse.journalpostId()}" }
@@ -81,7 +58,7 @@ internal class InnsendingMediator(
         }
     }
 
-    private fun finalize(innsending: Innsending, hendelse: Hendelse) {
+    private fun finalize(innsending: Innsending, hendelse: InnsendingHendelse) {
         innsendingRepository.lagre(innsending)
         if (!hendelse.hasMessages()) return
         if (hendelse.hasErrors()) {
