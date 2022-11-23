@@ -4,9 +4,13 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
+import no.nav.tiltakspenger.domene.nå
+import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakelsesPeriode
@@ -24,6 +28,19 @@ fun innsendingRegistrert(
     )
 }
 
+fun nySøker(
+    søkerId: SøkerId = SøkerId.random(),
+    ident: String = Random().nextInt().toString(),
+    personopplysninger: Personopplysninger.Søker = personopplysningKjedeligFyr(ident = ident),
+): Søker {
+    return Søker.fromDb(
+        søkerId = søkerId,
+        ident = ident,
+        sistEndret = nå(),
+        personopplysninger = personopplysninger,
+        opprettet = nå()
+    )
+}
 fun innsendingMedSøknad(
     journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),

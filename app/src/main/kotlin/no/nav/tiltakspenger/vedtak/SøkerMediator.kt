@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.slf4j.MDC
 
@@ -18,11 +19,12 @@ internal class SøkerMediator(
         rapidsConnection = rapidsConnection
     )
 
-    fun håndter(hendelse: SøkerHendelse) {
+    fun håndter(hendelse: ISøkerHendelse) {
         try {
             hentEllerOpprettSøker(hendelse).also { søker ->
                 when (hendelse) {
                     is IdentMottattHendelse -> søker.håndter(hendelse)
+                    is PersonopplysningerMottattHendelse -> søker.håndter(hendelse)
                     else -> throw RuntimeException("Ukjent hendelse")
                 }
                 finalize(søker, hendelse)
@@ -32,7 +34,7 @@ internal class SøkerMediator(
         }
     }
 
-    private fun hentEllerOpprettSøker(hendelse: SøkerHendelse): Søker {
+    private fun hentEllerOpprettSøker(hendelse: ISøkerHendelse): Søker {
         return when (val søker = søkerRepository.findByIdent(hendelse.ident())) {
             is Søker -> {
                 SECURELOG.debug { "Fant Søker for ${hendelse.ident()}" }
@@ -48,7 +50,7 @@ internal class SøkerMediator(
         }
     }
 
-    private fun finalize(søker: Søker, hendelse: SøkerHendelse) {
+    private fun finalize(søker: Søker, hendelse: ISøkerHendelse) {
         søkerRepository.lagre(søker)
         if (!hendelse.hasMessages()) return
         if (hendelse.hasErrors()) {

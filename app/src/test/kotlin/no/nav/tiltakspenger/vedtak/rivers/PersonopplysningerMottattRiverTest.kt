@@ -11,9 +11,11 @@ import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -24,14 +26,18 @@ import java.time.Month
 
 internal class PersonopplysningerMottattRiverTest {
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
+    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val testRapid = TestRapid()
-    private val mediatorSpy =
+    private val innsendingMediatorSpy =
         spyk(InnsendingMediator(innsendingRepository = innsendingRepository, rapidsConnection = testRapid))
+    private val søkerMediatorSpy =
+        spyk(SøkerMediator(søkerRepository = søkerRepository, rapidsConnection = testRapid))
 
     init {
         PersonopplysningerMottattRiver(
             rapidsConnection = testRapid,
-            innsendingMediator = mediatorSpy
+            innsendingMediator = innsendingMediatorSpy,
+            søkerMediator = søkerMediatorSpy,
         )
     }
 
@@ -64,7 +70,7 @@ internal class PersonopplysningerMottattRiverTest {
             assertEquals(InnsendingTilstandType.AvventerPersonopplysninger.name, field(0, "tilstandtype").asText())
             assertEquals(journalpostId, field(0, "journalpostId").asText())
             verify {
-                mediatorSpy.håndter(
+                innsendingMediatorSpy.håndter(
                     withArg<PersonopplysningerMottattHendelse> {
                         assertEquals(journalpostId, it.journalpostId())
                         val søkerMedPersonoppl =

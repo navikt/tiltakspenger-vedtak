@@ -10,11 +10,10 @@ import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 private val LOG = KotlinLogging.logger {}
 
 class SøkerServiceImpl(
-    val søkerRepository: SøkerRepository,
-    val innsendingRepository: InnsendingRepository,
+    private val søkerRepository: SøkerRepository,
+    private val innsendingRepository: InnsendingRepository,
     private val behandlingMapper: BehandlingMapper = BehandlingMapper()
 ) : SøkerService {
-
 
     override fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO? {
         val søker: Søker = søkerRepository.findByIdent(ident) ?: return null

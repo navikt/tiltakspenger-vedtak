@@ -14,6 +14,7 @@ import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import java.time.LocalDateTime
 
@@ -22,6 +23,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PersonopplysningerMottattRiver(
     private val innsendingMediator: InnsendingMediator,
+    private val søkerMediator: SøkerMediator,
     rapidsConnection: RapidsConnection
 ) : River.PacketListener {
     private companion object {
@@ -53,6 +55,7 @@ internal class PersonopplysningerMottattRiver(
         val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = packet["journalpostId"].asText(),
+            ident = packet["ident"].asText(),
             personopplysninger = mapPersonopplysninger(
                 dto = packet["@løsning.personopplysninger.person"].asObject(PersonopplysningerDTO::class.java),
                 innhentet = packet["@opprettet"].asLocalDateTime(),
@@ -61,6 +64,7 @@ internal class PersonopplysningerMottattRiver(
         )
 
         innsendingMediator.håndter(personopplysningerMottattHendelse)
+        søkerMediator.håndter(personopplysningerMottattHendelse)
     }
 
     //Hvorfor finnes ikke dette i r&r?

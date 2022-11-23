@@ -29,9 +29,11 @@ fun nyPersonopplysningHendelse(
     journalpostId: String = Random().nextInt().toString(),
     personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+    ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident ?: Random().nextInt().toString(),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
         journalpostId = journalpostId,
+        ident = ident,
         personopplysninger = personopplysninger,
         aktivitetslogg = aktivitetslogg,
     )

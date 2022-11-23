@@ -9,14 +9,16 @@ import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
-class SøkerRepository {
+class SøkerRepository(
+    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
+) {
 
     fun findByIdent(ident: String): Søker? {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 return txSession.run(
                     queryOf(findByIdent, ident).map { row ->
-                        row.toSøker()
+                        row.toSøker(txSession)
                     }.asSingle
                 )
             }
@@ -28,7 +30,7 @@ class SøkerRepository {
             it.transaction { txSession ->
                 return txSession.run(
                     queryOf(hent, søkerId.toString()).map { row ->
-                        row.toSøker()
+                        row.toSøker(txSession)
                     }.asSingle
                 )
             }
@@ -43,6 +45,11 @@ class SøkerRepository {
                 } else {
                     lagreSøker(søker, txSession)
                 }
+                personopplysningerDAO.lagre(
+                    søkerId = søker.søkerId,
+                    personopplysninger = søker.personopplysninger,
+                    txSession = txSession,
+                )
             }
         }
     }
@@ -75,15 +82,16 @@ class SøkerRepository {
         )
     }
 
-
-    private fun Row.toSøker(): Søker {
+    private fun Row.toSøker(txSession: TransactionalSession): Søker {
         val id = SøkerId.fromDb(string("id"))
         val ident = string("ident")
+        val personopplysninger = personopplysningerDAO.hent(id, txSession)
         val sistEndret = localDateTime("sist_endret")
         val opprettet = localDateTime("opprettet")
         return Søker.fromDb(
             søkerId = id,
             ident = ident,
+            personopplysninger = personopplysninger,
             sistEndret = sistEndret,
             opprettet = opprettet,
         )
@@ -120,4 +128,5 @@ class SøkerRepository {
 
     @Language("SQL")
     private val findByIdent = "select * from søker where ident = ?"
+
 }
