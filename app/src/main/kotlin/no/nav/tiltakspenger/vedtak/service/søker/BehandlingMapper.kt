@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
@@ -24,6 +25,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import java.time.LocalDate
 
 class BehandlingMapper {
@@ -84,6 +86,7 @@ class BehandlingMapper {
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til
                 ),
+                tiltakspengerYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.tiltakspengerYtelser),
                 statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
                 kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
                 pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
@@ -176,6 +179,12 @@ class BehandlingMapper {
         vurderingsperiode: Periode,
         søknad: Søknad
     ) = Inngangsvilkårsvurderinger(
+        tiltakspengerYtelser = TiltakspengerVilkårsvurderingKategori(
+            tiltakspengerVilkårsvurdering = TiltakspengerVilkårsvurdering(
+                ytelser = innsending.ytelser,
+                vurderingsperiode = vurderingsperiode
+            )
+        ),
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
             aap = AAPVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
             dagpenger = DagpengerVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),

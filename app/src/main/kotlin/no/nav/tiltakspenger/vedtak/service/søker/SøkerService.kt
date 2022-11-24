@@ -23,6 +23,7 @@ data class BehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
+    val tiltakspengerYtelser: VilkårsVurderingsKategoriDTO,
     val statligeYtelser: VilkårsVurderingsKategoriDTO,
     val kommunaleYtelser: KommunaleVilkårsVurderingsKategoriDTO,
     val pensjonsordninger: VilkårsVurderingsKategoriDTO,
