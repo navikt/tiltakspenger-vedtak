@@ -34,8 +34,9 @@ internal class VedleggDAOTest {
     fun `lagre vedlegg og hente de ut igjen`() {
         val søknadDAO = SøknadDAO()
         val repository = PostgresInnsendingRepository(søknadDAO)
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val søknadId = Søknad.randomId()
         val søknad = nySøknadMedArenaTiltak(

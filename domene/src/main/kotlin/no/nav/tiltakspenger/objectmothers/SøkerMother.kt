@@ -4,9 +4,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
-import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
@@ -22,9 +20,11 @@ import java.util.*
 
 fun innsendingRegistrert(
     journalpostId: String = Random().nextInt().toString(),
+    ident: String = Random().nextInt().toString(),
 ): Innsending {
     return Innsending(
         journalpostId = journalpostId,
+        ident = ident,
     )
 }
 
@@ -39,12 +39,13 @@ fun nySøker(
         personopplysninger = personopplysninger,
     )
 }
+
 fun innsendingMedSøknad(
     journalpostId: String = Random().nextInt().toString(),
     ident: String = Random().nextInt().toString(),
     søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
 ): Innsending {
-    val innsending = innsendingRegistrert(journalpostId)
+    val innsending = innsendingRegistrert(journalpostId, ident)
     val hendelse = nySøknadMottattHendelse(
         journalpostId = journalpostId,
         søknad = søknad,

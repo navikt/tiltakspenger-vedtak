@@ -21,7 +21,7 @@ CREATE TABLE innsending
 (
     id                      VARCHAR                  PRIMARY KEY,
     journalpost_id          VARCHAR                  NOT NULL UNIQUE,
-    ident                   VARCHAR                  NULL,
+    ident                   VARCHAR                  NOT NULL,
     tilstand                VARCHAR                  NOT NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL

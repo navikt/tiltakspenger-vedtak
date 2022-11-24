@@ -21,7 +21,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class Innsending private constructor(
     val id: InnsendingId,
     val journalpostId: String,
-    ident: String?,
+    val ident: String,
     tilstand: Tilstand,
     søknad: Søknad?,
     personopplysninger: List<Personopplysninger>,
@@ -29,8 +29,6 @@ class Innsending private constructor(
     ytelser: List<YtelseSak>,
     val aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
-    var ident: String? = ident
-        private set
     var tilstand: Tilstand = tilstand
         private set
     var søknad: Søknad? = søknad
@@ -89,10 +87,11 @@ class Innsending private constructor(
     }
 
     constructor(
-        journalpostId: String
+        journalpostId: String,
+        ident: String,
     ) : this(
         id = randomId(),
-        ident = null,
+        ident = ident,
         journalpostId = journalpostId,
         tilstand = InnsendingRegistrert,
         søknad = null,
@@ -109,7 +108,7 @@ class Innsending private constructor(
         fun fromDb(
             id: InnsendingId,
             journalpostId: String,
-            ident: String?,
+            ident: String,
             tilstand: String,
             søknad: Søknad?,
             tiltak: List<Tiltaksaktivitet>,
@@ -262,7 +261,6 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
             innsending.søknad = søknadMottattHendelse.søknad()
-            innsending.ident = søknadMottattHendelse.søknad().ident
             innsending.trengerPersonopplysninger(søknadMottattHendelse)
             innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }
@@ -367,7 +365,7 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
             melding = "Trenger personopplysninger",
-            detaljer = mapOf("ident" to this.ident!!)
+            detaljer = mapOf("ident" to this.ident)
         )
     }
 
@@ -375,7 +373,7 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
             melding = "Trenger skjermingdata",
-            detaljer = mapOf("ident" to this.ident!!)
+            detaljer = mapOf("ident" to this.ident)
         )
     }
 
@@ -383,7 +381,7 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
             melding = "Trenger arenatiltak",
-            detaljer = mapOf("ident" to this.ident!!)
+            detaljer = mapOf("ident" to this.ident)
         )
     }
 
@@ -391,7 +389,7 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
             melding = "Trenger arenaytelser",
-            detaljer = mapOf("ident" to this.ident!!)
+            detaljer = mapOf("ident" to this.ident)
         )
     }
 

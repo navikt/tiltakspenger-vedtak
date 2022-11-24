@@ -11,13 +11,12 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class SkjermingMottattRiverTest {
-    
+
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val testRapid = TestRapid()
@@ -78,7 +77,7 @@ internal class SkjermingMottattRiverTest {
             )
         )
         val personopplysningerMottattHendelse = nyPersonopplysningHendelse(journalpostId = journalpostId)
-        val innsending = Innsending(journalpostId)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         every { innsendingRepository.hent(journalpostId) } returns innsending
 
         // when

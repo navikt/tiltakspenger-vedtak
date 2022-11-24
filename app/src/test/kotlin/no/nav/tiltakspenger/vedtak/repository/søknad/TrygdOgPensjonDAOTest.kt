@@ -39,8 +39,9 @@ internal class TrygdOgPensjonDAOTest {
     fun `lagre trygdogpensjon og hente de ut igjen (må dessverre lagre både søker og søknad pga foreign keys)`() {
         val søknadDAO = SøknadDAO()
         val søkerRepository = PostgresInnsendingRepository(søknadDAO)
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         søkerRepository.lagre(innsending)
         val søknadId = Søknad.randomId()
         val søknad = enSøknad(søknadId, ident)

@@ -107,7 +107,7 @@ internal class PostgresInnsendingRepository(
         return Innsending.fromDb(
             id = id,
             journalpostId = string("journalpost_id"),
-            ident = stringOrNull("ident"),
+            ident = string("ident"),
             tilstand = string("tilstand"),
             søknad = søknadDAO.hent(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
@@ -148,7 +148,6 @@ internal class PostgresInnsendingRepository(
                 oppdater,
                 mapOf(
                     "id" to innsending.id.toString(),
-                    "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
                     "sistEndret" to LocalDateTime.now()
                 )
@@ -164,7 +163,6 @@ internal class PostgresInnsendingRepository(
     private val oppdater =
         """update innsending set 
               tilstand = :tilstand,
-              ident = :ident,
               sist_endret = :sistEndret
            where id = :id
         """.trimMargin()

@@ -15,6 +15,7 @@ import java.util.*
 internal class BehovMediatorTest {
     private companion object {
         private const val journalpostId = "journalpostId"
+        private const val ident = "ident"
         private lateinit var behovMediator: BehovMediator
     }
 
@@ -24,7 +25,7 @@ internal class BehovMediatorTest {
 
     @BeforeEach
     fun setup() {
-        innsending = Innsending(journalpostId = journalpostId)
+        innsending = Innsending(journalpostId = journalpostId, ident = ident)
         aktivitetslogg = Aktivitetslogg()
         behovMediator = BehovMediator(
             rapidsConnection = testRapid

@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
-import no.nav.tiltakspenger.objectmothers.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.skjermingTrue
@@ -44,7 +43,8 @@ internal class PostgresInnsendingRepositoryTest {
     @Test
     fun `lagre og hente bare innsending`() {
         val journalpostId = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId)
+        val ident = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
 
         innsendingRepository.lagre(innsending)
 
@@ -52,27 +52,6 @@ internal class PostgresInnsendingRepositoryTest {
 
         assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
         assertEquals(innsending.id, hentetInnsending.id)
-        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        innsending.personopplysninger shouldBe emptyList()
-    }
-
-    @Test
-    fun `lagre og oppdatere skal fikse ident`() {
-        val journalpostId = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId)
-
-        innsendingRepository.lagre(innsending)
-
-        val hendelse = nySøknadMottattHendelse(journalpostId = journalpostId)
-        val ident = hendelse.søknad().ident
-        innsending.håndter(hendelse)
-        innsendingRepository.lagre(innsending)
-
-        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
-
-        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
-        assertEquals(innsending.id, hentetInnsending.id)
-        assertEquals(ident, hentetInnsending.ident)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         innsending.personopplysninger shouldBe emptyList()
     }

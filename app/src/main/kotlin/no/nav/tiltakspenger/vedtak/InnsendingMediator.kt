@@ -25,24 +25,31 @@ internal class InnsendingMediator(
 
     fun håndter(hendelse: InnsendingHendelse) {
         try {
-            hentEllerOpprettInnsending(hendelse).also { innsending ->
-                observatører.forEach { innsending.addObserver(it) }
-                when (hendelse) {
-                    is SøknadMottattHendelse -> innsending.håndter(hendelse)
-                    is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
-                    is YtelserMottattHendelse -> innsending.håndter(hendelse)
-                    is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
-                    is SkjermingMottattHendelse -> innsending.håndter(hendelse)
-                    else -> throw RuntimeException("Ukjent hendelse")
+            if (hendelse is SøknadMottattHendelse) {
+                hentEllerOpprettInnsending(hendelse).also { innsending ->
+                    observatører.forEach { innsending.addObserver(it) }
+                    innsending.håndter(hendelse)
+                    finalize(innsending, hendelse)
                 }
-                finalize(innsending, hendelse)
+            } else {
+                hentInnsendingEllerFeil(hendelse)?.let { innsending ->
+                    observatører.forEach { innsending.addObserver(it) }
+                    when (hendelse) {
+                        is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
+                        is YtelserMottattHendelse -> innsending.håndter(hendelse)
+                        is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
+                        is SkjermingMottattHendelse -> innsending.håndter(hendelse)
+                        else -> throw RuntimeException("Ukjent hendelse")
+                    }
+                    finalize(innsending, hendelse)
+                }
             }
         } finally {
             MDC.clear()
         }
     }
 
-    private fun hentEllerOpprettInnsending(hendelse: InnsendingHendelse): Innsending {
+    private fun hentEllerOpprettInnsending(hendelse: SøknadMottattHendelse): Innsending {
         return when (val innsending = innsendingRepository.hent(hendelse.journalpostId())) {
             is Innsending -> {
                 SECURELOG.debug { "Fant Innsending for ${hendelse.journalpostId()}" }
@@ -50,10 +57,27 @@ internal class InnsendingMediator(
             }
 
             else -> {
-                val nyInnsending = Innsending(hendelse.journalpostId())
+                val nyInnsending = Innsending(hendelse.journalpostId(), hendelse.søknad().ident)
                 innsendingRepository.lagre(nyInnsending)
                 SECURELOG.info { "Opprettet Innsending for ${hendelse.journalpostId()}" }
                 nyInnsending
+            }
+        }
+    }
+
+    private fun hentInnsendingEllerFeil(hendelse: InnsendingHendelse): Innsending? {
+        return when (val innsending = innsendingRepository.hent(hendelse.journalpostId())) {
+            is Innsending -> {
+                SECURELOG.debug { "Fant Innsending for ${hendelse.journalpostId()}" }
+                innsending
+            }
+
+            else -> {
+                LOG.warn(
+                    "Fant ingen innsending for hendelse med" +
+                            "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
+                )
+                null
             }
         }
     }
