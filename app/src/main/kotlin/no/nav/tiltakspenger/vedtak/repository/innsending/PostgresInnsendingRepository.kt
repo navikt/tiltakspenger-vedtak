@@ -64,7 +64,7 @@ internal class PostgresInnsendingRepository(
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
-                    oppdaterTilstand(innsending = innsending, txSession = txSession)
+                    oppdater(innsending = innsending, txSession = txSession)
                 } else {
                     insert(innsending = innsending, txSession = txSession)
                 }
@@ -140,7 +140,7 @@ internal class PostgresInnsendingRepository(
         )
     }
 
-    private fun oppdaterTilstand(innsending: Innsending, txSession: TransactionalSession) {
+    private fun oppdater(innsending: Innsending, txSession: TransactionalSession) {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
         txSession.run(
@@ -148,6 +148,7 @@ internal class PostgresInnsendingRepository(
                 oppdater,
                 mapOf(
                     "id" to innsending.id.toString(),
+                    "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
                     "sistEndret" to LocalDateTime.now()
                 )
@@ -162,7 +163,8 @@ internal class PostgresInnsendingRepository(
     @Language("SQL")
     private val oppdater =
         """update innsending set 
-              tilstand = :tilstand, 
+              tilstand = :tilstand,
+              ident = :ident,
               sist_endret = :sistEndret
            where id = :id
         """.trimMargin()

@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.skjermingTrue
@@ -28,7 +29,7 @@ import java.util.*
 
 @Testcontainers
 internal class PostgresInnsendingRepositoryTest {
-    private val søkerRepo = PostgresInnsendingRepository()
+    private val innsendingRepository = PostgresInnsendingRepository()
 
     companion object {
         @Container
@@ -41,17 +42,38 @@ internal class PostgresInnsendingRepositoryTest {
     }
 
     @Test
-    fun `lagre og hente bare søker`() {
+    fun `lagre og hente bare innsending`() {
         val journalpostId = Random().nextInt().toString()
         val innsending = Innsending(journalpostId)
 
-        søkerRepo.lagre(innsending)
+        innsendingRepository.lagre(innsending)
 
-        val hentetSøker = søkerRepo.hent(journalpostId)!!
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
 
-        assertEquals(innsending.journalpostId, hentetSøker.journalpostId)
-        assertEquals(innsending.id, hentetSøker.id)
-        assertEquals(innsending.tilstand, hentetSøker.tilstand)
+        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
+        innsending.personopplysninger shouldBe emptyList()
+    }
+
+    @Test
+    fun `lagre og oppdatere skal fikse ident`() {
+        val journalpostId = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId)
+
+        innsendingRepository.lagre(innsending)
+
+        val hendelse = nySøknadMottattHendelse(journalpostId = journalpostId)
+        val ident = hendelse.søknad().ident
+        innsending.håndter(hendelse)
+        innsendingRepository.lagre(innsending)
+
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
+
+        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(ident, hentetInnsending.ident)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         innsending.personopplysninger shouldBe emptyList()
     }
 
@@ -70,7 +92,7 @@ internal class PostgresInnsendingRepositoryTest {
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 
-        val søker = innsendingMedYtelse(
+        val innsending = innsendingMedYtelse(
             journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
@@ -80,19 +102,19 @@ internal class PostgresInnsendingRepositoryTest {
             ytelseSak = ytelseSak,
         )
 
-        søkerRepo.lagre(søker)
+        innsendingRepository.lagre(innsending)
 
-        val hentetSøker = søkerRepo.hent(journalpostId)!!
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
 
-        assertEquals(søker.journalpostId, hentetSøker.journalpostId)
-        assertEquals(søker.ident, hentetSøker.ident)
-        assertEquals(søker.id, hentetSøker.id)
-        assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknad shouldBe søknad
-        hentetSøker.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
-        hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
-        hentetSøker.ytelser shouldContainExactly ytelseSak
-        hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
+        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
+        assertEquals(innsending.ident, hentetInnsending.ident)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
+        hentetInnsending.søknad shouldBe søknad
+        hentetInnsending.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
+        hentetInnsending.tiltak shouldContainExactly tiltaksaktivitet
+        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 
     @Test
@@ -107,23 +129,23 @@ internal class PostgresInnsendingRepositoryTest {
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
 
-        val søker = innsendingMedSøknad(
+        val innsending = innsendingMedSøknad(
             journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
         )
 
-        søkerRepo.lagre(søker)
+        innsendingRepository.lagre(innsending)
 
-        val hentetSøker = søkerRepo.findBySøknadId(søknad.søknadId)
-        assertNotNull(hentetSøker)
-        assertEquals(ident, søker.ident)
-        assertEquals(ident, søker.søknad!!.ident)
-        assertEquals(ident, hentetSøker!!.ident)
-        assertEquals(ident, hentetSøker.søknad!!.ident)
-        assertEquals(søker.id, hentetSøker.id)
-        assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknad shouldBe søknad
+        val hentetInnsending = innsendingRepository.findBySøknadId(søknad.søknadId)
+        assertNotNull(hentetInnsending)
+        assertEquals(ident, innsending.ident)
+        assertEquals(ident, innsending.søknad!!.ident)
+        assertEquals(ident, hentetInnsending!!.ident)
+        assertEquals(ident, hentetInnsending.søknad!!.ident)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
+        hentetInnsending.søknad shouldBe søknad
     }
 
     @Test
@@ -141,7 +163,7 @@ internal class PostgresInnsendingRepositoryTest {
         val tiltaksaktivitet = listOf(tiltaksaktivitet())
         val ytelseSak = listOf(ytelseSak())
 
-        val søker = innsendingMedYtelse(
+        val innsending = innsendingMedYtelse(
             journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,
@@ -151,18 +173,18 @@ internal class PostgresInnsendingRepositoryTest {
             ytelseSak = ytelseSak,
         )
 
-        søkerRepo.lagre(søker)
+        innsendingRepository.lagre(innsending)
 
-        val hentetSøker = søkerRepo.hent(journalpostId)!!
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
 
-        assertEquals(søker.journalpostId, hentetSøker.journalpostId)
-        assertEquals(søker.ident, hentetSøker.ident)
-        assertEquals(søker.id, hentetSøker.id)
-        assertEquals(søker.tilstand, hentetSøker.tilstand)
-        hentetSøker.søknad shouldBe søknad
-        hentetSøker.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
-        hentetSøker.tiltak shouldContainExactly tiltaksaktivitet
-        hentetSøker.ytelser shouldContainExactly ytelseSak
-        hentetSøker.aktivitetslogg shouldBeEqualToComparingFields søker.aktivitetslogg
+        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
+        assertEquals(innsending.ident, hentetInnsending.ident)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
+        hentetInnsending.søknad shouldBe søknad
+        hentetInnsending.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
+        hentetInnsending.tiltak shouldContainExactly tiltaksaktivitet
+        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 }
