@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.slf4j.MDC
 
@@ -25,6 +26,7 @@ internal class SøkerMediator(
                 when (hendelse) {
                     is IdentMottattHendelse -> søker.håndter(hendelse)
                     is PersonopplysningerMottattHendelse -> søker.håndter(hendelse)
+                    is SkjermingMottattHendelse -> søker.håndter(hendelse)
                     else -> throw RuntimeException("Ukjent hendelse")
                 }
                 finalize(søker, hendelse)

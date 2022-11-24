@@ -4,6 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -63,20 +64,21 @@ class SøkerRepository(
             queryOf(
                 oppdaterSøker, mapOf(
                     "ident" to søker.ident,
-                    "sistEndret" to søker.sistEndret,
+                    "sistEndret" to nå(),
                 )
             ).asUpdate
         )
     }
 
     private fun lagreSøker(søker: Søker, txSession: TransactionalSession) {
+        val nå = nå()
         txSession.run(
             queryOf(
                 lagreSøker, mapOf(
                     "id" to søker.søkerId.toString(),
                     "ident" to søker.ident,
-                    "opprettet" to søker.opprettet,
-                    "sistEndret" to søker.sistEndret,
+                    "opprettet" to nå,
+                    "sistEndret" to nå,
                 )
             ).asUpdate
         )
@@ -86,14 +88,10 @@ class SøkerRepository(
         val id = SøkerId.fromDb(string("id"))
         val ident = string("ident")
         val personopplysninger = personopplysningerDAO.hent(id, txSession)
-        val sistEndret = localDateTime("sist_endret")
-        val opprettet = localDateTime("opprettet")
         return Søker.fromDb(
             søkerId = id,
             ident = ident,
             personopplysninger = personopplysninger,
-            sistEndret = sistEndret,
-            opprettet = opprettet,
         )
     }
 

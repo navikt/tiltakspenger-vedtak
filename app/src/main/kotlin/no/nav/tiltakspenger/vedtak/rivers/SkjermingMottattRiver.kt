@@ -9,6 +9,7 @@ import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 
 private val LOG = KotlinLogging.logger {}
@@ -16,7 +17,8 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class SkjermingMottattRiver(
     rapidsConnection: RapidsConnection,
-    private val innsendingMediator: InnsendingMediator
+    private val innsendingMediator: InnsendingMediator,
+    private val søkerMediator: SøkerMediator,
 ) :
     River.PacketListener {
 
@@ -40,14 +42,15 @@ internal class SkjermingMottattRiver(
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = packet["journalpostId"].asText(),
+            ident = packet["ident"].asText(),
             skjerming = Skjerming(
                 ident = packet["ident"].asText(),
                 skjerming = packet["@løsning.skjerming"].asBoolean(),
                 innhentet = packet["@opprettet"].asLocalDateTime()
             )
-
         )
 
         innsendingMediator.håndter(skjermingMottattHendelse)
+        søkerMediator.håndter(skjermingMottattHendelse)
     }
 }

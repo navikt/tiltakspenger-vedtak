@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -123,6 +124,7 @@ internal class PostgresInnsendingRepository(
     private fun insert(innsending: Innsending, txSession: TransactionalSession) {
         LOG.info { "Insert innsending" }
         SECURELOG.info { "Insert innsending ${innsending.id}" }
+        val nå = nå()
         txSession.run(
             queryOf(
                 lagre,
@@ -131,8 +133,8 @@ internal class PostgresInnsendingRepository(
                     "journalpostId" to innsending.journalpostId,
                     "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
-                    "sist_endret" to LocalDateTime.now(),
-                    "opprettet" to LocalDateTime.now(),
+                    "sist_endret" to nå,
+                    "opprettet" to nå,
                 )
             ).asUpdate
         )

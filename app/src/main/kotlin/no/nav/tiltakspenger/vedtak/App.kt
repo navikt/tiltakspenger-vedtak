@@ -59,10 +59,14 @@ fun main() {
             )
             PersonopplysningerMottattRiver(
                 innsendingMediator = innsendingMediator,
-                rapidsConnection = it,
-                søkerMediator = søkerMediator
+                søkerMediator = søkerMediator,
+                rapidsConnection = it
             )
-            SkjermingMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
+            SkjermingMottattRiver(
+                innsendingMediator = innsendingMediator,
+                søkerMediator = søkerMediator,
+                rapidsConnection = it
+            )
             ArenaTiltakMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
             ArenaYtelserMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
             it.register(

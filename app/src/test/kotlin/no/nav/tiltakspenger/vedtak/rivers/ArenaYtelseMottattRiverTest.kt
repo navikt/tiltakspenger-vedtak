@@ -53,7 +53,8 @@ internal class ArenaYtelseMottattRiverTest {
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
+            ident = IDENT,
             skjerming = Skjerming(
                 ident = IDENT,
                 skjerming = false,

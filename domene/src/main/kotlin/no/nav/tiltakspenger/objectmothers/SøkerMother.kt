@@ -36,9 +36,7 @@ fun nySøker(
     return Søker.fromDb(
         søkerId = søkerId,
         ident = ident,
-        sistEndret = nå(),
         personopplysninger = personopplysninger,
-        opprettet = nå()
     )
 }
 fun innsendingMedSøknad(

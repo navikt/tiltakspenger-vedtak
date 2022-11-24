@@ -3,14 +3,12 @@ package no.nav.tiltakspenger.vedtak
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
-import java.time.LocalDateTime
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 
 class Søker private constructor(
     val søkerId: SøkerId,
     val ident: String,  // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
     var personopplysninger: Personopplysninger.Søker?,  // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
-    var sistEndret: LocalDateTime,
-    val opprettet: LocalDateTime,
 ) {
     constructor(
         ident: String
@@ -18,17 +16,20 @@ class Søker private constructor(
         søkerId = randomId(),
         ident = ident,
         personopplysninger = null,
-        sistEndret = LocalDateTime.now(),
-        opprettet = LocalDateTime.now(),
     )
 
     fun håndter(hendelse: IdentMottattHendelse) {
-        sistEndret = LocalDateTime.now()
+        // her skjer det ikke en pøkk...
     }
 
     fun håndter(hendelse: PersonopplysningerMottattHendelse) {
         personopplysninger = hendelse.personopplysninger().filterIsInstance<Personopplysninger.Søker>().first()
-        sistEndret = LocalDateTime.now()
+    }
+
+    fun håndter(hendelse: SkjermingMottattHendelse) {
+        personopplysninger = personopplysninger?.copy(
+            skjermet = hendelse.skjerming().skjerming
+        )
     }
 
     companion object {
@@ -37,15 +38,11 @@ class Søker private constructor(
         fun fromDb(
             søkerId: SøkerId,
             ident: String,
-            sistEndret: LocalDateTime,
             personopplysninger: Personopplysninger.Søker?,
-            opprettet: LocalDateTime
         ) = Søker(
             søkerId = søkerId,
             ident = ident,
             personopplysninger = personopplysninger,
-            sistEndret = sistEndret,
-            opprettet = opprettet,
         )
     }
 }

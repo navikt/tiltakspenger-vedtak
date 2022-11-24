@@ -8,14 +8,18 @@ import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class SkjermingMottattRiverTest {
     
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
+    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val testRapid = TestRapid()
     private val journalpostId = "wolla"
     private val ident = "05906398291"
@@ -52,7 +56,11 @@ internal class SkjermingMottattRiverTest {
             rapidsConnection = testRapid,
             innsendingMediator = InnsendingMediator(
                 innsendingRepository = innsendingRepository,
-                rapidsConnection = testRapid
+                rapidsConnection = testRapid,
+            ),
+            søkerMediator = SøkerMediator(
+                søkerRepository = søkerRepository,
+                rapidsConnection = testRapid,
             )
         )
     }

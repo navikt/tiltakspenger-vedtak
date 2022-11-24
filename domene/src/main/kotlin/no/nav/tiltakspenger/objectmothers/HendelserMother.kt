@@ -41,11 +41,13 @@ fun nyPersonopplysningHendelse(
 
 fun nySkjermingHendelse(
     journalpostId: String = Random().nextInt().toString(),
+    ident: String = Random().nextInt().toString(),
     skjerming: Skjerming = skjermingFalse(ident = journalpostId),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SkjermingMottattHendelse {
     return SkjermingMottattHendelse(
         journalpostId = journalpostId,
+        ident = ident,
         skjerming = skjerming,
         aktivitetslogg = aktivitetslogg,
     )
