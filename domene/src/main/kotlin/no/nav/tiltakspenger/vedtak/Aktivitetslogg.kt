@@ -7,14 +7,17 @@ import java.time.LocalDateTime
 // Understands issues that arose when analyzing a JSON message
 // Implements Collecting Parameter in Refactoring by Martin Fowler
 // Implements Visitor pattern to traverse the messages
-class Aktivitetslogg(
-    private var forelder: Aktivitetslogg? = null,
-    val aktiviteter: MutableList<Aktivitet> = mutableListOf()
+open class Aktivitetslogg(
+    private var forelder: IAktivitetslogg? = null,
+    private val aktiviteter: MutableList<Aktivitet> = mutableListOf()
 ) : IAktivitetslogg {
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
 
     internal fun MutableList<Kontekst>.snapshot(): List<Kontekst> = this.toList()
+
+    override fun aktiviteter(): List<Aktivitet> = aktiviteter.toList()
+
     fun accept(visitor: IAktivitetsloggVisitor) {
         visitor.preVisitAktivitetslogg(this)
         aktiviteter.forEach { it.accept(visitor) }
@@ -37,13 +40,13 @@ class Aktivitetslogg(
         add(Aktivitet.Error(kontekster.toKontekst(), melding))
     }
 
-    override fun severe(melding: String): Nothing {
+    override fun severe(melding: String) {
         add(Aktivitet.Severe(kontekster.toKontekst(), melding))
 
         throw AktivitetException(this)
     }
 
-    private fun add(aktivitet: Aktivitet) {
+    override fun add(aktivitet: Aktivitet) {
         this.aktiviteter.add(aktivitet)
         forelder?.let { forelder?.add(aktivitet) }
     }
@@ -289,7 +292,7 @@ interface IAktivitetslogg {
     fun warn(melding: String)
     fun behov(type: Aktivitetslogg.Aktivitet.Behov.Behovtype, melding: String, detaljer: Map<String, Any> = emptyMap())
     fun error(melding: String)
-    fun severe(melding: String): Nothing
+    fun severe(melding: String)
 
     fun hasMessages(): Boolean
     fun hasWarnings(): Boolean
@@ -301,6 +304,8 @@ interface IAktivitetslogg {
     fun addKontekst(kontekst: KontekstLogable)
     fun setForelderAndAddKontekst(innsending: Innsending)
     fun kontekster(): List<IAktivitetslogg>
+    fun aktiviteter(): List<Aktivitetslogg.Aktivitet>
+    fun add(aktivitet: Aktivitetslogg.Aktivitet)
 }
 
 interface IAktivitetsloggVisitor {

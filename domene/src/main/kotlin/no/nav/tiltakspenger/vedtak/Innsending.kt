@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -14,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit.MONTHS
+import java.util.concurrent.atomic.AtomicBoolean
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
@@ -27,18 +29,44 @@ class Innsending private constructor(
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
-    val aktivitetslogg: Aktivitetslogg
+    aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
+    private val dirtyAktivitetslogg = AtomicBoolean(false)
+    val aktivitetslogg: IAktivitetslogg = DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyAktivitetslogg)
+    var dirty: Boolean = false
+        get() {
+            return field || dirtyAktivitetslogg.get()
+        }
     var tilstand: Tilstand = tilstand
-        private set
+        private set(value) {
+            field = value
+            onDataChanged()
+        }
+
     var søknad: Søknad? = søknad
-        private set
+        private set(value) {
+            field = value
+            onDataChanged()
+        }
     var personopplysninger: List<Personopplysninger> = personopplysninger
-        private set
+        private set(value) {
+            field = value
+            onDataChanged()
+        }
     var tiltak: List<Tiltaksaktivitet> = tiltak
-        private set
+        private set(value) {
+            field = value
+            onDataChanged()
+        }
     var ytelser: List<YtelseSak> = ytelser
-        private set
+        private set(value) {
+            field = value
+            onDataChanged()
+        }
+
+    private fun onDataChanged() {
+        dirty = true
+    }
 
     private val observers = mutableSetOf<InnsendingObserver>()
 
