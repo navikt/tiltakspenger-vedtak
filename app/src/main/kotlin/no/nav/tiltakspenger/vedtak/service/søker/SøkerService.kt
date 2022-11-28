@@ -51,6 +51,14 @@ data class SøknadDTO(
     val startdato: LocalDate,
     val sluttdato: LocalDate?,
     val antallDager: Int?,
+    val fritekst: String?,
+    val vedlegg: List<VedleggDTO>
+)
+
+data class VedleggDTO(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
 )
 
 data class PeriodeDTO(
@@ -107,6 +115,9 @@ data class PersonopplysningerDTO(
     val etternavn: String?,
     val ident: String,
     val barn: List<BarnDTO>,
+    val fortrolig: Boolean,
+    val strengtFortrolig: Boolean,
+    val skjermet: Boolean,
 )
 
 data class BarnDTO(

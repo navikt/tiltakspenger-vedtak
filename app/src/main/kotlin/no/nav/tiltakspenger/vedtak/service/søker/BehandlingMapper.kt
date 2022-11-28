@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -31,12 +32,15 @@ class BehandlingMapper {
     fun mapSøkerOgInnsendinger(søker: Søker, innsendinger: List<Innsending>): SøkerDTO {
         return SøkerDTO(
             ident = søker.ident,
-            personopplysninger = innsendinger.firstOrNull()?.personopplysningerSøker()?.let {
+            personopplysninger = søker.personopplysninger?.let {
                 PersonopplysningerDTO(
                     fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     ident = it.ident,
-                    barn = listOf()
+                    barn = listOf(),
+                    fortrolig = it.fortrolig,
+                    strengtFortrolig = it.strengtFortrolig,
+                    skjermet = it.skjermet ?: false,
                 )
             },
             behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) })
@@ -64,6 +68,8 @@ class BehandlingMapper {
                     antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
                         (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
                     } else null,
+                    fritekst = søknad.fritekst,
+                    vedlegg = mapVedlegg(søknad.vedlegg),
                 ),
                 registrerteTiltak = innsending.tiltak.map {
                     TiltakDTO(
@@ -90,6 +96,18 @@ class BehandlingMapper {
                 lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
                 institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
                 barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
+            )
+        }
+    }
+
+    private fun mapVedlegg(
+        vedlegg: List<Vedlegg>,
+    ): List<VedleggDTO> {
+        return vedlegg.map {
+            VedleggDTO(
+                journalpostId = it.journalpostId,
+                dokumentInfoId = it.dokumentInfoId,
+                filnavn = it.filnavn,
             )
         }
     }

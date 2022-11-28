@@ -47,6 +47,9 @@ class InnsendingRoutesTest {
                 etternavn = "Bar",
                 ident = "",
                 barn = listOf(),
+                fortrolig = false,
+                strengtFortrolig = false,
+                skjermet = false,
             ),
             behandlinger = listOf(
                 BehandlingDTO(
@@ -59,7 +62,9 @@ class InnsendingRoutesTest {
                         beskrivelse = null,
                         startdato = 18.november(2022),
                         sluttdato = null,
-                        antallDager = 0
+                        antallDager = 0,
+                        fritekst = null,
+                        vedlegg = emptyList(),
                     ),
                     registrerteTiltak = listOf(),
                     vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
@@ -214,7 +219,8 @@ class InnsendingRoutesTest {
                 "beskrivelse": null,
                 "startdato": "2022-11-18",
                 "sluttdato": null,
-                "antallDager": 0
+                "antallDager": 0,
+                "vedlegg": []
               },
               "registrerteTiltak": [],
               "vurderingsperiode": {
