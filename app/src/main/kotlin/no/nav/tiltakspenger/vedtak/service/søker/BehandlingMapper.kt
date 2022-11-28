@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -64,7 +65,8 @@ class BehandlingMapper {
                     antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
                         (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
                     } else null,
-                    fritekst = søknad.fritekst
+                    fritekst = søknad.fritekst,
+                    vedlegg = mapVedlegg(søknad.vedlegg),
                 ),
                 registrerteTiltak = innsending.tiltak.map {
                     TiltakDTO(
@@ -91,6 +93,18 @@ class BehandlingMapper {
                 lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
                 institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
                 barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
+            )
+        }
+    }
+
+    private fun mapVedlegg(
+        vedlegg: List<Vedlegg>,
+    ): List<VedleggDTO> {
+        return vedlegg.map {vedlegg ->
+            VedleggDTO(
+                journalpostId = vedlegg.journalpostId,
+                dokumentInfoId = vedlegg.dokumentInfoId,
+                filnavn = vedlegg.filnavn,
             )
         }
     }

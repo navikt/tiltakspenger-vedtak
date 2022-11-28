@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 
 interface SøkerService {
@@ -52,6 +53,13 @@ data class SøknadDTO(
     val sluttdato: LocalDate?,
     val antallDager: Int?,
     val fritekst: String?,
+    val vedlegg: List<VedleggDTO>
+)
+
+data class VedleggDTO(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
 )
 
 data class PeriodeDTO(

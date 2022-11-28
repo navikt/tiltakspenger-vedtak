@@ -61,6 +61,7 @@ class InnsendingRoutesTest {
                         sluttdato = null,
                         antallDager = 0,
                         fritekst = null,
+                        vedlegg = emptyList(),
                     ),
                     registrerteTiltak = listOf(),
                     vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
@@ -215,7 +216,8 @@ class InnsendingRoutesTest {
                 "beskrivelse": null,
                 "startdato": "2022-11-18",
                 "sluttdato": null,
-                "antallDager": 0
+                "antallDager": 0,
+                "vedlegg": []
               },
               "registrerteTiltak": [],
               "vurderingsperiode": {
