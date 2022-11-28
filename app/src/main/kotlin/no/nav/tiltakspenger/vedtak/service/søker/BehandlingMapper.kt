@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
@@ -84,11 +85,11 @@ class BehandlingMapper {
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til
                 ),
-                statligeYtelser = mapVilkårsvurderingKategori(vilkårsvurderinger.statligeYtelser),
-                kommunaleYtelser = mapKommunalseVilkårsvurderingKategori(vilkårsvurderinger.kommunaleYtelser),
-                pensjonsordninger = mapVilkårsvurderingKategori(vilkårsvurderinger.pensjonsordninger),
-                lønnsinntekt = mapVilkårsvurderingKategori(vilkårsvurderinger.lønnsinntekt),
-                institusjonsopphold = mapVilkårsvurderingKategori(vilkårsvurderinger.institusjonopphold),
+                statligeYtelser = mapStatligeYtelser(vilkårsvurderinger.statligeYtelser),
+                kommunaleYtelser = mapKommunaleYtelser(vilkårsvurderinger.kommunaleYtelser),
+                pensjonsordninger = mapPensjonsordninger(vilkårsvurderinger.pensjonsordninger),
+                lønnsinntekt = mapLønnsinntekt(vilkårsvurderinger.lønnsinntekt),
+                institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
                 barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
             )
         }
@@ -112,44 +113,67 @@ class BehandlingMapper {
         }
     }
 
-    private fun mapKommunalseVilkårsvurderingKategori(kommunaleYtelserVilkårsvurderingKategori: KommunaleYtelserVilkårsvurderingKategori): KommunaleVilkårsVurderingsKategoriDTO {
-        return KommunaleVilkårsVurderingsKategoriDTO(
-            ytelse = kommunaleYtelserVilkårsvurderingKategori.vilkår().tittel,
-            lovreferanse = kommunaleYtelserVilkårsvurderingKategori.vilkår().lovreferanse.paragraf,
-            utfall = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO(),
-            detaljer = kommunaleYtelserVilkårsvurderingKategori.samletUtfall().mapToUtfallDTO().name,
-            introProgrammet = kommunaleYtelserVilkårsvurderingKategori.intro.vurderinger()
-                .map { mapVilkårsvurderingDTO(it) },
-            kvp = kommunaleYtelserVilkårsvurderingKategori.kvp.vurderinger().map { mapVilkårsvurderingDTO(it) },
+    private fun mapPensjonsordninger(vilkårsvurdering: VilkårsvurderingKategori): PensjonsordningerDTO {
+        val perioderMedPensjonsordning =
+            vilkårsvurdering.vurderinger()
+                .filter { it.vilkår is Vilkår.PENSJONSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+        return PensjonsordningerDTO(
+            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            perioder = perioderMedPensjonsordning.map { mapVurderingToVilkårsvurderingDTO(it) })
+    }
+
+    private fun mapLønnsinntekt(vilkårsvurdering: VilkårsvurderingKategori): LønnsinntekterDTO {
+        val perioderMedLønnsinntekter =
+            vilkårsvurdering.vurderinger()
+                .filter { it.vilkår is Vilkår.LØNNSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+        return LønnsinntekterDTO(
+            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            perioder = perioderMedLønnsinntekter.map { mapVurderingToVilkårsvurderingDTO(it) })
+    }
+
+    private fun mapInstitusjonsopphold(vilkårsvurdering: VilkårsvurderingKategori): InstitusjonsoppholdDTO {
+        val perioderMedInstitusjonsopphold =
+            vilkårsvurdering.vurderinger()
+                .filter { it.vilkår is Vilkår.LØNNSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+        return InstitusjonsoppholdDTO(
+            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) })
+    }
+
+    private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {
+        val perioderMedDagpenger =
+            v.vurderinger().filter { it.vilkår is Vilkår.DAGPENGER && it.utfall === Utfall.IKKE_OPPFYLT }
+        val perioderMedAAP =
+            v.vurderinger().filter { it.vilkår is Vilkår.AAP && it.utfall === Utfall.IKKE_OPPFYLT }
+        return StatligeYtelserDTO(
+            utfall = v.samletUtfall().mapToUtfallDTO(),
+            aap = perioderMedAAP.map { mapVurderingToVilkårsvurderingDTO(it) },
+            dagpenger = perioderMedDagpenger.map { mapVurderingToVilkårsvurderingDTO(it) }
         )
     }
 
-
-    private fun mapVilkårsvurderingKategori(v: VilkårsvurderingKategori): VilkårsVurderingsKategoriDTO =
-        VilkårsVurderingsKategoriDTO(
-            ytelse = v.vilkår().tittel,
-            lovreferanse = v.vilkår().lovreferanse.paragraf,
+    private fun mapKommunaleYtelser(v: VilkårsvurderingKategori): KommunaleYtelserDTO {
+        val perioderMedKVP = v.vurderinger().filter { it.vilkår is Vilkår.KVP && it.utfall === Utfall.IKKE_OPPFYLT }
+        val perioderMedIntroprogrammet =
+            v.vurderinger().filter { it.vilkår is Vilkår.INTROPROGRAMMET && it.utfall === Utfall.IKKE_OPPFYLT }
+        return KommunaleYtelserDTO(
             utfall = v.samletUtfall().mapToUtfallDTO(),
-            detaljer = v.samletUtfall().mapToUtfallDTO().name,
-            vilkårsvurderinger = v.vurderinger().map { vurdering ->
-                mapVilkårsvurderingDTO(vurdering)
-            }
+            kvp = perioderMedKVP.map { mapVurderingToVilkårsvurderingDTO(it) },
+            introProgrammet = perioderMedIntroprogrammet.map { mapVurderingToVilkårsvurderingDTO(it) }
         )
+    }
 
-    private fun mapVilkårsvurderingDTO(vurdering: Vurdering) =
+    private fun mapVurderingToVilkårsvurderingDTO(vurdering: Vurdering) =
         VilkårsvurderingDTO(
-            ytelse = vurdering.vilkår.tittel,
-            lovreferanse = vurdering.vilkår.lovreferanse.paragraf,
-            utfall = vurdering.utfall.mapToUtfallDTO(),
             periode = vurdering.fom?.let { fom ->
                 PeriodeDTO(
                     fra = fom,
                     til = vurdering.tom
                 )
             },
-            vilkår = vurdering.vilkår.lovreferanse.paragraf,
             kilde = vurdering.kilde,
             detaljer = vurdering.detaljer,
+            kreverManuellVurdering = vurdering.utfall === Utfall.KREVER_MANUELL_VURDERING
         )
 
     private fun mapBarn(innsending: Innsending) = listOf<BarnDTO>()
