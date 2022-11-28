@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
-import java.time.LocalDateTime
+import java.sql.SQLException
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -109,6 +109,7 @@ internal class PostgresInnsendingRepository(
             journalpostId = string("journalpost_id"),
             ident = string("ident"),
             tilstand = string("tilstand"),
+            sistEndret = localDateTime("sist_endret"),
             søknad = søknadDAO.hent(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelser = ytelsesakDAO.hentForInnsending(id, txSession),
@@ -143,16 +144,20 @@ internal class PostgresInnsendingRepository(
     private fun oppdater(innsending: Innsending, txSession: TransactionalSession) {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
-        txSession.run(
+        val antRaderOppdatert = txSession.run(
             queryOf(
                 oppdater,
                 mapOf(
                     "id" to innsending.id.toString(),
                     "tilstand" to innsending.tilstand.type.name,
-                    "sistEndret" to LocalDateTime.now()
+                    "sistEndretOld" to innsending.sistEndret,
+                    "sistEndret" to nå(),
                 )
             ).asUpdate
         )
+        if (antRaderOppdatert == 0 ) {
+            throw IllegalStateException("Noen andre har endret denne")
+        }
     }
 
     @Language("SQL")
@@ -165,6 +170,7 @@ internal class PostgresInnsendingRepository(
               tilstand = :tilstand,
               sist_endret = :sistEndret
            where id = :id
+             and sist_endret = :sistEndretOld
         """.trimMargin()
 
     @Language("SQL")

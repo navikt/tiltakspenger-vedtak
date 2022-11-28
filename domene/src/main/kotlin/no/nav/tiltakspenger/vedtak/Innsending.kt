@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
@@ -13,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.MONTHS
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -24,6 +26,7 @@ class Innsending private constructor(
     val ident: String,
     tilstand: Tilstand,
     søknad: Søknad?,
+    sistEndret: LocalDateTime?,
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
@@ -38,6 +41,8 @@ class Innsending private constructor(
     var tiltak: List<Tiltaksaktivitet> = tiltak
         private set
     var ytelser: List<YtelseSak> = ytelser
+        private set
+    var sistEndret: LocalDateTime? = sistEndret
         private set
 
     private val observers = mutableSetOf<InnsendingObserver>()
@@ -95,6 +100,7 @@ class Innsending private constructor(
         journalpostId = journalpostId,
         tilstand = InnsendingRegistrert,
         søknad = null,
+        sistEndret = null,
         personopplysninger = mutableListOf(),
         tiltak = mutableListOf(),
         ytelser = mutableListOf(),
@@ -111,6 +117,7 @@ class Innsending private constructor(
             ident: String,
             tilstand: String,
             søknad: Søknad?,
+            sistEndret: LocalDateTime,
             tiltak: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
             personopplysninger: List<Personopplysninger>,
@@ -122,6 +129,7 @@ class Innsending private constructor(
                 ident = ident,
                 tilstand = convertTilstand(tilstand),
                 søknad = søknad,
+                sistEndret = sistEndret,
                 personopplysninger = personopplysninger,
                 tiltak = tiltak,
                 ytelser = ytelser,
