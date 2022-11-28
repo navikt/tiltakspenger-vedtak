@@ -59,7 +59,8 @@ class InnsendingRoutesTest {
                         beskrivelse = null,
                         startdato = 18.november(2022),
                         sluttdato = null,
-                        antallDager = 0
+                        antallDager = 0,
+                        fritekst = null,
                     ),
                     registrerteTiltak = listOf(),
                     vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),

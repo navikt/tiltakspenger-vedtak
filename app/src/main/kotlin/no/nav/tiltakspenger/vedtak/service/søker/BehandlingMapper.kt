@@ -64,6 +64,7 @@ class BehandlingMapper {
                     antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
                         (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
                     } else null,
+                    fritekst = søknad.fritekst
                 ),
                 registrerteTiltak = innsending.tiltak.map {
                     TiltakDTO(

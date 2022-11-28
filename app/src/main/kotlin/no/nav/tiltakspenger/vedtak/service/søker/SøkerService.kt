@@ -51,6 +51,7 @@ data class SøknadDTO(
     val startdato: LocalDate,
     val sluttdato: LocalDate?,
     val antallDager: Int?,
+    val fritekst: String?,
 )
 
 data class PeriodeDTO(
