@@ -32,12 +32,15 @@ class BehandlingMapper {
     fun mapSøkerOgInnsendinger(søker: Søker, innsendinger: List<Innsending>): SøkerDTO {
         return SøkerDTO(
             ident = søker.ident,
-            personopplysninger = innsendinger.firstOrNull()?.personopplysningerSøker()?.let {
+            personopplysninger = søker.personopplysninger?.let {
                 PersonopplysningerDTO(
                     fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     ident = it.ident,
-                    barn = listOf()
+                    barn = listOf(),
+                    fortrolig = it.fortrolig,
+                    strengtFortrolig = it.strengtFortrolig,
+                    skjermet = it.skjermet ?: false,
                 )
             },
             behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) })
@@ -100,11 +103,11 @@ class BehandlingMapper {
     private fun mapVedlegg(
         vedlegg: List<Vedlegg>,
     ): List<VedleggDTO> {
-        return vedlegg.map {vedlegg ->
+        return vedlegg.map {
             VedleggDTO(
-                journalpostId = vedlegg.journalpostId,
-                dokumentInfoId = vedlegg.dokumentInfoId,
-                filnavn = vedlegg.filnavn,
+                journalpostId = it.journalpostId,
+                dokumentInfoId = it.dokumentInfoId,
+                filnavn = it.filnavn,
             )
         }
     }

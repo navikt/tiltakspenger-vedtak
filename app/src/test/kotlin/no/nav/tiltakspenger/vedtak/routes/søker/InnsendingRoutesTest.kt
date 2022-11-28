@@ -47,6 +47,9 @@ class InnsendingRoutesTest {
                 etternavn = "Bar",
                 ident = "",
                 barn = listOf(),
+                fortrolig = false,
+                strengtFortrolig = false,
+                skjermet = false,
             ),
             behandlinger = listOf(
                 BehandlingDTO(

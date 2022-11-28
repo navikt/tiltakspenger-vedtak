@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 
 interface SøkerService {
@@ -116,6 +115,9 @@ data class PersonopplysningerDTO(
     val etternavn: String?,
     val ident: String,
     val barn: List<BarnDTO>,
+    val fortrolig: Boolean,
+    val strengtFortrolig: Boolean,
+    val skjermet: Boolean,
 )
 
 data class BarnDTO(
