@@ -64,7 +64,7 @@ internal class PostgresInnsendingRepository(
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
-                    oppdaterTilstand(innsending = innsending, txSession = txSession)
+                    oppdater(innsending = innsending, txSession = txSession)
                 } else {
                     insert(innsending = innsending, txSession = txSession)
                 }
@@ -107,7 +107,7 @@ internal class PostgresInnsendingRepository(
         return Innsending.fromDb(
             id = id,
             journalpostId = string("journalpost_id"),
-            ident = stringOrNull("ident"),
+            ident = string("ident"),
             tilstand = string("tilstand"),
             søknad = søknadDAO.hent(id, txSession),
             tiltak = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
@@ -140,7 +140,7 @@ internal class PostgresInnsendingRepository(
         )
     }
 
-    private fun oppdaterTilstand(innsending: Innsending, txSession: TransactionalSession) {
+    private fun oppdater(innsending: Innsending, txSession: TransactionalSession) {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
         txSession.run(
@@ -162,7 +162,7 @@ internal class PostgresInnsendingRepository(
     @Language("SQL")
     private val oppdater =
         """update innsending set 
-              tilstand = :tilstand, 
+              tilstand = :tilstand,
               sist_endret = :sistEndret
            where id = :id
         """.trimMargin()

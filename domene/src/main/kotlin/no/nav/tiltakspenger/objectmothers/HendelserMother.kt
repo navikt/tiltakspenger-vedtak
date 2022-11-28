@@ -15,7 +15,8 @@ import java.util.*
 
 fun nySøknadMottattHendelse(
     journalpostId: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknadMedArenaTiltak(),
+    ident: String = Random().nextInt().toString(),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SøknadMottattHendelse {
     return SøknadMottattHendelse(
@@ -29,7 +30,8 @@ fun nyPersonopplysningHendelse(
     journalpostId: String = Random().nextInt().toString(),
     personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
-    ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident ?: Random().nextInt().toString(),
+    ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident
+        ?: Random().nextInt().toString(),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
         journalpostId = journalpostId,

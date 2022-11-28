@@ -82,7 +82,7 @@ internal class ArenaYtelseMottattRiverTest {
                 )
             )
         )
-        val innsending = Innsending(IDENT)
+        val innsending = Innsending(journalpostId = JOURNALPOSTID, ident = IDENT)
         innsending.håndter(søknadMottatthendelse)
         innsending.håndter(personopplysningerMottatthendelse)
         innsending.håndter(skjermingMottattHendelse)

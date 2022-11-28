@@ -20,6 +20,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+    implementation("com.papertrailapp:logback-syslog4j:1.0.0")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
@@ -35,7 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2022100711511665136276.49acbaae4ed4")
+    implementation("com.github.navikt:rapids-and-rivers:2022112407251669271100.df879df951cf")
     implementation("com.natpryce:konfig:1.6.10.0")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -43,7 +44,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.21.2")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.8.2")
+    implementation("org.flywaydb:flyway-core:9.8.3")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -62,5 +63,5 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:2.14.1.Final")
+    testImplementation("io.quarkus:quarkus-junit4-mock:2.14.2.Final")
 }

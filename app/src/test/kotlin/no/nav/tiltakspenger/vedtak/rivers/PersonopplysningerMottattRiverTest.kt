@@ -56,7 +56,7 @@ internal class PersonopplysningerMottattRiverTest {
                 journalpostId = journalpostId,
             )
         )
-        val innsending = Innsending(journalpostId)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         every { innsendingRepository.hent(journalpostId) } returns innsending
 
         innsending.håndter(søknadMottattHendelse)

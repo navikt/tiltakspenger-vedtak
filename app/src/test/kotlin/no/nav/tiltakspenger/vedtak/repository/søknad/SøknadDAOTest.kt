@@ -26,6 +26,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.temporal.ChronoUnit
+import java.util.*
 import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers
@@ -46,7 +47,8 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med null-felter`() {
         val ident = "3"
-        val innsending = Innsending(ident)
+        val journalpostId = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
@@ -102,7 +104,9 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med null-felter og underliggende klasser`() {
         val ident = "4"
-        val innsending = Innsending(ident)
+        val journalpostId = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
@@ -184,7 +188,8 @@ internal class SøknadDAOTest {
     @Test
     fun `lagre og hente med fyllte felter og underliggende klasser`() {
         val ident = "5"
-        val innsending = Innsending(ident)
+        val journalpostId = Random().nextInt().toString()
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()

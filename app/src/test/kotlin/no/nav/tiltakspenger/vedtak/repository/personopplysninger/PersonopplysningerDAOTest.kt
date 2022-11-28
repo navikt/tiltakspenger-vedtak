@@ -38,8 +38,9 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `lagre og hent`() {
         // given
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningMaxFyr(ident))
 
@@ -61,8 +62,9 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `lagre og hent med null-verdier`() {
         // given
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningKjedeligFyr(ident = ident))
 
@@ -98,8 +100,9 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `legg til personopplysninger for en ident som finnes fra før - da skal de nye dataene gjelde`() {
         // given
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val gamlePersonopplysninger = personopplysningKjedeligFyr(ident, strengtFortroligUtland = false)
 
@@ -130,8 +133,9 @@ internal class PersonopplysningerDAOTest {
 
     @Test
     fun `lagre barn og hent opp igjen`() {
+        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(ident)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         val barn1 = barn()
         val barn2 = barn()
         val personopplysninger = personopplysningKjedeligFyr(ident = ident)
