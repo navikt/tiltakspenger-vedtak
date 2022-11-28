@@ -337,7 +337,10 @@ class Innsending private constructor(
                 null -> {
                     arenaTiltakMottattHendelse
                         .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-                    innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!
+                    innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.filter {
+                        (it.deltakelsePeriode.tom ?: LocalDate.MAX) >
+                                (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+                    }
                     innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
                     innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
                 }
@@ -353,7 +356,10 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
             ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
-            innsending.ytelser = ytelserMottattHendelse.ytelseSak()
+            innsending.ytelser = ytelserMottattHendelse.ytelseSak().filter {
+                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX) >
+                        (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+            }
             innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
         }
     }
