@@ -83,7 +83,7 @@ internal class InnsendingMediator(
     }
 
     private fun finalize(innsending: Innsending, hendelse: InnsendingHendelse) {
-        if (innsending.dirty) innsendingRepository.lagre(innsending)
+        if (innsending.isDirty()) innsendingRepository.lagre(innsending)
         if (!hendelse.hasMessages()) return
         if (hendelse.hasErrors()) {
             LOG.warn("aktivitetslogg inneholder errors, se securelog for detaljer")

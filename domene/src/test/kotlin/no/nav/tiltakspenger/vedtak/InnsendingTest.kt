@@ -40,7 +40,7 @@ internal class InnsendingTest {
             "Tilstand - tilstandtype: AvventerPersonopplysninger"
         )
         innsending.aktivitetslogg.aktiviteter().filter { it.alvorlighetsgrad == 50 }.size - behovCountBefore shouldBe 0
-        innsending.dirty shouldBe true
+        innsending.isDirty() shouldBe true
     }
 
     @Test
@@ -49,11 +49,11 @@ internal class InnsendingTest {
         val innsending1 = innsendingRegistrert(journalpostId = "1")
         //Hendelsen medfører ingen endringer annet enn i aktivitetsloggen
         innsending1.håndter(nyPersonopplysningHendelse(journalpostId = "1"))
-        innsending1.dirty shouldBe true
+        innsending1.isDirty() shouldBe true
 
         val innsending2 = innsendingRegistrert(journalpostId = "1")
         //Søknad blir lagret på Innsendingen
         innsending2.håndter(nySøknadMottattHendelse(journalpostId = "1"))
-        innsending2.dirty shouldBe true
+        innsending2.isDirty() shouldBe true
     }
 }

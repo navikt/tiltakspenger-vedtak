@@ -31,42 +31,39 @@ class Innsending private constructor(
     ytelser: List<YtelseSak>,
     aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
-    private val dirtyAktivitetslogg = AtomicBoolean(false)
-    val aktivitetslogg: IAktivitetslogg = DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyAktivitetslogg)
-    var dirty: Boolean = false
-        get() {
-            return field || dirtyAktivitetslogg.get()
-        }
+    private val dirtyChecker: DirtyChecker = DirtyChecker()
+
+    val aktivitetslogg: IAktivitetslogg =
+        DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyChecker.get("aktivitetslogg"))
+
+    fun isDirty() = dirtyChecker.isDirty()
+
     var tilstand: Tilstand = tilstand
         private set(value) {
             field = value
-            onDataChanged()
+            dirtyChecker.set("tilstand")
         }
 
     var søknad: Søknad? = søknad
         private set(value) {
             field = value
-            onDataChanged()
+            dirtyChecker.set("søknad")
         }
     var personopplysninger: List<Personopplysninger> = personopplysninger
         private set(value) {
             field = value
-            onDataChanged()
+            dirtyChecker.set("personopplysninger")
         }
     var tiltak: List<Tiltaksaktivitet> = tiltak
         private set(value) {
             field = value
-            onDataChanged()
+            dirtyChecker.set("tiltak")
         }
     var ytelser: List<YtelseSak> = ytelser
         private set(value) {
             field = value
-            onDataChanged()
+            dirtyChecker.set("ytelser")
         }
-
-    private fun onDataChanged() {
-        dirty = true
-    }
 
     private val observers = mutableSetOf<InnsendingObserver>()
 
@@ -551,4 +548,12 @@ class Innsending private constructor(
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene
+
+    class DirtyChecker {
+        val properties: MutableMap<String, AtomicBoolean> = mutableMapOf()
+
+        fun get(name: String): AtomicBoolean = properties.getOrPut(name) { AtomicBoolean(false) }
+        fun set(name: String) = get(name).set(true)
+        fun isDirty(): Boolean = properties.any { it.value.get() }
+    }
 }
