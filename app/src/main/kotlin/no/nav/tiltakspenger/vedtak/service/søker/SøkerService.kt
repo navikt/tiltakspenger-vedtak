@@ -32,29 +32,38 @@ data class BehandlingDTO(
 )
 
 data class StatligeYtelserDTO(
-    val utfall: UtfallDTO,
+    val samletUtfall: UtfallDTO,
     val aap: List<VilkårsvurderingDTO>,
-    val dagpenger: List<VilkårsvurderingDTO>
+    val dagpenger: List<VilkårsvurderingDTO>,
 )
 
-data class KommunaleYtelserDTO(
+data class VilkårsvurderingDTO(
+    val kilde: String,
+    val detaljer: String,
+    val periode: PeriodeDTO?,
+    val kreverManuellVurdering: Boolean,
     val utfall: UtfallDTO,
+)
+
+
+data class KommunaleYtelserDTO(
+    val samletUtfall: UtfallDTO,
     val kvp: List<VilkårsvurderingDTO>,
     val introProgrammet: List<VilkårsvurderingDTO>
 )
 
 data class PensjonsordningerDTO(
-    val utfall: UtfallDTO,
+    val samletUtfall: UtfallDTO,
     val perioder: List<VilkårsvurderingDTO>
 )
 
 data class LønnsinntekterDTO(
-    val utfall: UtfallDTO,
+    val samletUtfall: UtfallDTO,
     val perioder: List<VilkårsvurderingDTO>
 )
 
 data class InstitusjonsoppholdDTO(
-    val utfall: UtfallDTO,
+    val samletUtfall: UtfallDTO,
     val perioder: List<VilkårsvurderingDTO>
 )
 
@@ -92,22 +101,6 @@ data class TiltakDTO(
     val prosent: Float?,
     val dagerIUken: Float?,
     val status: String,
-)
-
-data class VilkårsvurderingDTO(
-    val kilde: String,
-    val detaljer: String,
-    val periode: PeriodeDTO?,
-    val kreverManuellVurdering: Boolean,
-)
-
-data class KommunaleVilkårsVurderingsKategoriDTO(
-    val ytelse: String,
-    val lovreferanse: String,
-    val utfall: UtfallDTO,
-    val detaljer: String,
-    val introProgrammet: List<VilkårsvurderingDTO>,
-    val kvp: List<VilkårsvurderingDTO>,
 )
 
 enum class UtfallDTO {

@@ -73,13 +73,14 @@ class InnsendingRoutesTest {
                     registrerteTiltak = listOf(),
                     vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
                     statligeYtelser = StatligeYtelserDTO(
-                        utfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.Uavklart,
                         aap = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         ),
                         dagpenger = listOf(
@@ -87,58 +88,64 @@ class InnsendingRoutesTest {
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         )
                     ),
                     kommunaleYtelser = KommunaleYtelserDTO(
-                        utfall = UtfallDTO.Uavklart, kvp = listOf(
+                        samletUtfall = UtfallDTO.Uavklart, kvp = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         ), introProgrammet = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         )
 
                     ),
                     pensjonsordninger = PensjonsordningerDTO(
-                        utfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.Uavklart,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         )
                     ),
                     lønnsinntekt = LønnsinntekterDTO(
-                        utfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.Uavklart,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         )
                     ),
                     institusjonsopphold = InstitusjonsoppholdDTO(
-                        utfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.Uavklart,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
-                                kreverManuellVurdering = false
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
                             )
                         )
                     ),
@@ -265,13 +272,14 @@ class InnsendingRoutesTest {
                 "til": null
               },
               "statligeYtelser": {
-                "utfall": "Uavklart",
+                "samletUtfall": "Uavklart",
                 "aap": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ],
                 "dagpenger": [
@@ -279,18 +287,20 @@ class InnsendingRoutesTest {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ]
               },
               "kommunaleYtelser": {
-                "utfall": "Uavklart",
+                "samletUtfall": "Uavklart",
                 "kvp": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ],
                 "introProgrammet": [
@@ -298,40 +308,44 @@ class InnsendingRoutesTest {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ]
               },
               "pensjonsordninger": {
-                "utfall": "Uavklart",
+                "samletUtfall": "Uavklart",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ]
               },
               "lønnsinntekt": {
-                "utfall": "Uavklart",
+                "samletUtfall": "Uavklart",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ]
               },
               "institusjonsopphold": {
-                "utfall": "Uavklart",
+                "samletUtfall": "Uavklart",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
-                    "kreverManuellVurdering": false
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
                   }
                 ]
               },

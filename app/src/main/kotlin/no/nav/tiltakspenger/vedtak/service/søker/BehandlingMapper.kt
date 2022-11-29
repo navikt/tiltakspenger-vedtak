@@ -116,48 +116,48 @@ class BehandlingMapper {
     private fun mapPensjonsordninger(vilkårsvurdering: VilkårsvurderingKategori): PensjonsordningerDTO {
         val perioderMedPensjonsordning =
             vilkårsvurdering.vurderinger()
-                .filter { it.vilkår is Vilkår.PENSJONSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+                .filter { it.vilkår is Vilkår.PENSJONSINNTEKT }
         return PensjonsordningerDTO(
-            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
             perioder = perioderMedPensjonsordning.map { mapVurderingToVilkårsvurderingDTO(it) })
     }
 
     private fun mapLønnsinntekt(vilkårsvurdering: VilkårsvurderingKategori): LønnsinntekterDTO {
         val perioderMedLønnsinntekter =
             vilkårsvurdering.vurderinger()
-                .filter { it.vilkår is Vilkår.LØNNSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+                .filter { it.vilkår is Vilkår.LØNNSINNTEKT }
         return LønnsinntekterDTO(
-            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
             perioder = perioderMedLønnsinntekter.map { mapVurderingToVilkårsvurderingDTO(it) })
     }
 
     private fun mapInstitusjonsopphold(vilkårsvurdering: VilkårsvurderingKategori): InstitusjonsoppholdDTO {
         val perioderMedInstitusjonsopphold =
             vilkårsvurdering.vurderinger()
-                .filter { it.vilkår is Vilkår.LØNNSINNTEKT && it.utfall === Utfall.IKKE_OPPFYLT }
+                .filter { it.vilkår is Vilkår.INSTITUSJONSOPPHOLD }
         return InstitusjonsoppholdDTO(
-            utfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
             perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) })
     }
 
     private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {
         val perioderMedDagpenger =
-            v.vurderinger().filter { it.vilkår is Vilkår.DAGPENGER && it.utfall === Utfall.IKKE_OPPFYLT }
+            v.vurderinger().filter { it.vilkår is Vilkår.DAGPENGER }
         val perioderMedAAP =
-            v.vurderinger().filter { it.vilkår is Vilkår.AAP && it.utfall === Utfall.IKKE_OPPFYLT }
+            v.vurderinger().filter { it.vilkår is Vilkår.AAP }
         return StatligeYtelserDTO(
-            utfall = v.samletUtfall().mapToUtfallDTO(),
+            samletUtfall = v.samletUtfall().mapToUtfallDTO(),
             aap = perioderMedAAP.map { mapVurderingToVilkårsvurderingDTO(it) },
             dagpenger = perioderMedDagpenger.map { mapVurderingToVilkårsvurderingDTO(it) }
         )
     }
 
     private fun mapKommunaleYtelser(v: VilkårsvurderingKategori): KommunaleYtelserDTO {
-        val perioderMedKVP = v.vurderinger().filter { it.vilkår is Vilkår.KVP && it.utfall === Utfall.IKKE_OPPFYLT }
+        val perioderMedKVP = v.vurderinger().filter { it.vilkår is Vilkår.KVP }
         val perioderMedIntroprogrammet =
-            v.vurderinger().filter { it.vilkår is Vilkår.INTROPROGRAMMET && it.utfall === Utfall.IKKE_OPPFYLT }
+            v.vurderinger().filter { it.vilkår is Vilkår.INTROPROGRAMMET }
         return KommunaleYtelserDTO(
-            utfall = v.samletUtfall().mapToUtfallDTO(),
+            samletUtfall = v.samletUtfall().mapToUtfallDTO(),
             kvp = perioderMedKVP.map { mapVurderingToVilkårsvurderingDTO(it) },
             introProgrammet = perioderMedIntroprogrammet.map { mapVurderingToVilkårsvurderingDTO(it) }
         )
@@ -173,7 +173,8 @@ class BehandlingMapper {
             },
             kilde = vurdering.kilde,
             detaljer = vurdering.detaljer,
-            kreverManuellVurdering = vurdering.utfall === Utfall.KREVER_MANUELL_VURDERING
+            kreverManuellVurdering = vurdering.utfall === Utfall.KREVER_MANUELL_VURDERING,
+            utfall = vurdering.utfall.mapToUtfallDTO()
         )
 
     private fun mapBarn(innsending: Innsending) = listOf<BarnDTO>()
