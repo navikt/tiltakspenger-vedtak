@@ -1,7 +1,7 @@
 val javaVersion = JavaVersion.VERSION_17
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.7.22"
     id("io.gitlab.arturbosch.detekt").version("1.22.0")
 }
 
