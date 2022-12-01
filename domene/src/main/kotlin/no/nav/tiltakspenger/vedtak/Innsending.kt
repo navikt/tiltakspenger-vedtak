@@ -363,7 +363,7 @@ class Innsending private constructor(
                 (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX) >
                         (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
             }.also {
-                val antall = ytelserMottattHendelse.ytelseSak()!!.size - innsending.ytelser.size
+                val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
                 LOG.info { "Filtrerte bort $antall gamle ytelser" }
             }
             innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
