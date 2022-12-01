@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -38,6 +39,38 @@ internal class ArenaTiltakMottattRiverTest {
                 rapidsConnection = testRapid
             )
         )
+    }
+
+    @AfterEach
+    fun reset() {
+        testRapid.reset()
+    }
+
+    @Test
+    fun `Når ArenaTiltakMottattHendelse oppstår, skal gamle tiltak filtreres bort fra innsending`() {
+        val søknadMottatthendelse = SøknadMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(forelder = null),
+            journalpostId = JOURNALPOSTID,
+            søknad = nySøknadMedArenaTiltak(journalpostId = JOURNALPOSTID, ident = IDENT)
+        )
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = JOURNALPOSTID)
+
+        val skjermingMottattHendelse = SkjermingMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(forelder = null),
+            journalpostId = JOURNALPOSTID,
+            ident = IDENT,
+            skjerming = Skjerming(ident = IDENT, skjerming = false, innhentet = LocalDateTime.now())
+        )
+        val innsending = Innsending(journalpostId = JOURNALPOSTID, ident = IDENT)
+        innsending.håndter(søknadMottatthendelse)
+        innsending.håndter(personopplysningerMottatthendelse)
+        innsending.håndter(skjermingMottattHendelse)
+
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsending
+        val arenaTiltakMottattHendelse =
+            javaClass.getResource("/arenaTiltakMottattHendelse.json")?.readText(Charsets.UTF_8)!!
+        testRapid.sendTestMessage(arenaTiltakMottattHendelse)
+        assertEquals(6, innsending.tiltak.size)
     }
 
     @Test
@@ -221,22 +254,3 @@ internal class ArenaTiltakMottattRiverTest {
            }
         """.trimIndent()
 }
-
-// eksempel påmelding som blir postet
-//"""{
-//    "@event_name": "behov",
-//    "@opprettet": "2022-08-19T10:23:24.587525",
-//    "@id": "735d324b-b6ec-498f-982d-38761caef06f",
-//    "@behov": [
-//    "arenaytelser"
-//    ],
-//    "ident": "04927799109",
-//    "tilstandtype": "AvventerYtelser",
-//    "system_read_count": 0,
-//    "system_participating_services": [
-//    {
-//        "id": "735d324b-b6ec-498f-982d-38761caef06f",
-//        "time": "2022-08-19T10:23:24.590127"
-//    }
-//    ]
-//}"""
