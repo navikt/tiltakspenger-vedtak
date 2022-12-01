@@ -1,8 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.innsending
 
+import io.kotest.assertions.throwables.shouldThrowWithMessage
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
@@ -165,5 +168,25 @@ internal class PostgresInnsendingRepositoryTest {
         hentetInnsending.tiltak shouldContainExactly tiltaksaktivitet
         hentetInnsending.ytelser shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
+    }
+
+    @Test
+    fun `sjekk optimistisk locking`() {
+        val journalpostId = Random().nextInt().toString()
+        val ident = Random().nextInt().toString()
+        var innsending = Innsending(journalpostId = journalpostId, ident = ident)
+
+        innsending.sistEndret shouldBe null
+
+        innsending = innsendingRepository.lagre(innsending)
+
+        innsending.sistEndret shouldNotBe null
+
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
+        innsendingRepository.lagre(hentetInnsending)
+
+        shouldThrowWithMessage<IllegalStateException>("Noen andre har endret denne") {
+            innsendingRepository.lagre(innsending)
+        }
     }
 }

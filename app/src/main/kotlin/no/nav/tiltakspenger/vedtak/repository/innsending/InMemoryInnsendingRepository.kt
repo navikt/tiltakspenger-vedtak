@@ -9,8 +9,9 @@ class InMemoryInnsendingRepository : InnsendingRepository {
 
     override fun hent(journalpostId: String): Innsending? = søkere[journalpostId]
 
-    override fun lagre(innsending: Innsending) = with(søkere) {
+    override fun lagre(innsending: Innsending): Innsending = with(søkere) {
         this[innsending.journalpostId] = innsending
+        return innsending
     }
 
     override fun findBySøknadId(søknadId: String): Innsending? {
