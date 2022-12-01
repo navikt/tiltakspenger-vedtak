@@ -175,6 +175,8 @@ internal class PostgresInnsendingRepositoryTest {
         val ident = Random().nextInt().toString()
         var innsending = Innsending(journalpostId = journalpostId, ident = ident)
 
+        innsending.sistEndret shouldBe null
+
         innsendingRepository.lagre(innsending)
         innsending = innsendingRepository.hent(journalpostId)!!
 
