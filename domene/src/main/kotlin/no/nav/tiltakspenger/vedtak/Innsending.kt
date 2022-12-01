@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
@@ -17,6 +16,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.MONTHS
 
+private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 @Suppress("TooManyFunctions", "LongParameterList")
@@ -340,6 +340,9 @@ class Innsending private constructor(
                     innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.filter {
                         (it.deltakelsePeriode.tom ?: LocalDate.MAX) >
                                 (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+                    }.also {
+                        val antall = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.size - innsending.tiltak.size
+                        LOG.info { "Filtrerte bort $antall gamle tiltak" }
                     }
                     innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
                     innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
@@ -359,6 +362,9 @@ class Innsending private constructor(
             innsending.ytelser = ytelserMottattHendelse.ytelseSak().filter {
                 (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX) >
                         (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+            }.also {
+                val antall = ytelserMottattHendelse.ytelseSak()!!.size - innsending.ytelser.size
+                LOG.info { "Filtrerte bort $antall gamle ytelser" }
             }
             innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
         }
