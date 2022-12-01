@@ -1,11 +1,16 @@
 package no.nav.tiltakspenger.vedtak.routes.søker
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.domene.november
@@ -15,14 +20,18 @@ import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
-import no.nav.tiltakspenger.vedtak.service.søker.KommunaleVilkårsVurderingsKategoriDTO
+import no.nav.tiltakspenger.vedtak.service.søker.InstitusjonsoppholdDTO
+import no.nav.tiltakspenger.vedtak.service.søker.KommunaleYtelserDTO
+import no.nav.tiltakspenger.vedtak.service.søker.LønnsinntekterDTO
+import no.nav.tiltakspenger.vedtak.service.søker.PensjonsordningerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.service.søker.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.service.søker.StatligeYtelserDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
-import no.nav.tiltakspenger.vedtak.service.søker.VilkårsVurderingsKategoriDTO
+import no.nav.tiltakspenger.vedtak.service.søker.VilkårsvurderingDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -68,41 +77,82 @@ class InnsendingRoutesTest {
                     ),
                     registrerteTiltak = listOf(),
                     vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
-                    statligeYtelser = VilkårsVurderingsKategoriDTO(
-                        ytelse = "",
-                        lovreferanse = "",
-                        utfall = UtfallDTO.Uavklart,
-                        detaljer = "",
-                        vilkårsvurderinger = listOf()
+                    statligeYtelser = StatligeYtelserDTO(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        aap = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        ),
+                        dagpenger = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
                     ),
-                    kommunaleYtelser = KommunaleVilkårsVurderingsKategoriDTO(
-                        ytelse = "",
-                        lovreferanse = "",
-                        utfall = UtfallDTO.Uavklart,
-                        detaljer = "",
-                        introProgrammet = emptyList(),
-                        kvp = emptyList(),
+                    kommunaleYtelser = KommunaleYtelserDTO(
+                        samletUtfall = UtfallDTO.Uavklart, kvp = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        ), introProgrammet = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
+
                     ),
-                    pensjonsordninger = VilkårsVurderingsKategoriDTO(
-                        ytelse = "",
-                        lovreferanse = "",
-                        utfall = UtfallDTO.Uavklart,
-                        detaljer = "",
-                        vilkårsvurderinger = listOf()
+                    pensjonsordninger = PensjonsordningerDTO(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
                     ),
-                    lønnsinntekt = VilkårsVurderingsKategoriDTO(
-                        ytelse = "",
-                        lovreferanse = "",
-                        utfall = UtfallDTO.Uavklart,
-                        detaljer = "",
-                        vilkårsvurderinger = listOf()
+                    lønnsinntekt = LønnsinntekterDTO(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
                     ),
-                    institusjonsopphold = VilkårsVurderingsKategoriDTO(
-                        ytelse = "",
-                        lovreferanse = "",
-                        utfall = UtfallDTO.Uavklart,
-                        detaljer = "",
-                        vilkårsvurderinger = listOf()
+                    institusjonsopphold = InstitusjonsoppholdDTO(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
                     ),
                     barnetillegg = emptyList()
                 )
@@ -228,50 +278,92 @@ class InnsendingRoutesTest {
                 "til": null
               },
               "statligeYtelser": {
-                "ytelse": "",
-                "lovreferanse": "",
-                "utfall": "Uavklart",
-                "detaljer": "",
-                "vilkårsvurderinger": []
+                "samletUtfall": "Uavklart",
+                "aap": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "dagpenger": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ]
               },
               "kommunaleYtelser": {
-                "ytelse": "",
-                "lovreferanse": "",
-                "utfall": "Uavklart",
-                "detaljer": "",
-                "introProgrammet": [],
-                "kvp": []
+                "samletUtfall": "Uavklart",
+                "kvp": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "introProgrammet": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ]
               },
               "pensjonsordninger": {
-                "ytelse": "",
-                "lovreferanse": "",
-                "utfall": "Uavklart",
-                "detaljer": "",
-                "vilkårsvurderinger": []
+                "samletUtfall": "Uavklart",
+                "perioder": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ]
               },
               "lønnsinntekt": {
-                "ytelse": "",
-                "lovreferanse": "",
-                "utfall": "Uavklart",
-                "detaljer": "",
-                "vilkårsvurderinger": []
+                "samletUtfall": "Uavklart",
+                "perioder": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ]
               },
               "institusjonsopphold": {
-                "ytelse": "",
-                "lovreferanse": "",
-                "utfall": "Uavklart",
-                "detaljer": "",
-                "vilkårsvurderinger": []
+                "samletUtfall": "Uavklart",
+                "perioder": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ]
               },
               "barnetillegg": []
             }
           ],
-        "personopplysninger": {
-          "fornavn": "Foo",
-          "etternavn": "Bar",
-          "ident": "",
-          "barn": []
-        }
+          "personopplysninger": {
+            "fornavn": "Foo",
+            "etternavn": "Bar",
+            "ident": "",
+            "barn": []
+          }
         }
     """.trimIndent()
 }
