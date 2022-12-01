@@ -41,12 +41,15 @@ object Configuration {
         "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
         "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
         "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
+        "logback.configurationFile" to System.getenv("LOGBACK_CONFIGURATION_FILE")
     )
+
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
 
     private val localProperties = ConfigurationMap(
         mapOf(
             "application.profile" to Profile.LOCAL.toString(),
+            "logback.configurationFile" to "logback.local.xml",
             Rolle.SAKSBEHANDLER.name to "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
             Rolle.FORTROLIG_ADRESSE.name to "ea930b6b-9397-44d9-b9e6-f4cf527a632a",
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
@@ -99,6 +102,8 @@ object Configuration {
         ),
         AdRolle(Rolle.SKJERMING, UUID.fromString(config()[Key(Rolle.SKJERMING.name, stringType)]))
     )
+
+    fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     data class TokenVerificationConfig(
         val jwksUri: String = config()[Key("AZURE_OPENID_CONFIG_JWKS_URI", stringType)],
