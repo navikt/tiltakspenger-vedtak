@@ -60,35 +60,36 @@ internal class PostgresInnsendingRepository(
         }
     }
 
-    override fun lagre(innsending: Innsending) {
-        sessionOf(DataSource.hikariDataSource).use {
+    override fun lagre(innsending: Innsending): Innsending {
+        return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
                     oppdater(innsending = innsending, txSession = txSession)
                 } else {
                     insert(innsending = innsending, txSession = txSession)
+                }.also {
+                    søknadDAO.lagre(innsendingId = innsending.id, søknad = innsending.søknad, txSession = txSession)
+                    tiltaksaktivitetDAO.lagre(
+                        innsendingId = innsending.id,
+                        tiltaksaktiviteter = innsending.tiltak,
+                        txSession = txSession
+                    )
+                    ytelsesakDAO.lagre(
+                        innsendingId = innsending.id,
+                        ytelsesaker = innsending.ytelser,
+                        txSession = txSession
+                    )
+                    personopplysningerDAO.lagre(
+                        innsendingId = innsending.id,
+                        personopplysninger = innsending.personopplysninger,
+                        txSession = txSession
+                    )
+                    aktivitetsloggDAO.lagre(
+                        innsendingId = innsending.id,
+                        aktivitetslogg = innsending.aktivitetslogg,
+                        txSession = txSession
+                    )
                 }
-                søknadDAO.lagre(innsendingId = innsending.id, søknad = innsending.søknad, txSession = txSession)
-                tiltaksaktivitetDAO.lagre(
-                    innsendingId = innsending.id,
-                    tiltaksaktiviteter = innsending.tiltak,
-                    txSession = txSession
-                )
-                ytelsesakDAO.lagre(
-                    innsendingId = innsending.id,
-                    ytelsesaker = innsending.ytelser,
-                    txSession = txSession
-                )
-                personopplysningerDAO.lagre(
-                    innsendingId = innsending.id,
-                    personopplysninger = innsending.personopplysninger,
-                    txSession = txSession
-                )
-                aktivitetsloggDAO.lagre(
-                    innsendingId = innsending.id,
-                    aktivitetslogg = innsending.aktivitetslogg,
-                    txSession = txSession
-                )
             }
         }
     }
@@ -122,10 +123,11 @@ internal class PostgresInnsendingRepository(
         queryOf(finnes, journalpostId).map { row -> row.boolean("exists") }.asSingle
     ) ?: throw RuntimeException("Failed to check if innsending exists")
 
-    private fun insert(innsending: Innsending, txSession: TransactionalSession) {
+    private fun insert(innsending: Innsending, txSession: TransactionalSession): Innsending {
         LOG.info { "Insert innsending" }
         SECURELOG.info { "Insert innsending ${innsending.id}" }
         val nå = nå()
+        innsending.oppdaterSistEndret(nå)
         txSession.run(
             queryOf(
                 lagre,
@@ -134,30 +136,35 @@ internal class PostgresInnsendingRepository(
                     "journalpostId" to innsending.journalpostId,
                     "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
-                    "sist_endret" to nå,
+                    "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
                 )
             ).asUpdate
         )
+        return innsending
     }
 
-    private fun oppdater(innsending: Innsending, txSession: TransactionalSession) {
+    private fun oppdater(innsending: Innsending, txSession: TransactionalSession): Innsending {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
+        val sistEndretOld = innsending.sistEndret
+        innsending.oppdaterSistEndret(nå())
+
         val antRaderOppdatert = txSession.run(
             queryOf(
                 oppdater,
                 mapOf(
                     "id" to innsending.id.toString(),
                     "tilstand" to innsending.tilstand.type.name,
-                    "sistEndretOld" to innsending.sistEndret,
-                    "sistEndret" to nå(),
+                    "sistEndretOld" to sistEndretOld,
+                    "sistEndret" to innsending.sistEndret,
                 )
             ).asUpdate
         )
-        if (antRaderOppdatert == 0 ) {
+        if (antRaderOppdatert == 0) {
             throw IllegalStateException("Noen andre har endret denne")
         }
+        return innsending
     }
 
     @Language("SQL")

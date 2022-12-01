@@ -81,6 +81,10 @@ class Innsending private constructor(
         return Pair(tidligsteFomJustertForLovligTilbakedatering, senesteTom)
     }
 
+    fun oppdaterSistEndret(sistEndret: LocalDateTime) {
+        this.sistEndret = sistEndret
+    }
+
     fun vurderingsperiodeForSøknad(søknad: Søknad): Periode? {
         val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
         return senesteTom?.let { Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom) }

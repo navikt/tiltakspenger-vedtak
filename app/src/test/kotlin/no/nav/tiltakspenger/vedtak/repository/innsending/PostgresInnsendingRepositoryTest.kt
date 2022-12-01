@@ -4,6 +4,7 @@ import io.kotest.assertions.throwables.shouldThrowWithMessage
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
@@ -177,8 +178,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         innsending.sistEndret shouldBe null
 
-        innsendingRepository.lagre(innsending)
-        innsending = innsendingRepository.hent(journalpostId)!!
+        innsending = innsendingRepository.lagre(innsending)
+
+        innsending.sistEndret shouldNotBe null
 
         val hentetInnsending = innsendingRepository.hent(journalpostId)!!
         innsendingRepository.lagre(hentetInnsending)
