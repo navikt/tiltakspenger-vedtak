@@ -41,7 +41,7 @@ object Configuration {
         "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
         "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
         "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
-        "logback.configurationFile" to System.getenv("LOGBACK_CONFIGURATION_FILE")
+        "logback.configurationFile" to "logback.xml"
     )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
