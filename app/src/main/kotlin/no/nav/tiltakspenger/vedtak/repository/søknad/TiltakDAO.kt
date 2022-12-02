@@ -11,8 +11,8 @@ import org.intellij.lang.annotations.Language
 
 internal class TiltakDAO {
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): Tiltak =
-        hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)!!
+    fun hent(søknadId: SøknadId, txSession: TransactionalSession): Tiltak? =
+        hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)
 
     private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.ArenaTiltak? {
         return txSession.run(
