@@ -23,13 +23,53 @@ data class BehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
-    val tiltakspengerYtelser: VilkårsVurderingsKategoriDTO,
-    val statligeYtelser: VilkårsVurderingsKategoriDTO,
-    val kommunaleYtelser: KommunaleVilkårsVurderingsKategoriDTO,
-    val pensjonsordninger: VilkårsVurderingsKategoriDTO,
-    val lønnsinntekt: VilkårsVurderingsKategoriDTO,
-    val institusjonsopphold: VilkårsVurderingsKategoriDTO,
+    val tiltakspengerYtelser: TiltakspengerDTO,
+    val statligeYtelser: StatligeYtelserDTO,
+    val kommunaleYtelser: KommunaleYtelserDTO,
+    val pensjonsordninger: PensjonsordningerDTO,
+    val lønnsinntekt: LønnsinntekterDTO,
+    val institusjonsopphold: InstitusjonsoppholdDTO,
     val barnetillegg: List<BarnetilleggDTO>
+)
+
+data class StatligeYtelserDTO(
+    val samletUtfall: UtfallDTO,
+    val aap: List<VilkårsvurderingDTO>,
+    val dagpenger: List<VilkårsvurderingDTO>,
+)
+
+data class VilkårsvurderingDTO(
+    val kilde: String,
+    val detaljer: String,
+    val periode: PeriodeDTO?,
+    val kreverManuellVurdering: Boolean,
+    val utfall: UtfallDTO,
+)
+
+data class KommunaleYtelserDTO(
+    val samletUtfall: UtfallDTO,
+    val kvp: List<VilkårsvurderingDTO>,
+    val introProgrammet: List<VilkårsvurderingDTO>
+)
+
+data class TiltakspengerDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
+)
+
+data class PensjonsordningerDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
+)
+
+data class LønnsinntekterDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
+)
+
+data class InstitusjonsoppholdDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
 )
 
 data class BarnetilleggDTO(
@@ -52,6 +92,14 @@ data class SøknadDTO(
     val startdato: LocalDate,
     val sluttdato: LocalDate?,
     val antallDager: Int?,
+    val fritekst: String?,
+    val vedlegg: List<VedleggDTO>
+)
+
+data class VedleggDTO(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
 )
 
 data class PeriodeDTO(
@@ -68,33 +116,6 @@ data class TiltakDTO(
     val status: String,
 )
 
-data class VilkårsVurderingsKategoriDTO(
-    val ytelse: String,
-    val lovreferanse: String,
-    val utfall: UtfallDTO,
-    val detaljer: String,
-    val vilkårsvurderinger: List<VilkårsvurderingDTO>,
-)
-
-data class KommunaleVilkårsVurderingsKategoriDTO(
-    val ytelse: String,
-    val lovreferanse: String,
-    val utfall: UtfallDTO,
-    val detaljer: String,
-    val introProgrammet: List<VilkårsvurderingDTO>,
-    val kvp: List<VilkårsvurderingDTO>,
-)
-
-data class VilkårsvurderingDTO(
-    val ytelse: String,
-    val lovreferanse: String,
-    val utfall: UtfallDTO,
-    val detaljer: String,
-    val periode: PeriodeDTO?,
-    val kilde: String,
-    val vilkår: String,
-)
-
 enum class UtfallDTO {
     Oppfylt,
     Uavklart,
@@ -108,6 +129,9 @@ data class PersonopplysningerDTO(
     val etternavn: String?,
     val ident: String,
     val barn: List<BarnDTO>,
+    val fortrolig: Boolean,
+    val strengtFortrolig: Boolean,
+    val skjermet: Boolean,
 )
 
 data class BarnDTO(

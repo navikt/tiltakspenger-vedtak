@@ -14,7 +14,7 @@ class Inngangsvilkårsvurderinger(
     val kommunaleYtelser: KommunaleYtelserVilkårsvurderingKategori,
     val pensjonsordninger: PensjonsinntektVilkårsvurderingKategori,
     val lønnsinntekt: LønnsinntektVilkårsvurderingKategori,
-    val institusjonopphold: InstitusjonVilkårsvurderingKategori,
+    val institusjonopphold: InstitusjonVilkårsvurderingKategori
 ) {
     fun samletUtfall(): Utfall {
         val utfall =

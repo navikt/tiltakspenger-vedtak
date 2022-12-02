@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -38,18 +39,73 @@ internal class ArenaYtelseMottattRiverTest {
         )
     }
 
+    @AfterEach
+    fun reset() {
+        testRapid.reset()
+    }
+
+    @Test
+    fun `Når ArenaYtelserMottattHendelse oppstår, skal gamle tiltak filtreres bort fra innsending`() {
+        val søknadMottatthendelse = SøknadMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(forelder = null),
+            journalpostId = JOURNALPOSTID,
+            søknad = nySøknadMedArenaTiltak(journalpostId = JOURNALPOSTID, ident = IDENT)
+        )
+
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = JOURNALPOSTID)
+
+        val skjermingMottattHendelse = SkjermingMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(forelder = null),
+            journalpostId = JOURNALPOSTID,
+            ident = IDENT,
+            skjerming = Skjerming(ident = IDENT, skjerming = false, innhentet = LocalDateTime.now())
+        )
+
+        val tiltakMottattHendelse = ArenaTiltakMottattHendelse(
+            aktivitetslogg = Aktivitetslogg(forelder = null),
+            journalpostId = JOURNALPOSTID,
+            tiltaksaktivitet = listOf(
+                Tiltaksaktivitet(
+                    tiltak = Tiltaksaktivitet.Tiltak.ARBRRHDAG,
+                    aktivitetId = "",
+                    tiltakLokaltNavn = null,
+                    arrangør = null,
+                    bedriftsnummer = null,
+                    deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(null, null),
+                    deltakelseProsent = null,
+                    deltakerStatus = Tiltaksaktivitet.DeltakerStatus.GJENN,
+                    statusSistEndret = null,
+                    begrunnelseInnsøking = "",
+                    antallDagerPerUke = null,
+                    tidsstempelHosOss = LocalDateTime.now()
+                )
+            )
+        )
+        val innsending = Innsending(journalpostId = JOURNALPOSTID, ident = IDENT)
+        innsending.håndter(søknadMottatthendelse)
+        innsending.håndter(personopplysningerMottatthendelse)
+        innsending.håndter(skjermingMottattHendelse)
+        innsending.håndter(tiltakMottattHendelse)
+
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsending
+        val arenaYtelserMottattHendelse =
+            javaClass.getResource("/arenaYtelserMottattHendelse.json")?.readText(Charsets.UTF_8)!!
+        testRapid.sendTestMessage(arenaYtelserMottattHendelse)
+        assertEquals(5, innsending.ytelser.size)
+    }
+
     @Test
     fun `Når ArenaYtelser får en løsning på tiltak, skal den ikke sende noen nye behov`() {
         val søknadMottatthendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
-            journalpostId = IDENT,
+            journalpostId = JOURNALPOSTID,
             søknad = nySøknadMedArenaTiltak(
                 journalpostId = JOURNALPOSTID,
                 ident = IDENT,
             )
         )
 
-        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = IDENT)
+        val personopplysningerMottatthendelse = nyPersonopplysningHendelse(journalpostId = JOURNALPOSTID)
 
         val skjermingMottattHendelse = SkjermingMottattHendelse(
             aktivitetslogg = Aktivitetslogg(forelder = null),
@@ -88,7 +144,7 @@ internal class ArenaYtelseMottattRiverTest {
         innsending.håndter(skjermingMottattHendelse)
         innsending.håndter(tiltakMottattHendelse)
 
-        every { innsendingRepository.hent(IDENT) } returns innsending
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsending
         testRapid.sendTestMessage(ytelserMottattEvent())
         with(testRapid.inspektør) {
             assertEquals(0, size)

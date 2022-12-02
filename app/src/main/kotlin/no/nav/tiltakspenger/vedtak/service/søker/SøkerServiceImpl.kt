@@ -17,7 +17,7 @@ class SøkerServiceImpl(
 
     override fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO? {
         val søker: Søker = søkerRepository.findByIdent(ident) ?: return null
-        //søker.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
+        søker.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
         return SøkerIdDTO(
             id = søker.søkerId.toString(),
         )
@@ -25,7 +25,6 @@ class SøkerServiceImpl(
 
     override fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO? {
         val søker = søkerRepository.hent(søkerId) ?: return null
-        // søker.sjekkOmSaksbehandlerHarTilgang(saksbehandler)
         val innsendinger = innsendingRepository.findByIdent(søker.ident)
         LOG.info { "Hentet ${innsendinger.size} antall innsendinger" }
         innsendinger.forEach { it.sjekkOmSaksbehandlerHarTilgang(saksbehandler) }
