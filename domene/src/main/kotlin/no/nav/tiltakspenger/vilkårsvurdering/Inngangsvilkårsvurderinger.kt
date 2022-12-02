@@ -5,18 +5,21 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 
 
 class Inngangsvilkårsvurderinger(
+    val tiltakspengerYtelser: TiltakspengerVilkårsvurderingKategori,
     val statligeYtelser: StatligeYtelserVilkårsvurderingKategori,
     val kommunaleYtelser: KommunaleYtelserVilkårsvurderingKategori,
     val pensjonsordninger: PensjonsinntektVilkårsvurderingKategori,
     val lønnsinntekt: LønnsinntektVilkårsvurderingKategori,
-    val institusjonopphold: InstitusjonVilkårsvurderingKategori,
+    val institusjonopphold: InstitusjonVilkårsvurderingKategori
 ) {
     fun samletUtfall(): Utfall {
         val utfall =
             listOf(
+                tiltakspengerYtelser.samletUtfall(),
                 statligeYtelser.samletUtfall(),
                 kommunaleYtelser.samletUtfall(),
                 pensjonsordninger.samletUtfall(),
@@ -32,6 +35,7 @@ class Inngangsvilkårsvurderinger(
 
     fun vurderinger(): List<Vurdering> =
         listOf(
+            tiltakspengerYtelser.vurderinger(),
             statligeYtelser.vurderinger(),
             kommunaleYtelser.vurderinger(),
             pensjonsordninger.vurderinger(),

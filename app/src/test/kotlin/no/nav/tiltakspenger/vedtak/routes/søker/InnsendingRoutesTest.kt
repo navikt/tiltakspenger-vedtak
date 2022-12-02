@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.vedtak.service.søker.StatligeYtelserDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
+import no.nav.tiltakspenger.vedtak.service.søker.TiltakspengerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
 import no.nav.tiltakspenger.vedtak.service.søker.VilkårsvurderingDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -154,7 +155,18 @@ class InnsendingRoutesTest {
                             )
                         )
                     ),
-                    barnetillegg = emptyList()
+                    barnetillegg = emptyList(),
+                    tiltakspengerYtelser = TiltakspengerDTO(
+                        samletUtfall = UtfallDTO.Uavklart, perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart
+                            )
+                        )
+                    )
                 )
             )
         )

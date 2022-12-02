@@ -4,7 +4,12 @@ sealed class Vilkår {
 
     abstract val tittel: String
     abstract val lovreferanse: Lovreferanse
-    
+
+    object TILTAKSPENGER : Vilkår() {
+        override val tittel: String = "TILTAKSPENGER"
+        override val lovreferanse: Lovreferanse = Lovreferanse.TILTAKSPENGER
+    }
+
     object AAP : Vilkår() {
         override val tittel: String = "AAP"
         override val lovreferanse: Lovreferanse = Lovreferanse.AAP

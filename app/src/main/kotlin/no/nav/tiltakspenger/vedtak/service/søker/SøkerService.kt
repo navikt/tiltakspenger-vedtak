@@ -23,6 +23,7 @@ data class BehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
+    val tiltakspengerYtelser: TiltakspengerDTO,
     val statligeYtelser: StatligeYtelserDTO,
     val kommunaleYtelser: KommunaleYtelserDTO,
     val pensjonsordninger: PensjonsordningerDTO,
@@ -45,11 +46,15 @@ data class VilkårsvurderingDTO(
     val utfall: UtfallDTO,
 )
 
-
 data class KommunaleYtelserDTO(
     val samletUtfall: UtfallDTO,
     val kvp: List<VilkårsvurderingDTO>,
     val introProgrammet: List<VilkårsvurderingDTO>
+)
+
+data class TiltakspengerDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
 )
 
 data class PensjonsordningerDTO(

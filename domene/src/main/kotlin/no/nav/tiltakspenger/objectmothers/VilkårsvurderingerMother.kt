@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
@@ -18,6 +19,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 
 private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 
@@ -76,6 +78,18 @@ fun nyDagpengerVilkårsvurdering(
     return DagpengerVilkårsvurdering(
         vurderingsperiode = vurderingsperiode,
         ytelser = ytelser,
+    )
+}
+
+fun nyTiltakspengerVilkårsvurdering(
+    vurderingsperiode: Periode = defaultPeriode,
+    ytelser: List<YtelseSak> = emptyList(),
+): TiltakspengerVilkårsvurderingKategori {
+    return TiltakspengerVilkårsvurderingKategori(
+        tiltakspengerVilkårsvurdering = TiltakspengerVilkårsvurdering(
+            ytelser = ytelser,
+            vurderingsperiode = vurderingsperiode
+        )
     )
 }
 
@@ -146,8 +160,12 @@ fun nyVilkårsvurdering(
     institusjonsoppholdVilkårsvurdering: InstitusjonVilkårsvurderingKategori = nyInstitusjonsVilkårsvurdering(
         vurderingsperiode = vurderingsperiode,
     ),
+    tiltakspengerVilkårsvurdering: TiltakspengerVilkårsvurderingKategori = nyTiltakspengerVilkårsvurdering(
+        vurderingsperiode = vurderingsperiode
+    )
 ): Inngangsvilkårsvurderinger {
     return Inngangsvilkårsvurderinger(
+        tiltakspengerYtelser = tiltakspengerVilkårsvurdering,
         statligeYtelser = statligeYtelserVilkårsvurderingKategori,
         kommunaleYtelser = kommunaleYtelserVilkårsvurderingKategori,
         pensjonsordninger = pensjonsinntektVilkårsvurdering,
