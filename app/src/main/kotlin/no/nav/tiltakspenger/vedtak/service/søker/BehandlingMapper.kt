@@ -52,7 +52,8 @@ class BehandlingMapper {
     fun mapInnsendingMedSøknad(innsending: Innsending): BehandlingDTO? {
         val søknaden = innsending.søknad ?: return null
         return søknaden.let { søknad ->
-            val vurderingsperiode = Periode(søknad.tiltak.startdato, søknad.tiltak.sluttdato ?: LocalDate.MAX)
+            val vurderingsperiode =
+                Periode(søknad.tiltak?.startdato ?: LocalDate.MIN, søknad.tiltak?.sluttdato ?: LocalDate.MAX)
             val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
 
             BehandlingDTO(
@@ -60,14 +61,16 @@ class BehandlingMapper {
                     id = søknad.id.toString(),
                     søknadId = søknad.søknadId,
                     søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
-                    arrangoernavn = søknad.tiltak.arrangoernavn,
-                    tiltakskode = søknad.tiltak.tiltakskode?.navn ?: "Annet",
+                    arrangoernavn = søknad.tiltak?.arrangoernavn,
+                    tiltakskode = if (søknad.tiltak == null) "Ukjent" else (søknad.tiltak as Tiltak).tiltakskode?.navn
+                        ?: "Annet",
                     beskrivelse = when (søknad.tiltak) {
                         is Tiltak.ArenaTiltak -> null
                         is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+                        else -> null
                     },
-                    startdato = søknad.tiltak.startdato,
-                    sluttdato = søknad.tiltak.sluttdato,
+                    startdato = søknad.tiltak?.startdato,
+                    sluttdato = søknad.tiltak?.sluttdato,
                     antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
                         (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
                     } else null,

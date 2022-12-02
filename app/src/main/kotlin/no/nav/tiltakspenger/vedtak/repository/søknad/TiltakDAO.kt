@@ -26,13 +26,14 @@ internal class TiltakDAO {
         )
     }
 
-    fun lagre(søknadId: SøknadId, tiltak: Tiltak, txSession: TransactionalSession) {
+    fun lagre(søknadId: SøknadId, tiltak: Tiltak?, txSession: TransactionalSession) {
         slettArenatiltak(søknadId, txSession)
         slettBrukertiltak(søknadId, txSession)
 
         when (tiltak) {
             is Tiltak.ArenaTiltak -> lagreArenatiltak(søknadId, tiltak, txSession)
             is Tiltak.BrukerregistrertTiltak -> lagreBrukertiltak(søknadId, tiltak, txSession)
+            else -> {}
         }
     }
 

@@ -68,8 +68,8 @@ class Innsending private constructor(
         val søknadsdato: LocalDate = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate()
         val treMånederFørSøknadsdato: LocalDate = søknadsdato.minus(3, MONTHS)
 
-        val søknadFom: LocalDate = søknad.tiltak.startdato
-        val søknadTom: LocalDate? = søknad.tiltak.sluttdato
+        val søknadFom: LocalDate = søknad.tiltak?.startdato ?: LocalDate.EPOCH
+        val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
 
         val tiltakFom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.fom
         val tiltakTom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.tom

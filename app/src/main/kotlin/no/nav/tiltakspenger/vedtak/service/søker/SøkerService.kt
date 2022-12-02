@@ -89,7 +89,7 @@ data class SøknadDTO(
     val arrangoernavn: String?,
     val tiltakskode: String?,
     val beskrivelse: String?,
-    val startdato: LocalDate,
+    val startdato: LocalDate?,
     val sluttdato: LocalDate?,
     val antallDager: Int?,
     val fritekst: String?,
