@@ -1,11 +1,11 @@
 ## Hva skjedde?
 
-Tiltakspenger-vedtak var nede i 2,5 timer etter at det kom inn en søknad der hverken ArenaTiltak eller
+tiltakspenger-vedtak var nede i 2,5 timer etter at det kom inn en søknad der hverken ArenaTiltak eller
 BrukerregistrertTiltak var satt
 
 ## Hvilken effekt hadde det?
 
-tiltakspenger-saksbehandler var utilgjengelig i dette tidsrommet og at innkomne søknader midlertidig ikke ble behandlet
+tiltakspenger-saksbehandler var utilgjengelig i dette tidsrommet og innkomne søknader ble midlertidig ikke håndtert
 
 ## Hvordan oppdaget vi feilen
 
