@@ -38,7 +38,8 @@ fun main() {
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
-                søkerService = søkerService
+                søkerService = søkerService,
+                innsendingMediator = null // hva skal vi skrive her?
             )
         )
         .build()
