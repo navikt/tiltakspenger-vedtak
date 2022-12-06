@@ -13,7 +13,7 @@ import org.slf4j.MDC
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class InnsendingMediator(
+class InnsendingMediator(
     private val innsendingRepository: InnsendingRepository,
     private val observatører: List<InnsendingObserver> = emptyList(),
     rapidsConnection: RapidsConnection
