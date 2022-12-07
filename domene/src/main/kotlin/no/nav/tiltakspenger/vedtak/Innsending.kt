@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit.MONTHS
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -65,9 +64,6 @@ class Innsending private constructor(
 
         fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
 
-        val søknadsdato: LocalDate = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate()
-        val treMånederFørSøknadsdato: LocalDate = søknadsdato.minus(3, MONTHS)
-
         val søknadFom: LocalDate = søknad.tiltak?.startdato ?: LocalDate.EPOCH
         val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
 
@@ -76,23 +72,26 @@ class Innsending private constructor(
 
         val tidligsteFom: LocalDate = tidligsteDato(søknadFom, tiltakFom)
 
-        val tidligsteFomJustertForLovligTilbakedatering: LocalDate = senesteDato(tidligsteFom, treMånederFørSøknadsdato)
         val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
-        return Pair(tidligsteFomJustertForLovligTilbakedatering, senesteTom)
+        return Pair(tidligsteFom, senesteTom)
     }
 
     fun oppdaterSistEndret(sistEndret: LocalDateTime) {
         this.sistEndret = sistEndret
     }
 
-    fun vurderingsperiodeForSøknad(søknad: Søknad): Periode? {
-        val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
-        return senesteTom?.let { Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom) }
+    fun vurderingsperiodeForSøknad(): Periode? {
+        return this.søknad?.let {
+            val (tidligsteFom: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(it)
+            senesteTom?.let { Periode(tidligsteFom, senesteTom) }
+        }
     }
 
-    fun innsamlingsperiodeForSøknad(søknad: Søknad): Periode {
-        val (tidligsteFomJustertForLovligTilbakedatering: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(søknad)
-        return Periode(tidligsteFomJustertForLovligTilbakedatering, senesteTom ?: LocalDate.MAX)
+    fun filtreringsperiode(): Periode {
+        return søknad?.let {
+            val (tidligsteFom: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(it)
+            Periode(tidligsteFom, senesteTom ?: LocalDate.MAX)
+        } ?: Periode(LocalDate.MIN, LocalDate.MAX)
     }
 
     constructor(
@@ -338,8 +337,12 @@ class Innsending private constructor(
                     arenaTiltakMottattHendelse
                         .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
                     innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.filter {
-                        (it.deltakelsePeriode.tom ?: LocalDate.MAX) >
-                                (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+                        innsending.filtreringsperiode().overlapperMed(
+                            Periode(
+                                it.deltakelsePeriode.fom ?: LocalDate.MIN,
+                                it.deltakelsePeriode.tom ?: LocalDate.MAX
+                            )
+                        )
                     }.also {
                         val antall = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.size - innsending.tiltak.size
                         LOG.info { "Filtrerte bort $antall gamle tiltak" }
@@ -360,8 +363,12 @@ class Innsending private constructor(
         override fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
             ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
             innsending.ytelser = ytelserMottattHendelse.ytelseSak().filter {
-                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX) >
-                        (innsending.søknad?.tiltak?.startdato ?: LocalDate.MIN)
+                innsending.filtreringsperiode().overlapperMed(
+                    Periode(
+                        it.fomGyldighetsperiode.toLocalDate(),
+                        it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX
+                    )
+                )
             }.also {
                 val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
                 LOG.info { "Filtrerte bort $antall gamle ytelser" }
