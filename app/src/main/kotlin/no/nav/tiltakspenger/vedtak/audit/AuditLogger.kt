@@ -5,6 +5,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.callid.*
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.lang.String.join
 import java.util.*
@@ -205,4 +206,22 @@ internal suspend fun ApplicationCall.auditHvisInnlogget(
             ),
         )
     }
+}
+
+internal suspend fun audit(
+    saksbehandler: Saksbehandler,
+    berørtBruker: String,
+    action: AuditLogEvent.Action = AuditLogEvent.Action.ACCESS,
+    behandlingId: UUID? = null,
+    callId: String? = null,
+) {
+    AuditLogger.log(
+        AuditLogEvent(
+            navIdent = saksbehandler.navIdent,
+            berørtBrukerId = berørtBruker,
+            action = action,
+            behandlingId = behandlingId,
+            callId = callId,
+        ),
+    )
 }

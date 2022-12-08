@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -13,6 +14,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit.MONTHS
+import java.util.concurrent.atomic.AtomicBoolean
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
@@ -29,18 +32,41 @@ class Innsending private constructor(
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
-    val aktivitetslogg: Aktivitetslogg
+    aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
+    private val dirtyChecker: DirtyChecker = DirtyChecker()
+
+    val aktivitetslogg: IAktivitetslogg =
+        DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyChecker.get("aktivitetslogg"))
+
+    fun isDirty() = dirtyChecker.isDirty()
+
     var tilstand: Tilstand = tilstand
-        private set
+        private set(value) {
+            field = value
+            dirtyChecker.set("tilstand")
+        }
+
     var søknad: Søknad? = søknad
-        private set
+        private set(value) {
+            field = value
+            dirtyChecker.set("søknad")
+        }
     var personopplysninger: List<Personopplysninger> = personopplysninger
-        private set
+        private set(value) {
+            field = value
+            dirtyChecker.set("personopplysninger")
+        }
     var tiltak: List<Tiltaksaktivitet> = tiltak
-        private set
+        private set(value) {
+            field = value
+            dirtyChecker.set("tiltak")
+        }
     var ytelser: List<YtelseSak> = ytelser
-        private set
+        private set(value) {
+            field = value
+            dirtyChecker.set("ytelser")
+        }
     var sistEndret: LocalDateTime? = sistEndret
         private set
 
@@ -554,4 +580,12 @@ class Innsending private constructor(
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene
+
+    class DirtyChecker {
+        val properties: MutableMap<String, AtomicBoolean> = mutableMapOf()
+
+        fun get(name: String): AtomicBoolean = properties.getOrPut(name) { AtomicBoolean(false) }
+        fun set(name: String) = get(name).set(true)
+        fun isDirty(): Boolean = properties.any { it.value.get() }
+    }
 }

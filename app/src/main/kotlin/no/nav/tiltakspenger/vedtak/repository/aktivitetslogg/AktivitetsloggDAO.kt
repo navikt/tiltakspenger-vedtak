@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.IAktivitetslogg
 import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.objectMapper
@@ -94,9 +95,9 @@ class AktivitetsloggDAO {
     @Language("SQL")
     private val hentAktivitetslogger = "select * from aktivitet where innsending_id = ?"
 
-    fun lagre(innsendingId: InnsendingId, aktivitetslogg: Aktivitetslogg, txSession: TransactionalSession) {
+    fun lagre(innsendingId: InnsendingId, aktivitetslogg: IAktivitetslogg, txSession: TransactionalSession) {
         slettAktiviteter(innsendingId, txSession)
-        aktivitetslogg.aktiviteter.forEach { aktivitet ->
+        aktivitetslogg.aktiviteter().forEach { aktivitet ->
             txSession.run(
                 queryOf(
                     lagreAktivitetslogg, mapOf(
