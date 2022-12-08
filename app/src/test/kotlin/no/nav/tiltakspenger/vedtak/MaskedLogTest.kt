@@ -7,7 +7,7 @@ class MaskedLogTest {
 
     @Test
     fun manuellTest() {
-        System.setProperty("logback.configurationFile", "egenLogback.xml")
+        System.setProperty("logback.configurationFile", "logback.xml")
         val LOG = KotlinLogging.logger {}
         LOG.info("12345678901")
         LOG.info("1234567890123")

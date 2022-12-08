@@ -63,7 +63,7 @@ class SøknadDTO(
                 opprettet = dto.opprettet,
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
-                tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak)!!,
+                tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
                 trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
                 fritekst = dto.fritekst,
                 vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),

@@ -11,8 +11,8 @@ import org.intellij.lang.annotations.Language
 
 internal class TiltakDAO {
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): Tiltak =
-        hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)!!
+    fun hent(søknadId: SøknadId, txSession: TransactionalSession): Tiltak? =
+        hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)
 
     private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.ArenaTiltak? {
         return txSession.run(
@@ -26,13 +26,14 @@ internal class TiltakDAO {
         )
     }
 
-    fun lagre(søknadId: SøknadId, tiltak: Tiltak, txSession: TransactionalSession) {
+    fun lagre(søknadId: SøknadId, tiltak: Tiltak?, txSession: TransactionalSession) {
         slettArenatiltak(søknadId, txSession)
         slettBrukertiltak(søknadId, txSession)
 
         when (tiltak) {
             is Tiltak.ArenaTiltak -> lagreArenatiltak(søknadId, tiltak, txSession)
             is Tiltak.BrukerregistrertTiltak -> lagreBrukertiltak(søknadId, tiltak, txSession)
+            else -> {}
         }
     }
 

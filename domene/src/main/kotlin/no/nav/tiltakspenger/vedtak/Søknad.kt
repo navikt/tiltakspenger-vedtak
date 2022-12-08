@@ -22,7 +22,7 @@ data class Søknad(
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
     val tidsstempelHosOss: LocalDateTime,
-    val tiltak: Tiltak,
+    val tiltak: Tiltak?,
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
     val vedlegg: List<Vedlegg>

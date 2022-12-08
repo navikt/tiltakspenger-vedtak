@@ -51,3 +51,6 @@ spec:
         - application: tiltakspenger-saksbehandler
           namespace: tpts
           cluster: {{ cluster }}
+        - application: tiltakspenger-vedtak-rivers
+          namespace: tpts
+          cluster: {{ cluster }}

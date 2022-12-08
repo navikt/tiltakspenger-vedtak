@@ -65,7 +65,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
     private fun detaljerForManuellVurdering(sak: YtelseSak): String =
         if (sak.ytelsestype == YtelseSak.YtelseSakYtelsetype.DAGP) {
             when {
-                sak.antallUkerIgjen != null && sak.antallDagerIgjen != null -> "${sak.antallUkerIgjen} uker og ${sak.antallDagerIgjen} dager igjen"
+                sak.antallUkerIgjen != null && sak.antallDagerIgjen != null -> "${sak.antallUkerIgjen} uker (${sak.antallDagerIgjen} dager) igjen"
                 sak.antallUkerIgjen != null && sak.antallDagerIgjen == null -> "${sak.antallUkerIgjen} uker igjen"
                 sak.antallUkerIgjen == null && sak.antallDagerIgjen != null -> "${sak.antallDagerIgjen} dager igjen"
                 else -> "Ukjent antall uker igjen"
