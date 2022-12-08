@@ -226,6 +226,7 @@ class Innsending private constructor(
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(arenaTiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
         if (erFerdigBehandlet()) {
+            LOG.info("${arenaTiltakMottattHendelse.journalpostId()} er allerede ferdig behandlet")
             arenaTiltakMottattHendelse.error("journalpostId ${arenaTiltakMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }

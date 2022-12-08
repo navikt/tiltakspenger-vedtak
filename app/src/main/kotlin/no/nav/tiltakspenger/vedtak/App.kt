@@ -26,58 +26,74 @@ fun main() {
         securelog.error(e) { e.message }
     }
 
-
-    val innsendingRepository = InnsendingRepositoryBuilder.build()
-    val søkerRepository = SøkerRepository()
-    val søkerService = SøkerServiceImpl(søkerRepository, innsendingRepository)
-
-    RapidApplication.Builder(
-        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
-    )
-        .withKtorModule(
-            vedtakApi(
-                config = Configuration.TokenVerificationConfig(),
-                innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
-                søkerService = søkerService
-            )
-        )
-        .build()
-        .also {
-            val innsendingMediator = InnsendingMediator(
-                innsendingRepository = innsendingRepository,
-                rapidsConnection = it,
-                observatører = listOf()
-            )
-            val søkerMediator = SøkerMediator(
-                søkerRepository = søkerRepository,
-                rapidsConnection = it,
-            )
-            SøknadMottattRiver(
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                rapidsConnection = it
-            )
-            PersonopplysningerMottattRiver(
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                rapidsConnection = it
-            )
-            SkjermingMottattRiver(
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                rapidsConnection = it
-            )
-            ArenaTiltakMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
-            ArenaYtelserMottattRiver(innsendingMediator = innsendingMediator, rapidsConnection = it)
-            it.register(
-                object : RapidsConnection.StatusListener {
-                    override fun onStartup(rapidsConnection: RapidsConnection) {
-                        log.info("Skal kjøre flyway migrering")
-                        flywayMigrate()
-                        log.info("Har kjørt flyway migrering")
-                    }
-                }
-            )
-        }.start()
-    log.info { "nå er vi i gang" }
+    val applicationBuilder = ApplicationBuilder(System.getenv())
+    applicationBuilder.start()
 }
+
+
+//    val innsendingRepository = InnsendingRepositoryBuilder.build()
+//    val søkerRepository = SøkerRepository()
+//    val søkerService = SøkerServiceImpl(søkerRepository, innsendingRepository)
+//
+//    val rapidsConnection: RapidsConnection = RapidApplication.Builder(
+//        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
+//    )
+//        .withKtorModule {
+//            vedtakApi(
+//                config = Configuration.TokenVerificationConfig(),
+//                innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
+//                søkerService = søkerService,
+//                innsendingMediator = innsendingMediator // hva skal vi skrive her?
+//            )
+//        }
+//        .build()
+//
+//    val innsendingMediator = InnsendingMediator(
+//        innsendingRepository = innsendingRepository,
+//        rapidsConnection = rapidsConnection,
+//        observatører = listOf()
+//    )
+//    val søkerMediator = SøkerMediator(
+//        søkerRepository = søkerRepository,
+//        rapidsConnection = rapidsConnection,
+//    )
+//    log.info { "nå er vi i gang" }
+//}
+//
+//
+//
+//.also {
+//
+//    SøknadMottattRiver(
+//        innsendingMediator = innsendingMediator,
+//        søkerMediator = søkerMediator,
+//        rapidsConnection = it,
+//    )
+//    PersonopplysningerMottattRiver(
+//        innsendingMediator = innsendingMediator,
+//        søkerMediator = søkerMediator,
+//        rapidsConnection = it,
+//    )
+//    SkjermingMottattRiver(
+//        innsendingMediator = innsendingMediator,
+//        søkerMediator = søkerMediator,
+//        rapidsConnection = it,
+//    )
+//    ArenaTiltakMottattRiver(
+//        innsendingMediator = innsendingMediator,
+//        rapidsConnection = it,
+//    )
+//    ArenaYtelserMottattRiver(
+//        innsendingMediator = innsendingMediator,
+//        rapidsConnection = it,
+//    )
+//    it.register(
+//        object : RapidsConnection.StatusListener {
+//            override fun onStartup(rapidsConnection: RapidsConnection) {
+//                log.info("Skal kjøre flyway migrering")
+//                flywayMigrate()
+//                log.info("Har kjørt flyway migrering")
+//            }
+//        }
+//    )
+//}.start()
