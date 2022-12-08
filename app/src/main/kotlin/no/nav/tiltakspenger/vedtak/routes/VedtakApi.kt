@@ -32,39 +32,35 @@ import java.util.*
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal fun vedtakApi(
+internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     søkerService: SøkerService,
     innsendingMediator: InnsendingMediator
-): Application.() -> Unit {
-    return {
-        install(CallId)
-        install(CallLogging) {
-            callIdMdc("call-id")
-            disableDefaultColors()
-            filter { call ->
-                !call.request.path().startsWith("/isalive") &&
-                        !call.request.path().startsWith("/isready") &&
-                        !call.request.path().startsWith("/metrics")
-            }
+) {
+    install(CallId)
+    install(CallLogging) {
+        callIdMdc("call-id")
+        disableDefaultColors()
+        filter { call ->
+            !call.request.path().startsWith("/isalive") &&
+                    !call.request.path().startsWith("/isready") &&
+                    !call.request.path().startsWith("/metrics")
         }
-        jacksonSerialization()
-        auth(config)
-        routing {
-            authenticate("saksbehandling") {
-                søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
-                saksbehandlerRoutes(innloggetSaksbehandlerProvider)
-            }
-            authenticate {
-                tiltakRoutes(innsendingMediator)
-            }
-            naisRoutes()
-            static("/") {
-                staticBasePackage = "static"
-                resource("index.html")
-                defaultResource("index.html")
-            }
+    }
+    jacksonSerialization()
+    auth(config)
+    routing {
+        authenticate("saksbehandling") {
+            søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
+            saksbehandlerRoutes(innloggetSaksbehandlerProvider)
+        }
+        tiltakRoutes(innsendingMediator)
+        naisRoutes()
+        static("/") {
+            staticBasePackage = "static"
+            resource("index.html")
+            defaultResource("index.html")
         }
     }
 }

@@ -4,6 +4,7 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -19,9 +20,12 @@ data class ArenaTiltakMottattDTO(
     val feil: String?
 )
 
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
     post("/rivers/tiltak") {
+        LOG.info { "Vi har mottatt tiltak fra river" }
         val arenaTiltak = call.receive<ArenaTiltakMottattDTO>()
 
         val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
@@ -35,6 +39,7 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
             )
         )
 
+        SECURELOG.info {" Mottatt tiltak og laget hendelse : $arenaTiltakMottattHendelse" }
         innsendingMediator.håndter(arenaTiltakMottattHendelse)
     }
 }
