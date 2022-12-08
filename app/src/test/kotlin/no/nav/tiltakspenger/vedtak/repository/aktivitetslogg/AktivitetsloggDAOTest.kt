@@ -84,7 +84,7 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        hentetAktivitetslogg.aktiviteter shouldContainExactly aktivitetslogg.aktiviteter
+        hentetAktivitetslogg.aktiviteter() shouldContainExactly aktivitetslogg.aktiviteter()
     }
 
     @Test
@@ -130,7 +130,7 @@ internal class AktivitetsloggDAOTest {
             }
         }
 
-        hentetAktivitetslogg2.aktiviteter shouldContainExactly hentetAktivitetslogg.aktiviteter
+        hentetAktivitetslogg2.aktiviteter() shouldContainExactly hentetAktivitetslogg.aktiviteter()
     }
 
     @Test

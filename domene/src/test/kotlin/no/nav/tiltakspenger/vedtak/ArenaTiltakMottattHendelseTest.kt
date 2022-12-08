@@ -20,8 +20,9 @@ class ArenaTiltakMottattHendelseTest {
                 feil = ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet,
             )
         )
-        innsending.aktivitetslogg.aktiviteter.forEach { println(it.melding) }
-        innsending.aktivitetslogg.aktiviteter.filter { it.melding == "Fant ikke person i arenetiltak" }.size shouldBe 1
+        innsending.aktivitetslogg.aktiviteter().forEach { println(it.melding) }
+        innsending.aktivitetslogg.aktiviteter()
+            .filter { it.melding == "Fant ikke person i arenetiltak" }.size shouldBe 1
         innsending.tilstand shouldBe Innsending.FaktainnhentingFeilet
     }
 }

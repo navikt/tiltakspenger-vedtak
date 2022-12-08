@@ -70,7 +70,7 @@ internal class ArenaTiltakMottattRiverTest {
         val arenaTiltakMottattHendelse =
             javaClass.getResource("/arenaTiltakMottattHendelse.json")?.readText(Charsets.UTF_8)!!
         testRapid.sendTestMessage(arenaTiltakMottattHendelse)
-        assertEquals(6, innsending.tiltak.size)
+        assertEquals(5, innsending.tiltak.size)
     }
 
     @Test

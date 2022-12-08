@@ -210,7 +210,7 @@ class BehandlingMapper {
             utfall = vurdering.utfall.mapToUtfallDTO()
         )
 
-    private fun mapBarn(innsending: Innsending) = listOf<BarnDTO>()
+//    private fun mapBarn(innsending: Innsending) = listOf<BarnDTO>()
     /*
     søker.personopplysningerBarnMedIdent().map {
         BarnDTO(
