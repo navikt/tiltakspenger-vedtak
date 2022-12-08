@@ -14,9 +14,8 @@ import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit.MONTHS
-import java.util.concurrent.atomic.AtomicBoolean
 import java.time.LocalDateTime
+import java.util.concurrent.atomic.AtomicBoolean
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -353,6 +352,25 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
+
+            fun earliest(fom: LocalDate?, tom: LocalDate?) =
+                when {
+                    fom != null && tom != null -> if (tom.isBefore(fom)) {
+                        LOG.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
+                        tom
+                    } else {
+                        fom
+                    }
+                    else -> fom ?: LocalDate.MIN
+                }
+
+
+            fun latest(fom: LocalDate?, tom: LocalDate?) =
+                when {
+                    fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
+                    else -> tom ?: LocalDate.MAX
+                }
+
             when (arenaTiltakMottattHendelse.feilmelding()) {
                 ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet -> {
                     arenaTiltakMottattHendelse.error("Fant ikke person i arenetiltak")
@@ -363,12 +381,15 @@ class Innsending private constructor(
                     arenaTiltakMottattHendelse
                         .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
                     innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.filter {
-                        innsending.filtreringsperiode().overlapperMed(
-                            Periode(
-                                it.deltakelsePeriode.fom ?: LocalDate.MIN,
-                                it.deltakelsePeriode.tom ?: LocalDate.MAX
-                            )
+                        LOG.info { "filtreringsperiode : ${innsending.filtreringsperiode()}" }
+                        LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
+                        LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
+                        val periode = Periode(
+                            earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
+                            latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom)
                         )
+                        LOG.info { "periode : $periode" }
+                        innsending.filtreringsperiode().overlapperMed(periode)
                     }.also {
                         val antall = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.size - innsending.tiltak.size
                         LOG.info { "Filtrerte bort $antall gamle tiltak" }
