@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
+import io.ktor.http.*
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
+import io.ktor.server.response.*
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
@@ -22,9 +24,10 @@ data class ArenaTiltakMottattDTO(
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
+val tiltakpath = "/rivers/tiltak"
 
 fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
-    post("/rivers/tiltak") {
+    post("$tiltakpath") {
         LOG.info { "Vi har mottatt tiltak fra river" }
         val arenaTiltak = call.receive<ArenaTiltakMottattDTO>()
 
@@ -41,6 +44,7 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
 
         SECURELOG.info {" Mottatt tiltak og laget hendelse : $arenaTiltakMottattHendelse" }
         innsendingMediator.håndter(arenaTiltakMottattHendelse)
+        call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }
 
