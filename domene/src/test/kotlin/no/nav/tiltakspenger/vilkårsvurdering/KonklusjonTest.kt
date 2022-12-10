@@ -85,6 +85,60 @@ internal class KonklusjonTest {
     }
 
     @Test
+    fun `Teste manuelle periode som ikke overlapper`() {
+        val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 30))
+        val vilkår: List<Vilkår> = listOf(Vilkår.DAGPENGER, Vilkår.AAP)
+
+        vilkår
+            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
+            .plus(
+                Vurdering(
+                    Vilkår.GJENLEVENDEPENSJON,
+                    "",
+                    LocalDate.of(2022, 1, 1),
+                    LocalDate.of(2022, 1, 7),
+                    Utfall.KREVER_MANUELL_VURDERING,
+                    ""
+                )
+            ).plus(
+                Vurdering(
+                    Vilkår.LØNNSINNTEKT,
+                    "",
+                    LocalDate.of(2022, 1, 5),
+                    LocalDate.of(2022, 1, 9),
+                    Utfall.KREVER_MANUELL_VURDERING,
+                    ""
+                )
+            )
+            .plus(
+                Vurdering(
+                    Vilkår.SYKEPENGER,
+                    "",
+                    LocalDate.of(2022, 1, 12),
+                    LocalDate.of(2022, 1, 15),
+                    Utfall.KREVER_MANUELL_VURDERING,
+                    ""
+                )
+            )
+            .konklusjonFor(vurderingsperiode)
+            .shouldBe(
+                Konklusjon.KreverManuellBehandling(
+                    mapOf(
+
+                        Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 9)) to setOf(
+                            Vilkår.GJENLEVENDEPENSJON,
+                            Vilkår.LØNNSINNTEKT
+                        ),
+                        Periode(LocalDate.of(2022, 1, 12), LocalDate.of(2022, 1, 15)) to setOf(
+                            Vilkår.SYKEPENGER
+                        )
+
+                    )
+                )
+            )
+    }
+
+    @Test
     fun `Skal få ikke-oppfylt når minst en vurdering ikke er oppfylt for hele perioden`() {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
         val vilkår: List<Vilkår> = listOf(
