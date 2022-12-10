@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 
 //TODO: Needs more work
-private class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
+class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
     override fun next(value: LocalDate): LocalDate {
         return value.plusDays(1)
     }

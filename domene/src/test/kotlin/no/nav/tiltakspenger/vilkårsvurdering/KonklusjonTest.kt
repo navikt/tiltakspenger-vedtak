@@ -27,6 +27,56 @@ internal class KonklusjonTest {
             .shouldBe(Konklusjon.Oppfylt(vurderingsperiode to vilkår.toSet()))
     }
 
+//    @Test
+//    fun `Teste range av ikke godkjente`() {
+//        val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
+//        val vilkår: List<Vilkår> = listOf(
+//            Vilkår.DAGPENGER,
+//            Vilkår.AAP,
+//            Vilkår.ALDERSPENSJON,
+//            Vilkår.FORELDREPENGER,
+//            Vilkår.OMSORGSPENGER,
+//            Vilkår.SYKEPENGER,
+//            Vilkår.KVP,
+//            Vilkår.INTROPROGRAMMET
+//        )
+//
+//        vilkår
+//            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
+//            .plus(
+//                Vurdering(
+//                    Vilkår.GJENLEVENDEPENSJON,
+//                    "",
+//                    LocalDate.of(2022, 2, 1),
+//                    LocalDate.of(2022, 2, 28),
+//                    Utfall.IKKE_OPPFYLT,
+//                    ""
+//                )
+//            ).
+//            plus(
+//                Vurdering(
+//                    Vilkår.GJENLEVENDEPENSJON,
+//                    "",
+//                    LocalDate.of(2022, 4, 1),
+//                    LocalDate.of(2022, 4, 30),
+//                    Utfall.IKKE_OPPFYLT,
+//                    ""
+//                )
+//            )
+//            .plus(
+//                Vurdering(
+//                    Vilkår.GJENLEVENDEPENSJON,
+//                    "",
+//                    LocalDate.of(2022, 2, 15),
+//                    LocalDate.of(2022, 4, 15),
+//                    Utfall.IKKE_OPPFYLT,
+//                    ""
+//                )
+//            )
+//            .konklusjonFor(vurderingsperiode)
+//            .shouldBe(Konklusjon.Oppfylt(vurderingsperiode to vilkår.toSet()))
+//    }
+
     @Test
     fun `Skal få ikke-oppfylt når minst en vurdering ikke er oppfylt for hele perioden`() {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
@@ -48,6 +98,46 @@ internal class KonklusjonTest {
                     Vilkår.GJENLEVENDEPENSJON,
                     "",
                     vurderingsperiode.fra,
+                    vurderingsperiode.til,
+                    Utfall.IKKE_OPPFYLT,
+                    ""
+                )
+            )
+            .konklusjonFor(vurderingsperiode)
+            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(Vilkår.GJENLEVENDEPENSJON)))
+    }
+
+    @Test
+    fun `Skal få ikke-oppfylt når to vurdering som tilsammen ikke er oppfylt for hele perioden`() {
+        val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
+        val vilkår: List<Vilkår> = listOf(
+            Vilkår.DAGPENGER,
+            Vilkår.AAP,
+            Vilkår.ALDERSPENSJON,
+            Vilkår.FORELDREPENGER,
+            Vilkår.OMSORGSPENGER,
+            Vilkår.SYKEPENGER,
+            Vilkår.KVP,
+            Vilkår.INTROPROGRAMMET
+        )
+
+        vilkår
+            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
+            .plus(
+                Vurdering(
+                    Vilkår.GJENLEVENDEPENSJON,
+                    "",
+                    vurderingsperiode.fra,
+                    LocalDate.of(2022,1,10),
+                    Utfall.IKKE_OPPFYLT,
+                    ""
+                )
+            )
+            .plus(
+                Vurdering(
+                    Vilkår.GJENLEVENDEPENSJON,
+                    "",
+                    LocalDate.of(2022,1,11),
                     vurderingsperiode.til,
                     Utfall.IKKE_OPPFYLT,
                     ""
