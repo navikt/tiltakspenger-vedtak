@@ -41,6 +41,9 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
         .filter { it.overlapperMed(vurderingsperiode) }
         .mapNotNull { it.overlappendePeriode(vurderingsperiode) }
 
+    // Vi returnerer kun manuelle vurderinger hvis de finnes, selv om de ikke dekker hele vurderingsperioden.
+    // Resonnementet er at de er det eneste som er relevant, man kan ikke fatte et vedtak for deler av perioden
+    // så lenge det er noe som fremdeles må avklares
     if (manuellePerioderIVurderingsperioden.isNotEmpty()) {
         // Selv om vi her deler det opp i flere perioder, så er det ikke nødvendigvis sånn at alle vilkårene
         // gjelder for hele perioden her heller
