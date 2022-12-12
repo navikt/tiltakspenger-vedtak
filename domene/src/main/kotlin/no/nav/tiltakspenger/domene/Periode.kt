@@ -33,7 +33,16 @@ class Periode(fra: LocalDate, til: LocalDate) {
         val domain = LocalDateDiscreteDomain()
     }
 
-    val range: Range<LocalDate> = Range.closed(fra, til).canonical(domain)
+    val range: Range<LocalDate> = lagRangeFraFraOgTil(fra, til)
+
+    private fun lagRangeFraFraOgTil(fra: LocalDate, til: LocalDate): Range<LocalDate> =
+        when {
+            fra == LocalDate.MIN && til == LocalDate.MAX -> Range.all<LocalDate>().canonical(domain)
+            fra == LocalDate.MIN && til != LocalDate.MAX -> Range.atMost(til).canonical(domain)
+            fra != LocalDate.MIN && til == LocalDate.MAX -> Range.atLeast(fra).canonical(domain)
+            else -> Range.closed(fra, til).canonical(domain)
+        }
+
     val fra: LocalDate
         get() = range.fraOgMed()
     val til: LocalDate
@@ -122,7 +131,16 @@ fun List<Periode>.trekkFra(perioder: List<Periode>): List<Periode> {
 fun Set<Range<LocalDate>>.toPerioder() = this.map { it.toPeriode() }
 fun Range<LocalDate>.toPeriode(): Periode = Periode(this.fraOgMed(), this.tilOgMed())
 fun Range<LocalDate>.fraOgMed(): LocalDate =
-    if (this.lowerBoundType() == BoundType.CLOSED) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
+    if (this.hasLowerBound()) {
+        if (this.lowerBoundType() == BoundType.CLOSED) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
+    } else {
+        LocalDate.MIN
+    }
+
 
 fun Range<LocalDate>.tilOgMed(): LocalDate =
-    if (this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
+    if (this.hasUpperBound()) {
+        if (this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
+    } else {
+        LocalDate.MAX
+    }
