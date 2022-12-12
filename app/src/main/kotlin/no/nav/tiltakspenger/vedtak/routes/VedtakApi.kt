@@ -56,7 +56,6 @@ internal fun Application.vedtakApi(
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
         }
         tiltakRoutes(innsendingMediator)
-        naisRoutes()
         static("/") {
             staticBasePackage = "static"
             resource("index.html")
