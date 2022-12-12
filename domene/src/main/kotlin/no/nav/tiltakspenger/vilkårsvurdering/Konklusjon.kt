@@ -2,10 +2,12 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.leggSammen
-import no.nav.tiltakspenger.domene.periode
 import no.nav.tiltakspenger.domene.trekkFra
+import java.time.LocalDate
 
 fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
+
+    fun Vurdering.periode() = Periode(this.fom ?: LocalDate.MIN, this.tom ?: LocalDate.MAX)
 
     val oppfylteVurderinger = this.filter { it.utfall == Utfall.OPPFYLT }
     val ikkeOppfyltVurderinger = this.filter { it.utfall == Utfall.IKKE_OPPFYLT }
@@ -58,10 +60,10 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
     val oppfyltePerioderIVurderingsperioden: List<Periode> =
         vurderingsperiode.trekkFra(ikkeOppfyltePerioderIVurderingsperioden)
-
-    //Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
+    
     val oppfylte: List<Konklusjon.Oppfylt> = oppfyltePerioderIVurderingsperioden
         .map { periode ->
+            //Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
             Konklusjon.Oppfylt(periode to oppfylteVurderinger.toSet())
         }
     val ikkeOppfylte: List<Konklusjon.IkkeOppfylt> = ikkeOppfyltePerioderIVurderingsperioden

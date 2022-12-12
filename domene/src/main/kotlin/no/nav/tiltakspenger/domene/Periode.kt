@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableRangeSet
 import com.google.common.collect.Range
 import com.google.common.collect.RangeSet
 import com.google.common.collect.TreeRangeSet
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 
@@ -112,8 +111,6 @@ class Periode(fra: LocalDate, til: LocalDate) {
         return fra.datesUntil(til.plusDays(1)).toList()
     }
 }
-
-fun Vurdering.periode() = Periode(this.fom!!, this.tom!!)
 
 fun List<Periode>.leggSammen(): List<Periode> {
     val rangeSet = TreeRangeSet.create<LocalDate>()
