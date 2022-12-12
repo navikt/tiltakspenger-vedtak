@@ -7,6 +7,8 @@ import java.time.LocalDate
 
 internal class KonklusjonTest {
 
+    private fun Vilkår.toOppfyltVurdering() = Vurdering(this, "", null, null, Utfall.OPPFYLT, "")
+
     @Test
     fun `Skal få oppfylt når alle vurderinger er oppfylt`() {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
@@ -22,61 +24,59 @@ internal class KonklusjonTest {
         )
 
         vilkår
-            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
+            .map { it.toOppfyltVurdering() }
             .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.Oppfylt(vurderingsperiode to vilkår.toSet()))
+            .shouldBe(Konklusjon.Oppfylt(vurderingsperiode to vilkår.map { it.toOppfyltVurdering() }.toSet()))
     }
 
     @Test
     fun `Teste range av ikke godkjente`() {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 30))
         val vilkår: List<Vilkår> = listOf(Vilkår.DAGPENGER, Vilkår.AAP)
-
+        val gjenlevendepensjonVurdering = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            LocalDate.of(2022, 1, 1),
+            LocalDate.of(2022, 1, 7),
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
+        val lønnsinntektVurdering = Vurdering(
+            Vilkår.LØNNSINNTEKT,
+            "",
+            LocalDate.of(2022, 1, 5),
+            LocalDate.of(2022, 1, 10),
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
+        val sykepengerVurdering = Vurdering(
+            Vilkår.SYKEPENGER,
+            "",
+            LocalDate.of(2022, 1, 9),
+            LocalDate.of(2022, 1, 15),
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
         vilkår
-            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    LocalDate.of(2022, 1, 1),
-                    LocalDate.of(2022, 1, 7),
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            ).plus(
-                Vurdering(
-                    Vilkår.LØNNSINNTEKT,
-                    "",
-                    LocalDate.of(2022, 1, 5),
-                    LocalDate.of(2022, 1, 10),
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
-            .plus(
-                Vurdering(
-                    Vilkår.SYKEPENGER,
-                    "",
-                    LocalDate.of(2022, 1, 9),
-                    LocalDate.of(2022, 1, 15),
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
+            .map { it.toOppfyltVurdering() }
+            .plus(gjenlevendepensjonVurdering)
+            .plus(lønnsinntektVurdering)
+            .plus(sykepengerVurdering)
             .konklusjonFor(vurderingsperiode)
             .shouldBe(
                 Konklusjon.DelvisOppfylt(
                     listOf(
                         Konklusjon.Oppfylt(
-                            Periode(LocalDate.of(2022, 1, 16), LocalDate.of(2022, 1, 30)) to vilkår.toSet()
+                            Periode(
+                                LocalDate.of(2022, 1, 16),
+                                LocalDate.of(2022, 1, 30)
+                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet()
                         )
                     ),
                     listOf(
                         Konklusjon.IkkeOppfylt(
                             Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 15)) to setOf(
-                                Vilkår.GJENLEVENDEPENSJON,
-                                Vilkår.LØNNSINNTEKT,
-                                Vilkår.SYKEPENGER
+                                gjenlevendepensjonVurdering, lønnsinntektVurdering, sykepengerVurdering
                             )
                         )
                     )
@@ -89,48 +89,45 @@ internal class KonklusjonTest {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 30))
         val vilkår: List<Vilkår> = listOf(Vilkår.DAGPENGER, Vilkår.AAP)
 
+        val gjenlevendeVurdering = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            LocalDate.of(2022, 1, 1),
+            LocalDate.of(2022, 1, 7),
+            Utfall.KREVER_MANUELL_VURDERING,
+            ""
+        )
+        val lønnsinntektVurdering = Vurdering(
+            Vilkår.LØNNSINNTEKT,
+            "",
+            LocalDate.of(2022, 1, 5),
+            LocalDate.of(2022, 1, 9),
+            Utfall.KREVER_MANUELL_VURDERING,
+            ""
+        )
+        val sykepengerVurdering = Vurdering(
+            Vilkår.SYKEPENGER,
+            "",
+            LocalDate.of(2022, 1, 12),
+            LocalDate.of(2022, 1, 15),
+            Utfall.KREVER_MANUELL_VURDERING,
+            ""
+        )
         vilkår
-            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    LocalDate.of(2022, 1, 1),
-                    LocalDate.of(2022, 1, 7),
-                    Utfall.KREVER_MANUELL_VURDERING,
-                    ""
-                )
-            ).plus(
-                Vurdering(
-                    Vilkår.LØNNSINNTEKT,
-                    "",
-                    LocalDate.of(2022, 1, 5),
-                    LocalDate.of(2022, 1, 9),
-                    Utfall.KREVER_MANUELL_VURDERING,
-                    ""
-                )
-            )
-            .plus(
-                Vurdering(
-                    Vilkår.SYKEPENGER,
-                    "",
-                    LocalDate.of(2022, 1, 12),
-                    LocalDate.of(2022, 1, 15),
-                    Utfall.KREVER_MANUELL_VURDERING,
-                    ""
-                )
-            )
+            .map { it.toOppfyltVurdering() }
+            .plus(gjenlevendeVurdering)
+            .plus(lønnsinntektVurdering)
+            .plus(sykepengerVurdering)
             .konklusjonFor(vurderingsperiode)
             .shouldBe(
                 Konklusjon.KreverManuellBehandling(
                     mapOf(
 
                         Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 9)) to setOf(
-                            Vilkår.GJENLEVENDEPENSJON,
-                            Vilkår.LØNNSINNTEKT
+                            gjenlevendeVurdering, lønnsinntektVurdering
                         ),
                         Periode(LocalDate.of(2022, 1, 12), LocalDate.of(2022, 1, 15)) to setOf(
-                            Vilkår.SYKEPENGER
+                            sykepengerVurdering
                         )
 
                     )
@@ -152,24 +149,23 @@ internal class KonklusjonTest {
             Vilkår.INTROPROGRAMMET
         )
 
+        val gjenlevendeVurdering = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            vurderingsperiode.fra,
+            vurderingsperiode.til,
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
         vilkår
-            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    vurderingsperiode.fra,
-                    vurderingsperiode.til,
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
+            .map { it.toOppfyltVurdering() }
+            .plus(gjenlevendeVurdering)
             .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(Vilkår.GJENLEVENDEPENSJON)))
+            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering)))
     }
 
     @Test
-    fun `Skal få ikke-oppfylt når to vurdering som tilsammen ikke er oppfylt for hele perioden`() {
+    fun `Skal få ikke-oppfylt når to vurderinger tilsammen ikke er oppfylt for hele perioden`() {
         val vurderingsperiode = Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31))
         val vilkår: List<Vilkår> = listOf(
             Vilkår.DAGPENGER,
@@ -182,30 +178,28 @@ internal class KonklusjonTest {
             Vilkår.INTROPROGRAMMET
         )
 
+        val gjenlevendeVurdering1 = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            vurderingsperiode.fra,
+            LocalDate.of(2022, 1, 10),
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
+        val gjenlevendeVurdering2 = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            LocalDate.of(2022, 1, 11),
+            vurderingsperiode.til,
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
         vilkår
-            .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    vurderingsperiode.fra,
-                    LocalDate.of(2022, 1, 10),
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    LocalDate.of(2022, 1, 11),
-                    vurderingsperiode.til,
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
+            .map { it.toOppfyltVurdering() }
+            .plus(gjenlevendeVurdering1)
+            .plus(gjenlevendeVurdering2)
             .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(Vilkår.GJENLEVENDEPENSJON)))
+            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering1, gjenlevendeVurdering2)))
     }
 
     @Test
@@ -222,18 +216,17 @@ internal class KonklusjonTest {
             Vilkår.INTROPROGRAMMET
         )
 
+        val gjenlevendeVurdering = Vurdering(
+            Vilkår.GJENLEVENDEPENSJON,
+            "",
+            LocalDate.of(2022, 1, 11),
+            vurderingsperiode.til,
+            Utfall.IKKE_OPPFYLT,
+            ""
+        )
         vilkår
             .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
-            .plus(
-                Vurdering(
-                    Vilkår.GJENLEVENDEPENSJON,
-                    "",
-                    LocalDate.of(2022, 1, 11),
-                    vurderingsperiode.til,
-                    Utfall.IKKE_OPPFYLT,
-                    ""
-                )
-            )
+            .plus(gjenlevendeVurdering)
             .konklusjonFor(vurderingsperiode)
             .shouldBe(
                 Konklusjon.DelvisOppfylt(
@@ -242,7 +235,7 @@ internal class KonklusjonTest {
                             Periode(
                                 vurderingsperiode.fra,
                                 LocalDate.of(2022, 1, 10)
-                            ) to vilkår.toSet()
+                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet()
                         )
                     ),
                     listOf(
@@ -250,7 +243,7 @@ internal class KonklusjonTest {
                             Periode(
                                 LocalDate.of(2022, 1, 11),
                                 vurderingsperiode.til
-                            ) to setOf(Vilkår.GJENLEVENDEPENSJON)
+                            ) to setOf(gjenlevendeVurdering)
                         )
                     )
                 )

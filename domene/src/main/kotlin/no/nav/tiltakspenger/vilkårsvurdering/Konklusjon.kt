@@ -13,7 +13,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
     // For at vurderingsperioden skal være oppfylt i sin helhet, så må alle vilkår være oppfylt
     if (this.all { it.utfall == Utfall.OPPFYLT }) {
-        return Konklusjon.Oppfylt(vurderingsperiode to this.map { it.vilkår }.toSet())
+        return Konklusjon.Oppfylt(vurderingsperiode to this.toSet())
     }
 
     val ikkeOppfyltePerioderIVurderingsperioden = ikkeOppfyltVurderinger
@@ -31,7 +31,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
         // Merk at dette ikke tar høyde for at det kan være ulike vilkår som gjør at ulike deler av vurderingsperioden
         // ikke er oppfylt, så detaljerte er vi ikke. Ønsker man at for en gitt periode, så skal det være homogent
         // hvilke vilkår som har slått til, så må vi dele det opp mye mer.
-        return Konklusjon.IkkeOppfylt(vurderingsperiode to ikkeOppfyltVurderinger.map { it.vilkår }.toSet())
+        return Konklusjon.IkkeOppfylt(vurderingsperiode to ikkeOppfyltVurderinger.toSet())
     }
 
     val manuellePerioderIVurderingsperioden = manuelleVurderinger
@@ -44,14 +44,13 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
     if (manuellePerioderIVurderingsperioden.isNotEmpty()) {
         // Selv om vi her deler det opp i flere perioder, så er det ikke nødvendigvis sånn at alle vilkårene
         // gjelder for hele perioden her heller
-        val vilkårPerPeriode: Map<Periode, Set<Vilkår>> = manuellePerioderIVurderingsperioden
+        val vurderingPerPeriode: Map<Periode, Set<Vurdering>> = manuellePerioderIVurderingsperioden
             .associateWith { manuellPeriode ->
                 manuelleVurderinger
                     .filter { it.periode().overlapperMed(manuellPeriode) }
-                    .map { it.vilkår }
                     .toSet()
             }
-        return Konklusjon.KreverManuellBehandling(vilkårPerPeriode)
+        return Konklusjon.KreverManuellBehandling(vurderingPerPeriode)
     }
 
     val oppfyltePerioderIVurderingsperioden: List<Periode> =
@@ -60,14 +59,13 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
     //Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
     val oppfylte: List<Konklusjon.Oppfylt> = oppfyltePerioderIVurderingsperioden
         .map { periode ->
-            Konklusjon.Oppfylt(periode to oppfylteVurderinger.map { vurdering -> vurdering.vilkår }.toSet())
+            Konklusjon.Oppfylt(periode to oppfylteVurderinger.toSet())
         }
     val ikkeOppfylte: List<Konklusjon.IkkeOppfylt> = ikkeOppfyltePerioderIVurderingsperioden
         .map { ikkeOppfyltPeriode ->
             Konklusjon.IkkeOppfylt(
                 ikkeOppfyltPeriode to ikkeOppfyltVurderinger
                     .filter { it.periode().overlapperMed(ikkeOppfyltPeriode) }
-                    .map { vurdering -> vurdering.vilkår }
                     .toSet()
             )
         }
@@ -76,11 +74,11 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
 sealed interface Konklusjon {
 
-    data class Oppfylt(val periodeMedVilkår: Pair<Periode, Set<Vilkår>>) : Konklusjon
+    data class Oppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Konklusjon
 
-    data class IkkeOppfylt(val periodeMedVilkår: Pair<Periode, Set<Vilkår>>) : Konklusjon
+    data class IkkeOppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Konklusjon
 
-    data class KreverManuellBehandling(val perioderMedVilkår: Map<Periode, Set<Vilkår>>) : Konklusjon
+    data class KreverManuellBehandling(val perioderMedVilkår: Map<Periode, Set<Vurdering>>) : Konklusjon
 
     data class DelvisOppfylt(val oppfylt: List<Oppfylt>, val ikkeOppfylt: List<IkkeOppfylt>) : Konklusjon
 }
