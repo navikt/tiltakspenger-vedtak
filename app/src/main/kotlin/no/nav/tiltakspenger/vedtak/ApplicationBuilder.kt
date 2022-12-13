@@ -68,10 +68,10 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
 //            innsendingMediator = innsendingMediator,
 //            rapidsConnection = rapidsConnection,
 //        )
-        ArenaYtelserMottattRiver(
-            innsendingMediator = innsendingMediator,
-            rapidsConnection = rapidsConnection,
-        )
+//        ArenaYtelserMottattRiver(
+//            innsendingMediator = innsendingMediator,
+//            rapidsConnection = rapidsConnection,
+//        )
     }
 
     fun start() {
