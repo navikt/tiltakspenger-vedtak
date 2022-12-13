@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
@@ -67,6 +68,7 @@ internal fun Application.vedtakApi(
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
         }
+        skjermingRoutes(innsendingMediator)
         tiltakRoutes(innsendingMediator)
         ytelseRoutes(innsendingMediator)
         personopplysningerRoutes(innsendingMediator = innsendingMediator, søkerMediator = søkerMediator)
