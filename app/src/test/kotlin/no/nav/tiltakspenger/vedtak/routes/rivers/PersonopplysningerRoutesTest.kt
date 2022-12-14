@@ -22,6 +22,7 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class PersonopplysningerRoutesTest {
     private companion object {
@@ -56,6 +57,9 @@ class PersonopplysningerRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
 
+        val personopplysningerMottattHendelse =
+            File("src/test/resources/personopplysningerMottattHendelse_ny.json").readText()
+
         testApplication {
             application {
                 //vedtakTestApi()
@@ -74,7 +78,7 @@ class PersonopplysningerRoutesTest {
                     path("$personopplysningerPath")
                 },
             ) {
-                setBody(personopplysningerBody)
+                setBody(personopplysningerMottattHendelse)
             }
                 .apply {
                     status shouldBe HttpStatusCode.OK
@@ -84,6 +88,4 @@ class PersonopplysningerRoutesTest {
             Assertions.assertEquals(0, size)
         }
     }
-
-    private val personopplysningerBody = """""".trimIndent()
 }
