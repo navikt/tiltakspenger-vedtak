@@ -59,19 +59,19 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
             søkerMediator = søkerMediator,
             rapidsConnection = rapidsConnection,
         )
-        SkjermingMottattRiver(
-            innsendingMediator = innsendingMediator,
-            søkerMediator = søkerMediator,
-            rapidsConnection = rapidsConnection,
-        )
+//        SkjermingMottattRiver(
+//            innsendingMediator = innsendingMediator,
+//            søkerMediator = søkerMediator,
+//            rapidsConnection = rapidsConnection,
+//        )
 //        ArenaTiltakMottattRiver(
 //            innsendingMediator = innsendingMediator,
 //            rapidsConnection = rapidsConnection,
 //        )
-        ArenaYtelserMottattRiver(
-            innsendingMediator = innsendingMediator,
-            rapidsConnection = rapidsConnection,
-        )
+//        ArenaYtelserMottattRiver(
+//            innsendingMediator = innsendingMediator,
+//            rapidsConnection = rapidsConnection,
+//        )
     }
 
     fun start() {
