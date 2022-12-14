@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.innsending
 
 import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 class InMemoryInnsendingRepository : InnsendingRepository {
@@ -21,6 +22,15 @@ class InMemoryInnsendingRepository : InnsendingRepository {
     override fun findByIdent(ident: String): List<Innsending> = emptyList()
 
     override fun antall(): Long = innsendinger.size.toLong()
+
+    override fun antallMedTilstandFaktainnhentingFeilet(): Long =
+        innsendinger.values.filter { it.tilstand.type == InnsendingTilstandType.FaktainnhentingFeilet }.size.toLong()
+
+    override fun antallStoppetUnderBehandling(): Long =
+        innsendinger.values.filter {
+            it.tilstand.type != InnsendingTilstandType.FaktainnhentingFeilet &&
+                    it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
+        }.size.toLong()
 
     fun reset() = innsendinger.clear()
 }

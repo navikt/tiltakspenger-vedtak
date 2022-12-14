@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
@@ -16,6 +17,7 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -59,11 +61,43 @@ internal class PostgresInnsendingRepository(
         }
     }
 
+
     override fun antall(): Long {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(antall).map { row ->
+                        row.toAntall()
+                    }.asSingle
+                )
+            }
+        }!!
+    }
+
+    override fun antallMedTilstandFaktainnhentingFeilet(): Long {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(antallMedTilstand, InnsendingTilstandType.FaktainnhentingFeilet.name).map { row ->
+                        row.toAntall()
+                    }.asSingle
+                )
+            }
+        }!!
+    }
+
+    override fun antallStoppetUnderBehandling(): Long {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        antallStoppetUnderBehandling,
+                        mapOf(
+                            "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
+                            "tilstand2" to InnsendingTilstandType.FaktainnhentingFeilet.name,
+                            "sistEndret" to LocalDateTime.now().minusDays(1),
+                        )
+                    ).map { row ->
                         row.toAntall()
                     }.asSingle
                 )
@@ -203,6 +237,13 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val antall = "select count(id) as antall from innsending"
+
+    @Language("SQL")
+    private val antallMedTilstand = "select count(id) as antall from innsending where tilstand = ?"
+
+    @Language("SQL")
+    private val antallStoppetUnderBehandling =
+        "select count(id) as antall from innsending where tilstand not in (:tilstand1, :tilstand2) and sist_endret < :sist_endret"
 
     @Language("SQL")
     private val findByIdent = "select * from innsending where ident = ?"

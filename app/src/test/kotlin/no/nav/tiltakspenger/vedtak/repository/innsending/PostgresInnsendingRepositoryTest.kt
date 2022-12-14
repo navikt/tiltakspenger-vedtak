@@ -78,6 +78,34 @@ internal class PostgresInnsendingRepositoryTest {
     }
 
     @Test
+    fun `skal telle antall innsendinger hvor faktainnhenting har feilet korrekt`() {
+
+        // Flyway legger inn 6, ingen har feilet.
+        // Dette er mao en litt slapp test,
+        // men sjekker iallefall om spørringen feiler eller ikke..
+        innsendingRepository.antallMedTilstandFaktainnhentingFeilet() shouldBe 0
+    }
+
+    @Test
+    fun `skal telle antall innsendinger hvor behandlingen ikke er ferdig`() {
+
+        // Flyway legger inn 6, alle er ferdig.
+        // Dette er mao en litt slapp test,
+        // men sjekker iallefall om spørringen feiler eller ikke..
+        innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
+
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString()
+            )
+        )
+        // sist_endret er ikke gammel nok, så denne skal heller ikke telles med
+        innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
+
+    }
+
+    @Test
     fun `lagre og hente bare innsending`() {
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()

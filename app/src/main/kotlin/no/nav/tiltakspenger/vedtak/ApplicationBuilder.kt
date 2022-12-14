@@ -6,9 +6,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
@@ -46,7 +44,9 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
     )
 
     init {
-        AppMetrikker.antallSøknaderLagret(innsendingRepository)
+        AppMetrikker.antallInnsendingerLagret(innsendingRepository)
+        AppMetrikker.antallInnsendingerFeilet(innsendingRepository)
+        AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
 
         rapidsConnection.register(this)
         SøknadMottattRiver(
