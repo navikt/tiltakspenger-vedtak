@@ -21,7 +21,9 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
+import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
@@ -55,8 +57,9 @@ internal fun Application.vedtakApi(
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
         }
+        skjermingRoutes(innsendingMediator)
         tiltakRoutes(innsendingMediator)
-        naisRoutes()
+        ytelseRoutes(innsendingMediator)
         static("/") {
             staticBasePackage = "static"
             resource("index.html")
