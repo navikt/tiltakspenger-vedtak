@@ -5,11 +5,11 @@ import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 class InMemoryInnsendingRepository : InnsendingRepository {
 
-    private val søkere = mutableMapOf<String, Innsending>()
+    private val innsendinger = mutableMapOf<String, Innsending>()
 
-    override fun hent(journalpostId: String): Innsending? = søkere[journalpostId]
+    override fun hent(journalpostId: String): Innsending? = innsendinger[journalpostId]
 
-    override fun lagre(innsending: Innsending): Innsending = with(søkere) {
+    override fun lagre(innsending: Innsending): Innsending = with(innsendinger) {
         this[innsending.journalpostId] = innsending
         return innsending
     }
@@ -20,5 +20,7 @@ class InMemoryInnsendingRepository : InnsendingRepository {
 
     override fun findByIdent(ident: String): List<Innsending> = emptyList()
 
-    fun reset() = søkere.clear()
+    override fun antall(): Long = innsendinger.size.toLong()
+
+    fun reset() = innsendinger.clear()
 }

@@ -5,7 +5,6 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
@@ -20,10 +19,10 @@ import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -38,9 +37,44 @@ internal class PostgresInnsendingRepositoryTest {
         val postgresContainer = PostgresTestcontainer
     }
 
-    @BeforeAll
+    @BeforeEach
     fun setup() {
-        flywayMigrate()
+        flywayCleanAndMigrate()
+    }
+
+    @Test
+    fun `skal telle antall innsendinger korrekt`() {
+
+        // Flyway legger inn 6
+        innsendingRepository.antall() shouldBe 6
+
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString()
+            )
+        )
+        innsendingRepository.antall() shouldBe 7
+
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString()
+            )
+        )
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString()
+            )
+        )
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString()
+            )
+        )
+        innsendingRepository.antall() shouldBe 10
     }
 
     @Test

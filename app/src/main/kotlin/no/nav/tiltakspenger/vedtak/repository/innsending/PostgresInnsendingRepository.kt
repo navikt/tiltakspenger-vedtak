@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
-import java.sql.SQLException
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -60,6 +59,18 @@ internal class PostgresInnsendingRepository(
         }
     }
 
+    override fun antall(): Long {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(antall).map { row ->
+                        row.toAntall()
+                    }.asSingle
+                )
+            }
+        }!!
+    }
+
     override fun lagre(innsending: Innsending): Innsending {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -101,6 +112,10 @@ internal class PostgresInnsendingRepository(
                     ?.let { journalpostId -> this.hentMedTxSession(journalpostId, txSession) }
             }
         }
+    }
+
+    private fun Row.toAntall(): Long {
+        return long("antall")
     }
 
     private fun Row.toInnsending(txSession: TransactionalSession): Innsending {
@@ -185,6 +200,9 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val hent = "select * from innsending where journalpost_id = ?"
+
+    @Language("SQL")
+    private val antall = "select count(id) as antall from innsending"
 
     @Language("SQL")
     private val findByIdent = "select * from innsending where ident = ?"
