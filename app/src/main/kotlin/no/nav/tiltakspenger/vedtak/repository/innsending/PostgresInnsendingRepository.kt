@@ -94,7 +94,7 @@ internal class PostgresInnsendingRepository(
                         antallStoppetUnderBehandling,
                         mapOf(
                             "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
-                            "tilstand2" to InnsendingTilstandType.FaktainnhentingFeilet.name,
+                            "tilstand2" to InnsendingTilstandType.InnsendingFerdigstilt.name,
                             "sistEndret" to LocalDateTime.now().minusDays(1),
                         )
                     ).map { row ->
