@@ -11,7 +11,7 @@ import org.slf4j.MDC
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class SøkerMediator(
+class SøkerMediator(
     private val søkerRepository: SøkerRepository,
     rapidsConnection: RapidsConnection
 ) {

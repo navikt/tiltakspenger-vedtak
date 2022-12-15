@@ -6,8 +6,6 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
@@ -28,6 +26,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 søkerService = søkerService,
                 innsendingMediator = innsendingMediator,
+                søkerMediator = søkerMediator
             )
         }
         .build()
@@ -54,11 +53,11 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
             søkerMediator = søkerMediator,
             rapidsConnection = rapidsConnection,
         )
-        PersonopplysningerMottattRiver(
-            innsendingMediator = innsendingMediator,
-            søkerMediator = søkerMediator,
-            rapidsConnection = rapidsConnection,
-        )
+//        PersonopplysningerMottattRiver(
+//            innsendingMediator = innsendingMediator,
+//            søkerMediator = søkerMediator,
+//            rapidsConnection = rapidsConnection,
+//        )
 //        SkjermingMottattRiver(
 //            innsendingMediator = innsendingMediator,
 //            søkerMediator = søkerMediator,
