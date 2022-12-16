@@ -1,11 +1,16 @@
 package no.nav.tiltakspenger.domene
 
-import com.google.common.collect.*
+import com.google.common.collect.BoundType
+import com.google.common.collect.DiscreteDomain
+import com.google.common.collect.ImmutableRangeSet
+import com.google.common.collect.Range
+import com.google.common.collect.RangeSet
+import com.google.common.collect.TreeRangeSet
 import java.time.LocalDate
 
 
 //TODO: Needs more work
-private class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
+class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
     override fun next(value: LocalDate): LocalDate {
         return value.plusDays(1)
     }
@@ -22,7 +27,21 @@ private class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
 
 
 class Periode(fra: LocalDate, til: LocalDate) {
-    val range: Range<LocalDate> = Range.closed(fra, til)
+
+    companion object {
+        val domain = LocalDateDiscreteDomain()
+    }
+
+    val range: Range<LocalDate> = lagRangeFraFraOgTil(fra, til)
+
+    private fun lagRangeFraFraOgTil(fra: LocalDate, til: LocalDate): Range<LocalDate> =
+        when {
+            fra == LocalDate.MIN && til == LocalDate.MAX -> Range.all<LocalDate>().canonical(domain)
+            fra == LocalDate.MIN && til != LocalDate.MAX -> Range.atMost(til).canonical(domain)
+            fra != LocalDate.MIN && til == LocalDate.MAX -> Range.atLeast(fra).canonical(domain)
+            else -> Range.closed(fra, til).canonical(domain)
+        }
+
     val fra: LocalDate
         get() = range.fraOgMed()
     val til: LocalDate
@@ -36,7 +55,11 @@ class Periode(fra: LocalDate, til: LocalDate) {
         false
     }
 
-    fun overlappendePeriode(periode: Periode) = this.range.intersection(periode.range).toPeriode()
+    fun overlappendePeriode(periode: Periode): Periode? = try {
+        this.range.intersection(periode.range).toPeriode()
+    } catch (e: Exception) {
+        null
+    }
 
     fun ikkeOverlappendePeriode(periode: Periode): List<Periode> {
         val rangeSet: RangeSet<LocalDate> = TreeRangeSet.create()
@@ -81,18 +104,40 @@ class Periode(fra: LocalDate, til: LocalDate) {
         val andrePeriodeRangeSet =
             ImmutableRangeSet.Builder<LocalDate>().addAll(andrePerioder.map { it.range }).build()
         val ranges = opprinneligeRangeSet.difference(andrePeriodeRangeSet).asRanges()
-        return ranges.filter { !it.canonical(LocalDateDiscreteDomain()).isEmpty }.map { it.toPeriode() }
+        return ranges.filter { !it.canonical(domain).isEmpty }.map { it.toPeriode() }
     }
 
-    fun tilDager() : List<LocalDate> {
+    fun tilDager(): List<LocalDate> {
         return fra.datesUntil(til.plusDays(1)).toList()
     }
+}
+
+fun List<Periode>.leggSammen(): List<Periode> {
+    val rangeSet = TreeRangeSet.create<LocalDate>()
+    rangeSet.addAll(this.map { it.range })
+    return rangeSet.asRanges().toPerioder()
+}
+
+fun List<Periode>.trekkFra(perioder: List<Periode>): List<Periode> {
+    val rangeSet = TreeRangeSet.create<LocalDate>()
+    rangeSet.addAll(this.map { it.range })
+    rangeSet.removeAll(perioder.map { it.range })
+    return rangeSet.asRanges().toPerioder()
 }
 
 fun Set<Range<LocalDate>>.toPerioder() = this.map { it.toPeriode() }
 fun Range<LocalDate>.toPeriode(): Periode = Periode(this.fraOgMed(), this.tilOgMed())
 fun Range<LocalDate>.fraOgMed(): LocalDate =
-    if (this.lowerBoundType() == BoundType.CLOSED) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
+    if (this.hasLowerBound()) {
+        if (this.lowerBoundType() == BoundType.CLOSED) this.lowerEndpoint() else this.lowerEndpoint().plusDays(1)
+    } else {
+        LocalDate.MIN
+    }
+
 
 fun Range<LocalDate>.tilOgMed(): LocalDate =
-    if (this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
+    if (this.hasUpperBound()) {
+        if (this.upperBoundType() == BoundType.CLOSED) this.upperEndpoint() else this.upperEndpoint().minusDays(1)
+    } else {
+        LocalDate.MAX
+    }
