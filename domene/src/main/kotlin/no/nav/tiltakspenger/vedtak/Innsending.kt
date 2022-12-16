@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.DomeneMetrikker
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -297,6 +298,12 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
+            DomeneMetrikker.søknadMottattCounter().increment()
+            søknadMottattHendelse.søknad().tiltak?.tiltakskode?.let {
+                if (it.tiltaksgruppe == Tiltaksaktivitet.Tiltaksgruppe.UTFAS) {
+                    DomeneMetrikker.utfasCounter(it)
+                }
+            }
             innsending.søknad = søknadMottattHendelse.søknad()
             innsending.trengerPersonopplysninger(søknadMottattHendelse)
             innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)

@@ -7,4 +7,7 @@ interface InnsendingRepository {
     fun lagre(innsending: Innsending): Innsending
     fun findBySøknadId(søknadId: String): Innsending?
     fun findByIdent(ident: String): List<Innsending>
+    fun antall(): Long
+    fun antallMedTilstandFaktainnhentingFeilet(): Long
+    fun antallStoppetUnderBehandling(): Long
 }

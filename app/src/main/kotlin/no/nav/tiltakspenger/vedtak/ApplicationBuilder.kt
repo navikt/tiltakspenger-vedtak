@@ -6,12 +6,10 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import no.nav.tiltakspenger.vedtak.rivers.SkjermingMottattRiver
 import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
-import kotlin.random.Random
 
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -46,7 +44,10 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
     )
 
     init {
-        noeGauge { Random.nextDouble() }
+        AppMetrikker.antallInnsendingerLagret(innsendingRepository)
+        AppMetrikker.antallInnsendingerFeilet(innsendingRepository)
+        AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
+
         rapidsConnection.register(this)
         SøknadMottattRiver(
             innsendingMediator = innsendingMediator,
