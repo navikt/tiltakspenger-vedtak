@@ -369,6 +369,7 @@ class Innsending private constructor(
                     } else {
                         fom
                     }
+
                     else -> fom ?: LocalDate.MIN
                 }
 
@@ -421,7 +422,9 @@ class Innsending private constructor(
                 innsending.filtreringsperiode().overlapperMed(
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
-                        it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX
+                        it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX.let { tom ->
+                            if (tom < it.fomGyldighetsperiode.toLocalDate()) LocalDate.MAX else tom
+                        }
                     )
                 )
             }.also {
