@@ -29,8 +29,9 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
@@ -49,7 +50,7 @@ internal fun Application.vedtakApi(
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     søkerService: SøkerService,
     innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediator
+    søkerMediator: SøkerMediator,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -68,6 +69,7 @@ internal fun Application.vedtakApi(
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
         }
+        søknadRoutes(innsendingMediator, søkerMediator)
         skjermingRoutes(innsendingMediator)
         tiltakRoutes(innsendingMediator)
         ytelseRoutes(innsendingMediator)

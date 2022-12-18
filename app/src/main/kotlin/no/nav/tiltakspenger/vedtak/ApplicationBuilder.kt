@@ -24,7 +24,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 søkerService = søkerService,
                 innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator
+                søkerMediator = søkerMediator,
             )
         }
         .build()

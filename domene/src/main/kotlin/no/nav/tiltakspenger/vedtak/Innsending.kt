@@ -429,9 +429,9 @@ class Innsending private constructor(
                     )
                 )
             }.also {
-                val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
-                LOG.info { "Filtrerte bort $antall gamle ytelser" }
-            }
+                    val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
+                    LOG.info { "Filtrerte bort $antall gamle ytelser" }
+                }
             innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
         }
     }
