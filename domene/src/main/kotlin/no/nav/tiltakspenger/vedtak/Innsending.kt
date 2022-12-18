@@ -419,10 +419,11 @@ class Innsending private constructor(
         override fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
             ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
             innsending.ytelser = ytelserMottattHendelse.ytelseSak().filter {
+                val tomDato = it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX
                 innsending.filtreringsperiode().overlapperMed(
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
-                        it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX.let { tom ->
+                        tomDato.let { tom ->
                             if (tom < it.fomGyldighetsperiode.toLocalDate()) LocalDate.MAX else tom
                         }
                     )

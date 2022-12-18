@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
@@ -40,6 +41,11 @@ val ytelsepath = "/rivers/ytelser"
 fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }
+//        val arenaYtelser = try {
+//            deserialize<ArenaYtelserMottattDTO>(call.receive())
+//        } catch (e: Error) {
+//            println(e)
+//        }
         val arenaYtelser = call.receive<ArenaYtelserMottattDTO>()
 
         val ytelserMottattHendelse = YtelserMottattHendelse(
