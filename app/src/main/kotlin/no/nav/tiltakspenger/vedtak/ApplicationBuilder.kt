@@ -6,7 +6,6 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import no.nav.tiltakspenger.vedtak.rivers.SøknadMottattRiver
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
@@ -49,11 +48,11 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
         AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
 
         rapidsConnection.register(this)
-        SøknadMottattRiver(
-            innsendingMediator = innsendingMediator,
-            søkerMediator = søkerMediator,
-            rapidsConnection = rapidsConnection,
-        )
+//        SøknadMottattRiver(
+//            innsendingMediator = innsendingMediator,
+//            søkerMediator = søkerMediator,
+//            rapidsConnection = rapidsConnection,
+//        )
 //        PersonopplysningerMottattRiver(
 //            innsendingMediator = innsendingMediator,
 //            søkerMediator = søkerMediator,
