@@ -243,7 +243,7 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val antallStoppetUnderBehandling =
-        "select count(id) as antall from innsending where tilstand not in (:tilstand1, :tilstand2) and sist_endret < :sist_endret"
+        "select count(id) as antall from innsending where tilstand not in (:tilstand1, :tilstand2) and sist_endret < :sistEndret"
 
     @Language("SQL")
     private val findByIdent = "select * from innsending where ident = ?"
