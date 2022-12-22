@@ -87,6 +87,19 @@ internal class PostgresInnsendingRepository(
         }
     }
 
+    override fun hentInnsendingerMedTilstandFerdigstilt(): List<String> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(hentMedTilstand, InnsendingTilstandType.InnsendingFerdigstilt.name).map { row ->
+                        // row.toInnsending(txSession)
+                        row.toJournalpostId()
+                    }.asList
+                )
+            }
+        }
+    }
+
     override fun hentInnsendingerStoppetUnderBehandling(): List<String> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->

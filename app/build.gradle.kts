@@ -49,6 +49,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
