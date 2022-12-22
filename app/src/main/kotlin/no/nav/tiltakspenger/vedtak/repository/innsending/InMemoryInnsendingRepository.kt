@@ -47,11 +47,5 @@ class InMemoryInnsendingRepository : InnsendingRepository {
             .map { it.journalpostId }
     }
 
-    override fun hentInnsendingerMedTilstandFerdigstilt(): List<String> {
-        return innsendinger.values
-            .filter { it.tilstand.type == InnsendingTilstandType.InnsendingFerdigstilt }
-            .map { it.journalpostId }
-    }
-
     fun reset() = innsendinger.clear()
 }
