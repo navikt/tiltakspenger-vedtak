@@ -32,5 +32,20 @@ class InMemoryInnsendingRepository : InnsendingRepository {
                     it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
         }.size.toLong()
 
+    override fun hentInnsendingerMedTilstandFaktainnhentingFeilet(): List<String> {
+        return innsendinger.values
+            .filter { it.tilstand.type == InnsendingTilstandType.FaktainnhentingFeilet }
+            .map { it.journalpostId }
+    }
+
+    override fun hentInnsendingerStoppetUnderBehandling(): List<String> {
+        return innsendinger.values
+            .filter {
+                it.tilstand.type != InnsendingTilstandType.FaktainnhentingFeilet &&
+                        it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
+            }
+            .map { it.journalpostId }
+    }
+
     fun reset() = innsendinger.clear()
 }

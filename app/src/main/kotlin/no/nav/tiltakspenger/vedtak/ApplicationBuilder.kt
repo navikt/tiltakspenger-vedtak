@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
+import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 
@@ -24,6 +25,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
                 søkerService = søkerService,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
+                innsendingAdminService = innsendingAdminService,
             )
         }
         .build()
@@ -40,6 +42,10 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
     private val søkerMediator = SøkerMediator(
         søkerRepository = søkerRepository,
         rapidsConnection = rapidsConnection,
+    )
+    val innsendingAdminService = InnsendingAdminService(
+        innsendingRepository = innsendingRepository,
+        innsendingMediator = innsendingMediator,
     )
 
     init {

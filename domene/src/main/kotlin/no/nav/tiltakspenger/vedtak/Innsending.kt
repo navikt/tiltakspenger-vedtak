@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
@@ -278,6 +279,12 @@ class Innsending private constructor(
             ytelserMottattHendelse.warn("Forventet ikke YtelserMottattHendelse i ${type.name}")
         }
 
+        fun håndter(innsending: Innsending, resetInnsendingHendelse: ResetInnsendingHendelse) {
+            innsending.trengerPersonopplysninger(resetInnsendingHendelse)
+            innsending.tilstand(resetInnsendingHendelse, AvventerPersonopplysninger)
+            resetInnsendingHendelse.info("Innsending resatt, faktainnhenting begynner på nytt")
+        }
+
         fun leaving(innsending: Innsending, hendelse: InnsendingHendelse) {}
         fun entering(innsending: Innsending, hendelse: InnsendingHendelse) {}
 
@@ -429,9 +436,9 @@ class Innsending private constructor(
                     )
                 )
             }.also {
-                    val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
-                    LOG.info { "Filtrerte bort $antall gamle ytelser" }
-                }
+                val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
+                LOG.info { "Filtrerte bort $antall gamle ytelser" }
+            }
             innsending.tilstand(ytelserMottattHendelse, SøkerFerdigstiltType)
         }
     }
@@ -451,7 +458,7 @@ class Innsending private constructor(
     }
 
 
-    private fun trengerPersonopplysninger(hendelse: SøknadMottattHendelse) {
+    private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
             melding = "Trenger personopplysninger",

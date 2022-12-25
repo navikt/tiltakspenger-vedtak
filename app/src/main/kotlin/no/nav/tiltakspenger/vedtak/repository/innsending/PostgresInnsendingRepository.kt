@@ -74,6 +74,39 @@ internal class PostgresInnsendingRepository(
         }!!
     }
 
+    override fun hentInnsendingerMedTilstandFaktainnhentingFeilet(): List<String> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(hentMedTilstand, InnsendingTilstandType.FaktainnhentingFeilet.name).map { row ->
+                        // row.toInnsending(txSession)
+                        row.toJournalpostId()
+                    }.asList
+                )
+            }
+        }
+    }
+
+    override fun hentInnsendingerStoppetUnderBehandling(): List<String> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        hentStoppetUnderBehandling,
+                        mapOf(
+                            "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
+                            "tilstand2" to InnsendingTilstandType.InnsendingFerdigstilt.name,
+                            "sistEndret" to LocalDateTime.now().minusDays(1),
+                        )
+                    ).map { row ->
+                        // row.toInnsending(txSession)
+                        row.toJournalpostId()
+                    }.asList
+                )
+            }
+        }
+    }
+
     override fun antallMedTilstandFaktainnhentingFeilet(): Long {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -109,7 +142,7 @@ internal class PostgresInnsendingRepository(
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
-                    oppdater(innsending = innsending, txSession = txSession)
+                    oppdaterTilstand(innsending = innsending, txSession = txSession)
                 } else {
                     insert(innsending = innsending, txSession = txSession)
                 }.also {
@@ -152,6 +185,8 @@ internal class PostgresInnsendingRepository(
         return long("antall")
     }
 
+    private fun Row.toJournalpostId(): String = string("journalpost_id")
+
     private fun Row.toInnsending(txSession: TransactionalSession): Innsending {
         val id = InnsendingId.fromDb(string("id"))
         return Innsending.fromDb(
@@ -193,7 +228,7 @@ internal class PostgresInnsendingRepository(
         return innsending
     }
 
-    private fun oppdater(innsending: Innsending, txSession: TransactionalSession): Innsending {
+    private fun oppdaterTilstand(innsending: Innsending, txSession: TransactionalSession): Innsending {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
         val sistEndretOld = innsending.sistEndret
@@ -242,8 +277,15 @@ internal class PostgresInnsendingRepository(
     private val antallMedTilstand = "select count(id) as antall from innsending where tilstand = ?"
 
     @Language("SQL")
+    private val hentMedTilstand = "select * from innsending where tilstand = ?"
+
+    @Language("SQL")
     private val antallStoppetUnderBehandling =
         "select count(id) as antall from innsending where tilstand not in (:tilstand1, :tilstand2) and sist_endret < :sistEndret"
+
+    @Language("SQL")
+    private val hentStoppetUnderBehandling =
+        "select * from innsending where tilstand not in (:tilstand1, :tilstand2) and sist_endret < :sistEndret"
 
     @Language("SQL")
     private val findByIdent = "select * from innsending where ident = ?"

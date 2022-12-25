@@ -10,4 +10,6 @@ interface InnsendingRepository {
     fun antall(): Long
     fun antallMedTilstandFaktainnhentingFeilet(): Long
     fun antallStoppetUnderBehandling(): Long
+    fun hentInnsendingerMedTilstandFaktainnhentingFeilet(): List<String>
+    fun hentInnsendingerStoppetUnderBehandling(): List<String>
 }

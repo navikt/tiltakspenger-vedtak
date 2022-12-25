@@ -7,10 +7,12 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
+import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
 import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.nyTiltakHendelse
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.skjermingTrue
@@ -20,6 +22,7 @@ import no.nav.tiltakspenger.objectmothers.ytelseSak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -250,5 +253,25 @@ internal class PostgresInnsendingRepositoryTest {
         shouldThrowWithMessage<IllegalStateException>("Noen andre har endret denne") {
             innsendingRepository.lagre(innsending)
         }
+    }
+
+    @Test
+    fun `skal hente journalpostId for innsendinger som har feilet`() {
+        val journalpostId = Random().nextInt().toString()
+        val innsending = innsendingMedSkjerming(journalpostId = journalpostId)
+
+        innsending.håndter(
+            nyTiltakHendelse(
+                journalpostId = journalpostId,
+                tiltaksaktivitet = null,
+                feil = ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet,
+            )
+        )
+
+        innsendingRepository.lagre(innsending)
+
+        innsendingRepository.hentInnsendingerMedTilstandFaktainnhentingFeilet() shouldContainExactly listOf(
+            journalpostId
+        )
     }
 }
