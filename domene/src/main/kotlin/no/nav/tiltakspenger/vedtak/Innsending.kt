@@ -248,6 +248,19 @@ class Innsending private constructor(
         tilstand.håndter(this, ytelserMottattHendelse)
     }
 
+    fun håndter(resetInnsendingHendelse: ResetInnsendingHendelse) {
+        if (journalpostId != resetInnsendingHendelse.journalpostId()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(resetInnsendingHendelse, "Registrert ResetInnsendingHendelse")
+        if (erFerdigBehandlet()) {
+            resetInnsendingHendelse.error("journalpostId ${resetInnsendingHendelse.journalpostId()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, resetInnsendingHendelse)
+    }
+
     private fun kontekst(hendelse: InnsendingHendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)

@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
@@ -39,6 +40,7 @@ class InnsendingMediator(
                         is YtelserMottattHendelse -> innsending.håndter(hendelse)
                         is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
                         is SkjermingMottattHendelse -> innsending.håndter(hendelse)
+                        is ResetInnsendingHendelse -> innsending.håndter(hendelse)
                         else -> throw RuntimeException("Ukjent hendelse")
                     }
                     finalize(innsending, hendelse)
