@@ -164,10 +164,8 @@ private fun AuthenticationConfig.jwtSystemToken(config: Configuration.TokenVerif
                 return@validate null
             }
 
-            val claimedRoles: List<String> = cred.getListClaim("roles", String::class)
-            val authorizedRoles = roles?.map {
-                it.name
-            }
+            val claimedRoles: List<String> = cred.getListClaim("roles", String::class).map { it.uppercase() }
+            val authorizedRoles = roles?.map { it.name }
 
             if (!authorizedRoles.isNullOrEmpty()) {
                 if (claimedRoles.none(authorizedRoles::contains)) {

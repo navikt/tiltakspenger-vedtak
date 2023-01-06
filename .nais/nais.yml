@@ -59,4 +59,4 @@ spec:
           cluster: {{ cluster }}
           permissions:
             roles:
-              - "LAGE_HENDELSER"
+              - "lage_hendelser"
