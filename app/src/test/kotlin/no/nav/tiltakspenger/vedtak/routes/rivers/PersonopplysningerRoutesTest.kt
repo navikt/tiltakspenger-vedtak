@@ -12,6 +12,8 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
@@ -19,6 +21,8 @@ import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -45,6 +49,8 @@ class PersonopplysningerRoutesTest {
         rapidsConnection = testRapid
     )
 
+    private val innloggetSystembrukerProvider = mockk<InnloggetSystembrukerProvider>()
+
     @AfterEach
     fun reset() {
         testRapid.reset()
@@ -57,6 +63,11 @@ class PersonopplysningerRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
 
+        every { innloggetSystembrukerProvider.hentInnloggetSystembruker(any()) } returns Systembruker(
+            brukernavn = "Systembruker",
+            roller = listOf(Rolle.LAGE_HENDELSER),
+        )
+
         val personopplysningerMottattHendelse =
             File("src/test/resources/personopplysningerMottattHendelse_ny.json").readText()
 
@@ -66,8 +77,9 @@ class PersonopplysningerRoutesTest {
                 jacksonSerialization()
                 routing {
                     personopplysningerRoutes(
+                        innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                         innsendingMediator = innsendingMediator,
-                        søkerMediator = søkerMediator
+                        søkerMediator = søkerMediator,
                     )
                 }
             }

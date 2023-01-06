@@ -7,6 +7,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -14,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.rivers.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 val personopplysningerPath = "/rivers/personopplysninger"
@@ -27,9 +30,14 @@ data class PersonopplysningerMottattDTO(
     val innhentet: LocalDateTime,
 )
 
-fun Route.personopplysningerRoutes(innsendingMediator: InnsendingMediator, søkerMediator: SøkerMediator) {
+fun Route.personopplysningerRoutes(innloggetSystembrukerProvider: InnloggetSystembrukerProvider, innsendingMediator: InnsendingMediator, søkerMediator: SøkerMediator) {
     post("$personopplysningerPath") {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
+        val systembruker: Systembruker = innloggetSystembrukerProvider.hentInnloggetSystembruker(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        LOG.info { "Vi ble kallt med systembruker : $systembruker" }
+
         val personopplysninger = call.receive<PersonopplysningerMottattDTO>()
         val peronopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
