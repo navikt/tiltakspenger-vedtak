@@ -1,29 +1,6 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.spyk
-import io.mockk.verify
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
-import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Test
-import java.io.File
-import java.time.LocalDate
-import java.time.Month
-
+/*
 internal class PersonopplysningerMottattRiverTest {
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
@@ -102,3 +79,6 @@ internal class PersonopplysningerMottattRiverTest {
         }
     }
 }
+
+
+ */

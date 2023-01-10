@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.rivers
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
@@ -11,20 +10,13 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
-import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
-import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakMottattRiverTest
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
-import org.skyscreamer.jsonassert.JSONCompareMode
 
 class TiltakRoutesTest {
     private companion object {

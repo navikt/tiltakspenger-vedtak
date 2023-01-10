@@ -1,24 +1,15 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.type.CollectionType
 import io.ktor.http.*
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import io.ktor.server.routing.*
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.asLocalDateTime
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vedtak.db.deserialize
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.rivers.ArenaYtelserMottattRiver
-import no.nav.tiltakspenger.vedtak.rivers.TiltaksaktivitetDTO
 import no.nav.tiltakspenger.vedtak.rivers.YtelseSakDTO
 import no.nav.tiltakspenger.vedtak.rivers.YtelseSakStatusEnum
 import no.nav.tiltakspenger.vedtak.rivers.YtelseSakYtelsetypeEnum
@@ -56,7 +47,7 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
                 tidsstempelHosOss = arenaYtelser.innhentet,
             )
         )
-        SECURELOG.info {" Mottatt ytelser og laget hendelse : $ytelserMottattHendelse" }
+        SECURELOG.info { " Mottatt ytelser og laget hendelse : $ytelserMottattHendelse" }
         innsendingMediator.håndter(ytelserMottattHendelse)
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }

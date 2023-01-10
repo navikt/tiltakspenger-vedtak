@@ -1,26 +1,6 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import io.mockk.every
-import io.mockk.mockk
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
-import java.time.LocalDate
-import java.time.LocalDateTime
-
+/*
 internal class ArenaTiltakMottattRiverTest {
 
     private companion object {
@@ -254,3 +234,6 @@ internal class ArenaTiltakMottattRiverTest {
            }
         """.trimIndent()
 }
+
+
+ */

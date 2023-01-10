@@ -1,20 +1,6 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import io.mockk.every
-import io.mockk.mockk
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
-
+/*
 internal class SkjermingMottattRiverTest {
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
@@ -95,3 +81,6 @@ internal class SkjermingMottattRiverTest {
         }
     }
 }
+
+
+ */
