@@ -57,3 +57,6 @@ spec:
         - application: tiltakspenger-vedtak-rivers
           namespace: tpts
           cluster: {{ cluster }}
+          permissions:
+            roles:
+              - "lage_hendelser"

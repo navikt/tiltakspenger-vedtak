@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -22,6 +23,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
+                innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
                 søkerService = søkerService,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,

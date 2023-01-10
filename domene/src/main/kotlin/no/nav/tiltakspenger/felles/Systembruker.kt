@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.felles
 
-data class Saksbehandler(
-    val navIdent: String,
+data class Systembruker(
     override val brukernavn: String,
-    val epost: String,
     override val roller: List<Rolle>,
 ) : Bruker
