@@ -6,20 +6,16 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakDTO
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakStatusEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakYtelsetypeEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakPeriodeTypeForYtelseEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakStatusEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakVedtakstypeEnum
 import java.time.LocalDateTime
 
+
 data class ArenaYtelserMottattDTO(
-    val ytelser: List<YtelseSakDTO>,
+    val respons: ArenaYtelseResponsDTO,
     val ident: String,
     val journalpostId: String,
     val innhentet: LocalDateTime,
@@ -32,18 +28,14 @@ val ytelsepath = "/rivers/ytelser"
 fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }
-//        val arenaYtelser = try {
-//            deserialize<ArenaYtelserMottattDTO>(call.receive())
-//        } catch (e: Error) {
-//            println(e)
-//        }
+
         val arenaYtelser = call.receive<ArenaYtelserMottattDTO>()
 
         val ytelserMottattHendelse = YtelserMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = arenaYtelser.journalpostId,
             ytelseSak = mapYtelser(
-                ytelseSakDTO = arenaYtelser.ytelser,
+                ytelseSakDTO = arenaYtelser.respons.saker!!, //Hvis denne smeller må vi kode opp en FeilHendelse
                 tidsstempelHosOss = arenaYtelser.innhentet,
             )
         )
@@ -54,25 +46,25 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
 }
 
 private fun mapYtelser(
-    ytelseSakDTO: List<YtelseSakDTO>,
+    ytelseSakDTO: List<ArenaYtelseResponsDTO.SakDTO>,
     tidsstempelHosOss: LocalDateTime
 ): List<YtelseSak> {
     return ytelseSakDTO.map { ytelse ->
         YtelseSak(
-            fomGyldighetsperiode = ytelse.fomGyldighetsperiode,
-            tomGyldighetsperiode = ytelse.tomGyldighetsperiode,
-            datoKravMottatt = ytelse.datoKravMottatt,
-            dataKravMottatt = ytelse.dataKravMottatt,
+            fomGyldighetsperiode = ytelse.gyldighetsperiodeFom,
+            tomGyldighetsperiode = ytelse.gyldighetsperiodeTom,
+            datoKravMottatt = ytelse.kravMottattDato,
+            dataKravMottatt = null, //Kan fjernes
             fagsystemSakId = ytelse.fagsystemSakId,
-            status = ytelse.status?.let { s -> mapStatus(s) },
-            ytelsestype = ytelse.ytelsestype?.let { y -> mapYtelsetype(y) },
+            status = ytelse.status?.let { s -> mapSakStatus(s) },
+            ytelsestype = ytelse.sakType?.let { y -> mapSakType(y) },
             vedtak = ytelse.vedtak.map { vedtak ->
                 YtelseSak.YtelseVedtak(
                     beslutningsDato = vedtak.beslutningsDato,
-                    periodetypeForYtelse = vedtak.periodetypeForYtelse?.let { p -> mapPeriodeType(p) },
+                    periodetypeForYtelse = vedtak.vedtakType?.let { p -> mapVedtakType(p) },
                     vedtaksperiodeFom = vedtak.vedtaksperiodeFom,
                     vedtaksperiodeTom = vedtak.vedtaksperiodeTom,
-                    vedtaksType = vedtak.vedtaksType?.let { v -> mapVedtakstype(v) },
+                    vedtaksType = vedtak.rettighetType?.let { v -> mapRettighetType(v) },
                     status = vedtak.status?.let { s -> mapVedtakStatus(s) },
                 )
             },
@@ -83,22 +75,22 @@ private fun mapYtelser(
     }
 }
 
-private fun mapVedtakStatus(dto: YtelseVedtakStatusEnum): YtelseSak.YtelseVedtak.YtelseVedtakStatus {
+private fun mapVedtakStatus(dto: ArenaYtelseResponsDTO.VedtakStatusType): YtelseSak.YtelseVedtak.YtelseVedtakStatus {
     return YtelseSak.YtelseVedtak.YtelseVedtakStatus.valueOf(dto.name)
 }
 
-private fun mapVedtakstype(dto: YtelseVedtakVedtakstypeEnum): YtelseSak.YtelseVedtak.YtelseVedtakVedtakstype {
+private fun mapRettighetType(dto: ArenaYtelseResponsDTO.RettighetType): YtelseSak.YtelseVedtak.YtelseVedtakVedtakstype {
     return YtelseSak.YtelseVedtak.YtelseVedtakVedtakstype.valueOf(dto.name)
 }
 
-private fun mapPeriodeType(dto: YtelseVedtakPeriodeTypeForYtelseEnum): YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse {
+private fun mapVedtakType(dto: ArenaYtelseResponsDTO.VedtakType): YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse {
     return YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse.valueOf(dto.name)
 }
 
-private fun mapYtelsetype(dto: YtelseSakYtelsetypeEnum): YtelseSak.YtelseSakYtelsetype {
+private fun mapSakType(dto: ArenaYtelseResponsDTO.SakType): YtelseSak.YtelseSakYtelsetype {
     return YtelseSak.YtelseSakYtelsetype.valueOf(dto.name)
 }
 
-private fun mapStatus(dto: YtelseSakStatusEnum): YtelseSak.YtelseSakStatus {
+private fun mapSakStatus(dto: ArenaYtelseResponsDTO.SakStatusType): YtelseSak.YtelseSakStatus {
     return YtelseSak.YtelseSakStatus.valueOf(dto.name)
 }

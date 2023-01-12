@@ -1,24 +1,17 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
 import io.ktor.http.*
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import io.ktor.server.routing.*
 import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakDTO
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakStatusEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseSakYtelsetypeEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakPeriodeTypeForYtelseEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakStatusEnum
-import no.nav.tiltakspenger.vedtak.rivers.YtelseVedtakVedtakstypeEnum
 import java.time.LocalDateTime
+
 
 data class SkjermingDTO(
     val ident: String,
@@ -46,8 +39,8 @@ fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
                 innhentet = skjermingDTO.innhentet,
             ),
 
-        )
-        SECURELOG.info {" Mottatt skjerming og laget hendelse : $skjermingHendelse" }
+            )
+        SECURELOG.info { " Mottatt skjerming og laget hendelse : $skjermingHendelse" }
         innsendingMediator.håndter(skjermingHendelse)
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }

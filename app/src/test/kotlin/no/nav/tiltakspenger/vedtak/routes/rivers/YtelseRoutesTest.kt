@@ -9,7 +9,6 @@ import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
 import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -110,77 +109,75 @@ class YtelseRoutesTest {
 
     private val ytelseBody = """
         {
-          "ytelser": [
-            {
-              "fomGyldighetsperiode": "2022-01-15T00:00:00",
-              "tomGyldighetsperiode": "2022-02-28T00:00:00",
-              "datoKravMottatt": "2004-10-11",
-              "dataKravMottatt": "Individstønad",
-              "fagsystemSakId": "42",
-              "status": "AVSLU",
-              "ytelsestype": "INDIV",
-              "vedtak": [
-                {
-                  "beslutningsDato": "2004-10-11",
-                  "periodetypeForYtelse": "O",
-                  "vedtaksperiodeFom": "2004-09-27",
-                  "vedtaksperiodeTom": "2004-10-29",
-                  "vedtaksType": "BASI",
-                  "status": "AVSLU"
-                }
-              ],
-              "antallDagerIgjen": null,
-              "antallUkerIgjen": null
-            }
-          ],
-          "ident": "$IDENT",
-          "journalpostId": "$JOURNALPOSTID",
-          "innhentet": "2022-08-22T14:59:46.491437009"
+            "respons": {
+                "saker": [{
+                    "gyldighetsperiodeFom": "2022-01-15T00:00:00",
+                    "gyldighetsperiodeTom": "2022-02-28T00:00:00",
+                    "kravMottattDato": "2004-10-11",
+                    "fagsystemSakId": "42",
+                    "status": "AVSLU",
+                    "sakType": "INDIV",
+                    "vedtak": [{
+                        "beslutningsDato": "2004-10-11",
+                        "vedtakType": "O",
+                        "vedtaksperiodeFom": "2004-09-27",
+                        "vedtaksperiodeTom": "2004-10-29",
+                        "rettighetType": "BASI",
+                        "status": "AVSLU"
+                    }],
+                    "antallDagerIgjen": null,
+                    "antallUkerIgjen": null
+                }],
+                "feil": null
+            },
+            "ident": "$IDENT",
+            "journalpostId": "$JOURNALPOSTID",
+            "innhentet": "2022-08-22T14:59:46.491437009"
         }
     """.trimIndent()
 
     private fun ytelserMedTomFørFom() = """
         {
-          "ytelser": [
+          "respons": {
+            "saker": [
             {
-              "fomGyldighetsperiode": "2022-02-10T00:00:00",
-              "tomGyldighetsperiode": "2022-11-30T00:00:00",
-              "datoKravMottatt": "2022-09-19",
-              "dataKravMottatt": "Individstønad",
+              "gyldighetsperiodeFom": "2022-02-10T00:00:00",
+              "gyldighetsperiodeTom": "2022-11-30T00:00:00",
+              "kravMottattDato": "2022-09-19",
               "fagsystemSakId": "202264805",
               "status": "INAKT",
-              "ytelsestype": "INDIV",
+              "sakType": "INDIV",
               "vedtak": [
                 {
                   "beslutningsDato": "2022-09-22",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2022-09-01",
                   "vedtaksperiodeTom": "2022-11-30",
-                  "vedtaksType": "BASI",
+                  "rettighetType": "BASI",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2022-07-06",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2022-07-01",
                   "vedtaksperiodeTom": "2022-08-31",
-                  "vedtaksType": "BASI",
+                  "rettighetType": "BASI",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2022-05-19",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2022-05-10",
                   "vedtaksperiodeTom": "2022-06-30",
-                  "vedtaksType": "BASI",
+                  "rettighetType": "BASI",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2022-02-10",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2022-02-10",
                   "vedtaksperiodeTom": "2022-05-09",
-                  "vedtaksType": "BASI",
+                  "rettighetType": "BASI",
                   "status": "AVSLU"
                 }
               ],
@@ -188,60 +185,59 @@ class YtelseRoutesTest {
               "antallUkerIgjen": null
             },
             {
-              "fomGyldighetsperiode": "2007-11-05T00:00:00",
-              "tomGyldighetsperiode": "2007-11-04T00:00:00",
-              "datoKravMottatt": "2008-01-14",
-              "dataKravMottatt": "Dagpenger",
+              "gyldighetsperiodeFom": "2007-11-05T00:00:00",
+              "gyldighetsperiodeTom": "2007-11-04T00:00:00",
+              "kravMottattDato": "2008-01-14",
               "fagsystemSakId": "20085481",
               "status": "INAKT",
-              "ytelsestype": "DAGP",
+              "sakType": "DAGP",
               "vedtak": [
                 {
                   "beslutningsDato": "2009-03-17",
-                  "periodetypeForYtelse": "S",
+                  "vedtakType": "S",
                   "vedtaksperiodeFom": "2009-03-17",
                   "vedtaksperiodeTom": null,
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "IVERK"
                 },
                 {
                   "beslutningsDato": "2008-03-17",
-                  "periodetypeForYtelse": "N",
+                  "vedtakType": "N",
                   "vedtaksperiodeFom": "2008-03-17",
                   "vedtaksperiodeTom": null,
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "IVERK"
                 },
                 {
                   "beslutningsDato": "2008-02-27",
-                  "periodetypeForYtelse": "T",
+                  "vedtakType": "T",
                   "vedtaksperiodeFom": "2007-11-05",
                   "vedtaksperiodeTom": "2007-11-04",
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2008-02-27",
-                  "periodetypeForYtelse": "E",
+                  "vedtakType": "E",
                   "vedtaksperiodeFom": "2007-11-05",
                   "vedtaksperiodeTom": "2009-03-16",
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2008-01-21",
-                  "periodetypeForYtelse": "F",
+                  "vedtakType": "F",
                   "vedtaksperiodeFom": "2007-12-05",
                   "vedtaksperiodeTom": "2008-01-29",
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "AVSLU"
                 },
                 {
                   "beslutningsDato": "2008-01-21",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2007-12-05",
                   "vedtaksperiodeTom": "2007-11-04",
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "AVSLU"
                 }
               ],
@@ -249,28 +245,27 @@ class YtelseRoutesTest {
               "antallUkerIgjen": 40
             },
             {
-              "fomGyldighetsperiode": "2007-02-07T00:00:00",
-              "tomGyldighetsperiode": "2007-03-05T00:00:00",
-              "datoKravMottatt": "2007-02-09",
-              "dataKravMottatt": "Dagpenger",
+              "gyldighetsperiodeFom": "2007-02-07T00:00:00",
+              "gyldighetsperiodeTom": "2007-03-05T00:00:00",
+              "kravMottattDato": "2007-02-09",
               "fagsystemSakId": "200749871",
               "status": "INAKT",
-              "ytelsestype": "DAGP",
+              "sakType": "DAGP",
               "vedtak": [
                 {
                   "beslutningsDato": "2007-03-06",
-                  "periodetypeForYtelse": "S",
+                  "vedtakType": "S",
                   "vedtaksperiodeFom": "2007-03-06",
                   "vedtaksperiodeTom": null,
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "IVERK"
                 },
                 {
                   "beslutningsDato": "2007-02-13",
-                  "periodetypeForYtelse": "O",
+                  "vedtakType": "O",
                   "vedtaksperiodeFom": "2007-02-07",
                   "vedtaksperiodeTom": "2007-03-05",
-                  "vedtaksType": "DAGO",
+                  "rettighetType": "DAGO",
                   "status": "AVSLU"
                 }
               ],
@@ -278,6 +273,8 @@ class YtelseRoutesTest {
               "antallUkerIgjen": 40
             }
           ],
+          "feil": null
+          },
           "ident": "$IDENT",
           "journalpostId": "$JOURNALPOSTID",
           "innhentet": "2022-08-22T14:59:46.491437009"

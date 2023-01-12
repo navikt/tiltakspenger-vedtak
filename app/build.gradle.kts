@@ -17,6 +17,8 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
 
+    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:0.0.9")
+    implementation("com.github.navikt.tiltakspenger-libs:arenaytelser-dtos:0.0.9")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
