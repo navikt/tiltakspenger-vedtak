@@ -1,5 +1,10 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
+import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
+import no.nav.tiltakspenger.libs.person.BarnIFolkeregisteret
+import no.nav.tiltakspenger.vedtak.routes.rivers.ALDER_BARNETILLEGG
+import no.nav.tiltakspenger.vedtak.routes.rivers.SIKKERHETSMARGIN_ÅR
+import no.nav.tiltakspenger.vedtak.routes.rivers.kanGiRettPåBarnetillegg
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -28,7 +33,7 @@ internal class BarnDTOTest {
     @ParameterizedTest
     @MethodSource("providesAlderForBarnetilllegg")
     fun kanGiRettPåBarnetillegg(fødselsdato: LocalDate, expectedResult: Boolean) {
-        val barn = BarnDTO(
+        val barn = BarnIFolkeregisteret(
             ident = "",
             fornavn = "",
             mellomnavn = null,

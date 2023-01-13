@@ -1,12 +1,14 @@
 package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -34,10 +36,10 @@ fun nyPersonopplysningHendelse(
         ?: Random().nextInt().toString(),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
+        aktivitetslogg = aktivitetslogg,
         journalpostId = journalpostId,
         ident = ident,
         personopplysninger = personopplysninger,
-        aktivitetslogg = aktivitetslogg,
     )
 }
 
@@ -80,3 +82,15 @@ fun nyYtelseHendelse(
         aktivitetslogg = aktivitetslogg,
     )
 }
+
+fun nyFeilHendelse(
+    journalpostId: String = Random().nextInt().toString(),
+    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+    ident: String = Random().nextInt().toString(),
+    feil: Feil = Feil.PersonIkkeFunnet,
+) = FeilMottattHendelse(
+    aktivitetslogg = aktivitetslogg,
+    journalpostId = journalpostId,
+    ident = ident,
+    feil = feil,
+)

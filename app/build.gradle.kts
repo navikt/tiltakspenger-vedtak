@@ -2,6 +2,7 @@ val ktorVersion = "2.2.2"
 val kotestVersion = "5.5.4"
 val mockkVersion = "1.13.3"
 val testContainersVersion = "1.17.6"
+val felleslibVersion = "0.0.9"
 
 plugins {
     application
@@ -38,6 +39,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
+    implementation("com.github.navikt:tiltakspenger-libs:$felleslibVersion")
     implementation("com.github.navikt:rapids-and-rivers:2022122313141671797650.f806f770805a")
     implementation("com.natpryce:konfig:1.6.10.0")
     // Auth
