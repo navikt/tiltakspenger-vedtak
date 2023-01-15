@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -261,6 +262,19 @@ class Innsending private constructor(
         tilstand.håndter(this, resetInnsendingHendelse)
     }
 
+    fun håndter(feilMottattHendelse: FeilMottattHendelse) {
+        if (journalpostId != feilMottattHendelse.journalpostId()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(feilMottattHendelse, "Registrert FeilMottattHendelse")
+        if (erFerdigBehandlet()) {
+            feilMottattHendelse.error("journalpostId ${feilMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, feilMottattHendelse)
+    }
+
     private fun kontekst(hendelse: InnsendingHendelse, melding: String) {
         hendelse.setForelderAndAddKontekst(this)
         hendelse.addKontekst(this.tilstand)
@@ -296,6 +310,11 @@ class Innsending private constructor(
             innsending.trengerPersonopplysninger(resetInnsendingHendelse)
             innsending.tilstand(resetInnsendingHendelse, AvventerPersonopplysninger)
             resetInnsendingHendelse.info("Innsending resatt, faktainnhenting begynner på nytt")
+        }
+
+        fun håndter(innsending: Innsending, feilMottattHendelse: FeilMottattHendelse) {
+            innsending.tilstand(feilMottattHendelse, FaktainnhentingFeilet)
+            feilMottattHendelse.info("Mottatt ${feilMottattHendelse.feil()} fra faktainnhenter")
         }
 
         fun leaving(innsending: Innsending, hendelse: InnsendingHendelse) {}

@@ -2,6 +2,7 @@ val ktorVersion = "2.2.2"
 val kotestVersion = "5.5.4"
 val mockkVersion = "1.13.3"
 val testContainersVersion = "1.17.6"
+val felleslibVersion = "0.0.10"
 
 plugins {
     application
@@ -17,8 +18,9 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
 
-    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:0.0.10")
-    implementation("com.github.navikt.tiltakspenger-libs:arenaytelser-dtos:0.0.10")
+    implementation("com.github.navikt.tiltakspenger-libs:arenatiltak-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:arenaytelser-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("net.logstash.logback:logstash-logback-encoder:7.2")
@@ -43,7 +45,7 @@ dependencies {
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("com.auth0:jwks-rsa:0.21.2")
+    implementation("com.auth0:jwks-rsa:0.21.3")
 
     // DB
     implementation("org.flywaydb:flyway-core:9.11.0")
