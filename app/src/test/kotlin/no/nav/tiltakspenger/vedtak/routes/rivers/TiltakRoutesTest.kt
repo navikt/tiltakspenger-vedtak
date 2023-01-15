@@ -76,9 +76,10 @@ class TiltakRoutesTest {
 
     private val tiltakBody = """
         {
-        "tiltak": [
+        "respons": {
+            "tiltaksaktiviteter" : [
                 {
-                  "tiltaksnavn": "ARBTREN",
+                  "tiltakType": "ARBTREN",
                   "aktivitetId": "TA6734563",
                   "tiltakLokaltNavn": "Arbeidstrening",
                   "arrangoer": "STENDI SENIOR AS",
@@ -88,19 +89,17 @@ class TiltakRoutesTest {
                     "tom": "2022-08-31"
                   },
                   "deltakelseProsent": 100,
-                  "deltakerStatus": {
-                    "statusNavn": "Gjennomføres",
-                    "innerText": "GJENN"
-                  },
+                  "deltakerStatusType": "GJENN",
                   "statusSistEndret": "2022-08-09",
                   "begrunnelseInnsoeking": "Trenger tiltaksplass",
                   "antallDagerPerUke": null
                 }
-              ],
+            ],
+            "feil" : null
+        },
         "ident" : "$IDENT",
         "journalpostId" : "$JOURNALPOSTID",
-        "innhentet" : "2022-08-22T14:59:46.491437009",
-        "feil" : null
+        "innhentet" : "2022-08-22T14:59:46.491437009"
        }
     """.trimIndent()
 }

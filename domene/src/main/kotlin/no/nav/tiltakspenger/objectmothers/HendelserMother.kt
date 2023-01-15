@@ -11,72 +11,70 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
-import java.util.*
+import java.util.Random
 
 fun nySøknadMottattHendelse(
-    journalpostId: String = Random().nextInt().toString(),
-    ident: String = Random().nextInt().toString(),
-    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        journalpostId: String = Random().nextInt().toString(),
+        ident: String = Random().nextInt().toString(),
+        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SøknadMottattHendelse {
     return SøknadMottattHendelse(
-        aktivitetslogg = aktivitetslogg,
-        journalpostId = journalpostId,
-        søknad = søknad,
+            aktivitetslogg = aktivitetslogg,
+            journalpostId = journalpostId,
+            søknad = søknad,
     )
 }
 
 fun nyPersonopplysningHendelse(
-    journalpostId: String = Random().nextInt().toString(),
-    personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
-    ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident
-        ?: Random().nextInt().toString(),
+        journalpostId: String = Random().nextInt().toString(),
+        personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident
+                ?: Random().nextInt().toString(),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
-        journalpostId = journalpostId,
-        ident = ident,
-        personopplysninger = personopplysninger,
-        aktivitetslogg = aktivitetslogg,
+            journalpostId = journalpostId,
+            ident = ident,
+            personopplysninger = personopplysninger,
+            aktivitetslogg = aktivitetslogg,
     )
 }
 
 fun nySkjermingHendelse(
-    journalpostId: String = Random().nextInt().toString(),
-    ident: String = Random().nextInt().toString(),
-    skjerming: Skjerming = skjermingFalse(ident = journalpostId),
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        journalpostId: String = Random().nextInt().toString(),
+        ident: String = Random().nextInt().toString(),
+        skjerming: Skjerming = skjermingFalse(ident = journalpostId),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): SkjermingMottattHendelse {
     return SkjermingMottattHendelse(
-        journalpostId = journalpostId,
-        ident = ident,
-        skjerming = skjerming,
-        aktivitetslogg = aktivitetslogg,
+            journalpostId = journalpostId,
+            ident = ident,
+            skjerming = skjerming,
+            aktivitetslogg = aktivitetslogg,
     )
 }
 
 fun nyTiltakHendelse(
-    journalpostId: String = Random().nextInt().toString(),
-    tiltaksaktivitet: List<Tiltaksaktivitet>? = listOf(tiltaksaktivitet()),
-    feil: ArenaTiltakMottattHendelse.Feilmelding? = null,
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        journalpostId: String = Random().nextInt().toString(),
+        tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): ArenaTiltakMottattHendelse {
     return ArenaTiltakMottattHendelse(
-        journalpostId = journalpostId,
-        tiltaksaktivitet = tiltaksaktivitet,
-        feil = feil,
-        aktivitetslogg = aktivitetslogg,
+            journalpostId = journalpostId,
+            tiltaksaktivitet = tiltaksaktivitet,
+            aktivitetslogg = aktivitetslogg,
     )
 }
 
 fun nyYtelseHendelse(
-    journalpostId: String = Random().nextInt().toString(),
-    ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        journalpostId: String = Random().nextInt().toString(),
+        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
 ): YtelserMottattHendelse {
     return YtelserMottattHendelse(
-        journalpostId = journalpostId,
-        ytelseSak = ytelseSak,
-        aktivitetslogg = aktivitetslogg,
+            journalpostId = journalpostId,
+            ytelseSak = ytelseSak,
+            aktivitetslogg = aktivitetslogg,
     )
 }

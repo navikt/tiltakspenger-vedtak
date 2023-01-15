@@ -1,13 +1,11 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
@@ -19,35 +17,40 @@ import no.nav.tiltakspenger.vedtak.rivers.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
+
 val personopplysningerPath = "/rivers/personopplysninger"
 
 private val LOG = KotlinLogging.logger {}
 
 data class PersonopplysningerMottattDTO(
-    val journalpostId: String,
-    val ident: String,
-    val personopplysninger: PersonopplysningerDTO,
-    val innhentet: LocalDateTime,
+        val journalpostId: String,
+        val ident: String,
+        val personopplysninger: PersonopplysningerDTO,
+        val innhentet: LocalDateTime,
 )
 
-fun Route.personopplysningerRoutes(innloggetSystembrukerProvider: InnloggetSystembrukerProvider, innsendingMediator: InnsendingMediator, søkerMediator: SøkerMediator) {
+fun Route.personopplysningerRoutes(
+        innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
+        innsendingMediator: InnsendingMediator,
+        søkerMediator: SøkerMediator
+) {
     post("$personopplysningerPath") {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
         val systembruker: Systembruker = innloggetSystembrukerProvider.hentInnloggetSystembruker(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+                ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
         LOG.info { "Vi ble kallt med systembruker : $systembruker" }
 
         val personopplysninger = call.receive<PersonopplysningerMottattDTO>()
         val peronopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
-            aktivitetslogg = Aktivitetslogg(),
-            journalpostId = personopplysninger.journalpostId,
-            ident = personopplysninger.ident,
-            personopplysninger = mapPersonopplysninger(
-                personopplysninger.personopplysninger,
-                personopplysninger.innhentet,
-                personopplysninger.ident
-            )
+                aktivitetslogg = Aktivitetslogg(),
+                journalpostId = personopplysninger.journalpostId,
+                ident = personopplysninger.ident,
+                personopplysninger = mapPersonopplysninger(
+                        personopplysninger.personopplysninger,
+                        personopplysninger.innhentet,
+                        personopplysninger.ident
+                )
         )
         innsendingMediator.håndter(peronopplysningerMottattHendelse)
         søkerMediator.håndter(peronopplysningerMottattHendelse)
@@ -56,43 +59,43 @@ fun Route.personopplysningerRoutes(innloggetSystembrukerProvider: InnloggetSyste
 }
 
 private fun mapPersonopplysninger(
-    dto: PersonopplysningerDTO,
-    innhentet: LocalDateTime,
-    ident: String,
+        dto: PersonopplysningerDTO,
+        innhentet: LocalDateTime,
+        ident: String,
 ): List<Personopplysninger> {
     return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
         Personopplysninger.BarnMedIdent(
-            ident = it.ident,
-            fødselsdato = it.fødselsdato,
-            fornavn = it.fornavn,
-            mellomnavn = it.mellomnavn,
-            etternavn = it.etternavn,
-            fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
-            strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
-            strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
-            oppholdsland = null, // TODO: fix!
-            tidsstempelHosOss = innhentet,
+                ident = it.ident,
+                fødselsdato = it.fødselsdato,
+                fornavn = it.fornavn,
+                mellomnavn = it.mellomnavn,
+                etternavn = it.etternavn,
+                fortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
+                strengtFortrolig = it.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
+                strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+                oppholdsland = null, // TODO: fix!
+                tidsstempelHosOss = innhentet,
         )
     } + dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
         Personopplysninger.BarnUtenIdent(
-            fødselsdato = barn.fødselsdato,
-            fornavn = barn.fornavn,
-            mellomnavn = barn.mellomnavn,
-            etternavn = barn.etternavn,
-            tidsstempelHosOss = innhentet,
+                fødselsdato = barn.fødselsdato,
+                fornavn = barn.fornavn,
+                mellomnavn = barn.mellomnavn,
+                etternavn = barn.etternavn,
+                tidsstempelHosOss = innhentet,
         )
     } + Personopplysninger.Søker(
-        ident = ident,
-        fødselsdato = dto.fødselsdato,
-        fornavn = dto.fornavn,
-        mellomnavn = dto.mellomnavn,
-        etternavn = dto.etternavn,
-        fortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
-        strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
-        strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
-        skjermet = null,
-        kommune = dto.gtKommune,
-        bydel = dto.gtBydel,
-        tidsstempelHosOss = innhentet,
+            ident = ident,
+            fødselsdato = dto.fødselsdato,
+            fornavn = dto.fornavn,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn,
+            fortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.FORTROLIG,
+            strengtFortrolig = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG,
+            strengtFortroligUtland = dto.adressebeskyttelseGradering == AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND,
+            skjermet = null,
+            kommune = dto.gtKommune,
+            bydel = dto.gtBydel,
+            tidsstempelHosOss = innhentet,
     )
 }

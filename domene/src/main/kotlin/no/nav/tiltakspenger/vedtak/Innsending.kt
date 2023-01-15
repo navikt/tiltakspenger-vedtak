@@ -24,21 +24,21 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 @Suppress("TooManyFunctions", "LongParameterList")
 class Innsending private constructor(
-    val id: InnsendingId,
-    val journalpostId: String,
-    val ident: String,
-    tilstand: Tilstand,
-    søknad: Søknad?,
-    sistEndret: LocalDateTime?,
-    personopplysninger: List<Personopplysninger>,
-    tiltak: List<Tiltaksaktivitet>,
-    ytelser: List<YtelseSak>,
-    aktivitetslogg: Aktivitetslogg
+        val id: InnsendingId,
+        val journalpostId: String,
+        val ident: String,
+        tilstand: Tilstand,
+        søknad: Søknad?,
+        sistEndret: LocalDateTime?,
+        personopplysninger: List<Personopplysninger>,
+        tiltak: List<Tiltaksaktivitet>,
+        ytelser: List<YtelseSak>,
+        aktivitetslogg: Aktivitetslogg
 ) : KontekstLogable {
     private val dirtyChecker: DirtyChecker = DirtyChecker()
 
     val aktivitetslogg: IAktivitetslogg =
-        DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyChecker.get("aktivitetslogg"))
+            DirtyCheckingAktivitetslogg(aktivitetslogg, dirtyChecker.get("aktivitetslogg"))
 
     fun isDirty() = dirtyChecker.isDirty()
 
@@ -78,16 +78,16 @@ class Innsending private constructor(
     fun personopplysningerBarnMedIdent() = personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
 
     fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
-        if (søknad.tiltak is Tiltak.ArenaTiltak) {
-            this.tiltak.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
-        } else null
+            if (søknad.tiltak is Tiltak.ArenaTiltak) {
+                this.tiltak.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
+            } else null
 
     private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate, LocalDate?> {
         fun tidligsteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
-            (datoer.toList() + dato).filterNotNull().min()
+                (datoer.toList() + dato).filterNotNull().min()
 
         fun senesteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
-            (datoer.toList() + dato).filterNotNull().max()
+                (datoer.toList() + dato).filterNotNull().max()
 
         fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
 
@@ -122,19 +122,19 @@ class Innsending private constructor(
     }
 
     constructor(
-        journalpostId: String,
-        ident: String,
+            journalpostId: String,
+            ident: String,
     ) : this(
-        id = randomId(),
-        ident = ident,
-        journalpostId = journalpostId,
-        tilstand = InnsendingRegistrert,
-        søknad = null,
-        sistEndret = null,
-        personopplysninger = mutableListOf(),
-        tiltak = mutableListOf(),
-        ytelser = mutableListOf(),
-        aktivitetslogg = Aktivitetslogg()
+            id = randomId(),
+            ident = ident,
+            journalpostId = journalpostId,
+            tilstand = InnsendingRegistrert,
+            søknad = null,
+            sistEndret = null,
+            personopplysninger = mutableListOf(),
+            tiltak = mutableListOf(),
+            ytelser = mutableListOf(),
+            aktivitetslogg = Aktivitetslogg()
     )
 
     companion object {
@@ -142,28 +142,28 @@ class Innsending private constructor(
         fun randomId() = InnsendingId.random()
 
         fun fromDb(
-            id: InnsendingId,
-            journalpostId: String,
-            ident: String,
-            tilstand: String,
-            søknad: Søknad?,
-            sistEndret: LocalDateTime,
-            tiltak: List<Tiltaksaktivitet>,
-            ytelser: List<YtelseSak>,
-            personopplysninger: List<Personopplysninger>,
-            aktivitetslogg: Aktivitetslogg,
+                id: InnsendingId,
+                journalpostId: String,
+                ident: String,
+                tilstand: String,
+                søknad: Søknad?,
+                sistEndret: LocalDateTime,
+                tiltak: List<Tiltaksaktivitet>,
+                ytelser: List<YtelseSak>,
+                personopplysninger: List<Personopplysninger>,
+                aktivitetslogg: Aktivitetslogg,
         ): Innsending {
             return Innsending(
-                id = id,
-                journalpostId = journalpostId,
-                ident = ident,
-                tilstand = convertTilstand(tilstand),
-                søknad = søknad,
-                sistEndret = sistEndret,
-                personopplysninger = personopplysninger,
-                tiltak = tiltak,
-                ytelser = ytelser,
-                aktivitetslogg = aktivitetslogg,
+                    id = id,
+                    journalpostId = journalpostId,
+                    ident = ident,
+                    tilstand = convertTilstand(tilstand),
+                    søknad = søknad,
+                    sistEndret = sistEndret,
+                    personopplysninger = personopplysninger,
+                    tiltak = tiltak,
+                    ytelser = ytelser,
+                    aktivitetslogg = aktivitetslogg,
             )
         }
 
@@ -202,7 +202,7 @@ class Innsending private constructor(
         kontekst(personopplysningerMottattHendelse, "Registrert PersonopplysningerMottattHendelse")
         if (erFerdigBehandlet()) {
             personopplysningerMottattHendelse
-                .error("journalpostId ${personopplysningerMottattHendelse.journalpostId()} allerede ferdig behandlet")
+                    .error("journalpostId ${personopplysningerMottattHendelse.journalpostId()} allerede ferdig behandlet")
             return
         }
         tilstand.håndter(this, personopplysningerMottattHendelse)
@@ -303,10 +303,10 @@ class Innsending private constructor(
 
         override fun opprettKontekst(): Kontekst {
             return Kontekst(
-                "Tilstand",
-                mapOf(
-                    "tilstandtype" to type.name
-                )
+                    "Tilstand",
+                    mapOf(
+                            "tilstandtype" to type.name
+                    )
             )
         }
     }
@@ -337,11 +337,11 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(
-            innsending: Innsending,
-            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse
+                innsending: Innsending,
+                personopplysningerMottattHendelse: PersonopplysningerMottattHendelse
         ) {
             personopplysningerMottattHendelse
-                .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
+                    .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
             innsending.personopplysninger = personopplysningerMottattHendelse.personopplysninger()
             innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
             innsending.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
@@ -362,7 +362,7 @@ class Innsending private constructor(
             innsending.personopplysninger = innsending.personopplysninger.map {
                 if (it is Personopplysninger.Søker) {
                     it.copy(
-                        skjermet = skjermingMottattHendelse.skjerming().skjerming
+                            skjermet = skjermingMottattHendelse.skjerming().skjerming
                     )
                 } else {
                     it
@@ -382,51 +382,42 @@ class Innsending private constructor(
         override fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
 
             fun earliest(fom: LocalDate?, tom: LocalDate?) =
-                when {
-                    fom != null && tom != null -> if (tom.isBefore(fom)) {
-                        LOG.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
-                        tom
-                    } else {
-                        fom
-                    }
+                    when {
+                        fom != null && tom != null -> if (tom.isBefore(fom)) {
+                            LOG.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
+                            tom
+                        } else {
+                            fom
+                        }
 
-                    else -> fom ?: LocalDate.MIN
-                }
+                        else -> fom ?: LocalDate.MIN
+                    }
 
 
             fun latest(fom: LocalDate?, tom: LocalDate?) =
-                when {
-                    fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
-                    else -> tom ?: LocalDate.MAX
-                }
-
-            when (arenaTiltakMottattHendelse.feilmelding()) {
-                ArenaTiltakMottattHendelse.Feilmelding.PersonIkkeFunnet -> {
-                    arenaTiltakMottattHendelse.error("Fant ikke person i arenetiltak")
-                    innsending.tilstand(arenaTiltakMottattHendelse, FaktainnhentingFeilet)
-                }
-
-                null -> {
-                    arenaTiltakMottattHendelse
-                        .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-                    innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.filter {
-                        LOG.info { "filtreringsperiode : ${innsending.filtreringsperiode()}" }
-                        LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
-                        LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
-                        val periode = Periode(
-                            earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
-                            latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom)
-                        )
-                        LOG.info { "periode : $periode" }
-                        innsending.filtreringsperiode().overlapperMed(periode)
-                    }.also {
-                        val antall = arenaTiltakMottattHendelse.tiltaksaktivitet()!!.size - innsending.tiltak.size
-                        LOG.info { "Filtrerte bort $antall gamle tiltak" }
+                    when {
+                        fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
+                        else -> tom ?: LocalDate.MAX
                     }
-                    innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
-                    innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
-                }
+
+            arenaTiltakMottattHendelse
+                    .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
+            innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet().filter {
+                LOG.info { "filtreringsperiode : ${innsending.filtreringsperiode()}" }
+                LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
+                LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
+                val periode = Periode(
+                        earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
+                        latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom)
+                )
+                LOG.info { "periode : $periode" }
+                innsending.filtreringsperiode().overlapperMed(periode)
+            }.also {
+                val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - innsending.tiltak.size
+                LOG.info { "Filtrerte bort $antall gamle tiltak" }
             }
+            innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
+            innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
         }
     }
 
@@ -441,12 +432,12 @@ class Innsending private constructor(
             innsending.ytelser = ytelserMottattHendelse.ytelseSak().filter {
                 val tomDato = it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX
                 innsending.filtreringsperiode().overlapperMed(
-                    Periode(
-                        it.fomGyldighetsperiode.toLocalDate(),
-                        tomDato.let { tom ->
-                            if (tom < it.fomGyldighetsperiode.toLocalDate()) LocalDate.MAX else tom
-                        }
-                    )
+                        Periode(
+                                it.fomGyldighetsperiode.toLocalDate(),
+                                tomDato.let { tom ->
+                                    if (tom < it.fomGyldighetsperiode.toLocalDate()) LocalDate.MAX else tom
+                                }
+                        )
                 )
             }.also {
                 val antall = ytelserMottattHendelse.ytelseSak().size - innsending.ytelser.size
@@ -473,40 +464,40 @@ class Innsending private constructor(
 
     private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
-            melding = "Trenger personopplysninger",
-            detaljer = mapOf("ident" to this.ident)
+                type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+                melding = "Trenger personopplysninger",
+                detaljer = mapOf("ident" to this.ident)
         )
     }
 
     private fun trengerSkjermingdata(hendelse: InnsendingHendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
-            melding = "Trenger skjermingdata",
-            detaljer = mapOf("ident" to this.ident)
+                type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
+                melding = "Trenger skjermingdata",
+                detaljer = mapOf("ident" to this.ident)
         )
     }
 
     private fun trengerTiltak(hendelse: InnsendingHendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
-            melding = "Trenger arenatiltak",
-            detaljer = mapOf("ident" to this.ident)
+                type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
+                melding = "Trenger arenatiltak",
+                detaljer = mapOf("ident" to this.ident)
         )
     }
 
     private fun trengerArenaYtelse(hendelse: InnsendingHendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
-            melding = "Trenger arenaytelser",
-            detaljer = mapOf("ident" to this.ident)
+                type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
+                melding = "Trenger arenaytelser",
+                detaljer = mapOf("ident" to this.ident)
         )
     }
 
     private fun tilstand(
-        event: InnsendingHendelse,
-        nyTilstand: Tilstand,
-        block: () -> Unit = {}
+            event: InnsendingHendelse,
+            nyTilstand: Tilstand,
+            block: () -> Unit = {}
     ) {
         if (tilstand == nyTilstand) {
             return // Already in this state => ignore
@@ -521,20 +512,20 @@ class Innsending private constructor(
     }
 
     private fun emitTilstandEndret(
-        gjeldendeTilstand: InnsendingTilstandType,
-        aktivitetslogg: Aktivitetslogg,
-        forrigeTilstand: InnsendingTilstandType,
-        timeout: Duration
+            gjeldendeTilstand: InnsendingTilstandType,
+            aktivitetslogg: Aktivitetslogg,
+            forrigeTilstand: InnsendingTilstandType,
+            timeout: Duration
     ) {
         observers.forEach {
             it.tilstandEndret(
-                InnsendingObserver.InnendingEndretTilstandEvent(
-                    journalpostId = journalpostId,
-                    gjeldendeTilstand = gjeldendeTilstand,
-                    forrigeTilstand = forrigeTilstand,
-                    aktivitetslogg = aktivitetslogg,
-                    timeout = timeout
-                )
+                    InnsendingObserver.InnendingEndretTilstandEvent(
+                            journalpostId = journalpostId,
+                            gjeldendeTilstand = gjeldendeTilstand,
+                            forrigeTilstand = forrigeTilstand,
+                            aktivitetslogg = aktivitetslogg,
+                            timeout = timeout
+                    )
             )
         }
     }
@@ -544,14 +535,14 @@ class Innsending private constructor(
     }
 
     private fun erFerdigBehandlet() =
-        this.tilstand.type in setOf(
-            InnsendingTilstandType.InnsendingFerdigstilt,
-            InnsendingTilstandType.AlleredeBehandlet
-        )
+            this.tilstand.type in setOf(
+                    InnsendingTilstandType.InnsendingFerdigstilt,
+                    InnsendingTilstandType.AlleredeBehandlet
+            )
 
     override fun opprettKontekst(): Kontekst = Kontekst(
-        "Innsending",
-        mapOf("journalpostId" to journalpostId)
+            "Innsending",
+            mapOf("journalpostId" to journalpostId)
     )
 
     fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
@@ -583,9 +574,9 @@ class Innsending private constructor(
         }
 
         fun sjekkBeskyttelsesbehovSkjermet(
-            erEgenAnsatt: Boolean,
-            harBeskyttelsesbehovFortrolig: Boolean,
-            harBeskyttelsesbehovStrengtFortrolig: Boolean
+                erEgenAnsatt: Boolean,
+                harBeskyttelsesbehovFortrolig: Boolean,
+                harBeskyttelsesbehovStrengtFortrolig: Boolean
         ) {
             if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
                 SECURELOG.info("erEgenAnsatt")
@@ -602,29 +593,29 @@ class Innsending private constructor(
         fun sjekkSøkerForTilgang(personopplysninger: Personopplysninger.Søker) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
-                personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
+                    personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
             val erEgenAnsatt = personopplysninger.skjermet ?: false
 
             sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig)
             sjekkBeskytelsesbehovFortrolig(harBeskyttelsesbehovFortrolig)
             sjekkBeskyttelsesbehovSkjermet(
-                erEgenAnsatt,
-                harBeskyttelsesbehovFortrolig,
-                harBeskyttelsesbehovStrengtFortrolig
+                    erEgenAnsatt,
+                    harBeskyttelsesbehovFortrolig,
+                    harBeskyttelsesbehovStrengtFortrolig
             )
         }
 
         fun sjekkBarnMedIdentForTilgang(personopplysninger: Personopplysninger.BarnMedIdent) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
-                personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
+                    personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
 
             sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig)
             sjekkBeskytelsesbehovFortrolig(harBeskyttelsesbehovFortrolig)
         }
 
         personopplysningerSøker()?.let { sjekkSøkerForTilgang(it) }
-            ?: throw TilgangException("Umulig å vurdere tilgang")
+                ?: throw TilgangException("Umulig å vurdere tilgang")
         personopplysningerBarnMedIdent().forEach {
             sjekkBarnMedIdentForTilgang(it)
         }

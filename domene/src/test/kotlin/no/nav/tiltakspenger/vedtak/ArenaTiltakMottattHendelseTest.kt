@@ -1,15 +1,14 @@
 package no.nav.tiltakspenger.vedtak
 
-import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
-import no.nav.tiltakspenger.objectmothers.nyTiltakHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.*
 
 class ArenaTiltakMottattHendelseTest {
     @Test
+    @Disabled("Denne håndteres annerledes nå, faktainnhenteren sender tom liste!")
     fun `lagre og hente en med feil i tiltak fra Arena`() {
+        /*
         val journalpostId = Random().nextInt().toString()
         val innsending = innsendingMedSkjerming(journalpostId = journalpostId)
 
@@ -24,5 +23,6 @@ class ArenaTiltakMottattHendelseTest {
         innsending.aktivitetslogg.aktiviteter()
             .filter { it.melding == "Fant ikke person i arenetiltak" }.size shouldBe 1
         innsending.tilstand shouldBe Innsending.FaktainnhentingFeilet
+         */
     }
 }
