@@ -150,7 +150,7 @@ fun nyAlderVilkårsvurdering(vurderingsperiode: Periode = defaultPeriode): Alder
     return AlderVilkårsvurderingKategori(
         alderVilkårsvurdering = AlderVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            søkersFødselsdato = LocalDate.MAX
+            søkersFødselsdato = LocalDate.now().minusYears(20)
         )
     )
 }
