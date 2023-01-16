@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
@@ -7,14 +8,14 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 
-
 class Inngangsvilkårsvurderinger(
     val tiltakspengerYtelser: TiltakspengerVilkårsvurderingKategori,
     val statligeYtelser: StatligeYtelserVilkårsvurderingKategori,
     val kommunaleYtelser: KommunaleYtelserVilkårsvurderingKategori,
     val pensjonsordninger: PensjonsinntektVilkårsvurderingKategori,
     val lønnsinntekt: LønnsinntektVilkårsvurderingKategori,
-    val institusjonopphold: InstitusjonVilkårsvurderingKategori
+    val institusjonopphold: InstitusjonVilkårsvurderingKategori,
+    val alder: AlderVilkårsvurderingKategori
 ) {
     fun samletUtfall(): Utfall {
         val utfall =
@@ -25,6 +26,7 @@ class Inngangsvilkårsvurderinger(
                 pensjonsordninger.samletUtfall(),
                 lønnsinntekt.samletUtfall(),
                 institusjonopphold.samletUtfall(),
+                alder.samletUtfall()
             )
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
@@ -41,6 +43,7 @@ class Inngangsvilkårsvurderinger(
             pensjonsordninger.vurderinger(),
             lønnsinntekt.vurderinger(),
             institusjonopphold.vurderinger(),
+            alder.vurderinger()
         ).flatten()
 }
 

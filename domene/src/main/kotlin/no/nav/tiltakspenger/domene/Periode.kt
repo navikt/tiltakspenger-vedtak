@@ -92,11 +92,11 @@ class Periode(fra: LocalDate, til: LocalDate) {
         return "Periode(range=$range)"
     }
 
-    fun inneholder(fødselsdato: LocalDate): Boolean = range.contains(fødselsdato)
+    fun inneholder(dato: LocalDate): Boolean = range.contains(dato)
 
-    fun etter(fødselsdato: LocalDate): Boolean = this.fra.isAfter(fødselsdato)
+    fun etter(dato: LocalDate): Boolean = this.fra.isAfter(dato)
 
-    fun før(fødselsdato: LocalDate): Boolean = this.til.isBefore(fødselsdato)
+    fun før(dato: LocalDate): Boolean = this.til.isBefore(dato)
 
     fun trekkFra(andrePerioder: List<Periode>): List<Periode> {
         val opprinneligeRangeSet =

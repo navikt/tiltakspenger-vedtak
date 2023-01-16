@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
@@ -21,6 +22,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
@@ -265,6 +267,12 @@ class BehandlingMapper {
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
                 // institusjonsopphold = emptyList(),
+            )
+        ),
+        alder = AlderVilkårsvurderingKategori(
+            alderVilkårsvurdering = AlderVilkårsvurdering(
+                vurderingsperiode = vurderingsperiode,
+                søkersFødselsdato = innsending.personopplysningerSøker()!!.fødselsdato
             )
         )
     )
