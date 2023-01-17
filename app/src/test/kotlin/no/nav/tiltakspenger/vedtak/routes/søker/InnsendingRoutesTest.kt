@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.InstitusjonsoppholdDTO
 import no.nav.tiltakspenger.vedtak.service.søker.KommunaleYtelserDTO
@@ -164,6 +165,18 @@ class InnsendingRoutesTest {
                                 periode = null,
                                 kreverManuellVurdering = false,
                                 utfall = UtfallDTO.Uavklart
+                            )
+                        )
+                    ),
+                    alderVilkårsvurdering = AlderVilkårsvurderingDTO(
+                        samletUtfall = UtfallDTO.Oppfylt,
+                        perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Oppfylt
                             )
                         )
                     )

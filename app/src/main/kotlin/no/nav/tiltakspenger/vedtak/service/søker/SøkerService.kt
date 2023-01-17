@@ -29,7 +29,8 @@ data class BehandlingDTO(
     val pensjonsordninger: PensjonsordningerDTO,
     val lønnsinntekt: LønnsinntekterDTO,
     val institusjonsopphold: InstitusjonsoppholdDTO,
-    val barnetillegg: List<BarnetilleggDTO>
+    val barnetillegg: List<BarnetilleggDTO>,
+    val alderVilkårsvurdering: AlderVilkårsvurderingDTO,
 )
 
 data class StatligeYtelserDTO(
@@ -68,6 +69,11 @@ data class LønnsinntekterDTO(
 )
 
 data class InstitusjonsoppholdDTO(
+    val samletUtfall: UtfallDTO,
+    val perioder: List<VilkårsvurderingDTO>
+)
+
+data class AlderVilkårsvurderingDTO(
     val samletUtfall: UtfallDTO,
     val perioder: List<VilkårsvurderingDTO>
 )

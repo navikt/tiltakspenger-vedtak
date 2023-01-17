@@ -104,7 +104,8 @@ class BehandlingMapper {
                 pensjonsordninger = mapPensjonsordninger(vilkårsvurderinger.pensjonsordninger),
                 lønnsinntekt = mapLønnsinntekt(vilkårsvurderinger.lønnsinntekt),
                 institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
-                barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
+                barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
+                alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
             )
         }
     }
@@ -173,6 +174,15 @@ class BehandlingMapper {
         return InstitusjonsoppholdDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
             perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) })
+    }
+
+    private fun mapAlderVilkårsvurdering(vilkårsvurdering: VilkårsvurderingKategori): AlderVilkårsvurderingDTO {
+        val perioder =
+            vilkårsvurdering.vurderinger()
+                .filter { it.vilkår is Vilkår.ALDER }
+        return AlderVilkårsvurderingDTO(
+            samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            perioder = perioder.map { mapVurderingToVilkårsvurderingDTO(it) })
     }
 
     private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {
