@@ -42,6 +42,7 @@ class BehandlingMapper {
                     fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     ident = it.ident,
+                    fødselsdato = it.fødselsdato,
                     barn = listOf(),
                     fortrolig = it.fortrolig,
                     strengtFortrolig = it.strengtFortrolig,

@@ -134,6 +134,7 @@ data class PersonopplysningerDTO(
     val fornavn: String?,
     val etternavn: String?,
     val ident: String,
+    val fødselsdato: LocalDate,
     val barn: List<BarnDTO>,
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,

@@ -45,7 +45,8 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             return listOf(
                 lagIkkeOppfyltVurdering(
                     fra = vurderingsperiode.fra,
-                    til = vurderingsperiode.til
+                    til = vurderingsperiode.til,
+                    null
                 )
             )
         }
@@ -54,7 +55,11 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             datoBrukerFyller18År = datoBrukerFyller18År
         )
         return listOf(
-            lagIkkeOppfyltVurdering(fra = periodeUnder18År.fra, til = periodeUnder18År.til),
+            lagIkkeOppfyltVurdering(
+                fra = periodeUnder18År.fra,
+                til = periodeUnder18År.til,
+                detaljer = "Bruker fyller 18 år i søknadsperioden"
+            ),
             lagOppfyltVurdering(fra = periodeFylt18År.fra, til = periodeFylt18År.til)
         )
     }
@@ -63,21 +68,21 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
     fun lagOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
         Vurdering(
             vilkår = vilkår(),
-            kilde = "Søknad",
+            kilde = "PDL",
             fom = fra,
             tom = til,
             utfall = Utfall.OPPFYLT,
-            detaljer = "Bruker har fylt 18 år",
+            detaljer = "-"
         )
 
-    fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
+    fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
         Vurdering(
             vilkår = vilkår(),
-            kilde = "Søknad",
+            kilde = "PDL",
             fom = fra,
             tom = til,
             utfall = Utfall.IKKE_OPPFYLT,
-            detaljer = "Bruker har ikke fylt 18 år",
+            detaljer = if (detaljer.isNullOrEmpty()) "-" else detaljer,
         )
 
     val alderVurderinger: List<Vurdering> = lagAlderVurderinger(

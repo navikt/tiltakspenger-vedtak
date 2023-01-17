@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.time.LocalDate
 
 class InnsendingRoutesTest {
 
@@ -57,6 +58,7 @@ class InnsendingRoutesTest {
                 fornavn = "Foo",
                 etternavn = "Bar",
                 ident = "",
+                fødselsdato = LocalDate.now(),
                 barn = listOf(),
                 fortrolig = false,
                 strengtFortrolig = false,
