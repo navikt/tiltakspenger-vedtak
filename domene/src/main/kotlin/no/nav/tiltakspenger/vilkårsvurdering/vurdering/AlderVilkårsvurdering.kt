@@ -7,9 +7,12 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 import java.time.LocalDate
 
-class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: LocalDate): Vilkårsvurdering() {
+class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: LocalDate) : Vilkårsvurdering() {
 
-    fun splittVurderingsperiodePåDato(vurderingsperiode: Periode, datoBrukerFyller18År: LocalDate): Pair<Periode, Periode> {
+    fun splittVurderingsperiodePåDato(
+        vurderingsperiode: Periode,
+        datoBrukerFyller18År: LocalDate
+    ): Pair<Periode, Periode> {
         val periodeFørBrukerFyller18År = Periode(
             fra = vurderingsperiode.fra,
             til = datoBrukerFyller18År.minusDays(1)
@@ -51,8 +54,8 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             datoBrukerFyller18År = datoBrukerFyller18År
         )
         return listOf(
-            lagOppfyltVurdering(fra = periodeFylt18År.fra, til = periodeFylt18År.til),
-            lagIkkeOppfyltVurdering(fra = periodeUnder18År.fra, til = periodeUnder18År.til)
+            lagIkkeOppfyltVurdering(fra = periodeUnder18År.fra, til = periodeUnder18År.til),
+            lagOppfyltVurdering(fra = periodeFylt18År.fra, til = periodeFylt18År.til)
         )
     }
 
@@ -81,6 +84,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         vurderingsperiode = vurderingsperiode,
         søkersFødselsdato = søkersFødselsdato
     )
+
     override fun vurderinger(): List<Vurdering> {
         return alderVurderinger;
     }
