@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
@@ -21,6 +22,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
@@ -40,6 +42,7 @@ class BehandlingMapper {
                     fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     ident = it.ident,
+                    fødselsdato = it.fødselsdato,
                     barn = listOf(),
                     fortrolig = it.fortrolig,
                     strengtFortrolig = it.strengtFortrolig,
@@ -102,7 +105,8 @@ class BehandlingMapper {
                 pensjonsordninger = mapPensjonsordninger(vilkårsvurderinger.pensjonsordninger),
                 lønnsinntekt = mapLønnsinntekt(vilkårsvurderinger.lønnsinntekt),
                 institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
-                barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent())
+                barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
+                alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
             )
         }
     }
@@ -171,6 +175,15 @@ class BehandlingMapper {
         return InstitusjonsoppholdDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
             perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) })
+    }
+
+    private fun mapAlderVilkårsvurdering(vilkårsvurdering: VilkårsvurderingKategori): AlderVilkårsvurderingDTO {
+        val perioder =
+            vilkårsvurdering.vurderinger()
+                .filter { it.vilkår is Vilkår.ALDER }
+        return AlderVilkårsvurderingDTO(
+            samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
+            perioder = perioder.map { mapVurderingToVilkårsvurderingDTO(it) })
     }
 
     private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {
@@ -265,6 +278,12 @@ class BehandlingMapper {
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
                 // institusjonsopphold = emptyList(),
+            )
+        ),
+        alder = AlderVilkårsvurderingKategori(
+            alderVilkårsvurdering = AlderVilkårsvurdering(
+                vurderingsperiode = vurderingsperiode,
+                søkersFødselsdato = innsending.personopplysningerSøker()!!.fødselsdato
             )
         )
     )

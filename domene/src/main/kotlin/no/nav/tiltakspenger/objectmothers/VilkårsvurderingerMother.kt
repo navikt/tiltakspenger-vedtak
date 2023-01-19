@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.LønnsinntektVilkårsvurderingKategori
@@ -13,6 +14,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
@@ -20,6 +22,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
+import java.time.LocalDate
 
 private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 
@@ -143,6 +146,15 @@ fun nyKommunaleYtelserVilkårsvurdering(
     )
 }
 
+fun nyAlderVilkårsvurdering(vurderingsperiode: Periode = defaultPeriode): AlderVilkårsvurderingKategori {
+    return AlderVilkårsvurderingKategori(
+        alderVilkårsvurdering = AlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søkersFødselsdato = LocalDate.now().minusYears(20)
+        )
+    )
+}
+
 fun nyVilkårsvurdering(
     vurderingsperiode: Periode = defaultPeriode,
     statligeYtelserVilkårsvurderingKategori: StatligeYtelserVilkårsvurderingKategori = nyStatligeYtelserVilkårsvurdering(
@@ -162,6 +174,9 @@ fun nyVilkårsvurdering(
     ),
     tiltakspengerVilkårsvurdering: TiltakspengerVilkårsvurderingKategori = nyTiltakspengerVilkårsvurdering(
         vurderingsperiode = vurderingsperiode
+    ),
+    alderVilkårsvurdering: AlderVilkårsvurderingKategori = nyAlderVilkårsvurdering(
+        vurderingsperiode = vurderingsperiode
     )
 ): Inngangsvilkårsvurderinger {
     return Inngangsvilkårsvurderinger(
@@ -171,5 +186,6 @@ fun nyVilkårsvurdering(
         pensjonsordninger = pensjonsinntektVilkårsvurdering,
         lønnsinntekt = lønnsinntektVilkårsvurdering,
         institusjonopphold = institusjonsoppholdVilkårsvurdering,
+        alder = alderVilkårsvurdering
     )
 }

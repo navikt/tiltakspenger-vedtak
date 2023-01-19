@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.InstitusjonsoppholdDTO
 import no.nav.tiltakspenger.vedtak.service.søker.KommunaleYtelserDTO
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.time.LocalDate
 
 class InnsendingRoutesTest {
 
@@ -56,6 +58,7 @@ class InnsendingRoutesTest {
                 fornavn = "Foo",
                 etternavn = "Bar",
                 ident = "",
+                fødselsdato = LocalDate.now(),
                 barn = listOf(),
                 fortrolig = false,
                 strengtFortrolig = false,
@@ -164,6 +167,18 @@ class InnsendingRoutesTest {
                                 periode = null,
                                 kreverManuellVurdering = false,
                                 utfall = UtfallDTO.Uavklart
+                            )
+                        )
+                    ),
+                    alderVilkårsvurdering = AlderVilkårsvurderingDTO(
+                        samletUtfall = UtfallDTO.Oppfylt,
+                        perioder = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Oppfylt
                             )
                         )
                     )
