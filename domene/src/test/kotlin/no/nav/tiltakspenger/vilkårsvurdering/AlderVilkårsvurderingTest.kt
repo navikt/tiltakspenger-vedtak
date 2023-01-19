@@ -29,9 +29,9 @@ class AlderVilkårsvurderingTest {
             vurderingsperiode = vurderingsperiode,
             søkersFødselsdato = fødselsdato
         )
-        alderVilkårsvurdering.alderVurderinger.size shouldBe 2
+        alderVilkårsvurdering.alderVurderinger.size shouldBe 1
         alderVilkårsvurdering.alderVurderinger[0].utfall shouldBe Utfall.IKKE_OPPFYLT
-        alderVilkårsvurdering.alderVurderinger[1].utfall shouldBe Utfall.OPPFYLT
+        alderVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
     }
 
     @Test

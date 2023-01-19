@@ -59,8 +59,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
                 fra = periodeUnder18År.fra,
                 til = periodeUnder18År.til,
                 detaljer = "Bruker fyller 18 år i søknadsperioden"
-            ),
-            lagOppfyltVurdering(fra = periodeFylt18År.fra, til = periodeFylt18År.til)
+            )
         )
     }
 
