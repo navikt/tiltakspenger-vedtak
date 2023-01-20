@@ -101,3 +101,5 @@ build
 /.env
 
 .DS_Store
+!.idea/codeStyles/codeStyleConfig.xml
+!.idea/codeStyles/Project.xml
