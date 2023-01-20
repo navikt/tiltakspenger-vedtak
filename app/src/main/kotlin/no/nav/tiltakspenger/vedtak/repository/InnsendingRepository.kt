@@ -12,4 +12,5 @@ interface InnsendingRepository {
     fun antallStoppetUnderBehandling(): Long
     fun hentInnsendingerMedTilstandFaktainnhentingFeilet(): List<String>
     fun hentInnsendingerStoppetUnderBehandling(): List<String>
+    fun hentInnsendingerMedTilstandFerdigstilt(): List<String>
 }
