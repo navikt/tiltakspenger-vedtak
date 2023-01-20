@@ -381,7 +381,7 @@ class Innsending private constructor(
             innsending.personopplysninger = innsending.personopplysninger.map {
                 if (it is Personopplysninger.Søker) {
                     it.copy(
-                            skjermet = skjermingMottattHendelse.skjerming().skjerming
+                        skjermet = skjermingMottattHendelse.skjerming().søker.skjerming
                     )
                 } else {
                     it
@@ -493,7 +493,9 @@ class Innsending private constructor(
         hendelse.behov(
                 type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
                 melding = "Trenger skjermingdata",
-                detaljer = mapOf("ident" to this.ident)
+                detaljer = mapOf(
+                    "ident" to this.ident,
+                    "barn" to this.personopplysningerBarnMedIdent().map { it.ident })
         )
     }
 

@@ -9,6 +9,7 @@ import io.ktor.server.util.*
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
 import no.nav.tiltakspenger.objectmothers.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class SkjermingRoutesTest {
     private companion object {
@@ -76,10 +78,19 @@ class SkjermingRoutesTest {
 
     private val skjermingBody = """
         {
-          "skjerming": false,
-          "ident": "$IDENT",
-          "journalpostId": "$JOURNALPOSTID",
-          "innhentet": "2022-08-22T14:59:46.491437009"
+            "ident": "$IDENT",
+            "journalpostId": "$JOURNALPOSTID",
+            "skjerming": {
+                "skjermingForPersoner": {
+                    "søker": {
+                        "ident": "05906398291",
+                        "skjerming": false
+                    },
+                    "barn": []
+                },
+                "feil": null
+            },
+            "innhentet": "2022-08-22T14:59:46.491437009"
         }
     """.trimIndent()
 }

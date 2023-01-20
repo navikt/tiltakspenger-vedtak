@@ -87,17 +87,10 @@ class SøknadRoutesTest {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
             Assertions.assertEquals("personopplysninger", field(0, "@behov")[0].asText())
+            Assertions.assertEquals(IDENT, field(0, "ident").asText())
         }
     }
 
-    //    private val søknadBody = """
-//        {
-//          "skjerming": false,
-//          "ident": "$IDENT",
-//          "journalpostId": "$JOURNALPOSTID",
-//          "innhentet": "2022-08-22T14:59:46.491437009"
-//        }
-//    """.trimIndent()
     private val søknadBody =
         """
         {

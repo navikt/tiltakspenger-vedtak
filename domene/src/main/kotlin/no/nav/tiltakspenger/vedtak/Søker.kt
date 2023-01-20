@@ -34,7 +34,7 @@ class Søker private constructor(
 
     fun håndter(hendelse: SkjermingMottattHendelse) {
         personopplysninger = personopplysninger?.copy(
-            skjermet = hendelse.skjerming().skjerming
+            skjermet = hendelse.skjerming().søker.skjerming
         )
     }
 
