@@ -110,6 +110,7 @@ private fun mapPersonopplysninger(
             fortrolig = it.adressebeskyttelseGradering == FORTROLIG,
             strengtFortrolig = it.adressebeskyttelseGradering == STRENGT_FORTROLIG,
             strengtFortroligUtland = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG_UTLAND,
+            skjermet = null,
             oppholdsland = null, // TODO: fix!
             tidsstempelHosOss = innhentet,
         )

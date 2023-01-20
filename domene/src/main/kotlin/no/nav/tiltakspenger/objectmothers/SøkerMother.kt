@@ -232,6 +232,7 @@ fun barn(
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
     strengtFortroligUtland: Boolean = false,
+    skjermet: Boolean = false,
     oppholdsland: String? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
 ): Personopplysninger.BarnMedIdent {
@@ -244,6 +245,7 @@ fun barn(
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
         strengtFortroligUtland = strengtFortroligUtland,
+        skjermet = skjermet,
         oppholdsland = oppholdsland,
         tidsstempelHosOss = tidsstempelHosOss,
     )

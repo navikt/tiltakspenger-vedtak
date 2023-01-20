@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
 
@@ -35,6 +36,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
                     "fortrolig" to personopplysninger.fortrolig,
                     "strengtFortrolig" to personopplysninger.strengtFortrolig,
                     "strengtFortroligUtland" to personopplysninger.strengtFortroligUtland,
+                    "skjermet" to personopplysninger.skjermet,
                     "oppholdsland" to personopplysninger.oppholdsland,
                     "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
                 )
@@ -55,6 +57,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             fortrolig = row.boolean("fortrolig"),
             strengtFortrolig = row.boolean("strengt_fortrolig"),
             strengtFortroligUtland = row.boolean("strengt_fortrolig_utland"),
+            skjermet = row.booleanOrNull("skjermet"),
             oppholdsland = row.stringOrNull("oppholdsland"),
             tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
         )
@@ -79,6 +82,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             fortrolig,       
             strengt_fortrolig,
             strengt_fortrolig_utland,
+            skjermet,
             oppholdsland,           
             tidsstempel_hos_oss            
         ) values (
@@ -92,6 +96,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             :fortrolig,         
             :strengtFortrolig, 
             :strengtFortroligUtland, 
+            :skjermet, 
             :oppholdsland,             
             :tidsstempelHosOss
         )""".trimIndent()
