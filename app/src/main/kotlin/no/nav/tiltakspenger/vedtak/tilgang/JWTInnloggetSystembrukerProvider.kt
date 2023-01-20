@@ -1,12 +1,9 @@
 package no.nav.tiltakspenger.vedtak.tilgang
 
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.auth.jwt.JWTPrincipal
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.vedtak.AdRolle
-import no.nav.tiltakspenger.vedtak.Configuration
-import java.util.*
 
 private val LOG = KotlinLogging.logger {}
 
@@ -19,7 +16,7 @@ class JWTInnloggetSystembrukerProvider(
             LOG.info { "Vi fant disse rollene i systemtoken $it" }
         }
 
-        val roller = allAvailableRoles.filter {rolle ->
+        val roller = allAvailableRoles.filter { rolle ->
             rollerFraToken.contains(rolle.name)
         }
 

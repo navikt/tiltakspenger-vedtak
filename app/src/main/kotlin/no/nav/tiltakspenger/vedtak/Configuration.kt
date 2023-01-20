@@ -8,7 +8,7 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.felles.Rolle
-import java.util.*
+import java.util.UUID
 
 private const val applicationName = "tiltakspenger-vedtak"
 

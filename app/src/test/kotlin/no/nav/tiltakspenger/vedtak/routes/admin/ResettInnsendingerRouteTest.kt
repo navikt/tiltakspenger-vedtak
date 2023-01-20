@@ -1,11 +1,14 @@
 package no.nav.tiltakspenger.vedtak.routes.admin
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest

@@ -15,14 +15,12 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
-import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions

@@ -2,12 +2,12 @@ package no.nav.tiltakspenger.vedtak.tilgang
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.auth.jwt.JWTPrincipal
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.UUID
 
 internal class SaksbehandlerProviderTest {
 

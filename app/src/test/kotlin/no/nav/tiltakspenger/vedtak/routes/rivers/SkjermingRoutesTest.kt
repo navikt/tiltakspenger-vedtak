@@ -1,15 +1,17 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.request.setBody
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
 import no.nav.tiltakspenger.objectmothers.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -18,7 +20,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class SkjermingRoutesTest {
     private companion object {

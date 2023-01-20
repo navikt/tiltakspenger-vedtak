@@ -60,7 +60,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
     val oppfyltePerioderIVurderingsperioden: List<Periode> =
         vurderingsperiode.trekkFra(ikkeOppfyltePerioderIVurderingsperioden)
-    
+
     val oppfylte: List<Konklusjon.Oppfylt> = oppfyltePerioderIVurderingsperioden
         .map { periode ->
             //Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt

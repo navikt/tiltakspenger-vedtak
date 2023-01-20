@@ -244,7 +244,7 @@ open class Aktivitetslogg(
                 return result
             }
 
-            @Suppress("EnumNaming")
+
             enum class Behovtype {
                 personopplysninger, skjerming, arenatiltak, arenaytelser,
             }

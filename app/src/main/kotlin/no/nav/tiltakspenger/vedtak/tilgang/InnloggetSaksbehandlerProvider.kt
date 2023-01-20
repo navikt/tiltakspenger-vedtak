@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.tilgang
 
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface InnloggetSaksbehandlerProvider {

@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-@Suppress("TooManyFunctions", "LongParameterList")
+
 class Innsending private constructor(
     val id: InnsendingId,
     val journalpostId: String,

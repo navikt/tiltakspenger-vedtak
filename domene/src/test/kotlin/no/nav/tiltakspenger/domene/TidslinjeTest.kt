@@ -3,11 +3,11 @@ package no.nav.tiltakspenger.domene
 import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
 import no.nav.tiltakspenger.domene.vilkår.Institusjonsopphold
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class TidslinjeTest{
+internal class TidslinjeTest {
     fun institusjonsoppholdBrukerFaktum(
         fra: LocalDate = 1.januar(2022),
         til: LocalDate = 10.januar(2022),
@@ -46,7 +46,10 @@ internal class TidslinjeTest{
             )
         )
         val tidslinje = Tidslinje.lagTidslinje(
-           vilkårsvurderinger = Vilkårsvurderinger(periode = Periode(fra = 1.januar(2022), til = 12.januar(2022)), vilkårsvurderinger = listOf(vilkårsvurdering) )
+            vilkårsvurderinger = Vilkårsvurderinger(
+                periode = Periode(fra = 1.januar(2022), til = 12.januar(2022)),
+                vilkårsvurderinger = listOf(vilkårsvurdering)
+            )
         )
 
         val (ikkeOppfylteDager, oppfylteDager) = tidslinje.vurderteDager.partition { it.utfallsperiode == Utfall.VurdertOgIkkeOppfylt }

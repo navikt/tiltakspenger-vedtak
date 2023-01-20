@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.*
+import java.util.Random
 
 internal class SøkerServiceTest {
 

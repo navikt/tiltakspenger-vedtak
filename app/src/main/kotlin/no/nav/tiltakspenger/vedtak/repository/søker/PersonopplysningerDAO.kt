@@ -71,7 +71,7 @@ class PersonopplysningerDAO() {
     private fun slett(søkerId: SøkerId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, søkerId.toString()).asUpdate)
 
-    private fun Row.toPersonopplysninger() : Personopplysninger.Søker {
+    private fun Row.toPersonopplysninger(): Personopplysninger.Søker {
         return Personopplysninger.Søker(
             ident = string("ident"),
             fødselsdato = localDate("fødselsdato"),

@@ -91,10 +91,12 @@ class VilkårsvurderingTest {
                     assertEquals(start, it.periode.fra)
                     assertEquals(om1Uke, it.periode.til)
                 }
+
                 Utfall.VurdertOgOppfylt -> {
                     assertEquals(om1Uke.plusDays(1), it.periode.fra)
                     assertEquals(om2Uker, it.periode.til)
                 }
+
                 else -> fail()
             }
         }

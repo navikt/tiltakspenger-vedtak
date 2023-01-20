@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.domene.vilkår
 
-import no.nav.tiltakspenger.domene.*
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Utfall
+import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.fakta.FødselsdatoFaktum
 import kotlin.reflect.KClass
@@ -26,12 +28,14 @@ object ErOver18År : Vilkår {
                     vurderingsperiode
                 )
             )
+
             vurderingsperiode.før(faktum.fødselsdato) -> listOf(
                 Utfallsperiode(
                     utfall = Utfall.VurdertOgIkkeOppfylt,
                     vurderingsperiode
                 )
             )
+
             else -> listOf(
                 Utfallsperiode(
                     utfall = Utfall.VurdertOgIkkeOppfylt,

@@ -1,7 +1,18 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.vedtak.*
-import no.nav.tiltakspenger.vedtak.meldinger.*
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Feil
+import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.util.Random
 
 fun nySøknadMottattHendelse(

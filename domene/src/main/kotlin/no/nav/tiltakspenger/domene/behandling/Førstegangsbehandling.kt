@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.*
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.Vilkårsvurdering
+import no.nav.tiltakspenger.domene.Vilkårsvurderinger
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.vilkår.ErOver18År
 import java.time.LocalDate

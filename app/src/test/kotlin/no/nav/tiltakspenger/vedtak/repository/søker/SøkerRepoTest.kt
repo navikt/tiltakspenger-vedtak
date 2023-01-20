@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.*
+import java.util.Random
 
 @Testcontainers
 internal class SøkerRepoTest {
