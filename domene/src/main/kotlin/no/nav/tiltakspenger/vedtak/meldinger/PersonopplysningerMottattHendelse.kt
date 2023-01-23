@@ -16,5 +16,4 @@ class PersonopplysningerMottattHendelse(
     override fun ident() = ident
 
     fun personopplysninger() = personopplysninger
-
 }

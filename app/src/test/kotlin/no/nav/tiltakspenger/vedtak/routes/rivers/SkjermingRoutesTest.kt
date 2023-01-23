@@ -49,7 +49,7 @@ class SkjermingRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     skjermingRoutes(

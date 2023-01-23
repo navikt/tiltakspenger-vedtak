@@ -15,7 +15,7 @@ class Innvilgelse : Vedtak {
 
 class Avslag : Vedtak {
     override fun tilArenaVedtak() {
-        // 
+        //
         TODO("Not yet implemented")
     }
 }

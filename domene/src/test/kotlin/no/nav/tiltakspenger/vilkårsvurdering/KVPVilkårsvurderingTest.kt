@@ -75,5 +75,4 @@ internal class KVPVilkårsvurderingTest {
 
         kvpVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
     }
-
 }

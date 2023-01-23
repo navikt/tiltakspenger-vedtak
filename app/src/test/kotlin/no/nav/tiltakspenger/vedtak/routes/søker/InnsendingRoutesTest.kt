@@ -103,7 +103,8 @@ class InnsendingRoutesTest {
                         )
                     ),
                     kommunaleYtelser = KommunaleYtelserDTO(
-                        samletUtfall = UtfallDTO.Uavklart, kvp = listOf(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        kvp = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
@@ -111,7 +112,8 @@ class InnsendingRoutesTest {
                                 kreverManuellVurdering = false,
                                 utfall = UtfallDTO.Uavklart
                             )
-                        ), introProgrammet = listOf(
+                        ),
+                        introProgrammet = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
@@ -160,7 +162,8 @@ class InnsendingRoutesTest {
                     ),
                     barnetillegg = emptyList(),
                     tiltakspengerYtelser = TiltakspengerDTO(
-                        samletUtfall = UtfallDTO.Uavklart, perioder = listOf(
+                        samletUtfall = UtfallDTO.Uavklart,
+                        perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
@@ -188,7 +191,7 @@ class InnsendingRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søkerRoutes(
@@ -227,7 +230,7 @@ class InnsendingRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søkerRoutes(
@@ -259,7 +262,7 @@ class InnsendingRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søkerRoutes(

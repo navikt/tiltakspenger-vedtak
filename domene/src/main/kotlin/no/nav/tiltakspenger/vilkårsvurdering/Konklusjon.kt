@@ -24,8 +24,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
         .filter { it.overlapperMed(vurderingsperiode) }
         .mapNotNull { it.overlappendePeriode(vurderingsperiode) }
 
-
-    //Hvis dette slår til, så skal ikkeOppfyltePerioderIVurderingsperioden.size være 1:
+    // Hvis dette slår til, så skal ikkeOppfyltePerioderIVurderingsperioden.size være 1:
     if (ikkeOppfyltePerioderIVurderingsperioden.any { it.inneholderHele(vurderingsperiode) }) {
         // Vi skal ikke kunne få ikke-oppfylte vilkårsvurderinger hvor den ikke-oppfylte perioden
         // er utenfor vurderingsperioden, da ville vilkåret vært oppfylt
@@ -63,7 +62,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
     val oppfylte: List<Konklusjon.Oppfylt> = oppfyltePerioderIVurderingsperioden
         .map { periode ->
-            //Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
+            // Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
             Konklusjon.Oppfylt(periode to oppfylteVurderinger.toSet())
         }
     val ikkeOppfylte: List<Konklusjon.IkkeOppfylt> = ikkeOppfyltePerioderIVurderingsperioden

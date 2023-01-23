@@ -8,8 +8,7 @@ import com.google.common.collect.RangeSet
 import com.google.common.collect.TreeRangeSet
 import java.time.LocalDate
 
-
-//TODO: Needs more work
+// TODO: Needs more work
 class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
     override fun next(value: LocalDate): LocalDate {
         return value.plusDays(1)
@@ -21,10 +20,9 @@ class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
 
     override fun distance(start: LocalDate, end: LocalDate): Long {
         return start.until(end).days.toLong()
-        //return DAYS.between(start, end)
+        // return DAYS.between(start, end)
     }
 }
-
 
 class Periode(fra: LocalDate, til: LocalDate) {
 
@@ -133,7 +131,6 @@ fun Range<LocalDate>.fraOgMed(): LocalDate =
     } else {
         LocalDate.MIN
     }
-
 
 fun Range<LocalDate>.tilOgMed(): LocalDate =
     if (this.hasUpperBound()) {

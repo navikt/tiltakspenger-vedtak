@@ -23,5 +23,4 @@ interface Vilkår {
     fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode>
 }
 
-
 val inngangsVilkår = listOf(ErOver18År, KVP)

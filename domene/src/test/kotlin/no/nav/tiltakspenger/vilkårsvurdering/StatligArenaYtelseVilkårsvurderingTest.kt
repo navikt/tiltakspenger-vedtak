@@ -28,7 +28,6 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         @JvmStatic
         private fun utenOverlapp() = testdata(vurderingsperiode = Periode(19.februar(2022), 28.februar(2022)))
 
-
         @JvmStatic
         private fun medOverlapp() = testdata(vurderingsperiode = Periode(19.januar(2022), 28.mars(2022)))
 

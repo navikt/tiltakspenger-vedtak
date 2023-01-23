@@ -15,6 +15,7 @@ class Førstegangsbehandling private constructor(
     val vilkårsvurderinger: Vilkårsvurderinger,
     var tilstand: Tilstand
 ) : Saksbehandling {
+
     constructor(ident: String) : this(
         vilkårsvurderinger = Vilkårsvurderinger(
             periode = Periode(fra = LocalDate.now(), til = LocalDate.now()),

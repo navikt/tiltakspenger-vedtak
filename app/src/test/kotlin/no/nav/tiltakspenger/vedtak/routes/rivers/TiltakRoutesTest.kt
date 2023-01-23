@@ -49,7 +49,7 @@ class TiltakRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     tiltakRoutes(

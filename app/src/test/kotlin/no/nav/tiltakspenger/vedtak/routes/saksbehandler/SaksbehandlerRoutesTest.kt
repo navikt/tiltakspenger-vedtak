@@ -31,7 +31,8 @@ class SaksbehandlerRoutesTest {
           "brukernavn":"Sak Behandler",
           "epost":"Sak.Behandler@nav.no",
           "roller":["SAKSBEHANDLER"]
-        }""".trimIndent()
+        }
+    """.trimIndent()
 
     @Test
     fun `test`() {
@@ -39,7 +40,7 @@ class SaksbehandlerRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     saksbehandlerRoutes(

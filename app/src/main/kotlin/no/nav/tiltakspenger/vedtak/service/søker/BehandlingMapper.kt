@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
@@ -49,7 +48,8 @@ class BehandlingMapper {
                     skjermet = it.skjermet ?: false,
                 )
             },
-            behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) })
+            behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) }
+        )
     }
 
     fun mapInnsendingMedSøknad(innsending: Innsending): BehandlingDTO? {
@@ -147,7 +147,8 @@ class BehandlingMapper {
                 .filter { it.vilkår is Vilkår.TILTAKSPENGER }
         return TiltakspengerDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
-            perioder = perioderMedTiltakspenger.map { mapVurderingToVilkårsvurderingDTO(it) })
+            perioder = perioderMedTiltakspenger.map { mapVurderingToVilkårsvurderingDTO(it) }
+        )
     }
 
     private fun mapPensjonsordninger(vilkårsvurdering: VilkårsvurderingKategori): PensjonsordningerDTO {
@@ -156,7 +157,8 @@ class BehandlingMapper {
                 .filter { it.vilkår is Vilkår.PENSJONSINNTEKT }
         return PensjonsordningerDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
-            perioder = perioderMedPensjonsordning.map { mapVurderingToVilkårsvurderingDTO(it) })
+            perioder = perioderMedPensjonsordning.map { mapVurderingToVilkårsvurderingDTO(it) }
+        )
     }
 
     private fun mapLønnsinntekt(vilkårsvurdering: VilkårsvurderingKategori): LønnsinntekterDTO {
@@ -165,7 +167,8 @@ class BehandlingMapper {
                 .filter { it.vilkår is Vilkår.LØNNSINNTEKT }
         return LønnsinntekterDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
-            perioder = perioderMedLønnsinntekter.map { mapVurderingToVilkårsvurderingDTO(it) })
+            perioder = perioderMedLønnsinntekter.map { mapVurderingToVilkårsvurderingDTO(it) }
+        )
     }
 
     private fun mapInstitusjonsopphold(vilkårsvurdering: VilkårsvurderingKategori): InstitusjonsoppholdDTO {
@@ -174,7 +177,8 @@ class BehandlingMapper {
                 .filter { it.vilkår is Vilkår.INSTITUSJONSOPPHOLD }
         return InstitusjonsoppholdDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
-            perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) })
+            perioder = perioderMedInstitusjonsopphold.map { mapVurderingToVilkårsvurderingDTO(it) }
+        )
     }
 
     private fun mapAlderVilkårsvurdering(vilkårsvurdering: VilkårsvurderingKategori): AlderVilkårsvurderingDTO {
@@ -183,7 +187,8 @@ class BehandlingMapper {
                 .filter { it.vilkår is Vilkår.ALDER }
         return AlderVilkårsvurderingDTO(
             samletUtfall = vilkårsvurdering.samletUtfall().mapToUtfallDTO(),
-            perioder = perioder.map { mapVurderingToVilkårsvurderingDTO(it) })
+            perioder = perioder.map { mapVurderingToVilkårsvurderingDTO(it) }
+        )
     }
 
     private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {

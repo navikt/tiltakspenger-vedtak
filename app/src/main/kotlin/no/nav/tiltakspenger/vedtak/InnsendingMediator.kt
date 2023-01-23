@@ -79,7 +79,7 @@ class InnsendingMediator(
             else -> {
                 LOG.warn(
                     "Fant ingen innsending for hendelse med" +
-                            "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
+                        "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
                 )
                 null
             }

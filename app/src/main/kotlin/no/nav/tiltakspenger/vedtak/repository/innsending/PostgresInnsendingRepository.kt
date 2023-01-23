@@ -61,7 +61,6 @@ internal class PostgresInnsendingRepository(
         }
     }
 
-
     override fun antall(): Long {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->

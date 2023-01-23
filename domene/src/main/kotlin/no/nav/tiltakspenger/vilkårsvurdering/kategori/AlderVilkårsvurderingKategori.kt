@@ -13,5 +13,4 @@ class AlderVilkårsvurderingKategori(
     override fun samletUtfall(): Utfall = alderVilkårsvurdering.samletUtfall()
 
     override fun vurderinger(): List<Vurdering> = alderVilkårsvurdering.vurderinger()
-
 }

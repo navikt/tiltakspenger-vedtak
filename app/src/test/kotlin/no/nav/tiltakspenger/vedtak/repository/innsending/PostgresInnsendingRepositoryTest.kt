@@ -102,7 +102,6 @@ internal class PostgresInnsendingRepositoryTest {
         )
         // sist_endret er ikke gammel nok, så denne skal heller ikke telles med
         innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
-
     }
 
     @Test

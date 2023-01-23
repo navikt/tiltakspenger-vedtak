@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.lang.String.join
 import java.util.UUID
 
-
 private val LOG = KotlinLogging.logger {}
 
 data class AuditLogEvent(

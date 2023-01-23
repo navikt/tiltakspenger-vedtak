@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.LocalDateTime
 
-
 data class ArenaYtelserMottattDTO(
     val respons: ArenaYtelseResponsDTO,
     val ident: String,
@@ -36,7 +35,7 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = arenaYtelser.journalpostId,
             ytelseSak = mapYtelser(
-                ytelseSakDTO = arenaYtelser.respons.saker!!, //Hvis denne smeller må vi kode opp en FeilHendelse
+                ytelseSakDTO = arenaYtelser.respons.saker!!, // Hvis denne smeller må vi kode opp en FeilHendelse
                 tidsstempelHosOss = arenaYtelser.innhentet,
             )
         )
@@ -55,7 +54,7 @@ private fun mapYtelser(
             fomGyldighetsperiode = ytelse.gyldighetsperiodeFom,
             tomGyldighetsperiode = ytelse.gyldighetsperiodeTom,
             datoKravMottatt = ytelse.kravMottattDato,
-            dataKravMottatt = null, //Kan fjernes
+            dataKravMottatt = null, // Kan fjernes
             fagsystemSakId = ytelse.fagsystemSakId,
             status = ytelse.status?.let { s -> mapSakStatus(s) },
             ytelsestype = ytelse.sakType?.let { y -> mapSakType(y) },

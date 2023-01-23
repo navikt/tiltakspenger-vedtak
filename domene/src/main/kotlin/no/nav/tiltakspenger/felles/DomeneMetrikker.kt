@@ -4,7 +4,6 @@ import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 
-
 object DomeneMetrikker {
 
     fun utfasCounter(tiltakstype: Tiltaksaktivitet.Tiltak): Counter = Counter
@@ -17,5 +16,4 @@ object DomeneMetrikker {
         .builder("antall_søknader_mottatt")
         .description("counter for mottatte søknader")
         .register(Metrics.globalRegistry)
-
 }

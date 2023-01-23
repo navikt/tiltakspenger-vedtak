@@ -31,7 +31,8 @@ class YtelsesakDAO(
         val id = random(ULID_PREFIX_YTELSE)
         txSession.run(
             queryOf(
-                lagreYtelseSak, mapOf(
+                lagreYtelseSak,
+                mapOf(
                     "id" to id.toString(),
                     "innsendingId" to innsendingId.toString(),
                     "fomGyldighetsperiode" to ytelseSak.fomGyldighetsperiode,
@@ -99,7 +100,8 @@ class YtelsesakDAO(
             :antallDagerIgjen,
             :antallUkerIgjen,
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val slettYtelsesak = "delete from ytelsesak where innsending_id = ?"

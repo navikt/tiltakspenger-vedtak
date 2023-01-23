@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-
 class Innsending private constructor(
     val id: InnsendingId,
     val journalpostId: String,
@@ -416,7 +415,6 @@ class Innsending private constructor(
                     else -> fom ?: LocalDate.MIN
                 }
 
-
             fun latest(fom: LocalDate?, tom: LocalDate?) =
                 when {
                     fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
@@ -484,7 +482,6 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
     }
 
-
     private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
@@ -499,7 +496,8 @@ class Innsending private constructor(
             melding = "Trenger skjermingdata",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "barn" to this.personopplysningerBarnMedIdent().map { it.ident })
+                "barn" to this.personopplysningerBarnMedIdent().map { it.ident }
+            )
         )
     }
 
@@ -575,7 +573,7 @@ class Innsending private constructor(
         fun sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig: Boolean) {
             if (harBeskyttelsesbehovStrengtFortrolig) {
                 SECURELOG.info("erStrengtFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
                 if (Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to strengt fortrolig for $ident")
                 } else {
@@ -588,7 +586,7 @@ class Innsending private constructor(
         fun sjekkBeskytelsesbehovFortrolig(harBeskyttelsesbehovFortrolig: Boolean) {
             if (harBeskyttelsesbehovFortrolig) {
                 SECURELOG.info("erFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
                 if (Rolle.FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to fortrolig for $ident")
                 } else {
@@ -605,7 +603,7 @@ class Innsending private constructor(
         ) {
             if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
                 SECURELOG.info("erEgenAnsatt")
-                //Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
+                // Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
                 if (Rolle.SKJERMING in saksbehandler.roller) {
                     SECURELOG.info("Access granted to egen ansatt for $ident")
                 } else {
@@ -645,7 +643,6 @@ class Innsending private constructor(
             sjekkBarnMedIdentForTilgang(it)
         }
     }
-
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene

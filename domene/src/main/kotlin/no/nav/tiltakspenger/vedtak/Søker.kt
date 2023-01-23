@@ -13,8 +13,8 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class Søker private constructor(
     val søkerId: SøkerId,
-    val ident: String,  // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
-    var personopplysninger: Personopplysninger.Søker?,  // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
+    val ident: String, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
+    var personopplysninger: Personopplysninger.Søker?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
 ) {
     constructor(
         ident: String
@@ -42,7 +42,7 @@ class Søker private constructor(
         fun sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig: Boolean) {
             if (harBeskyttelsesbehovStrengtFortrolig) {
                 SECURELOG.info("erStrengtFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
                 if (Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to strengt fortrolig for $ident")
                 } else {
@@ -55,7 +55,7 @@ class Søker private constructor(
         fun sjekkBeskytelsesbehovFortrolig(harBeskyttelsesbehovFortrolig: Boolean) {
             if (harBeskyttelsesbehovFortrolig) {
                 SECURELOG.info("erFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
                 if (Rolle.FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to fortrolig for $ident")
                 } else {
@@ -72,7 +72,7 @@ class Søker private constructor(
         ) {
             if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
                 SECURELOG.info("erEgenAnsatt")
-                //Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
+                // Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
                 if (Rolle.SKJERMING in saksbehandler.roller) {
                     SECURELOG.info("Access granted to egen ansatt for $ident")
                 } else {

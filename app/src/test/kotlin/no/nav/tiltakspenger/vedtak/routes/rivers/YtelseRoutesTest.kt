@@ -49,7 +49,7 @@ class YtelseRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     ytelseRoutes(
@@ -84,7 +84,7 @@ class YtelseRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     ytelseRoutes(

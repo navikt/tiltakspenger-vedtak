@@ -33,13 +33,11 @@ class ForeldrepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun vilkår(): Vilkår = Vilkår.FORELDREPENGER
 }
 
-
 class SvangerskapspengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "FP-Sak"
 
     override fun vilkår(): Vilkår = Vilkår.SVANGERSKAPSPENGER
 }
-
 
 class GjenlevendepensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
@@ -47,20 +45,17 @@ class GjenlevendepensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun vilkår(): Vilkår = Vilkår.GJENLEVENDEPENSJON
 }
 
-
 class SupplerendeStønadVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "SupStønad"
 
     override fun vilkår(): Vilkår = Vilkår.SUPPLERENDESTØNAD
 }
 
-
 class AlderspensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
     override fun vilkår(): Vilkår = Vilkår.ALDERSPENSJON
 }
-
 
 class OpplæringspengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "K9"

@@ -31,9 +31,9 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
         val arenaTiltak: ArenaTiltakMottattDTO = try {
             call.receive()
         } catch (t: Throwable) {
-            //println("1")
-            //println(t.message)
-            //println(t.stackTraceToString())
+            // println("1")
+            // println(t.message)
+            // println(t.stackTraceToString())
             LOG.info("Feil ved mapping fra json")
             LOG.info("Feil ved mapping fra json til kotlinkode", t)
             throw t
@@ -55,7 +55,6 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $arenaTiltakMottattHendelse" }
             innsendingMediator.håndter(arenaTiltakMottattHendelse)
             call.respond(message = "OK", status = HttpStatusCode.OK)
-
         } else {
             LOG.error { "Mottok en feil må skrive kode for å håndtere den ${arenaTiltak.respons.feil}" }
             throw RuntimeException("Mottok en feil ifm arenatiltak")

@@ -16,5 +16,4 @@ class FeilMottattHendelse(
     override fun ident() = ident
 
     fun feil() = feil
-
 }

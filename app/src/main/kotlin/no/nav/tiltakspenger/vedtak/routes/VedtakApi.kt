@@ -63,8 +63,8 @@ internal fun Application.vedtakApi(
         disableDefaultColors()
         filter { call ->
             !call.request.path().startsWith("/isalive") &&
-                    !call.request.path().startsWith("/isready") &&
-                    !call.request.path().startsWith("/metrics")
+                !call.request.path().startsWith("/isready") &&
+                !call.request.path().startsWith("/metrics")
         }
     }
     jacksonSerialization()

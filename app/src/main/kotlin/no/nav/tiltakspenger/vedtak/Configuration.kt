@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-
 import com.natpryce.konfig.ConfigurationMap
 import com.natpryce.konfig.ConfigurationProperties.Companion.systemProperties
 import com.natpryce.konfig.EnvironmentVariables

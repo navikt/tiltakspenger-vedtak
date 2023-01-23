@@ -120,7 +120,8 @@ internal class BarnetilleggDAO {
             :alder,
             :oppholdsland,
             :soktBarnetillegg
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val slettBarnetillegg = "delete from søknad_barnetillegg where søknad_id = ?"

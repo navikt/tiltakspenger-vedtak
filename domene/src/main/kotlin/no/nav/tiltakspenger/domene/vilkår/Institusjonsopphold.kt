@@ -22,7 +22,7 @@ object Institusjonsopphold : Vilkår {
                 instFaktum.oppholdsperiode.map { Utfallsperiode(utfall = Utfall.VurdertOgIkkeOppfylt, periode = it) }
             val oppfylt = vurderingsperiode.trekkFra(instFaktum.oppholdsperiode)
                 .map { Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = it) }
-            //TODO: Sorter i korrekt rekkefølge
+            // TODO: Sorter i korrekt rekkefølge
             ikkeOppfylt + oppfylt
         }
     }

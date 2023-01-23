@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak
 import no.nav.tiltakspenger.domene.nå
 import java.time.LocalDateTime
 
-
 // Understands issues that arose when analyzing a JSON message
 // Implements Collecting Parameter in Refactoring by Martin Fowler
 // Implements Visitor pattern to traverse the messages
@@ -86,7 +85,7 @@ open class Aktivitetslogg(
         }
     }
 
-    //Hva gjør egentlig denne? Den er åpenbart ikke en getter på this.kontekster..
+    // Hva gjør egentlig denne? Den er åpenbart ikke en getter på this.kontekster..
     override fun kontekster(): List<Aktivitetslogg> {
         val groupBy: Map<Map<String, String>, List<Aktivitet>> =
             aktiviteter.groupBy { aktivitet -> aktivitet.konteksterAvTypeAsMap(typer = listOf("Søker")) }
@@ -124,7 +123,6 @@ open class Aktivitetslogg(
         val tidsstempel: LocalDateTime,
         val kontekster: List<Kontekst>
     ) : Comparable<Aktivitet> {
-
 
         fun alleKonteksterAsMap(): Map<String, String> =
             kontekster.fold(mutableMapOf()) { result, spesifikkKontekst -> result.apply { putAll(spesifikkKontekst.kontekstMap) } }
@@ -171,7 +169,6 @@ open class Aktivitetslogg(
             return result
         }
 
-
         class Info(
             kontekster: List<Kontekst>,
             melding: String,
@@ -186,7 +183,6 @@ open class Aktivitetslogg(
             override fun accept(visitor: IAktivitetsloggVisitor) {
                 visitor.visitInfo(kontekster, this, melding, tidsstempel)
             }
-
         }
 
         class Warn(
@@ -244,12 +240,9 @@ open class Aktivitetslogg(
                 return result
             }
 
-
             enum class Behovtype {
                 personopplysninger, skjerming, arenatiltak, arenaytelser,
             }
-
-
         }
 
         class Error(
@@ -284,7 +277,6 @@ open class Aktivitetslogg(
             }
         }
     }
-
 }
 
 interface IAktivitetslogg {

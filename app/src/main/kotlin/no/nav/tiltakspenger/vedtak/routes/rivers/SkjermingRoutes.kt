@@ -18,7 +18,6 @@ import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import java.time.LocalDateTime
 
-
 data class SkjermingDTO(
     val ident: String,
     val journalpostId: String,

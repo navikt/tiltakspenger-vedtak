@@ -12,7 +12,7 @@ class InnsendingAdminService(
 
     fun resettInnsendingerSomHarFeiletEllerStoppetOpp() {
         val innsendinger = innsendingRepository.hentInnsendingerMedTilstandFaktainnhentingFeilet() +
-                innsendingRepository.hentInnsendingerStoppetUnderBehandling()
+            innsendingRepository.hentInnsendingerStoppetUnderBehandling()
         innsendinger.forEach {
             innsendingMediator.håndter(
                 ResetInnsendingHendelse(

@@ -114,5 +114,4 @@ sealed class Vilkår {
         override val tittel: String = "LØNNSINNTEKT"
         override val lovreferanse: Lovreferanse = Lovreferanse.LØNNSINNTEKT
     }
-
 }

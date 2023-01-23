@@ -48,7 +48,8 @@ class PersonopplysningerDAO() {
         securelog.debug { "Lagre personopplysninger for søker $personopplysninger" }
         txSession.run(
             queryOf(
-                lagreSql, mapOf(
+                lagreSql,
+                mapOf(
                     "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGERSØKER).toString(),
                     "sokerId" to søkerId.toString(),
                     "ident" to personopplysninger.ident,
@@ -126,7 +127,8 @@ class PersonopplysningerDAO() {
             :kommune,           
             :bydel,             
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_PERSONOPPLYSNINGERSØKER = "person"

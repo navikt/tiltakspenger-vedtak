@@ -37,5 +37,4 @@ internal class SøkerRepoTest {
         hentet?.personopplysninger shouldBe søker.personopplysninger
         hentet?.søkerId shouldBe søker.søkerId
     }
-
 }

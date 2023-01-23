@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-//Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
+// Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+TiltakOgAktivitet_v1#ArenaTjenesteWebserviceTiltakOgAktivitet_v1-HentTiltakOgAktiviteterForBrukerResponse
 data class Tiltaksaktivitet(
     val tiltak: Tiltak, // Det vi får her er teksten i Enumen, ikke koden. Det er litt klønete..
     val aktivitetId: String,
@@ -35,7 +35,7 @@ data class Tiltaksaktivitet(
                 "JOBSOK" -> Tiltak.JOBBK
                 "PRAKSORD" -> Tiltak.ARBTREN
                 "AMO" -> Tiltak.GRUPPEAMO
-                "Annet" -> null //TODO: Hvordan mappe Annet?
+                "Annet" -> null // TODO: Hvordan mappe Annet?
                 else -> null
             }
     }

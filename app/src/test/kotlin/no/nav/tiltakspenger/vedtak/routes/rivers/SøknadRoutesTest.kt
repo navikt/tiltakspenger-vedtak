@@ -61,7 +61,7 @@ class SøknadRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søknadRoutes(

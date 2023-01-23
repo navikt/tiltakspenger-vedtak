@@ -30,7 +30,6 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
     fun brukerFyller18ÅrEtterVurderingsperioden(vurderingsperiode: Periode, datoSøkerFyller18År: LocalDate): Boolean =
         vurderingsperiode.før(datoSøkerFyller18År)
 
-
     fun lagAlderVurderinger(vurderingsperiode: Periode, søkersFødselsdato: LocalDate): List<Vurdering> {
         val datoBrukerFyller18År = søkersFødselsdato.plusYears(18)
         if (brukerEr18ÅrIHeleVurderingsperioden(vurderingsperiode, datoBrukerFyller18År)) {
@@ -63,7 +62,6 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         )
     }
 
-
     fun lagOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
         Vurdering(
             vilkår = vilkår(),
@@ -90,7 +88,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
     )
 
     override fun vurderinger(): List<Vurdering> {
-        return alderVurderinger;
+        return alderVurderinger
     }
 
     override fun detIkkeManuelleUtfallet(): Utfall {

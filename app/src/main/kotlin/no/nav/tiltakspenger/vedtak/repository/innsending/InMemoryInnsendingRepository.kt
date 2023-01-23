@@ -29,7 +29,7 @@ class InMemoryInnsendingRepository : InnsendingRepository {
     override fun antallStoppetUnderBehandling(): Long =
         innsendinger.values.filter {
             it.tilstand.type != InnsendingTilstandType.FaktainnhentingFeilet &&
-                    it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
+                it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
         }.size.toLong()
 
     override fun hentInnsendingerMedTilstandFaktainnhentingFeilet(): List<String> {
@@ -42,7 +42,7 @@ class InMemoryInnsendingRepository : InnsendingRepository {
         return innsendinger.values
             .filter {
                 it.tilstand.type != InnsendingTilstandType.FaktainnhentingFeilet &&
-                        it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
+                    it.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt
             }
             .map { it.journalpostId }
     }

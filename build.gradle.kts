@@ -14,15 +14,18 @@ allprojects {
     }
 }
 
-spotless {
-    kotlin {
-        ktlint("0.45.2")
-    }
-}
-
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "com.diffplug.spotless")
+
+    spotless {
+        kotlin {
+            ktlint("0.45.2")
+        }
+    }
+
     tasks {
+
         compileKotlin {
             kotlinOptions.jvmTarget = javaVersion.toString()
         }

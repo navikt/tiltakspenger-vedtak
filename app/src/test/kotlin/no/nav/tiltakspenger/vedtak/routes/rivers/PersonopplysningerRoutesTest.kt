@@ -72,7 +72,7 @@ class PersonopplysningerRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     personopplysningerRoutes(
@@ -106,7 +106,7 @@ class PersonopplysningerRoutesTest {
     }
 }
 
-//{
+// {
 //    "@event_name": "behov",
 //    "@opprettet": "2023-01-17T12:50:54.875468981",
 //    "@id": "f51435b1-c993-4ca8-92ff-f62f3d4f2ebc",
@@ -127,4 +127,4 @@ class PersonopplysningerRoutesTest {
 //        "time": "2023-01-17T12:50:54.895176586"
 //    }
 //    ]
-//}
+// }

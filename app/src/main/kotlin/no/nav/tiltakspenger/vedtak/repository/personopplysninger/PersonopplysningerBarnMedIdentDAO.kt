@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
-
 internal class PersonopplysningerBarnMedIdentDAO {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
@@ -25,7 +24,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
         securelog.info { "Lagre personopplysninger for barn med ident $personopplysninger" }
         txSession.run(
             queryOf(
-                lagreSql, mapOf(
+                lagreSql,
+                mapOf(
                     "id" to random(ULID_PREFIX_BARN_MED_IDENT).toString(),
                     "innsendingId" to innsendingId.toString(),
                     "ident" to personopplysninger.ident,
@@ -99,7 +99,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
             :skjermet, 
             :oppholdsland,             
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_BARN_MED_IDENT = "barnm"

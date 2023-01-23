@@ -37,7 +37,6 @@ class LønnsinntektVilkårsvurdering(
             )
         )
 
-
     override fun vurderinger(): List<Vurdering> =
         (aInntektVurderinger + søknadVurderinger + manuellVurdering).filterNotNull()
 

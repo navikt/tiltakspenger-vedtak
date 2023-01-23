@@ -67,6 +67,5 @@ internal class SøkerServiceTest {
         assertThrows<TilgangException> {
             service.hentSøkerOgSøknader(søker.søkerId, saksbehandler())
         }
-
     }
 }

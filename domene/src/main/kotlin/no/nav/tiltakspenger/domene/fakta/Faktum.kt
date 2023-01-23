@@ -24,16 +24,13 @@ class Fødselsdato private constructor(tilstand: Tilstand, private val dato: Loc
     constructor(date: LocalDate) : this(Tilstand.KJENT, date)
 }
 
-//fun main(){
+// fun main(){
 //    val ukjentFødselsdato = Fødselsdato()
 //    val kjentfødselsdato = Fødselsdato(LocalDate.now())
 //    val listeMedfakta = listOf(ukjentFødselsdato, kjentfødselsdato)
 //    val ukjentefakta = listeMedfakta.all { it.tilstand == Faktum2.Tilstand.Ukjent }
-//}
+// }
 
 interface Faktum {
     val kilde: FaktumKilde
 }
-
-
-
