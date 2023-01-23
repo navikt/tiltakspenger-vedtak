@@ -1,10 +1,11 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
@@ -12,7 +13,6 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.LocalDateTime
-
 
 data class ArenaYtelserMottattDTO(
     val respons: ArenaYtelseResponsDTO,
@@ -35,7 +35,7 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = arenaYtelser.journalpostId,
             ytelseSak = mapYtelser(
-                ytelseSakDTO = arenaYtelser.respons.saker!!, //Hvis denne smeller må vi kode opp en FeilHendelse
+                ytelseSakDTO = arenaYtelser.respons.saker!!, // Hvis denne smeller må vi kode opp en FeilHendelse
                 tidsstempelHosOss = arenaYtelser.innhentet,
             )
         )
@@ -54,7 +54,7 @@ private fun mapYtelser(
             fomGyldighetsperiode = ytelse.gyldighetsperiodeFom,
             tomGyldighetsperiode = ytelse.gyldighetsperiodeTom,
             datoKravMottatt = ytelse.kravMottattDato,
-            dataKravMottatt = null, //Kan fjernes
+            dataKravMottatt = null, // Kan fjernes
             fagsystemSakId = ytelse.fagsystemSakId,
             status = ytelse.status?.let { s -> mapSakStatus(s) },
             ytelsestype = ytelse.sakType?.let { y -> mapSakType(y) },

@@ -32,7 +32,6 @@ data class UlidBase(private val stringValue: String) : Ulid {
     override fun toString() = stringValue
 }
 
-
 data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
     companion object {
         private const val PREFIX = "ins"

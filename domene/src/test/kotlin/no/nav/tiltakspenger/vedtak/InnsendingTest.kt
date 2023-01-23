@@ -47,12 +47,12 @@ internal class InnsendingTest {
     fun `Innsending should be dirty when changed`() {
 
         val innsending1 = innsendingRegistrert(journalpostId = "1")
-        //Hendelsen medfører ingen endringer annet enn i aktivitetsloggen
+        // Hendelsen medfører ingen endringer annet enn i aktivitetsloggen
         innsending1.håndter(nyPersonopplysningHendelse(journalpostId = "1"))
         innsending1.isDirty() shouldBe true
 
         val innsending2 = innsendingRegistrert(journalpostId = "1")
-        //Søknad blir lagret på Innsendingen
+        // Søknad blir lagret på Innsendingen
         innsending2.håndter(nySøknadMottattHendelse(journalpostId = "1"))
         innsending2.isDirty() shouldBe true
     }

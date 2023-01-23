@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 internal class AktivitetsloggTest {
 
@@ -200,7 +199,7 @@ internal class AktivitetsloggTest {
         assertAtBådeKontekstOgDetaljerBlirMappetInnIKafkaMeldingene(aktivitetslogg.behov())
     }
 
-    //Denne metoden er lik-ish den som brukes i BehovMediator
+    // Denne metoden er lik-ish den som brukes i BehovMediator
     private fun assertAtBådeKontekstOgDetaljerBlirMappetInnIKafkaMeldingene(behov: List<Behov>) {
         behov.groupBy { it.alleKonteksterAsMap() }.forEach { (kontekst, behov) ->
             val behovsliste = mutableListOf<String>()

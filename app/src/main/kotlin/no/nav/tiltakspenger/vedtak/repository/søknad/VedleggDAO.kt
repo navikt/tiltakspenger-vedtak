@@ -32,7 +32,8 @@ internal class VedleggDAO {
     ) {
         txSession.run(
             queryOf(
-                lagreVedlegg, mapOf(
+                lagreVedlegg,
+                mapOf(
                     "id" to random(ULID_PREFIX_VEDLEGG).toString(),
                     "soknadId" to søknadId.toString(),
                     "journalpostId" to vedlegg.journalpostId,
@@ -81,7 +82,8 @@ internal class VedleggDAO {
             :journalpostId,
             :dokumentInfoId,
             :filnavn
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_VEDLEGG = "vedlegg"

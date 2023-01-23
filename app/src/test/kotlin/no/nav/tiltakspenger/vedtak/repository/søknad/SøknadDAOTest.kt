@@ -26,7 +26,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Random
 import kotlin.reflect.full.declaredMemberProperties
 
 @Testcontainers

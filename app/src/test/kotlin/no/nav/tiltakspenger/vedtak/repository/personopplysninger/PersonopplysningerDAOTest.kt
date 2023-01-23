@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak.repository.personopplysninger
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.objectmothers.barn
 import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.*
+import java.util.Random
 
 @Testcontainers
 internal class PersonopplysningerDAOTest {

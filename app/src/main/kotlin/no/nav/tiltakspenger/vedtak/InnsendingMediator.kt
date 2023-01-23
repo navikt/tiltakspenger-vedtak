@@ -2,7 +2,14 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.meldinger.*
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.slf4j.MDC
 
@@ -74,7 +81,7 @@ class InnsendingMediator(
             else -> {
                 LOG.warn(
                     "Fant ingen innsending for hendelse med" +
-                            "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
+                        "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
                 )
                 null
             }

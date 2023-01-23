@@ -1,15 +1,14 @@
 package no.nav.tiltakspenger.vedtak.audit
 
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.callid.*
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
+import io.ktor.server.plugins.callid.callId
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.lang.String.join
-import java.util.*
-
+import java.util.UUID
 
 private val LOG = KotlinLogging.logger {}
 

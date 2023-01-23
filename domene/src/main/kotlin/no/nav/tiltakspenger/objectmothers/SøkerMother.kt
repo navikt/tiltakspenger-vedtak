@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
+import no.nav.tiltakspenger.vedtak.SkjermingPerson
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -231,6 +232,7 @@ fun barn(
     fortrolig: Boolean = false,
     strengtFortrolig: Boolean = false,
     strengtFortroligUtland: Boolean = false,
+    skjermet: Boolean = false,
     oppholdsland: String? = null,
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
 ): Personopplysninger.BarnMedIdent {
@@ -243,6 +245,7 @@ fun barn(
         fortrolig = fortrolig,
         strengtFortrolig = strengtFortrolig,
         strengtFortroligUtland = strengtFortroligUtland,
+        skjermet = skjermet,
         oppholdsland = oppholdsland,
         tidsstempelHosOss = tidsstempelHosOss,
     )
@@ -250,20 +253,28 @@ fun barn(
 
 fun skjermingFalse(
     ident: String = Random().nextInt().toString(),
+    barn: List<SkjermingPerson> = emptyList(),
 ): Skjerming {
     return Skjerming(
-        ident = ident,
-        skjerming = false,
+        søker = SkjermingPerson(
+            ident = ident,
+            skjerming = false,
+        ),
+        barn = barn,
         innhentet = 1.januarDateTime(2022),
     )
 }
 
 fun skjermingTrue(
     ident: String = Random().nextInt().toString(),
+    barn: List<SkjermingPerson> = emptyList(),
 ): Skjerming {
     return Skjerming(
-        ident = ident,
-        skjerming = true,
+        søker = SkjermingPerson(
+            ident = ident,
+            skjerming = true,
+        ),
+        barn = barn,
         innhentet = 1.januarDateTime(2022),
     )
 }

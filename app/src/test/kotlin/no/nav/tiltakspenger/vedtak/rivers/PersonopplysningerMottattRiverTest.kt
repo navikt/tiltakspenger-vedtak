@@ -18,7 +18,7 @@ internal class PersonopplysningerMottattRiverTest {
         )
     }
 
-    @Suppress("LongMethod")
+
     @Test
     fun `Når PersonopplysningerRiver får en løsning på person, skal den sende en behovsmelding etter skjerming`() {
         val journalpostId = "foobar3"

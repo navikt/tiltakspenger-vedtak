@@ -27,7 +27,6 @@ private fun gcpFlyway() = Flyway
     .cleanOnValidationError(true)
     .load()
 
-
 fun flywayMigrate() {
     flyway().migrate()
 }

@@ -45,7 +45,8 @@ internal class TiltakDAO {
         if (arenaTiltak != null) {
             txSession.run(
                 queryOf(
-                    lagreArenaTiltak, mapOf(
+                    lagreArenaTiltak,
+                    mapOf(
                         "id" to random(ULID_PREFIX_ARENATILTAK).toString(),
                         "soknadId" to søknadId.toString(),
                         "arenaId" to arenaTiltak.arenaId,
@@ -71,7 +72,8 @@ internal class TiltakDAO {
         if (brukerregistrertTiltak != null) {
             txSession.run(
                 queryOf(
-                    lagreBrukerTiltak, mapOf(
+                    lagreBrukerTiltak,
+                    mapOf(
                         "id" to random(ULID_PREFIX_BRUKERTILTAK).toString(),
                         "soknadId" to søknadId.toString(),
                         "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,
@@ -177,7 +179,8 @@ internal class TiltakDAO {
             :adresse,
             :postnummer,
             :antallDager
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val lagreArenaTiltak = """
@@ -205,7 +208,8 @@ internal class TiltakDAO {
             :opprinneligSluttdato,
             :startdato,
             :sluttdato
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_ARENATILTAK = "atilt"

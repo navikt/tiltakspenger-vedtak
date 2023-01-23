@@ -32,7 +32,8 @@ internal class TrygdOgPensjonDAO {
     ) {
         txSession.run(
             queryOf(
-                lagreTrygdOgPensjon, mapOf(
+                lagreTrygdOgPensjon,
+                mapOf(
                     "id" to random(ULID_PREFIX_TRYGDOGPENSJON).toString(),
                     "soknadId" to søknadId.toString(),
                     "utbetaler" to trygdOgPensjon.utbetaler,
@@ -86,7 +87,8 @@ internal class TrygdOgPensjonDAO {
             :prosent,
             :fom,
             :tom
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_TRYGDOGPENSJON = "togp"

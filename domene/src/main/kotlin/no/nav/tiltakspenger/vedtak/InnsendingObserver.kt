@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak
 
-
 import java.time.Duration
 
 interface InnsendingObserver {

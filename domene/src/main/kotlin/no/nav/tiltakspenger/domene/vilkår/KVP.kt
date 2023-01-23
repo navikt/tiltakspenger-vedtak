@@ -1,4 +1,6 @@
-import no.nav.tiltakspenger.domene.*
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Utfall
+import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.fakta.FaktumKilde
 import no.nav.tiltakspenger.domene.fakta.KVPFaktum
@@ -20,10 +22,12 @@ object KVP : Vilkår {
     private fun vurder(faktum: KVPFaktum, vurderingsperiode: Periode): List<Utfallsperiode> {
         return when {
             faktum.deltarKVP && faktum.kilde == FaktumKilde.BRUKER ->
-                listOf(Utfallsperiode(utfall= Utfall.VurdertOgTrengerManuellBehandling, periode = vurderingsperiode))
+                listOf(Utfallsperiode(utfall = Utfall.VurdertOgTrengerManuellBehandling, periode = vurderingsperiode))
+
             !faktum.deltarKVP && faktum.kilde == FaktumKilde.SAKSBEHANDLER ->
-                listOf(Utfallsperiode(utfall= Utfall.VurdertOgOppfylt,periode = vurderingsperiode))
-            else -> listOf(Utfallsperiode(utfall= Utfall.VurdertOgIkkeOppfylt,periode = vurderingsperiode))
+                listOf(Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = vurderingsperiode))
+
+            else -> listOf(Utfallsperiode(utfall = Utfall.VurdertOgIkkeOppfylt, periode = vurderingsperiode))
         }
     }
 }

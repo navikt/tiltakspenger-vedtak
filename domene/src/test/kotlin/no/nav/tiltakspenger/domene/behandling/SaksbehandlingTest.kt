@@ -1,9 +1,8 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.Tiltak
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime

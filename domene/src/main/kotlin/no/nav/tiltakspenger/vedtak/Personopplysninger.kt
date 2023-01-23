@@ -42,6 +42,7 @@ sealed class Personopplysninger {
         val fortrolig: Boolean,
         val strengtFortrolig: Boolean,
         val strengtFortroligUtland: Boolean,
+        val skjermet: Boolean?,
         val oppholdsland: String?,
         val tidsstempelHosOss: LocalDateTime // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
     ) : Tidsstempler, Personopplysninger() {

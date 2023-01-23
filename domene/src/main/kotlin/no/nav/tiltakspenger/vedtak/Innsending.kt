@@ -8,7 +8,14 @@ import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
-import no.nav.tiltakspenger.vedtak.meldinger.*
+import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-@Suppress("TooManyFunctions", "LongParameterList")
 class Innsending private constructor(
     val id: InnsendingId,
     val journalpostId: String,
@@ -28,7 +34,7 @@ class Innsending private constructor(
     personopplysninger: List<Personopplysninger>,
     tiltak: List<Tiltaksaktivitet>,
     ytelser: List<YtelseSak>,
-    aktivitetslogg: Aktivitetslogg
+    aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
     private val dirtyChecker: DirtyChecker = DirtyChecker()
 
@@ -368,7 +374,7 @@ class Innsending private constructor(
 
         override fun håndter(
             innsending: Innsending,
-            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse
+            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
         ) {
             personopplysningerMottattHendelse
                 .info("Fikk info om person saker: ${personopplysningerMottattHendelse.personopplysninger()}")
@@ -390,12 +396,16 @@ class Innsending private constructor(
                 skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
             innsending.personopplysninger = innsending.personopplysninger.map {
-                if (it is Personopplysninger.Søker) {
-                    it.copy(
-                        skjermet = skjermingMottattHendelse.skjerming().skjerming
+                when (it) {
+                    is Personopplysninger.BarnMedIdent -> it.copy(
+                        skjermet = skjermingMottattHendelse.skjerming()
+                            .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming
                     )
-                } else {
-                    it
+
+                    is Personopplysninger.BarnUtenIdent -> it
+                    is Personopplysninger.Søker -> it.copy(
+                        skjermet = skjermingMottattHendelse.skjerming().søker.skjerming
+                    )
                 }
             }
             innsending.trengerTiltak(skjermingMottattHendelse)
@@ -422,7 +432,6 @@ class Innsending private constructor(
 
                     else -> fom ?: LocalDate.MIN
                 }
-
 
             fun latest(fom: LocalDate?, tom: LocalDate?) =
                 when {
@@ -501,7 +510,6 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
     }
 
-
     private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
@@ -514,7 +522,10 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
             melding = "Trenger skjermingdata",
-            detaljer = mapOf("ident" to this.ident)
+            detaljer = mapOf(
+                "ident" to this.ident,
+                "barn" to this.personopplysningerBarnMedIdent().map { it.ident }
+            )
         )
     }
 
@@ -537,7 +548,7 @@ class Innsending private constructor(
     private fun tilstand(
         event: InnsendingHendelse,
         nyTilstand: Tilstand,
-        block: () -> Unit = {}
+        block: () -> Unit = {},
     ) {
         if (tilstand == nyTilstand) {
             return // Already in this state => ignore
@@ -555,7 +566,7 @@ class Innsending private constructor(
         gjeldendeTilstand: InnsendingTilstandType,
         aktivitetslogg: Aktivitetslogg,
         forrigeTilstand: InnsendingTilstandType,
-        timeout: Duration
+        timeout: Duration,
     ) {
         observers.forEach {
             it.tilstandEndret(
@@ -590,7 +601,7 @@ class Innsending private constructor(
         fun sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig: Boolean) {
             if (harBeskyttelsesbehovStrengtFortrolig) {
                 SECURELOG.info("erStrengtFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
                 if (Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to strengt fortrolig for $ident")
                 } else {
@@ -603,7 +614,7 @@ class Innsending private constructor(
         fun sjekkBeskytelsesbehovFortrolig(harBeskyttelsesbehovFortrolig: Boolean) {
             if (harBeskyttelsesbehovFortrolig) {
                 SECURELOG.info("erFortrolig")
-                //Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
+                // Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
                 if (Rolle.FORTROLIG_ADRESSE in saksbehandler.roller) {
                     SECURELOG.info("Access granted to fortrolig for $ident")
                 } else {
@@ -616,11 +627,11 @@ class Innsending private constructor(
         fun sjekkBeskyttelsesbehovSkjermet(
             erEgenAnsatt: Boolean,
             harBeskyttelsesbehovFortrolig: Boolean,
-            harBeskyttelsesbehovStrengtFortrolig: Boolean
+            harBeskyttelsesbehovStrengtFortrolig: Boolean,
         ) {
             if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
                 SECURELOG.info("erEgenAnsatt")
-                //Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
+                // Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
                 if (Rolle.SKJERMING in saksbehandler.roller) {
                     SECURELOG.info("Access granted to egen ansatt for $ident")
                 } else {
@@ -660,7 +671,6 @@ class Innsending private constructor(
             sjekkBarnMedIdentForTilgang(it)
         }
     }
-
 
     // Jeg har fjernet flere av
     // private fun emit* funksjonene

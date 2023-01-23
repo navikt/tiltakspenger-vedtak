@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.domene.sak
 
-import no.nav.tiltakspenger.domene.behandling.Saksbehandling
 import no.nav.tiltakspenger.domene.Søknad
+import no.nav.tiltakspenger.domene.behandling.Saksbehandling
 
 class Sak(
     val behandlinger: List<Saksbehandling>
@@ -9,7 +9,7 @@ class Sak(
     companion object {
         fun opprettEllerHentSakMedBehandling(
             søknad: Søknad,
-        ) : Sak {
+        ): Sak {
             return Sak(emptyList())
         }
     }

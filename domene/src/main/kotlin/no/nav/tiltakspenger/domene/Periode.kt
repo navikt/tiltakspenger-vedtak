@@ -8,8 +8,7 @@ import com.google.common.collect.RangeSet
 import com.google.common.collect.TreeRangeSet
 import java.time.LocalDate
 
-
-//TODO: Needs more work
+// TODO: Needs more work
 class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
     override fun next(value: LocalDate): LocalDate {
         return value.plusDays(1)
@@ -21,10 +20,9 @@ class LocalDateDiscreteDomain : DiscreteDomain<LocalDate>() {
 
     override fun distance(start: LocalDate, end: LocalDate): Long {
         return start.until(end).days.toLong()
-        //return DAYS.between(start, end)
+        // return DAYS.between(start, end)
     }
 }
-
 
 class Periode(fra: LocalDate, til: LocalDate) {
 
@@ -92,11 +90,11 @@ class Periode(fra: LocalDate, til: LocalDate) {
         return "Periode(range=$range)"
     }
 
-    fun inneholder(fødselsdato: LocalDate): Boolean = range.contains(fødselsdato)
+    fun inneholder(dato: LocalDate): Boolean = range.contains(dato)
 
-    fun etter(fødselsdato: LocalDate): Boolean = this.fra.isAfter(fødselsdato)
+    fun etter(dato: LocalDate): Boolean = this.fra.isAfter(dato)
 
-    fun før(fødselsdato: LocalDate): Boolean = this.til.isBefore(fødselsdato)
+    fun før(dato: LocalDate): Boolean = this.til.isBefore(dato)
 
     fun trekkFra(andrePerioder: List<Periode>): List<Periode> {
         val opprinneligeRangeSet =
@@ -133,7 +131,6 @@ fun Range<LocalDate>.fraOgMed(): LocalDate =
     } else {
         LocalDate.MIN
     }
-
 
 fun Range<LocalDate>.tilOgMed(): LocalDate =
     if (this.hasUpperBound()) {

@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 internal class BarnUtenFolkeregisteridentifikatorDTOTest {
     companion object {
-        @Suppress("UnusedPrivateMember")
+
         @JvmStatic
         private fun providesAlderForBarnetilllegg() = listOf(
             Arguments.of(null, true),

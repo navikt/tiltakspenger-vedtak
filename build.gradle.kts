@@ -2,7 +2,7 @@ val javaVersion = JavaVersion.VERSION_17
 
 plugins {
     kotlin("jvm") version "1.8.0"
-    id("io.gitlab.arturbosch.detekt").version("1.22.0")
+    id("com.diffplug.spotless") version "5.0.0"
 }
 
 allprojects {
@@ -14,15 +14,18 @@ allprojects {
     }
 }
 
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
-    config = files("$projectDir/config/detekt.yml")
-}
-
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "com.diffplug.spotless")
+
+    spotless {
+        kotlin {
+            ktlint("0.45.2")
+        }
+    }
+
     tasks {
+
         compileKotlin {
             kotlinOptions.jvmTarget = javaVersion.toString()
         }

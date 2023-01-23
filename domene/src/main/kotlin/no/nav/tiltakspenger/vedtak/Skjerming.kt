@@ -2,7 +2,16 @@ package no.nav.tiltakspenger.vedtak
 
 import java.time.LocalDateTime
 
-class Skjerming(val ident: String, val skjerming: Boolean, val innhentet: LocalDateTime) : Tidsstempler {
+data class SkjermingPerson(
+    val ident: String,
+    val skjerming: Boolean,
+)
+
+data class Skjerming(
+    val søker: SkjermingPerson,
+    val barn: List<SkjermingPerson>,
+    val innhentet: LocalDateTime,
+) : Tidsstempler {
 
     override fun tidsstempelKilde() = innhentet
 

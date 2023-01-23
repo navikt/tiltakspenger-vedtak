@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-//Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+Ytelseskontrakt_v3#ArenaTjenesteWebserviceYtelseskontrakt_v3-HentYtelseskontraktListeResponse
+// Dokumentert her: https://confluence.adeo.no/display/ARENA/Arena+-+Tjeneste+Webservice+-+Ytelseskontrakt_v3#ArenaTjenesteWebserviceYtelseskontrakt_v3-HentYtelseskontraktListeResponse
 data class YtelseSak(
     val fomGyldighetsperiode: LocalDateTime,
     val tomGyldighetsperiode: LocalDateTime?,
@@ -145,5 +145,4 @@ data class YtelseSak(
         INDIV("Individstønad"),
         ANNET("Alt annet")
     }
-
 }

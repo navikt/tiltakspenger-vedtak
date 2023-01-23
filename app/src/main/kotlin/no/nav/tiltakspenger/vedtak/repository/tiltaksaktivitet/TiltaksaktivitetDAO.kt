@@ -32,7 +32,8 @@ class TiltaksaktivitetDAO {
     ) {
         txSession.run(
             queryOf(
-                lagreTiltaksaktivitet, mapOf(
+                lagreTiltaksaktivitet,
+                mapOf(
                     "id" to random(ULID_PREFIX_TILTAKSAKTIVITET).toString(),
                     "innsendingId" to innsendingId.toString(),
                     "tiltak" to tiltaksaktivitet.tiltak.name,
@@ -111,7 +112,8 @@ class TiltaksaktivitetDAO {
             :begrunnelseInnsoking,
             :antallDagerPerUke,
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val slettTiltaksaktivitet = "delete from tiltaksaktivitet where innsending_id = ?"

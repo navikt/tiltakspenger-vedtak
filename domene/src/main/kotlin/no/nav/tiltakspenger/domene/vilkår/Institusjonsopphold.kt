@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.domene.vilkår
 
-import no.nav.tiltakspenger.domene.*
+import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.Utfall
+import no.nav.tiltakspenger.domene.Utfallsperiode
 import no.nav.tiltakspenger.domene.fakta.Faktum
 import no.nav.tiltakspenger.domene.fakta.InstitusjonsoppholdsFaktum
 import kotlin.reflect.KClass
@@ -20,7 +22,7 @@ object Institusjonsopphold : Vilkår {
                 instFaktum.oppholdsperiode.map { Utfallsperiode(utfall = Utfall.VurdertOgIkkeOppfylt, periode = it) }
             val oppfylt = vurderingsperiode.trekkFra(instFaktum.oppholdsperiode)
                 .map { Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, periode = it) }
-            //TODO: Sorter i korrekt rekkefølge
+            // TODO: Sorter i korrekt rekkefølge
             ikkeOppfylt + oppfylt
         }
     }

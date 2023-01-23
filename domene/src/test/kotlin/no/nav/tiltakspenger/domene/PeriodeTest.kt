@@ -1,6 +1,10 @@
 package no.nav.tiltakspenger.domene
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 internal class PeriodeTest {
@@ -30,7 +34,6 @@ internal class PeriodeTest {
         assertEquals(fellesperiode, periode2.overlappendePeriode(periode1))
         assertNotEquals(fellesperiode, periode2.overlappendePeriode(periode2))
     }
-
 
     @Test
     fun overlapperIkkeMed() {
@@ -70,7 +73,8 @@ internal class PeriodeTest {
                 Periode(fra = 1.mai(2022), til = 4.mai(2022)),
                 Periode(fra = 7.mai(2022), til = 10.mai(2022)),
                 Periode(fra = 13.mai(2022), til = 15.mai(2022))
-            ), result
+            ),
+            result
         )
     }
 
@@ -91,7 +95,8 @@ internal class PeriodeTest {
             listOf(
                 Periode(fra = 1.mai(2022), til = 4.mai(2022)),
                 Periode(fra = 13.mai(2022), til = 15.mai(2022))
-            ), result
+            ),
+            result
         )
     }
 

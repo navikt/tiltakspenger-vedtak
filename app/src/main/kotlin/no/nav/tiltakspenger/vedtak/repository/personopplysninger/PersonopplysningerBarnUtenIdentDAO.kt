@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import org.intellij.lang.annotations.Language
 
-
 internal class PersonopplysningerBarnUtenIdentDAO {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
@@ -24,7 +23,8 @@ internal class PersonopplysningerBarnUtenIdentDAO {
         securelog.info { "Lagre personopplysninger for barn uten ident $personopplysninger" }
         txSession.run(
             queryOf(
-                lagreSql, mapOf(
+                lagreSql,
+                mapOf(
                     "id" to random(ULID_PREFIX_BARN_UTEN_IDENT).toString(),
                     "innsendingId" to innsendingId.toString(),
                     "fodselsdato" to personopplysninger.fødselsdato,
@@ -74,7 +74,8 @@ internal class PersonopplysningerBarnUtenIdentDAO {
             :mellomnavn,        
             :etternavn,         
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_BARN_UTEN_IDENT = "barnu"

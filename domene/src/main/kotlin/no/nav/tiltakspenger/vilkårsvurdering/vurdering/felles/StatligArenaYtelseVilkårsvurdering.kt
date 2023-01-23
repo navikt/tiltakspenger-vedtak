@@ -38,7 +38,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
                 (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
             ).overlapperMed(vurderingsperiode)
         }
-        //.filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
+        // .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
         .filter { it.ytelsestype == type }
         .map {
             Vurdering(

@@ -77,7 +77,6 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
-
     }
 
     @Test
@@ -98,6 +97,5 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
-
     }
 }

@@ -4,18 +4,26 @@ import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.callid.*
-import io.ktor.server.plugins.callloging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.AuthenticationConfig
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.http.content.defaultResource
+import io.ktor.server.http.content.resource
+import io.ktor.server.http.content.static
+import io.ktor.server.http.content.staticBasePackage
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callIdMdc
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
+import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -35,7 +43,7 @@ import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
-import java.util.*
+import java.util.UUID
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -55,8 +63,8 @@ internal fun Application.vedtakApi(
         disableDefaultColors()
         filter { call ->
             !call.request.path().startsWith("/isalive") &&
-                    !call.request.path().startsWith("/isready") &&
-                    !call.request.path().startsWith("/metrics")
+                !call.request.path().startsWith("/isready") &&
+                !call.request.path().startsWith("/metrics")
         }
     }
     jacksonSerialization()
@@ -86,7 +94,12 @@ internal fun Application.vedtakApi(
     }
 }
 
-private fun AuthenticationConfig.jwt(config: Configuration.TokenVerificationConfig, name: String, realm: String, roles: List<Rolle>? = null) =
+private fun AuthenticationConfig.jwt(
+    config: Configuration.TokenVerificationConfig,
+    name: String,
+    realm: String,
+    roles: List<Rolle>? = null
+) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
         this.realm = realm
@@ -127,7 +140,12 @@ private fun AuthenticationConfig.jwt(config: Configuration.TokenVerificationConf
         }
     }
 
-private fun AuthenticationConfig.jwtSystemToken(config: Configuration.TokenVerificationConfig, name: String, realm: String, roles: List<Rolle>? = null) =
+private fun AuthenticationConfig.jwtSystemToken(
+    config: Configuration.TokenVerificationConfig,
+    name: String,
+    realm: String,
+    roles: List<Rolle>? = null
+) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
         this.realm = realm

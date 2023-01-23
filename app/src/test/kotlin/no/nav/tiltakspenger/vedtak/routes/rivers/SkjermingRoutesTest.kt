@@ -1,11 +1,14 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers
 
 import io.kotest.matchers.shouldBe
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.server.routing.*
-import io.ktor.server.testing.*
-import io.ktor.server.util.*
+import io.ktor.client.request.setBody
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
+import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -46,7 +49,7 @@ class SkjermingRoutesTest {
 
         testApplication {
             application {
-                //vedtakTestApi()
+                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     skjermingRoutes(
@@ -76,10 +79,19 @@ class SkjermingRoutesTest {
 
     private val skjermingBody = """
         {
-          "skjerming": false,
-          "ident": "$IDENT",
-          "journalpostId": "$JOURNALPOSTID",
-          "innhentet": "2022-08-22T14:59:46.491437009"
+            "ident": "$IDENT",
+            "journalpostId": "$JOURNALPOSTID",
+            "skjerming": {
+                "skjermingForPersoner": {
+                    "søker": {
+                        "ident": "05906398291",
+                        "skjerming": false
+                    },
+                    "barn": []
+                },
+                "feil": null
+            },
+            "innhentet": "2022-08-22T14:59:46.491437009"
         }
     """.trimIndent()
 }

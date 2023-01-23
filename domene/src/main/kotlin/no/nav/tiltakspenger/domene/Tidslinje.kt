@@ -31,7 +31,6 @@ class Tidslinje private constructor(
     }
 }
 
-
 data class VurdertPeriode(
     val periode: Periode,
     val samletUtfall: Utfall,
@@ -56,6 +55,4 @@ class VurdertDag(
     vilkårsvurderinger
         .filter { /*Bare riktig dag*/ }
         .filter { it.utfallsperiodes.any { it is Utfallsperiode.VurdertOgOppfylt} }.isEmpty()*/
-
-
 }

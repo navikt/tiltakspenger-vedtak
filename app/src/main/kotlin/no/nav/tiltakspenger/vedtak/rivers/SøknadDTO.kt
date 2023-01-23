@@ -95,7 +95,6 @@ class BrukerregistrertTiltakDTO(
                 postnummer = dto.postnummer,
                 antallDager = dto.antallDager
             )
-
     }
 }
 
@@ -116,7 +115,7 @@ class ArenaTiltakDTO(
             arenaId = dto.arenaId,
             arrangoernavn = dto.arrangoer,
             harSluttdatoFraArena = dto.harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()),  // TODO test this
+            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
             erIEndreStatus = dto.erIEndreStatus,
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,
@@ -137,7 +136,10 @@ class IntroduksjonsprogrammetDetaljerDTO(
 }
 
 class TrygdOgPensjonDTO(
-    val utbetaler: String, val prosent: Int? = null, val fom: LocalDate? = null, val tom: LocalDate? = null
+    val utbetaler: String,
+    val prosent: Int? = null,
+    val fom: LocalDate? = null,
+    val tom: LocalDate? = null
 ) {
     companion object {
         internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
@@ -170,7 +172,7 @@ class BarnetilleggDTO(
     val fornavn: String? = null,
     val mellomnavn: String? = null,
     val etternavn: String? = null,
-    val søktBarnetillegg: Boolean? = null, //Er midlertidig at det er null, endres når alt er i sync
+    val søktBarnetillegg: Boolean? = null, // Er midlertidig at det er null, endres når alt er i sync
 ) {
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {

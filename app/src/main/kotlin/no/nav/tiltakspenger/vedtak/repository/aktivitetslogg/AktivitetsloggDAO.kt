@@ -60,7 +60,6 @@ class AktivitetsloggDAO {
 
             else -> throw IllegalStateException("Ukjent Labeltype")
         }
-
     }
 
     @Language("SQL")
@@ -88,7 +87,6 @@ class AktivitetsloggDAO {
         )
     """.trimIndent()
 
-
     @Language("SQL")
     private val slettAktiviteter = "delete from aktivitet where innsending_id = ?"
 
@@ -100,7 +98,8 @@ class AktivitetsloggDAO {
         aktivitetslogg.aktiviteter().forEach { aktivitet ->
             txSession.run(
                 queryOf(
-                    lagreAktivitetslogg, mapOf(
+                    lagreAktivitetslogg,
+                    mapOf(
                         "id" to UUID.randomUUID(),
                         "innsendingId" to innsendingId.toString(),
                         "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,

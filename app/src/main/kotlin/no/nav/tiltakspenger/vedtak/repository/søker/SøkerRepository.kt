@@ -62,7 +62,8 @@ class SøkerRepository(
     private fun oppdaterSøker(søker: Søker, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                oppdaterSøker, mapOf(
+                oppdaterSøker,
+                mapOf(
                     "ident" to søker.ident,
                     "sistEndret" to nå(),
                 )
@@ -74,7 +75,8 @@ class SøkerRepository(
         val nå = nå()
         txSession.run(
             queryOf(
-                lagreSøker, mapOf(
+                lagreSøker,
+                mapOf(
                     "id" to søker.søkerId.toString(),
                     "ident" to søker.ident,
                     "opprettet" to nå,
@@ -107,8 +109,8 @@ class SøkerRepository(
             :ident,
             :sistEndret,
             :opprettet
-        )""".trimIndent()
-
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val oppdaterSøker = """
@@ -116,7 +118,7 @@ class SøkerRepository(
             ident = :ident,
             sist_endret = :sistEndret
         where id = :id
-        """.trimIndent()
+    """.trimIndent()
 
     @Language("SQL")
     private val finnes = "select exists(select 1 from søker where id = ?)"
@@ -126,5 +128,4 @@ class SøkerRepository(
 
     @Language("SQL")
     private val findByIdent = "select * from søker where ident = ?"
-
 }

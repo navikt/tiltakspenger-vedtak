@@ -514,13 +514,13 @@ internal class SøknadMottattRiverTest {
         """{
             "@event_name" : "behov",
             "@opprettet" : "2022-06-27T11:36:31.346814",
-            "@id": "ed2fc977-2188-4bac-be16-7226dba5b9ea", 
+            "@id": "ed2fc977-2188-4bac-be16-7226dba5b9ea",
             "@behov" : [ "Journalpost "],
             "journalpostId" : "whatever",
             "ident" : "124567",
-            "tilstand" : "MottattType", 
+            "tilstand" : "MottattType",
             "system_read_count" : 0,
-            "system_participating_services" : [ 
+            "system_participating_services" : [
                 { "id" : "ed2fc977-2188-4bac-be16-7226dba5b9ea", "time" : "2022-06-27T11:36:31.389679 "}
             ]
            }""".trimIndent()

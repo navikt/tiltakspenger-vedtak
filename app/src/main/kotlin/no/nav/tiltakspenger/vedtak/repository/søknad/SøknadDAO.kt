@@ -42,7 +42,7 @@ internal class SøknadDAO(
     }
 
     fun lagre(innsendingId: InnsendingId, søknad: Søknad?, txSession: TransactionalSession) {
-        søknad?.let { lagreHeleSøknaden(innsendingId, it, txSession) } //TODO: Burde vel egentlig slette søknaden..
+        søknad?.let { lagreHeleSøknaden(innsendingId, it, txSession) } // TODO: Burde vel egentlig slette søknaden..
     }
 
     private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
@@ -64,7 +64,8 @@ internal class SøknadDAO(
     private fun oppdaterSøknad(søknad: Søknad, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                oppdaterSøknad, mapOf(
+                oppdaterSøknad,
+                mapOf(
                     "id" to søknad.id.toString(),
                     "fornavn" to søknad.fornavn,
                     "etternavn" to søknad.etternavn,
@@ -88,7 +89,8 @@ internal class SøknadDAO(
     private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                lagreSøknad, mapOf(
+                lagreSøknad,
+                mapOf(
                     "id" to søknad.id.toString(),
                     "innsendingId" to innsendingId.toString(),
                     "eksternSoknadId" to søknad.søknadId,
@@ -203,7 +205,8 @@ internal class SøknadDAO(
             :dokumentinfoId,
             :opprettet,
             :tidsstempelHosOss
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val oppdaterSøknad = """
@@ -223,7 +226,7 @@ internal class SøknadDAO(
             opprettet = :opprettet,
             tidsstempel_hos_oss = :tidsstempelHosOss
         where id = :id
-        """.trimIndent()
+    """.trimIndent()
 
     @Language("SQL")
     private val finnes = "select exists(select 1 from søknad where id = ?)"

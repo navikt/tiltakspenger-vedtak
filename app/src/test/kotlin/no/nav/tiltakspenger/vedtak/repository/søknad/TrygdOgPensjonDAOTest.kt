@@ -20,7 +20,7 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Random
 
 @Testcontainers
 internal class TrygdOgPensjonDAOTest {

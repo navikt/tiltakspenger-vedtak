@@ -27,7 +27,8 @@ class YtelsevedtakDAO {
     private fun lagreVedtak(ytelsesakId: UlidBase, ytelseVedtak: YtelseVedtak, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                lagreYtelseVedtak, mapOf(
+                lagreYtelseVedtak,
+                mapOf(
                     "id" to random(ULID_PREFIX_VEDTAK).toString(),
                     "ytelsesakId" to ytelsesakId.toString(),
                     "beslutningsDato" to ytelseVedtak.beslutningsDato,
@@ -86,7 +87,8 @@ class YtelsevedtakDAO {
             :vedtaksperiodeTom,
             :vedtaksType,
             :status
-        )""".trimIndent()
+        )
+    """.trimIndent()
 
     @Language("SQL")
     private val slettYtelsevedtak =

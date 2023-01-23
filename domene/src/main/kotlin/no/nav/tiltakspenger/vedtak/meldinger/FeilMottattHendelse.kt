@@ -1,10 +1,9 @@
 package no.nav.tiltakspenger.vedtak.meldinger
 
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.ISøkerHendelse
 import no.nav.tiltakspenger.vedtak.InnsendingHendelse
-import no.nav.tiltakspenger.vedtak.Feil
-import no.nav.tiltakspenger.vedtak.Personopplysninger
 
 class FeilMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
@@ -17,5 +16,4 @@ class FeilMottattHendelse(
     override fun ident() = ident
 
     fun feil() = feil
-
 }
