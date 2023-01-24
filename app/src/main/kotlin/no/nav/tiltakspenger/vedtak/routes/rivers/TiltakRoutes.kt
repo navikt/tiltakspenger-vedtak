@@ -49,7 +49,8 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
                 tiltaksaktivitet = mapArenaTiltak(
                     tiltaksaktivitetDTO = arenaTiltak.respons.tiltaksaktiviteter!!,
                     innhentet = arenaTiltak.innhentet,
-                )
+                ),
+                tidsstempelTiltakInnhentet = arenaTiltak.innhentet,
             )
 
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $arenaTiltakMottattHendelse" }

@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import java.time.LocalDateTime
 import java.util.Random
 
 fun nySøknadMottattHendelse(
@@ -61,11 +62,13 @@ fun nyTiltakHendelse(
     journalpostId: String = Random().nextInt().toString(),
     tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+    tidsstempelTiltakInnhentet: LocalDateTime = LocalDateTime.now(),
 ): ArenaTiltakMottattHendelse {
     return ArenaTiltakMottattHendelse(
         journalpostId = journalpostId,
         tiltaksaktivitet = tiltaksaktivitet,
         aktivitetslogg = aktivitetslogg,
+        tidsstempelTiltakInnhentet = tidsstempelTiltakInnhentet,
     )
 }
 

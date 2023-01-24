@@ -31,7 +31,7 @@ class Innsending private constructor(
     søknad: Søknad?,
     sistEndret: LocalDateTime?,
     personopplysninger: List<Personopplysninger>,
-    tiltak: List<Tiltaksaktivitet>,
+    tiltak: InnhentedeTiltak?,
     ytelser: List<YtelseSak>,
     aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
@@ -58,11 +58,28 @@ class Innsending private constructor(
             field = value
             dirtyChecker.set("personopplysninger")
         }
-    var tiltak: List<Tiltaksaktivitet> = tiltak
-        private set(value) {
+
+    private var tidsstempelTiltakInnhentet: LocalDateTime? = tiltak?.tidsstempelInnhentet
+    private var tiltaksliste: List<Tiltaksaktivitet> = tiltak?.tiltaksliste ?: mutableListOf()
+        set(value) {
             field = value
             dirtyChecker.set("tiltak")
         }
+    var tiltak: InnhentedeTiltak?
+        private set(value) {
+            if (value != null) {
+                this.tidsstempelTiltakInnhentet = value.tidsstempelInnhentet
+                this.tiltaksliste = value.tiltaksliste
+            } else {
+                this.tidsstempelTiltakInnhentet = null
+                this.tiltaksliste = emptyList()
+            }
+        }
+        get() = if (tidsstempelTiltakInnhentet == null) null else InnhentedeTiltak(
+            this.tiltaksliste,
+            this.tidsstempelTiltakInnhentet!!
+        )
+
     var ytelser: List<YtelseSak> = ytelser
         private set(value) {
             field = value
@@ -79,7 +96,7 @@ class Innsending private constructor(
 
     fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
         if (søknad.tiltak is Tiltak.ArenaTiltak) {
-            this.tiltak.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
+            this.tiltaksliste.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
         } else null
 
     private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate, LocalDate?> {
@@ -132,7 +149,7 @@ class Innsending private constructor(
         søknad = null,
         sistEndret = null,
         personopplysninger = mutableListOf(),
-        tiltak = mutableListOf(),
+        tiltak = null,
         ytelser = mutableListOf(),
         aktivitetslogg = Aktivitetslogg()
     )
@@ -148,7 +165,8 @@ class Innsending private constructor(
             tilstand: String,
             søknad: Søknad?,
             sistEndret: LocalDateTime,
-            tiltak: List<Tiltaksaktivitet>,
+            tidsstempelTiltakInnhentet: LocalDateTime?,
+            tiltaksliste: List<Tiltaksaktivitet>,
             ytelser: List<YtelseSak>,
             personopplysninger: List<Personopplysninger>,
             aktivitetslogg: Aktivitetslogg,
@@ -161,7 +179,7 @@ class Innsending private constructor(
                 søknad = søknad,
                 sistEndret = sistEndret,
                 personopplysninger = personopplysninger,
-                tiltak = tiltak,
+                tiltak = tidsstempelTiltakInnhentet?.let { InnhentedeTiltak(tiltaksliste, tidsstempelTiltakInnhentet) },
                 ytelser = ytelser,
                 aktivitetslogg = aktivitetslogg,
             )
@@ -423,20 +441,23 @@ class Innsending private constructor(
 
             arenaTiltakMottattHendelse
                 .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-            innsending.tiltak = arenaTiltakMottattHendelse.tiltaksaktivitet().filter {
-                LOG.info { "filtreringsperiode : ${innsending.filtreringsperiode()}" }
-                LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
-                LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
-                val periode = Periode(
-                    earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
-                    latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom)
-                )
-                LOG.info { "periode : $periode" }
-                innsending.filtreringsperiode().overlapperMed(periode)
-            }.also {
-                val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - innsending.tiltak.size
-                LOG.info { "Filtrerte bort $antall gamle tiltak" }
-            }
+            innsending.tiltak = InnhentedeTiltak(
+                tidsstempelInnhentet = arenaTiltakMottattHendelse.tidsstempelTiltakInnhentet(),
+                tiltaksliste = arenaTiltakMottattHendelse.tiltaksaktivitet().filter {
+                    LOG.info { "filtreringsperiode : ${innsending.filtreringsperiode()}" }
+                    LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
+                    LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
+                    val periode = Periode(
+                        earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
+                        latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom)
+                    )
+                    LOG.info { "periode : $periode" }
+                    innsending.filtreringsperiode().overlapperMed(periode)
+                }.also {
+                    val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - innsending.tiltaksliste.size
+                    LOG.info { "Filtrerte bort $antall gamle tiltak" }
+                }
+            )
             innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
             innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
         }

@@ -141,14 +141,14 @@ internal class PostgresInnsendingRepository(
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
-                    oppdaterTilstand(innsending = innsending, txSession = txSession)
+                    oppdater(innsending = innsending, txSession = txSession)
                 } else {
                     insert(innsending = innsending, txSession = txSession)
                 }.also {
                     søknadDAO.lagre(innsendingId = innsending.id, søknad = innsending.søknad, txSession = txSession)
                     tiltaksaktivitetDAO.lagre(
                         innsendingId = innsending.id,
-                        tiltaksaktiviteter = innsending.tiltak,
+                        tiltaksaktiviteter = innsending.tiltak?.tiltaksliste ?: emptyList(),
                         txSession = txSession
                     )
                     ytelsesakDAO.lagre(
@@ -195,7 +195,8 @@ internal class PostgresInnsendingRepository(
             tilstand = string("tilstand"),
             sistEndret = localDateTime("sist_endret"),
             søknad = søknadDAO.hent(id, txSession),
-            tiltak = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
+            tidsstempelTiltakInnhentet = localDateTimeOrNull("tidsstempel_tiltak_innhentet"),
+            tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelser = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysninger = personopplysningerDAO.hent(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
@@ -219,6 +220,7 @@ internal class PostgresInnsendingRepository(
                     "journalpostId" to innsending.journalpostId,
                     "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
+                    "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
                 )
@@ -227,7 +229,7 @@ internal class PostgresInnsendingRepository(
         return innsending
     }
 
-    private fun oppdaterTilstand(innsending: Innsending, txSession: TransactionalSession): Innsending {
+    private fun oppdater(innsending: Innsending, txSession: TransactionalSession): Innsending {
         LOG.info { "Update innsending" }
         SECURELOG.info { "Update innsending ${innsending.id} tilstand ${innsending.tilstand}" }
         val sistEndretOld = innsending.sistEndret
@@ -239,6 +241,7 @@ internal class PostgresInnsendingRepository(
                 mapOf(
                     "id" to innsending.id.toString(),
                     "tilstand" to innsending.tilstand.type.name,
+                    "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
                 )
@@ -252,13 +255,14 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val lagre =
-        "insert into innsending (id, journalpost_id, ident, tilstand, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :sist_endret, :opprettet)"
+        "insert into innsending (id, journalpost_id, ident, tilstand, tidsstempel_tiltak_innhentet, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :tidsstempel_tiltak_innhentet, :sist_endret, :opprettet)"
 
     @Language("SQL")
     private val oppdater =
         """update innsending set 
               tilstand = :tilstand,
-              sist_endret = :sistEndret
+              sist_endret = :sistEndret,
+              tidsstempel_tiltak_innhentet = :tidsstempel_tiltak_innhentet
            where id = :id
              and sist_endret = :sistEndretOld
         """.trimMargin()

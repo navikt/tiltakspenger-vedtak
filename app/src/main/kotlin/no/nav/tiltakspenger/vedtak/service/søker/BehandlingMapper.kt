@@ -80,7 +80,7 @@ class BehandlingMapper {
                     fritekst = søknad.fritekst,
                     vedlegg = mapVedlegg(søknad.vedlegg),
                 ),
-                registrerteTiltak = innsending.tiltak.map {
+                registrerteTiltak = innsending.tiltak?.tiltaksliste?.map {
                     TiltakDTO(
                         arrangør = it.arrangør,
                         navn = it.tiltak.navn,
@@ -94,7 +94,7 @@ class BehandlingMapper {
                         dagerIUken = it.antallDagerPerUke,
                         status = it.deltakerStatus.tekst,
                     )
-                },
+                } ?: emptyList(), // TODO: Dette må endres, ikke gyldig tilstand
                 vurderingsperiode = PeriodeDTO(
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til
