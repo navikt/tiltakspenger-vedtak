@@ -119,7 +119,7 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        innsending.personopplysninger shouldBe emptyList()
+        innsending.personopplysninger shouldBe null
     }
 
     @Test
@@ -157,9 +157,13 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         hentetInnsending.søknad shouldBe søknad
-        hentetInnsending.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
+        hentetInnsending.personopplysninger!!.personopplysningerliste shouldContainExactly listOf(
+            personopplysninger.copy(
+                skjermet = false
+            )
+        )
         hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
-        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 
@@ -229,9 +233,9 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         hentetInnsending.søknad shouldBe søknad
-        hentetInnsending.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
+        hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
-        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 

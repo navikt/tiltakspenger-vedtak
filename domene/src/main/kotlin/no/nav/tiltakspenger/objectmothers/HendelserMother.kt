@@ -35,12 +35,14 @@ fun nyPersonopplysningHendelse(
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
     ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident
         ?: Random().nextInt().toString(),
+    tidsstempelPersonopplysningerInnhentet: LocalDateTime = LocalDateTime.now(),
 ): PersonopplysningerMottattHendelse {
     return PersonopplysningerMottattHendelse(
         aktivitetslogg = aktivitetslogg,
         journalpostId = journalpostId,
         ident = ident,
         personopplysninger = personopplysninger,
+        tidsstempelPersonopplysningerInnhentet = tidsstempelPersonopplysningerInnhentet,
     )
 }
 
@@ -76,11 +78,13 @@ fun nyYtelseHendelse(
     journalpostId: String = Random().nextInt().toString(),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+    tidsstempelYtelserInnhentet: LocalDateTime = LocalDateTime.now()
 ): YtelserMottattHendelse {
     return YtelserMottattHendelse(
         journalpostId = journalpostId,
         ytelseSak = ytelseSak,
         aktivitetslogg = aktivitetslogg,
+        tidsstempelYtelserInnhentet = tidsstempelYtelserInnhentet,
     )
 }
 

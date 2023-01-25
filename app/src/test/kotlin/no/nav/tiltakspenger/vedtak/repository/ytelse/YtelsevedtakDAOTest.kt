@@ -48,7 +48,7 @@ class YtelsevedtakDAOTest {
         }
 
         hentet.size shouldBe 1
-        hentet.first() shouldBe innsending.ytelser.first()
+        hentet.first() shouldBe innsending.ytelser!!.ytelserliste.first()
     }
 
     @Test
@@ -98,6 +98,6 @@ class YtelsevedtakDAOTest {
         }
 
         hentet.size shouldBe 1
-        hentet.first() shouldBe innsending.ytelser.first()
+        hentet.first() shouldBe innsending.ytelser!!.ytelserliste.first()
     }
 }

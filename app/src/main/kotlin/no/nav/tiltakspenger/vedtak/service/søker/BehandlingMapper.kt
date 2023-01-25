@@ -254,13 +254,19 @@ class BehandlingMapper {
     ) = Inngangsvilkårsvurderinger(
         tiltakspengerYtelser = TiltakspengerVilkårsvurderingKategori(
             tiltakspengerVilkårsvurdering = TiltakspengerVilkårsvurdering(
-                ytelser = innsending.ytelser,
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(), // TODO: Dette er ikke innafor
                 vurderingsperiode = vurderingsperiode
             )
         ),
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
-            aap = AAPVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
-            dagpenger = DagpengerVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
+            aap = AAPVilkårsvurdering(
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                vurderingsperiode = vurderingsperiode
+            ), // TODO: Dette er ikke innafor
+            dagpenger = DagpengerVilkårsvurdering(
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                vurderingsperiode = vurderingsperiode
+            ), // TODO: Dette er ikke innafor
         ),
         kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),

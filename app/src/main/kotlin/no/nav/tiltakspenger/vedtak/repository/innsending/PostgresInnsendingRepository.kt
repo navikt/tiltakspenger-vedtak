@@ -153,12 +153,12 @@ internal class PostgresInnsendingRepository(
                     )
                     ytelsesakDAO.lagre(
                         innsendingId = innsending.id,
-                        ytelsesaker = innsending.ytelser,
+                        ytelsesaker = innsending.ytelser?.ytelserliste ?: emptyList(),
                         txSession = txSession
                     )
                     personopplysningerDAO.lagre(
                         innsendingId = innsending.id,
-                        personopplysninger = innsending.personopplysninger,
+                        personopplysninger = innsending.personopplysninger?.personopplysningerliste ?: emptyList(),
                         txSession = txSession
                     )
                     aktivitetsloggDAO.lagre(
@@ -196,9 +196,11 @@ internal class PostgresInnsendingRepository(
             sistEndret = localDateTime("sist_endret"),
             søknad = søknadDAO.hent(id, txSession),
             tidsstempelTiltakInnhentet = localDateTimeOrNull("tidsstempel_tiltak_innhentet"),
+            tidsstempelPersonopplysningerInnhentet = localDateTimeOrNull("tidsstempel_personopplysninger_innhentet"),
+            tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
-            ytelser = ytelsesakDAO.hentForInnsending(id, txSession),
-            personopplysninger = personopplysningerDAO.hent(id, txSession),
+            ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
+            personopplysningerliste = personopplysningerDAO.hent(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
         )
     }
@@ -221,6 +223,8 @@ internal class PostgresInnsendingRepository(
                     "ident" to innsending.ident,
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
+                    "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
+                    "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
                 )
@@ -242,6 +246,8 @@ internal class PostgresInnsendingRepository(
                     "id" to innsending.id.toString(),
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
+                    "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
+                    "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
                 )
@@ -255,14 +261,16 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val lagre =
-        "insert into innsending (id, journalpost_id, ident, tilstand, tidsstempel_tiltak_innhentet, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :tidsstempel_tiltak_innhentet, :sist_endret, :opprettet)"
+        "insert into innsending (id, journalpost_id, ident, tilstand, tidsstempel_tiltak_innhentet, tidsstempel_personopplysninger_innhentet, tidsstempel_ytelser_innhentet, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :tidsstempel_tiltak_innhentet, :tidsstempel_personopplysninger_innhentet, :tidsstempel_ytelser_innhentet, :sist_endret, :opprettet)"
 
     @Language("SQL")
     private val oppdater =
         """update innsending set 
               tilstand = :tilstand,
               sist_endret = :sistEndret,
-              tidsstempel_tiltak_innhentet = :tidsstempel_tiltak_innhentet
+              tidsstempel_tiltak_innhentet = :tidsstempel_tiltak_innhentet,
+              tidsstempel_personopplysninger_innhentet = :tidsstempel_personopplysninger_innhentet,
+              tidsstempel_ytelser_innhentet = :tidsstempel_ytelser_innhentet
            where id = :id
              and sist_endret = :sistEndretOld
         """.trimMargin()

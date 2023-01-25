@@ -76,6 +76,7 @@ fun Route.personopplysningerRoutes(
                         personopplysningerMottattDTO.innhentet,
                         personopplysningerMottattDTO.ident
                     ),
+                    tidsstempelPersonopplysningerInnhentet = personopplysningerMottattDTO.innhentet,
                 )
                 innsendingMediator.håndter(personopplysningerMottattHendelse)
                 søkerMediator.håndter(personopplysningerMottattHendelse)
