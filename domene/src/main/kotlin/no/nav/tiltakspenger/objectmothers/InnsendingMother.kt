@@ -5,6 +5,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
@@ -118,7 +119,10 @@ fun innsendingMedTiltak(
         )
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
-    tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
+    tiltak: InnhentedeTiltak = InnhentedeTiltak(
+        tiltaksliste = listOf(tiltaksaktivitet()),
+        tidsstempelInnhentet = 1.januarDateTime(2022)
+    ),
 ): Innsending {
     val innsending = innsendingMedSkjerming(
         journalpostId = journalpostId,
@@ -130,7 +134,8 @@ fun innsendingMedTiltak(
     innsending.håndter(
         nyTiltakHendelse(
             journalpostId = journalpostId,
-            tiltaksaktivitet = tiltaksaktivitet,
+            tiltaksaktivitet = tiltak.tiltaksliste,
+            tidsstempelTiltakInnhentet = tiltak.tidsstempelInnhentet,
         )
     )
     return innsending
@@ -147,7 +152,10 @@ fun innsendingMedYtelse(
         )
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
-    tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
+    tiltak: InnhentedeTiltak = InnhentedeTiltak(
+        tiltaksliste = listOf(tiltaksaktivitet()),
+        tidsstempelInnhentet = 1.januarDateTime(2022)
+    ),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
 ): Innsending {
     val innsending = innsendingMedTiltak(
@@ -156,7 +164,7 @@ fun innsendingMedYtelse(
         søknad = søknad,
         personopplysninger = personopplysninger,
         skjerming = skjerming,
-        tiltaksaktivitet = tiltaksaktivitet,
+        tiltak = tiltak,
     )
     innsending.håndter(
         nyYtelseHendelse(

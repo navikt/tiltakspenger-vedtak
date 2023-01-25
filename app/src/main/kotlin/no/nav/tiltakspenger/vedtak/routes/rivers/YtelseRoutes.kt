@@ -37,7 +37,8 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
             ytelseSak = mapYtelser(
                 ytelseSakDTO = arenaYtelser.respons.saker!!, // Hvis denne smeller må vi kode opp en FeilHendelse
                 tidsstempelHosOss = arenaYtelser.innhentet,
-            )
+            ),
+            tidsstempelYtelserInnhentet = arenaYtelser.innhentet,
         )
         SECURELOG.info { " Mottatt ytelser og laget hendelse : $ytelserMottattHendelse" }
         innsendingMediator.håndter(ytelserMottattHendelse)

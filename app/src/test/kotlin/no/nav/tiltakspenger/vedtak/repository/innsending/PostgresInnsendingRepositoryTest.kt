@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.objectmothers.skjermingTrue
 import no.nav.tiltakspenger.objectmothers.tiltaksaktivitet
 import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
 import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
 import java.util.Random
 
 @Testcontainers
@@ -117,7 +119,7 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        innsending.personopplysninger shouldBe emptyList()
+        innsending.personopplysninger shouldBe null
     }
 
     @Test
@@ -132,7 +134,8 @@ internal class PostgresInnsendingRepositoryTest {
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
-        val tiltaksaktivitet = listOf(tiltaksaktivitet())
+        val tiltak =
+            InnhentedeTiltak(tiltaksliste = listOf(tiltaksaktivitet()), tidsstempelInnhentet = LocalDateTime.now())
         val ytelseSak = listOf(ytelseSak())
 
         val innsending = innsendingMedYtelse(
@@ -141,7 +144,7 @@ internal class PostgresInnsendingRepositoryTest {
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
             skjerming = skjermingFalse(ident = ident),
-            tiltaksaktivitet = tiltaksaktivitet,
+            tiltak = tiltak,
             ytelseSak = ytelseSak,
         )
 
@@ -154,9 +157,13 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         hentetInnsending.søknad shouldBe søknad
-        hentetInnsending.personopplysninger shouldContainExactly listOf(personopplysninger.copy(skjermet = false))
-        hentetInnsending.tiltak shouldContainExactly tiltaksaktivitet
-        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.personopplysninger!!.personopplysningerliste shouldContainExactly listOf(
+            personopplysninger.copy(
+                skjermet = false
+            )
+        )
+        hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
+        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 
@@ -203,7 +210,8 @@ internal class PostgresInnsendingRepositoryTest {
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
-        val tiltaksaktivitet = listOf(tiltaksaktivitet())
+        val tiltak =
+            InnhentedeTiltak(tiltaksliste = listOf(tiltaksaktivitet()), tidsstempelInnhentet = LocalDateTime.now())
         val ytelseSak = listOf(ytelseSak())
 
         val innsending = innsendingMedYtelse(
@@ -212,7 +220,7 @@ internal class PostgresInnsendingRepositoryTest {
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
             skjerming = skjermingTrue(ident = ident),
-            tiltaksaktivitet = tiltaksaktivitet,
+            tiltak = tiltak,
             ytelseSak = ytelseSak,
         )
 
@@ -225,9 +233,9 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         hentetInnsending.søknad shouldBe søknad
-        hentetInnsending.personopplysninger shouldBe listOf(personopplysninger.copy(skjermet = true))
-        hentetInnsending.tiltak shouldContainExactly tiltaksaktivitet
-        hentetInnsending.ytelser shouldContainExactly ytelseSak
+        hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
+        hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
+        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 

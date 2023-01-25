@@ -80,7 +80,7 @@ class BehandlingMapper {
                     fritekst = søknad.fritekst,
                     vedlegg = mapVedlegg(søknad.vedlegg),
                 ),
-                registrerteTiltak = innsending.tiltak.map {
+                registrerteTiltak = innsending.tiltak?.tiltaksliste?.map {
                     TiltakDTO(
                         arrangør = it.arrangør,
                         navn = it.tiltak.navn,
@@ -94,7 +94,7 @@ class BehandlingMapper {
                         dagerIUken = it.antallDagerPerUke,
                         status = it.deltakerStatus.tekst,
                     )
-                },
+                } ?: emptyList(), // TODO: Dette må endres, ikke gyldig tilstand
                 vurderingsperiode = PeriodeDTO(
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til
@@ -254,13 +254,19 @@ class BehandlingMapper {
     ) = Inngangsvilkårsvurderinger(
         tiltakspengerYtelser = TiltakspengerVilkårsvurderingKategori(
             tiltakspengerVilkårsvurdering = TiltakspengerVilkårsvurdering(
-                ytelser = innsending.ytelser,
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(), // TODO: Dette er ikke innafor
                 vurderingsperiode = vurderingsperiode
             )
         ),
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
-            aap = AAPVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
-            dagpenger = DagpengerVilkårsvurdering(ytelser = innsending.ytelser, vurderingsperiode = vurderingsperiode),
+            aap = AAPVilkårsvurdering(
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                vurderingsperiode = vurderingsperiode
+            ), // TODO: Dette er ikke innafor
+            dagpenger = DagpengerVilkårsvurdering(
+                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                vurderingsperiode = vurderingsperiode
+            ), // TODO: Dette er ikke innafor
         ),
         kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
