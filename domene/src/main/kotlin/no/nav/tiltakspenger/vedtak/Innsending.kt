@@ -72,9 +72,9 @@ class Innsending private constructor(
     private var personopplysningerliste: List<Personopplysninger> =
         personopplysninger?.personopplysningerliste ?: mutableListOf()
         private set(value) {
-            field = value
-            dirtyChecker.set("personopplysninger")
-        }
+                field = value
+                dirtyChecker.set("personopplysninger")
+            }
 
     private var tidsstempelTiltakInnhentet: LocalDateTime? = tiltak?.tidsstempelInnhentet
     private var tiltaksliste: List<Tiltaksaktivitet> = tiltak?.tiltaksliste ?: mutableListOf()
