@@ -210,6 +210,7 @@ internal class PostgresInnsendingRepository(
             søknad = søknadDAO.hent(id, txSession),
             tidsstempelTiltakInnhentet = localDateTimeOrNull("tidsstempel_tiltak_innhentet"),
             tidsstempelPersonopplysningerInnhentet = localDateTimeOrNull("tidsstempel_personopplysninger_innhentet"),
+            tidsstempelSkjermingInnhentet = localDateTimeOrNull("tidsstempel_skjerming_innhentet"),
             tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
@@ -237,6 +238,7 @@ internal class PostgresInnsendingRepository(
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
+                    "tidsstempel_skjerming_innhentet" to innsending.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
@@ -260,6 +262,7 @@ internal class PostgresInnsendingRepository(
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
+                    "tidsstempel_skjerming_innhentet" to innsending.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
@@ -274,7 +277,7 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val lagre =
-        "insert into innsending (id, journalpost_id, ident, tilstand, tidsstempel_tiltak_innhentet, tidsstempel_personopplysninger_innhentet, tidsstempel_ytelser_innhentet, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :tidsstempel_tiltak_innhentet, :tidsstempel_personopplysninger_innhentet, :tidsstempel_ytelser_innhentet, :sist_endret, :opprettet)"
+        "insert into innsending (id, journalpost_id, ident, tilstand, tidsstempel_tiltak_innhentet, tidsstempel_personopplysninger_innhentet, tidsstempel_skjerming_innhentet, tidsstempel_ytelser_innhentet, sist_endret, opprettet) values (:id, :journalpostId, :ident, :tilstand, :tidsstempel_tiltak_innhentet, :tidsstempel_personopplysninger_innhentet, :tidsstempel_skjerming_innhentet, :tidsstempel_ytelser_innhentet, :sist_endret, :opprettet)"
 
     @Language("SQL")
     private val oppdater =
@@ -283,6 +286,7 @@ internal class PostgresInnsendingRepository(
               sist_endret = :sistEndret,
               tidsstempel_tiltak_innhentet = :tidsstempel_tiltak_innhentet,
               tidsstempel_personopplysninger_innhentet = :tidsstempel_personopplysninger_innhentet,
+              tidsstempel_skjerming_innhentet = :tidsstempel_skjerming_innhentet,
               tidsstempel_ytelser_innhentet = :tidsstempel_ytelser_innhentet
            where id = :id
              and sist_endret = :sistEndretOld
