@@ -5,6 +5,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.routes.rivers.DayHasBegunEvent
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -18,11 +19,11 @@ class EventMediator(
     internal fun håndter(hendelse: DayHasBegunEvent) {
         innsendingAdminService.hentInnsendingerSomErFerdigstilt()
             .forEach { journalpostId ->
-                publiserInnsendingUtdatertHendelse(journalpostId)
+                publiserInnsendingUtdatertHendelse(journalpostId, hendelse.date)
             }
     }
 
-    private fun publiserInnsendingUtdatertHendelse(journalpostId: String) {
+    private fun publiserInnsendingUtdatertHendelse(journalpostId: String, dag: LocalDate) {
         val id = UUID.randomUUID()
 
         mutableMapOf(
@@ -30,6 +31,7 @@ class EventMediator(
             "@opprettet" to LocalDateTime.now(),
             "@id" to id,
             "journalpostId" to journalpostId,
+            "dag" to dag
         )
             .let { JsonMessage.newMessage(it) }
             .also { message ->

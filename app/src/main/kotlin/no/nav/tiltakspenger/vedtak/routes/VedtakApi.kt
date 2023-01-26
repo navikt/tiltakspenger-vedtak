@@ -28,9 +28,12 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
+import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
+import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknadRoutes
@@ -55,7 +58,8 @@ internal fun Application.vedtakApi(
     søkerService: SøkerService,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
-    innsendingAdminService: InnsendingAdminService
+    innsendingAdminService: InnsendingAdminService,
+    eventMediator: EventMediator,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -84,6 +88,14 @@ internal fun Application.vedtakApi(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
+            )
+            passageOfTimeRoutes(
+                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
+                eventMediator = eventMediator,
+            )
+            innsendingUtdatertRoutes(
+                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
+                innsendingMediator = innsendingMediator,
             )
         }
         static("/") {

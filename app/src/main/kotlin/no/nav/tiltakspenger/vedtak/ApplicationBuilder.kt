@@ -28,6 +28,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
+                eventMediator = eventMediator,
             )
         }
         .build()
@@ -48,6 +49,10 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
     val innsendingAdminService = InnsendingAdminService(
         innsendingRepository = innsendingRepository,
         innsendingMediator = innsendingMediator,
+    )
+    private val eventMediator = EventMediator(
+        rapidsConnection = rapidsConnection,
+        innsendingAdminService = innsendingAdminService,
     )
 
     init {
