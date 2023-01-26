@@ -66,8 +66,8 @@ fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
                                 )
                             },
                             innhentet = skjermingDTO.innhentet,
-                        )
-
+                        ),
+                        tidsstempelSkjermingInnhentet = skjermingDTO.innhentet,
                     )
                     SECURELOG.info { " Mottatt skjerming og laget hendelse : $skjermingHendelse" }
                     innsendingMediator.håndter(skjermingHendelse)

@@ -22,4 +22,7 @@ class InnsendingAdminService(
             )
         }
     }
+
+    fun hentInnsendingerSomErFerdigstilt() =
+        innsendingRepository.hentInnsendingerMedTilstandFerdigstilt()
 }

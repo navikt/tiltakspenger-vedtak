@@ -51,12 +51,14 @@ fun nySkjermingHendelse(
     ident: String = Random().nextInt().toString(),
     skjerming: Skjerming = skjermingFalse(ident = journalpostId),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+    tidsstemplerSkjermingInnhentet: LocalDateTime = LocalDateTime.now(),
 ): SkjermingMottattHendelse {
     return SkjermingMottattHendelse(
         journalpostId = journalpostId,
         ident = ident,
         skjerming = skjerming,
         aktivitetslogg = aktivitetslogg,
+        tidsstempelSkjermingInnhentet = tidsstemplerSkjermingInnhentet,
     )
 }
 
