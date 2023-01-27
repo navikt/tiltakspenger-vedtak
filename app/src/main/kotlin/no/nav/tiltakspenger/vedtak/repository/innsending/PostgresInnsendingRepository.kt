@@ -40,12 +40,12 @@ internal class PostgresInnsendingRepository(
 
     private fun hentMedTxSession(
         journalpostId: String,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ): Innsending? {
         return txSession.run(
             queryOf(hent, journalpostId).map { row ->
                 row.toInnsending(txSession)
-            }.asSingle
+            }.asSingle,
         )
     }
 
@@ -55,7 +55,7 @@ internal class PostgresInnsendingRepository(
                 txSession.run(
                     queryOf(findByIdent, ident).map { row ->
                         row.toInnsending(txSession)
-                    }.asList
+                    }.asList,
                 )
             }
         }
@@ -67,7 +67,7 @@ internal class PostgresInnsendingRepository(
                 txSession.run(
                     queryOf(antall).map { row ->
                         row.toAntall()
-                    }.asSingle
+                    }.asSingle,
                 )
             }
         }!!
@@ -80,7 +80,7 @@ internal class PostgresInnsendingRepository(
                     queryOf(hentMedTilstand, InnsendingTilstandType.FaktainnhentingFeilet.name).map { row ->
                         // row.toInnsending(txSession)
                         row.toJournalpostId()
-                    }.asList
+                    }.asList,
                 )
             }
         }
@@ -93,7 +93,7 @@ internal class PostgresInnsendingRepository(
                     queryOf(hentMedTilstand, InnsendingTilstandType.InnsendingFerdigstilt.name).map { row ->
                         // row.toInnsending(txSession)
                         row.toJournalpostId()
-                    }.asList
+                    }.asList,
                 )
             }
         }
@@ -108,12 +108,12 @@ internal class PostgresInnsendingRepository(
                         mapOf(
                             "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
                             "tilstand2" to InnsendingTilstandType.InnsendingFerdigstilt.name,
-                            "sistEndret" to LocalDateTime.now().minusDays(1),
-                        )
+                            "sistEndret" to LocalDateTime.now().minusHours(1),
+                        ),
                     ).map { row ->
                         // row.toInnsending(txSession)
                         row.toJournalpostId()
-                    }.asList
+                    }.asList,
                 )
             }
         }
@@ -125,7 +125,7 @@ internal class PostgresInnsendingRepository(
                 txSession.run(
                     queryOf(antallMedTilstand, InnsendingTilstandType.FaktainnhentingFeilet.name).map { row ->
                         row.toAntall()
-                    }.asSingle
+                    }.asSingle,
                 )
             }
         }!!
@@ -140,11 +140,11 @@ internal class PostgresInnsendingRepository(
                         mapOf(
                             "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
                             "tilstand2" to InnsendingTilstandType.InnsendingFerdigstilt.name,
-                            "sistEndret" to LocalDateTime.now().minusDays(1),
-                        )
+                            "sistEndret" to LocalDateTime.now().minusHours(1),
+                        ),
                     ).map { row ->
                         row.toAntall()
-                    }.asSingle
+                    }.asSingle,
                 )
             }
         }!!
@@ -162,22 +162,22 @@ internal class PostgresInnsendingRepository(
                     tiltaksaktivitetDAO.lagre(
                         innsendingId = innsending.id,
                         tiltaksaktiviteter = innsending.tiltak?.tiltaksliste ?: emptyList(),
-                        txSession = txSession
+                        txSession = txSession,
                     )
                     ytelsesakDAO.lagre(
                         innsendingId = innsending.id,
                         ytelsesaker = innsending.ytelser?.ytelserliste ?: emptyList(),
-                        txSession = txSession
+                        txSession = txSession,
                     )
                     personopplysningerDAO.lagre(
                         innsendingId = innsending.id,
                         personopplysninger = innsending.personopplysninger?.personopplysningerliste ?: emptyList(),
-                        txSession = txSession
+                        txSession = txSession,
                     )
                     aktivitetsloggDAO.lagre(
                         innsendingId = innsending.id,
                         aktivitetslogg = innsending.aktivitetslogg,
-                        txSession = txSession
+                        txSession = txSession,
                     )
                 }
             }
@@ -215,12 +215,12 @@ internal class PostgresInnsendingRepository(
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysningerliste = personopplysningerDAO.hent(id, txSession),
-            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession)
+            aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
         )
     }
 
     private fun innsendingFinnes(journalpostId: String, txSession: TransactionalSession): Boolean = txSession.run(
-        queryOf(finnes, journalpostId).map { row -> row.boolean("exists") }.asSingle
+        queryOf(finnes, journalpostId).map { row -> row.boolean("exists") }.asSingle,
     ) ?: throw RuntimeException("Failed to check if innsending exists")
 
     private fun insert(innsending: Innsending, txSession: TransactionalSession): Innsending {
@@ -242,8 +242,8 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
         return innsending
     }
@@ -266,8 +266,8 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
         if (antRaderOppdatert == 0) {
             throw IllegalStateException("Noen andre har endret denne")
