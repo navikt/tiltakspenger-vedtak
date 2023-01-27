@@ -32,7 +32,7 @@ class YtelseRoutesTest {
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
-        observatører = listOf()
+        observatører = listOf(),
     )
 
     @AfterEach
@@ -53,7 +53,7 @@ class YtelseRoutesTest {
                 jacksonSerialization()
                 routing {
                     ytelseRoutes(
-                        innsendingMediator = innsendingMediator
+                        innsendingMediator = innsendingMediator,
                     )
                 }
             }
@@ -71,7 +71,9 @@ class YtelseRoutesTest {
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(0, size)
+            Assertions.assertEquals(1, size)
+            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+            Assertions.assertEquals("fpytelser", field(0, "@behov")[0].asText())
         }
     }
 
@@ -88,7 +90,7 @@ class YtelseRoutesTest {
                 jacksonSerialization()
                 routing {
                     ytelseRoutes(
-                        innsendingMediator = innsendingMediator
+                        innsendingMediator = innsendingMediator,
                     )
                 }
             }
@@ -106,7 +108,9 @@ class YtelseRoutesTest {
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(0, size)
+            Assertions.assertEquals(1, size)
+            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+            Assertions.assertEquals("fpytelser", field(0, "@behov")[0].asText())
         }
     }
 

@@ -15,7 +15,7 @@ class YtelsevedtakDAO {
         return txSession.run(
             queryOf(hentYtelsevedtak, ytelsesakId.toString())
                 .map { row -> row.toYtelsevedtak() }
-                .asList
+                .asList,
         )
     }
 
@@ -37,13 +37,9 @@ class YtelsevedtakDAO {
                     "vedtaksperiodeTom" to ytelseVedtak.vedtaksperiodeTom,
                     "vedtaksType" to ytelseVedtak.vedtaksType?.name,
                     "status" to ytelseVedtak.status?.name,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
-    }
-
-    private fun slettVedtak(ytelsesakId: UlidBase, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettYtelsevedtak, ytelsesakId.toString()).asUpdate)
     }
 
     fun slettVedtakForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession) {
