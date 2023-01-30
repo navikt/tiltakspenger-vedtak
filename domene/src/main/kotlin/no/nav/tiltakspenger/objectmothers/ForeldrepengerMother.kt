@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-fun fpytelse(
+fun foreldrepengerVedtak(
     id: ForeldrepengerVedtakId = ForeldrepengerVedtakId.random(),
     version: String = "v1",
     aktør: String = "aktørId",

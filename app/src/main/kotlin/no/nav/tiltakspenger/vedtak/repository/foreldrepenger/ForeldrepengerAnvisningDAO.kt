@@ -43,10 +43,10 @@ class ForeldrepengerAnvisningDAO() {
                 lagreForeldrepengerAnvisning,
                 mapOf(
                     "id" to id.toString(),
-                    "foreldrepenger_vedtak_id" to foreldrepengerVedtakId.toString(),
+                    "foreldrepengerVedtakId" to foreldrepengerVedtakId.toString(),
                     "fra" to anvisning.periode.fra,
                     "til" to anvisning.periode.til,
-                    "beløp" to anvisning.beløp,
+                    "belop" to anvisning.beløp,
                     "dagsats" to anvisning.dagsats,
                     "utbetalingsgrad" to anvisning.utbetalingsgrad,
                 ),
@@ -87,7 +87,7 @@ class ForeldrepengerAnvisningDAO() {
             :til,
             :belop,
             :dagsats,
-            :utbetalingsgrad,
+            :utbetalingsgrad
         )
     """.trimIndent()
 
