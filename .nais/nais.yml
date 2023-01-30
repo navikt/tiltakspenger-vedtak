@@ -51,6 +51,9 @@ spec:
   accessPolicy:
     inbound:
       rules:
+        - application: tiltakspenger-admin
+          namespace: tpts
+          cluster: {{ cluster }}
         - application: tiltakspenger-saksbehandler
           namespace: tpts
           cluster: {{ cluster }}
