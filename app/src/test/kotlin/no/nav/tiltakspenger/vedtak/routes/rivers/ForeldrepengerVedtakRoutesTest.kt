@@ -81,7 +81,7 @@ class ForeldrepengerVedtakRoutesTest {
         {
             "ident": "$IDENT",
             "journalpostId": "$JOURNALPOSTID",
-            "fpytelser": {
+            "foreldrepenger": {
               "ytelser": [
                 {
                   "version": "v1",
