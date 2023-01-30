@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
+import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
@@ -84,6 +85,7 @@ internal fun Application.vedtakApi(
             skjermingRoutes(innsendingMediator)
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)
+            foreldrepengerRoutes(innsendingMediator)
             personopplysningerRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
@@ -110,7 +112,7 @@ private fun AuthenticationConfig.jwt(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null
+    roles: List<Rolle>? = null,
 ) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
@@ -156,7 +158,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null
+    roles: List<Rolle>? = null,
 ) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
