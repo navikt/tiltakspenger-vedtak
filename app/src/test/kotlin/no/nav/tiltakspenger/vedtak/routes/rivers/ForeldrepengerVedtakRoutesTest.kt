@@ -77,6 +77,55 @@ class ForeldrepengerVedtakRoutesTest {
         }
     }
 
+    @Test
+    fun `sjekk at kall til river foreldrepenger route med tom liste sender ut et behov`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
+            ident = IDENT,
+            journalpostId = JOURNALPOSTID,
+        )
+
+        testApplication {
+            application {
+                // vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    foreldrepengerRoutes(
+                        innsendingMediator = innsendingMediator,
+                    )
+                }
+            }
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$foreldrepengerpath")
+                },
+            ) {
+                setBody(tomBody)
+            }
+                .apply {
+                    status shouldBe HttpStatusCode.OK
+                }
+        }
+        with(testRapid.inspektør) {
+            Assertions.assertEquals(0, size)
+//            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+//            Assertions.assertEquals("arenatiltak", field(0, "@behov")[0].asText())
+        }
+    }
+
+    private val tomBody = """
+        {
+            "ident": "$IDENT",
+            "journalpostId": "$JOURNALPOSTID",
+            "foreldrepenger": {
+              "ytelser": [],
+              "feil": null
+            },
+            "innhentet": "2022-08-22T14:59:46.491437009"
+        }
+    """.trimIndent()
+
     private val fpBody = """
         {
             "ident": "$IDENT",
