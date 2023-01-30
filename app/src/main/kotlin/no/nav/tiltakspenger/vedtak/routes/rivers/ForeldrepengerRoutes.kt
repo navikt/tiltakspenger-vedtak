@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 data class ForeldrepengerDTO(
     val ident: String,
     val journalpostId: String,
-    val fpytelser: FPResponsDTO,
+    val foreldrepenger: FPResponsDTO,
     val innhentet: LocalDateTime,
 )
 
@@ -37,12 +37,12 @@ fun Route.foreldrepengerRoutes(innsendingMediator: InnsendingMediator) {
         val foreldrepengerDTO = call.receive<ForeldrepengerDTO>()
 
         when {
-            foreldrepengerDTO.fpytelser.feil != null -> {
+            foreldrepengerDTO.foreldrepenger.feil != null -> {
                 val feilMottattHendelse = FeilMottattHendelse(
                     aktivitetslogg = Aktivitetslogg(),
                     journalpostId = foreldrepengerDTO.journalpostId,
                     ident = foreldrepengerDTO.ident,
-                    feil = when (foreldrepengerDTO.fpytelser.feil!!) {
+                    feil = when (foreldrepengerDTO.foreldrepenger.feil!!) {
                         FPResponsDTO.FeilmeldingDTO.UkjentFeil -> Feil.UkjentFeil
                     },
                 )
@@ -50,8 +50,8 @@ fun Route.foreldrepengerRoutes(innsendingMediator: InnsendingMediator) {
                 call.respond(message = "OK", status = HttpStatusCode.OK)
             }
 
-            foreldrepengerDTO.fpytelser.ytelser != null -> {
-                foreldrepengerDTO.fpytelser.ytelser?.let { dto ->
+            foreldrepengerDTO.foreldrepenger.ytelser != null -> {
+                foreldrepengerDTO.foreldrepenger.ytelser?.let { dto ->
                     val foreldrepengerHendelse = ForeldrepengerMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),
                         journalpostId = foreldrepengerDTO.journalpostId,
