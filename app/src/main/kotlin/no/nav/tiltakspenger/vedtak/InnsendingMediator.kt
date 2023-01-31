@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
@@ -19,11 +20,11 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class InnsendingMediator(
     private val innsendingRepository: InnsendingRepository,
     private val observatører: List<InnsendingObserver> = emptyList(),
-    rapidsConnection: RapidsConnection
+    rapidsConnection: RapidsConnection,
 ) {
 
     private val behovMediator: BehovMediator = BehovMediator(
-        rapidsConnection = rapidsConnection
+        rapidsConnection = rapidsConnection,
     )
 
     fun håndter(hendelse: InnsendingHendelse) {
@@ -42,6 +43,7 @@ class InnsendingMediator(
                         is YtelserMottattHendelse -> innsending.håndter(hendelse)
                         is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
                         is SkjermingMottattHendelse -> innsending.håndter(hendelse)
+                        is ForeldrepengerMottattHendelse -> innsending.håndter(hendelse)
                         is ResetInnsendingHendelse -> innsending.håndter(hendelse)
                         is FeilMottattHendelse -> innsending.håndter(hendelse)
                         is InnsendingUtdatertHendelse -> innsending.håndter(hendelse)
@@ -81,7 +83,7 @@ class InnsendingMediator(
             else -> {
                 LOG.warn(
                     "Fant ingen innsending for hendelse med" +
-                        "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen"
+                        "journalpostId ${hendelse.journalpostId()}, ignorerer hendelsen",
                 )
                 null
             }

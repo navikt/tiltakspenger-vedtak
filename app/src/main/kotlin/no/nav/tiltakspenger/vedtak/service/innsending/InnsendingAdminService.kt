@@ -29,8 +29,24 @@ class InnsendingAdminService(
         }
     }
 
+    fun hentInnsendingerSomHarFeiletEllerStoppetOpp(): AdminInnsendingerDAO {
+        val innsendingerFeilet = innsendingRepository.hentInnsendingerMedTilstandFaktainnhentingFeilet().also {
+            LOG.info { "Fant ${it.size} innsendinger i tilstand feilet" }
+        }
+        val innsendingerStoppet = innsendingRepository.hentInnsendingerStoppetUnderBehandling().also {
+            LOG.info { "Fant ${it.size} innsendinger i tilstand stoppet eller under behandling" }
+        }
+        return AdminInnsendingerDAO(innsendingerFeilet.size, innsendingerStoppet.size)
+    }
+
     fun hentInnsendingerSomErFerdigstilt(): List<String> =
         innsendingRepository.hentInnsendingerMedTilstandFerdigstilt().also {
             LOG.info { "Fant ${it.size} innsendinger i tilstand ferdigstilt" }
         }
+
+    // @TODO Flytt denne, hører ikke hjemme her.
+    data class AdminInnsendingerDAO(
+        val feilet: Int,
+        val stoppet: Int
+    )
 }

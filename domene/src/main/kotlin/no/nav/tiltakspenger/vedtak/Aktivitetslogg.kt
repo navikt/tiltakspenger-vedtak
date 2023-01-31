@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 // Implements Visitor pattern to traverse the messages
 open class Aktivitetslogg(
     private var forelder: IAktivitetslogg? = null,
-    private val aktiviteter: MutableList<Aktivitet> = mutableListOf()
+    private val aktiviteter: MutableList<Aktivitet> = mutableListOf(),
 ) : IAktivitetslogg {
     // Kunne/burde dette vært en stack heller enn en list? (https://stackoverflow.com/questions/46900048/how-can-i-use-stack-in-kotlin)
     private val kontekster = mutableListOf<KontekstLogable>() // Doesn't need serialization
@@ -95,7 +95,7 @@ open class Aktivitetslogg(
         return aktivitetListeListe.map { aktivitetListe ->
             Aktivitetslogg(this).apply {
                 aktiviteter.addAll(
-                    aktivitetListe
+                    aktivitetListe,
                 )
             }
         }
@@ -121,7 +121,7 @@ open class Aktivitetslogg(
         val label: Char,
         val melding: String,
         val tidsstempel: LocalDateTime,
-        val kontekster: List<Kontekst>
+        val kontekster: List<Kontekst>,
     ) : Comparable<Aktivitet> {
 
         fun alleKonteksterAsMap(): Map<String, String> =
@@ -188,7 +188,7 @@ open class Aktivitetslogg(
         class Warn(
             kontekster: List<Kontekst>,
             melding: String,
-            tidsstempel: LocalDateTime = nå()
+            tidsstempel: LocalDateTime = nå(),
         ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Warn> {
@@ -241,7 +241,7 @@ open class Aktivitetslogg(
             }
 
             enum class Behovtype {
-                personopplysninger, skjerming, arenatiltak, arenaytelser,
+                personopplysninger, skjerming, arenatiltak, arenaytelser, fpytelser,
             }
         }
 
@@ -306,7 +306,7 @@ interface IAktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Info,
         melding: String,
-        tidsstempel: LocalDateTime
+        tidsstempel: LocalDateTime,
     ) {
     }
 
@@ -314,7 +314,7 @@ interface IAktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Warn,
         melding: String,
-        tidsstempel: LocalDateTime
+        tidsstempel: LocalDateTime,
     ) {
     }
 
@@ -324,7 +324,7 @@ interface IAktivitetsloggVisitor {
         type: Aktivitetslogg.Aktivitet.Behov.Behovtype,
         melding: String,
         detaljer: Map<String, Any>,
-        tidsstempel: LocalDateTime
+        tidsstempel: LocalDateTime,
     ) {
     }
 
@@ -332,7 +332,7 @@ interface IAktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Error,
         melding: String,
-        tidsstempel: LocalDateTime
+        tidsstempel: LocalDateTime,
     ) {
     }
 
@@ -340,7 +340,7 @@ interface IAktivitetsloggVisitor {
         kontekster: List<Kontekst>,
         aktivitet: Aktivitetslogg.Aktivitet.Severe,
         melding: String,
-        tidsstempel: LocalDateTime
+        tidsstempel: LocalDateTime,
     ) {
     }
 

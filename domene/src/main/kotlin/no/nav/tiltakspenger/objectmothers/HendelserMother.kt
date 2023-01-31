@@ -80,7 +80,7 @@ fun nyYtelseHendelse(
     journalpostId: String = Random().nextInt().toString(),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
     aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
-    tidsstempelYtelserInnhentet: LocalDateTime = LocalDateTime.now()
+    tidsstempelYtelserInnhentet: LocalDateTime = LocalDateTime.now(),
 ): YtelserMottattHendelse {
     return YtelserMottattHendelse(
         journalpostId = journalpostId,
@@ -89,6 +89,20 @@ fun nyYtelseHendelse(
         tidsstempelYtelserInnhentet = tidsstempelYtelserInnhentet,
     )
 }
+
+// fun nyForeldrepengerHendelse(
+//    ident: String = Random().nextInt().toString(),
+//    journalpostId: String = Random().nextInt().toString(),
+//    fpytelser: List<ForeldrepengerVedtak> = listOf(fpytelse()),
+//    aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+// ): ForeldrepengerMottattHendelse {
+//    return ForeldrepengerMottattHendelse(
+//        ident = ident,
+//        journalpostId = journalpostId,
+//        foreldrepengerVedtakListe = fpytelser,
+//        aktivitetslogg = aktivitetslogg,
+//    )
+// }
 
 fun nyFeilHendelse(
     journalpostId: String = Random().nextInt().toString(),
