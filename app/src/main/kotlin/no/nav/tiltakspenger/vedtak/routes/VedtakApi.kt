@@ -78,7 +78,9 @@ internal fun Application.vedtakApi(
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
         }
-        resettInnsendingerRoute(innsendingAdminService)
+        authenticate("admin") {
+            resettInnsendingerRoute(innsendingAdminService)
+        }
         authenticate("systemtoken") {
             søknadRoutes(innsendingMediator, søkerMediator)
             skjermingRoutes(innsendingMediator)
@@ -110,7 +112,7 @@ private fun AuthenticationConfig.jwt(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null
+    roles: List<Rolle>? = null,
 ) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
@@ -156,7 +158,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null
+    roles: List<Rolle>? = null,
 ) =
     jwt(name) {
         SECURELOG.info { "config : $config" }
@@ -222,6 +224,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
 
     install(Authentication) {
         jwt(config, "saksbehandling", "saksbehandling", listOf(Rolle.SAKSBEHANDLER))
+        jwt(config, "admin", "saksbehandling", listOf(Rolle.ADMIN))
         jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))
     }
 }

@@ -36,6 +36,7 @@ spec:
           - id: {{ ROLE_FORTROLIG }}
           - id: {{ ROLE_STRENGT_FORTROLIG }}
           - id: {{ ROLE_SKJERMING }}
+          - id: {{ ROLE_ADMIN }}
         extra:
           - NAVident
           - azp_name
