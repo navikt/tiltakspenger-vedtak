@@ -39,7 +39,7 @@ class ResettInnsendingerRouteTest {
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK
-                bodyAsText() shouldBe "Ok"
+                bodyAsText() shouldBe "{\"status\":\"ok\"}"
             }
         }
     }

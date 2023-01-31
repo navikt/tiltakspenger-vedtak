@@ -23,4 +23,4 @@ fun Route.resettInnsendingerRoute(
     }
 }
 
-data class AdminMessage(private val status: String)
+data class AdminMessage(val status: String)
