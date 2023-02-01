@@ -7,8 +7,11 @@ import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.InnsendingId
+import no.nav.tiltakspenger.felles.UføreVedtakId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
+import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
@@ -16,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedta
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
+import no.nav.tiltakspenger.vedtak.repository.uføre.UføreVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -29,6 +33,7 @@ internal class PostgresInnsendingRepository(
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
     private val foreldrepengerVedtakDAO: ForeldrepengerVedtakDAO = ForeldrepengerVedtakDAO(),
+    private val uføreVedtakDAO: UføreVedtakDAO = UføreVedtakDAO(),
     private val aktivitetsloggDAO: AktivitetsloggDAO = AktivitetsloggDAO(),
 ) : InnsendingRepository {
 
@@ -180,6 +185,11 @@ internal class PostgresInnsendingRepository(
                         innsendingId = innsending.id,
                         foreldrepengerVedtak = innsending.foreldrepengerVedtak?.foreldrepengerVedtakliste
                             ?: emptyList(),
+                        txSession = txSession,
+                    )
+                    uføreVedtakDAO.lagre(
+                        innsendingId = innsending.id,
+                        uføreVedtak = innsending.,
                         txSession = txSession,
                     )
                     aktivitetsloggDAO.lagre(

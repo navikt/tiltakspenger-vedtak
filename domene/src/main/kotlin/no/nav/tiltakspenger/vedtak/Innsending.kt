@@ -37,6 +37,7 @@ class Innsending private constructor(
     tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
+    uføre: InnhentetUføre?,
     aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
     private val dirtyChecker: DirtyChecker = DirtyChecker()
@@ -76,9 +77,9 @@ class Innsending private constructor(
     private var personopplysningerliste: List<Personopplysninger> =
         personopplysninger?.personopplysningerliste ?: mutableListOf()
         private set(value) {
-                field = value
-                dirtyChecker.set("personopplysninger")
-            }
+            field = value
+            dirtyChecker.set("personopplysninger")
+        }
 
     var tidsstempelSkjermingInnhentet: LocalDateTime? = tidsstempelSkjermingInnhentet
 
@@ -142,9 +143,22 @@ class Innsending private constructor(
     private var foreldrepengerVedtakListe: List<ForeldrepengerVedtak> =
         foreldrepengerVedtak?.foreldrepengerVedtakliste ?: mutableListOf()
         private set(value) {
-                field = value
-                dirtyChecker.set("foreldrepenger")
+            field = value
+            dirtyChecker.set("foreldrepenger")
+        }
+
+    var uføreVedtak: UføreVedtak?
+        private set(value) {
+            if (value != null) {
+                this.uføreVedtak = value
+                this.tid
             }
+        }
+        get() = {
+
+        }
+
+    private var tidsstempelUføreInnhentet: LocalDateTime? = personopplysninger?.tidsstempelInnhentet
 
     var sistEndret: LocalDateTime? = sistEndret
         private set
@@ -856,7 +870,7 @@ class Innsending private constructor(
 
         this.foreldrepengerVedtak = InnhentedeForeldrepengerVedtak(
             foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
-            tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet()
+            tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
         )
         // filtrere??
     }

@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.Random
 
 @Testcontainers
-class ForeldrepengerAnvisningDAOTest {
+class ForeldrepengerVedtakDAOTest {
     companion object {
         @Container
         val postgresContainer = PostgresTestcontainer

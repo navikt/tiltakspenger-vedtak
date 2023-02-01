@@ -135,8 +135,4 @@ class ForeldrepengerVedtakDAO(
 
     @Language("SQL")
     private val hentForeldrepengerVedtak = "select * from foreldrepenger_vedtak where innsending_id = ?"
-
-    companion object {
-        private const val ULID_PREFIX_FP = "fp"
-    }
 }
