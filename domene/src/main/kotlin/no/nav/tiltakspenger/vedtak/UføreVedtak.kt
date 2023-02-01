@@ -6,8 +6,8 @@ import java.time.LocalDateTime
 
 data class UføreVedtak(
     val id: UføreVedtakId,
-    val harUforegrad: Boolean,
-    val datoUfor: LocalDate?,
+    val harUføregrad: Boolean,
+    val datoUfør: LocalDate?,
     val virkDato: LocalDate?,
     val innhentet: LocalDateTime,
 ) : Tidsstempler {

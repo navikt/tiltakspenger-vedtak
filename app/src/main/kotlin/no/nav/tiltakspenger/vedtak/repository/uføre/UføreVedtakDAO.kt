@@ -20,10 +20,11 @@ class UføreVedtakDAO() {
 
     fun lagre(
         innsendingId: InnsendingId,
-        uføreVedtak: UføreVedtak,
+        uføreVedtak: UføreVedtak?,
         txSession: TransactionalSession,
     ) {
         slettUføreVedtak(innsendingId, txSession)
+        if (uføreVedtak == null) return
         lagreUføreVedtak(innsendingId, uføreVedtak, txSession)
     }
 
@@ -39,8 +40,8 @@ class UføreVedtakDAO() {
                 mapOf(
                     "id" to id.toString(),
                     "innsendingId" to innsendingId.toString(),
-                    "harUforegrad" to uføreVedtak.harUforegrad,
-                    "datoUfor" to uføreVedtak.datoUfor,
+                    "harUforegrad" to uføreVedtak.harUføregrad,
+                    "datoUfor" to uføreVedtak.datoUfør,
                     "virkDato" to uføreVedtak.virkDato,
                     "innhentet" to uføreVedtak.innhentet,
                     "tidsstempelHosOss" to LocalDateTime.now(),
@@ -56,8 +57,8 @@ class UføreVedtakDAO() {
     private fun Row.toUføreVedtak(txSession: TransactionalSession): UføreVedtak {
         return UføreVedtak(
             id = UføreVedtakId.fromDb(string("id")),
-            harUforegrad = boolean("har_uforegrad"),
-            datoUfor = localDateOrNull("dato_ufor"),
+            harUføregrad = boolean("har_uforegrad"),
+            datoUfør = localDateOrNull("dato_ufor"),
             virkDato = localDateOrNull("virk_dato"),
             innhentet = localDateTime("innhentet"),
         )

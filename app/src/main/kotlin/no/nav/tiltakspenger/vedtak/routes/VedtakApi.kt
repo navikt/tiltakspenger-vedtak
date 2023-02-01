@@ -39,6 +39,7 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
+import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
@@ -86,6 +87,7 @@ internal fun Application.vedtakApi(
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)
             foreldrepengerRoutes(innsendingMediator)
+            uføreRoutes(innsendingMediator)
             personopplysningerRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,

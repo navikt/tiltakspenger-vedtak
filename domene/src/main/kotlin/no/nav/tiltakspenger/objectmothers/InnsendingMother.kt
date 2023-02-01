@@ -5,6 +5,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -15,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakelsesPeriode
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakerStatus
+import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -63,8 +65,8 @@ fun innsendingMedPersonopplysninger(
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
-            strengtFortroligUtland = false
-        )
+            strengtFortroligUtland = false,
+        ),
     ),
 ): Innsending {
     val innsending = innsendingMedSøknad(
@@ -76,7 +78,7 @@ fun innsendingMedPersonopplysninger(
         nyPersonopplysningHendelse(
             journalpostId = journalpostId,
             personopplysninger = personopplysninger,
-        )
+        ),
     )
     return innsending
 }
@@ -88,8 +90,8 @@ fun innsendingMedSkjerming(
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
-            strengtFortroligUtland = false
-        )
+            strengtFortroligUtland = false,
+        ),
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
 ): Innsending {
@@ -103,7 +105,7 @@ fun innsendingMedSkjerming(
         nySkjermingHendelse(
             journalpostId = journalpostId,
             skjerming = skjerming,
-        )
+        ),
     )
     return innsending
 }
@@ -115,13 +117,13 @@ fun innsendingMedTiltak(
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
-            strengtFortroligUtland = false
-        )
+            strengtFortroligUtland = false,
+        ),
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltak: InnhentedeTiltak = InnhentedeTiltak(
         tiltaksliste = listOf(tiltaksaktivitet()),
-        tidsstempelInnhentet = 1.januarDateTime(2022)
+        tidsstempelInnhentet = 1.januarDateTime(2022),
     ),
 ): Innsending {
     val innsending = innsendingMedSkjerming(
@@ -136,7 +138,7 @@ fun innsendingMedTiltak(
             journalpostId = journalpostId,
             tiltaksaktivitet = tiltak.tiltaksliste,
             tidsstempelTiltakInnhentet = tiltak.tidsstempelInnhentet,
-        )
+        ),
     )
     return innsending
 }
@@ -148,13 +150,13 @@ fun innsendingMedYtelse(
     personopplysninger: List<Personopplysninger> = listOf(
         personopplysningKjedeligFyr(
             ident = ident,
-            strengtFortroligUtland = false
-        )
+            strengtFortroligUtland = false,
+        ),
     ),
     skjerming: Skjerming = skjermingFalse(ident = ident),
     tiltak: InnhentedeTiltak = InnhentedeTiltak(
         tiltaksliste = listOf(tiltaksaktivitet()),
-        tidsstempelInnhentet = 1.januarDateTime(2022)
+        tidsstempelInnhentet = 1.januarDateTime(2022),
     ),
     ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
 ): Innsending {
@@ -170,8 +172,88 @@ fun innsendingMedYtelse(
         nyYtelseHendelse(
             journalpostId = journalpostId,
             ytelseSak = ytelseSak,
-        )
+        ),
     )
+    return innsending
+}
+
+fun innsendingMedForeldrepenger(
+    journalpostId: String = Random().nextInt().toString(),
+    ident: String = Random().nextInt().toString(),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false,
+        ),
+    ),
+    skjerming: Skjerming = skjermingFalse(ident = ident),
+    tiltak: InnhentedeTiltak = InnhentedeTiltak(
+        tiltaksliste = listOf(tiltaksaktivitet()),
+        tidsstempelInnhentet = 1.januarDateTime(2022),
+    ),
+    ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
+    foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
+): Innsending {
+    val innsending = innsendingMedYtelse(
+        journalpostId = journalpostId,
+        ident = ident,
+        søknad = søknad,
+        personopplysninger = personopplysninger,
+        skjerming = skjerming,
+        tiltak = tiltak,
+        ytelseSak = ytelseSak,
+    )
+
+    innsending.håndter(
+        nyForeldrepengerHendelse(
+            ident = ident,
+            journalpostId = journalpostId,
+            foreldrepengerVedtakListe = foreldrepengerVedtakListe,
+        ),
+    )
+
+    return innsending
+}
+
+fun innsendingMedUføre(
+    journalpostId: String = Random().nextInt().toString(),
+    ident: String = Random().nextInt().toString(),
+    søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+    personopplysninger: List<Personopplysninger> = listOf(
+        personopplysningKjedeligFyr(
+            ident = ident,
+            strengtFortroligUtland = false,
+        ),
+    ),
+    skjerming: Skjerming = skjermingFalse(ident = ident),
+    tiltak: InnhentedeTiltak = InnhentedeTiltak(
+        tiltaksliste = listOf(tiltaksaktivitet()),
+        tidsstempelInnhentet = 1.januarDateTime(2022),
+    ),
+    ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
+    foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
+    uføreVedtak: UføreVedtak = uføreVedtak(),
+): Innsending {
+    val innsending = innsendingMedForeldrepenger(
+        journalpostId = journalpostId,
+        ident = ident,
+        søknad = søknad,
+        personopplysninger = personopplysninger,
+        skjerming = skjerming,
+        tiltak = tiltak,
+        ytelseSak = ytelseSak,
+        foreldrepengerVedtakListe = foreldrepengerVedtakListe,
+    )
+
+    innsending.håndter(
+        nyUføreHendelse(
+            ident = ident,
+            journalpostId = journalpostId,
+            uføreVedtak = uføreVedtak,
+        ),
+    )
+
     return innsending
 }
 

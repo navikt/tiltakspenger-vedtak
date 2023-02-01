@@ -1,9 +1,10 @@
 package no.nav.tiltakspenger.vedtak.repository.uføre
 
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.foreldrepengerVedtak
-import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.innsendingMedForeldrepenger
+import no.nav.tiltakspenger.objectmothers.uføreVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -28,29 +29,29 @@ class UføreVedtakDAOTest {
 
     @Test
     fun `lagre og hente med null felter`() {
-        val foreldrepengerVedtakDAO = ForeldrepengerVedtakDAO()
-        val repository = PostgresInnsendingRepository(foreldrepengerVedtakDAO = foreldrepengerVedtakDAO)
+        val uføreVedtakDAO = UføreVedtakDAO()
+        val repository = PostgresInnsendingRepository(uføreVedtakDAO = uføreVedtakDAO)
         val ident = Random().nextInt().toString()
-        val innsending = innsendingMedYtelse(ident = ident)
+        val innsending = innsendingMedForeldrepenger(ident = ident)
         repository.lagre(innsending)
 
-        val foreldrepengerVedtak = foreldrepengerVedtak()
+        val uføreVedtak = uføreVedtak()
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                foreldrepengerVedtakDAO.lagre(innsending.id, listOf(foreldrepengerVedtak), txSession)
+                uføreVedtakDAO.lagre(innsending.id, uføreVedtak, txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                foreldrepengerVedtakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
+                uføreVedtakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
             }
         }
 
-        hentet.size shouldBe 1
-        hentet.first() shouldBe foreldrepengerVedtak.copy(
-            id = hentet.first().id,
+        hentet shouldNotBe null
+        hentet shouldBe uføreVedtak.copy(
+            id = hentet!!.id,
         )
     }
 }

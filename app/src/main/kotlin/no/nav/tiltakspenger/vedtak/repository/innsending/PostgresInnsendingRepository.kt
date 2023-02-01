@@ -7,11 +7,8 @@ import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.felles.UføreVedtakId
-import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
-import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
@@ -189,7 +186,7 @@ internal class PostgresInnsendingRepository(
                     )
                     uføreVedtakDAO.lagre(
                         innsendingId = innsending.id,
-                        uføreVedtak = innsending.,
+                        uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
                         txSession = txSession,
                     )
                     aktivitetsloggDAO.lagre(
@@ -231,10 +228,12 @@ internal class PostgresInnsendingRepository(
             tidsstempelSkjermingInnhentet = localDateTimeOrNull("tidsstempel_skjerming_innhentet"),
             tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tidsstempelForeldrepengerVedtakInnhentet = localDateTimeOrNull("tidsstempel_foreldrepengervedtak_innhentet"),
+            tidsstempelUføreInnhentet = localDateTimeOrNull("tidsstempel_uførevedtak_innhentet"),
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysningerliste = personopplysningerDAO.hent(id, txSession),
             foreldrepengerVedtak = foreldrepengerVedtakDAO.hentForInnsending(id, txSession),
+            uføreVedtak = uføreVedtakDAO.hentForInnsending(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
         )
     }
