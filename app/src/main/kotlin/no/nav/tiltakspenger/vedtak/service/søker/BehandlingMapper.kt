@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
@@ -30,7 +31,8 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
-import java.time.LocalDate
+
+private val LOG = KotlinLogging.logger {}
 
 class BehandlingMapper {
 
@@ -62,12 +64,14 @@ class BehandlingMapper {
                 )
             } else {
                 val vurderingsperiode =
-                    Periode(søknad.tiltak?.startdato ?: LocalDate.MIN, søknad.tiltak?.sluttdato ?: LocalDate.MAX)
-                val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
+                    innsending.vurderingsperiodeForSøknad()
+                        ?: return IkkeKlarForBehandlingDTO(søknad = mapSøknad(søknad))
+                            .also { LOG.warn("Fant ikke vurderingsperiode for innsending ${innsending.id}") }
 
+                val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
                 KlarForBehandlingDTO(
                     søknad = mapSøknad(søknad),
-                    registrerteTiltak = innsending.tiltak?.tiltaksliste?.map {
+                    registrerteTiltak = innsending.tiltak!!.tiltaksliste!!.map {
                         TiltakDTO(
                             arrangør = it.arrangør,
                             navn = it.tiltak.navn,
@@ -81,7 +85,7 @@ class BehandlingMapper {
                             dagerIUken = it.antallDagerPerUke,
                             status = it.deltakerStatus.tekst,
                         )
-                    } ?: emptyList(), // TODO: Dette må endres, ikke gyldig tilstand
+                    },
                     vurderingsperiode = PeriodeDTO(
                         fra = vurderingsperiode.fra,
                         til = vurderingsperiode.til,
@@ -263,19 +267,19 @@ class BehandlingMapper {
     ) = Inngangsvilkårsvurderinger(
         tiltakspengerYtelser = TiltakspengerVilkårsvurderingKategori(
             tiltakspengerVilkårsvurdering = TiltakspengerVilkårsvurdering(
-                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(), // TODO: Dette er ikke innafor
+                ytelser = innsending.ytelser!!.ytelserliste,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),
         statligeYtelser = StatligeYtelserVilkårsvurderingKategori(
             aap = AAPVilkårsvurdering(
-                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                ytelser = innsending.ytelser!!.ytelserliste,
                 vurderingsperiode = vurderingsperiode,
-            ), // TODO: Dette er ikke innafor
+            ),
             dagpenger = DagpengerVilkårsvurdering(
-                ytelser = innsending.ytelser?.ytelserliste ?: emptyList(),
+                ytelser = innsending.ytelser!!.ytelserliste,
                 vurderingsperiode = vurderingsperiode,
-            ), // TODO: Dette er ikke innafor
+            ),
         ),
         kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),

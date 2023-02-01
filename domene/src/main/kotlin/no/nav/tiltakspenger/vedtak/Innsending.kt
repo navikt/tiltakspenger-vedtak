@@ -162,25 +162,25 @@ class Innsending private constructor(
 
     fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
         if (søknad.tiltak is Tiltak.ArenaTiltak) {
-            this.tiltaksliste.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
+            this.tiltaksliste.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId } // TODO: Denne vil aldri slå til, man sammenligner epler og pærer
         } else null
 
-    private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate, LocalDate?> {
-        fun tidligsteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
-            (datoer.toList() + dato).filterNotNull().min()
+    private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate?, LocalDate?> {
+        fun tidligsteDato(dato: LocalDate?, vararg datoer: LocalDate?): LocalDate? =
+            (datoer.toList() + dato).filterNotNull().minOrNull()
 
         fun senesteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
             (datoer.toList() + dato).filterNotNull().max()
 
         fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
 
-        val søknadFom: LocalDate = søknad.tiltak?.startdato ?: LocalDate.EPOCH
+        val søknadFom: LocalDate? = søknad.tiltak?.startdato // ?: LocalDate.EPOCH
         val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
 
         val tiltakFom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.fom
         val tiltakTom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.tom
 
-        val tidligsteFom: LocalDate = tidligsteDato(søknadFom, tiltakFom)
+        val tidligsteFom: LocalDate? = tidligsteDato(søknadFom, tiltakFom)
 
         val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
         return Pair(tidligsteFom, senesteTom)
@@ -192,15 +192,19 @@ class Innsending private constructor(
 
     fun vurderingsperiodeForSøknad(): Periode? {
         return this.søknad?.let {
-            val (tidligsteFom: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(it)
-            senesteTom?.let { Periode(tidligsteFom, senesteTom) }
+            val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
+            if (tidligsteFom != null && senesteTom != null) Periode(tidligsteFom, senesteTom) else null
         }
     }
 
+    // TODO: MIN eller EPOCH ? MAX eller LocalDate.of(9999,12,31)
     fun filtreringsperiode(): Periode {
         return søknad?.let {
-            val (tidligsteFom: LocalDate, senesteTom: LocalDate?) = finnFomOgTom(it)
-            Periode(tidligsteFom, senesteTom ?: LocalDate.MAX)
+            val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
+            Periode(
+                tidligsteFom ?: LocalDate.MIN,
+                senesteTom ?: LocalDate.MAX,
+            )
         } ?: Periode(LocalDate.MIN, LocalDate.MAX)
     }
 
@@ -856,7 +860,7 @@ class Innsending private constructor(
 
         this.foreldrepengerVedtak = InnhentedeForeldrepengerVedtak(
             foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
-            tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet()
+            tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
         )
         // filtrere??
     }
