@@ -4,11 +4,11 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
@@ -39,18 +39,7 @@ class BehandlingMapper {
     fun mapSøkerOgInnsendinger(søker: Søker, innsendinger: List<Innsending>): SøkerDTO {
         return SøkerDTO(
             ident = søker.ident,
-            personopplysninger = søker.personopplysninger?.let {
-                PersonopplysningerDTO(
-                    fornavn = it.fornavn,
-                    etternavn = it.etternavn,
-                    ident = it.ident,
-                    fødselsdato = it.fødselsdato,
-                    barn = listOf(),
-                    fortrolig = it.fortrolig,
-                    strengtFortrolig = it.strengtFortrolig,
-                    skjermet = it.skjermet ?: false,
-                )
-            },
+            personopplysninger = søker.personopplysninger?.let { mapPersonopplysninger(it) },
             behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) },
         )
     }
@@ -58,10 +47,8 @@ class BehandlingMapper {
     fun mapInnsendingMedSøknad(innsending: Innsending): KlarEllerIkkeKlarForBehandlingDTO? {
         val søknaden = innsending.søknad ?: return null
         return søknaden.let { søknad ->
-            if (innsending.tilstand.type != InnsendingTilstandType.InnsendingFerdigstilt) {
-                IkkeKlarForBehandlingDTO(
-                    søknad = mapSøknad(søknad),
-                )
+            if (!innsending.erFerdigstilt()) {
+                IkkeKlarForBehandlingDTO(søknad = mapSøknad(søknad))
             } else {
                 val vurderingsperiode =
                     innsending.vurderingsperiodeForSøknad()
@@ -71,25 +58,8 @@ class BehandlingMapper {
                 val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
                 KlarForBehandlingDTO(
                     søknad = mapSøknad(søknad),
-                    registrerteTiltak = innsending.tiltak!!.tiltaksliste!!.map {
-                        TiltakDTO(
-                            arrangør = it.arrangør,
-                            navn = it.tiltak.navn,
-                            periode = it.deltakelsePeriode.fom?.let { fom ->
-                                PeriodeDTO(
-                                    fra = fom,
-                                    til = it.deltakelsePeriode.tom,
-                                )
-                            },
-                            prosent = it.deltakelseProsent,
-                            dagerIUken = it.antallDagerPerUke,
-                            status = it.deltakerStatus.tekst,
-                        )
-                    },
-                    vurderingsperiode = PeriodeDTO(
-                        fra = vurderingsperiode.fra,
-                        til = vurderingsperiode.til,
-                    ),
+                    registrerteTiltak = innsending.tiltak!!.tiltaksliste.map { mapTiltak(it) },
+                    vurderingsperiode = mapVurderingsperiode(vurderingsperiode),
                     tiltakspengerYtelser = mapTiltakspenger(vilkårsvurderinger.tiltakspengerYtelser),
                     statligeYtelser = mapStatligeYtelser(vilkårsvurderinger.statligeYtelser),
                     kommunaleYtelser = mapKommunaleYtelser(vilkårsvurderinger.kommunaleYtelser),
@@ -102,6 +72,36 @@ class BehandlingMapper {
             }
         }
     }
+
+    private fun mapPersonopplysninger(it: Personopplysninger.Søker) = PersonopplysningerDTO(
+        fornavn = it.fornavn,
+        etternavn = it.etternavn,
+        ident = it.ident,
+        fødselsdato = it.fødselsdato,
+        barn = listOf(),
+        fortrolig = it.fortrolig,
+        strengtFortrolig = it.strengtFortrolig,
+        skjermet = it.skjermet ?: false,
+    )
+
+    private fun mapVurderingsperiode(vurderingsperiode: Periode) = PeriodeDTO(
+        fra = vurderingsperiode.fra,
+        til = vurderingsperiode.til,
+    )
+
+    private fun mapTiltak(it: Tiltaksaktivitet) = TiltakDTO(
+        arrangør = it.arrangør,
+        navn = it.tiltak.navn,
+        periode = it.deltakelsePeriode.fom?.let { fom ->
+            PeriodeDTO(
+                fra = fom,
+                til = it.deltakelsePeriode.tom,
+            )
+        },
+        prosent = it.deltakelseProsent,
+        dagerIUken = it.antallDagerPerUke,
+        status = it.deltakerStatus.tekst,
+    )
 
     private fun mapSøknad(søknad: Søknad) = SøknadDTO(
         id = søknad.id.toString(),

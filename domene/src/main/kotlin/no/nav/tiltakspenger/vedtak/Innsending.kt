@@ -118,7 +118,7 @@ class Innsending private constructor(
 
         fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
 
-        val søknadFom: LocalDate? = søknad.tiltak?.startdato // ?: LocalDate.EPOCH
+        val søknadFom: LocalDate? = søknad.tiltak?.startdato
         val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
 
         val tiltakFom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.fom
@@ -151,6 +151,8 @@ class Innsending private constructor(
             )
         } ?: Periode(LocalDate.MIN, LocalDate.MAX)
     }
+
+    fun erFerdigstilt() = tilstand.type == InnsendingTilstandType.InnsendingFerdigstilt
 
     constructor(
         journalpostId: String,
