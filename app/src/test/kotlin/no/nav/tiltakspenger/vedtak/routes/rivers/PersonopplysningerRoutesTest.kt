@@ -14,7 +14,7 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -39,13 +39,13 @@ class PersonopplysningerRoutesTest {
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
-        observatører = listOf()
+        observatører = listOf(),
     )
 
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val søkerMediator = SøkerMediator(
         søkerRepository = søkerRepository,
-        rapidsConnection = testRapid
+        rapidsConnection = testRapid,
     )
 
     private val innloggetSystembrukerProvider = mockk<InnloggetSystembrukerProvider>()

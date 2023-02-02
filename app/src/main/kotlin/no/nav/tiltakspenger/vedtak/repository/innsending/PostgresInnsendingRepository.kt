@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedta
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
+import no.nav.tiltakspenger.vedtak.repository.uføre.UføreVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -29,6 +30,7 @@ internal class PostgresInnsendingRepository(
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
     private val foreldrepengerVedtakDAO: ForeldrepengerVedtakDAO = ForeldrepengerVedtakDAO(),
+    private val uføreVedtakDAO: UføreVedtakDAO = UføreVedtakDAO(),
     private val aktivitetsloggDAO: AktivitetsloggDAO = AktivitetsloggDAO(),
 ) : InnsendingRepository {
 
@@ -182,6 +184,11 @@ internal class PostgresInnsendingRepository(
                             ?: emptyList(),
                         txSession = txSession,
                     )
+                    uføreVedtakDAO.lagre(
+                        innsendingId = innsending.id,
+                        uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
+                        txSession = txSession,
+                    )
                     aktivitetsloggDAO.lagre(
                         innsendingId = innsending.id,
                         aktivitetslogg = innsending.aktivitetslogg,
@@ -221,10 +228,12 @@ internal class PostgresInnsendingRepository(
             tidsstempelSkjermingInnhentet = localDateTimeOrNull("tidsstempel_skjerming_innhentet"),
             tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tidsstempelForeldrepengerVedtakInnhentet = localDateTimeOrNull("tidsstempel_foreldrepengervedtak_innhentet"),
+            tidsstempelUføreInnhentet = localDateTimeOrNull("tidsstempel_uførevedtak_innhentet"),
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysningerliste = personopplysningerDAO.hent(id, txSession),
             foreldrepengerVedtak = foreldrepengerVedtakDAO.hentForInnsending(id, txSession),
+            uføreVedtak = uføreVedtakDAO.hentForInnsending(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
         )
     }
@@ -248,7 +257,7 @@ internal class PostgresInnsendingRepository(
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
-                    "tidsstempel_skjerming_innhentet" to innsending.tidsstempelSkjermingInnhentet,
+                    "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
@@ -273,7 +282,7 @@ internal class PostgresInnsendingRepository(
                     "tilstand" to innsending.tilstand.type.name,
                     "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
-                    "tidsstempel_skjerming_innhentet" to innsending.tidsstempelSkjermingInnhentet,
+                    "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,

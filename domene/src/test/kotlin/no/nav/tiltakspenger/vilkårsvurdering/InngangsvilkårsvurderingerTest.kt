@@ -4,14 +4,14 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.februarDateTime
-import no.nav.tiltakspenger.objectmothers.nyDagpengerVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.nyIntroprogrammetVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.nyKommunaleYtelserVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.nyKvpVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.nyStatligeYtelserVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.objectmothers.nyVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyDagpengerVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKvpVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
@@ -25,9 +25,9 @@ class InngangsvilkårsvurderingerTest {
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
                     søknad = nySøknadMedArenaTiltak(
                         deltarKvp = true,
-                    )
-                )
-            )
+                    ),
+                ),
+            ),
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -49,9 +49,9 @@ class InngangsvilkårsvurderingerTest {
                             fom = vurderingsperiode.fra,
                             tom = vurderingsperiode.til,
                         ),
-                    )
-                )
-            )
+                    ),
+                ),
+            ),
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -72,10 +72,10 @@ class InngangsvilkårsvurderingerTest {
                             ytelsestype = YtelseSak.YtelseSakYtelsetype.DAGP,
                             fomGyldighetsperiode = 3.februarDateTime(2022),
                             tomGyldighetsperiode = 15.februarDateTime(2022),
-                        )
-                    )
-                )
-            )
+                        ),
+                    ),
+                ),
+            ),
         )
 
         vilkårsvurderinger.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING

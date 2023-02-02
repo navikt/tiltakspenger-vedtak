@@ -16,7 +16,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.domene.november
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.objectmothers.saksbehandler
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO

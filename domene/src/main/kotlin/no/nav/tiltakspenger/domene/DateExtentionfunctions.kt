@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.domene
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 infix fun Int.januar(year: Int): LocalDate = LocalDate.of(year, Month.JANUARY, this)
@@ -23,7 +24,7 @@ fun Int.januarDateTime(year: Int): LocalDateTime = LocalDateTime.of(
     Month.JANUARY,
     this,
     0,
-    0
+    0,
 ).truncatedTo(ChronoUnit.MILLIS)
 
 fun Int.februarDateTime(year: Int): LocalDateTime = LocalDateTime.of(
@@ -31,7 +32,7 @@ fun Int.februarDateTime(year: Int): LocalDateTime = LocalDateTime.of(
     Month.FEBRUARY,
     this,
     0,
-    0
+    0,
 ).truncatedTo(ChronoUnit.MILLIS)
 
 fun Int.marsDateTime(year: Int): LocalDateTime = LocalDateTime.of(
@@ -39,8 +40,11 @@ fun Int.marsDateTime(year: Int): LocalDateTime = LocalDateTime.of(
     Month.MARCH,
     this,
     0,
-    0
+    0,
 ).truncatedTo(ChronoUnit.MILLIS)
 
 fun nå() = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)
 // fun LocalDateTime.Companion.nowTrunc() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+
+fun LocalDate.toNormalDate(): String = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    .format(this)

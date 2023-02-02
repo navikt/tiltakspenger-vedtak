@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class SkjermingRoutesTest {
+class UføreVedtakRoutesTest {
     private companion object {
         const val IDENT = "04927799109"
         const val JOURNALPOSTID = "foobar2"
@@ -41,8 +41,8 @@ class SkjermingRoutesTest {
     }
 
     @Test
-    fun `sjekk at kall til river skjerming route sender ut et behov`() {
-        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedPersonopplysninger(
+    fun `sjekk at kall til river uføre route ikke sender ut et behov`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedForeldrepenger(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
         )
@@ -52,7 +52,7 @@ class SkjermingRoutesTest {
                 // vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    skjermingRoutes(
+                    uføreRoutes(
                         innsendingMediator = innsendingMediator,
                     )
                 }
@@ -61,35 +61,32 @@ class SkjermingRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$skjermingpath")
+                    path("$uførepath")
                 },
             ) {
-                setBody(skjermingBody)
+                setBody(uføreBody)
             }
                 .apply {
                     status shouldBe HttpStatusCode.OK
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(1, size)
-            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("arenatiltak", field(0, "@behov")[0].asText())
+            Assertions.assertEquals(0, size)
         }
     }
 
-    private val skjermingBody = """
+    private val uføreBody = """
         {
             "ident": "$IDENT",
             "journalpostId": "$JOURNALPOSTID",
-            "skjerming": {
-                "skjermingForPersoner": {
-                    "søker": {
-                        "ident": "05906398291",
-                        "skjerming": false
-                    },
-                    "barn": []
+            "uføre": {
+              "uføregrad": 
+                {
+                  "harUforegrad": false,
+                  "datoUfor": "2022-01-01",
+                  "virkDato": "2022-01-01"
                 },
-                "feil": null
+              "feil": null
             },
             "innhentet": "2022-08-22T14:59:46.491437009"
         }

@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -71,9 +71,9 @@ class ForeldrepengerVedtakRoutesTest {
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(0, size)
-//            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-//            Assertions.assertEquals("arenatiltak", field(0, "@behov")[0].asText())
+            Assertions.assertEquals(1, size)
+            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
         }
     }
 
@@ -108,9 +108,9 @@ class ForeldrepengerVedtakRoutesTest {
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(0, size)
-//            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-//            Assertions.assertEquals("arenatiltak", field(0, "@behov")[0].asText())
+            Assertions.assertEquals(1, size)
+            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
         }
     }
 

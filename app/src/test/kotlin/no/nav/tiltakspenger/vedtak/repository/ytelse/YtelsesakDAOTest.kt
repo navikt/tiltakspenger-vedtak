@@ -2,10 +2,10 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
-import no.nav.tiltakspenger.objectmothers.tomYtelsesak
-import no.nav.tiltakspenger.objectmothers.ytelseSak
-import no.nav.tiltakspenger.objectmothers.ytelseVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tomYtelsesak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate

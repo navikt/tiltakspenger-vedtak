@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Vedlegg
@@ -51,12 +51,12 @@ internal class VedleggDAOTest {
         val vedleggMedNull = Vedlegg(
             journalpostId = "journalpostId",
             dokumentInfoId = "dokumentInfoId",
-            filnavn = null
+            filnavn = null,
         )
         val vedleggUtenNull = Vedlegg(
             journalpostId = "journalpostId",
             dokumentInfoId = "dokumentInfoId",
-            filnavn = "filnavn"
+            filnavn = "filnavn",
         )
 
         val vedleggDAO = VedleggDAO()
@@ -65,7 +65,7 @@ internal class VedleggDAOTest {
                 vedleggDAO.lagre(
                     søknadId = søknadId,
                     vedlegg = listOf(vedleggMedNull, vedleggUtenNull),
-                    txSession
+                    txSession,
                 )
             }
         }

@@ -7,6 +7,7 @@ enum class InnsendingTilstandType {
     AvventerTiltak,
     AvventerYtelser,
     AvventerForeldrepenger,
+    AvventerUføre,
     InnsendingFerdigstilt,
     FaktainnhentingFeilet,
 }

@@ -12,8 +12,8 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.innsendingRegistrert
-import no.nav.tiltakspenger.objectmothers.nySøker
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -36,7 +36,7 @@ class SøknadRoutesTest {
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
-        observatører = listOf()
+        observatører = listOf(),
     )
     private val søkerMediator = SøkerMediator(
         søkerRepository = søkerRepository,
