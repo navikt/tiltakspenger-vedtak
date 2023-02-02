@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
@@ -80,7 +80,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
             fom = null,
             tom = null,
             utfall = Utfall.OPPFYLT,
-            detaljer = "Svart NEI i søknaden"
+            detaljer = "Svart NEI i søknaden",
         )
         val vurderingSaksbehandler =
             Vurdering(
@@ -93,7 +93,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
             )
         introProgrammetVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             vurderingSøknad,
-            vurderingSaksbehandler
+            vurderingSaksbehandler,
         )
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT

@@ -4,9 +4,9 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.objectmothers.barn
-import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.objectmothers.personopplysningMaxFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningMaxFyr
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer

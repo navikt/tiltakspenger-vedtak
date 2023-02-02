@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.innsendingMedSkjerming
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -32,7 +32,7 @@ class TiltakRoutesTest {
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
-        observatører = listOf()
+        observatører = listOf(),
     )
 
     @AfterEach
@@ -53,7 +53,7 @@ class TiltakRoutesTest {
                 jacksonSerialization()
                 routing {
                     tiltakRoutes(
-                        innsendingMediator = innsendingMediator
+                        innsendingMediator = innsendingMediator,
                     )
                 }
             }

@@ -13,7 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.objectmothers.saksbehandler
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -44,7 +44,7 @@ class SaksbehandlerRoutesTest {
                 jacksonSerialization()
                 routing {
                     saksbehandlerRoutes(
-                        innloggetSaksbehandlerProviderMock
+                        innloggetSaksbehandlerProviderMock,
                     )
                 }
             }
@@ -60,7 +60,7 @@ class SaksbehandlerRoutesTest {
                 JSONAssert.assertEquals(
                     saksbehandlerMock,
                     bodyAsText(),
-                    JSONCompareMode.LENIENT
+                    JSONCompareMode.LENIENT,
                 )
             }
         }

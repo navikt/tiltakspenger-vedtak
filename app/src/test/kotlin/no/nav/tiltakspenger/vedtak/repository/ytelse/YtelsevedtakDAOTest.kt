@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.innsendingMedTiltak
-import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
-import no.nav.tiltakspenger.objectmothers.tomYtelsevedtak
-import no.nav.tiltakspenger.objectmothers.ytelseSak
-import no.nav.tiltakspenger.objectmothers.ytelseVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tomYtelsevedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -36,7 +36,7 @@ class YtelsevedtakDAOTest {
         val ident = Random().nextInt().toString()
         val innsending = innsendingMedYtelse(
             ident = ident,
-            ytelseSak = listOf(ytelseSak(vedtak = listOf(tomYtelsevedtak())))
+            ytelseSak = listOf(ytelseSak(vedtak = listOf(tomYtelsevedtak()))),
         )
 
         repository.lagre(innsending)
@@ -60,7 +60,7 @@ class YtelsevedtakDAOTest {
         repository.lagre(innsending)
 
         val ytelseSak = ytelseSak(
-            vedtak = listOf(tomYtelsevedtak())
+            vedtak = listOf(tomYtelsevedtak()),
         )
 
         sessionOf(DataSource.hikariDataSource).use {
@@ -86,7 +86,7 @@ class YtelsevedtakDAOTest {
         val ident = Random().nextInt().toString()
         val innsending = innsendingMedYtelse(
             ident = ident,
-            ytelseSak = listOf(ytelseSak(vedtak = listOf(ytelseVedtak())))
+            ytelseSak = listOf(ytelseSak(vedtak = listOf(ytelseVedtak()))),
         )
 
         repository.lagre(innsending)

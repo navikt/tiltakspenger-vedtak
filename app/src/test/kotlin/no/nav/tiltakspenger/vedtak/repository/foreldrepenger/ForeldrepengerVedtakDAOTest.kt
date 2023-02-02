@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vedtak.repository.foreldrepenger
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.foreldrepengerVedtak
-import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate

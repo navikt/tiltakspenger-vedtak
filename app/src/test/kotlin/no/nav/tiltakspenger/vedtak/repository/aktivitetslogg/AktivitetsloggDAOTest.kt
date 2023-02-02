@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.innsendingRegistrert
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.KontekstLogable
@@ -145,7 +145,7 @@ internal class AktivitetsloggDAOTest {
             detaljer = mapOf(
                 "ident" to "1234",
                 "tall" to 32,
-            )
+            ),
         )
 
         val dao = AktivitetsloggDAO()
@@ -172,9 +172,11 @@ internal class AktivitetsloggDAOTest {
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.addKontekst(innsending)
-        aktivitetslogg.addKontekst(object : KontekstLogable {
-            override fun opprettKontekst() = Kontekst("testType", mapOf("foo" to "bar"))
-        })
+        aktivitetslogg.addKontekst(
+            object : KontekstLogable {
+                override fun opprettKontekst() = Kontekst("testType", mapOf("foo" to "bar"))
+            },
+        )
         aktivitetslogg.info("en melding")
 
         val dao = AktivitetsloggDAO()

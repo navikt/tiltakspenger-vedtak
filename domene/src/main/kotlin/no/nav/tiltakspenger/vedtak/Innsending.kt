@@ -35,7 +35,6 @@ class Innsending private constructor(
     søknad: Søknad?,
     sistEndret: LocalDateTime?,
     personopplysninger: InnhentedePersonopplysninger?,
-    tidsstempelSkjermingInnhentet: LocalDateTime?,
     tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
@@ -61,111 +60,35 @@ class Innsending private constructor(
             dirtyChecker.set("søknad")
         }
 
-    var personopplysninger: InnhentedePersonopplysninger?
+    var personopplysninger: InnhentedePersonopplysninger? = personopplysninger
         private set(value) {
-            if (value != null) {
-                this.tidsstempelPersonopplysningerInnhentet = value.tidsstempelInnhentet
-                this.personopplysningerliste = value.personopplysningerliste
-            } else {
-                this.tidsstempelPersonopplysningerInnhentet = null
-                this.personopplysningerliste = emptyList()
-            }
+            field = value
+            dirtyChecker.set("personopplysninger")
         }
-        get() = if (tidsstempelPersonopplysningerInnhentet == null) null else InnhentedePersonopplysninger(
-            this.personopplysningerliste,
-            this.tidsstempelPersonopplysningerInnhentet!!,
-        )
-    private var tidsstempelPersonopplysningerInnhentet: LocalDateTime? = personopplysninger?.tidsstempelInnhentet
-    private var personopplysningerliste: List<Personopplysninger> =
-        personopplysninger?.personopplysningerliste ?: mutableListOf()
-        private set(value) {
-                field = value
-                dirtyChecker.set("personopplysninger")
-            }
 
-    var tidsstempelSkjermingInnhentet: LocalDateTime? = tidsstempelSkjermingInnhentet
-
-    var tiltak: InnhentedeTiltak?
-        private set(value) {
-            if (value != null) {
-                this.tidsstempelTiltakInnhentet = value.tidsstempelInnhentet
-                this.tiltaksliste = value.tiltaksliste
-            } else {
-                this.tidsstempelTiltakInnhentet = null
-                this.tiltaksliste = emptyList()
-            }
-        }
-        get() = if (tidsstempelTiltakInnhentet == null) null else InnhentedeTiltak(
-            this.tiltaksliste,
-            this.tidsstempelTiltakInnhentet!!,
-        )
-    private var tidsstempelTiltakInnhentet: LocalDateTime? = tiltak?.tidsstempelInnhentet
-    private var tiltaksliste: List<Tiltaksaktivitet> = tiltak?.tiltaksliste ?: mutableListOf()
+    var tiltak: InnhentedeTiltak? = tiltak
         set(value) {
             field = value
             dirtyChecker.set("tiltak")
         }
 
-    var ytelser: InnhentedeArenaYtelser?
-        private set(value) {
-            if (value != null) {
-                this.tidsstempelYtelserInnhentet = value.tidsstempelInnhentet
-                this.ytelserliste = value.ytelserliste
-            } else {
-                this.tidsstempelYtelserInnhentet = null
-                this.ytelserliste = emptyList()
-            }
-        }
-        get() = if (tidsstempelYtelserInnhentet == null) null else InnhentedeArenaYtelser(
-            this.ytelserliste,
-            this.tidsstempelYtelserInnhentet!!,
-        )
-    private var tidsstempelYtelserInnhentet: LocalDateTime? = ytelser?.tidsstempelInnhentet
-    private var ytelserliste: List<YtelseSak> = ytelser?.ytelserliste ?: mutableListOf()
+    var ytelser: InnhentedeArenaYtelser? = ytelser
         private set(value) {
             field = value
             dirtyChecker.set("ytelser")
         }
 
-    var foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?
+    var foreldrepengerVedtak: InnhentedeForeldrepengerVedtak? = foreldrepengerVedtak
         private set(value) {
-            if (value != null) {
-                this.foreldrepengerVedtakListe = value.foreldrepengerVedtakliste
-                this.tidsstempelForeldrepengerVedtakInnhentet = value.tidsstempelInnhentet
-            } else {
-                this.foreldrepengerVedtakListe = emptyList()
-                this.tidsstempelForeldrepengerVedtakInnhentet = null
-            }
+            field = value
+            dirtyChecker.set("foreldrepenger")
         }
-        get() = if (tidsstempelForeldrepengerVedtakInnhentet == null) null else InnhentedeForeldrepengerVedtak(
-            this.foreldrepengerVedtakListe,
-            this.tidsstempelForeldrepengerVedtakInnhentet!!,
-        )
-    private var tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime? = foreldrepengerVedtak?.tidsstempelInnhentet
-    private var foreldrepengerVedtakListe: List<ForeldrepengerVedtak> =
-        foreldrepengerVedtak?.foreldrepengerVedtakliste ?: mutableListOf()
-        private set(value) {
-                field = value
-                dirtyChecker.set("foreldrepenger")
-            }
 
-    var uføreVedtak: InnhentetUføre?
+    var uføreVedtak: InnhentetUføre? = uføreVedtak
         private set(value) {
-            if (value != null) {
-                this.uføreVedtakdata = value.uføreVedtak
-                this.tidsstempelUføreInnhentet = value.tidsstempelInnhentet
-            } else {
-                this.uføreVedtakdata = null
-                this.tidsstempelUføreInnhentet = null
-            }
+            field = value
+            dirtyChecker.set("uføre")
         }
-        get() = if (tidsstempelUføreInnhentet == null) null else InnhentetUføre(
-            uføreVedtak = uføreVedtakdata,
-            tidsstempelInnhentet = tidsstempelUføreInnhentet!!,
-        )
-
-    private var tidsstempelUføreInnhentet: LocalDateTime? = personopplysninger?.tidsstempelInnhentet
-    private var uføreVedtakdata: UføreVedtak? = uføreVedtak?.uføreVedtak
 
     var sistEndret: LocalDateTime? = sistEndret
         private set
@@ -183,7 +106,7 @@ class Innsending private constructor(
 
     fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
         if (søknad.tiltak is Tiltak.ArenaTiltak) {
-            this.tiltaksliste.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
+            this.tiltak?.tiltaksliste?.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId }
         } else null
 
     private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate, LocalDate?> {
@@ -236,7 +159,6 @@ class Innsending private constructor(
         søknad = null,
         sistEndret = null,
         personopplysninger = null,
-        tidsstempelSkjermingInnhentet = null,
         tiltak = null,
         ytelser = null,
         foreldrepengerVedtak = null,
@@ -277,11 +199,11 @@ class Innsending private constructor(
                 sistEndret = sistEndret,
                 personopplysninger = tidsstempelPersonopplysningerInnhentet?.let {
                     InnhentedePersonopplysninger(
-                        personopplysningerliste,
-                        it,
+                        personopplysningerliste = personopplysningerliste,
+                        tidsstempelInnhentet = it,
+                        tidsstempelSkjermingInnhentet = tidsstempelSkjermingInnhentet,
                     )
                 },
-                tidsstempelSkjermingInnhentet = tidsstempelSkjermingInnhentet,
                 tiltak = tidsstempelTiltakInnhentet?.let { InnhentedeTiltak(tiltaksliste, it) },
                 ytelser = tidsstempelYtelserInnhentet?.let { InnhentedeArenaYtelser(ytelserliste, it) },
                 foreldrepengerVedtak = tidsstempelForeldrepengerVedtakInnhentet?.let {
@@ -808,9 +730,9 @@ class Innsending private constructor(
 
     private fun mottaYtelser(ytelserMottattHendelse: YtelserMottattHendelse) {
 
-        if (this.tidsstempelYtelserInnhentet != null &&
+        if (this.ytelser != null &&
             !ytelserMottattHendelse.tidsstempelYtelserInnhentet()
-                .isAfter(this.tidsstempelYtelserInnhentet)
+                .isAfter(this.ytelser!!.tidsstempelInnhentet)
         ) {
             ytelserMottattHendelse
                 .info("Fikk utdatert info om arenaYtelser, lagrer ikke")
@@ -840,9 +762,9 @@ class Innsending private constructor(
     private fun mottaPersonopplysninger(
         personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
     ) {
-        if (this.tidsstempelPersonopplysningerInnhentet != null &&
+        if (this.personopplysninger != null &&
             !personopplysningerMottattHendelse.tidsstempelPersonopplysningerInnhentet()
-                .isAfter(this.tidsstempelPersonopplysningerInnhentet)
+                .isAfter(this.personopplysninger!!.tidsstempelInnhentet)
         ) {
             personopplysningerMottattHendelse
                 .info("Fikk utdatert info om person saker, lagrer ikke")
@@ -860,9 +782,9 @@ class Innsending private constructor(
     private fun mottaTiltak(
         arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse,
     ) {
-        if (this.tidsstempelTiltakInnhentet != null &&
+        if (this.tiltak != null &&
             !arenaTiltakMottattHendelse.tidsstempelTiltakInnhentet()
-                .isAfter(this.tidsstempelTiltakInnhentet)
+                .isAfter(this.tiltak!!.tidsstempelInnhentet)
         ) {
             arenaTiltakMottattHendelse.info("Fikk utdatert info om arenaTiltak, lagrer ikke")
             return
@@ -902,7 +824,7 @@ class Innsending private constructor(
                 LOG.info { "periode : $periode" }
                 this.filtreringsperiode().overlapperMed(periode)
             }.also {
-                val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - this.tiltaksliste.size
+                val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - it.size
                 LOG.info { "Filtrerte bort $antall gamle tiltak" }
             },
         )
@@ -911,9 +833,9 @@ class Innsending private constructor(
     private fun mottaForeldrepengerVedtak(
         foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse,
     ) {
-        if (this.tidsstempelForeldrepengerVedtakInnhentet != null &&
+        if (this.foreldrepengerVedtak != null &&
             !foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet()
-                .isAfter(this.tidsstempelForeldrepengerVedtakInnhentet)
+                .isAfter(this.foreldrepengerVedtak!!.tidsstempelInnhentet)
         ) {
             foreldrepengerMottattHendelse.info("Fikk utdatert info om foreldrepengervedtak, lagrer ikke")
             return
@@ -926,15 +848,14 @@ class Innsending private constructor(
             foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
             tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
         )
-        // filtrere??
     }
 
     private fun mottaUføreVedtak(
         uføreMottattHendelse: UføreMottattHendelse,
     ) {
-        if (this.tidsstempelUføreInnhentet != null &&
+        if (this.uføreVedtak != null &&
             !uføreMottattHendelse.tidsstempelUføreVedtakInnhentet()
-                .isAfter(this.tidsstempelUføreInnhentet)
+                .isAfter(this.uføreVedtak!!.tidsstempelInnhentet)
         ) {
             uføreMottattHendelse.info("Fikk utdatert info om uføreVedtak, lagrer ikke")
             return
@@ -947,28 +868,27 @@ class Innsending private constructor(
             uføreVedtak = uføreMottattHendelse.uføreVedtak(),
             tidsstempelInnhentet = uføreMottattHendelse.tidsstempelUføreVedtakInnhentet(),
         )
-        // filtrere??
     }
 
     private fun mottaSkjermingsdata(
         skjermingMottattHendelse: SkjermingMottattHendelse,
         exceptionHvisManglendePersonopplysninger: Boolean,
     ) {
-        if (this.tidsstempelSkjermingInnhentet != null &&
-            !skjermingMottattHendelse.tidsstempelSkjermingInnhentet()
-                .isAfter(this.tidsstempelSkjermingInnhentet)
-        ) {
-            skjermingMottattHendelse.info("Fikk utdatert info om skjerming, lagrer ikke")
-            return
-        }
-
         skjermingMottattHendelse.info("Fikk info om skjerming: ${skjermingMottattHendelse.skjerming()}")
-        if (this.personopplysningerSøker() == null) {
+        if (this.personopplysninger == null) {
             if (exceptionHvisManglendePersonopplysninger) {
                 skjermingMottattHendelse.severe("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             } else {
                 skjermingMottattHendelse.warn("Skjerming kan ikke settes når vi ikke har noe Personopplysninger")
             }
+            return
+        }
+
+        if (this.personopplysninger!!.tidsstempelSkjermingInnhentet != null &&
+            !skjermingMottattHendelse.tidsstempelSkjermingInnhentet()
+                .isAfter(this.personopplysninger!!.tidsstempelInnhentet)
+        ) {
+            skjermingMottattHendelse.info("Fikk utdatert info om skjerming, lagrer ikke")
             return
         }
 

@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.uføre
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.innsendingMedForeldrepenger
-import no.nav.tiltakspenger.objectmothers.uføreVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
+import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate

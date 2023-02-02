@@ -5,18 +5,18 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.objectmothers.barnetilleggMedIdent
-import no.nav.tiltakspenger.objectmothers.barnetilleggUtenIdent
-import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
-import no.nav.tiltakspenger.objectmothers.innsendingMedYtelse
-import no.nav.tiltakspenger.objectmothers.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.objectmothers.nySøknadMedBrukerTiltak
-import no.nav.tiltakspenger.objectmothers.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.objectmothers.skjermingFalse
-import no.nav.tiltakspenger.objectmothers.skjermingTrue
-import no.nav.tiltakspenger.objectmothers.tiltaksaktivitet
-import no.nav.tiltakspenger.objectmothers.trygdOgPensjon
-import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
+import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltaksaktivitet
+import no.nav.tiltakspenger.objectmothers.ObjectMother.trygdOgPensjon
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -53,28 +53,28 @@ internal class PostgresInnsendingRepositoryTest {
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString()
-            )
+                ident = Random().nextInt().toString(),
+            ),
         )
         innsendingRepository.antall() shouldBe 7
 
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString()
-            )
+                ident = Random().nextInt().toString(),
+            ),
         )
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString()
-            )
+                ident = Random().nextInt().toString(),
+            ),
         )
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString()
-            )
+                ident = Random().nextInt().toString(),
+            ),
         )
         innsendingRepository.antall() shouldBe 10
     }
@@ -99,8 +99,8 @@ internal class PostgresInnsendingRepositoryTest {
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString()
-            )
+                ident = Random().nextInt().toString(),
+            ),
         )
         // sist_endret er ikke gammel nok, så denne skal heller ikke telles med
         innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
@@ -159,8 +159,8 @@ internal class PostgresInnsendingRepositoryTest {
         hentetInnsending.søknad shouldBe søknad
         hentetInnsending.personopplysninger!!.personopplysningerliste shouldContainExactly listOf(
             personopplysninger.copy(
-                skjermet = false
-            )
+                skjermet = false,
+            ),
         )
         hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
         hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak

@@ -16,7 +16,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.domene.november
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.objectmothers.saksbehandler
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO
@@ -89,8 +89,8 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
                         ),
                         dagpenger = listOf(
                             VilkårsvurderingDTO(
@@ -98,9 +98,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     kommunaleYtelser = KommunaleYtelserDTO(
                         samletUtfall = UtfallDTO.Uavklart,
@@ -110,8 +110,8 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
                         ),
                         introProgrammet = listOf(
                             VilkårsvurderingDTO(
@@ -119,9 +119,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
 
                     ),
                     pensjonsordninger = PensjonsordningerDTO(
@@ -132,9 +132,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     lønnsinntekt = LønnsinntekterDTO(
                         samletUtfall = UtfallDTO.Uavklart,
@@ -144,9 +144,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     institusjonsopphold = InstitusjonsoppholdDTO(
                         samletUtfall = UtfallDTO.Uavklart,
@@ -156,9 +156,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     barnetillegg = emptyList(),
                     tiltakspengerYtelser = TiltakspengerDTO(
@@ -169,9 +169,9 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart
-                            )
-                        )
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     alderVilkårsvurdering = AlderVilkårsvurderingDTO(
                         samletUtfall = UtfallDTO.Oppfylt,
@@ -181,12 +181,12 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Oppfylt
-                            )
-                        )
-                    )
-                )
-            )
+                                utfall = UtfallDTO.Oppfylt,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
         )
 
         testApplication {
@@ -214,7 +214,7 @@ class InnsendingRoutesTest {
                 JSONAssert.assertEquals(
                     expectedSøkerMedSøknader,
                     bodyAsText(),
-                    JSONCompareMode.LENIENT
+                    JSONCompareMode.LENIENT,
                 )
             }
         }

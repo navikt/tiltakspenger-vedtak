@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.domene.januarDateTime
-import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
@@ -23,7 +23,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     fomGyldighetsperiode = 1.januarDateTime(2022),
                     tomGyldighetsperiode = 31.januarDateTime(2022),
                     ytelsestype = YtelseSak.YtelseSakYtelsetype.AA,
-                )
+                ),
             ),
             vurderingsperiode = vurderingsperiode,
         )
@@ -33,7 +33,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     fomGyldighetsperiode = 1.februarDateTime(2022),
                     tomGyldighetsperiode = 28.februarDateTime(2022),
                     ytelsestype = YtelseSak.YtelseSakYtelsetype.DAGP,
-                )
+                ),
             ),
             vurderingsperiode = vurderingsperiode,
         )
@@ -56,7 +56,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     fomGyldighetsperiode = 1.januarDateTime(2022),
                     tomGyldighetsperiode = 31.januarDateTime(2022),
                     ytelsestype = YtelseSak.YtelseSakYtelsetype.AA,
-                )
+                ),
             ),
             vurderingsperiode = vurderingsperiode,
         )
@@ -66,7 +66,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     fomGyldighetsperiode = 1.februarDateTime(2022),
                     tomGyldighetsperiode = 28.februarDateTime(2022),
                     ytelsestype = YtelseSak.YtelseSakYtelsetype.DAGP,
-                )
+                ),
             ),
             vurderingsperiode = vurderingsperiode,
         )

@@ -4,5 +4,6 @@ import java.time.LocalDateTime
 
 data class InnhentedePersonopplysninger(
     val personopplysningerliste: List<Personopplysninger>,
-    val tidsstempelInnhentet: LocalDateTime
+    val tidsstempelInnhentet: LocalDateTime,
+    val tidsstempelSkjermingInnhentet: LocalDateTime? = null,
 )

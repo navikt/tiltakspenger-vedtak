@@ -2,10 +2,10 @@ package no.nav.tiltakspenger.vedtak
 
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.objectmothers.innsendingMedSøknad
-import no.nav.tiltakspenger.objectmothers.innsendingRegistrert
-import no.nav.tiltakspenger.objectmothers.nyPersonopplysningHendelse
-import no.nav.tiltakspenger.objectmothers.nySøknadMottattHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import org.junit.jupiter.api.Test
 
@@ -24,7 +24,7 @@ internal class InnsendingTest {
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = innsending.journalpostId,
                 søknad = søknad!!,
-            )
+            ),
         )
 
         innsending.aktivitetslogg.aktiviteter().size - sizeBefore shouldBe 2
@@ -37,7 +37,7 @@ internal class InnsendingTest {
             .map { it.map { kontekst -> kontekst.melding() } } shouldContain listOf(
             "SøknadMottattHendelse - journalpostId: ${innsending.journalpostId}",
             "Innsending - journalpostId: ${innsending.journalpostId}",
-            "Tilstand - tilstandtype: AvventerPersonopplysninger"
+            "Tilstand - tilstandtype: AvventerPersonopplysninger",
         )
         innsending.aktivitetslogg.aktiviteter().filter { it.alvorlighetsgrad == 50 }.size - behovCountBefore shouldBe 0
         innsending.isDirty() shouldBe true

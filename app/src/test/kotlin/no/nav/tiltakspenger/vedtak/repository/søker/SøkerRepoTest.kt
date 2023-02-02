@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.objectmothers.nySøker
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import org.junit.jupiter.api.BeforeEach

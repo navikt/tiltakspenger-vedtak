@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.domene.mars
 import no.nav.tiltakspenger.domene.marsDateTime
-import no.nav.tiltakspenger.objectmothers.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.AA
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.DAGP
@@ -33,19 +33,19 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
 
         private fun testdata(vurderingsperiode: Periode) = listOf(
             Arguments.of(AAPVilkårsvurdering(ytelser(AA), vurderingsperiode)),
-            Arguments.of(DagpengerVilkårsvurdering(ytelser(DAGP), vurderingsperiode))
+            Arguments.of(DagpengerVilkårsvurdering(ytelser(DAGP), vurderingsperiode)),
         )
 
         private fun ytelser(type: YtelseSak.YtelseSakYtelsetype) = listOf(
             ytelseSak(
                 fomGyldighetsperiode = 1.januarDateTime(2022),
                 tomGyldighetsperiode = 31.januarDateTime(2022),
-                ytelsestype = type
+                ytelsestype = type,
             ),
             ytelseSak(
                 fomGyldighetsperiode = 1.marsDateTime(2022),
                 tomGyldighetsperiode = 31.marsDateTime(2022),
-                ytelsestype = type
+                ytelsestype = type,
             ),
         )
     }
@@ -53,7 +53,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("utenOverlapp")
     fun `vilkåret er oppfylt når vurderingsperioden ikke overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering
+        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering,
     ) {
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.vurderinger().first().kilde shouldBe "Arena"
@@ -67,7 +67,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
     @ParameterizedTest
     @MethodSource("medOverlapp")
     fun `vilkåret er ikke oppfylt når vurderingsperioden overlapper med perioden for ytelsen`(
-        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering
+        statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering,
     ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering(
@@ -76,7 +76,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = ""
+                detaljer = "",
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
@@ -84,7 +84,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = ""
+                detaljer = "",
             ),
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
@@ -109,7 +109,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = ""
+                detaljer = "",
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
@@ -117,7 +117,7 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = ""
+                detaljer = "",
             ),
             Vurdering(
                 vilkår = Vilkår.SYKEPENGER,
@@ -125,8 +125,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
                 fom = 19.januar(2022),
                 tom = 28.mars(2022),
                 utfall = Utfall.OPPFYLT,
-                detaljer = ""
-            )
+                detaljer = "",
+            ),
         )
         statligVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
         statligVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
