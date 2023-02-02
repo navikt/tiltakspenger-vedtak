@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.søker
+package no.nav.tiltakspenger.vedtak.routes
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature

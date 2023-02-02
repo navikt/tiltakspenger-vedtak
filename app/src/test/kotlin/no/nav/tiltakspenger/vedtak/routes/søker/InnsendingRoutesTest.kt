@@ -20,8 +20,8 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO
-import no.nav.tiltakspenger.vedtak.service.søker.BehandlingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.InstitusjonsoppholdDTO
+import no.nav.tiltakspenger.vedtak.service.søker.KlarForBehandlingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.KommunaleYtelserDTO
 import no.nav.tiltakspenger.vedtak.service.søker.LønnsinntekterDTO
 import no.nav.tiltakspenger.vedtak.service.søker.PensjonsordningerDTO
@@ -65,7 +65,7 @@ class InnsendingRoutesTest {
                 skjermet = false,
             ),
             behandlinger = listOf(
-                BehandlingDTO(
+                KlarForBehandlingDTO(
                     søknad = SøknadDTO(
                         id = "",
                         søknadId = "",

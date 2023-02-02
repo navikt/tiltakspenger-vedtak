@@ -10,16 +10,24 @@ interface SøkerService {
 }
 
 data class SøkerIdDTO(
-    val id: String
+    val id: String,
 )
 
 data class SøkerDTO(
     val ident: String,
-    val behandlinger: List<BehandlingDTO>,
-    val personopplysninger: PersonopplysningerDTO?
+    val behandlinger: List<KlarEllerIkkeKlarForBehandlingDTO>,
+    val personopplysninger: PersonopplysningerDTO?,
 )
 
-data class BehandlingDTO(
+sealed class KlarEllerIkkeKlarForBehandlingDTO(
+    val klarForBehandling: Boolean,
+)
+
+data class IkkeKlarForBehandlingDTO(
+    val søknad: SøknadDTO,
+) : KlarEllerIkkeKlarForBehandlingDTO(false)
+
+data class KlarForBehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: PeriodeDTO,
@@ -31,7 +39,7 @@ data class BehandlingDTO(
     val institusjonsopphold: InstitusjonsoppholdDTO,
     val barnetillegg: List<BarnetilleggDTO>,
     val alderVilkårsvurdering: AlderVilkårsvurderingDTO,
-)
+) : KlarEllerIkkeKlarForBehandlingDTO(true)
 
 data class StatligeYtelserDTO(
     val samletUtfall: UtfallDTO,
@@ -50,32 +58,32 @@ data class VilkårsvurderingDTO(
 data class KommunaleYtelserDTO(
     val samletUtfall: UtfallDTO,
     val kvp: List<VilkårsvurderingDTO>,
-    val introProgrammet: List<VilkårsvurderingDTO>
+    val introProgrammet: List<VilkårsvurderingDTO>,
 )
 
 data class TiltakspengerDTO(
     val samletUtfall: UtfallDTO,
-    val perioder: List<VilkårsvurderingDTO>
+    val perioder: List<VilkårsvurderingDTO>,
 )
 
 data class PensjonsordningerDTO(
     val samletUtfall: UtfallDTO,
-    val perioder: List<VilkårsvurderingDTO>
+    val perioder: List<VilkårsvurderingDTO>,
 )
 
 data class LønnsinntekterDTO(
     val samletUtfall: UtfallDTO,
-    val perioder: List<VilkårsvurderingDTO>
+    val perioder: List<VilkårsvurderingDTO>,
 )
 
 data class InstitusjonsoppholdDTO(
     val samletUtfall: UtfallDTO,
-    val perioder: List<VilkårsvurderingDTO>
+    val perioder: List<VilkårsvurderingDTO>,
 )
 
 data class AlderVilkårsvurderingDTO(
     val samletUtfall: UtfallDTO,
-    val perioder: List<VilkårsvurderingDTO>
+    val perioder: List<VilkårsvurderingDTO>,
 )
 
 data class BarnetilleggDTO(
@@ -85,7 +93,7 @@ data class BarnetilleggDTO(
     val bosatt: String,
     val kilde: String,
     val utfall: UtfallDTO,
-    val søktBarnetillegg: Boolean
+    val søktBarnetillegg: Boolean,
 )
 
 data class SøknadDTO(
@@ -99,7 +107,7 @@ data class SøknadDTO(
     val sluttdato: LocalDate?,
     val antallDager: Int?,
     val fritekst: String?,
-    val vedlegg: List<VedleggDTO>
+    val vedlegg: List<VedleggDTO>,
 )
 
 data class VedleggDTO(
@@ -145,5 +153,5 @@ data class BarnDTO(
     val fornavn: String,
     val etternavn: String,
     val ident: String?,
-    val bosted: String?
+    val bosted: String?,
 )

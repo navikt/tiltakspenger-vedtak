@@ -12,13 +12,15 @@ internal const val resettFeiletOgStoppetInnsendinger = "/innsendinger/resett/fei
 internal const val feiletOgStoppetInnsendinger = "/innsendinger/feiletogstoppet"
 
 fun Route.resettInnsendingerRoute(
-    innsendingAdminService: InnsendingAdminService
+    innsendingAdminService: InnsendingAdminService,
 ) {
     get(feiletOgStoppetInnsendinger) {
         call.respond(innsendingAdminService.hentInnsendingerSomHarFeiletEllerStoppetOpp())
     }
     post(resettFeiletOgStoppetInnsendinger) {
         innsendingAdminService.resettInnsendingerSomHarFeiletEllerStoppetOpp()
-        call.respond(message = "Ok", status = HttpStatusCode.OK)
+        call.respond(message = AdminMessage("ok"), status = HttpStatusCode.OK)
     }
 }
+
+data class AdminMessage(val status: String)
