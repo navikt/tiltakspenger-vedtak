@@ -16,7 +16,7 @@ class ForeldrepengerAnvisningDAO() {
     ): List<ForeldrepengerVedtak.ForeldrepengerAnvisning> {
         return txSession.run(
             queryOf(hentForeldrepengerAnvisning, foreldrepengerVedtakId.toString())
-                .map { row -> row.toForeldrepengerAnvisning(txSession) }
+                .map { row -> row.toForeldrepengerAnvisning() }
                 .asList,
         )
     }
@@ -61,7 +61,7 @@ class ForeldrepengerAnvisningDAO() {
         txSession.run(queryOf(slettForeldrepengerAnvisning, foreldrepengerVedtakId.toString()).asUpdate)
     }
 
-    private fun Row.toForeldrepengerAnvisning(txSession: TransactionalSession): ForeldrepengerVedtak.ForeldrepengerAnvisning {
+    private fun Row.toForeldrepengerAnvisning(): ForeldrepengerVedtak.ForeldrepengerAnvisning {
         return ForeldrepengerVedtak.ForeldrepengerAnvisning(
             periode = Periode(fra = localDate("fra"), til = localDate("til")),
             beløp = bigDecimalOrNull("beløp"),

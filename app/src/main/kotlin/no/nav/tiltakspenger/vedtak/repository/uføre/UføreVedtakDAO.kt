@@ -13,7 +13,7 @@ class UføreVedtakDAO() {
     fun hentForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession): UføreVedtak? {
         return txSession.run(
             queryOf(hentUføreVedtak, innsendingId.toString())
-                .map { row -> row.toUføreVedtak(txSession) }
+                .map { row -> row.toUføreVedtak() }
                 .asSingle,
         )
     }
@@ -54,7 +54,7 @@ class UføreVedtakDAO() {
         txSession.run(queryOf(slettUføreVedtak, innsendingId.toString()).asUpdate)
     }
 
-    private fun Row.toUføreVedtak(txSession: TransactionalSession): UføreVedtak {
+    private fun Row.toUføreVedtak(): UføreVedtak {
         return UføreVedtak(
             id = UføreVedtakId.fromDb(string("id")),
             harUføregrad = boolean("har_uforegrad"),

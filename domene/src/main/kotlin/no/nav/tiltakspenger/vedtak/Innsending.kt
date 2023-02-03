@@ -508,7 +508,7 @@ class Innsending private constructor(
             foreldrepengerMottattHendelse.info("Fikk info om foreldrepenger: ${foreldrepengerMottattHendelse.foreldrepengerVedtakListe()}")
             innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
             innsending.trengerUføre(foreldrepengerMottattHendelse)
-            innsending.tilstand(foreldrepengerMottattHendelse, InnsendingFerdigstilt)
+            innsending.tilstand(foreldrepengerMottattHendelse, AvventerUføre)
         }
     }
 
