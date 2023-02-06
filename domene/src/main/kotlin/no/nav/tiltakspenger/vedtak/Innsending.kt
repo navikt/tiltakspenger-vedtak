@@ -539,6 +539,8 @@ class Innsending private constructor(
             innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
             innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
+            innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
+            innsending.trengerUføre(innsendingUtdatertHendelse)
         }
     }
 
