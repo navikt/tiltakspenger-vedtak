@@ -35,11 +35,14 @@ internal class PostgresInnsendingRepository(
 ) : InnsendingRepository {
 
     override fun hent(journalpostId: String): Innsending? {
-        sessionOf(DataSource.hikariDataSource).use {
+        val start = System.currentTimeMillis()
+        val returnValue = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                return hentMedTxSession(journalpostId, txSession)
+                hentMedTxSession(journalpostId, txSession)
             }
         }
+        LOG.info { "PostgresInnsendingRepository.hent tok ${(System.currentTimeMillis() - start)} ms" }
+        return returnValue
     }
 
     private fun hentMedTxSession(
@@ -155,7 +158,8 @@ internal class PostgresInnsendingRepository(
     }
 
     override fun lagre(innsending: Innsending): Innsending {
-        return sessionOf(DataSource.hikariDataSource).use {
+        val start = System.currentTimeMillis()
+        val returnValue = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
                     oppdater(innsending = innsending, txSession = txSession)
@@ -197,6 +201,8 @@ internal class PostgresInnsendingRepository(
                 }
             }
         }
+        LOG.info { "PostgresInnsendingRepository.lagre tok ${(System.currentTimeMillis() - start)} ms" }
+        return returnValue
     }
 
     override fun findBySøknadId(søknadId: String): Innsending? {
