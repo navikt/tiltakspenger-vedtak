@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.slf4j.MDC
+import kotlin.system.measureTimeMillis
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -29,34 +30,37 @@ class InnsendingMediator(
     )
 
     fun håndter(hendelse: InnsendingHendelse) {
-        try {
-            if (hendelse is SøknadMottattHendelse) {
-                hentEllerOpprettInnsending(hendelse).also { innsending ->
-                    observatører.forEach { innsending.addObserver(it) }
-                    innsending.håndter(hendelse)
-                    finalize(innsending, hendelse)
-                }
-            } else {
-                hentInnsendingEllerFeil(hendelse)?.let { innsending ->
-                    observatører.forEach { innsending.addObserver(it) }
-                    when (hendelse) {
-                        is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
-                        is YtelserMottattHendelse -> innsending.håndter(hendelse)
-                        is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
-                        is SkjermingMottattHendelse -> innsending.håndter(hendelse)
-                        is ForeldrepengerMottattHendelse -> innsending.håndter(hendelse)
-                        is UføreMottattHendelse -> innsending.håndter(hendelse)
-                        is ResetInnsendingHendelse -> innsending.håndter(hendelse)
-                        is FeilMottattHendelse -> innsending.håndter(hendelse)
-                        is InnsendingUtdatertHendelse -> innsending.håndter(hendelse)
-                        else -> throw RuntimeException("Ukjent hendelse")
+        val elapsed = measureTimeMillis {
+            try {
+                if (hendelse is SøknadMottattHendelse) {
+                    hentEllerOpprettInnsending(hendelse).also { innsending ->
+                        observatører.forEach { innsending.addObserver(it) }
+                        innsending.håndter(hendelse)
+                        finalize(innsending, hendelse)
                     }
-                    finalize(innsending, hendelse)
+                } else {
+                    hentInnsendingEllerFeil(hendelse)?.let { innsending ->
+                        observatører.forEach { innsending.addObserver(it) }
+                        when (hendelse) {
+                            is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
+                            is YtelserMottattHendelse -> innsending.håndter(hendelse)
+                            is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
+                            is SkjermingMottattHendelse -> innsending.håndter(hendelse)
+                            is ForeldrepengerMottattHendelse -> innsending.håndter(hendelse)
+                            is UføreMottattHendelse -> innsending.håndter(hendelse)
+                            is ResetInnsendingHendelse -> innsending.håndter(hendelse)
+                            is FeilMottattHendelse -> innsending.håndter(hendelse)
+                            is InnsendingUtdatertHendelse -> innsending.håndter(hendelse)
+                            else -> throw RuntimeException("Ukjent hendelse")
+                        }
+                        finalize(innsending, hendelse)
+                    }
                 }
+            } finally {
+                MDC.clear()
             }
-        } finally {
-            MDC.clear()
         }
+        LOG.info { "InnsendingMediator.håndter tok $elapsed" }
     }
 
     private fun hentEllerOpprettInnsending(hendelse: SøknadMottattHendelse): Innsending {
