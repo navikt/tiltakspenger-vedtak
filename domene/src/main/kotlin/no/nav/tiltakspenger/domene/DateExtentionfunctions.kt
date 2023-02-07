@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.domene
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 infix fun Int.januar(year: Int): LocalDate = LocalDate.of(year, Month.JANUARY, this)
@@ -45,6 +44,3 @@ fun Int.marsDateTime(year: Int): LocalDateTime = LocalDateTime.of(
 
 fun nå() = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)
 // fun LocalDateTime.Companion.nowTrunc() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
-
-fun LocalDate.toNormalDate(): String = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    .format(this)

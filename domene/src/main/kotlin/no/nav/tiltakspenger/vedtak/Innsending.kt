@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.toNormalDate
+import no.nav.tiltakspenger.domene.desember
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.DomeneMetrikker
 import no.nav.tiltakspenger.felles.InnsendingId
@@ -146,10 +146,10 @@ class Innsending private constructor(
         return søknad?.let {
             val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
             Periode(
-                tidligsteFom ?: LocalDate.MIN,
-                senesteTom ?: LocalDate.MAX,
+                tidligsteFom ?: LocalDate.EPOCH,
+                senesteTom ?: 31.desember(9999),
             )
-        } ?: Periode(LocalDate.MIN, LocalDate.MAX)
+        } ?: Periode(LocalDate.EPOCH, 31.desember(9999))
     }
 
     fun erFerdigstilt() = tilstand.type == InnsendingTilstandType.InnsendingFerdigstilt
@@ -592,8 +592,8 @@ class Innsending private constructor(
             melding = "Trenger fpytelser",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fra.toNormalDate(),
-                "tom" to this.filtreringsperiode().til.toNormalDate(),
+                "fom" to this.filtreringsperiode().fra,
+                "tom" to this.filtreringsperiode().til,
             ),
         )
     }
@@ -604,8 +604,8 @@ class Innsending private constructor(
             melding = "Trenger uføre",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fra.toNormalDate(),
-                "tom" to this.filtreringsperiode().til.toNormalDate(),
+                "fom" to this.filtreringsperiode().fra,
+                "tom" to this.filtreringsperiode().til,
             ),
         )
     }
