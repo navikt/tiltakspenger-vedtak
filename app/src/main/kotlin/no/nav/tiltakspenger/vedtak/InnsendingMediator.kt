@@ -60,7 +60,7 @@ class InnsendingMediator(
                 MDC.clear()
             }
         }
-        LOG.info { "InnsendingMediator.håndter tok $elapsed" }
+        LOG.info { "InnsendingMediator.håndter tok $elapsed ms for ${hendelse::class.java.simpleName}" }
     }
 
     private fun hentEllerOpprettInnsending(hendelse: SøknadMottattHendelse): Innsending {
