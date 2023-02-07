@@ -21,24 +21,6 @@ class OvergangsstønadVilkårsvurdering : IkkeImplementertVurdering() {
     override fun vilkår(): Vilkår = Vilkår.OVERGANGSSTØNAD
 }
 
-class PleiepengerVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "K9"
-
-    override fun vilkår(): Vilkår = Vilkår.PLEIEPENGER
-}
-
-class ForeldrepengerVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "FP-Sak"
-
-    override fun vilkår(): Vilkår = Vilkår.FORELDREPENGER
-}
-
-class SvangerskapspengerVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "FP-Sak"
-
-    override fun vilkår(): Vilkår = Vilkår.SVANGERSKAPSPENGER
-}
-
 class GjenlevendepensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
@@ -55,16 +37,4 @@ class AlderspensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"
 
     override fun vilkår(): Vilkår = Vilkår.ALDERSPENSJON
-}
-
-class OpplæringspengerVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "K9"
-
-    override fun vilkår(): Vilkår = Vilkår.OPPLÆRINGSPENGER
-}
-
-class OmsorgspengerVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "K9"
-
-    override fun vilkår(): Vilkår = Vilkår.OMSORGSPENGER
 }

@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -17,11 +18,16 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurd
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import java.time.LocalDate
 
@@ -86,6 +92,56 @@ interface VilkårsvurderingerMother {
         )
     }
 
+    fun nyForeldrepengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        ytelser: List<ForeldrepengerVedtak> = emptyList(),
+    ): ForeldrepengerVilkårsvurdering {
+        return ForeldrepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            ytelser = ytelser,
+        )
+    }
+
+    fun nyPleiepengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        ytelser: List<ForeldrepengerVedtak> = emptyList(),
+    ): PleiepengerVilkårsvurdering {
+        return PleiepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            ytelser = ytelser,
+        )
+    }
+
+    fun nyOmsorgspengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        ytelser: List<ForeldrepengerVedtak> = emptyList(),
+    ): OmsorgspengerVilkårsvurdering {
+        return OmsorgspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            ytelser = ytelser,
+        )
+    }
+
+    fun nyOpplæringspengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        ytelser: List<ForeldrepengerVedtak> = emptyList(),
+    ): OpplæringspengerVilkårsvurdering {
+        return OpplæringspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            ytelser = ytelser,
+        )
+    }
+
+    fun nySvangerskapspengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        ytelser: List<ForeldrepengerVedtak> = emptyList(),
+    ): SvangerskapspengerVilkårsvurdering {
+        return SvangerskapspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            ytelser = ytelser,
+        )
+    }
+
     fun nyTiltakspengerVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
         ytelser: List<YtelseSak> = emptyList(),
@@ -106,10 +162,30 @@ interface VilkårsvurderingerMother {
         dagpengerVilkårsvurdering: DagpengerVilkårsvurdering = nyDagpengerVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
         ),
+        foreldrepengerVilkårsvurdering: ForeldrepengerVilkårsvurdering = nyForeldrepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        pleiepengerVilkårsvurdering: PleiepengerVilkårsvurdering = nyPleiepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        svangerskapspengerVilkårsvurdering: SvangerskapspengerVilkårsvurdering = nySvangerskapspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        opplæringspengerVilkårsvurdering: OpplæringspengerVilkårsvurdering = nyOpplæringspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        omsorgspengerVilkårsvurdering: OmsorgspengerVilkårsvurdering = nyOmsorgspengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
     ): StatligeYtelserVilkårsvurderingKategori {
         return StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
+            foreldrepenger = foreldrepengerVilkårsvurdering,
+            pleiepenger = pleiepengerVilkårsvurdering,
+            svangerskapspenger = svangerskapspengerVilkårsvurdering,
+            opplæringspenger = opplæringspengerVilkårsvurdering,
+            omsorgspenger = omsorgspengerVilkårsvurdering,
         )
     }
 

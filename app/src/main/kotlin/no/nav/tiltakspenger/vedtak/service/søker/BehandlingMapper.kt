@@ -25,11 +25,16 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 
 private val LOG = KotlinLogging.logger {}
@@ -278,6 +283,26 @@ class BehandlingMapper {
             ),
             dagpenger = DagpengerVilkårsvurdering(
                 ytelser = innsending.ytelser!!.ytelserliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            foreldrepenger = ForeldrepengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            pleiepenger = PleiepengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            omsorgspenger = OmsorgspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            opplæringspenger = OpplæringspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            svangerskapspenger = SvangerskapspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),

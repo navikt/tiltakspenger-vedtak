@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak.YtelserOutput.PLEIEPENGER_SYKT_BARN
+import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
@@ -84,13 +84,13 @@ private fun mapFPYtelser(ytelseV1DTO: FPResponsDTO.YtelseV1DTO, innhentet: Local
         vedtattTidspunkt = ytelseV1DTO.vedtattTidspunkt,
         ytelse = when (ytelseV1DTO.ytelse) {
             YtelserOutput.PLEIEPENGER_SYKT_BARN -> PLEIEPENGER_SYKT_BARN
-            YtelserOutput.PLEIEPENGER_NÆRSTÅENDE -> ForeldrepengerVedtak.YtelserOutput.PLEIEPENGER_NÆRSTÅENDE
-            YtelserOutput.OMSORGSPENGER -> ForeldrepengerVedtak.YtelserOutput.OMSORGSPENGER
-            YtelserOutput.OPPLÆRINGSPENGER -> ForeldrepengerVedtak.YtelserOutput.OPPLÆRINGSPENGER
-            YtelserOutput.ENGANGSTØNAD -> ForeldrepengerVedtak.YtelserOutput.ENGANGSTØNAD
-            YtelserOutput.FORELDREPENGER -> ForeldrepengerVedtak.YtelserOutput.FORELDREPENGER
-            YtelserOutput.SVANGERSKAPSPENGER -> ForeldrepengerVedtak.YtelserOutput.SVANGERSKAPSPENGER
-            YtelserOutput.FRISINN -> ForeldrepengerVedtak.YtelserOutput.FRISINN
+            YtelserOutput.PLEIEPENGER_NÆRSTÅENDE -> ForeldrepengerVedtak.Ytelser.PLEIEPENGER_NÆRSTÅENDE
+            YtelserOutput.OMSORGSPENGER -> ForeldrepengerVedtak.Ytelser.OMSORGSPENGER
+            YtelserOutput.OPPLÆRINGSPENGER -> ForeldrepengerVedtak.Ytelser.OPPLÆRINGSPENGER
+            YtelserOutput.ENGANGSTØNAD -> ForeldrepengerVedtak.Ytelser.ENGANGSTØNAD
+            YtelserOutput.FORELDREPENGER -> ForeldrepengerVedtak.Ytelser.FORELDREPENGER
+            YtelserOutput.SVANGERSKAPSPENGER -> ForeldrepengerVedtak.Ytelser.SVANGERSKAPSPENGER
+            YtelserOutput.FRISINN -> ForeldrepengerVedtak.Ytelser.FRISINN
         },
         saksnummer = ytelseV1DTO.saksnummer,
         vedtakReferanse = ytelseV1DTO.vedtakReferanse,
