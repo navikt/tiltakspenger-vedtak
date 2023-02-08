@@ -27,7 +27,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvur
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
@@ -106,7 +106,7 @@ interface VilkårsvurderingerMother {
 
     fun nyUføreVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        uføreVedtak: UføreVedtak? = null
+        uføreVedtak: UføreVedtak? = null,
     ): UføreVilkarsvurdering {
         return UføreVilkarsvurdering(
             uføreVedtak = uføreVedtak,
@@ -117,8 +117,8 @@ interface VilkårsvurderingerMother {
     fun nyPleiepengerVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
         ytelser: List<ForeldrepengerVedtak> = emptyList(),
-    ): PleiepengerVilkårsvurdering {
-        return PleiepengerVilkårsvurdering(
+    ): PleiepengerNærståendeVilkårsvurdering {
+        return PleiepengerNærståendeVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
             ytelser = ytelser,
         )
@@ -177,7 +177,7 @@ interface VilkårsvurderingerMother {
         foreldrepengerVilkårsvurdering: ForeldrepengerVilkårsvurdering = nyForeldrepengerVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
         ),
-        pleiepengerVilkårsvurdering: PleiepengerVilkårsvurdering = nyPleiepengerVilkårsvurdering(
+        pleiepengerNærståendeVilkårsvurdering: PleiepengerNærståendeVilkårsvurdering = nyPleiepengerVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
         ),
         svangerskapspengerVilkårsvurdering: SvangerskapspengerVilkårsvurdering = nySvangerskapspengerVilkårsvurdering(
@@ -191,13 +191,13 @@ interface VilkårsvurderingerMother {
         ),
         uføreVilkarsvurdering: UføreVilkarsvurdering = nyUføreVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-        )
+        ),
     ): StatligeYtelserVilkårsvurderingKategori {
         return StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
             foreldrepenger = foreldrepengerVilkårsvurdering,
-            pleiepenger = pleiepengerVilkårsvurdering,
+            pleiepenger = pleiepengerNærståendeVilkårsvurdering,
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,

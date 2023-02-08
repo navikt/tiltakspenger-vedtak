@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
@@ -26,7 +26,7 @@ class StatligeYtelserVilkårsvurderingKategori(
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
     val uføretrygd: UføreVilkarsvurdering,
     val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
-    val pleiepenger: PleiepengerVilkårsvurdering,
+    val pleiepenger: PleiepengerNærståendeVilkårsvurdering,
     val foreldrepenger: ForeldrepengerVilkårsvurdering,
     val svangerskapspenger: SvangerskapspengerVilkårsvurdering,
     val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering = GjenlevendepensjonVilkårsvurdering(),

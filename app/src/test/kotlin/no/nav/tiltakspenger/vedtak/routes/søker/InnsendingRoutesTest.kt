@@ -101,7 +101,71 @@ class InnsendingRoutesTest {
                                 utfall = UtfallDTO.Uavklart,
                             ),
                         ),
-                    ),
+                        uføre = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        pleiepengerNærstående = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        pleiepengerSyktBarn = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        foreldrepenger = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        svangerskapspenger = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        opplæringspenger = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+                        omsorgspenger = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
+
+                        ),
                     kommunaleYtelser = KommunaleYtelserDTO(
                         samletUtfall = UtfallDTO.Uavklart,
                         kvp = listOf(
@@ -123,7 +187,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
 
-                    ),
+                        ),
                     pensjonsordninger = PensjonsordningerDTO(
                         samletUtfall = UtfallDTO.Uavklart,
                         perioder = listOf(
@@ -319,6 +383,69 @@ class InnsendingRoutesTest {
                   }
                 ],
                 "dagpenger": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "uføre": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "pleiepengerNærstående": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "pleiepengerSyktBarn": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "foreldrepenger": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "svangerskapspenger": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "omsorgspenger": [
+                  {
+                    "kilde": "",
+                    "detaljer": "",
+                    "periode": null,
+                    "kreverManuellVurdering": false,
+                    "utfall": "Uavklart"
+                  }
+                ],
+                "opplæringspenger": [
                   {
                     "kilde": "",
                     "detaljer": "",

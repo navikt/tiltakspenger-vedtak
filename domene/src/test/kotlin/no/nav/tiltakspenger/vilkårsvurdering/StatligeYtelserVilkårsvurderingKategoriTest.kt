@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurderi
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 import org.junit.jupiter.api.Test
@@ -60,7 +60,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                 til = 28.februar(2022),
             ),
         )
-        val pleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(
+        val pleiepengerNærståendeVilkårsvurdering = PleiepengerNærståendeVilkårsvurdering(
             ytelser = listOf(
                 foreldrepengerVedtak(
                     ytelse = ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN,
@@ -133,7 +133,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
             foreldrepenger = foreldrepengerVilkårsvurdering,
-            pleiepenger = pleiepengerVilkårsvurdering,
+            pleiepenger = pleiepengerNærståendeVilkårsvurdering,
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
@@ -181,7 +181,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                 til = 28.februar(2022),
             ),
         )
-        val pleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(
+        val pleiepengerNærståendeVilkårsvurdering = PleiepengerNærståendeVilkårsvurdering(
             ytelser = listOf(
                 foreldrepengerVedtak(
                     ytelse = ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN,
@@ -252,7 +252,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
             foreldrepenger = foreldrepengerVilkårsvurdering,
-            pleiepenger = pleiepengerVilkårsvurdering,
+            pleiepenger = pleiepengerNærståendeVilkårsvurdering,
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
@@ -277,7 +277,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )
-        val pleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(
+        val pleiepengerNærståendeVilkårsvurdering = PleiepengerNærståendeVilkårsvurdering(
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )
@@ -302,7 +302,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
             foreldrepenger = foreldrepengerVilkårsvurdering,
-            pleiepenger = pleiepengerVilkårsvurdering,
+            pleiepenger = pleiepengerNærståendeVilkårsvurdering,
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,

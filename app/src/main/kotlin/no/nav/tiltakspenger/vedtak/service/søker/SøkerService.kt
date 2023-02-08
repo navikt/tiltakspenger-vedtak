@@ -45,6 +45,18 @@ data class StatligeYtelserDTO(
     val samletUtfall: UtfallDTO,
     val aap: List<VilkårsvurderingDTO>,
     val dagpenger: List<VilkårsvurderingDTO>,
+//    val sykepenger: List<VilkårsvurderingDTO>,
+    val uføre: List<VilkårsvurderingDTO>,
+//    val overgangsstønad: List<VilkårsvurderingDTO>,
+    val pleiepengerNærstående: List<VilkårsvurderingDTO>,
+    val pleiepengerSyktBarn: List<VilkårsvurderingDTO>,
+    val foreldrepenger: List<VilkårsvurderingDTO>,
+    val svangerskapspenger: List<VilkårsvurderingDTO>,
+//    val gjenlevendepensjon: List<VilkårsvurderingDTO>,
+//    val supplerendeStønad: List<VilkårsvurderingDTO>,
+//    val alderspensjon: List<VilkårsvurderingDTO>,
+    val opplæringspenger: List<VilkårsvurderingDTO>,
+    val omsorgspenger: List<VilkårsvurderingDTO>,
 )
 
 data class VilkårsvurderingDTO(
