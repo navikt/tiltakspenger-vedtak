@@ -162,42 +162,69 @@ internal class PostgresInnsendingRepository(
         val returnValue = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 if (innsendingFinnes(journalpostId = innsending.journalpostId, txSession = txSession)) {
-                    oppdater(innsending = innsending, txSession = txSession)
+                    val tid = System.currentTimeMillis()
+                    val oppdatertInnsending = oppdater(innsending = innsending, txSession = txSession)
+                    LOG.info { "Oppdater innsending tid tok ${System.currentTimeMillis() - tid} ms" }
+                    oppdatertInnsending
                 } else {
-                    insert(innsending = innsending, txSession = txSession)
+                    val tid = System.currentTimeMillis()
+                    val lagretInnsending = insert(innsending = innsending, txSession = txSession)
+                    LOG.info { "Insert innsending tid tok ${System.currentTimeMillis() - tid} ms" }
+                    lagretInnsending
                 }.also {
+                    val tid1 = System.currentTimeMillis()
                     søknadDAO.lagre(innsendingId = innsending.id, søknad = innsending.søknad, txSession = txSession)
+                    val tid2 = System.currentTimeMillis()
+                    LOG.info { "søknadDAO.lagre tid tok ${tid2 - tid1} ms" }
+
                     tiltaksaktivitetDAO.lagre(
                         innsendingId = innsending.id,
                         tiltaksaktiviteter = innsending.tiltak?.tiltaksliste ?: emptyList(),
                         txSession = txSession,
                     )
+                    val tid3 = System.currentTimeMillis()
+                    LOG.info { "tiltaksaktivitetDAO.lagre tid tok ${tid3 - tid2} ms" }
+
                     ytelsesakDAO.lagre(
                         innsendingId = innsending.id,
                         ytelsesaker = innsending.ytelser?.ytelserliste ?: emptyList(),
                         txSession = txSession,
                     )
+                    val tid4 = System.currentTimeMillis()
+                    LOG.info { "ytelsesakDAO.lagre tid tok ${tid4 - tid3} ms" }
+
                     personopplysningerDAO.lagre(
                         innsendingId = innsending.id,
                         personopplysninger = innsending.personopplysninger?.personopplysningerliste ?: emptyList(),
                         txSession = txSession,
                     )
+                    val tid5 = System.currentTimeMillis()
+                    LOG.info { "personopplysningerDAO.lagre tid tok ${tid5 - tid4} ms" }
+
                     foreldrepengerVedtakDAO.lagre(
                         innsendingId = innsending.id,
                         foreldrepengerVedtak = innsending.foreldrepengerVedtak?.foreldrepengerVedtakliste
                             ?: emptyList(),
                         txSession = txSession,
                     )
+                    val tid6 = System.currentTimeMillis()
+                    LOG.info { "foreldrepengerVedtakDAO.lagre tid tok ${tid6 - tid5} ms" }
+
                     uføreVedtakDAO.lagre(
                         innsendingId = innsending.id,
                         uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
                         txSession = txSession,
                     )
+                    val tid7 = System.currentTimeMillis()
+                    LOG.info { "uføreVedtakDAO.lagre tid tok ${tid7 - tid6} ms" }
+
                     aktivitetsloggDAO.lagre(
                         innsendingId = innsending.id,
                         aktivitetslogg = innsending.aktivitetslogg,
                         txSession = txSession,
                     )
+                    val tid8 = System.currentTimeMillis()
+                    LOG.info { "aktivitetsloggDAO.lagre tid tok ${tid8 - tid7} ms" }
                 }
             }
         }
