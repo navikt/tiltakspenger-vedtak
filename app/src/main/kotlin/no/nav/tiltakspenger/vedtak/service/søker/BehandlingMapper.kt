@@ -36,6 +36,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsv
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 
 private val LOG = KotlinLogging.logger {}
 
@@ -303,6 +304,10 @@ class BehandlingMapper {
             ),
             svangerskapspenger = SvangerskapspengerVilkårsvurdering(
                 ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            uføretrygd = UføreVilkarsvurdering(
+                uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),

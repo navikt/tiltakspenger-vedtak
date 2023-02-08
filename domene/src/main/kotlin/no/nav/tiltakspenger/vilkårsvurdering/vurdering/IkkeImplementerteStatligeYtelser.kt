@@ -9,11 +9,11 @@ class SykepengerVilkårsvurdering : IkkeImplementertVurdering() {
     override fun vilkår(): Vilkår = Vilkår.SYKEPENGER
 }
 
-class UføretrygdVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "Pesys"
-
-    override fun vilkår(): Vilkår = Vilkår.UFØRETRYGD
-}
+// class UføretrygdVilkårsvurdering : IkkeImplementertVurdering() {
+//    override fun kilde() = "Pesys"
+//
+//    override fun vilkår(): Vilkår = Vilkår.UFØRETRYGD
+// }
 
 class OvergangsstønadVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "[ny løsning]"

@@ -18,13 +18,13 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurde
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføretrygdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 
 class StatligeYtelserVilkårsvurderingKategori(
     val aap: AAPVilkårsvurdering,
     val dagpenger: DagpengerVilkårsvurdering,
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
-    val uføretrygd: UføretrygdVilkårsvurdering,
+    val uføretrygd: UføreVilkarsvurdering,
     val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
     val pleiepenger: PleiepengerVilkårsvurdering,
     val foreldrepenger: ForeldrepengerVilkårsvurdering,

@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.domene.februar
 import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvur
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 import org.junit.jupiter.api.Test
 
 internal class StatligeYtelserVilkårsvurderingKategoriTest {
@@ -119,6 +121,14 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val uføreVilkarsvurdering = nyUføreVilkårsvurdering(
+            uføreVedtak = null,
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -127,6 +137,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
+            uføretrygd = uføreVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -230,6 +241,12 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                 til = 28.februar(2022),
             ),
         )
+        val uføreVilkarsvurdering = nyUføreVilkårsvurdering(
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
 
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
@@ -239,6 +256,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
+            uføretrygd = uføreVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -275,6 +293,10 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ytelser = emptyList(),
             vurderingsperiode = vurderingsperiode,
         )
+        val uføreVilkarsvurdering = UføreVilkarsvurdering(
+            uføreVedtak = null,
+            vurderingsperiode = vurderingsperiode,
+        )
 
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
@@ -284,6 +306,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             svangerskapspenger = svangerskapspengerVilkårsvurdering,
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
+            uføretrygd = uføreVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
