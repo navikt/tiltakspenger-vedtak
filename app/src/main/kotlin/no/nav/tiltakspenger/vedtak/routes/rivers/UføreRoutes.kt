@@ -43,6 +43,7 @@ fun Route.uføreRoutes(innsendingMediator: InnsendingMediator) {
                     ident = uføreDTO.ident,
                     feil = when (uføreDTO.uføre.feil!!) {
                         Feilmelding.UkjentFeil -> Feil.UkjentFeil
+                        Feilmelding.UgyldigIdent -> Feil.UgyldigIdent
                     },
                 )
                 innsendingMediator.håndter(feilMottattHendelse)
