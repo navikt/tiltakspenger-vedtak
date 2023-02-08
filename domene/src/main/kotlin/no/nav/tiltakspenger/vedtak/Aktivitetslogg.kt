@@ -122,6 +122,7 @@ open class Aktivitetslogg(
         val melding: String,
         val tidsstempel: LocalDateTime,
         val kontekster: List<Kontekst>,
+        val persistert: Boolean,
     ) : Comparable<Aktivitet> {
 
         fun alleKonteksterAsMap(): Map<String, String> =
@@ -173,7 +174,8 @@ open class Aktivitetslogg(
             kontekster: List<Kontekst>,
             melding: String,
             tidsstempel: LocalDateTime = nå(),
-        ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster) {
+            persistert: Boolean = false,
+        ) : Aktivitet(0, 'I', melding, tidsstempel, kontekster, persistert) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Info> {
                     return aktiviteter.filterIsInstance<Info>()
@@ -189,7 +191,8 @@ open class Aktivitetslogg(
             kontekster: List<Kontekst>,
             melding: String,
             tidsstempel: LocalDateTime = nå(),
-        ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster) {
+            persistert: Boolean = false,
+        ) : Aktivitet(25, 'W', melding, tidsstempel, kontekster, persistert) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Warn> {
                     return aktiviteter.filterIsInstance<Warn>()
@@ -207,7 +210,8 @@ open class Aktivitetslogg(
             melding: String,
             val detaljer: Map<String, Any> = emptyMap(),
             tidsstempel: LocalDateTime = nå(),
-        ) : Aktivitet(50, 'N', melding, tidsstempel, kontekster) {
+            persistert: Boolean = false,
+        ) : Aktivitet(50, 'N', melding, tidsstempel, kontekster, persistert) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Behov> {
                     return aktiviteter.filterIsInstance<Behov>()
@@ -249,7 +253,8 @@ open class Aktivitetslogg(
             kontekster: List<Kontekst>,
             melding: String,
             tidsstempel: LocalDateTime = nå(),
-        ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster) {
+            persistert: Boolean = false,
+        ) : Aktivitet(75, 'E', melding, tidsstempel, kontekster, persistert) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Error> {
                     return aktiviteter.filterIsInstance<Error>()
@@ -265,7 +270,8 @@ open class Aktivitetslogg(
             kontekster: List<Kontekst>,
             melding: String,
             tidsstempel: LocalDateTime = nå(),
-        ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster) {
+            persistert: Boolean = false,
+        ) : Aktivitet(100, 'S', melding, tidsstempel, kontekster, persistert) {
             companion object {
                 internal fun filter(aktiviteter: List<Aktivitet>): List<Severe> {
                     return aktiviteter.filterIsInstance<Severe>()

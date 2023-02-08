@@ -30,24 +30,28 @@ class AktivitetsloggDAO {
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
+                persistert = true,
             )
 
             "W" -> Aktivitetslogg.Aktivitet.Warn(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
+                persistert = true,
             )
 
             "E" -> Aktivitetslogg.Aktivitet.Error(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
+                persistert = true,
             )
 
             "S" -> Aktivitetslogg.Aktivitet.Severe(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
+                persistert = true,
             )
 
             "N" -> Aktivitetslogg.Aktivitet.Behov(
@@ -56,6 +60,7 @@ class AktivitetsloggDAO {
                 melding = melding,
                 detaljer = detaljer,
                 tidsstempel = tidsstempl,
+                persistert = true,
             )
 
             else -> throw IllegalStateException("Ukjent Labeltype")
@@ -94,27 +99,29 @@ class AktivitetsloggDAO {
     private val hentAktivitetslogger = "select * from aktivitet where innsending_id = ?"
 
     fun lagre(innsendingId: InnsendingId, aktivitetslogg: IAktivitetslogg, txSession: TransactionalSession) {
-        slettAktiviteter(innsendingId, txSession)
-        aktivitetslogg.aktiviteter().forEach { aktivitet ->
-            txSession.run(
-                queryOf(
-                    lagreAktivitetslogg,
-                    mapOf(
-                        "id" to UUID.randomUUID(),
-                        "innsendingId" to innsendingId.toString(),
-                        "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
-                        "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
-                        "label" to aktivitet.label,
-                        "melding" to aktivitet.melding,
-                        "tidsstempel" to aktivitet.tidsstempel,
-                        "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
-                            aktivitet.detaljer
-                        ) else null,
-                        "kontekster" to aktivitet.kontekster.serialize()
-                    )
-                ).asUpdate
-            )
-        }
+        // slettAktiviteter(innsendingId, txSession)
+        aktivitetslogg.aktiviteter()
+            .filter { !it.persistert }
+            .forEach { aktivitet ->
+                txSession.run(
+                    queryOf(
+                        lagreAktivitetslogg,
+                        mapOf(
+                            "id" to UUID.randomUUID(),
+                            "innsendingId" to innsendingId.toString(),
+                            "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
+                            "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
+                            "label" to aktivitet.label,
+                            "melding" to aktivitet.melding,
+                            "tidsstempel" to aktivitet.tidsstempel,
+                            "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
+                                aktivitet.detaljer,
+                            ) else null,
+                            "kontekster" to aktivitet.kontekster.serialize(),
+                        ),
+                    ).asUpdate,
+                )
+            }
     }
 
     private fun slettAktiviteter(innsendingId: InnsendingId, txSession: TransactionalSession) {
@@ -125,6 +132,6 @@ class AktivitetsloggDAO {
         Aktivitetslogg(
             aktiviteter = txSession.run(queryOf(hentAktivitetslogger, innsendingId.toString()).map(toAktivitet).asList)
                 .sorted()
-                .toMutableList()
+                .toMutableList(),
         )
 }
