@@ -49,7 +49,7 @@ internal class SøknadDAO(
         queryOf(finnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
     ) ?: throw RuntimeException("Failed to check if søknad exists")
 
-    //Søknaden vil aldri endres, så det er ingen grunn til å oppdatere den hvis den først har blitt lagret
+    // Søknaden vil aldri endres, så det er ingen grunn til å oppdatere den hvis den først har blitt lagret
     private fun lagreHeleSøknaden(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
         if (søknadFinnes(søknad.id, txSession)) {
             return
