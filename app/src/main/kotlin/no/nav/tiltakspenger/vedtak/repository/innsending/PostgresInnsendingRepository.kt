@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedtakDAO
+import no.nav.tiltakspenger.vedtak.repository.overgangsstønad.OvergangsstønadVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.tiltaksaktivitet.TiltaksaktivitetDAO
@@ -30,6 +31,7 @@ internal class PostgresInnsendingRepository(
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
     private val foreldrepengerVedtakDAO: ForeldrepengerVedtakDAO = ForeldrepengerVedtakDAO(),
+    private val overgangsstønadVedtakDAO: OvergangsstønadVedtakDAO = OvergangsstønadVedtakDAO(),
     private val uføreVedtakDAO: UføreVedtakDAO = UføreVedtakDAO(),
     private val aktivitetsloggDAO: AktivitetsloggDAO = AktivitetsloggDAO(),
 ) : InnsendingRepository {
@@ -210,6 +212,13 @@ internal class PostgresInnsendingRepository(
                     val tid6 = System.currentTimeMillis()
                     LOG.info { "foreldrepengerVedtakDAO.lagre tid tok ${tid6 - tid5} ms" }
 
+                    overgangsstønadVedtakDAO.lagre(
+                        innsendingId = innsending.id,
+                        overgangsstønadVedtak = innsending.overgangsstønadVedtak?.overgangsstønadVedtak
+                            ?: emptyList(),
+                        txSession = txSession,
+                    )
+
                     uføreVedtakDAO.lagre(
                         innsendingId = innsending.id,
                         uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
@@ -261,11 +270,13 @@ internal class PostgresInnsendingRepository(
             tidsstempelSkjermingInnhentet = localDateTimeOrNull("tidsstempel_skjerming_innhentet"),
             tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tidsstempelForeldrepengerVedtakInnhentet = localDateTimeOrNull("tidsstempel_foreldrepengervedtak_innhentet"),
+            tidsstempelOvergangsstønadVedtakInnhentet = localDateTimeOrNull("tidsstempel_overgangsstønadvedtak_innhentet"),
             tidsstempelUføreInnhentet = localDateTimeOrNull("tidsstempel_uførevedtak_innhentet"),
             tiltaksliste = tiltaksaktivitetDAO.hentForInnsending(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysningerliste = personopplysningerDAO.hent(id, txSession),
             foreldrepengerVedtak = foreldrepengerVedtakDAO.hentForInnsending(id, txSession),
+            overgangsstønadVedtak = overgangsstønadVedtakDAO.hentForInnsending(id, txSession),
             uføreVedtak = uføreVedtakDAO.hentForInnsending(id, txSession),
             aktivitetslogg = aktivitetsloggDAO.hent(id, txSession),
         )

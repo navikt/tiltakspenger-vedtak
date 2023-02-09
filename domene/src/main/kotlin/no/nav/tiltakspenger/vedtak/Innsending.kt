@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -38,6 +39,7 @@ class Innsending private constructor(
     tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
+    overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak?,
     uføreVedtak: InnhentetUføre?,
     aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
@@ -82,6 +84,12 @@ class Innsending private constructor(
         private set(value) {
             field = value
             dirtyChecker.set("foreldrepenger")
+        }
+
+    var overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak? = overgangsstønadVedtak
+        private set(value) {
+            field = value
+            dirtyChecker.set("overgangsstønad")
         }
 
     var uføreVedtak: InnhentetUføre? = uføreVedtak
@@ -168,6 +176,7 @@ class Innsending private constructor(
         tiltak = null,
         ytelser = null,
         foreldrepengerVedtak = null,
+        overgangsstønadVedtak = null,
         uføreVedtak = null,
         aktivitetslogg = Aktivitetslogg(),
     )
@@ -184,6 +193,7 @@ class Innsending private constructor(
             søknad: Søknad?,
             sistEndret: LocalDateTime,
             foreldrepengerVedtak: List<ForeldrepengerVedtak>,
+            overgangsstønadVedtak: List<OvergangsstønadVedtak>,
             uføreVedtak: UføreVedtak?,
             personopplysningerliste: List<Personopplysninger>,
             tiltaksliste: List<Tiltaksaktivitet>,
@@ -192,6 +202,7 @@ class Innsending private constructor(
             tidsstempelYtelserInnhentet: LocalDateTime?,
             tidsstempelPersonopplysningerInnhentet: LocalDateTime?,
             tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime?,
+            tidsstempelOvergangsstønadVedtakInnhentet: LocalDateTime?,
             tidsstempelUføreInnhentet: LocalDateTime?,
             tidsstempelSkjermingInnhentet: LocalDateTime?,
             aktivitetslogg: Aktivitetslogg,
@@ -217,6 +228,9 @@ class Innsending private constructor(
                         foreldrepengerVedtak,
                         it,
                     )
+                },
+                overgangsstønadVedtak = tidsstempelOvergangsstønadVedtakInnhentet?.let {
+                    InnhentedeOvergangsstønadVedtak(overgangsstønadVedtak, it)
                 },
                 uføreVedtak = tidsstempelUføreInnhentet?.let {
                     InnhentetUføre(
@@ -305,6 +319,19 @@ class Innsending private constructor(
         tilstand.håndter(this, foreldrepengerMottattHendelse)
     }
 
+    fun håndter(overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+        if (journalpostId != overgangsstønadMottattHendelse.journalpostId()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(overgangsstønadMottattHendelse, "Registrert OvergangsstønadMottattHendelse")
+        if (erAlleFaktaInnhentet()) {
+            overgangsstønadMottattHendelse.error("journalpostId ${overgangsstønadMottattHendelse.journalpostId()} allerede ferdig behandlet")
+            return
+        }
+        tilstand.håndter(this, overgangsstønadMottattHendelse)
+    }
+
     fun håndter(uføreMottattHendelse: UføreMottattHendelse) {
         if (journalpostId != uføreMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
@@ -390,6 +417,10 @@ class Innsending private constructor(
 
         fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
             innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
+        }
+
+        fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
         }
 
         fun håndter(innsending: Innsending, uføreMottattHendelse: UføreMottattHendelse) {
@@ -855,6 +886,26 @@ class Innsending private constructor(
         this.foreldrepengerVedtak = InnhentedeForeldrepengerVedtak(
             foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
             tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
+        )
+    }
+
+    private fun mottaOvergangsstønadVedtak(
+        overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse,
+    ) {
+        if (this.overgangsstønadVedtak != null &&
+            !overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet()
+                .isAfter(this.overgangsstønadVedtak!!.tidsstempelInnhentet)
+        ) {
+            overgangsstønadMottattHendelse.info("Fikk utdatert info om overgangsstønadvedtak, lagrer ikke")
+            return
+        }
+
+        overgangsstønadMottattHendelse
+            .info("Fikk info om overgangsstønadVedtak: ${overgangsstønadMottattHendelse.perioder()}")
+
+        this.overgangsstønadVedtak = InnhentedeOvergangsstønadVedtak(
+            overgangsstønadVedtak = overgangsstønadMottattHendelse.perioder(),
+            tidsstempelInnhentet = overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet(),
         )
     }
 

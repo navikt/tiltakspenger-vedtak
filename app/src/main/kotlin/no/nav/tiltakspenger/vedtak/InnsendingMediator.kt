@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -47,6 +48,7 @@ class InnsendingMediator(
                             is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
                             is SkjermingMottattHendelse -> innsending.håndter(hendelse)
                             is ForeldrepengerMottattHendelse -> innsending.håndter(hendelse)
+                            is OvergangsstønadMottattHendelse -> innsending.håndter(hendelse)
                             is UføreMottattHendelse -> innsending.håndter(hendelse)
                             is ResetInnsendingHendelse -> innsending.håndter(hendelse)
                             is FeilMottattHendelse -> innsending.håndter(hendelse)
