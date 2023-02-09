@@ -21,7 +21,7 @@ internal class SøknadDAO(
         return txSession.run(
             queryOf(hentIdent, søknadId)
                 .map { row -> row.toIdent() }
-                .asSingle
+                .asSingle,
         )
     }
 
@@ -29,7 +29,7 @@ internal class SøknadDAO(
         return txSession.run(
             queryOf(hentIdent, søknadId)
                 .map { row -> row.toJournalpostId() }
-                .asSingle
+                .asSingle,
         )
     }
 
@@ -37,7 +37,7 @@ internal class SøknadDAO(
         return txSession.run(
             queryOf(hent, innsendingId.toString())
                 .map { row -> row.toSøknad(txSession) }
-                .asSingle
+                .asSingle,
         )
     }
 
@@ -46,15 +46,16 @@ internal class SøknadDAO(
     }
 
     private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
-        queryOf(finnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle
+        queryOf(finnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
     ) ?: throw RuntimeException("Failed to check if søknad exists")
 
+    //Søknaden vil aldri endres, så det er ingen grunn til å oppdatere den hvis den først har blitt lagret
     private fun lagreHeleSøknaden(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
         if (søknadFinnes(søknad.id, txSession)) {
-            oppdaterSøknad(søknad, txSession)
-        } else {
-            lagreSøknad(innsendingId, søknad, txSession)
+            return
         }
+
+        lagreSøknad(innsendingId, søknad, txSession)
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
         trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon, txSession)
@@ -81,8 +82,8 @@ internal class SøknadDAO(
                     "dokumentinfoId" to søknad.dokumentInfoId,
                     "opprettet" to søknad.opprettet,
                     "tidsstempelHosOss" to søknad.tidsstempelHosOss,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 
@@ -108,8 +109,8 @@ internal class SøknadDAO(
                     "dokumentinfoId" to søknad.dokumentInfoId,
                     "opprettet" to søknad.opprettet,
                     "tidsstempelHosOss" to søknad.tidsstempelHosOss,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 
@@ -150,7 +151,7 @@ internal class SøknadDAO(
             introduksjonsprogrammetDetaljer = introduksjonsprogrammetFom?.let {
                 IntroduksjonsprogrammetDetaljer(
                     introduksjonsprogrammetFom,
-                    introduksjonsprogrammetTom
+                    introduksjonsprogrammetTom,
                 )
             },
             oppholdInstitusjon = oppholdInstitusjon,
