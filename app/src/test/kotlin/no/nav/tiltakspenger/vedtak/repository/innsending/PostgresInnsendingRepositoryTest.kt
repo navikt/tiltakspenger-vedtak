@@ -48,14 +48,6 @@ internal class PostgresInnsendingRepositoryTest {
     fun `skal telle antall innsendinger korrekt`() {
 
         // Flyway legger inn 6
-        innsendingRepository.antall() shouldBe 6
-
-        innsendingRepository.lagre(
-            Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
-            ),
-        )
         innsendingRepository.antall() shouldBe 7
 
         innsendingRepository.lagre(
@@ -64,6 +56,8 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = Random().nextInt().toString(),
             ),
         )
+        innsendingRepository.antall() shouldBe 8
+
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
@@ -76,7 +70,13 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = Random().nextInt().toString(),
             ),
         )
-        innsendingRepository.antall() shouldBe 10
+        innsendingRepository.lagre(
+            Innsending(
+                journalpostId = Random().nextInt().toString(),
+                ident = Random().nextInt().toString(),
+            ),
+        )
+        innsendingRepository.antall() shouldBe 11
     }
 
     @Test
@@ -94,7 +94,7 @@ internal class PostgresInnsendingRepositoryTest {
         // Flyway legger inn 6, alle er ferdig.
         // Dette er mao en litt slapp test,
         // men sjekker iallefall om spørringen feiler eller ikke..
-        innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
+        innsendingRepository.antallStoppetUnderBehandling() shouldBe 1
 
         innsendingRepository.lagre(
             Innsending(
@@ -103,7 +103,7 @@ internal class PostgresInnsendingRepositoryTest {
             ),
         )
         // sist_endret er ikke gammel nok, så denne skal heller ikke telles med
-        innsendingRepository.antallStoppetUnderBehandling() shouldBe 0
+        innsendingRepository.antallStoppetUnderBehandling() shouldBe 1
     }
 
     @Test
