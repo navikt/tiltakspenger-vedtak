@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
+import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
@@ -96,7 +97,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
 
     override fun onStartup(rapidsConnection: RapidsConnection) {
         log.info("Skal kjøre flyway migrering")
-        flywayCleanAndMigrate()
+        flywayMigrate()
         log.info("Har kjørt flyway migrering")
     }
 }
