@@ -325,10 +325,6 @@ class Innsending private constructor(
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(overgangsstønadMottattHendelse, "Registrert OvergangsstønadMottattHendelse")
-        if (erAlleFaktaInnhentet()) {
-            overgangsstønadMottattHendelse.error("journalpostId ${overgangsstønadMottattHendelse.journalpostId()} allerede ferdig behandlet")
-            return
-        }
         tilstand.håndter(this, overgangsstønadMottattHendelse)
     }
 
