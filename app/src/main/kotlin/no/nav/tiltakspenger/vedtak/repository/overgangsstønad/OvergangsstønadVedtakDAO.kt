@@ -42,11 +42,11 @@ class OvergangsstønadVedtakDAO() {
                 lagreOvergangsstønadVedtak,
                 mapOf(
                     "id" to id.toString(),
-                    "innsendingId" to innsendingId.toString(),
+                    "innsending_id" to innsendingId.toString(),
                     "fom_dato" to overgangsstønadVedtak.periode.fomDato,
                     "tom_dato" to overgangsstønadVedtak.periode.tomDato,
                     "innhentet" to overgangsstønadVedtak.innhentet,
-                    "tidsstempelHosOss" to LocalDateTime.now(),
+                    "tidsstempel_hos_oss" to LocalDateTime.now(),
                 ),
             ).asUpdate,
         )
@@ -72,16 +72,20 @@ class OvergangsstønadVedtakDAO() {
     private val lagreOvergangsstønadVedtak = """
         insert into overgangsstønad_vedtak (
             id,
+            innsending_id,
             fom_dato,
             tom_dato,
             datakilde,
             innhentet,
+            tidsstempel_hos_oss,
         ) values (
             :id, 
+            :innsending_id,
             :fom_dato,
             :tom_dato,
             :datakilde,
             :innhentet,
+            :tidsstempel_hos_oss,
         )
     """.trimIndent()
 
