@@ -165,7 +165,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
 
-                        ),
+                    ),
                     kommunaleYtelser = KommunaleYtelserDTO(
                         samletUtfall = UtfallDTO.Uavklart,
                         kvp = listOf(
@@ -187,7 +187,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
 
-                        ),
+                    ),
                     pensjonsordninger = PensjonsordningerDTO(
                         samletUtfall = UtfallDTO.Uavklart,
                         perioder = listOf(
