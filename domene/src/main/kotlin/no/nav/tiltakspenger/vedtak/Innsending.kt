@@ -250,6 +250,7 @@ class Innsending private constructor(
                 InnsendingTilstandType.AvventerTiltak -> AvventerTiltak
                 InnsendingTilstandType.AvventerYtelser -> AvventerYtelser
                 InnsendingTilstandType.AvventerForeldrepenger -> AvventerForeldrepenger
+                InnsendingTilstandType.AvventerOvergangsstønad -> AvventerOvergangsstønad
                 InnsendingTilstandType.AvventerUføre -> AvventerUføre
                 InnsendingTilstandType.InnsendingFerdigstilt -> InnsendingFerdigstilt
                 InnsendingTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
@@ -534,8 +535,22 @@ class Innsending private constructor(
         override fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
             foreldrepengerMottattHendelse.info("Fikk info om foreldrepenger: ${foreldrepengerMottattHendelse.foreldrepengerVedtakListe()}")
             innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
-            innsending.trengerUføre(foreldrepengerMottattHendelse)
-            innsending.tilstand(foreldrepengerMottattHendelse, AvventerUføre)
+            innsending.trengerOvergangsstønad(foreldrepengerMottattHendelse)
+            innsending.tilstand(foreldrepengerMottattHendelse, AvventerOvergangsstønad)
+        }
+    }
+
+    internal object AvventerOvergangsstønad : Tilstand {
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerOvergangsstønad
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+        override fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+            overgangsstønadMottattHendelse.info("Fikk info om overgangsstønad: ${overgangsstønadMottattHendelse.perioder()}")
+            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
+            innsending.trengerUføre(overgangsstønadMottattHendelse)
+            innsending.tilstand(overgangsstønadMottattHendelse, AvventerUføre)
         }
     }
 
@@ -567,6 +582,7 @@ class Innsending private constructor(
             innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
             innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
+            innsending.trengerOvergangsstønad(innsendingUtdatertHendelse)
             innsending.trengerUføre(innsendingUtdatertHendelse)
         }
     }
@@ -617,6 +633,18 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.fpytelser,
             melding = "Trenger fpytelser",
+            detaljer = mapOf(
+                "ident" to this.ident,
+                "fom" to this.filtreringsperiode().fra,
+                "tom" to this.filtreringsperiode().til,
+            ),
+        )
+    }
+
+    private fun trengerOvergangsstønad(hendelse: InnsendingHendelse) {
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.overgangsstønad,
+            melding = "Trenger overgangsstønad",
             detaljer = mapOf(
                 "ident" to this.ident,
                 "fom" to this.filtreringsperiode().fra,

@@ -245,7 +245,7 @@ open class Aktivitetslogg(
             }
 
             enum class Behovtype {
-                personopplysninger, skjerming, arenatiltak, arenaytelser, fpytelser, uføre,
+                personopplysninger, skjerming, arenatiltak, arenaytelser, fpytelser, overgangsstønad, uføre,
             }
         }
 
