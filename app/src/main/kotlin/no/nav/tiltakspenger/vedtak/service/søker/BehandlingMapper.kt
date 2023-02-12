@@ -34,6 +34,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvur
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
@@ -312,7 +313,11 @@ class BehandlingMapper {
                 ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
                 vurderingsperiode = vurderingsperiode,
             ),
-            pleiepenger = PleiepengerNærståendeVilkårsvurdering(
+            pleiepengerNærstående = PleiepengerNærståendeVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            pleiepengerSyktBarn = PleiepengerSyktBarnVilkårsvurdering(
                 ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
                 vurderingsperiode = vurderingsperiode,
             ),

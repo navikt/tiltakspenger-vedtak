@@ -8,10 +8,9 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 import java.time.LocalDate
 
-class UføreVilkarsvurdering(
+data class UføreVilkarsvurdering(
     private val uføreVedtak: UføreVedtak?,
     private val vurderingsperiode: Periode,
-
 ) : Vilkårsvurdering() {
     val uføreVurderinger: List<Vurdering> = lagVurderingerFraVedtak()
     override fun vilkår(): Vilkår = Vilkår.UFØRETRYGD
@@ -42,8 +41,8 @@ class UføreVilkarsvurdering(
                 Vurdering(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = KILDE,
-                    fom = vurderingsperiode.fra,
-                    tom = vurderingsperiode.til,
+                    fom = null,
+                    tom = null,
                     utfall = Utfall.OPPFYLT,
                     detaljer = "",
                 ),
@@ -52,14 +51,16 @@ class UføreVilkarsvurdering(
 
         if (vurderingsperiode.inneholder(dato)) {
             return listOf(
-                Vurdering(
-                    vilkår = Vilkår.UFØRETRYGD,
-                    kilde = KILDE,
-                    fom = vurderingsperiode.fra,
-                    tom = dato.minusDays(1),
-                    utfall = Utfall.OPPFYLT,
-                    detaljer = "",
-                ),
+                // Vi trenger ikke den oppfylte når det finnes en ikke_oppfylt.
+                // Da er den oppfylte implisit
+//                Vurdering(
+//                    vilkår = Vilkår.UFØRETRYGD,
+//                    kilde = KILDE,
+//                    fom = vurderingsperiode.fra,
+//                    tom = dato.minusDays(1),
+//                    utfall = Utfall.OPPFYLT,
+//                    detaljer = "",
+//                ),
                 Vurdering(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = KILDE,

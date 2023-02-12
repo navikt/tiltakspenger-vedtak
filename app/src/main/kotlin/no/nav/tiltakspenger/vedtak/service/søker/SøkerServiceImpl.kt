@@ -26,6 +26,7 @@ class SøkerServiceImpl(
     override fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO? {
         val søker = søkerRepository.hent(søkerId) ?: return null
         val innsendinger = innsendingRepository.findByIdent(søker.ident)
+
         LOG.info { "Hentet ${innsendinger.size} antall innsendinger" }
         innsendinger.forEach { it.sjekkOmSaksbehandlerHarTilgang(saksbehandler) }
         return behandlingMapper.mapSøkerOgInnsendinger(søker, innsendinger)

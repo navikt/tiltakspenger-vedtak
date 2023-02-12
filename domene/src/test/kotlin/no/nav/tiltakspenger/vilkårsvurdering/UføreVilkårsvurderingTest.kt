@@ -60,8 +60,21 @@ class UføreVilkårsvurderingTest {
             ),
         )
         uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
-        uføreVilkarsvurdering.uføreVurderinger.size shouldBe 2
-        uføreVilkarsvurdering.uføreVurderinger.first().utfall shouldBe Utfall.OPPFYLT
-        uføreVilkarsvurdering.uføreVurderinger.last().utfall shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.uføreVurderinger.size shouldBe 1
+        uføreVilkarsvurdering.uføreVurderinger.first().utfall shouldBe Utfall.IKKE_OPPFYLT
+    }
+
+    @Test
+    fun `Vilkåret om uføre blir ikke oppfylt når bruker har vedtak som starter før perioden`() {
+        val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
+        val uføreVilkarsvurdering = UføreVilkarsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            uføreVedtak = ObjectMother.uføreVedtak(
+                harUføregrad = true,
+                datoUfør = 1.januar(2021),
+                virkDato = 1.januar(2021),
+            ),
+        )
+        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
     }
 }

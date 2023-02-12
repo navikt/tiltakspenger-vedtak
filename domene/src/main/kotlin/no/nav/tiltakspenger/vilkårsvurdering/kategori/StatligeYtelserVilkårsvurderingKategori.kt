@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvur
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
@@ -26,7 +27,8 @@ class StatligeYtelserVilkårsvurderingKategori(
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
     val uføretrygd: UføreVilkarsvurdering,
     val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
-    val pleiepenger: PleiepengerNærståendeVilkårsvurdering,
+    val pleiepengerNærstående: PleiepengerNærståendeVilkårsvurdering,
+    val pleiepengerSyktBarn: PleiepengerSyktBarnVilkårsvurdering,
     val foreldrepenger: ForeldrepengerVilkårsvurdering,
     val svangerskapspenger: SvangerskapspengerVilkårsvurdering,
     val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering = GjenlevendepensjonVilkårsvurdering(),
@@ -44,7 +46,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             sykepenger.samletUtfall(),
             uføretrygd.samletUtfall(),
             overgangsstønad.samletUtfall(),
-            pleiepenger.samletUtfall(),
+            pleiepengerNærstående.samletUtfall(),
+            pleiepengerSyktBarn.samletUtfall(),
             foreldrepenger.samletUtfall(),
             svangerskapspenger.samletUtfall(),
             gjenlevendepensjon.samletUtfall(),
@@ -67,7 +70,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             sykepenger.vurderinger(),
             uføretrygd.vurderinger(),
             overgangsstønad.vurderinger(),
-            pleiepenger.vurderinger(),
+            pleiepengerNærstående.vurderinger(),
+            pleiepengerSyktBarn.vurderinger(),
             foreldrepenger.vurderinger(),
             svangerskapspenger.vurderinger(),
             gjenlevendepensjon.vurderinger(),
