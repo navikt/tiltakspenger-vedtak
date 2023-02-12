@@ -78,7 +78,7 @@ class ForeldrepengerVedtakDAO(
             version = string("version"),
             aktør = string("aktør"),
             vedtattTidspunkt = localDateTime("vedtatt_tidspunkt"),
-            ytelse = ForeldrepengerVedtak.YtelserOutput.valueOf(string("ytelse")),
+            ytelse = ForeldrepengerVedtak.Ytelser.valueOf(string("ytelse")),
             saksnummer = stringOrNull("saksnummer"),
             vedtakReferanse = string("vedtakReferanse"),
             ytelseStatus = ForeldrepengerVedtak.Status.valueOf(string("ytelseStatus")),

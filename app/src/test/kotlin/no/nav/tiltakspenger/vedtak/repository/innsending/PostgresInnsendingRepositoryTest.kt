@@ -47,8 +47,7 @@ internal class PostgresInnsendingRepositoryTest {
     @Test
     fun `skal telle antall innsendinger korrekt`() {
 
-        // Flyway legger inn 6
-        innsendingRepository.antall() shouldBe 7
+        var antallInnsendinger = innsendingRepository.antall()
 
         innsendingRepository.lagre(
             Innsending(
@@ -56,7 +55,8 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = Random().nextInt().toString(),
             ),
         )
-        innsendingRepository.antall() shouldBe 8
+        antallInnsendinger++
+        innsendingRepository.antall() shouldBe antallInnsendinger
 
         innsendingRepository.lagre(
             Innsending(
@@ -64,19 +64,22 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = Random().nextInt().toString(),
             ),
         )
+        antallInnsendinger++
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
             ),
         )
+        antallInnsendinger++
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
             ),
         )
-        innsendingRepository.antall() shouldBe 11
+        antallInnsendinger++
+        innsendingRepository.antall() shouldBe antallInnsendinger
     }
 
     @Test

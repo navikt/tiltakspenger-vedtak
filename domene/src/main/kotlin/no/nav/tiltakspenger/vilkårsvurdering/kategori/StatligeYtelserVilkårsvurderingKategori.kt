@@ -14,26 +14,28 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføretrygdVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 
 class StatligeYtelserVilkårsvurderingKategori(
     val aap: AAPVilkårsvurdering,
     val dagpenger: DagpengerVilkårsvurdering,
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
-    val uføretrygd: UføretrygdVilkårsvurdering = UføretrygdVilkårsvurdering(),
+    val uføretrygd: UføreVilkarsvurdering,
     val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
-    val pleiepenger: PleiepengerVilkårsvurdering = PleiepengerVilkårsvurdering(),
-    val foreldrepenger: ForeldrepengerVilkårsvurdering = ForeldrepengerVilkårsvurdering(),
-    val svangerskapspenger: SvangerskapspengerVilkårsvurdering = SvangerskapspengerVilkårsvurdering(),
+    val pleiepengerNærstående: PleiepengerNærståendeVilkårsvurdering,
+    val pleiepengerSyktBarn: PleiepengerSyktBarnVilkårsvurdering,
+    val foreldrepenger: ForeldrepengerVilkårsvurdering,
+    val svangerskapspenger: SvangerskapspengerVilkårsvurdering,
     val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering = GjenlevendepensjonVilkårsvurdering(),
     val supplerendeStønad: SupplerendeStønadVilkårsvurdering = SupplerendeStønadVilkårsvurdering(),
     val alderspensjon: AlderspensjonVilkårsvurdering = AlderspensjonVilkårsvurdering(),
-    val opplæringspenger: OpplæringspengerVilkårsvurdering = OpplæringspengerVilkårsvurdering(),
-    val omsorgspenger: OmsorgspengerVilkårsvurdering = OmsorgspengerVilkårsvurdering(),
+    val opplæringspenger: OpplæringspengerVilkårsvurdering,
+    val omsorgspenger: OmsorgspengerVilkårsvurdering,
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.STATLIGEYTELSER
 
@@ -44,7 +46,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             sykepenger.samletUtfall(),
             uføretrygd.samletUtfall(),
             overgangsstønad.samletUtfall(),
-            pleiepenger.samletUtfall(),
+            pleiepengerNærstående.samletUtfall(),
+            pleiepengerSyktBarn.samletUtfall(),
             foreldrepenger.samletUtfall(),
             svangerskapspenger.samletUtfall(),
             gjenlevendepensjon.samletUtfall(),
@@ -67,7 +70,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             sykepenger.vurderinger(),
             uføretrygd.vurderinger(),
             overgangsstønad.vurderinger(),
-            pleiepenger.vurderinger(),
+            pleiepengerNærstående.vurderinger(),
+            pleiepengerSyktBarn.vurderinger(),
             foreldrepenger.vurderinger(),
             svangerskapspenger.vurderinger(),
             gjenlevendepensjon.vurderinger(),

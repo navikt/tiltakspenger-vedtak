@@ -31,16 +31,10 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
         val arenaTiltak: ArenaTiltakMottattDTO = try {
             call.receive()
         } catch (t: Throwable) {
-            // println("1")
-            // println(t.message)
-            // println(t.stackTraceToString())
             LOG.info("Feil ved mapping fra json")
             LOG.info("Feil ved mapping fra json til kotlinkode", t)
             throw t
-        } finally {
-            println("2")
         }
-        println("3")
 
         if (arenaTiltak.respons.tiltaksaktiviteter != null) {
             val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
