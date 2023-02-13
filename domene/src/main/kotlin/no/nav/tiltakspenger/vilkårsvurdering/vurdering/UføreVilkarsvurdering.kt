@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.domene.toDisplayDate
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -45,8 +46,8 @@ data class UføreVilkarsvurdering(
                     tom = null,
                     utfall = Utfall.OPPFYLT,
                     detaljer = if (dato.toString() == LocalDate.of(9999, 12, 31)
-                            .toString()
-                    ) "" else "Uførevedtak fra $dato",
+                        .toString()
+                    ) "" else "Uførevedtak fra ${dato.toDisplayDate()}",
                 ),
             )
         }
@@ -67,9 +68,9 @@ data class UføreVilkarsvurdering(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = KILDE,
                     fom = dato,
-                    tom = vurderingsperiode.til,
+                    tom = null,
                     utfall = Utfall.IKKE_OPPFYLT,
-                    detaljer = "Uførevedtak fra $dato",
+                    detaljer = "",
                 ),
             )
         }
@@ -78,10 +79,10 @@ data class UføreVilkarsvurdering(
             Vurdering(
                 vilkår = Vilkår.UFØRETRYGD,
                 kilde = KILDE,
-                fom = vurderingsperiode.fra,
-                tom = vurderingsperiode.til,
+                fom = dato,
+                tom = null,
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = "Uførevedtak fra $dato",
+                detaljer = "",
             ),
         )
     }
