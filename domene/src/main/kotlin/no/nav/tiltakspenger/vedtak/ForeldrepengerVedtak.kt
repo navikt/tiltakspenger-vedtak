@@ -10,7 +10,7 @@ data class ForeldrepengerVedtak(
     val version: String,
     val aktør: String,
     val vedtattTidspunkt: LocalDateTime,
-    val ytelse: YtelserOutput,
+    val ytelse: Ytelser,
     val saksnummer: String?,
     val vedtakReferanse: String,
     val ytelseStatus: Status,
@@ -32,23 +32,7 @@ data class ForeldrepengerVedtak(
         val utbetalingsgrad: BigDecimal?,
     )
 
-    enum class YtelserInput {
-        /** Folketrygdloven K9 ytelser.  */
-        PSB, // PLEIEPENGER_SYKT_BARN,
-        PPN, // PLEIEPENGER_NÆRSTÅENDE,
-        OMP, // OMSORGSPENGER,
-        OLP, // OPPLÆRINGSPENGER,
-
-        /** Folketrygdloven K14 ytelser.  */
-        ES, // ENGANGSTØNAD,
-        FP, // FORELDREPENGER,
-        SVP // SVANGERSKAPSPENGER,
-
-        /** Midlertidig ytelse for Selvstendig næringsdrivende og Frilansere (Anmodning 10).  */
-        // FRISINN
-    }
-
-    enum class YtelserOutput {
+    enum class Ytelser {
         /** Folketrygdloven K9 ytelser.  */
         PLEIEPENGER_SYKT_BARN,
         PLEIEPENGER_NÆRSTÅENDE,
@@ -72,9 +56,4 @@ data class ForeldrepengerVedtak(
         FPSAK,
         K9SAK
     }
-
-//    data class Periode(
-//        val fom: LocalDate,
-//        val tom: LocalDate,
-//    )
 }

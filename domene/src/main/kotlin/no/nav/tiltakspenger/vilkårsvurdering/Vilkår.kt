@@ -40,9 +40,14 @@ sealed class Vilkår {
         override val lovreferanse: Lovreferanse = Lovreferanse.OVERGANGSSTØNAD
     }
 
-    object PLEIEPENGER : Vilkår() {
-        override val tittel: String = "PLEIEPENGER"
-        override val lovreferanse: Lovreferanse = Lovreferanse.PLEIEPENGER
+    object PLEIEPENGER_NÆRSTÅENDE : Vilkår() {
+        override val tittel: String = "PLEIEPENGER_NÆRSTÅENDE"
+        override val lovreferanse: Lovreferanse = Lovreferanse.PLEIEPENGER_NÆRSTÅENDE
+    }
+
+    object PLEIEPENGER_SYKT_BARN : Vilkår() {
+        override val tittel: String = "PLEIEPENGER_SYKT_BARN"
+        override val lovreferanse: Lovreferanse = Lovreferanse.PLEIEPENGER_SYKT_BARN
     }
 
     object FORELDREPENGER : Vilkår() {

@@ -13,7 +13,7 @@ interface ForeldrepengerMother {
         version: String = "v1",
         aktør: String = "aktørId",
         vedtattTidspunkt: LocalDateTime = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
-        ytelse: ForeldrepengerVedtak.YtelserOutput = ForeldrepengerVedtak.YtelserOutput.FORELDREPENGER,
+        ytelse: ForeldrepengerVedtak.Ytelser = ForeldrepengerVedtak.Ytelser.FORELDREPENGER,
         saksnummer: String = "saksnr",
         vedtakRef: String = "vedtakRef",
         status: ForeldrepengerVedtak.Status = ForeldrepengerVedtak.Status.LØPENDE,

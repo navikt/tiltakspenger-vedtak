@@ -25,12 +25,19 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 
 private val LOG = KotlinLogging.logger {}
 
@@ -205,14 +212,36 @@ class BehandlingMapper {
     }
 
     private fun mapStatligeYtelser(v: VilkårsvurderingKategori): StatligeYtelserDTO {
-        val perioderMedDagpenger =
-            v.vurderinger().filter { it.vilkår is Vilkår.DAGPENGER }
-        val perioderMedAAP =
-            v.vurderinger().filter { it.vilkår is Vilkår.AAP }
+        val perioderMedDagpenger = v.vurderinger().filter { it.vilkår is Vilkår.DAGPENGER }
+        val perioderMedAAP = v.vurderinger().filter { it.vilkår is Vilkår.AAP }
+        val perioderMedUføre = v.vurderinger().filter { it.vilkår is Vilkår.UFØRETRYGD }
+//        val perioderMedSykepenger = v.vurderinger().filter { it.vilkår is Vilkår.SYKEPENGER }
+//        val perioderMedOvergangsstønad = v.vurderinger().filter { it.vilkår is Vilkår.OVERGANGSSTØNAD }
+        val perioderMedPleiepengerNærstående = v.vurderinger().filter { it.vilkår is Vilkår.PLEIEPENGER_NÆRSTÅENDE }
+        val perioderMedPleiepengerSyktBarn = v.vurderinger().filter { it.vilkår is Vilkår.PLEIEPENGER_SYKT_BARN }
+        val perioderMedForeldrepenger = v.vurderinger().filter { it.vilkår is Vilkår.FORELDREPENGER }
+        val perioderMedSvangerskapspenger = v.vurderinger().filter { it.vilkår is Vilkår.SVANGERSKAPSPENGER }
+        val perioderMedOpplæringspenger = v.vurderinger().filter { it.vilkår is Vilkår.OPPLÆRINGSPENGER }
+        val perioderMedOmsorgspenger = v.vurderinger().filter { it.vilkår is Vilkår.OMSORGSPENGER }
+//        val perioderMedGjenlevende = v.vurderinger().filter { it.vilkår is Vilkår.GJENLEVENDEPENSJON }
+//        val perioderMedSupplerendeStønad = v.vurderinger().filter { it.vilkår is Vilkår.SUPPLERENDESTØNAD }
+//        val perioderMedAlderspensjon = v.vurderinger().filter { it.vilkår is Vilkår.ALDERSPENSJON }
         return StatligeYtelserDTO(
             samletUtfall = v.samletUtfall().mapToUtfallDTO(),
             aap = perioderMedAAP.map { mapVurderingToVilkårsvurderingDTO(it) },
             dagpenger = perioderMedDagpenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+//            sykepenger = perioderMedSykepenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+            uføre = perioderMedUføre.map { mapVurderingToVilkårsvurderingDTO(it) },
+//            overgangsstønad = perioderMedOvergangsstønad.map { mapVurderingToVilkårsvurderingDTO(it) },
+            pleiepengerNærstående = perioderMedPleiepengerNærstående.map { mapVurderingToVilkårsvurderingDTO(it) },
+            pleiepengerSyktBarn = perioderMedPleiepengerSyktBarn.map { mapVurderingToVilkårsvurderingDTO(it) },
+            foreldrepenger = perioderMedForeldrepenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+            svangerskapspenger = perioderMedSvangerskapspenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+            opplæringspenger = perioderMedOpplæringspenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+            omsorgspenger = perioderMedOmsorgspenger.map { mapVurderingToVilkårsvurderingDTO(it) },
+//            gjenlevendepensjon = perioderMedGjenlevende.map { mapVurderingToVilkårsvurderingDTO(it) },
+//            supplerendeStønad = perioderMedSupplerendeStønad.map { mapVurderingToVilkårsvurderingDTO(it) },
+//            alderspensjon = perioderMedAlderspensjon.map { mapVurderingToVilkårsvurderingDTO(it) },
         )
     }
 
@@ -278,6 +307,34 @@ class BehandlingMapper {
             ),
             dagpenger = DagpengerVilkårsvurdering(
                 ytelser = innsending.ytelser!!.ytelserliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            foreldrepenger = ForeldrepengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            pleiepengerNærstående = PleiepengerNærståendeVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            pleiepengerSyktBarn = PleiepengerSyktBarnVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            omsorgspenger = OmsorgspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            opplæringspenger = OpplæringspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            svangerskapspenger = SvangerskapspengerVilkårsvurdering(
+                ytelser = innsending.foreldrepengerVedtak!!.foreldrepengerVedtakliste,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            uføretrygd = UføreVilkarsvurdering(
+                uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),

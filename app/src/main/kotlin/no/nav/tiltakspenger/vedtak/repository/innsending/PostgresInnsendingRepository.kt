@@ -304,6 +304,7 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
+                    "tidsstempel_uforevedtak_innhentet" to innsending.uføreVedtak?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
                 ),
@@ -329,6 +330,7 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
+                    "tidsstempel_uforevedtak_innhentet" to innsending.uføreVedtak?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
                 ),
@@ -352,6 +354,7 @@ internal class PostgresInnsendingRepository(
             tidsstempel_skjerming_innhentet, 
             tidsstempel_ytelser_innhentet, 
             tidsstempel_foreldrepengervedtak_innhentet, 
+            tidsstempel_uførevedtak_innhentet,
             sist_endret, 
             opprettet
         ) values (
@@ -364,6 +367,7 @@ internal class PostgresInnsendingRepository(
             :tidsstempel_skjerming_innhentet, 
             :tidsstempel_ytelser_innhentet, 
             :tidsstempel_foreldrepengervedtak_innhentet, 
+            :tidsstempel_uforevedtak_innhentet,
             :sist_endret, 
             :opprettet
         )
@@ -378,7 +382,8 @@ internal class PostgresInnsendingRepository(
               tidsstempel_personopplysninger_innhentet = :tidsstempel_personopplysninger_innhentet,
               tidsstempel_skjerming_innhentet = :tidsstempel_skjerming_innhentet,
               tidsstempel_ytelser_innhentet = :tidsstempel_ytelser_innhentet,
-              tidsstempel_foreldrepengervedtak_innhentet = :tidsstempel_foreldrepengervedtak_innhentet
+              tidsstempel_foreldrepengervedtak_innhentet = :tidsstempel_foreldrepengervedtak_innhentet,
+              tidsstempel_uførevedtak_innhentet = :tidsstempel_uforevedtak_innhentet
            where id = :id
              and sist_endret = :sistEndretOld
         """.trimMargin()
