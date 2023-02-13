@@ -73,7 +73,7 @@ class ForeldrepengerVedtakRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
+            Assertions.assertEquals("overgangsstønad", field(0, "@behov")[0].asText())
         }
     }
 
@@ -110,7 +110,7 @@ class ForeldrepengerVedtakRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
+            Assertions.assertEquals("overgangsstønad", field(0, "@behov")[0].asText())
         }
     }
 
