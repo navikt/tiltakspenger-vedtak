@@ -298,10 +298,6 @@ class Innsending private constructor(
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(foreldrepengerMottattHendelse, "Registrert ForeldrepengerMottattHendelse")
-        if (erAlleFaktaInnhentet()) {
-            foreldrepengerMottattHendelse.error("journalpostId ${foreldrepengerMottattHendelse.journalpostId()} allerede ferdig behandlet")
-            return
-        }
         tilstand.håndter(this, foreldrepengerMottattHendelse)
     }
 
@@ -311,10 +307,6 @@ class Innsending private constructor(
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(uføreMottattHendelse, "Registrert UføreMottattHendelse")
-        if (erAlleFaktaInnhentet()) {
-            uføreMottattHendelse.error("journalpostId ${uføreMottattHendelse.journalpostId()} allerede ferdig behandlet")
-            return
-        }
         tilstand.håndter(this, uføreMottattHendelse)
     }
 

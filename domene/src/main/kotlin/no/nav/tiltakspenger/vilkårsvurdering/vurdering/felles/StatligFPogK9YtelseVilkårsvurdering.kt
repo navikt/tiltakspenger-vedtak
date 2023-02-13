@@ -48,7 +48,7 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
                 fom = it.periode.fra,
                 tom = it.periode.til,
                 utfall = Utfall.KREVER_MANUELL_VURDERING,
-                detaljer = it.tilleggsopplysninger ?: "",
+                detaljer = "",
             )
         }.ifEmpty {
             listOf(
