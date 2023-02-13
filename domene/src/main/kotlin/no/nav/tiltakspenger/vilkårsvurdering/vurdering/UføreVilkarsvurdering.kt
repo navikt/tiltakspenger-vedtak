@@ -32,7 +32,7 @@ data class UføreVilkarsvurdering(
             (uføreVedtak == null) or
             (uføreVedtak?.harUføregrad == false) or
             (uføreVedtak?.virkDato == null)
-        ) LocalDate.MAX else {
+        ) LocalDate.of(9999, 12, 31) else {
             uføreVedtak!!.virkDato!!
         }
 
@@ -44,7 +44,9 @@ data class UføreVilkarsvurdering(
                     fom = null,
                     tom = null,
                     utfall = Utfall.OPPFYLT,
-                    detaljer = "",
+                    detaljer = if (dato.toString() == LocalDate.of(9999, 12, 31)
+                            .toString()
+                    ) "" else "Uførevedtak fra $dato",
                 ),
             )
         }
@@ -67,7 +69,7 @@ data class UføreVilkarsvurdering(
                     fom = dato,
                     tom = vurderingsperiode.til,
                     utfall = Utfall.IKKE_OPPFYLT,
-                    detaljer = "",
+                    detaljer = "Uførevedtak fra $dato",
                 ),
             )
         }
@@ -79,7 +81,7 @@ data class UføreVilkarsvurdering(
                 fom = vurderingsperiode.fra,
                 tom = vurderingsperiode.til,
                 utfall = Utfall.IKKE_OPPFYLT,
-                detaljer = "",
+                detaljer = "Uførevedtak fra $dato",
             ),
         )
     }
