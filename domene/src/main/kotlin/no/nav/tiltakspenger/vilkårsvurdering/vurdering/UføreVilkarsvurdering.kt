@@ -69,7 +69,7 @@ data class UføreVilkarsvurdering(
                     kilde = KILDE,
                     fom = dato,
                     tom = null,
-                    utfall = Utfall.IKKE_OPPFYLT,
+                    utfall = Utfall.KREVER_MANUELL_VURDERING,
                     detaljer = "",
                 ),
             )
@@ -81,7 +81,7 @@ data class UføreVilkarsvurdering(
                 kilde = KILDE,
                 fom = dato,
                 tom = null,
-                utfall = Utfall.IKKE_OPPFYLT,
+                utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "",
             ),
         )
