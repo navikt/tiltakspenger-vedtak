@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFra
 
 class LønnsinntektVilkårsvurdering(
     søknad: Søknad,
-    vurderingsperiode: Periode
+    vurderingsperiode: Periode,
 ) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
     override fun vilkår(): Vilkår = Vilkår.LØNNSINNTEKT
 
@@ -34,7 +34,7 @@ class LønnsinntektVilkårsvurdering(
                 tom = null,
                 utfall = Utfall.IKKE_IMPLEMENTERT,
                 detaljer = "",
-            )
+            ),
         )
 
     override fun vurderinger(): List<Vurdering> =

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class DirtyCheckingAktivitetslogg(
     private val wrappedAktivitetslogg: IAktivitetslogg,
-    private val isDirty: AtomicBoolean
+    private val isDirty: AtomicBoolean,
 ) : IAktivitetslogg by wrappedAktivitetslogg {
 
     override fun info(melding: String) {

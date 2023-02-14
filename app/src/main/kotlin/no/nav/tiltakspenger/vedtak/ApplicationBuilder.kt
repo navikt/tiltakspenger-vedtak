@@ -17,7 +17,7 @@ val securelog = KotlinLogging.logger("tjenestekall")
 
 internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnection.StatusListener {
     val rapidsConnection: RapidsConnection = RapidApplication.Builder(
-        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
+        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers),
     )
         .withKtorModule {
             vedtakApi(
@@ -40,7 +40,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
     val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,
-        observatører = listOf()
+        observatører = listOf(),
     )
     private val søkerMediator = SøkerMediator(
         søkerRepository = søkerRepository,

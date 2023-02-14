@@ -18,7 +18,7 @@ abstract class Vilkårsvurdering {
         fom: LocalDate,
         tom: LocalDate,
         utfall: Utfall,
-        detaljer: String
+        detaljer: String,
     ) {
         manuellVurdering = Vurdering(
             vilkår = vilkår(),
@@ -26,7 +26,7 @@ abstract class Vilkårsvurdering {
             fom = fom,
             tom = tom,
             utfall = utfall,
-            detaljer = detaljer
+            detaljer = detaljer,
         )
     }
 }

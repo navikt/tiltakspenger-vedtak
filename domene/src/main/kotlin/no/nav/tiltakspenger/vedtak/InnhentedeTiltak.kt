@@ -4,5 +4,5 @@ import java.time.LocalDateTime
 
 data class InnhentedeTiltak(
     val tiltaksliste: List<Tiltaksaktivitet>,
-    val tidsstempelInnhentet: LocalDateTime
+    val tidsstempelInnhentet: LocalDateTime,
 )

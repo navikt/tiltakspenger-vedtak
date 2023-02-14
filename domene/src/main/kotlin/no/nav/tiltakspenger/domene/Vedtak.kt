@@ -48,5 +48,5 @@ data class ArenaVedtak(
     val opprinneligTilDato: LocalDate,
     val knyttetTilTilak: String,
     val valgtSats: String = "BYHOY",
-    val antallDagerMedutbetaling: Int
+    val antallDagerMedutbetaling: Int,
 )

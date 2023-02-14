@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 
 class AlderVilkårsvurderingKategori(
-    val alderVilkårsvurdering: AlderVilkårsvurdering
+    val alderVilkårsvurdering: AlderVilkårsvurdering,
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.ALDER
 

@@ -33,7 +33,7 @@ fun Route.innsendingUtdatertRoutes(
         val innsendingUtdatert = call.receive<InnsendingUtdatert>()
         val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            journalpostId = innsendingUtdatert.journalpostId
+            journalpostId = innsendingUtdatert.journalpostId,
         )
         innsendingMediator.håndter(innsendingUtdatertHendelse)
         call.respond(message = "OK", status = HttpStatusCode.OK)

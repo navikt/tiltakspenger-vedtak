@@ -11,7 +11,7 @@ import java.util.UUID
 private val LOG = KotlinLogging.logger {}
 
 class JWTInnloggetSaksbehandlerProvider(
-    private val allAvailableRoles: List<AdRolle> = Configuration.alleAdRoller()
+    private val allAvailableRoles: List<AdRolle> = Configuration.alleAdRoller(),
 ) : InnloggetSaksbehandlerProvider {
 
     private fun epostToBrukernavn(epost: String): String =
@@ -27,7 +27,7 @@ class JWTInnloggetSaksbehandlerProvider(
     override fun hentSaksbehandler(principal: JWTPrincipal): Saksbehandler {
         val ident = requireNotNull(principal.getClaim("NAVident", String::class)) { "NAVident er null i token" }
         val epost = requireNotNull(
-            principal.getClaim("preferred_username", String::class)
+            principal.getClaim("preferred_username", String::class),
         ) { "preferred_username er null i token" }
         val roller = principal.getListClaim("groups", UUID::class).mapFromUUIDToRoleName()
 

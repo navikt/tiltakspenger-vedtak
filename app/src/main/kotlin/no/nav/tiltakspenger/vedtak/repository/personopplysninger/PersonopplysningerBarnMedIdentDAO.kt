@@ -19,7 +19,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
     internal fun lagre(
         innsendingId: InnsendingId,
         personopplysninger: Personopplysninger.BarnMedIdent,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for barn med ident $personopplysninger" }
         txSession.run(
@@ -38,9 +38,9 @@ internal class PersonopplysningerBarnMedIdentDAO {
                     "strengtFortroligUtland" to personopplysninger.strengtFortroligUtland,
                     "skjermet" to personopplysninger.skjermet,
                     "oppholdsland" to personopplysninger.oppholdsland,
-                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
-                )
-            ).asUpdate
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss,
+                ),
+            ).asUpdate,
         )
     }
 
@@ -59,7 +59,7 @@ internal class PersonopplysningerBarnMedIdentDAO {
             strengtFortroligUtland = row.boolean("strengt_fortrolig_utland"),
             skjermet = row.booleanOrNull("skjermet"),
             oppholdsland = row.stringOrNull("oppholdsland"),
-            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
+            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss"),
         )
     }
 

@@ -19,7 +19,7 @@ internal class SaksbehandlingTest {
             ident = "123",
             opprettet = LocalDateTime.now(),
             deltarKvp = false,
-            tiltak = Tiltak("", "", "", LocalDate.now(), LocalDate.now())
+            tiltak = Tiltak("", "", "", LocalDate.now(), LocalDate.now()),
         )
         saksbehandling.behandle(søknad)
 

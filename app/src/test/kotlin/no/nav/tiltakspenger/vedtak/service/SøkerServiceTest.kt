@@ -26,7 +26,6 @@ internal class SøkerServiceTest {
 
     @Test
     fun `skal kunne hente behandlingDTO`() {
-
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         val søknad = nySøknadMedBrukerTiltak(
@@ -48,7 +47,6 @@ internal class SøkerServiceTest {
 
     @Test
     fun `skal ikke ha tilgang`() {
-
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         val søknad = nySøknadMedBrukerTiltak(

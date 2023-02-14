@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.domene
 import java.time.LocalDate
 
 class Tidslinje private constructor(
-    val vurderteDager: List<VurdertDag>
+    val vurderteDager: List<VurdertDag>,
 ) {
     companion object {
         fun lagTidslinje(vilkårsvurderinger: Vilkårsvurderinger): Tidslinje {
@@ -21,11 +21,11 @@ class Tidslinje private constructor(
 
                 VurdertDag(
                     dag = dag,
-                    utfallsperiode = utfall
+                    utfallsperiode = utfall,
                 )
             }
             return Tidslinje(
-                vurderteDager = dager
+                vurderteDager = dager,
             )
         }
     }
@@ -34,18 +34,18 @@ class Tidslinje private constructor(
 data class VurdertPeriode(
     val periode: Periode,
     val samletUtfall: Utfall,
-    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList()
+    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList(),
 )
 
 fun List<VurdertDag>.toPeriode(): Periode = Periode(
     fra = this.minOf { it.dag },
-    til = this.maxOf { it.dag }
+    til = this.maxOf { it.dag },
 )
 
 class VurdertDag(
     val dag: LocalDate,
     val utfallsperiode: Utfall,
-    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList()
+    val vilkårsvurderinger: List<Vilkårsvurdering> = emptyList(),
 ) {
 
     fun ikkeOppfylteVilkår(): List<Vilkårsvurdering> = emptyList()

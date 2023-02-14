@@ -45,7 +45,7 @@ data class ForeldrepengerVedtak(
         SVANGERSKAPSPENGER,
 
         /** Midlertidig ytelse for Selvstendig næringsdrivende og Frilansere (Anmodning 10).  */
-        FRISINN
+        FRISINN,
     }
 
     enum class Status {
@@ -54,6 +54,6 @@ data class ForeldrepengerVedtak(
 
     enum class Kildesystem {
         FPSAK,
-        K9SAK
+        K9SAK,
     }
 }

@@ -18,7 +18,7 @@ data class AuditLogEvent(
     val action: Action = Action.ACCESS,
     val behandlingId: UUID? = null,
     val callId: String?,
-    val logLevel: Level = Level.INFO
+    val logLevel: Level = Level.INFO,
 ) {
     /**
      * Hva slags CRUD-operasjon blir gjort
@@ -79,7 +79,7 @@ enum class CefFieldName(val kode: String) {
      * Om handlingen blir tillatt eller ikke (permit/deny)
      */
     DECISION_VERDI("flexString1"),
-    DECISION_LABEL("flexString1Label");
+    DECISION_LABEL("flexString1Label"),
 }
 
 data class CefField(val cefFieldName: CefFieldName, val value: String)

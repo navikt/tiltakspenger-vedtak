@@ -6,5 +6,5 @@ class InstitusjonsoppholdsFaktum(
     override val kilde: FaktumKilde,
     val opphold: Boolean,
     val oppholdsperiode: List<Periode>,
-    val friKostOgLosji: Boolean
+    val friKostOgLosji: Boolean,
 ) : Faktum

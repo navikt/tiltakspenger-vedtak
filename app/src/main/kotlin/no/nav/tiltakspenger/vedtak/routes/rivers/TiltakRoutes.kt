@@ -59,7 +59,7 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
 
 private fun mapArenaTiltak(
     tiltaksaktivitetDTO: List<ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO>,
-    innhentet: LocalDateTime
+    innhentet: LocalDateTime,
 ): List<Tiltaksaktivitet> {
     return tiltaksaktivitetDTO.map {
         Tiltaksaktivitet(
@@ -70,7 +70,7 @@ private fun mapArenaTiltak(
             bedriftsnummer = it.bedriftsnummer,
             deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
                 it.deltakelsePeriode?.fom,
-                it.deltakelsePeriode?.tom
+                it.deltakelsePeriode?.tom,
             ),
             deltakelseProsent = it.deltakelseProsent,
             deltakerStatus = mapDeltakerStatus(it.deltakerStatusType),

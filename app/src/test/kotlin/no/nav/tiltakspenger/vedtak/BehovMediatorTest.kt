@@ -28,22 +28,21 @@ internal class BehovMediatorTest {
         innsending = Innsending(journalpostId = journalpostId, ident = ident)
         aktivitetslogg = Aktivitetslogg()
         behovMediator = BehovMediator(
-            rapidsConnection = testRapid
+            rapidsConnection = testRapid,
         )
         testRapid.reset()
     }
 
     @Test
     internal fun `grupperer behov`() {
-
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(innsending)
         hendelse.behov(
             Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
-                "aktørId" to "12344"
-            )
+                "aktørId" to "12344",
+            ),
         )
         hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
         hendelse.behov(Behovtype.skjerming, "Trenger Skjermingdata")
@@ -76,15 +75,15 @@ internal class BehovMediatorTest {
             Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
-                "aktørId" to "12344"
-            )
+                "aktørId" to "12344",
+            ),
         )
         hendelse.behov(
             Behovtype.personopplysninger,
             "Trenger personopplysninger",
             mapOf(
-                "aktørId" to "12344"
-            )
+                "aktørId" to "12344",
+            ),
         )
 
         assertThrows<IllegalArgumentException> { behovMediator.håndter(hendelse) }
@@ -101,14 +100,14 @@ internal class BehovMediatorTest {
     }
 
     private class Testkontekst(
-        private val melding: String
+        private val melding: String,
     ) : KontekstLogable {
         override fun opprettKontekst() = Kontekst(melding, mapOf(melding to melding))
     }
 
     private class TestHendelse(
         private val melding: String,
-        internal val logg: Aktivitetslogg
+        internal val logg: Aktivitetslogg,
     ) : InnsendingHendelse(logg), KontekstLogable {
         init {
             logg.addKontekst(this)

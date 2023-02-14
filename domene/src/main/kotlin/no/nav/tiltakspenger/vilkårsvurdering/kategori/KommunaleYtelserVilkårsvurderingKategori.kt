@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 
 class KommunaleYtelserVilkårsvurderingKategori(
     val intro: IntroProgrammetVilkårsvurdering,
-    val kvp: KVPVilkårsvurdering
+    val kvp: KVPVilkårsvurdering,
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.KOMMUNALEYTELSER
 

@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.Søknad
 import no.nav.tiltakspenger.domene.behandling.Saksbehandling
 
 class Sak(
-    val behandlinger: List<Saksbehandling>
+    val behandlinger: List<Saksbehandling>,
 ) {
     companion object {
         fun opprettEllerHentSakMedBehandling(

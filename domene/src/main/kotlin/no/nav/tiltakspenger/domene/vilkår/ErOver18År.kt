@@ -14,10 +14,11 @@ object ErOver18År : Vilkår {
 
     override fun vurder(faktum: List<Faktum>, vurderingsperiode: Periode): List<Utfallsperiode> {
         faktum as List<FødselsdatoFaktum>
-        return if (faktum.isEmpty())
+        return if (faktum.isEmpty()) {
             listOf(Utfallsperiode(utfall = Utfall.IkkeVurdert, vurderingsperiode))
-        else
+        } else {
             vurder(faktum.first(), vurderingsperiode)
+        }
     }
 
     private fun vurder(faktum: FødselsdatoFaktum, vurderingsperiode: Periode): List<Utfallsperiode> {
@@ -25,23 +26,23 @@ object ErOver18År : Vilkår {
             vurderingsperiode.etter(faktum.fødselsdato) -> listOf(
                 Utfallsperiode(
                     utfall = Utfall.VurdertOgOppfylt,
-                    vurderingsperiode
-                )
+                    vurderingsperiode,
+                ),
             )
 
             vurderingsperiode.før(faktum.fødselsdato) -> listOf(
                 Utfallsperiode(
                     utfall = Utfall.VurdertOgIkkeOppfylt,
-                    vurderingsperiode
-                )
+                    vurderingsperiode,
+                ),
             )
 
             else -> listOf(
                 Utfallsperiode(
                     utfall = Utfall.VurdertOgIkkeOppfylt,
-                    Periode(vurderingsperiode.fra, faktum.fødselsdato.minusDays(1))
+                    Periode(vurderingsperiode.fra, faktum.fødselsdato.minusDays(1)),
                 ),
-                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(faktum.fødselsdato, vurderingsperiode.til))
+                Utfallsperiode(utfall = Utfall.VurdertOgOppfylt, Periode(faktum.fødselsdato, vurderingsperiode.til)),
             )
         }
     }

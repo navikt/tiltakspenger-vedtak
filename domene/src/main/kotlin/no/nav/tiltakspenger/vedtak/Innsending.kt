@@ -115,7 +115,9 @@ class Innsending private constructor(
     fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
         if (søknad.tiltak is Tiltak.ArenaTiltak) {
             this.tiltak?.tiltaksliste?.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId } // TODO: Denne vil aldri slå til, man sammenligner epler og pærer
-        } else null
+        } else {
+            null
+        }
 
     private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate?, LocalDate?> {
         fun tidligsteDato(dato: LocalDate?, vararg datoer: LocalDate?): LocalDate? =
@@ -708,7 +710,6 @@ class Innsending private constructor(
     )
 
     fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
-
         fun sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig: Boolean) {
             if (harBeskyttelsesbehovStrengtFortrolig) {
                 SECURELOG.info("erStrengtFortrolig")
@@ -784,7 +785,6 @@ class Innsending private constructor(
     }
 
     private fun mottaYtelser(ytelserMottattHendelse: YtelserMottattHendelse) {
-
         if (this.ytelser != null &&
             !ytelserMottattHendelse.tidsstempelYtelserInnhentet()
                 .isAfter(this.ytelser!!.tidsstempelInnhentet)

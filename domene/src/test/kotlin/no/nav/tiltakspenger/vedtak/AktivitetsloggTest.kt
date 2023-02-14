@@ -67,7 +67,7 @@ internal class AktivitetsloggTest {
     fun `Melding sendt til forelder`() {
         val hendelse = TestHendelse(
             "Hendelse",
-            aktivitetslogg.barn()
+            aktivitetslogg.barn(),
         )
         "info message".also {
             hendelse.info(it)
@@ -85,7 +85,7 @@ internal class AktivitetsloggTest {
     fun `Melding sendt fra barnebarn til forelder`() {
         val hendelse = TestHendelse(
             melding = "Hendelse",
-            logg = aktivitetslogg.barn()
+            logg = aktivitetslogg.barn(),
         )
         hendelse.addKontekst(person)
         val arbeidsgiver =
@@ -114,7 +114,7 @@ internal class AktivitetsloggTest {
     fun `Vis bare arbeidsgiveraktivitet`() {
         val hendelse1 = TestHendelse(
             "Hendelse1",
-            aktivitetslogg.barn()
+            aktivitetslogg.barn(),
         )
         hendelse1.addKontekst(person)
         val arbeidsgiver1 =
@@ -128,7 +128,7 @@ internal class AktivitetsloggTest {
         hendelse1.error("error message")
         val hendelse2 = TestHendelse(
             "Hendelse2",
-            aktivitetslogg.barn()
+            aktivitetslogg.barn(),
         )
         hendelse2.addKontekst(person)
         val arbeidsgiver2 =
@@ -148,7 +148,7 @@ internal class AktivitetsloggTest {
     fun `Behov kan ha detaljer`() {
         val hendelse1 = TestHendelse(
             "Hendelse1",
-            aktivitetslogg.barn()
+            aktivitetslogg.barn(),
         )
         hendelse1.addKontekst(person)
         val param1 = "value"
@@ -158,8 +158,8 @@ internal class AktivitetsloggTest {
             "Trenger personopplysninger",
             mapOf(
                 "param1" to param1,
-                "param2" to param2
-            )
+                "param2" to param2,
+            ),
         )
 
         assertEquals(1, aktivitetslogg.behov().size)
@@ -174,7 +174,7 @@ internal class AktivitetsloggTest {
     fun `Behov med flere kontekster og detaljer skal bli mappet riktig`() {
         val hendelse1 = TestHendelse(
             "Hendelse1",
-            aktivitetslogg.barn()
+            aktivitetslogg.barn(),
         )
         hendelse1.addKontekst(person)
         hendelse1.addKontekst(TestKontekst("whatever"))
@@ -185,8 +185,8 @@ internal class AktivitetsloggTest {
             "Trenger personopplysninger",
             mapOf(
                 "param1" to param1,
-                "param2" to param2
-            )
+                "param2" to param2,
+            ),
         )
 
         assertEquals(1, aktivitetslogg.behov().size)
@@ -209,7 +209,7 @@ internal class AktivitetsloggTest {
                 "@event_name" to "behov",
                 "@opprettet" to LocalDateTime.now(),
                 "@id" to id,
-                "@behov" to behovsliste
+                "@behov" to behovsliste,
             )
                 .apply {
                     putAll(kontekst)
@@ -217,7 +217,7 @@ internal class AktivitetsloggTest {
                         require(behov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${behov.type.name} på samme kontekst" }
                         require(
                             behov.detaljer().filterKeys { this.containsKey(it) && this[it] != behov.detaljer()[it] }
-                                .isEmpty()
+                                .isEmpty(),
                         ) { "Kan ikke produsere behov med duplikate detaljer" }
                         behovsliste.add(behov.type.name)
                         putAll(behov.detaljer())
@@ -242,12 +242,12 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Info,
                     melding: String,
-                    tidsstempel: LocalDateTime
+                    tidsstempel: LocalDateTime,
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
                 }
-            }
+            },
         )
         assertTrue(visitorCalled)
     }
@@ -260,12 +260,12 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Warn,
                     melding: String,
-                    tidsstempel: LocalDateTime
+                    tidsstempel: LocalDateTime,
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
                 }
-            }
+            },
         )
         assertTrue(visitorCalled)
     }
@@ -278,12 +278,12 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Error,
                     melding: String,
-                    tidsstempel: LocalDateTime
+                    tidsstempel: LocalDateTime,
                 ) {
                     visitorCalled = true
                     assertTrue(message in aktivitet.toString(), aktivitetslogg.toString())
                 }
-            }
+            },
         )
         assertTrue(visitorCalled)
     }
@@ -296,28 +296,28 @@ internal class AktivitetsloggTest {
                     kontekster: List<Kontekst>,
                     aktivitet: Aktivitet.Severe,
                     melding: String,
-                    tidsstempel: LocalDateTime
+                    tidsstempel: LocalDateTime,
                 ) {
                     visitorCalled = true
                     assertEquals(message, melding)
                 }
-            }
+            },
         )
         assertTrue(visitorCalled)
     }
 
     private class TestKontekst(
-        private val melding: String
+        private val melding: String,
     ) : KontekstLogable {
         override fun opprettKontekst() = Kontekst(
             kontekstType = melding,
-            kontekstMap = mapOf(melding to melding)
+            kontekstMap = mapOf(melding to melding),
         )
     }
 
     private class TestHendelse(
         private val melding: String,
-        val logg: Aktivitetslogg
+        val logg: Aktivitetslogg,
     ) : KontekstLogable, IAktivitetslogg by logg {
         init {
             logg.addKontekst(this)

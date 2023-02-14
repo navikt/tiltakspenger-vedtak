@@ -77,7 +77,7 @@ internal class SøknadDAOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
             ),
             trygdOgPensjon = emptyList(),
             fritekst = null,
@@ -133,7 +133,7 @@ internal class SøknadDAOTest {
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
                     søktBarnetillegg = true,
-                )
+                ),
             ),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
@@ -145,12 +145,15 @@ internal class SøknadDAOTest {
                 opprinneligSluttdato = LocalDate.now(),
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
             ),
             trygdOgPensjon = listOf(
                 TrygdOgPensjon(
-                    utbetaler = "Storebrand", prosent = null, fom = LocalDate.of(2020, 10, 1), tom = null
-                )
+                    utbetaler = "Storebrand",
+                    prosent = null,
+                    fom = LocalDate.of(2020, 10, 1),
+                    tom = null,
+                ),
             ),
             fritekst = null,
             vedlegg = listOf(
@@ -158,8 +161,8 @@ internal class SøknadDAOTest {
                     journalpostId = "journalpostId",
                     dokumentInfoId = "dokumentId",
                     filnavn = "filnavn",
-                )
-            )
+                ),
+            ),
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -202,7 +205,7 @@ internal class SøknadDAOTest {
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
-            startdato = LocalDate.now()
+            startdato = LocalDate.now(),
         )
         val søknad = Søknad(
             id = uuid,
@@ -216,7 +219,7 @@ internal class SøknadDAOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
                 fom = LocalDate.of(2022, Month.AUGUST, 15),
-                tom = LocalDate.of(2022, Month.AUGUST, 30)
+                tom = LocalDate.of(2022, Month.AUGUST, 30),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = TypeInstitusjon.BARNEVERN,
@@ -230,7 +233,7 @@ internal class SøknadDAOTest {
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
                     søktBarnetillegg = true,
-                )
+                ),
             ),
             tidsstempelHosOss = innhentet,
             tiltak = tiltak,
@@ -239,8 +242,8 @@ internal class SøknadDAOTest {
                     utbetaler = "Storebrand",
                     prosent = 50,
                     fom = LocalDate.of(2020, 10, 1),
-                    tom = LocalDate.of(2020, 10, 1)
-                )
+                    tom = LocalDate.of(2020, 10, 1),
+                ),
             ),
             fritekst = "Fritekst",
             vedlegg = listOf(
@@ -248,8 +251,8 @@ internal class SøknadDAOTest {
                     journalpostId = "journalpostId",
                     dokumentInfoId = "dokumentId",
                     filnavn = "filnavn",
-                )
-            )
+                ),
+            ),
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -300,7 +303,7 @@ internal class SøknadDAOTest {
 
         assertEquals(
             (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,
-            (hentet.tiltak as Tiltak.ArenaTiltak).sluttdato
+            (hentet.tiltak as Tiltak.ArenaTiltak).sluttdato,
         )
         assertEquals(søknad.trygdOgPensjon.first().fom, hentet.trygdOgPensjon.first().fom)
 

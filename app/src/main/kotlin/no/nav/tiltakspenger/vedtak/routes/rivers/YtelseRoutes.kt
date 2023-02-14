@@ -48,7 +48,7 @@ fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
 
 private fun mapYtelser(
     ytelseSakDTO: List<ArenaYtelseResponsDTO.SakDTO>,
-    tidsstempelHosOss: LocalDateTime
+    tidsstempelHosOss: LocalDateTime,
 ): List<YtelseSak> {
     return ytelseSakDTO.map { ytelse ->
         YtelseSak(

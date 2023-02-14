@@ -46,7 +46,6 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `skal telle antall innsendinger korrekt`() {
-
         var antallInnsendinger = innsendingRepository.antall()
 
         innsendingRepository.lagre(
@@ -84,7 +83,6 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `skal telle antall innsendinger hvor faktainnhenting har feilet korrekt`() {
-
         // Flyway legger inn 6, ingen har feilet.
         // Dette er mao en litt slapp test,
         // men sjekker iallefall om spørringen feiler eller ikke..
@@ -93,7 +91,6 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `skal telle antall innsendinger hvor behandlingen ikke er ferdig`() {
-
         // Flyway legger inn 6, alle er ferdig.
         // Dette er mao en litt slapp test,
         // men sjekker iallefall om spørringen feiler eller ikke..
@@ -262,8 +259,8 @@ internal class PostgresInnsendingRepositoryTest {
         }
     }
 
-    @Test
     // TODO: Gjør om til feilHendelsen som kommer fra PDL
+    @Test
     fun `skal hente journalpostId for innsendinger som har feilet`() {
         /*
         val journalpostId = Random().nextInt().toString()

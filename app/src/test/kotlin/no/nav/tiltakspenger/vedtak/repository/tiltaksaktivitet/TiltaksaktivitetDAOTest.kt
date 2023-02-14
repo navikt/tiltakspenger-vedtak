@@ -91,7 +91,7 @@ internal class TiltaksaktivitetDAOTest {
             bedriftsnummer = "bedriftsnummer",
             deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
                 LocalDate.now().minusDays(5),
-                LocalDate.now().minusDays(1)
+                LocalDate.now().minusDays(1),
             ),
             deltakelseProsent = 50.0F,
             deltakerStatus = Tiltaksaktivitet.DeltakerStatus.AKTUELL,

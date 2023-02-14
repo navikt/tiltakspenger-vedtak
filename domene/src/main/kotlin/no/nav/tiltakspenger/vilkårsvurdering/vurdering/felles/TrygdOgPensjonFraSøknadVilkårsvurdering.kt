@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
     private val søknad: Søknad,
-    private val vurderingsperiode: Periode
+    private val vurderingsperiode: Periode,
 ) : Vilkårsvurdering() {
 
     protected val søknadVurderinger: List<Vurdering> = lagVurderingerFraSøknad()
@@ -32,7 +32,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
                         tom = null,
                         utfall = Utfall.OPPFYLT,
                         detaljer = "Svart NEI i søknaden",
-                    )
+                    ),
                 )
             }
 

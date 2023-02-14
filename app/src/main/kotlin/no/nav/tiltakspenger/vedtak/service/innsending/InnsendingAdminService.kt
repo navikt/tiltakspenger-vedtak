@@ -47,6 +47,6 @@ class InnsendingAdminService(
     // @TODO Flytt denne, hører ikke hjemme her.
     data class AdminInnsendingerDAO(
         val feilet: Int,
-        val stoppet: Int
+        val stoppet: Int,
     )
 }

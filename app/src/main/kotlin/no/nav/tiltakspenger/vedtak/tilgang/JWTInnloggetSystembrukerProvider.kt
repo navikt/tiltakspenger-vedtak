@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.felles.Systembruker
 private val LOG = KotlinLogging.logger {}
 
 class JWTInnloggetSystembrukerProvider(
-    private val allAvailableRoles: List<Rolle> = listOf(Rolle.LAGE_HENDELSER)
+    private val allAvailableRoles: List<Rolle> = listOf(Rolle.LAGE_HENDELSER),
 ) : InnloggetSystembrukerProvider {
     override fun hentSystembruker(principal: JWTPrincipal): Systembruker {
         val azpName = requireNotNull(principal.getClaim("azp_name", String::class)) { "azp_name er null i token" }

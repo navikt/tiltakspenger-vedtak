@@ -13,7 +13,6 @@ internal class InnsendingTest {
 
     @Test
     fun `å motta samme søknad to ganger resulterer i Info i aktivitetsloggen og ingen behov`() {
-
         val innsending = innsendingMedSøknad()
         val søknad = innsending.søknad
         val sizeBefore = innsending.aktivitetslogg.aktiviteter().size
@@ -45,7 +44,6 @@ internal class InnsendingTest {
 
     @Test
     fun `Innsending should be dirty when changed`() {
-
         val innsending1 = innsendingRegistrert(journalpostId = "1")
         // Hendelsen medfører ingen endringer annet enn i aktivitetsloggen
         innsending1.håndter(nyPersonopplysningHendelse(journalpostId = "1"))

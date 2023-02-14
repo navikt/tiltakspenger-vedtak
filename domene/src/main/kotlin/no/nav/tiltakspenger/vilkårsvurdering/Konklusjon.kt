@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.domene.trekkFra
 import java.time.LocalDate
 
 fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
-
     fun Vurdering.periode() = Periode(this.fom ?: LocalDate.MIN, this.tom ?: LocalDate.MAX)
 
     val oppfylteVurderinger = this.filter { it.utfall == Utfall.OPPFYLT }
@@ -70,7 +69,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
             Konklusjon.IkkeOppfylt(
                 ikkeOppfyltPeriode to ikkeOppfyltVurderinger
                     .filter { it.periode().overlapperMed(ikkeOppfyltPeriode) }
-                    .toSet()
+                    .toSet(),
             )
         }
     return Konklusjon.DelvisOppfylt(oppfylte, ikkeOppfylte)

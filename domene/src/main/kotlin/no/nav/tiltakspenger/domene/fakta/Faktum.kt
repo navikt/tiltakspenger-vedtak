@@ -5,7 +5,7 @@ import java.time.LocalDate
 enum class FaktumKilde {
     BRUKER,
     SYSTEM,
-    SAKSBEHANDLER
+    SAKSBEHANDLER,
 }
 
 sealed class Faktum2<R>(val tilstand: Tilstand, private val verdi: R?) {
@@ -14,7 +14,7 @@ sealed class Faktum2<R>(val tilstand: Tilstand, private val verdi: R?) {
 
     enum class Tilstand {
         KJENT,
-        UKJENT
+        UKJENT,
     }
 }
 

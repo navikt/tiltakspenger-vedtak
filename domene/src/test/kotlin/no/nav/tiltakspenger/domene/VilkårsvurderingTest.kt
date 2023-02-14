@@ -18,7 +18,7 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering har utfall IKKE_VURDERT`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = ErOver18År,
-            vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+            vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now()),
         )
         assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
     }
@@ -27,7 +27,7 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering som mottar riktig fakta har utfall VURDERT_OG_OPPFYLT`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = ErOver18År,
-            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
+            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019)),
         )
         assertTrue(vilkårsvurdering.utfallsperioder.first().utfall == Utfall.IkkeVurdert)
 
@@ -40,7 +40,7 @@ class VilkårsvurderingTest {
     fun `en vilkårsvurdering om KVP hvor bruker sier hen går på det skal til manuell behandling`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = KVP,
-            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
+            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019)),
         )
         val vurderingMedUtfall =
             vilkårsvurdering.vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
@@ -51,7 +51,7 @@ class VilkårsvurderingTest {
     fun `en KVP vilkårsvurdering med fakta fra bruker og fakta fra saksbehandler skal avgjøres ved holmgang`() {
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = KVP,
-            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019))
+            vurderingsperiode = Periode(fra = 13.april(2019), til = 20.april(2019)),
         )
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(KVPFaktum(deltarKVP = true, kilde = FaktumKilde.BRUKER))
@@ -62,7 +62,6 @@ class VilkårsvurderingTest {
     // | Alt ok | fengsel | Alt Ok |
     @Test
     fun `en bruker bor på institusjon i deler av vurderingsperioden`() {
-
         //  |--fengsel--|--Ok--|
         val start = 1.mars(2022)
         val om1Uke = start.plusWeeks(1)
@@ -70,7 +69,7 @@ class VilkårsvurderingTest {
 
         val vilkårsvurdering = Vilkårsvurdering(
             vilkår = Institusjonsopphold,
-            vurderingsperiode = Periode(fra = start, til = om2Uker)
+            vurderingsperiode = Periode(fra = start, til = om2Uker),
         )
         val vurderingMedUtfall = vilkårsvurdering
             .vurder(
@@ -78,8 +77,8 @@ class VilkårsvurderingTest {
                     opphold = true,
                     kilde = FaktumKilde.BRUKER,
                     oppholdsperiode = listOf(Periode(fra = start, til = om1Uke)),
-                    friKostOgLosji = false
-                )
+                    friKostOgLosji = false,
+                ),
             )
 
         assertEquals(2, vurderingMedUtfall.utfallsperioder.size)

@@ -16,7 +16,7 @@ class YtelsesakDAO(
         return txSession.run(
             queryOf(hentYtelsesak, innsendingId.toString())
                 .map { row -> row.toYtelsesak(txSession) }
-                .asList
+                .asList,
         )
     }
 
@@ -45,8 +45,8 @@ class YtelsesakDAO(
                     "antallDagerIgjen" to ytelseSak.antallDagerIgjen,
                     "antallUkerIgjen" to ytelseSak.antallUkerIgjen,
                     "tidsstempelHosOss" to ytelseSak.tidsstempelHosOss,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
         ytelsevedtakDAO.lagre(id, ytelseSak.vedtak, txSession)
     }
@@ -68,7 +68,7 @@ class YtelsesakDAO(
             ytelsestype = stringOrNull("ytelsestype")?.let { YtelseSak.YtelseSakYtelsetype.valueOf(it) },
             antallDagerIgjen = intOrNull("antall_dager_igjen"),
             antallUkerIgjen = intOrNull("antall_uker_igjen"),
-            tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
+            tidsstempelHosOss = localDateTime("tidsstempel_hos_oss"),
         )
     }
 

@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 class InstitusjonsoppholdVilkårsvurdering(
     private val søknad: Søknad,
     // private val institusjonsopphold: List<Institusjonsopphold>?,
-    private val vurderingsperiode: Periode
+    private val vurderingsperiode: Periode,
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
 
@@ -41,12 +41,15 @@ class InstitusjonsoppholdVilkårsvurdering(
     )
 
     private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: TypeInstitusjon?): String =
-        if (oppholdInstitusjon == null || oppholdInstitusjon == false) "Svart NEI i søknaden"
-        else when (typeInstitusjon) {
-            TypeInstitusjon.OVERGANGSBOLIG -> "Opphold på overgangsbolig"
-            TypeInstitusjon.BARNEVERN -> "Opphold på barneverninstitusjon"
-            TypeInstitusjon.ANNET -> "Opphold på annen type institusjon"
-            else -> "Opphold på ukjent institusjon"
+        if (oppholdInstitusjon == null || oppholdInstitusjon == false) {
+            "Svart NEI i søknaden"
+        } else {
+            when (typeInstitusjon) {
+                TypeInstitusjon.OVERGANGSBOLIG -> "Opphold på overgangsbolig"
+                TypeInstitusjon.BARNEVERN -> "Opphold på barneverninstitusjon"
+                TypeInstitusjon.ANNET -> "Opphold på annen type institusjon"
+                else -> "Opphold på ukjent institusjon"
+            }
         }
 
     // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:

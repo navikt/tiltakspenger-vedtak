@@ -16,13 +16,13 @@ internal class TiltakDAO {
 
     private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.ArenaTiltak? {
         return txSession.run(
-            queryOf(hentArenaTiltak, søknadId.toString()).map { row -> row.toArenatiltak() }.asSingle
+            queryOf(hentArenaTiltak, søknadId.toString()).map { row -> row.toArenatiltak() }.asSingle,
         )
     }
 
     private fun hentBrukerTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.BrukerregistrertTiltak? {
         return txSession.run(
-            queryOf(hentBrukerregistrertTiltak, søknadId.toString()).map { row -> row.toBrukertiltak() }.asSingle
+            queryOf(hentBrukerregistrertTiltak, søknadId.toString()).map { row -> row.toBrukertiltak() }.asSingle,
         )
     }
 
@@ -40,7 +40,7 @@ internal class TiltakDAO {
     private fun lagreArenatiltak(
         søknadId: SøknadId,
         arenaTiltak: Tiltak.ArenaTiltak?,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         if (arenaTiltak != null) {
             txSession.run(
@@ -58,8 +58,8 @@ internal class TiltakDAO {
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
                         "startdato" to arenaTiltak.startdato,
                         "sluttdato" to arenaTiltak.sluttdato,
-                    )
-                ).asUpdate
+                    ),
+                ).asUpdate,
             )
         }
     }
@@ -67,7 +67,7 @@ internal class TiltakDAO {
     private fun lagreBrukertiltak(
         søknadId: SøknadId,
         brukerregistrertTiltak: Tiltak.BrukerregistrertTiltak?,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         if (brukerregistrertTiltak != null) {
             txSession.run(
@@ -84,8 +84,8 @@ internal class TiltakDAO {
                         "adresse" to brukerregistrertTiltak.adresse,
                         "postnummer" to brukerregistrertTiltak.postnummer,
                         "antallDager" to brukerregistrertTiltak.antallDager,
-                    )
-                ).asUpdate
+                    ),
+                ).asUpdate,
             )
         }
     }
@@ -117,7 +117,7 @@ internal class TiltakDAO {
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
             sluttdato = sluttdato,
-            startdato = startdato
+            startdato = startdato,
         )
     }
 

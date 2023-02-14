@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class FødselsdatoFaktum(
     override val kilde: FaktumKilde,
-    val fødselsdato: LocalDate
+    val fødselsdato: LocalDate,
 ) : Faktum {
     fun erOver18() = true
     fun erUnder16() = false

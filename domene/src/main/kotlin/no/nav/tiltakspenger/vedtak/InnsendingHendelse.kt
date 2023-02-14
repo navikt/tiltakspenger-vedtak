@@ -7,7 +7,7 @@ interface IInnsendingHendelse : KontekstLogable, IAktivitetslogg {
 }
 
 abstract class InnsendingHendelse protected constructor(
-    override val aktivitetslogg: Aktivitetslogg = Aktivitetslogg()
+    override val aktivitetslogg: Aktivitetslogg = Aktivitetslogg(),
 ) : IAktivitetslogg by aktivitetslogg, IInnsendingHendelse {
 
     init {

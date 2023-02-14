@@ -14,8 +14,8 @@ abstract class IkkeImplementertVurdering : Vilkårsvurdering() {
                     fom = null,
                     tom = null,
                     utfall = Utfall.IKKE_IMPLEMENTERT,
-                    detaljer = ""
-                )
+                    detaljer = "",
+                ),
             )
         }
 

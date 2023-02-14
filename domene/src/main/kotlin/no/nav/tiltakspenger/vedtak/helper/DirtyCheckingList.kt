@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class DirtyCheckingList<E>(
     private val wrappedList: MutableList<E>,
-    private val isDirty: AtomicBoolean
+    private val isDirty: AtomicBoolean,
 ) : MutableList<E> by wrappedList {
 
     override fun clear() {

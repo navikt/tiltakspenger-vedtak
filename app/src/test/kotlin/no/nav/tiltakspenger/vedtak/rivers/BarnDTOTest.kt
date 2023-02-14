@@ -20,12 +20,14 @@ internal class BarnDTOTest {
             Arguments.of(LocalDate.now().minusYears(5), true),
             Arguments.of(LocalDate.now().minusYears(ALDER_BARNETILLEGG), true),
             Arguments.of(
-                LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR).plusDays(1), true
+                LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR).plusDays(1),
+                true,
             ),
             Arguments.of(LocalDate.now().minusYears(20), false),
             Arguments.of(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR), false),
             Arguments.of(
-                LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR).minusDays(1), false
+                LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR).minusDays(1),
+                false,
             ),
         )
     }
@@ -39,7 +41,7 @@ internal class BarnDTOTest {
             mellomnavn = null,
             etternavn = "",
             fødselsdato = LocalDate.now(),
-            adressebeskyttelseGradering = AdressebeskyttelseGradering.UGRADERT
+            adressebeskyttelseGradering = AdressebeskyttelseGradering.UGRADERT,
         )
 
         assertEquals(expectedResult, barn.copy(fødselsdato = fødselsdato).kanGiRettPåBarnetillegg())

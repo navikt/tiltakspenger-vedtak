@@ -21,14 +21,14 @@ internal class VedleggDAO {
         return txSession.run(
             queryOf(hentVedlegg, søknadId.toString())
                 .map { row -> row.toVedlegg() }
-                .asList
+                .asList,
         )
     }
 
     private fun lagreVedlegg(
         søknadId: SøknadId,
         vedlegg: Vedlegg,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         txSession.run(
             queryOf(
@@ -39,14 +39,14 @@ internal class VedleggDAO {
                     "journalpostId" to vedlegg.journalpostId,
                     "dokumentInfoId" to vedlegg.dokumentInfoId,
                     "filnavn" to vedlegg.filnavn,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 
     private fun slett(søknadId: SøknadId, txSession: TransactionalSession) {
         txSession.run(
-            queryOf(slettVedlegg, søknadId.toString()).asUpdate
+            queryOf(slettVedlegg, søknadId.toString()).asUpdate,
         )
     }
 

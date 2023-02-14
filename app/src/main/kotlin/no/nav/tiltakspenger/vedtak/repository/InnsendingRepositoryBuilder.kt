@@ -12,8 +12,8 @@ object InnsendingRepositoryBuilder {
             søknadDAO = SøknadDAO(
                 barnetilleggDAO = BarnetilleggDAO(),
                 tiltakDAO = TiltakDAO(),
-                trygdOgPensjonDAO = TrygdOgPensjonDAO()
-            )
+                trygdOgPensjonDAO = TrygdOgPensjonDAO(),
+            ),
         )
     }
 }
