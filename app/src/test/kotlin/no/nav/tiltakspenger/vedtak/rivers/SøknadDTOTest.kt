@@ -34,14 +34,14 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -52,7 +52,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
@@ -63,10 +63,10 @@ internal class SøknadDTOTest {
                 tom = LocalDate.now(),
                 adresse = null,
                 postnummer = null,
-                antallDager = 0
+                antallDager = 0,
             ),
             trygdOgPensjon = listOf(
-                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
+                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom),
             ),
             fritekst = "hei",
             vedlegg = listOf(
@@ -74,8 +74,8 @@ internal class SøknadDTOTest {
                     journalpostId = "journalpostId",
                     dokumentInfoId = "dokumentInfoId",
                     filnavn = "filnavn",
-                )
-            )
+                ),
+            ),
         )
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -113,14 +113,14 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -131,7 +131,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
@@ -142,10 +142,10 @@ internal class SøknadDTOTest {
                 tom = LocalDate.now(),
                 adresse = null,
                 postnummer = null,
-                antallDager = 0
+                antallDager = 0,
             ),
             trygdOgPensjon = listOf(
-                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom)
+                TrygdOgPensjonDTO(utbetaler = "", prosent = null, fom = fom, tom = tom),
             ),
             fritekst = "hei",
             vedlegg = emptyList(),
@@ -172,14 +172,14 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -190,7 +190,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = null,
@@ -235,7 +235,7 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -250,7 +250,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = null,
@@ -267,7 +267,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.arenaTiltak!!.arrangoer, (søknad.tiltak as Tiltak.ArenaTiltak).arrangoernavn)
         assertEquals(
             søknadDTO.arenaTiltak!!.harSluttdatoFraArena,
-            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena
+            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena,
         )
         assertEquals(søknadDTO.arenaTiltak!!.erIEndreStatus, (søknad.tiltak as Tiltak.ArenaTiltak).erIEndreStatus)
         assertEquals(Tiltaksaktivitet.Tiltak.JOBBK, (søknad.tiltak as Tiltak.ArenaTiltak).tiltakskode)
@@ -275,11 +275,11 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.arenaTiltak!!.sluttdato, (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato)
         assertEquals(
             søknadDTO.arenaTiltak!!.opprinneligStartdato,
-            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligStartdato
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligStartdato,
         )
         assertEquals(
             søknadDTO.arenaTiltak!!.opprinneligSluttdato,
-            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligSluttdato
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligSluttdato,
         )
     }
 
@@ -297,7 +297,7 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -312,7 +312,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = null,
@@ -329,7 +329,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.arenaTiltak!!.arrangoer, (søknad.tiltak as Tiltak.ArenaTiltak).arrangoernavn)
         assertEquals(
             søknadDTO.arenaTiltak!!.harSluttdatoFraArena,
-            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena
+            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena,
         )
         assertEquals(søknadDTO.arenaTiltak!!.erIEndreStatus, (søknad.tiltak as Tiltak.ArenaTiltak).erIEndreStatus)
         assertEquals(Tiltaksaktivitet.Tiltak.AMO, (søknad.tiltak as Tiltak.ArenaTiltak).tiltakskode)
@@ -337,11 +337,11 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.arenaTiltak!!.sluttdato, (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato)
         assertEquals(
             søknadDTO.arenaTiltak!!.opprinneligStartdato,
-            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligStartdato
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligStartdato,
         )
         assertEquals(
             søknadDTO.arenaTiltak!!.opprinneligSluttdato,
-            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligSluttdato
+            (søknad.tiltak as Tiltak.ArenaTiltak).opprinneligSluttdato,
         )
     }
 
@@ -359,7 +359,7 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -374,7 +374,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.now(),
                 adresse = "Tiltaksveien",
                 postnummer = "0489",
-                antallDager = 4
+                antallDager = 4,
             ),
             trygdOgPensjon = listOf(),
             fritekst = "hei",
@@ -387,26 +387,26 @@ internal class SøknadDTOTest {
         assertTrue(søknad.tiltak is Tiltak.BrukerregistrertTiltak)
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.adresse,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).adresse
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).adresse,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.arrangoernavn,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn,
         )
         assertEquals(Tiltaksaktivitet.Tiltak.JOBBK, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).tiltakskode)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.fom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).startdato)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.tom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).sluttdato)
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.beskrivelse,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.postnummer,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).postnummer
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).postnummer,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.antallDager,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager,
         )
     }
 
@@ -424,7 +424,7 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -439,7 +439,7 @@ internal class SøknadDTOTest {
                 tom = LocalDate.now(),
                 adresse = "Tiltaksveien",
                 postnummer = "0489",
-                antallDager = 4
+                antallDager = 4,
             ),
             trygdOgPensjon = listOf(),
             fritekst = "hei",
@@ -452,26 +452,26 @@ internal class SøknadDTOTest {
         assertTrue(søknad.tiltak is Tiltak.BrukerregistrertTiltak)
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.adresse,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).adresse
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).adresse,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.arrangoernavn,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).arrangoernavn,
         )
         assertEquals(Tiltaksaktivitet.Tiltak.GRUPPEAMO, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).tiltakskode)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.fom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).startdato)
         assertEquals(søknadDTO.brukerregistrertTiltak!!.tom, (søknad.tiltak as Tiltak.BrukerregistrertTiltak).sluttdato)
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.beskrivelse,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.postnummer,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).postnummer
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).postnummer,
         )
         assertEquals(
             søknadDTO.brukerregistrertTiltak!!.antallDager,
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager,
         )
     }
 
@@ -491,14 +491,14 @@ internal class SøknadDTOTest {
             deltarIntroduksjonsprogrammet = true,
             introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
                 fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10)
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
                 BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE")
+                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -509,7 +509,7 @@ internal class SøknadDTOTest {
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
-                startdato = LocalDate.now()
+                startdato = LocalDate.now(),
 
             ),
             brukerregistrertTiltak = null,

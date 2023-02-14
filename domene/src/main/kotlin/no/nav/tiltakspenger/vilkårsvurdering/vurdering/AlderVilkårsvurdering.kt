@@ -11,15 +11,15 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
 
     fun splittVurderingsperiodePåDato(
         vurderingsperiode: Periode,
-        datoBrukerFyller18År: LocalDate
+        datoBrukerFyller18År: LocalDate,
     ): Pair<Periode, Periode> {
         val periodeFørBrukerFyller18År = Periode(
             fra = vurderingsperiode.fra,
-            til = datoBrukerFyller18År.minusDays(1)
+            til = datoBrukerFyller18År.minusDays(1),
         )
         val periodeEtterBrukerFyller18År = Periode(
             fra = datoBrukerFyller18År,
-            til = vurderingsperiode.til
+            til = vurderingsperiode.til,
         )
         return Pair(periodeFørBrukerFyller18År, periodeEtterBrukerFyller18År)
     }
@@ -36,8 +36,8 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             return listOf(
                 lagOppfyltVurdering(
                     fra = vurderingsperiode.fra,
-                    til = vurderingsperiode.til
-                )
+                    til = vurderingsperiode.til,
+                ),
             )
         }
         if (brukerFyller18ÅrEtterVurderingsperioden(vurderingsperiode, datoBrukerFyller18År)) {
@@ -45,20 +45,20 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
                 lagIkkeOppfyltVurdering(
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til,
-                    null
-                )
+                    null,
+                ),
             )
         }
         val (periodeUnder18År, periodeFylt18År) = splittVurderingsperiodePåDato(
             vurderingsperiode = vurderingsperiode,
-            datoBrukerFyller18År = datoBrukerFyller18År
+            datoBrukerFyller18År = datoBrukerFyller18År,
         )
         return listOf(
             lagIkkeOppfyltVurdering(
                 fra = periodeUnder18År.fra,
                 til = periodeUnder18År.til,
-                detaljer = "Bruker fyller 18 år i søknadsperioden"
-            )
+                detaljer = "Bruker fyller 18 år i søknadsperioden",
+            ),
         )
     }
 
@@ -69,7 +69,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             fom = fra,
             tom = til,
             utfall = Utfall.OPPFYLT,
-            detaljer = "-"
+            detaljer = "-",
         )
 
     fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
@@ -84,7 +84,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
 
     val alderVurderinger: List<Vurdering> = lagAlderVurderinger(
         vurderingsperiode = vurderingsperiode,
-        søkersFødselsdato = søkersFødselsdato
+        søkersFødselsdato = søkersFødselsdato,
     )
 
     override fun vurderinger(): List<Vurdering> {

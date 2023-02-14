@@ -21,7 +21,7 @@ internal class BarnetilleggDAO {
         return txSession.run(
             queryOf(hentBarnetillegg, søknadId.toString())
                 .map { row -> row.toBarnetillegg() }
-                .asList
+                .asList,
         )
     }
 
@@ -54,13 +54,13 @@ internal class BarnetilleggDAO {
             )
         }
         txSession.run(
-            queryOf(lagreBarnetillegg, paramMap).asUpdate
+            queryOf(lagreBarnetillegg, paramMap).asUpdate,
         )
     }
 
     private fun slettBarnetillegg(søknadId: SøknadId, txSession: TransactionalSession) {
         txSession.run(
-            queryOf(slettBarnetillegg, søknadId.toString()).asUpdate
+            queryOf(slettBarnetillegg, søknadId.toString()).asUpdate,
         )
     }
 

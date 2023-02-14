@@ -39,7 +39,7 @@ data class YtelseSak(
             K("Kontroll"), // Står ikke listet opp i dokumentasjonen..
             M("Omgjør reaksjon"), // Står ikke listet opp i dokumentasjonen..
             R("Revurdering"), // Står ikke listet opp i dokumentasjonen..
-            T("Tidsbegrenset bortfall"); // Gjelder ikke tiltakspenger
+            T("Tidsbegrenset bortfall"), // Gjelder ikke tiltakspenger
         }
 
         enum class YtelseVedtakVedtakstype(val navn: String, val ytelseSakYtelsetype: YtelseSakYtelsetype) {
@@ -119,7 +119,7 @@ data class YtelseSak(
             UFOREYT("Uføreytelser", YtelseSakYtelsetype.ANNET),
             UNDM("Bøker og undervisningsmatr.", YtelseSakYtelsetype.ANNET),
             UTESTENG("Utestengning", YtelseSakYtelsetype.ANNET),
-            VENT("Ventestønad", YtelseSakYtelsetype.ANNET)
+            VENT("Ventestønad", YtelseSakYtelsetype.ANNET),
         }
 
         enum class YtelseVedtakStatus(val navn: String) {
@@ -129,20 +129,20 @@ data class YtelseSak(
             IVERK("Iverksatt"),
             MOTAT("Mottatt"),
             OPPRE("Opprettet"),
-            REGIS("Registrert")
+            REGIS("Registrert"),
         }
     }
 
     enum class YtelseSakStatus(val navn: String) {
         AKTIV("Aktiv"),
         AVSLU("Lukket"),
-        INAKT("Inaktiv")
+        INAKT("Inaktiv"),
     }
 
     enum class YtelseSakYtelsetype(val navn: String) {
         AA("Arbeidsavklaringspenger"),
         DAGP("Dagpenger"),
         INDIV("Individstønad"),
-        ANNET("Alt annet")
+        ANNET("Alt annet"),
     }
 }

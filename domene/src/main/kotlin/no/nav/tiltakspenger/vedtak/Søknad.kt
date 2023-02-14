@@ -25,7 +25,7 @@ data class Søknad(
     val tiltak: Tiltak?,
     val trygdOgPensjon: List<TrygdOgPensjon>,
     val fritekst: String?,
-    val vedlegg: List<Vedlegg>
+    val vedlegg: List<Vedlegg>,
 ) : Tidsstempler {
 
     companion object {
@@ -45,14 +45,14 @@ data class Vedlegg(
 
 data class IntroduksjonsprogrammetDetaljer(
     val fom: LocalDate,
-    val tom: LocalDate?
+    val tom: LocalDate?,
 )
 
 data class TrygdOgPensjon(
     val utbetaler: String,
     val prosent: Int? = null,
     val fom: LocalDate? = null,
-    val tom: LocalDate? = null
+    val tom: LocalDate? = null,
 )
 
 sealed class Tiltak {
@@ -71,7 +71,7 @@ sealed class Tiltak {
         val opprinneligSluttdato: LocalDate? = null,
         val opprinneligStartdato: LocalDate,
         override val sluttdato: LocalDate? = null,
-        override val startdato: LocalDate
+        override val startdato: LocalDate,
     ) : Tiltak()
 
     data class BrukerregistrertTiltak(
@@ -82,7 +82,7 @@ sealed class Tiltak {
         override val sluttdato: LocalDate,
         val adresse: String? = null,
         val postnummer: String? = null,
-        val antallDager: Int
+        val antallDager: Int,
     ) : Tiltak()
 }
 

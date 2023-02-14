@@ -60,7 +60,6 @@ class InngangsvilkårsvurderingerTest {
 
     @Test
     fun `en vilkårsvurdering med dagpenger skal gi ikke oppfylt og riktig periode`() {
-
         val vurderingsperiode = Periode(1.februar(2022), 28.februar(2022))
 
         val vilkårsvurderinger = nyVilkårsvurdering(

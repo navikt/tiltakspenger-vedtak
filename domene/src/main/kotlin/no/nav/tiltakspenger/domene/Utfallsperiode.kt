@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.domene
 
 data class Utfallsperiode(
     val utfall: Utfall,
-    val periode: Periode
+    val periode: Periode,
 )
 
 enum class Utfall {

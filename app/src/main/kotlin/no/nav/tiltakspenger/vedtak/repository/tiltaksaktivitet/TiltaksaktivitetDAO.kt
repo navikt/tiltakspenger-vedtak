@@ -14,7 +14,7 @@ class TiltaksaktivitetDAO {
         return txSession.run(
             queryOf(hentTiltaksaktivitet, innsendingId.toString())
                 .map { row -> row.toTiltaksaktivitet() }
-                .asList
+                .asList,
         )
     }
 
@@ -28,7 +28,7 @@ class TiltaksaktivitetDAO {
     private fun lagreTiltak(
         innsendingId: InnsendingId,
         tiltaksaktivitet: Tiltaksaktivitet,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         txSession.run(
             queryOf(
@@ -48,9 +48,9 @@ class TiltaksaktivitetDAO {
                     "statusSistEndret" to tiltaksaktivitet.statusSistEndret,
                     "begrunnelseInnsoking" to tiltaksaktivitet.begrunnelseInnsøking,
                     "antallDagerPerUke" to tiltaksaktivitet.antallDagerPerUke,
-                    "tidsstempelHosOss" to tiltaksaktivitet.tidsstempelHosOss
-                )
-            ).asUpdate
+                    "tidsstempelHosOss" to tiltaksaktivitet.tidsstempelHosOss,
+                ),
+            ).asUpdate,
         )
     }
 
@@ -67,7 +67,7 @@ class TiltaksaktivitetDAO {
             bedriftsnummer = stringOrNull("bedriftsnummer"),
             deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
                 fom = localDateOrNull("deltakelse_periode_fom"),
-                tom = localDateOrNull("deltakelse_periode_tom")
+                tom = localDateOrNull("deltakelse_periode_tom"),
             ),
             deltakelseProsent = floatOrNull("deltakelse_prosent"),
             deltakerStatus = string("deltaker_status").let { Tiltaksaktivitet.DeltakerStatus.valueOf(it) },

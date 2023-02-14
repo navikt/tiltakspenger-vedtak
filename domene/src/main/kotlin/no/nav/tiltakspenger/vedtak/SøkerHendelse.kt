@@ -7,7 +7,7 @@ interface ISøkerHendelse : KontekstLogable, IAktivitetslogg {
 }
 
 abstract class SøkerHendelse protected constructor(
-    override val aktivitetslogg: Aktivitetslogg = Aktivitetslogg()
+    override val aktivitetslogg: Aktivitetslogg = Aktivitetslogg(),
 ) : IAktivitetslogg by aktivitetslogg, ISøkerHendelse {
 
     init {

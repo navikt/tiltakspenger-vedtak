@@ -20,7 +20,7 @@ internal class KonklusjonTest {
             Vilkår.OMSORGSPENGER,
             Vilkår.SYKEPENGER,
             Vilkår.KVP,
-            Vilkår.INTROPROGRAMMET
+            Vilkår.INTROPROGRAMMET,
         )
 
         vilkår
@@ -39,7 +39,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 1),
             LocalDate.of(2022, 1, 7),
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         val lønnsinntektVurdering = Vurdering(
             Vilkår.LØNNSINNTEKT,
@@ -47,7 +47,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 5),
             LocalDate.of(2022, 1, 10),
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         val sykepengerVurdering = Vurdering(
             Vilkår.SYKEPENGER,
@@ -55,7 +55,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 9),
             LocalDate.of(2022, 1, 15),
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         vilkår
             .map { it.toOppfyltVurdering() }
@@ -69,18 +69,20 @@ internal class KonklusjonTest {
                         Konklusjon.Oppfylt(
                             Periode(
                                 LocalDate.of(2022, 1, 16),
-                                LocalDate.of(2022, 1, 30)
-                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet()
-                        )
+                                LocalDate.of(2022, 1, 30),
+                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet(),
+                        ),
                     ),
                     listOf(
                         Konklusjon.IkkeOppfylt(
                             Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 15)) to setOf(
-                                gjenlevendepensjonVurdering, lønnsinntektVurdering, sykepengerVurdering
-                            )
-                        )
-                    )
-                )
+                                gjenlevendepensjonVurdering,
+                                lønnsinntektVurdering,
+                                sykepengerVurdering,
+                            ),
+                        ),
+                    ),
+                ),
             )
     }
 
@@ -95,7 +97,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 1),
             LocalDate.of(2022, 1, 7),
             Utfall.KREVER_MANUELL_VURDERING,
-            ""
+            "",
         )
         val lønnsinntektVurdering = Vurdering(
             Vilkår.LØNNSINNTEKT,
@@ -103,7 +105,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 5),
             LocalDate.of(2022, 1, 9),
             Utfall.KREVER_MANUELL_VURDERING,
-            ""
+            "",
         )
         val sykepengerVurdering = Vurdering(
             Vilkår.SYKEPENGER,
@@ -111,7 +113,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 12),
             LocalDate.of(2022, 1, 15),
             Utfall.KREVER_MANUELL_VURDERING,
-            ""
+            "",
         )
         vilkår
             .map { it.toOppfyltVurdering() }
@@ -124,14 +126,15 @@ internal class KonklusjonTest {
                     mapOf(
 
                         Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 9)) to setOf(
-                            gjenlevendeVurdering, lønnsinntektVurdering
+                            gjenlevendeVurdering,
+                            lønnsinntektVurdering,
                         ),
                         Periode(LocalDate.of(2022, 1, 12), LocalDate.of(2022, 1, 15)) to setOf(
-                            sykepengerVurdering
-                        )
+                            sykepengerVurdering,
+                        ),
 
-                    )
-                )
+                    ),
+                ),
             )
     }
 
@@ -146,7 +149,7 @@ internal class KonklusjonTest {
             Vilkår.OMSORGSPENGER,
             Vilkår.SYKEPENGER,
             Vilkår.KVP,
-            Vilkår.INTROPROGRAMMET
+            Vilkår.INTROPROGRAMMET,
         )
 
         val gjenlevendeVurdering = Vurdering(
@@ -155,7 +158,7 @@ internal class KonklusjonTest {
             vurderingsperiode.fra,
             vurderingsperiode.til,
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         vilkår
             .map { it.toOppfyltVurdering() }
@@ -175,7 +178,7 @@ internal class KonklusjonTest {
             Vilkår.OMSORGSPENGER,
             Vilkår.SYKEPENGER,
             Vilkår.KVP,
-            Vilkår.INTROPROGRAMMET
+            Vilkår.INTROPROGRAMMET,
         )
 
         val gjenlevendeVurdering1 = Vurdering(
@@ -184,7 +187,7 @@ internal class KonklusjonTest {
             vurderingsperiode.fra,
             LocalDate.of(2022, 1, 10),
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         val gjenlevendeVurdering2 = Vurdering(
             Vilkår.GJENLEVENDEPENSJON,
@@ -192,7 +195,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 11),
             vurderingsperiode.til,
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         vilkår
             .map { it.toOppfyltVurdering() }
@@ -213,7 +216,7 @@ internal class KonklusjonTest {
             Vilkår.OMSORGSPENGER,
             Vilkår.SYKEPENGER,
             Vilkår.KVP,
-            Vilkår.INTROPROGRAMMET
+            Vilkår.INTROPROGRAMMET,
         )
 
         val gjenlevendeVurdering = Vurdering(
@@ -222,7 +225,7 @@ internal class KonklusjonTest {
             LocalDate.of(2022, 1, 11),
             vurderingsperiode.til,
             Utfall.IKKE_OPPFYLT,
-            ""
+            "",
         )
         vilkår
             .map { Vurdering(it, "", null, null, Utfall.OPPFYLT, "") }
@@ -234,19 +237,19 @@ internal class KonklusjonTest {
                         Konklusjon.Oppfylt(
                             Periode(
                                 vurderingsperiode.fra,
-                                LocalDate.of(2022, 1, 10)
-                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet()
-                        )
+                                LocalDate.of(2022, 1, 10),
+                            ) to vilkår.map { it.toOppfyltVurdering() }.toSet(),
+                        ),
                     ),
                     listOf(
                         Konklusjon.IkkeOppfylt(
                             Periode(
                                 LocalDate.of(2022, 1, 11),
-                                vurderingsperiode.til
-                            ) to setOf(gjenlevendeVurdering)
-                        )
-                    )
-                )
+                                vurderingsperiode.til,
+                            ) to setOf(gjenlevendeVurdering),
+                        ),
+                    ),
+                ),
             )
     }
 }

@@ -13,7 +13,7 @@ class Førstegangsbehandling private constructor(
     var søknad: Søknad?,
 //    val vilkårsvurderinger: List<Vilkårsvurdering>,
     val vilkårsvurderinger: Vilkårsvurderinger,
-    var tilstand: Tilstand
+    var tilstand: Tilstand,
 ) : Saksbehandling {
 
     constructor(ident: String) : this(
@@ -22,13 +22,13 @@ class Førstegangsbehandling private constructor(
             vilkårsvurderinger = listOf(
                 Vilkårsvurdering(
                     vilkår = ErOver18År,
-                    vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now())
+                    vurderingsperiode = Periode(fra = LocalDate.now(), til = LocalDate.now()),
                 ),
             ),
         ),
         søknad = null,
         tilstand = Tilstand.Start,
-        ident = ident
+        ident = ident,
     )
 
     override fun behandle(søknad: Søknad) {
@@ -62,7 +62,7 @@ class Førstegangsbehandling private constructor(
             HENTER_OPPLYSNINGER,
             VILKÅRSVURDERING,
             TIL_MANUELL_BEHANDLING,
-            FERDIG
+            FERDIG,
         }
 
         object Start : Tilstand() {

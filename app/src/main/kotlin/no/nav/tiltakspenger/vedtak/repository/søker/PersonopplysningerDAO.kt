@@ -21,14 +21,14 @@ class PersonopplysningerDAO() {
         return txSession.run(
             queryOf(hentSql, søkerId.toString())
                 .map { row -> row.toPersonopplysninger() }
-                .asSingle
+                .asSingle,
         )
     }
 
     fun lagre(
         søkerId: SøkerId,
         personopplysninger: Personopplysninger.Søker?,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         log.debug { "Sletter personopplysninger før lagring" }
         slett(søkerId, txSession)
@@ -43,7 +43,7 @@ class PersonopplysningerDAO() {
     private fun lagrePersonopplysninger(
         søkerId: SøkerId,
         personopplysninger: Personopplysninger.Søker,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         securelog.debug { "Lagre personopplysninger for søker $personopplysninger" }
         txSession.run(
@@ -63,9 +63,9 @@ class PersonopplysningerDAO() {
                     "skjermet" to personopplysninger.skjermet,
                     "kommune" to personopplysninger.kommune,
                     "bydel" to personopplysninger.bydel,
-                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
-                )
-            ).asUpdate
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss,
+                ),
+            ).asUpdate,
         )
     }
 
@@ -85,7 +85,7 @@ class PersonopplysningerDAO() {
             skjermet = booleanOrNull("skjermet"),
             kommune = stringOrNull("kommune"),
             bydel = stringOrNull("bydel"),
-            tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
+            tidsstempelHosOss = localDateTime("tidsstempel_hos_oss"),
         )
     }
 

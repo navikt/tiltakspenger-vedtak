@@ -114,9 +114,13 @@ class AktivitetsloggDAO {
                             "label" to aktivitet.label,
                             "melding" to aktivitet.melding,
                             "tidsstempel" to aktivitet.tidsstempel,
-                            "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) objectMapper.writeValueAsString(
-                                aktivitet.detaljer,
-                            ) else null,
+                            "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) {
+                                objectMapper.writeValueAsString(
+                                    aktivitet.detaljer,
+                                )
+                            } else {
+                                null
+                            },
                             "kontekster" to aktivitet.kontekster.serialize(),
                         ),
                     ).asUpdate,

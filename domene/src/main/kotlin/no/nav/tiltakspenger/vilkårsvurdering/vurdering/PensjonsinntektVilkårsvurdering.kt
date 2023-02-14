@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.TrygdOgPensjonFra
 
 class PensjonsinntektVilkårsvurdering(
     private val søknad: Søknad,
-    private val vurderingsperiode: Periode
+    private val vurderingsperiode: Periode,
 ) : TrygdOgPensjonFraSøknadVilkårsvurdering(søknad, vurderingsperiode) {
     override fun vilkår(): Vilkår = Vilkår.PENSJONSINNTEKT
 

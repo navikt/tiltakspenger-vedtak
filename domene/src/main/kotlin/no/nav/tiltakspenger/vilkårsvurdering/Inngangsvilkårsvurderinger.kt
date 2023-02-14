@@ -15,7 +15,7 @@ class Inngangsvilkårsvurderinger(
     val pensjonsordninger: PensjonsinntektVilkårsvurderingKategori,
     val lønnsinntekt: LønnsinntektVilkårsvurderingKategori,
     val institusjonopphold: InstitusjonVilkårsvurderingKategori,
-    val alder: AlderVilkårsvurderingKategori
+    val alder: AlderVilkårsvurderingKategori,
 ) {
     fun samletUtfall(): Utfall {
         val utfall =
@@ -26,7 +26,7 @@ class Inngangsvilkårsvurderinger(
                 pensjonsordninger.samletUtfall(),
                 lønnsinntekt.samletUtfall(),
                 institusjonopphold.samletUtfall(),
-                alder.samletUtfall()
+                alder.samletUtfall(),
             )
         return when {
             utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
@@ -43,7 +43,7 @@ class Inngangsvilkårsvurderinger(
             pensjonsordninger.vurderinger(),
             lønnsinntekt.vurderinger(),
             institusjonopphold.vurderinger(),
-            alder.vurderinger()
+            alder.vurderinger(),
         ).flatten()
 }
 

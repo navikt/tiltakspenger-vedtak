@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 abstract class StatligArenaYtelseVilkårsvurdering(
     val ytelser: List<YtelseSak>,
-    val vurderingsperiode: Periode
+    val vurderingsperiode: Periode,
 ) : Vilkårsvurdering() {
     val ytelseVurderinger: List<Vurdering> = lagYtelseVurderinger(ytelser, vurderingsperiode, ytelseType())
 
@@ -30,12 +30,12 @@ abstract class StatligArenaYtelseVilkårsvurdering(
     fun lagYtelseVurderinger(
         ytelser: List<YtelseSak>,
         vurderingsperiode: Periode,
-        type: YtelseSak.YtelseSakYtelsetype
+        type: YtelseSak.YtelseSakYtelsetype,
     ): List<Vurdering> = ytelser
         .filter {
             Periode(
                 it.fomGyldighetsperiode.toLocalDate(),
-                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
+                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX),
             ).overlapperMed(vurderingsperiode)
         }
         // .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
@@ -58,7 +58,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
                     tom = null,
                     utfall = Utfall.OPPFYLT,
                     detaljer = "",
-                )
+                ),
             )
         }
 
@@ -70,5 +70,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
                 sak.antallUkerIgjen == null && sak.antallDagerIgjen != null -> "${sak.antallDagerIgjen} dager igjen"
                 else -> "Ukjent antall uker igjen"
             }
-        } else ""
+        } else {
+            ""
+        }
 }

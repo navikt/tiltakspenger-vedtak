@@ -13,11 +13,11 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class SøkerMediator(
     private val søkerRepository: SøkerRepository,
-    rapidsConnection: RapidsConnection
+    rapidsConnection: RapidsConnection,
 ) {
 
     private val behovMediator: BehovMediator = BehovMediator(
-        rapidsConnection = rapidsConnection
+        rapidsConnection = rapidsConnection,
     )
 
     fun håndter(hendelse: ISøkerHendelse) {

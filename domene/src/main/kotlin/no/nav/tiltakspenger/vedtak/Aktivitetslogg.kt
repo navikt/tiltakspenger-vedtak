@@ -244,6 +244,8 @@ open class Aktivitetslogg(
                 return result
             }
 
+            // Disse burde vi vel kunne endre til Camelcase slik at ktlint blir happy
+            @Suppress("ktlint:enum-entry-name-case")
             enum class Behovtype {
                 personopplysninger, skjerming, arenatiltak, arenaytelser, fpytelser, uføre,
             }

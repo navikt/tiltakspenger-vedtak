@@ -12,7 +12,7 @@ private val LOG = KotlinLogging.logger {}
 class SøkerServiceImpl(
     private val søkerRepository: SøkerRepository,
     private val innsendingRepository: InnsendingRepository,
-    private val behandlingMapper: BehandlingMapper = BehandlingMapper()
+    private val behandlingMapper: BehandlingMapper = BehandlingMapper(),
 ) : SøkerService {
 
     override fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO? {

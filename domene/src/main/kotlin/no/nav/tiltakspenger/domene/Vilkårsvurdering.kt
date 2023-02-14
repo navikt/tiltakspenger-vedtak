@@ -9,7 +9,7 @@ data class Vilkårsvurdering(
     val fakta: List<Faktum> = emptyList(),
     val vurderingsperiode: Periode,
     val utfallsperioder: List<Utfallsperiode> = listOf(
-        Utfallsperiode(utfall = Utfall.IkkeVurdert, periode = vurderingsperiode)
+        Utfallsperiode(utfall = Utfall.IkkeVurdert, periode = vurderingsperiode),
     ),
 ) {
     fun vurder(faktum: Faktum): Vilkårsvurdering {
@@ -27,7 +27,7 @@ data class Vilkårsvurdering(
 
 class Vilkårsvurderinger(
     val periode: Periode,
-    val vilkårsvurderinger: List<Vilkårsvurdering>
+    val vilkårsvurderinger: List<Vilkårsvurdering>,
 ) {
     // fun leggTilVilkår()
     // fun legg til vilkår

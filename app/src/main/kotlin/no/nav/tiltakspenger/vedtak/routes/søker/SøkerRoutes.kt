@@ -22,14 +22,13 @@ internal const val søknaderPath = "/person/soknader"
 internal const val søkerPath = "/soker"
 
 data class PersonIdent(
-    val ident: String
+    val ident: String,
 )
 
 fun Route.søkerRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     søkerService: SøkerService,
 ) {
-
     post(søkerPath) {
         LOG.debug("Mottatt request på $søkerPath")
         val personIdent = call.receive<PersonIdent>()

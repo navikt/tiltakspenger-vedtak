@@ -21,7 +21,7 @@ internal class SaksbehandlerProviderTest {
         every { principal.getClaim("preferred_username", String::class) } returns "test.user@nav.no"
         every { principal.getListClaim("groups", UUID::class) } returns listOf(
             "1b3a2c4d-d620-4fcf-a29b-a6cdadf29680",
-            "5ef775f2-61f8-4283-bf3d-8d03f428aa14"
+            "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
         ).map { UUID.fromString(it) }
 
         val innloggetBruker = innloggetSaksbehandlerProvider.hentSaksbehandler(principal)
@@ -30,7 +30,7 @@ internal class SaksbehandlerProviderTest {
         innloggetBruker.navIdent shouldBe "H12345"
         innloggetBruker.roller shouldContainExactlyInAnyOrder listOf(
             Rolle.SAKSBEHANDLER,
-            Rolle.STRENGT_FORTROLIG_ADRESSE
+            Rolle.STRENGT_FORTROLIG_ADRESSE,
         )
     }
 }

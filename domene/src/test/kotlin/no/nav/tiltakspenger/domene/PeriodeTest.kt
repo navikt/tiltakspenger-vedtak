@@ -64,17 +64,17 @@ internal class PeriodeTest {
         val result = periodeEn.ikkeOverlappendePerioder(
             listOf(
                 fengselPeriode,
-                kvpPeriode
-            )
+                kvpPeriode,
+            ),
         )
         assertEquals(3, result.size)
         assertEquals(
             listOf(
                 Periode(fra = 1.mai(2022), til = 4.mai(2022)),
                 Periode(fra = 7.mai(2022), til = 10.mai(2022)),
-                Periode(fra = 13.mai(2022), til = 15.mai(2022))
+                Periode(fra = 13.mai(2022), til = 15.mai(2022)),
             ),
-            result
+            result,
         )
     }
 
@@ -87,16 +87,16 @@ internal class PeriodeTest {
         val result = periodeEn.ikkeOverlappendePerioder(
             listOf(
                 fengselPeriode,
-                kvpPeriode
-            )
+                kvpPeriode,
+            ),
         )
         assertEquals(2, result.size)
         assertEquals(
             listOf(
                 Periode(fra = 1.mai(2022), til = 4.mai(2022)),
-                Periode(fra = 13.mai(2022), til = 15.mai(2022))
+                Periode(fra = 13.mai(2022), til = 15.mai(2022)),
             ),
-            result
+            result,
         )
     }
 

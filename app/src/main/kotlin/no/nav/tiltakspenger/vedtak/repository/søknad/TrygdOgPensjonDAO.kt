@@ -21,14 +21,14 @@ internal class TrygdOgPensjonDAO {
         return txSession.run(
             queryOf(hentTrygdOgPensjon, søknadId.toString())
                 .map { row -> row.toTrygdOgPensjon() }
-                .asList
+                .asList,
         )
     }
 
     private fun lagreTrygdOgPensjon(
         søknadId: SøknadId,
         trygdOgPensjon: TrygdOgPensjon,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         txSession.run(
             queryOf(
@@ -40,14 +40,14 @@ internal class TrygdOgPensjonDAO {
                     "prosent" to trygdOgPensjon.prosent,
                     "fom" to trygdOgPensjon.fom,
                     "tom" to trygdOgPensjon.tom,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 
     private fun slettTrygdOgPensjon(søknadId: SøknadId, txSession: TransactionalSession) {
         txSession.run(
-            queryOf(slettTrygdOgPensjon, søknadId.toString()).asUpdate
+            queryOf(slettTrygdOgPensjon, søknadId.toString()).asUpdate,
         )
     }
 

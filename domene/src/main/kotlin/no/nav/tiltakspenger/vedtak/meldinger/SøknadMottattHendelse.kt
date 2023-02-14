@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 class SøknadMottattHendelse(
     aktivitetslogg: Aktivitetslogg,
     private val journalpostId: String,
-    private val søknad: Søknad
+    private val søknad: Søknad,
 ) : InnsendingHendelse(aktivitetslogg) {
 
     override fun journalpostId() = journalpostId

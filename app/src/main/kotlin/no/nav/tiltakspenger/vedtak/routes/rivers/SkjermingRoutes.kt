@@ -42,7 +42,7 @@ fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
                     ident = skjermingDTO.ident,
                     feil = when (skjermingDTO.skjerming.feil!!) {
                         IdentIkkeFunnet -> Feil.IdentIkkeFunnet
-                    }
+                    },
                 )
                 innsendingMediator.håndter(feilMottattHendelse)
                 call.respond(message = "OK", status = HttpStatusCode.OK)

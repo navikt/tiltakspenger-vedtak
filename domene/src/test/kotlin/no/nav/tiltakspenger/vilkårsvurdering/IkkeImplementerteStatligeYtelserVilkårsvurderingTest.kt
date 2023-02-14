@@ -33,7 +33,7 @@ internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
             fom = null,
             tom = null,
             utfall = Utfall.IKKE_IMPLEMENTERT,
-            detaljer = ""
+            detaljer = "",
         )
     }
 }

@@ -41,7 +41,7 @@ data class PersonopplysningerMottattDTO(
 fun Route.personopplysningerRoutes(
     innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
     innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediator
+    søkerMediator: SøkerMediator,
 ) {
     post("$personopplysningerPath") {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
@@ -60,7 +60,7 @@ fun Route.personopplysningerRoutes(
                     ident = personopplysningerMottattDTO.ident,
                     feil = when (personopplysningerMottattDTO.personopplysninger.feil!!) {
                         Feilmelding.PersonIkkeFunnet -> Feil.PersonIkkeFunnet
-                    }
+                    },
                 )
                 innsendingMediator.håndter(feilMottattHendelse)
                 call.respond(message = "OK", status = HttpStatusCode.OK)
@@ -74,7 +74,7 @@ fun Route.personopplysningerRoutes(
                     personopplysninger = mapPersonopplysninger(
                         personopplysningerMottattDTO.personopplysninger.person!!,
                         personopplysningerMottattDTO.innhentet,
-                        personopplysningerMottattDTO.ident
+                        personopplysningerMottattDTO.ident,
                     ),
                     tidsstempelPersonopplysningerInnhentet = personopplysningerMottattDTO.innhentet,
                 )

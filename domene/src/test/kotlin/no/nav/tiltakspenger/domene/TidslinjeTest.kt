@@ -26,7 +26,7 @@ internal class TidslinjeTest {
         vurderingsperiode = Periode(
             fra = fra,
             til = til,
-        )
+        ),
     )
 
     fun vurdertVilkårsvurdering() =
@@ -42,14 +42,14 @@ internal class TidslinjeTest {
                 opphold = true,
                 kilde = FaktumKilde.BRUKER,
                 oppholdsperiode = listOf(Periode(fra = 1.januar(2022), til = 10.januar(2022))),
-                friKostOgLosji = false
-            )
+                friKostOgLosji = false,
+            ),
         )
         val tidslinje = Tidslinje.lagTidslinje(
             vilkårsvurderinger = Vilkårsvurderinger(
                 periode = Periode(fra = 1.januar(2022), til = 12.januar(2022)),
-                vilkårsvurderinger = listOf(vilkårsvurdering)
-            )
+                vilkårsvurderinger = listOf(vilkårsvurdering),
+            ),
         )
 
         val (ikkeOppfylteDager, oppfylteDager) = tidslinje.vurderteDager.partition { it.utfallsperiode == Utfall.VurdertOgIkkeOppfylt }

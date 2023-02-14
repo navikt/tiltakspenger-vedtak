@@ -69,7 +69,7 @@ internal class TrygdOgPensjonDAOTest {
                 trygdOgPensjonDAO.lagre(
                     søknadId = søknadId,
                     trygdOgPensjon = listOf(trygdOgPensjonMedNull, trygdOgPensjonUtenNull),
-                    txSession
+                    txSession,
                 )
             }
         }
@@ -110,7 +110,7 @@ internal class TrygdOgPensjonDAOTest {
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
-            startdato = LocalDate.now()
+            startdato = LocalDate.now(),
         ),
         trygdOgPensjon = emptyList(),
         fritekst = null,

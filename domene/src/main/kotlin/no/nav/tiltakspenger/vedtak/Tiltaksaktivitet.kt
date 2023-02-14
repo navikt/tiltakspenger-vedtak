@@ -106,7 +106,7 @@ data class Tiltaksaktivitet(
         TILRTILSK(
             "Forebyggings- og tilretteleggingstilskudd IA virksomheter og BHT-honorar",
             Tiltaksgruppe.UTFAS,
-            false
+            false,
         ),
         KAT("Formidlingstjenester", Tiltaksgruppe.UTFAS, true),
         VALS("Formidlingstjenester - Ventelønn", Tiltaksgruppe.UTFAS, true),
@@ -175,7 +175,7 @@ data class Tiltaksaktivitet(
         VIDRSKOLE("Videregående skole", Tiltaksgruppe.UTFAS, false),
         OPPLT2AAR("2-årig opplæringstiltak", Tiltaksgruppe.UTFAS, true),
         AB("To be deleted", Tiltaksgruppe.UTFAS, true),
-        OUTDEF("Ukjent", Tiltaksgruppe.UTFAS, true)
+        OUTDEF("Ukjent", Tiltaksgruppe.UTFAS, true),
     }
 
     enum class DeltakerStatus(val tekst: String) {
@@ -192,6 +192,6 @@ data class Tiltaksaktivitet(
         JATAKK("Takket ja til tilbud"),
         NEITAKK("Takket nei til tilbud"),
         TILBUD("Godkjent tiltaksplass"),
-        VENTELISTE("Venteliste")
+        VENTELISTE("Venteliste"),
     }
 }

@@ -17,7 +17,7 @@ class Søker private constructor(
     var personopplysninger: Personopplysninger.Søker?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
 ) {
     constructor(
-        ident: String
+        ident: String,
     ) : this(
         søkerId = randomId(),
         ident = ident,
@@ -34,7 +34,7 @@ class Søker private constructor(
 
     fun håndter(hendelse: SkjermingMottattHendelse) {
         personopplysninger = personopplysninger?.copy(
-            skjermet = hendelse.skjerming().søker.skjerming
+            skjermet = hendelse.skjerming().søker.skjerming,
         )
     }
 
@@ -68,7 +68,7 @@ class Søker private constructor(
         fun sjekkBeskyttelsesbehovSkjermet(
             erEgenAnsatt: Boolean,
             harBeskyttelsesbehovFortrolig: Boolean,
-            harBeskyttelsesbehovStrengtFortrolig: Boolean
+            harBeskyttelsesbehovStrengtFortrolig: Boolean,
         ) {
             if (erEgenAnsatt && !(harBeskyttelsesbehovFortrolig || harBeskyttelsesbehovStrengtFortrolig)) {
                 SECURELOG.info("erEgenAnsatt")
@@ -93,7 +93,7 @@ class Søker private constructor(
             sjekkBeskyttelsesbehovSkjermet(
                 erEgenAnsatt,
                 harBeskyttelsesbehovFortrolig,
-                harBeskyttelsesbehovStrengtFortrolig
+                harBeskyttelsesbehovStrengtFortrolig,
             )
         }
 

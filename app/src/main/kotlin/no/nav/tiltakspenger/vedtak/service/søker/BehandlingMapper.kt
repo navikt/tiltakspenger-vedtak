@@ -115,8 +115,12 @@ class BehandlingMapper {
         søknadId = søknad.søknadId,
         søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
         arrangoernavn = søknad.tiltak?.arrangoernavn,
-        tiltakskode = if (søknad.tiltak == null) "Ukjent" else (søknad.tiltak as Tiltak).tiltakskode?.navn
-            ?: "Annet",
+        tiltakskode = if (søknad.tiltak == null) {
+            "Ukjent"
+        } else {
+            (søknad.tiltak as Tiltak).tiltakskode?.navn
+                ?: "Annet"
+        },
         beskrivelse = when (søknad.tiltak) {
             is Tiltak.ArenaTiltak -> null
             is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
@@ -126,7 +130,9 @@ class BehandlingMapper {
         sluttdato = søknad.tiltak?.sluttdato,
         antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
             (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
-        } else null,
+        } else {
+            null
+        },
         fritekst = søknad.fritekst,
         vedlegg = mapVedlegg(søknad.vedlegg),
     )
@@ -151,8 +157,11 @@ class BehandlingMapper {
             BarnetilleggDTO(
                 navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
                 alder = it.alder,
-                fødselsdato = if (it is Barnetillegg.UtenIdent) it.fødselsdato
-                else barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato,
+                fødselsdato = if (it is Barnetillegg.UtenIdent) {
+                    it.fødselsdato
+                } else {
+                    barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato
+                },
                 bosatt = it.oppholdsland,
                 kilde = "Søknad",
                 utfall = UtfallDTO.Oppfylt,

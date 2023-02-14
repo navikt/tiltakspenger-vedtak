@@ -20,7 +20,7 @@ class SøkerRepository(
                 return txSession.run(
                     queryOf(findByIdent, ident).map { row ->
                         row.toSøker(txSession)
-                    }.asSingle
+                    }.asSingle,
                 )
             }
         }
@@ -32,7 +32,7 @@ class SøkerRepository(
                 return txSession.run(
                     queryOf(hent, søkerId.toString()).map { row ->
                         row.toSøker(txSession)
-                    }.asSingle
+                    }.asSingle,
                 )
             }
         }
@@ -56,7 +56,7 @@ class SøkerRepository(
     }
 
     private fun søkerFinnes(søkerId: SøkerId, txSession: TransactionalSession): Boolean = txSession.run(
-        queryOf(finnes, søkerId.toString()).map { row -> row.boolean("exists") }.asSingle
+        queryOf(finnes, søkerId.toString()).map { row -> row.boolean("exists") }.asSingle,
     ) ?: throw RuntimeException("Failed to check if søker exists")
 
     private fun oppdaterSøker(søker: Søker, txSession: TransactionalSession) {
@@ -66,8 +66,8 @@ class SøkerRepository(
                 mapOf(
                     "ident" to søker.ident,
                     "sistEndret" to nå(),
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 
@@ -81,8 +81,8 @@ class SøkerRepository(
                     "ident" to søker.ident,
                     "opprettet" to nå,
                     "sistEndret" to nå,
-                )
-            ).asUpdate
+                ),
+            ).asUpdate,
         )
     }
 

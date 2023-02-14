@@ -10,7 +10,7 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehovMediator(
-    private val rapidsConnection: RapidsConnection
+    private val rapidsConnection: RapidsConnection,
 ) {
 
     internal fun håndter(hendelse: InnsendingHendelse) {
@@ -22,7 +22,7 @@ class BehovMediator(
 
     private fun håndter(
         hendelse: InnsendingHendelse,
-        behov: List<Aktivitetslogg.Aktivitet.Behov>
+        behov: List<Aktivitetslogg.Aktivitet.Behov>,
     ) {
         // Denne linja sørger for at alle behov som har lik kontekst (Map<String, String>) behandles sammen
         // og blir sendt ut som en og samme melding på Rapiden.
@@ -38,7 +38,7 @@ class BehovMediator(
                 "@opprettet" to LocalDateTime.now(),
                 "@id" to id,
                 "@behovId" to behovId,
-                "@behov" to behovsliste
+                "@behov" to behovsliste,
             )
                 .apply {
                     putAll(kontekst)
@@ -46,7 +46,7 @@ class BehovMediator(
                         require(etBehov.type.name !in behovsliste) { "Kan ikke produsere samme behov ${etBehov.type.name} på samme kontekst" }
                         require(
                             etBehov.detaljer().filterKeys { this.containsKey(it) && this[it] != etBehov.detaljer()[it] }
-                                .isEmpty()
+                                .isEmpty(),
                         ) { "Kan ikke produsere behov med duplikate detaljer" }
                         behovsliste.add(etBehov.type.name)
                         putAll(etBehov.detaljer())

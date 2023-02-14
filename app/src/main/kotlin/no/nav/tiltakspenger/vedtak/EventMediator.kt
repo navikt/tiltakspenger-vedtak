@@ -31,7 +31,7 @@ class EventMediator(
             "@opprettet" to LocalDateTime.now(),
             "@id" to id,
             "journalpostId" to journalpostId,
-            "dag" to dag
+            "dag" to dag,
         )
             .let { JsonMessage.newMessage(it) }
             .also { message ->

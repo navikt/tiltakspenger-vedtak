@@ -77,7 +77,7 @@ internal class BarnetilleggDAOTest {
                 barnetilleggDAO.lagre(
                     søknadId = søknadId,
                     barnetillegg = listOf(barnetilleggMedIdent, barnetilleggUtenIdent),
-                    txSession
+                    txSession,
                 )
             }
         }
@@ -118,7 +118,7 @@ internal class BarnetilleggDAOTest {
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
-            startdato = LocalDate.now()
+            startdato = LocalDate.now(),
         ),
         trygdOgPensjon = emptyList(),
         fritekst = null,

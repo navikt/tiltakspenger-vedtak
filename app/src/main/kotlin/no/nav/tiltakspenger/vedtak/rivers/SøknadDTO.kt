@@ -80,21 +80,24 @@ class BrukerregistrertTiltakDTO(
     val tom: LocalDate,
     val adresse: String? = null,
     val postnummer: String? = null,
-    val antallDager: Int
+    val antallDager: Int,
 ) {
     companion object {
         internal fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
-            if (dto == null) null
-            else Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode), // TODO:test
-                arrangoernavn = dto.arrangoernavn,
-                beskrivelse = dto.beskrivelse,
-                startdato = dto.fom,
-                sluttdato = dto.tom,
-                adresse = dto.adresse,
-                postnummer = dto.postnummer,
-                antallDager = dto.antallDager
-            )
+            if (dto == null) {
+                null
+            } else {
+                Tiltak.BrukerregistrertTiltak(
+                    tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode), // TODO:test
+                    arrangoernavn = dto.arrangoernavn,
+                    beskrivelse = dto.beskrivelse,
+                    startdato = dto.fom,
+                    sluttdato = dto.tom,
+                    adresse = dto.adresse,
+                    postnummer = dto.postnummer,
+                    antallDager = dto.antallDager,
+                )
+            }
     }
 }
 
@@ -107,21 +110,24 @@ class ArenaTiltakDTO(
     val opprinneligSluttdato: LocalDate? = null,
     val opprinneligStartdato: LocalDate,
     val sluttdato: LocalDate? = null,
-    val startdato: LocalDate
+    val startdato: LocalDate,
 ) {
     companion object {
-        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) null
-        else Tiltak.ArenaTiltak(
-            arenaId = dto.arenaId,
-            arrangoernavn = dto.arrangoer,
-            harSluttdatoFraArena = dto.harSluttdatoFraArena,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
-            erIEndreStatus = dto.erIEndreStatus,
-            opprinneligSluttdato = dto.opprinneligSluttdato,
-            opprinneligStartdato = dto.opprinneligStartdato,
-            sluttdato = dto.sluttdato,
-            startdato = dto.startdato
-        )
+        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
+            null
+        } else {
+            Tiltak.ArenaTiltak(
+                arenaId = dto.arenaId,
+                arrangoernavn = dto.arrangoer,
+                harSluttdatoFraArena = dto.harSluttdatoFraArena,
+                tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
+                erIEndreStatus = dto.erIEndreStatus,
+                opprinneligSluttdato = dto.opprinneligSluttdato,
+                opprinneligStartdato = dto.opprinneligStartdato,
+                sluttdato = dto.sluttdato,
+                startdato = dto.startdato,
+            )
+        }
     }
 }
 
@@ -139,11 +145,14 @@ class TrygdOgPensjonDTO(
     val utbetaler: String,
     val prosent: Int? = null,
     val fom: LocalDate? = null,
-    val tom: LocalDate? = null
+    val tom: LocalDate? = null,
 ) {
     companion object {
         internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
-            utbetaler = dto.utbetaler, prosent = dto.prosent, fom = dto.fom, tom = dto.tom
+            utbetaler = dto.utbetaler,
+            prosent = dto.prosent,
+            fom = dto.fom,
+            tom = dto.tom,
         )
     }
 }
@@ -176,15 +185,17 @@ class BarnetilleggDTO(
 ) {
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
-            return if (dto.ident != null) Barnetillegg.MedIdent(
-                alder = dto.alder,
-                oppholdsland = dto.oppholdsland,
-                ident = dto.ident,
-                fornavn = dto.fornavn,
-                mellomnavn = dto.mellomnavn,
-                etternavn = dto.etternavn,
-                søktBarnetillegg = dto.søktBarnetillegg ?: true,
-            ) else
+            return if (dto.ident != null) {
+                Barnetillegg.MedIdent(
+                    alder = dto.alder,
+                    oppholdsland = dto.oppholdsland,
+                    ident = dto.ident,
+                    fornavn = dto.fornavn,
+                    mellomnavn = dto.mellomnavn,
+                    etternavn = dto.etternavn,
+                    søktBarnetillegg = dto.søktBarnetillegg ?: true,
+                )
+            } else {
                 Barnetillegg.UtenIdent(
                     alder = dto.alder,
                     oppholdsland = dto.oppholdsland,
@@ -192,12 +203,14 @@ class BarnetilleggDTO(
                     fornavn = dto.fornavn,
                     mellomnavn = dto.mellomnavn,
                     etternavn = dto.etternavn,
-                    søktBarnetillegg = dto.søktBarnetillegg ?: true
+                    søktBarnetillegg = dto.søktBarnetillegg ?: true,
                 )
+            }
         }
     }
 }
 
+@Suppress("ktlint:enum-entry-name-case")
 enum class TypeInstitusjonDTO(val type: String) {
     barneverninstitusjon("barneverninstitusjon"),
     overgangsbolig("overgangsbolig"),

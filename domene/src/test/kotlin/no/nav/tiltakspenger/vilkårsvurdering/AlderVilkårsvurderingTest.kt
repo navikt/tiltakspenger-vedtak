@@ -14,7 +14,7 @@ class AlderVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
         val alderVilkårsvurdering = AlderVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            søkersFødselsdato = fødselsdato
+            søkersFødselsdato = fødselsdato,
         )
         alderVilkårsvurdering.alderVurderinger.size shouldBe 1
         alderVilkårsvurdering.alderVurderinger[0].utfall shouldBe Utfall.OPPFYLT
@@ -27,7 +27,7 @@ class AlderVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
         val alderVilkårsvurdering = AlderVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            søkersFødselsdato = fødselsdato
+            søkersFødselsdato = fødselsdato,
         )
         alderVilkårsvurdering.alderVurderinger.size shouldBe 1
         alderVilkårsvurdering.alderVurderinger[0].utfall shouldBe Utfall.IKKE_OPPFYLT
@@ -40,7 +40,7 @@ class AlderVilkårsvurderingTest {
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
         val alderVilkårsvurdering = AlderVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
-            søkersFødselsdato = fødselsdato
+            søkersFødselsdato = fødselsdato,
         )
         alderVilkårsvurdering.alderVurderinger.size shouldBe 1
         alderVilkårsvurdering.alderVurderinger[0].utfall shouldBe Utfall.IKKE_OPPFYLT

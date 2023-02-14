@@ -18,7 +18,7 @@ internal class PersonopplysningerBarnUtenIdentDAO {
     internal fun lagre(
         innsendingId: InnsendingId,
         personopplysninger: Personopplysninger.BarnUtenIdent,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for barn uten ident $personopplysninger" }
         txSession.run(
@@ -31,9 +31,9 @@ internal class PersonopplysningerBarnUtenIdentDAO {
                     "fornavn" to personopplysninger.fornavn,
                     "mellomnavn" to personopplysninger.mellomnavn,
                     "etternavn" to personopplysninger.etternavn,
-                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
-                )
-            ).asUpdate
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss,
+                ),
+            ).asUpdate,
         )
     }
 
@@ -46,7 +46,7 @@ internal class PersonopplysningerBarnUtenIdentDAO {
             fornavn = row.string("fornavn"),
             mellomnavn = row.stringOrNull("mellomnavn"),
             etternavn = row.string("etternavn"),
-            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
+            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss"),
         )
     }
 

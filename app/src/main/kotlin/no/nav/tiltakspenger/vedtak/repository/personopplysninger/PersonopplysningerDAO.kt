@@ -12,7 +12,7 @@ import org.intellij.lang.annotations.Language
 
 internal class PersonopplysningerDAO(
     private val barnMedIdentDAO: PersonopplysningerBarnMedIdentDAO = PersonopplysningerBarnMedIdentDAO(),
-    private val barnUtenIdentDAO: PersonopplysningerBarnUtenIdentDAO = PersonopplysningerBarnUtenIdentDAO()
+    private val barnUtenIdentDAO: PersonopplysningerBarnUtenIdentDAO = PersonopplysningerBarnUtenIdentDAO(),
 ) {
     private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
@@ -31,7 +31,7 @@ internal class PersonopplysningerDAO(
     fun lagre(
         innsendingId: InnsendingId,
         personopplysninger: List<Personopplysninger>,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         log.info { "Sletter personopplysninger før lagring" }
         slett(innsendingId, txSession)
@@ -46,7 +46,7 @@ internal class PersonopplysningerDAO(
                 is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
                     innsendingId,
                     it,
-                    txSession
+                    txSession,
                 )
             }
         }
@@ -58,7 +58,7 @@ internal class PersonopplysningerDAO(
     private fun lagre(
         innsendingId: InnsendingId,
         personopplysninger: Personopplysninger.Søker,
-        txSession: TransactionalSession
+        txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
         txSession.run(
@@ -78,9 +78,9 @@ internal class PersonopplysningerDAO(
                     "skjermet" to personopplysninger.skjermet,
                     "kommune" to personopplysninger.kommune,
                     "bydel" to personopplysninger.bydel,
-                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss
-                )
-            ).asUpdate
+                    "tidsstempelHosOss" to personopplysninger.tidsstempelHosOss,
+                ),
+            ).asUpdate,
         )
     }
 
@@ -100,7 +100,7 @@ internal class PersonopplysningerDAO(
             skjermet = row.booleanOrNull("skjermet"),
             kommune = row.stringOrNull("kommune"),
             bydel = row.stringOrNull("bydel"),
-            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss")
+            tidsstempelHosOss = row.localDateTime("tidsstempel_hos_oss"),
         )
     }
 
