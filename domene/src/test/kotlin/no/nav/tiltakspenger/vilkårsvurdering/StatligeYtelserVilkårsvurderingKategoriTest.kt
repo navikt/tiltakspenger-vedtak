@@ -393,7 +393,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                 harUføregrad = true,
                 datoUfør = 1.januar(2020),
                 virkDato = 1.januar(2020),
-            )
+            ),
         )
 
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
@@ -408,6 +408,6 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             uføretrygd = uføreVilkarsvurdering,
         )
 
-        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 }

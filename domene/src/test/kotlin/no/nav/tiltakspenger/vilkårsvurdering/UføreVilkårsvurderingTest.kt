@@ -31,7 +31,7 @@ class UføreVilkårsvurderingTest {
                 virkDato = 31.desember(2021),
             ),
         )
-        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
     @Test
@@ -45,7 +45,7 @@ class UføreVilkårsvurderingTest {
                 virkDato = 1.januar(2022),
             ),
         )
-        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
     @Test
@@ -59,9 +59,9 @@ class UføreVilkårsvurderingTest {
                 virkDato = 15.januar(2022),
             ),
         )
-        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
         uføreVilkarsvurdering.uføreVurderinger.size shouldBe 1
-        uføreVilkarsvurdering.uføreVurderinger.first().utfall shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.uføreVurderinger.first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 
     @Test
@@ -75,6 +75,6 @@ class UføreVilkårsvurderingTest {
                 virkDato = 1.januar(2021),
             ),
         )
-        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.IKKE_OPPFYLT
+        uføreVilkarsvurdering.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
     }
 }
