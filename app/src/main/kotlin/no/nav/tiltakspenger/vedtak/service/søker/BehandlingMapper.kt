@@ -75,6 +75,7 @@ class BehandlingMapper {
                     institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
                     barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
                     alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
+                    hash = innsending.endringsHash(),
                 )
             }
         }

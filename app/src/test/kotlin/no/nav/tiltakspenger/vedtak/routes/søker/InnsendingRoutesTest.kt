@@ -249,6 +249,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
                     ),
+                    hash = "hash",
                 ),
             ),
         )
