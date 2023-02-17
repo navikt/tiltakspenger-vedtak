@@ -31,4 +31,7 @@ class SøkerServiceImpl(
         innsendinger.forEach { it.sjekkOmSaksbehandlerHarTilgang(saksbehandler) }
         return behandlingMapper.mapSøkerOgInnsendinger(søker, innsendinger)
     }
+
+    override fun finnHashForInnsending(journalpostId: String): String? =
+        innsendingRepository.hent(journalpostId)?.endringsHash()
 }
