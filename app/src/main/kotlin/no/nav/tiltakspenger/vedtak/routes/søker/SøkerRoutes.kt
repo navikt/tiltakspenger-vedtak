@@ -26,12 +26,12 @@ data class PersonIdent(
     val ident: String,
 )
 
-data class JournalpostId(
-    val journalpostId: String,
+data class SøknadId(
+    val søknadId: String,
 )
 
 data class InnsendingHash(
-    val journalpostId: String,
+    val søknadId: String,
     val hash: String,
 )
 
@@ -81,21 +81,21 @@ fun Route.søkerRoutes(
 
     post(innsendingHashPath) {
         LOG.debug("Mottatt request på $innsendingHashPath")
-        val journalpostId = call.receive<JournalpostId>()
+        val søknadId = call.receive<SøknadId>()
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
         val hash: String =
             try {
-                søkerService.finnHashForInnsending(journalpostId.journalpostId)
+                søkerService.finnHashForInnsending(søknadId.søknadId)
                     ?: return@post call.respond(message = "Innsending ikke funnet", status = HttpStatusCode.NotFound)
             } catch (tex: TilgangException) {
                 LOG.warn("Saksbehandler har ikke tilgang", tex)
                 return@post call.respond(message = "Saksbehandler har ikke tilgang", status = HttpStatusCode.Forbidden)
             }
         call.respond(
-            message = InnsendingHash(journalpostId = journalpostId.journalpostId, hash = hash),
+            message = InnsendingHash(søknadId = søknadId.søknadId, hash = hash),
             status = HttpStatusCode.OK,
         )
     }
