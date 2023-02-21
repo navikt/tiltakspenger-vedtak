@@ -25,7 +25,7 @@ class OvergangsstønadVedtakDAO() {
         txSession: TransactionalSession,
     ) {
         slettOvergangsstønadVedtak(innsendingId, txSession)
-        if (overgangsstønadVedtak == null || overgangsstønadVedtak.isEmpty()) return
+        if (overgangsstønadVedtak.isEmpty()) return
         overgangsstønadVedtak.forEach {
             lagreOvergangsstønadVedtak(innsendingId, it, txSession)
         }
@@ -43,8 +43,8 @@ class OvergangsstønadVedtakDAO() {
                 mapOf(
                     "id" to id.toString(),
                     "innsending_id" to innsendingId.toString(),
-                    "fom_dato" to overgangsstønadVedtak.periode.fomDato,
-                    "tom_dato" to overgangsstønadVedtak.periode.tomDato,
+                    "fom" to overgangsstønadVedtak.periode.fom,
+                    "tom" to overgangsstønadVedtak.periode.tom,
                     "innhentet" to overgangsstønadVedtak.innhentet,
                     "tidsstempel_hos_oss" to LocalDateTime.now(),
                 ),
@@ -60,9 +60,9 @@ class OvergangsstønadVedtakDAO() {
         return OvergangsstønadVedtak(
             id = OvergangsstønadVedtakId.fromDb(string("id")),
             periode = OvergangsstønadPeriode(
-                fomDato = string("fom_dato"),
-                tomDato = string("tom_dato"),
-                datakilde = string("datakilde")
+                fom = string("fom"),
+                tom = string("tom"),
+                datakilde = string("datakilde"),
             ),
             innhentet = localDateTime("innhentet"),
         )
@@ -73,19 +73,19 @@ class OvergangsstønadVedtakDAO() {
         insert into overgangsstønad_vedtak (
             id,
             innsending_id,
-            fom_dato,
-            tom_dato,
+            fom,
+            tom,
             datakilde,
             innhentet,
-            tidsstempel_hos_oss,
+            tidsstempel_hos_oss
         ) values (
             :id, 
             :innsending_id,
-            :fom_dato,
-            :tom_dato,
+            :fom,
+            :tom,
             :datakilde,
             :innhentet,
-            :tidsstempel_hos_oss,
+            :tidsstempel_hos_oss
         )
     """.trimIndent()
 

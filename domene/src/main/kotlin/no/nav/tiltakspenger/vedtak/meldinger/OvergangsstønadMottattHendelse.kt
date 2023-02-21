@@ -10,7 +10,7 @@ class OvergangsstønadMottattHendelse(
     private val journalpostId: String,
     private val ident: String,
     private val innhentet: LocalDateTime,
-    private val perioder: List<OvergangsstønadVedtak>
+    private val perioder: List<OvergangsstønadVedtak>,
 ) : InnsendingHendelse(aktivitetslogg) {
     override fun journalpostId() = journalpostId
     fun ident() = ident

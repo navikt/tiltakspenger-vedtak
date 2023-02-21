@@ -8,8 +8,8 @@ CREATE TABLE overgangsstønad_vedtak
 (
     id                  VARCHAR PRIMARY KEY,
     innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
-    fom_dato            DATE                     NOT NULL,
-    tom_dato            DATE                     NOT NULL,
+    fom                 DATE                     NOT NULL,
+    tom                 DATE                     NOT NULL,
     datakilde           VARCHAR                  NOT NULL,
     innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL

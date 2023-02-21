@@ -8,10 +8,9 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
+import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadResponsDTO
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.OvergangsstønadDTO
-import no.nav.tiltakspenger.vedtak.OvergangsstønadPeriode
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import java.time.LocalDateTime
@@ -20,11 +19,41 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 val overgangsstønadPath = "/rivers/overgangsstonad"
 
+data class OvergangsstønadDTO(
+    val ident: String,
+    val journalpostId: String,
+    val overgangsstønadRespons: OvergangsstønadResponsDTO,
+    val innhentet: LocalDateTime,
+)
+
 fun Route.overgangsstønadRoutes(innsendingMediator: InnsendingMediator) {
     post("$overgangsstønadPath") {
         LOG.info { "Vi har mottatt overgangsstønad fra river" }
         val overgangsstønadDTO = call.receive<OvergangsstønadDTO>()
-        // todo: hva skal vi gjøre dersom vi ikke får noen perioder (men behovet er løst)?
+
+        when {
+            overgangsstønadDTO.overgangsstønadRespons.feil != null -> {
+                // handle feil
+
+                innsendingMediator.håndter(feilMottattHendelse)
+                call.respond(message = "OK", status = HttpStatusCode.OK)
+            }
+
+            overgangsstønadDTO.overgangsstønadRespons.overgangsstønad != null -> {
+                // handle ok
+                val
+
+                SECURELOG.info { " Mottatt overgangsstønad og laget hendelse : $overgangsstønadHendelse" }
+                innsendingMediator.håndter(overgangsstønadHendelse)
+                call.respond(message = "OK", status = HttpStatusCode.OK)
+            }
+
+            else -> {
+                throw IllegalStateException("Mottatt overgangsstønad som ikke her hverken vedtak eller feil")
+            }
+        }
+
+
         if (overgangsstønadDTO.perioder.isNotEmpty()) {
             val overgangsstønadHendelse = OvergangsstønadMottattHendelse(
                 aktivitetslogg = Aktivitetslogg(),
@@ -34,21 +63,23 @@ fun Route.overgangsstønadRoutes(innsendingMediator: InnsendingMediator) {
                 perioder = overgangsstønadDTO.perioder.map {
                     mapToOvergangsstønadVedtak(
                         periode = it,
-                        innhentet = overgangsstønadDTO.innhentet
+                        innhentet = overgangsstønadDTO.innhentet,
                     )
-                }
+                },
             )
-            SECURELOG.info { " Mottatt overgangsstønad og laget hendelse : $overgangsstønadHendelse" }
-            innsendingMediator.håndter(overgangsstønadHendelse)
+
         }
-        call.respond(message = "OK", status = HttpStatusCode.OK)
+
     }
 }
 
-private fun mapToOvergangsstønadVedtak(periode: OvergangsstønadPeriode, innhentet: LocalDateTime): OvergangsstønadVedtak {
+private fun mapToOvergangsstønadVedtak(
+    periode: OvergangsstønadPeriode,
+    innhentet: LocalDateTime,
+): OvergangsstønadVedtak {
     return OvergangsstønadVedtak(
         id = OvergangsstønadVedtakId.random(),
         periode = periode,
-        innhentet = innhentet
+        innhentet = innhentet,
     )
 }
