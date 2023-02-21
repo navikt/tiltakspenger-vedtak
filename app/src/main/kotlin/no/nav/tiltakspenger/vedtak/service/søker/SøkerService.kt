@@ -7,6 +7,7 @@ import java.time.LocalDate
 interface SøkerService {
     fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
     fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO?
+    fun finnHashForInnsending(søknadId: String): String?
 }
 
 data class SøkerIdDTO(
@@ -14,6 +15,7 @@ data class SøkerIdDTO(
 )
 
 data class SøkerDTO(
+    val søkerId: String,
     val ident: String,
     val behandlinger: List<KlarEllerIkkeKlarForBehandlingDTO>,
     val personopplysninger: PersonopplysningerDTO?,
@@ -39,6 +41,7 @@ data class KlarForBehandlingDTO(
     val institusjonsopphold: InstitusjonsoppholdDTO,
     val barnetillegg: List<BarnetilleggDTO>,
     val alderVilkårsvurdering: AlderVilkårsvurderingDTO,
+    val hash: String,
 ) : KlarEllerIkkeKlarForBehandlingDTO(true)
 
 data class StatligeYtelserDTO(

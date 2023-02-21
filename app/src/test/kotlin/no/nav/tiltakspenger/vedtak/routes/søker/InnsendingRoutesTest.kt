@@ -53,6 +53,7 @@ class InnsendingRoutesTest {
         every {
             søkerServiceMock.hentSøkerOgSøknader(søkerId, saksbehandler())
         } returns SøkerDTO(
+            søkerId = "",
             ident = "1234",
             personopplysninger = PersonopplysningerDTO(
                 fornavn = "Foo",
@@ -249,6 +250,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
                     ),
+                    hash = "hash",
                 ),
             ),
         )

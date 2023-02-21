@@ -50,6 +50,16 @@ class Innsending private constructor(
 
     fun isDirty() = dirtyChecker.isDirty()
 
+    fun endringsHash(): String =
+        listOfNotNull(
+            søknad?.tidsstempelHosOss,
+            personopplysninger?.tidsstempelInnhentet,
+            tiltak?.tidsstempelInnhentet,
+            ytelser?.tidsstempelInnhentet,
+            foreldrepengerVedtak?.tidsstempelInnhentet,
+            uføreVedtak?.tidsstempelInnhentet,
+        ).fold(journalpostId.hashCode()) { hash, tidsstempel -> 31 * hash + tidsstempel.hashCode() }.toString()
+
     var tilstand: Tilstand = tilstand
         private set(value) {
             field = value

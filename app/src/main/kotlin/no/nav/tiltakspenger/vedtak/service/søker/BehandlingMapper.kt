@@ -45,6 +45,7 @@ class BehandlingMapper {
 
     fun mapSøkerOgInnsendinger(søker: Søker, innsendinger: List<Innsending>): SøkerDTO {
         return SøkerDTO(
+            søkerId = søker.søkerId.toString(),
             ident = søker.ident,
             personopplysninger = søker.personopplysninger?.let { mapPersonopplysninger(it) },
             behandlinger = innsendinger.mapNotNull { mapInnsendingMedSøknad(it) },
@@ -75,6 +76,7 @@ class BehandlingMapper {
                     institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
                     barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
                     alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
+                    hash = innsending.endringsHash(),
                 )
             }
         }
