@@ -15,6 +15,7 @@ data class SøkerIdDTO(
 )
 
 data class SøkerDTO(
+    val søkerId: String,
     val ident: String,
     val behandlinger: List<KlarEllerIkkeKlarForBehandlingDTO>,
     val personopplysninger: PersonopplysningerDTO?,
