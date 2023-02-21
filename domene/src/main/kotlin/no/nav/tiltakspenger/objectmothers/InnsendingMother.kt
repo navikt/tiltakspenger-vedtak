@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
@@ -14,11 +15,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyTiltakHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
+import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.SkjermingPerson
@@ -228,6 +231,47 @@ interface InnsendingMother {
         return innsending
     }
 
+    fun innsendingMedOvergangsstønad(
+        journalpostId: String = Random().nextInt().toString(),
+        ident: String = Random().nextInt().toString(),
+        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        personopplysninger: List<Personopplysninger> = listOf(
+            personopplysningKjedeligFyr(
+                ident = ident,
+                strengtFortroligUtland = false,
+            ),
+        ),
+        skjerming: Skjerming = skjermingFalse(ident = ident),
+        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+            tiltaksliste = listOf(tiltaksaktivitet()),
+            tidsstempelInnhentet = 1.januarDateTime(2022),
+        ),
+        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
+        foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
+        overgangsstønader: List<OvergangsstønadVedtak> = listOf(overgangsstønadVedtak()),
+    ): Innsending {
+        val innsending = innsendingMedForeldrepenger(
+            journalpostId = journalpostId,
+            ident = ident,
+            søknad = søknad,
+            personopplysninger = personopplysninger,
+            skjerming = skjerming,
+            tiltak = tiltak,
+            ytelseSak = ytelseSak,
+            foreldrepengerVedtakListe = foreldrepengerVedtakListe,
+        )
+
+        innsending.håndter(
+            nyOvergangsstønadHendelse(
+                ident = ident,
+                journalpostId = journalpostId,
+                overgansstønader = overgangsstønader,
+            ),
+        )
+
+        return innsending
+    }
+
     fun innsendingMedUføre(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
@@ -247,7 +291,7 @@ interface InnsendingMother {
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
         uføreVedtak: UføreVedtak = uføreVedtak(),
     ): Innsending {
-        val innsending = innsendingMedForeldrepenger(
+        val innsending = innsendingMedOvergangsstønad(
             journalpostId = journalpostId,
             ident = ident,
             søknad = søknad,

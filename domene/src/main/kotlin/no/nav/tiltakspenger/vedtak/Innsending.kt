@@ -541,7 +541,7 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
-            overgangsstønadMottattHendelse.info("Fikk info om overgangsstønad: ${overgangsstønadMottattHendelse.perioder()}")
+            overgangsstønadMottattHendelse.info("Fikk info om overgangsstønad: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
             innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
             innsending.trengerUføre(overgangsstønadMottattHendelse)
             innsending.tilstand(overgangsstønadMottattHendelse, AvventerUføre)
@@ -917,10 +917,10 @@ class Innsending private constructor(
         }
 
         overgangsstønadMottattHendelse
-            .info("Fikk info om overgangsstønadVedtak: ${overgangsstønadMottattHendelse.perioder()}")
+            .info("Fikk info om overgangsstønadVedtak: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
 
         this.overgangsstønadVedtak = InnhentedeOvergangsstønadVedtak(
-            overgangsstønadVedtak = overgangsstønadMottattHendelse.perioder(),
+            overgangsstønadVedtak = overgangsstønadMottattHendelse.overgangsstønadVedtakListe(),
             tidsstempelInnhentet = overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet(),
         )
     }

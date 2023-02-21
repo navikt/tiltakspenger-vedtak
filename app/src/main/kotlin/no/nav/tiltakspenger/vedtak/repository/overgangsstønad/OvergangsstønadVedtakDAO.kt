@@ -5,7 +5,6 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
-import no.nav.tiltakspenger.vedtak.OvergangsstønadPeriode
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -43,8 +42,9 @@ class OvergangsstønadVedtakDAO() {
                 mapOf(
                     "id" to id.toString(),
                     "innsending_id" to innsendingId.toString(),
-                    "fom" to overgangsstønadVedtak.periode.fom,
-                    "tom" to overgangsstønadVedtak.periode.tom,
+                    "fom" to overgangsstønadVedtak.fom,
+                    "tom" to overgangsstønadVedtak.tom,
+                    "datakilde" to overgangsstønadVedtak.datakilde,
                     "innhentet" to overgangsstønadVedtak.innhentet,
                     "tidsstempel_hos_oss" to LocalDateTime.now(),
                 ),
@@ -59,11 +59,9 @@ class OvergangsstønadVedtakDAO() {
     private fun Row.toOvergangsstønadVedtak(): OvergangsstønadVedtak {
         return OvergangsstønadVedtak(
             id = OvergangsstønadVedtakId.fromDb(string("id")),
-            periode = OvergangsstønadPeriode(
-                fom = string("fom"),
-                tom = string("tom"),
-                datakilde = string("datakilde"),
-            ),
+            fom = localDate("fom"),
+            tom = localDate("tom"),
+            datakilde = string("datakilde"),
             innhentet = localDateTime("innhentet"),
         )
     }

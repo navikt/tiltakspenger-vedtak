@@ -4,7 +4,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
-import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -35,23 +35,23 @@ class OvergangsstønadDAOTest {
         val innsending = innsendingMedForeldrepenger(ident = ident)
         repository.lagre(innsending)
 
-        val uføreVedtak = uføreVedtak()
+        val overgangsstønadVedtak = listOf(overgangsstønadVedtak())
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                uføreVedtakDAO.lagre(innsending.id, uføreVedtak, txSession)
+                overgangsstønadVedtakDAO.lagre(innsending.id, overgangsstønadVedtak, txSession)
             }
         }
 
         val hentet = sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                uføreVedtakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
+                overgangsstønadVedtakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
             }
         }
 
         hentet shouldNotBe null
-        hentet shouldBe uføreVedtak.copy(
-            id = hentet!!.id,
+        hentet.first() shouldBe overgangsstønadVedtak.first().copy(
+            id = hentet.first().id,
         )
     }
 }
