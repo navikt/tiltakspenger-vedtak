@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
@@ -38,6 +39,7 @@ class Innsending private constructor(
     tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
+    overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak?,
     uføreVedtak: InnhentetUføre?,
     aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
@@ -92,6 +94,12 @@ class Innsending private constructor(
         private set(value) {
             field = value
             dirtyChecker.set("foreldrepenger")
+        }
+
+    var overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak? = overgangsstønadVedtak
+        private set(value) {
+            field = value
+            dirtyChecker.set("overgangsstønad")
         }
 
     var uføreVedtak: InnhentetUføre? = uføreVedtak
@@ -180,6 +188,7 @@ class Innsending private constructor(
         tiltak = null,
         ytelser = null,
         foreldrepengerVedtak = null,
+        overgangsstønadVedtak = null,
         uføreVedtak = null,
         aktivitetslogg = Aktivitetslogg(),
     )
@@ -196,6 +205,7 @@ class Innsending private constructor(
             søknad: Søknad?,
             sistEndret: LocalDateTime,
             foreldrepengerVedtak: List<ForeldrepengerVedtak>,
+            overgangsstønadVedtak: List<OvergangsstønadVedtak>,
             uføreVedtak: UføreVedtak?,
             personopplysningerliste: List<Personopplysninger>,
             tiltaksliste: List<Tiltaksaktivitet>,
@@ -204,6 +214,7 @@ class Innsending private constructor(
             tidsstempelYtelserInnhentet: LocalDateTime?,
             tidsstempelPersonopplysningerInnhentet: LocalDateTime?,
             tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime?,
+            tidsstempelOvergangsstønadVedtakInnhentet: LocalDateTime?,
             tidsstempelUføreInnhentet: LocalDateTime?,
             tidsstempelSkjermingInnhentet: LocalDateTime?,
             aktivitetslogg: Aktivitetslogg,
@@ -230,6 +241,9 @@ class Innsending private constructor(
                         it,
                     )
                 },
+                overgangsstønadVedtak = tidsstempelOvergangsstønadVedtakInnhentet?.let {
+                    InnhentedeOvergangsstønadVedtak(overgangsstønadVedtak, it)
+                },
                 uføreVedtak = tidsstempelUføreInnhentet?.let {
                     InnhentetUføre(
                         uføreVedtak,
@@ -248,6 +262,7 @@ class Innsending private constructor(
                 InnsendingTilstandType.AvventerTiltak -> AvventerTiltak
                 InnsendingTilstandType.AvventerYtelser -> AvventerYtelser
                 InnsendingTilstandType.AvventerForeldrepenger -> AvventerForeldrepenger
+                InnsendingTilstandType.AvventerOvergangsstønad -> AvventerOvergangsstønad
                 InnsendingTilstandType.AvventerUføre -> AvventerUføre
                 InnsendingTilstandType.InnsendingFerdigstilt -> InnsendingFerdigstilt
                 InnsendingTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
@@ -311,6 +326,15 @@ class Innsending private constructor(
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(foreldrepengerMottattHendelse, "Registrert ForeldrepengerMottattHendelse")
         tilstand.håndter(this, foreldrepengerMottattHendelse)
+    }
+
+    fun håndter(overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+        if (journalpostId != overgangsstønadMottattHendelse.journalpostId()) return
+        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
+        // til Søker sin aktivitetslogg (Søker sin blir forelder)
+        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
+        kontekst(overgangsstønadMottattHendelse, "Registrert OvergangsstønadMottattHendelse")
+        tilstand.håndter(this, overgangsstønadMottattHendelse)
     }
 
     fun håndter(uføreMottattHendelse: UføreMottattHendelse) {
@@ -394,6 +418,10 @@ class Innsending private constructor(
 
         fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
             innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
+        }
+
+        fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
         }
 
         fun håndter(innsending: Innsending, uføreMottattHendelse: UføreMottattHendelse) {
@@ -511,8 +539,22 @@ class Innsending private constructor(
         override fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
             foreldrepengerMottattHendelse.info("Fikk info om foreldrepenger: ${foreldrepengerMottattHendelse.foreldrepengerVedtakListe()}")
             innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
-            innsending.trengerUføre(foreldrepengerMottattHendelse)
-            innsending.tilstand(foreldrepengerMottattHendelse, AvventerUføre)
+            innsending.trengerOvergangsstønad(foreldrepengerMottattHendelse)
+            innsending.tilstand(foreldrepengerMottattHendelse, AvventerOvergangsstønad)
+        }
+    }
+
+    internal object AvventerOvergangsstønad : Tilstand {
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerOvergangsstønad
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+        override fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
+            overgangsstønadMottattHendelse.info("Fikk info om overgangsstønad: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
+            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
+            innsending.trengerUføre(overgangsstønadMottattHendelse)
+            innsending.tilstand(overgangsstønadMottattHendelse, AvventerUføre)
         }
     }
 
@@ -544,6 +586,7 @@ class Innsending private constructor(
             innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
             innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
+            innsending.trengerOvergangsstønad(innsendingUtdatertHendelse)
             innsending.trengerUføre(innsendingUtdatertHendelse)
         }
     }
@@ -594,6 +637,18 @@ class Innsending private constructor(
         hendelse.behov(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.fpytelser,
             melding = "Trenger fpytelser",
+            detaljer = mapOf(
+                "ident" to this.ident,
+                "fom" to this.filtreringsperiode().fra,
+                "tom" to this.filtreringsperiode().til,
+            ),
+        )
+    }
+
+    private fun trengerOvergangsstønad(hendelse: InnsendingHendelse) {
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.overgangsstønad,
+            melding = "Trenger overgangsstønad",
             detaljer = mapOf(
                 "ident" to this.ident,
                 "fom" to this.filtreringsperiode().fra,
@@ -857,6 +912,26 @@ class Innsending private constructor(
         this.foreldrepengerVedtak = InnhentedeForeldrepengerVedtak(
             foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
             tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
+        )
+    }
+
+    private fun mottaOvergangsstønadVedtak(
+        overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse,
+    ) {
+        if (this.overgangsstønadVedtak != null &&
+            !overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet()
+                .isAfter(this.overgangsstønadVedtak!!.tidsstempelInnhentet)
+        ) {
+            overgangsstønadMottattHendelse.info("Fikk utdatert info om overgangsstønadvedtak, lagrer ikke")
+            return
+        }
+
+        overgangsstønadMottattHendelse
+            .info("Fikk info om overgangsstønadVedtak: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
+
+        this.overgangsstønadVedtak = InnhentedeOvergangsstønadVedtak(
+            overgangsstønadVedtak = overgangsstønadMottattHendelse.overgangsstønadVedtakListe(),
+            tidsstempelInnhentet = overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet(),
         )
     }
 

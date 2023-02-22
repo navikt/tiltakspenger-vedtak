@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
+import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -113,6 +115,22 @@ interface HendelserMother {
             foreldrepengerVedtakListe = foreldrepengerVedtakListe,
             aktivitetslogg = aktivitetslogg,
             tidsstempelForeldrepengerVedtakInnhentet = tidsstempelForeldrepengerInnhentet,
+        )
+    }
+
+    fun nyOvergangsstønadHendelse(
+        ident: String = Random().nextInt().toString(),
+        journalpostId: String = Random().nextInt().toString(),
+        overgansstønader: List<OvergangsstønadVedtak> = listOf(ObjectMother.overgangsstønadVedtak()),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        innhentet: LocalDateTime = LocalDateTime.now(),
+    ): OvergangsstønadMottattHendelse {
+        return OvergangsstønadMottattHendelse(
+            ident = ident,
+            journalpostId = journalpostId,
+            overgangsstønadVedtakListe = overgansstønader,
+            aktivitetslogg = aktivitetslogg,
+            innhentet = innhentet,
         )
     }
 

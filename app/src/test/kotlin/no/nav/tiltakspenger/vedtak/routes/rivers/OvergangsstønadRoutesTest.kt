@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class ForeldrepengerVedtakRoutesTest {
+class OvergangsstønadRoutesTest {
     private companion object {
         const val IDENT = "04927799109"
         const val JOURNALPOSTID = "foobar2"
@@ -41,8 +41,8 @@ class ForeldrepengerVedtakRoutesTest {
     }
 
     @Test
-    fun `sjekk at kall til river foreldrepenger route sender ut et behov`() {
-        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
+    fun `sjekk at kall til river overgangsstønad route sender ut et behov`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedForeldrepenger(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
         )
@@ -52,7 +52,7 @@ class ForeldrepengerVedtakRoutesTest {
                 // vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    foreldrepengerRoutes(
+                    overgangsstønadRoutes(
                         innsendingMediator = innsendingMediator,
                     )
                 }
@@ -61,10 +61,10 @@ class ForeldrepengerVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$foreldrepengerpath")
+                    path("$overgangsstønadPath")
                 },
             ) {
-                setBody(fpBody)
+                setBody(overgangsstønadBody)
             }
                 .apply {
                     status shouldBe HttpStatusCode.OK
@@ -73,13 +73,13 @@ class ForeldrepengerVedtakRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("overgangsstønad", field(0, "@behov")[0].asText())
+            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
         }
     }
 
     @Test
-    fun `sjekk at kall til river foreldrepenger route med tom liste sender ut et behov`() {
-        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
+    fun `sjekk at kall til river overgangsstønad route med tom liste sender ut et behov`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedForeldrepenger(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
         )
@@ -89,7 +89,7 @@ class ForeldrepengerVedtakRoutesTest {
                 // vedtakTestApi()
                 jacksonSerialization()
                 routing {
-                    foreldrepengerRoutes(
+                    overgangsstønadRoutes(
                         innsendingMediator = innsendingMediator,
                     )
                 }
@@ -98,7 +98,7 @@ class ForeldrepengerVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$foreldrepengerpath")
+                    path("$overgangsstønadPath")
                 },
             ) {
                 setBody(tomBody)
@@ -110,7 +110,42 @@ class ForeldrepengerVedtakRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("overgangsstønad", field(0, "@behov")[0].asText())
+            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
+        }
+    }
+
+    @Test
+    fun `sjekk at kall til river overgangsstønad route med feil ikke sender ut et behov`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedForeldrepenger(
+            ident = IDENT,
+            journalpostId = JOURNALPOSTID,
+        )
+
+        testApplication {
+            application {
+                // vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    overgangsstønadRoutes(
+                        innsendingMediator = innsendingMediator,
+                    )
+                }
+            }
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$overgangsstønadPath")
+                },
+            ) {
+                setBody(feilBody)
+            }
+                .apply {
+                    status shouldBe HttpStatusCode.OK
+                }
+        }
+        with(testRapid.inspektør) {
+            Assertions.assertEquals(0, size)
         }
     }
 
@@ -118,45 +153,36 @@ class ForeldrepengerVedtakRoutesTest {
         {
             "ident": "$IDENT",
             "journalpostId": "$JOURNALPOSTID",
-            "foreldrepenger": {
-              "ytelser": [],
+            "overgangsstønadRespons": {
+              "overgangsstønader": [],
               "feil": null
             },
             "innhentet": "2022-08-22T14:59:46.491437009"
         }
     """.trimIndent()
 
-    private val fpBody = """
+    private val feilBody = """
         {
             "ident": "$IDENT",
             "journalpostId": "$JOURNALPOSTID",
-            "foreldrepenger": {
-              "ytelser": [
+            "overgangsstønadRespons": {
+              "overgangsstønader": null,
+              "feil": "Feilet"
+            },
+            "innhentet": "2022-08-22T14:59:46.491437009"
+        }
+    """.trimIndent()
+
+    private val overgangsstønadBody = """
+        {
+            "ident": "$IDENT",
+            "journalpostId": "$JOURNALPOSTID",
+            "overgangsstønadRespons": {
+              "overgangsstønader": [
                 {
-                  "version": "v1",
-                  "aktør": "aktørId",
-                  "vedtattTidspunkt": "2022-01-01T12:00:00",
-                  "ytelse": "PLEIEPENGER_SYKT_BARN",
-                  "saksnummer": "sakNr",
-                  "vedtakReferanse": "Ref",
-                  "ytelseStatus": "LØPENDE",
-                  "kildesystem": "FPSAK",
-                  "periode": {
-                    "fom": "2022-01-01",
-                    "tom": "2022-01-31"
-                  },
-                  "tilleggsopplysninger": "Tillegg",
-                  "anvist": [
-                      {
-                        "periode": {
-                          "fom": "2022-01-01",
-                          "tom": "2022-01-31"
-                        },
-                        "beløp": 100.0,
-                        "dagsats": 50.0,
-                        "utbetalingsgrad": 10.0
-                      }
-                    ]
+                  "fom": "2022-01-01",
+                  "tom": "2022-01-31",  
+                  "datakilde": "kilde"
                 }
               ],
               "feil": null
