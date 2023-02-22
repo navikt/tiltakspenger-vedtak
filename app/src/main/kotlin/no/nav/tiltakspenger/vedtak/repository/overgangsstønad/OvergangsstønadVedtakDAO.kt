@@ -3,11 +3,14 @@ package no.nav.tiltakspenger.vedtak.repository.overgangsstønad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
+
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class OvergangsstønadVedtakDAO() {
     fun hentForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession): List<OvergangsstønadVedtak> {
@@ -23,6 +26,7 @@ class OvergangsstønadVedtakDAO() {
         overgangsstønadVedtak: List<OvergangsstønadVedtak>,
         txSession: TransactionalSession,
     ) {
+        SECURELOG.info { "Skal lagre Overgangsstønader $overgangsstønadVedtak" }
         slettOvergangsstønadVedtak(innsendingId, txSession)
         if (overgangsstønadVedtak.isEmpty()) return
         overgangsstønadVedtak.forEach {
@@ -35,6 +39,7 @@ class OvergangsstønadVedtakDAO() {
         overgangsstønadVedtak: OvergangsstønadVedtak,
         txSession: TransactionalSession,
     ) {
+        SECURELOG.info { "lagrer Overgangsstønad : $overgangsstønadVedtak" }
         val id = OvergangsstønadVedtakId.random()
         txSession.run(
             queryOf(
@@ -53,6 +58,7 @@ class OvergangsstønadVedtakDAO() {
     }
 
     private fun slettOvergangsstønadVedtak(innsendingId: InnsendingId, txSession: TransactionalSession) {
+        SECURELOG.info { "Sletter overgangsstønad før insert" }
         txSession.run(queryOf(slettOvergangsstønadVedtak, innsendingId.toString()).asUpdate)
     }
 

@@ -219,21 +219,25 @@ internal class PostgresInnsendingRepository(
                         txSession = txSession,
                     )
 
+                    val tid7 = System.currentTimeMillis()
+                    LOG.info { "overgangsstønadVedtakDAO.lagre tid tok ${tid7 - tid6} ms" }
+
                     uføreVedtakDAO.lagre(
                         innsendingId = innsending.id,
                         uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
                         txSession = txSession,
                     )
-                    val tid7 = System.currentTimeMillis()
-                    LOG.info { "uføreVedtakDAO.lagre tid tok ${tid7 - tid6} ms" }
+
+                    val tid8 = System.currentTimeMillis()
+                    LOG.info { "uføreVedtakDAO.lagre tid tok ${tid8 - tid7} ms" }
 
                     aktivitetsloggDAO.lagre(
                         innsendingId = innsending.id,
                         aktivitetslogg = innsending.aktivitetslogg,
                         txSession = txSession,
                     )
-                    val tid8 = System.currentTimeMillis()
-                    LOG.info { "aktivitetsloggDAO.lagre tid tok ${tid8 - tid7} ms" }
+                    val tid9 = System.currentTimeMillis()
+                    LOG.info { "aktivitetsloggDAO.lagre tid tok ${tid9 - tid8} ms" }
                 }
             }
         }
