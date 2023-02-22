@@ -58,6 +58,7 @@ class Innsending private constructor(
             ytelser?.tidsstempelInnhentet,
             foreldrepengerVedtak?.tidsstempelInnhentet,
             uføreVedtak?.tidsstempelInnhentet,
+            overgangsstønadVedtak?.tidsstempelInnhentet,
         ).fold(journalpostId.hashCode()) { hash, tidsstempel -> 31 * hash + tidsstempel.hashCode() }.toString()
 
     var tilstand: Tilstand = tilstand
@@ -242,7 +243,10 @@ class Innsending private constructor(
                     )
                 },
                 overgangsstønadVedtak = tidsstempelOvergangsstønadVedtakInnhentet?.let {
-                    InnhentedeOvergangsstønadVedtak(overgangsstønadVedtak, it)
+                    InnhentedeOvergangsstønadVedtak(
+                        overgangsstønadVedtak,
+                        it,
+                    )
                 },
                 uføreVedtak = tidsstempelUføreInnhentet?.let {
                     InnhentetUføre(
