@@ -146,8 +146,6 @@ class OvergangsstønadRoutesTest {
         }
         with(testRapid.inspektør) {
             Assertions.assertEquals(0, size)
-//            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-//            Assertions.assertEquals("uføre", field(0, "@behov")[0].asText())
         }
     }
 
@@ -182,8 +180,8 @@ class OvergangsstønadRoutesTest {
             "overgangsstønadRespons": {
               "overgangsstønader": [
                 {
-                  "fomDato": "2022-01-01",
-                  "tomDato": "2022-01-31",  
+                  "fom": "2022-01-01",
+                  "tom": "2022-01-31",  
                   "datakilde": "kilde"
                 }
               ],

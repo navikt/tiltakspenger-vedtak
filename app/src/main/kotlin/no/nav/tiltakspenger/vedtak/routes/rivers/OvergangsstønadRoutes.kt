@@ -86,8 +86,8 @@ private fun mapToOvergangsstønadVedtak(
 ): OvergangsstønadVedtak {
     return OvergangsstønadVedtak(
         id = OvergangsstønadVedtakId.random(),
-        fom = LocalDate.parse(dto.fomDato), // TODO flytt parsing til faktainnhenter
-        tom = LocalDate.parse(dto.tomDato),
+        fom = LocalDate.parse(dto.fom), // TODO flytt parsing til faktainnhenter
+        tom = LocalDate.parse(dto.tom),
         datakilde = dto.datakilde,
         innhentet = innhentet,
     )
