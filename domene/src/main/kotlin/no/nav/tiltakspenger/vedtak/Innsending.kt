@@ -975,7 +975,7 @@ class Innsending private constructor(
 
         if (this.personopplysninger!!.tidsstempelSkjermingInnhentet != null &&
             !skjermingMottattHendelse.tidsstempelSkjermingInnhentet()
-                .isAfter(this.personopplysninger!!.tidsstempelInnhentet)
+                .isAfter(this.personopplysninger!!.tidsstempelSkjermingInnhentet)
         ) {
             skjermingMottattHendelse.info("Fikk utdatert info om skjerming, lagrer ikke")
             return
@@ -983,6 +983,7 @@ class Innsending private constructor(
 
         this.personopplysninger = InnhentedePersonopplysninger(
             tidsstempelInnhentet = this.personopplysninger!!.tidsstempelInnhentet,
+            tidsstempelSkjermingInnhentet = this.personopplysninger!!.tidsstempelSkjermingInnhentet,
             personopplysningerliste = this.personopplysninger!!.personopplysningerliste.map {
                 when (it) {
                     is Personopplysninger.BarnMedIdent -> it.copy(
