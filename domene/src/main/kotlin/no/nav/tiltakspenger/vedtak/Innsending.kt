@@ -983,7 +983,7 @@ class Innsending private constructor(
 
         this.personopplysninger = InnhentedePersonopplysninger(
             tidsstempelInnhentet = this.personopplysninger!!.tidsstempelInnhentet,
-            tidsstempelSkjermingInnhentet = this.personopplysninger!!.tidsstempelSkjermingInnhentet,
+            tidsstempelSkjermingInnhentet = skjermingMottattHendelse.tidsstempelSkjermingInnhentet(),
             personopplysningerliste = this.personopplysninger!!.personopplysningerliste.map {
                 when (it) {
                     is Personopplysninger.BarnMedIdent -> it.copy(

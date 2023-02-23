@@ -7,8 +7,10 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -236,6 +238,48 @@ internal class PostgresInnsendingRepositoryTest {
         hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
         hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
+        hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
+    }
+
+    @Test
+    fun `lagre og hente hele aggregatet med Skjerming`() {
+        val ident = Random().nextInt().toString()
+        val journalpostId = Random().nextInt().toString()
+
+        val søknad = nySøknadMedArenaTiltak(
+            journalpostId = journalpostId,
+            ident = ident,
+            barnetillegg = listOf(barnetilleggUtenIdent()),
+            trygdOgPensjon = listOf(trygdOgPensjon()),
+        )
+        val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
+
+        val innsending = innsendingMedPersonopplysninger(
+            journalpostId = journalpostId,
+            ident = ident,
+            søknad = søknad,
+            personopplysninger = listOf(personopplysninger),
+        )
+
+        innsendingRepository.lagre(innsending)
+
+        innsending.håndter(
+            skjermingMottattHendelse = nySkjermingHendelse(
+                journalpostId = journalpostId,
+                skjerming = skjermingTrue(),
+            ),
+        )
+
+        innsendingRepository.lagre(innsending)
+
+        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
+
+        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
+        assertEquals(innsending.ident, hentetInnsending.ident)
+        assertEquals(innsending.id, hentetInnsending.id)
+        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
+        hentetInnsending.søknad shouldBe søknad
+        hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 

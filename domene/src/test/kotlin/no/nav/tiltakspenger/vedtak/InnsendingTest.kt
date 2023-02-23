@@ -2,10 +2,13 @@ package no.nav.tiltakspenger.vedtak
 
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import org.junit.jupiter.api.Test
 
@@ -53,5 +56,15 @@ internal class InnsendingTest {
         // Søknad blir lagret på Innsendingen
         innsending2.håndter(nySøknadMottattHendelse(journalpostId = "1"))
         innsending2.isDirty() shouldBe true
+
+        val innsending3 = innsendingMedPersonopplysninger(journalpostId = "1")
+        // Søknad blir lagret på Innsendingen
+        innsending3.håndter(
+            nySkjermingHendelse(
+                journalpostId = "1",
+                skjerming = skjermingTrue(),
+            ),
+        )
+        innsending3.isDirty() shouldBe true
     }
 }
