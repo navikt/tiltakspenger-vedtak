@@ -309,6 +309,7 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
                     "tidsstempel_uforevedtak_innhentet" to innsending.uføreVedtak?.tidsstempelInnhentet,
+                    "tidsstempel_overgangsstonadvedtak_innhentet" to innsending.overgangsstønadVedtak?.tidsstempelInnhentet,
                     "sist_endret" to innsending.sistEndret,
                     "opprettet" to nå,
                 ),
@@ -335,6 +336,7 @@ internal class PostgresInnsendingRepository(
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
                     "tidsstempel_foreldrepengervedtak_innhentet" to innsending.foreldrepengerVedtak?.tidsstempelInnhentet,
                     "tidsstempel_uforevedtak_innhentet" to innsending.uføreVedtak?.tidsstempelInnhentet,
+                    "tidsstempel_overgangsstonadvedtak_innhentet" to innsending.overgangsstønadVedtak?.tidsstempelInnhentet,
                     "sistEndretOld" to sistEndretOld,
                     "sistEndret" to innsending.sistEndret,
                 ),
@@ -359,6 +361,7 @@ internal class PostgresInnsendingRepository(
             tidsstempel_ytelser_innhentet, 
             tidsstempel_foreldrepengervedtak_innhentet, 
             tidsstempel_uførevedtak_innhentet,
+            tidsstempel_overgangsstønadvedtak_innhentet,
             sist_endret, 
             opprettet
         ) values (
@@ -372,6 +375,7 @@ internal class PostgresInnsendingRepository(
             :tidsstempel_ytelser_innhentet, 
             :tidsstempel_foreldrepengervedtak_innhentet, 
             :tidsstempel_uforevedtak_innhentet,
+            :tidsstempel_overgangsstonadvedtak_innhentet,
             :sist_endret, 
             :opprettet
         )
@@ -387,7 +391,8 @@ internal class PostgresInnsendingRepository(
               tidsstempel_skjerming_innhentet = :tidsstempel_skjerming_innhentet,
               tidsstempel_ytelser_innhentet = :tidsstempel_ytelser_innhentet,
               tidsstempel_foreldrepengervedtak_innhentet = :tidsstempel_foreldrepengervedtak_innhentet,
-              tidsstempel_uførevedtak_innhentet = :tidsstempel_uforevedtak_innhentet
+              tidsstempel_uførevedtak_innhentet = :tidsstempel_uforevedtak_innhentet,
+              tidsstempel_overgangsstønadvedtak_innhentet = :tidsstempel_overgangsstonadvedtak_innhentet
            where id = :id
              and sist_endret = :sistEndretOld
         """.trimMargin()
