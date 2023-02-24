@@ -14,7 +14,7 @@ interface ForeldrepengerMother {
         aktør: String = "aktørId",
         vedtattTidspunkt: LocalDateTime = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
         ytelse: ForeldrepengerVedtak.Ytelser = ForeldrepengerVedtak.Ytelser.FORELDREPENGER,
-        saksnummer: String = "saksnr",
+        saksnummer: String? = "saksnr",
         vedtakRef: String = "vedtakRef",
         status: ForeldrepengerVedtak.Status = ForeldrepengerVedtak.Status.LØPENDE,
         kildesystem: ForeldrepengerVedtak.Kildesystem = ForeldrepengerVedtak.Kildesystem.FPSAK,

@@ -27,7 +27,7 @@ class ForeldrepengerVedtakDAOTest {
     }
 
     @Test
-    fun `lagre og hente med null felter`() {
+    fun `lagre og hente med default felter`() {
         val foreldrepengerVedtakDAO = ForeldrepengerVedtakDAO()
         val repository = PostgresInnsendingRepository(foreldrepengerVedtakDAO = foreldrepengerVedtakDAO)
         val ident = Random().nextInt().toString()
@@ -35,6 +35,36 @@ class ForeldrepengerVedtakDAOTest {
         repository.lagre(innsending)
 
         val foreldrepengerVedtak = foreldrepengerVedtak()
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                foreldrepengerVedtakDAO.lagre(innsending.id, listOf(foreldrepengerVedtak), txSession)
+            }
+        }
+
+        val hentet = sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                foreldrepengerVedtakDAO.hentForInnsending(innsendingId = innsending.id, txSession = txSession)
+            }
+        }
+
+        hentet.size shouldBe 1
+        hentet.first() shouldBe foreldrepengerVedtak.copy(
+            id = hentet.first().id,
+        )
+    }
+
+    @Test
+    fun `lagre og hente med null i saksnummer`() {
+        val foreldrepengerVedtakDAO = ForeldrepengerVedtakDAO()
+        val repository = PostgresInnsendingRepository(foreldrepengerVedtakDAO = foreldrepengerVedtakDAO)
+        val ident = Random().nextInt().toString()
+        val innsending = innsendingMedYtelse(ident = ident)
+        repository.lagre(innsending)
+
+        val foreldrepengerVedtak = foreldrepengerVedtak(
+            saksnummer = null,
+        )
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->

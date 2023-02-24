@@ -114,6 +114,43 @@ class ForeldrepengerVedtakRoutesTest {
         }
     }
 
+    @Test
+    fun `sjekk at kall til river foreldrepenger route med null i saksnummer går ok`() {
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
+            ident = IDENT,
+            journalpostId = JOURNALPOSTID,
+        )
+
+        testApplication {
+            application {
+                // vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    foreldrepengerRoutes(
+                        innsendingMediator = innsendingMediator,
+                    )
+                }
+            }
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$foreldrepengerpath")
+                },
+            ) {
+                setBody(saksnummerNullable)
+            }
+                .apply {
+                    status shouldBe HttpStatusCode.OK
+                }
+        }
+        with(testRapid.inspektør) {
+            Assertions.assertEquals(1, size)
+            Assertions.assertEquals("behov", field(0, "@event_name").asText())
+            Assertions.assertEquals("overgangsstønad", field(0, "@behov")[0].asText())
+        }
+    }
+
     private val tomBody = """
         {
             "ident": "$IDENT",
@@ -163,5 +200,34 @@ class ForeldrepengerVedtakRoutesTest {
             },
             "innhentet": "2022-08-22T14:59:46.491437009"
         }
+    """.trimIndent()
+
+    private val saksnummerNullable = """
+        {
+          "ident": "$IDENT",
+          "journalpostId": "$JOURNALPOSTID",
+          "foreldrepenger": {
+            "ytelser": [
+              {
+                "version": "1.0",
+                "aktør": "1000002970704",
+                "vedtattTidspunkt": "2012-11-13T00:00:00",
+                "ytelse": "PLEIEPENGER_SYKT_BARN",
+                "saksnummer": null,
+                "vedtakReferanse": "",
+                "ytelseStatus": "UNDER_BEHANDLING",
+                "kildesystem": "K9SAK",
+                "periode": {
+                  "fom": "2012-11-13",
+                  "tom": "9999-12-31"
+                },
+                "tilleggsopplysninger": null,
+                "anvist": []
+              }
+            ],
+            "feil": null
+          },
+          "innhentet": "2023-02-24T15:15:19.340589406"
+        }   
     """.trimIndent()
 }
