@@ -50,7 +50,7 @@ data class StatligeYtelserDTO(
     val dagpenger: List<VilkårsvurderingDTO>,
 //    val sykepenger: List<VilkårsvurderingDTO>,
     val uføre: List<VilkårsvurderingDTO>,
-//    val overgangsstønad: List<VilkårsvurderingDTO>,
+    val overgangsstønad: List<VilkårsvurderingDTO>,
     val pleiepengerNærstående: List<VilkårsvurderingDTO>,
     val pleiepengerSyktBarn: List<VilkårsvurderingDTO>,
     val foreldrepenger: List<VilkårsvurderingDTO>,

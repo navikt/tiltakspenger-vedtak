@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
+import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -26,6 +27,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
@@ -111,6 +113,16 @@ interface VilkårsvurderingerMother {
     ): UføreVilkarsvurdering {
         return UføreVilkarsvurdering(
             uføreVedtak = uføreVedtak,
+            vurderingsperiode = vurderingsperiode,
+        )
+    }
+
+    fun nyOvergangsstønadVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        overgangsstønaderVedtak: List<OvergangsstønadVedtak> = emptyList(),
+    ): OvergangsstønadVilkårsvurdering {
+        return OvergangsstønadVilkårsvurdering(
+            overgangsstønadVedtak = overgangsstønaderVedtak,
             vurderingsperiode = vurderingsperiode,
         )
     }
@@ -206,6 +218,9 @@ interface VilkårsvurderingerMother {
         uføreVilkarsvurdering: UføreVilkarsvurdering = nyUføreVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
         ),
+        overgangsstønadVilkårsvurdering: OvergangsstønadVilkårsvurdering = nyOvergangsstønadVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
     ): StatligeYtelserVilkårsvurderingKategori {
         return StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
@@ -217,6 +232,7 @@ interface VilkårsvurderingerMother {
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
+            overgangsstønad = overgangsstønadVilkårsvurdering,
         )
     }
 

@@ -15,11 +15,11 @@ class SykepengerVilkårsvurdering : IkkeImplementertVurdering() {
 //    override fun vilkår(): Vilkår = Vilkår.UFØRETRYGD
 // }
 
-class OvergangsstønadVilkårsvurdering : IkkeImplementertVurdering() {
-    override fun kilde() = "[ny løsning]"
-
-    override fun vilkår(): Vilkår = Vilkår.OVERGANGSSTØNAD
-}
+// class OvergangsstønadVilkårsvurdering : IkkeImplementertVurdering() {
+//    override fun kilde() = "[ny løsning]"
+//
+//    override fun vilkår(): Vilkår = Vilkår.OVERGANGSSTØNAD
+// }
 
 class GjenlevendepensjonVilkårsvurdering : IkkeImplementertVurdering() {
     override fun kilde() = "Pesys"

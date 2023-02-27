@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
@@ -227,7 +228,7 @@ class BehandlingMapper {
         val perioderMedAAP = v.vurderinger().filter { it.vilkår is Vilkår.AAP }
         val perioderMedUføre = v.vurderinger().filter { it.vilkår is Vilkår.UFØRETRYGD }
 //        val perioderMedSykepenger = v.vurderinger().filter { it.vilkår is Vilkår.SYKEPENGER }
-//        val perioderMedOvergangsstønad = v.vurderinger().filter { it.vilkår is Vilkår.OVERGANGSSTØNAD }
+        val perioderMedOvergangsstønad = v.vurderinger().filter { it.vilkår is Vilkår.OVERGANGSSTØNAD }
         val perioderMedPleiepengerNærstående = v.vurderinger().filter { it.vilkår is Vilkår.PLEIEPENGER_NÆRSTÅENDE }
         val perioderMedPleiepengerSyktBarn = v.vurderinger().filter { it.vilkår is Vilkår.PLEIEPENGER_SYKT_BARN }
         val perioderMedForeldrepenger = v.vurderinger().filter { it.vilkår is Vilkår.FORELDREPENGER }
@@ -243,7 +244,7 @@ class BehandlingMapper {
             dagpenger = perioderMedDagpenger.map { mapVurderingToVilkårsvurderingDTO(it) },
 //            sykepenger = perioderMedSykepenger.map { mapVurderingToVilkårsvurderingDTO(it) },
             uføre = perioderMedUføre.map { mapVurderingToVilkårsvurderingDTO(it) },
-//            overgangsstønad = perioderMedOvergangsstønad.map { mapVurderingToVilkårsvurderingDTO(it) },
+            overgangsstønad = perioderMedOvergangsstønad.map { mapVurderingToVilkårsvurderingDTO(it) },
             pleiepengerNærstående = perioderMedPleiepengerNærstående.map { mapVurderingToVilkårsvurderingDTO(it) },
             pleiepengerSyktBarn = perioderMedPleiepengerSyktBarn.map { mapVurderingToVilkårsvurderingDTO(it) },
             foreldrepenger = perioderMedForeldrepenger.map { mapVurderingToVilkårsvurderingDTO(it) },
@@ -346,6 +347,10 @@ class BehandlingMapper {
             ),
             uføretrygd = UføreVilkarsvurdering(
                 uføreVedtak = innsending.uføreVedtak?.uføreVedtak,
+                vurderingsperiode = vurderingsperiode,
+            ),
+            overgangsstønad = OvergangsstønadVilkårsvurdering(
+                overgangsstønadVedtak = innsending.overgangsstønadVedtak!!.overgangsstønadVedtak,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),

@@ -26,7 +26,7 @@ class StatligeYtelserVilkårsvurderingKategori(
     val dagpenger: DagpengerVilkårsvurdering,
     val sykepenger: SykepengerVilkårsvurdering = SykepengerVilkårsvurdering(),
     val uføretrygd: UføreVilkarsvurdering,
-    val overgangsstønad: OvergangsstønadVilkårsvurdering = OvergangsstønadVilkårsvurdering(),
+    val overgangsstønad: OvergangsstønadVilkårsvurdering,
     val pleiepengerNærstående: PleiepengerNærståendeVilkårsvurdering,
     val pleiepengerSyktBarn: PleiepengerSyktBarnVilkårsvurdering,
     val foreldrepenger: ForeldrepengerVilkårsvurdering,

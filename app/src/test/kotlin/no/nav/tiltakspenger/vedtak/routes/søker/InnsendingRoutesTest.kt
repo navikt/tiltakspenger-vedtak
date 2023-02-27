@@ -165,7 +165,15 @@ class InnsendingRoutesTest {
                                 utfall = UtfallDTO.Uavklart,
                             ),
                         ),
-
+                        overgangsstønad = listOf(
+                            VilkårsvurderingDTO(
+                                kilde = "",
+                                detaljer = "",
+                                periode = null,
+                                kreverManuellVurdering = false,
+                                utfall = UtfallDTO.Uavklart,
+                            ),
+                        ),
                     ),
                     kommunaleYtelser = KommunaleYtelserDTO(
                         samletUtfall = UtfallDTO.Uavklart,

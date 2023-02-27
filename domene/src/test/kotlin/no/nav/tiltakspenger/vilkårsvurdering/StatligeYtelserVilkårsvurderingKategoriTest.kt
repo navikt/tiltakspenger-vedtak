@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.februarDateTime
 import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
@@ -147,6 +148,14 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val overgangsstønadVilkarsvurdering = nyOvergangsstønadVilkårsvurdering(
+            overgangsstønaderVedtak = emptyList(),
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -157,6 +166,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
+            overgangsstønad = overgangsstønadVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -282,6 +292,14 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val overgangsstønadVilkarsvurdering = nyOvergangsstønadVilkårsvurdering(
+            overgangsstønaderVedtak = emptyList(),
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -292,6 +310,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
+            overgangsstønad = overgangsstønadVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -337,6 +356,14 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             vurderingsperiode = vurderingsperiode,
         )
 
+        val overgangsstønadVilkarsvurdering = nyOvergangsstønadVilkårsvurdering(
+            overgangsstønaderVedtak = emptyList(),
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -347,6 +374,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
+            overgangsstønad = overgangsstønadVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
@@ -396,6 +424,14 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val overgangsstønadVilkarsvurdering = nyOvergangsstønadVilkårsvurdering(
+            overgangsstønaderVedtak = emptyList(),
+            vurderingsperiode = Periode(
+                fra = 1.februar(2022),
+                til = 28.februar(2022),
+            ),
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -406,6 +442,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             opplæringspenger = opplæringspengerVilkårsvurdering,
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
+            overgangsstønad = overgangsstønadVilkarsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
