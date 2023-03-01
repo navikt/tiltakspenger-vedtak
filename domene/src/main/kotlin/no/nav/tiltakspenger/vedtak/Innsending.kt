@@ -953,6 +953,18 @@ class Innsending private constructor(
         uføreMottattHendelse
             .info("Fikk info om uføreMottattHendelse: ${uføreMottattHendelse.uføreVedtak()}")
 
+        if (uføreMottattHendelse.uføreVedtak().virkDato != null) {
+            if (!this.filtreringsperiode().inneholder(uføreMottattHendelse.uføreVedtak().virkDato!!)) {
+                uføreMottattHendelse
+                    .info("Filtrer bort vedtak da virkDato ikke er i vurderingsperioden ${this.filtreringsperiode()}")
+                this.uføreVedtak = InnhentetUføre(
+                    uføreVedtak = null,
+                    tidsstempelInnhentet = uføreMottattHendelse.tidsstempelUføreVedtakInnhentet(),
+                )
+                return
+            }
+        }
+
         this.uføreVedtak = InnhentetUføre(
             uføreVedtak = uføreMottattHendelse.uføreVedtak(),
             tidsstempelInnhentet = uføreMottattHendelse.tidsstempelUføreVedtakInnhentet(),
