@@ -7,8 +7,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg

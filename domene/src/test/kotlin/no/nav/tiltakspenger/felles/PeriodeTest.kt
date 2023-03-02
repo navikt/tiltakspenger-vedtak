@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.felles
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse

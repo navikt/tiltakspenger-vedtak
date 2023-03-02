@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.februarDateTime
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.februar
+import no.nav.tiltakspenger.felles.februarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyDagpengerVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering

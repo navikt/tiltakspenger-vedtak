@@ -2,10 +2,10 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
-import no.nav.tiltakspenger.domene.juni
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.felles.juni
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad

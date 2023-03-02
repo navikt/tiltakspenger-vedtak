@@ -2,12 +2,12 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
-import no.nav.tiltakspenger.domene.mars
-import no.nav.tiltakspenger.domene.marsDateTime
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.februar
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.felles.marsDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype.AA

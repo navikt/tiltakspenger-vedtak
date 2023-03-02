@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import java.math.BigDecimal
 import java.time.LocalDateTime

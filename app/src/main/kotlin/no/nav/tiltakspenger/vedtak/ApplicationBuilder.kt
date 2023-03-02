@@ -15,7 +15,8 @@ import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
 
-internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnection.StatusListener {
+internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<String, String>) :
+    RapidsConnection.StatusListener {
     val rapidsConnection: RapidsConnection = RapidApplication.Builder(
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers),
     )
@@ -46,7 +47,7 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
         søkerRepository = søkerRepository,
         rapidsConnection = rapidsConnection,
     )
-    val innsendingAdminService = InnsendingAdminService(
+    private val innsendingAdminService = InnsendingAdminService(
         innsendingRepository = innsendingRepository,
         innsendingMediator = innsendingMediator,
     )
@@ -61,29 +62,6 @@ internal class ApplicationBuilder(config: Map<String, String>) : RapidsConnectio
         AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
 
         rapidsConnection.register(this)
-//        SøknadMottattRiver(
-//            innsendingMediator = innsendingMediator,
-//            søkerMediator = søkerMediator,
-//            rapidsConnection = rapidsConnection,
-//        )
-//        PersonopplysningerMottattRiver(
-//            innsendingMediator = innsendingMediator,
-//            søkerMediator = søkerMediator,
-//            rapidsConnection = rapidsConnection,
-//        )
-//        SkjermingMottattRiver(
-//            innsendingMediator = innsendingMediator,
-//            søkerMediator = søkerMediator,
-//            rapidsConnection = rapidsConnection,
-//        )
-//        ArenaTiltakMottattRiver(
-//            innsendingMediator = innsendingMediator,
-//            rapidsConnection = rapidsConnection,
-//        )
-//        ArenaYtelserMottattRiver(
-//            innsendingMediator = innsendingMediator,
-//            rapidsConnection = rapidsConnection,
-//        )
     }
 
     fun start() {

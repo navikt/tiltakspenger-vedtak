@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.februar
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering

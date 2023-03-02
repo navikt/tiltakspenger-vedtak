@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger

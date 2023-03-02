@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.februar
-import no.nav.tiltakspenger.domene.februarDateTime
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.februar
+import no.nav.tiltakspenger.felles.februarDateTime
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreVilkårsvurdering

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.domene.nå
+import no.nav.tiltakspenger.felles.nå
 import java.time.LocalDateTime
 
 // Understands issues that arose when analyzing a JSON message

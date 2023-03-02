@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.januar
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak

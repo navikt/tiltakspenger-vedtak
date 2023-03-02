@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.felles.UføreVedtakId
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -2,8 +2,8 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakStatus
 import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseSakYtelsetype

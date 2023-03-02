@@ -2,9 +2,9 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.januarDateTime
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse

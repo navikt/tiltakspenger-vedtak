@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.toDisplayDate
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.toDisplayDate
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår

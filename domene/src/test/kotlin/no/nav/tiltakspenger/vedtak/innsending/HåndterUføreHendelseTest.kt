@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.vedtak.innsending
 
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.januar
-import no.nav.tiltakspenger.domene.mars
-import no.nav.tiltakspenger.domene.nå
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedOvergangsstønad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak

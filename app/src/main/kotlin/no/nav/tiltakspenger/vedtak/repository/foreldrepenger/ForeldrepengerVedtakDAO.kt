@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak.repository.foreldrepenger
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.InnsendingId
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime

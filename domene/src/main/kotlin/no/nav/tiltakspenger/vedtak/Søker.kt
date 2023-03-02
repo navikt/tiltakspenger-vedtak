@@ -26,6 +26,7 @@ class Søker private constructor(
 
     fun håndter(hendelse: IdentMottattHendelse) {
         // her skjer det ikke en pøkk...
+        SECURELOG.info { "Søker fikk en identMottattHendelse med iden ${hendelse.ident()} som vi ignorerer" }
     }
 
     fun håndter(hendelse: PersonopplysningerMottattHendelse) {

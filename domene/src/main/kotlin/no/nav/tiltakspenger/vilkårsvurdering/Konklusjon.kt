@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.leggSammen
-import no.nav.tiltakspenger.domene.trekkFra
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.leggSammen
+import no.nav.tiltakspenger.felles.trekkFra
 import java.time.LocalDate
 
 fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {

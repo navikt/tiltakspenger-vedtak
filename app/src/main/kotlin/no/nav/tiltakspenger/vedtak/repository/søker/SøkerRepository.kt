@@ -4,8 +4,8 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.nå
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language

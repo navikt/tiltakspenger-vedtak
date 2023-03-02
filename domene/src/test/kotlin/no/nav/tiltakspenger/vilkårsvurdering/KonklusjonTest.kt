@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.felles.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

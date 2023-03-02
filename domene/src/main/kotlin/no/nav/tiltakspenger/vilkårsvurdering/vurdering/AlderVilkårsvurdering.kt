@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
-import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -9,7 +9,7 @@ import java.time.LocalDate
 
 class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: LocalDate) : Vilkårsvurdering() {
 
-    fun splittVurderingsperiodePåDato(
+    private fun splittVurderingsperiodePåDato(
         vurderingsperiode: Periode,
         datoBrukerFyller18År: LocalDate,
     ): Pair<Periode, Periode> {
@@ -24,13 +24,19 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         return Pair(periodeFørBrukerFyller18År, periodeEtterBrukerFyller18År)
     }
 
-    fun brukerEr18ÅrIHeleVurderingsperioden(vurderingsperiode: Periode, datoSøkerFyller18År: LocalDate): Boolean =
+    private fun brukerEr18ÅrIHeleVurderingsperioden(
+        vurderingsperiode: Periode,
+        datoSøkerFyller18År: LocalDate,
+    ): Boolean =
         vurderingsperiode.etter(datoSøkerFyller18År) || vurderingsperiode.fra.isEqual(datoSøkerFyller18År)
 
-    fun brukerFyller18ÅrEtterVurderingsperioden(vurderingsperiode: Periode, datoSøkerFyller18År: LocalDate): Boolean =
+    private fun brukerFyller18ÅrEtterVurderingsperioden(
+        vurderingsperiode: Periode,
+        datoSøkerFyller18År: LocalDate,
+    ): Boolean =
         vurderingsperiode.før(datoSøkerFyller18År)
 
-    fun lagAlderVurderinger(vurderingsperiode: Periode, søkersFødselsdato: LocalDate): List<Vurdering> {
+    private fun lagAlderVurderinger(vurderingsperiode: Periode, søkersFødselsdato: LocalDate): List<Vurdering> {
         val datoBrukerFyller18År = søkersFødselsdato.plusYears(18)
         if (brukerEr18ÅrIHeleVurderingsperioden(vurderingsperiode, datoBrukerFyller18År)) {
             return listOf(
@@ -49,7 +55,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
                 ),
             )
         }
-        val (periodeUnder18År, periodeFylt18År) = splittVurderingsperiodePåDato(
+        val (periodeUnder18År, _) = splittVurderingsperiodePåDato(
             vurderingsperiode = vurderingsperiode,
             datoBrukerFyller18År = datoBrukerFyller18År,
         )
@@ -62,7 +68,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         )
     }
 
-    fun lagOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
+    private fun lagOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
         Vurdering(
             vilkår = vilkår(),
             kilde = "PDL",
@@ -72,7 +78,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             detaljer = "-",
         )
 
-    fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
+    private fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
         Vurdering(
             vilkår = vilkår(),
             kilde = "PDL",

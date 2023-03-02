@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.domene.Periode
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
+import no.nav.tiltakspenger.felles.Periode
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

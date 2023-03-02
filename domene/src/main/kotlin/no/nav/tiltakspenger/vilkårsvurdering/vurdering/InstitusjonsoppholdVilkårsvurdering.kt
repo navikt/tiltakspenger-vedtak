@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
-import no.nav.tiltakspenger.domene.Periode
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall

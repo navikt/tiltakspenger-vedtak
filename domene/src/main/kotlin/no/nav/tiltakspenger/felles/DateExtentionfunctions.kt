@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.felles
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -43,7 +43,7 @@ fun Int.marsDateTime(year: Int): LocalDateTime = LocalDateTime.of(
     0,
 ).truncatedTo(ChronoUnit.MILLIS)
 
-fun nå() = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)
+fun nå(): LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)
 // fun LocalDateTime.Companion.nowTrunc() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
 fun LocalDate.toDisplayDate(): String = DateTimeFormatter.ofPattern("dd.MM.yyyy")

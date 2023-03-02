@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import org.junit.jupiter.api.Test
 

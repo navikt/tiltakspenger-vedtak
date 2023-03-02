@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.Periode
-import no.nav.tiltakspenger.domene.januar
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold

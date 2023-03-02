@@ -91,7 +91,7 @@ fun Route.søkerRoutes(
                 søkerService.finnHashForInnsending(søknadId.søknadId)
                     ?: return@post call.respond(message = "Innsending ikke funnet", status = HttpStatusCode.NotFound)
             } catch (tex: TilgangException) {
-                LOG.warn("Saksbehandler har ikke tilgang", tex)
+                LOG.warn("Saksbehandler $saksbehandler har ikke tilgang", tex)
                 return@post call.respond(message = "Saksbehandler har ikke tilgang", status = HttpStatusCode.Forbidden)
             }
         call.respond(

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.felles
 
 import com.google.common.collect.BoundType
 import com.google.common.collect.DiscreteDomain
