@@ -57,8 +57,8 @@ fun Route.søkerRoutes(
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
-    get("$søkerPath/{søkerId}") {
-        LOG.debug("Mottatt request på $søkerPath")
+    get("$søkerPath/{sokerId}") {
+        LOG.debug("Mottatt request på $søkerPath/sokerId")
         val søkerId = call.parameters["sokerId"]?.let { SøkerId.fromDb(it) }
             ?: return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
         // TODO:
