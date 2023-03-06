@@ -18,7 +18,6 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
 
-internal const val søknaderPath = "/person/soknader"
 internal const val innsendingHashPath = "/innsending/hash"
 internal const val søkerPath = "/soker"
 
@@ -58,8 +57,8 @@ fun Route.søkerRoutes(
         call.respond(message = response, status = HttpStatusCode.OK)
     }
 
-    get("$søknaderPath/{sokerId}") {
-        LOG.debug("Mottatt request på $søknaderPath")
+    get("$søkerPath/{sokerId}") {
+        LOG.debug("Mottatt request på $søkerPath/sokerId")
         val søkerId = call.parameters["sokerId"]?.let { SøkerId.fromDb(it) }
             ?: return@get call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
         // TODO:

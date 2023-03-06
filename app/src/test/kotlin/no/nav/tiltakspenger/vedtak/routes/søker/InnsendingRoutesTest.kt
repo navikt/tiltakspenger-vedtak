@@ -279,7 +279,7 @@ class InnsendingRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath/$søkerId")
+                    path("$søkerPath/$søkerId")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK
@@ -318,7 +318,7 @@ class InnsendingRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath/$søkerId")
+                    path("$søkerPath/$søkerId")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.Forbidden
@@ -350,7 +350,7 @@ class InnsendingRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$søknaderPath/$sokerId")
+                    path("$søkerPath/$sokerId")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.NotFound
