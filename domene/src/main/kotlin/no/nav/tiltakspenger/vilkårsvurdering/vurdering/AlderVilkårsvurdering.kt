@@ -41,16 +41,16 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         if (brukerEr18ÅrIHeleVurderingsperioden(vurderingsperiode, datoBrukerFyller18År)) {
             return listOf(
                 lagOppfyltVurdering(
-                    fra = vurderingsperiode.fra,
-                    til = vurderingsperiode.til,
+                    fra = null,
+                    til = null,
                 ),
             )
         }
         if (brukerFyller18ÅrEtterVurderingsperioden(vurderingsperiode, datoBrukerFyller18År)) {
             return listOf(
                 lagIkkeOppfyltVurdering(
-                    fra = vurderingsperiode.fra,
-                    til = vurderingsperiode.til,
+                    fra = null,
+                    til = null,
                     null,
                 ),
             )
@@ -68,7 +68,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
         )
     }
 
-    private fun lagOppfyltVurdering(fra: LocalDate, til: LocalDate): Vurdering =
+    private fun lagOppfyltVurdering(fra: LocalDate?, til: LocalDate?): Vurdering =
         Vurdering(
             vilkår = vilkår(),
             kilde = "PDL",
@@ -78,7 +78,7 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
             detaljer = "-",
         )
 
-    private fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
+    private fun lagIkkeOppfyltVurdering(fra: LocalDate?, til: LocalDate?, detaljer: String?): Vurdering =
         Vurdering(
             vilkår = vilkår(),
             kilde = "PDL",
