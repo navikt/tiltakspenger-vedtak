@@ -4,7 +4,7 @@ sqlInstances:
   diskAutoresize: false
   pointInTimeRecovery: false
 ingress:
-  url: https://tiltakspenger-vedtak.dev.intern.nav.no
+  url: https://tiltakspenger-vedtak.intern.dev.nav.no
 cluster: dev-gcp
 tenant: trygdeetaten.no
 ROLE_SAKSBEHANDLER: 1b3a2c4d-d620-4fcf-a29b-a6cdadf29680
