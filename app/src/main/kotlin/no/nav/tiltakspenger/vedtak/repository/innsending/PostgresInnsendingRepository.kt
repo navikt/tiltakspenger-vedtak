@@ -99,7 +99,10 @@ internal class PostgresInnsendingRepository(
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
-                    queryOf(hentMedTilstand, InnsendingTilstandType.InnsendingFerdigstilt.name).map { row ->
+                    queryOf(
+                        hentMedTilstandOgIkkeForGammel,
+                        InnsendingTilstandType.InnsendingFerdigstilt.name,
+                    ).map { row ->
                         // row.toInnsending(txSession)
                         row.toJournalpostId()
                     }.asList,
@@ -411,6 +414,10 @@ internal class PostgresInnsendingRepository(
 
     @Language("SQL")
     private val hentMedTilstand = "select * from innsending where tilstand = ?"
+
+    @Language("SQL")
+    private val hentMedTilstandOgIkkeForGammel =
+        "select * from innsending where tilstand = ? and opprettet > now() - INTERVAL '21 DAYS'"
 
     @Language("SQL")
     private val antallStoppetUnderBehandling =
