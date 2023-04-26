@@ -1,4 +1,4 @@
-val ktorVersion = "2.2.4"
+val ktorVersion = "2.3.0"
 val kotestVersion = "5.5.5"
 val mockkVersion = "1.13.5"
 val testContainersVersion = "1.17.6"
