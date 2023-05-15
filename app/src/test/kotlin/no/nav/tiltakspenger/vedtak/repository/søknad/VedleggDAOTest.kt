@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -40,7 +40,7 @@ internal class VedleggDAOTest {
         val innsending = Innsending(journalpostId = journalpostId, ident = ident)
         repository.lagre(innsending)
         val søknadId = Søknad.randomId()
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             id = søknadId,
             personopplysninger = personSøknad(
                 ident = ident,

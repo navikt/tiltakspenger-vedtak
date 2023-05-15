@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKvpVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
@@ -24,7 +24,7 @@ class InngangsvilkårsvurderingerTest {
         val vilkårsvurderinger = nyVilkårsvurdering(
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
-                    søknad = nySøknadMedArenaTiltak(
+                    søknad = nySøknadMedTiltak(
                         kvp = kvpJa(),
                     ),
                 ),
@@ -44,7 +44,7 @@ class InngangsvilkårsvurderingerTest {
                 vurderingsperiode = vurderingsperiode,
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
-                    søknad = nySøknadMedArenaTiltak(
+                    søknad = nySøknadMedTiltak(
                         intro = introJa(),
                     ),
                 ),

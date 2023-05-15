@@ -77,7 +77,7 @@ internal class SøknadDAO(
                     "deltarIntro" to søknad.intro.deltar,
                     "introFom" to søknad.intro.periode?.fra,
                     "introTom" to søknad.intro.periode?.til,
-                    "instOpphold" to søknad.oppholdInstitusjon,
+                    "instOpphold" to søknad.institusjon,
                     "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
@@ -100,13 +100,41 @@ internal class SøknadDAO(
                     "fornavn" to søknad.personopplysninger.fornavn,
                     "etternavn" to søknad.personopplysninger.etternavn,
                     "ident" to søknad.personopplysninger.ident,
-                    "deltarKvp" to søknad.kvp.deltar,
-                    "kvpFom" to søknad.kvp.periode?.fra,
-                    "kvpTom" to søknad.kvp.periode?.til,
+                    "deltarKvp" to when(søknad.kvp) {
+                        is Søknad.PeriodeSpm.Ja -> "ja"
+                        is Søknad.PeriodeSpm.Nei -> "nei"
+                        is Søknad.PeriodeSpm.IkkeRelevant -> "ikkeRelevant"
+                        is Søknad.PeriodeSpm.IkkeMedISøknaden -> "ikkeVurdert"
+                    },
+                    "kvpFom" to when(val kvp = søknad.kvp) {
+                        is Søknad.PeriodeSpm.Ja -> kvp.periode.fra
+                        is Søknad.PeriodeSpm.Nei -> null
+                        is Søknad.PeriodeSpm.IkkeRelevant -> null
+                    },
+                    "kvpTom" to when(val kvp = søknad.kvp) {
+                        is Søknad.PeriodeSpm.Ja -> kvp.periode.til
+                        is Søknad.PeriodeSpm.Nei -> null
+                        is Søknad.PeriodeSpm.IkkeRelevant -> null
+                    },
+                    "deltarIntro" to when(søknad.intro) {
+                        is Søknad.PeriodeSpm.Ja -> true
+                        is Søknad.PeriodeSpm.Nei -> false
+                        is Søknad.PeriodeSpm.IkkeRelevant -> null
+                    },
+                    "introFom" to when(val intro = søknad.intro) {
+                        is Søknad.PeriodeSpm.Ja -> intro.periode.fra
+                        is Søknad.PeriodeSpm.Nei -> null
+                        is Søknad.PeriodeSpm.IkkeRelevant -> null
+                    },
+                    "introTom" to when(val intro = søknad.intro) {
+                        is Søknad.PeriodeSpm.Ja -> intro.periode.til
+                        is Søknad.PeriodeSpm.Nei -> null
+                        is Søknad.PeriodeSpm.IkkeRelevant -> null
+                    },
                     "deltarIntro" to søknad.intro.deltar,
                     "introFom" to søknad.intro.periode?.fra,
                     "introTom" to søknad.intro.periode?.til,
-                    "instOpphold" to søknad.oppholdInstitusjon,
+                    "instOpphold" to søknad.institusjon,
                     "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
                     "journalpostId" to søknad.journalpostId,
@@ -149,11 +177,14 @@ internal class SøknadDAO(
         return Søknad(
             id = id,
             søknadId = søknadId,
+            journalpostId = journalpostId,
+            dokumentInfoId = dokumentInfoId,
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = fornavn,
                 etternavn = etternavn,
             ),
+            kvp =
             kvp = Søknad.Kvp(
                 deltar = deltarKvp,
                 periode = kvpFom?.let {
@@ -163,7 +194,7 @@ internal class SøknadDAO(
                     )
                 },
             ),
-            intro = Søknad.Intro(
+            intro = Søknad.PeriodeSpm(
                 deltar = deltarIntro,
                 periode = introFom?.let {
                     Periode(
@@ -172,16 +203,13 @@ internal class SøknadDAO(
                     )
                 },
             ),
-            oppholdInstitusjon = oppholdInstitusjon,
-            typeInstitusjon = typeInstitusjon,
+            institusjon = oppholdInstitusjon,
             opprettet = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
             tiltak = tiltak,
             trygdOgPensjon = trygdOgPensjon,
             fritekst = fritekst,
-            dokumentInfoId = dokumentInfoId,
-            journalpostId = journalpostId,
             vedlegg = vedlegg,
         )
     }

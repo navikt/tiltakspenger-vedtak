@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyTiltakHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
@@ -62,7 +62,7 @@ interface InnsendingMother {
     fun innsendingMedSøknad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -83,7 +83,7 @@ interface InnsendingMother {
     fun innsendingMedPersonopplysninger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -115,7 +115,7 @@ interface InnsendingMother {
     fun innsendingMedSkjerming(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -149,7 +149,7 @@ interface InnsendingMother {
     fun innsendingMedTiltak(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -188,7 +188,7 @@ interface InnsendingMother {
     fun innsendingMedYtelse(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -228,7 +228,7 @@ interface InnsendingMother {
     fun innsendingMedForeldrepenger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -273,7 +273,7 @@ interface InnsendingMother {
     fun innsendingMedOvergangsstønad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -320,7 +320,7 @@ interface InnsendingMother {
     fun innsendingMedUføre(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",

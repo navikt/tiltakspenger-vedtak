@@ -97,7 +97,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.ident)
         assertEquals(søknadDTO.kvalifiseringsprogram.deltar, søknad.kvp.deltar)
         assertEquals(søknadDTO.introduksjonsprogram.deltar, søknad.intro.deltar)
-        assertEquals(søknadDTO.oppholdInstitusjon, søknad.oppholdInstitusjon)
+        assertEquals(søknadDTO.oppholdInstitusjon, søknad.institusjon)
         assertEquals(TypeInstitusjon.ANNET, søknad.typeInstitusjon)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.fritekst, søknad.fritekst)

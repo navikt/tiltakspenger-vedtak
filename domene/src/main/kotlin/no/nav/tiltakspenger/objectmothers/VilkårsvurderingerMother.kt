@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
@@ -41,7 +41,7 @@ private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 interface VilkårsvurderingerMother {
     fun nyPensjonsinntektVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedArenaTiltak(),
+        søknad: Søknad = nySøknadMedTiltak(),
     ): PensjonsinntektVilkårsvurderingKategori {
         return PensjonsinntektVilkårsvurderingKategori(
             pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
@@ -53,7 +53,7 @@ interface VilkårsvurderingerMother {
 
     fun nyLønnsinntektVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedArenaTiltak(),
+        søknad: Søknad = nySøknadMedTiltak(),
     ): LønnsinntektVilkårsvurderingKategori {
         return LønnsinntektVilkårsvurderingKategori(
             lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
@@ -65,7 +65,7 @@ interface VilkårsvurderingerMother {
 
     fun nyInstitusjonsVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedArenaTiltak(),
+        søknad: Søknad = nySøknadMedTiltak(),
         institusjonsopphold: List<Institusjonsopphold> = emptyList(),
     ): InstitusjonVilkårsvurderingKategori {
         return InstitusjonVilkårsvurderingKategori(
@@ -238,7 +238,7 @@ interface VilkårsvurderingerMother {
 
     fun nyIntroprogrammetVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedArenaTiltak(),
+        søknad: Søknad = nySøknadMedTiltak(),
     ): IntroProgrammetVilkårsvurdering {
         return IntroProgrammetVilkårsvurdering(
             søknad = søknad,
@@ -248,7 +248,7 @@ interface VilkårsvurderingerMother {
 
     fun nyKvpVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedArenaTiltak(),
+        søknad: Søknad = nySøknadMedTiltak(),
     ): KVPVilkårsvurdering {
         return KVPVilkårsvurdering(
             søknad = søknad,

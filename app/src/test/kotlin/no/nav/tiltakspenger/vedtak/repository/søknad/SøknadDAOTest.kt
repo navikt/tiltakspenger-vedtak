@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -68,8 +67,7 @@ internal class SøknadDAOTest {
             ),
             kvp = kvpNei(),
             intro = introNei(),
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
+            institusjon = null,
             opprettet = null,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
@@ -127,8 +125,7 @@ internal class SøknadDAOTest {
             ),
             kvp = kvpNei(),
             intro = introNei(),
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
+            institusjon = null,
             opprettet = null,
             barnetillegg = listOf(
                 Barnetillegg.MedIdent(
@@ -234,8 +231,7 @@ internal class SøknadDAOTest {
                 fra = 15.august(2022),
                 til = 30.august(2022),
             ),
-            oppholdInstitusjon = true,
-            typeInstitusjon = TypeInstitusjon.BARNEVERN,
+            institusjon = true,
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
                 Barnetillegg.MedIdent(

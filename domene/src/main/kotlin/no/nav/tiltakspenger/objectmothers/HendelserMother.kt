@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltaksaktivitet
@@ -31,7 +31,7 @@ interface HendelserMother {
     fun nySøknadMottattHendelse(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(
+        søknad: Søknad = nySøknadMedTiltak(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",

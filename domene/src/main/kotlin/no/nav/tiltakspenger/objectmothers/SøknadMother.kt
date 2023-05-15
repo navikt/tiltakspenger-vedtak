@@ -44,28 +44,6 @@ interface SøknadMother {
         )
     }
 
-    fun brukerTiltak(
-        tiltakskode: Tiltaksaktivitet.Tiltak? = Tiltaksaktivitet.Tiltak.JOBBK,
-        arrangoernavn: String? = "arrangørnavn",
-        beskrivelse: String? = "beskrivelse",
-        startdato: LocalDate = 1.januar(2022),
-        sluttdato: LocalDate = 31.januar(2022),
-        adresse: String? = "adresse",
-        postnummer: String? = "1234",
-        antallDager: Int = 30,
-    ): Tiltak.BrukerregistrertTiltak {
-        return Tiltak.BrukerregistrertTiltak(
-            tiltakskode = tiltakskode,
-            arrangoernavn = arrangoernavn,
-            beskrivelse = beskrivelse,
-            startdato = startdato,
-            sluttdato = sluttdato,
-            adresse = adresse,
-            postnummer = postnummer,
-            antallDager = antallDager,
-        )
-    }
-
     fun trygdOgPensjon(
         utbetaler: String = "Utbetaler",
         prosent: Int? = 0,
@@ -120,14 +98,14 @@ interface SøknadMother {
         )
     }
 
-    fun nySøknadMedArenaTiltak(
+    fun nySøknadMedTiltak(
         id: SøknadId = Søknad.randomId(),
         søknadId: String = "søknadId",
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
         personopplysninger: Personopplysninger = personSøknad(),
         kvp: Søknad.Kvp = kvpNei(),
-        intro: Søknad.Intro = introNei(),
+        intro: Søknad.PeriodeSpm = introNei(),
         oppholdInstitusjon: Boolean? = false,
         typeInstitusjon: TypeInstitusjon? = null,
         opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -146,8 +124,7 @@ interface SøknadMother {
             personopplysninger = personopplysninger,
             kvp = kvp,
             intro = intro,
-            oppholdInstitusjon = oppholdInstitusjon,
-            typeInstitusjon = typeInstitusjon,
+            institusjon = oppholdInstitusjon,
             opprettet = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
@@ -165,7 +142,7 @@ interface SøknadMother {
         dokumentInfoId: String = "dokumentInfoId",
         personopplysninger: Personopplysninger = personSøknad(),
         kvp: Søknad.Kvp = kvpNei(),
-        intro: Søknad.Intro = introNei(),
+        intro: Søknad.PeriodeSpm = introNei(),
         oppholdInstitusjon: Boolean? = false,
         typeInstitusjon: TypeInstitusjon? = null,
         opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -184,8 +161,7 @@ interface SøknadMother {
             personopplysninger = personopplysninger,
             kvp = kvp,
             intro = intro,
-            oppholdInstitusjon = oppholdInstitusjon,
-            typeInstitusjon = typeInstitusjon,
+            institusjon = oppholdInstitusjon,
             opprettet = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
@@ -215,14 +191,14 @@ interface SøknadMother {
         fra: LocalDate = 1.januar(2022),
         til: LocalDate = 31.januar(2022),
     ) = Søknad.Kvp(
-        deltar = false,
+        deltar = true,
         periode = Periode(
             fra = fra,
             til = til,
         ),
     )
 
-    fun introNei() = Søknad.Intro(
+    fun introNei() = Søknad.PeriodeSpm(
         deltar = false,
         periode = null,
     )
@@ -230,8 +206,8 @@ interface SøknadMother {
     fun introJa(
         fra: LocalDate = 1.januar(2022),
         til: LocalDate = 31.januar(2022),
-    ) = Søknad.Intro(
-        deltar = false,
+    ) = Søknad.PeriodeSpm(
+        deltar = true,
         periode = Periode(
             fra = fra,
             til = til,

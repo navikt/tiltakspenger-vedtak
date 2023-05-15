@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplys
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -210,7 +210,7 @@ internal class PostgresInnsendingRepositoryTest {
         val ident = Random().nextInt().toString()
         val journalpostId = Random().nextInt().toString()
 
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             journalpostId = journalpostId,
             personopplysninger = personSøknad(
                 ident = ident,
@@ -253,7 +253,7 @@ internal class PostgresInnsendingRepositoryTest {
         val ident = Random().nextInt().toString()
         val journalpostId = Random().nextInt().toString()
 
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             journalpostId = journalpostId,
             personopplysninger = personSøknad(
                 ident = ident,

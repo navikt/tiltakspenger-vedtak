@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
@@ -15,7 +15,7 @@ class KommunaleYtelserVilkårsvurderingTest {
 
     @Test
     fun `Samlet utfall for kommunale ytelser`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             intro = introNei(),
         )
 
@@ -35,7 +35,7 @@ class KommunaleYtelserVilkårsvurderingTest {
 
     @Test
     fun `Samlet utfall for kommunale ytelser som krever manuell behandling`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             kvp = kvpJa(),
         )
 

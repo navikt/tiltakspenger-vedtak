@@ -13,10 +13,16 @@ data class Søknad(
     val journalpostId: String,
     val dokumentInfoId: String,
     val personopplysninger: Personopplysninger,
-    val kvp: Kvp,
-    val intro: Intro,
-    val oppholdInstitusjon: Boolean?,
-    val typeInstitusjon: TypeInstitusjon?,
+    val kvp: PeriodeSpm,
+    val intro: PeriodeSpm,
+    val institusjon: PeriodeSpm,
+
+    val etterlønn: Boolean,
+    val alderspensjon: LocalDate?,
+    val sykepenger: PeriodeSpm,
+    val supplerendeStønadAlder: PeriodeSpm,
+    val supplerendeStønadFlyktning: PeriodeSpm,
+    
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
     val tidsstempelHosOss: LocalDateTime,
@@ -45,10 +51,37 @@ data class Søknad(
         val periode: Periode?,
     )
 
-    data class Intro(
-        val deltar: Boolean,
-        val periode: Periode?,
-    )
+    sealed class PeriodeSpm {
+        object IkkeMedISøknaden : PeriodeSpm()
+        object IkkeRelevant : PeriodeSpm()
+        object Nei : PeriodeSpm()
+        data class Ja(
+            val periode: Periode,
+        ) : PeriodeSpm()
+    }
+
+    sealed class JaNeiSpm {
+        object IkkeMedISøknaden : JaNeiSpm()
+        object IkkeRelevant : JaNeiSpm()
+        object Ja : JaNeiSpm()
+        object Nei : JaNeiSpm()
+    }
+
+    sealed class FraOgMedDatoSpm {
+        object IkkeMedISøknaden : JaNeiSpm()
+        object IkkeRelevant : JaNeiSpm()
+        object Ja : JaNeiSpm()
+        object Nei : JaNeiSpm()
+    }
+
+//    data class Inddtro(
+//        val erBesvart: Boolean,
+//        val erRelevant: Boolean,
+//        val besvart: Boolean,
+//
+//        val deltar: Boolean,
+//        val periode: Periode?,
+//    )
 }
 
 data class Vedlegg(
@@ -63,6 +96,15 @@ data class TrygdOgPensjon(
     val fom: LocalDate? = null,
     val tom: LocalDate? = null,
 )
+
+//data class Tiltak(
+//    val arenaId: String,
+//    val periode: Periode,
+//    val opprinneligStartdato: LocalDate,
+//    val opprinneligSluttdato: LocalDate?,
+//    val arrangør: String,
+//    val type: Tiltaksaktivitet.Tiltak,
+//)
 
 sealed class Tiltak {
 
@@ -81,17 +123,6 @@ sealed class Tiltak {
         val opprinneligStartdato: LocalDate,
         override val sluttdato: LocalDate? = null,
         override val startdato: LocalDate,
-    ) : Tiltak()
-
-    data class BrukerregistrertTiltak(
-        override val tiltakskode: Tiltaksaktivitet.Tiltak?, // Er null hvis bruker velger "Annet" i søknaden
-        override val arrangoernavn: String?, // Er null om f.eks. kode 6
-        val beskrivelse: String?,
-        override val startdato: LocalDate,
-        override val sluttdato: LocalDate,
-        val adresse: String? = null,
-        val postnummer: String? = null,
-        val antallDager: Int,
     ) : Tiltak()
 }
 

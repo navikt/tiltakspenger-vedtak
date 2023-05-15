@@ -36,8 +36,8 @@ class InstitusjonsoppholdVilkårsvurdering(
         kilde = SØKNADKILDE,
         fom = null,
         tom = null,
-        utfall = if (søknad.oppholdInstitusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
-        detaljer = detaljer(søknad.oppholdInstitusjon, søknad.typeInstitusjon),
+        utfall = if (søknad.institusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
+        detaljer = detaljer(søknad.institusjon, søknad.typeInstitusjon),
     )
 
     private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: TypeInstitusjon?): String =

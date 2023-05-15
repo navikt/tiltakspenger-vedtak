@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
@@ -55,7 +54,7 @@ data class SøknadDTO(
                         )
                     },
                 ),
-                intro = Søknad.Intro(
+                intro = Søknad.PeriodeSpm(
                     deltar = dto.introduksjonsprogram.deltar,
                     periode = dto.introduksjonsprogram.periode?.let {
                         Periode(
@@ -64,15 +63,7 @@ data class SøknadDTO(
                         )
                     },
                 ),
-                oppholdInstitusjon = dto.oppholdInstitusjon,
-                typeInstitusjon = dto.typeInstitusjon?.let { TypeInstitusjonDTO.valueOf(it) }.let {
-                    when (it) {
-                        TypeInstitusjonDTO.barneverninstitusjon -> TypeInstitusjon.BARNEVERN
-                        TypeInstitusjonDTO.overgangsbolig -> TypeInstitusjon.OVERGANGSBOLIG
-                        TypeInstitusjonDTO.annet -> TypeInstitusjon.ANNET
-                        null -> null
-                    }
-                },
+                institusjon = dto.oppholdInstitusjon,
                 opprettet = dto.opprettet,
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,

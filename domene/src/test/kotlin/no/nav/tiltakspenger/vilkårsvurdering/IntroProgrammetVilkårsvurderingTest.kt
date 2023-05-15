@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             intro = introJa(
                 fra = 1 januar (2022),
                 til = 31 januar (2022),
@@ -38,7 +38,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             intro = introNei(),
         )
 
@@ -57,7 +57,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en manuell vurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             intro = introNei(),
         )
 
@@ -100,7 +100,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
+        val søknad = nySøknadMedTiltak(
             intro = introJa(
                 fra = 1 januar (2022),
                 til = 31 januar (2022),
@@ -125,8 +125,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad med mangelfulle data`() {
-        val søknad = nySøknadMedArenaTiltak(
-            intro = Søknad.Intro(
+        val søknad = nySøknadMedTiltak(
+            intro = Søknad.PeriodeSpm(
                 deltar = true,
                 periode = null,
             ),
