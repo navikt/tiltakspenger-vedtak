@@ -2,13 +2,14 @@
 
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.juni
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Søknad.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
@@ -16,7 +17,7 @@ import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Random
 
 interface SøknadMother {
     fun arenaTiltak(
@@ -124,12 +125,9 @@ interface SøknadMother {
         søknadId: String = "søknadId",
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
-        fornavn: String? = "Fornavn",
-        etternavn: String? = "Etternavn",
-        ident: String = Random().nextInt().toString(),
-        deltarKvp: Boolean = false,
-        deltarIntroduksjonsprogrammet: Boolean = false,
-        introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
+        personopplysninger: Personopplysninger = personSøknad(),
+        kvp: Søknad.Kvp = kvpNei(),
+        intro: Søknad.Intro = introNei(),
         oppholdInstitusjon: Boolean? = false,
         typeInstitusjon: TypeInstitusjon? = null,
         opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -145,12 +143,9 @@ interface SøknadMother {
             søknadId = søknadId,
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
-            fornavn = fornavn,
-            etternavn = etternavn,
-            ident = ident,
-            deltarKvp = deltarKvp,
-            deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
-            introduksjonsprogrammetDetaljer = introduksjonsprogrammetDetaljer,
+            personopplysninger = personopplysninger,
+            kvp = kvp,
+            intro = intro,
             oppholdInstitusjon = oppholdInstitusjon,
             typeInstitusjon = typeInstitusjon,
             opprettet = opprettet,
@@ -168,12 +163,9 @@ interface SøknadMother {
         søknadId: String = Random().nextInt().toString(),
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
-        fornavn: String? = "Fornavn",
-        etternavn: String? = "Etternavn",
-        ident: String = Random().nextInt().toString(),
-        deltarKvp: Boolean = false,
-        deltarIntroduksjonsprogrammet: Boolean = false,
-        introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer? = null,
+        personopplysninger: Personopplysninger = personSøknad(),
+        kvp: Søknad.Kvp = kvpNei(),
+        intro: Søknad.Intro = introNei(),
         oppholdInstitusjon: Boolean? = false,
         typeInstitusjon: TypeInstitusjon? = null,
         opprettet: LocalDateTime? = 1.januarDateTime(2022),
@@ -189,12 +181,9 @@ interface SøknadMother {
             søknadId = søknadId,
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
-            fornavn = fornavn,
-            etternavn = etternavn,
-            ident = ident,
-            deltarKvp = deltarKvp,
-            deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
-            introduksjonsprogrammetDetaljer = introduksjonsprogrammetDetaljer,
+            personopplysninger = personopplysninger,
+            kvp = kvp,
+            intro = intro,
             oppholdInstitusjon = oppholdInstitusjon,
             typeInstitusjon = typeInstitusjon,
             opprettet = opprettet,
@@ -206,4 +195,46 @@ interface SøknadMother {
             vedlegg = vedlegg,
         )
     }
+
+    fun personSøknad(
+        fornavn: String = "Fornavn",
+        etternavn: String = "Etternavn",
+        ident: String = Random().nextInt().toString(),
+    ) = Personopplysninger(
+        fornavn = fornavn,
+        etternavn = etternavn,
+        ident = ident,
+    )
+
+    fun kvpNei() = Søknad.Kvp(
+        deltar = false,
+        periode = null,
+    )
+
+    fun kvpJa(
+        fra: LocalDate = 1.januar(2022),
+        til: LocalDate = 31.januar(2022),
+    ) = Søknad.Kvp(
+        deltar = false,
+        periode = Periode(
+            fra = fra,
+            til = til,
+        ),
+    )
+
+    fun introNei() = Søknad.Intro(
+        deltar = false,
+        periode = null,
+    )
+
+    fun introJa(
+        fra: LocalDate = 1.januar(2022),
+        til: LocalDate = 31.januar(2022),
+    ) = Søknad.Intro(
+        deltar = false,
+        periode = Periode(
+            fra = fra,
+            til = til,
+        ),
+    )
 }

@@ -2,9 +2,13 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.felles.august
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -57,12 +61,13 @@ internal class SøknadDAOTest {
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
-            ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
+            ),
+            kvp = kvpNei(),
+            intro = introNei(),
             oppholdInstitusjon = null,
             typeInstitusjon = null,
             opprettet = null,
@@ -97,7 +102,7 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
     }
 
@@ -115,12 +120,13 @@ internal class SøknadDAOTest {
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
-            ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
+            ),
+            kvp = kvpNei(),
+            intro = introNei(),
             oppholdInstitusjon = null,
             typeInstitusjon = null,
             opprettet = null,
@@ -178,14 +184,17 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
 
         assertNotNull(hentet.tiltak)
         assertEquals(1, hentet.barnetillegg.size)
         assertEquals(1, hentet.trygdOgPensjon.size)
         assertEquals(1, hentet.vedlegg.size)
-        assertNull(hentet.introduksjonsprogrammetDetaljer)
+        assertEquals(false, hentet.intro.deltar)
+        assertNull(hentet.intro.periode)
+        assertEquals(false, hentet.kvp.deltar)
+        assertNull(hentet.kvp.periode)
     }
 
     @Test
@@ -212,14 +221,18 @@ internal class SøknadDAOTest {
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = "Johnny",
-            etternavn = "McPerson",
-            ident = ident,
-            deltarKvp = true,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = LocalDate.of(2022, Month.AUGUST, 15),
-                tom = LocalDate.of(2022, Month.AUGUST, 30),
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
+            ),
+            kvp = kvpJa(
+                fra = 15.august(2022),
+                til = 30.august(2022),
+            ),
+            intro = introJa(
+                fra = 15.august(2022),
+                til = 30.august(2022),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = TypeInstitusjon.BARNEVERN,
@@ -268,7 +281,7 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
 
         assertNotNull(hentet.tiltak)
@@ -279,7 +292,8 @@ internal class SøknadDAOTest {
             assertNotNull(it.call(hentet))
         }
 
-        assertEquals(søknad.introduksjonsprogrammetDetaljer, hentet.introduksjonsprogrammetDetaljer)
+        assertEquals(søknad.intro, hentet.intro)
+        assertEquals(søknad.kvp, hentet.kvp)
 
         val barnetillegg = hentet.barnetillegg.first()
         barnetillegg::class.declaredMemberProperties.forEach {
@@ -299,7 +313,6 @@ internal class SøknadDAOTest {
         println(søknad.opprettet)
         assertEquals(søknad.opprettet, hentet.opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
-        assertEquals(søknad.deltarKvp, hentet.deltarKvp)
 
         assertEquals(
             (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,

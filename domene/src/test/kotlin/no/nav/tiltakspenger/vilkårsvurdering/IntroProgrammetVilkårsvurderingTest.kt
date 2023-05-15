@@ -5,8 +5,10 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
 
@@ -15,10 +17,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
         val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = 1 januar (2022),
-                tom = 31 januar (2022),
+            intro = introJa(
+                fra = 1 januar (2022),
+                til = 31 januar (2022),
             ),
         )
 
@@ -38,8 +39,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
         val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+            intro = introNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -58,8 +58,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne sende inn en manuell vurdering`() {
         val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+            intro = introNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -102,10 +101,9 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
         val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = 1 januar (2022),
-                tom = 31 januar (2022),
+            intro = introJa(
+                fra = 1 januar (2022),
+                til = 31 januar (2022),
             ),
         )
 
@@ -128,8 +126,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad med mangelfulle data`() {
         val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = null,
+            intro = Søknad.Intro(
+                deltar = true,
+                periode = null,
+            ),
         )
 
         val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))

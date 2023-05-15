@@ -4,6 +4,8 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.februarDateTime
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyDagpengerVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
@@ -12,7 +14,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
 
@@ -24,7 +25,7 @@ class InngangsvilkårsvurderingerTest {
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
                     søknad = nySøknadMedArenaTiltak(
-                        deltarKvp = true,
+                        kvp = kvpJa(),
                     ),
                 ),
             ),
@@ -44,11 +45,7 @@ class InngangsvilkårsvurderingerTest {
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
                     søknad = nySøknadMedArenaTiltak(
-                        deltarIntroduksjonsprogrammet = true,
-                        introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                            fom = vurderingsperiode.fra,
-                            tom = vurderingsperiode.til,
-                        ),
+                        intro = introJa(),
                     ),
                 ),
             ),

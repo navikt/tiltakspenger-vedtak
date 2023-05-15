@@ -13,21 +13,21 @@ class IntroProgrammetVilkårsvurdering(søknad: Søknad, vurderingsperiode: Peri
     override fun lagVurderingFraSøknad() = Vurdering(
         vilkår = vilkår(),
         kilde = KILDE,
-        fom = søknad.introduksjonsprogrammetDetaljer?.fom,
-        tom = søknad.introduksjonsprogrammetDetaljer?.tom,
+        fom = søknad.intro.periode?.fra,
+        tom = søknad.intro.periode?.til,
         utfall = avgjørUtfall(),
         detaljer = detaljer(),
     )
 
     private fun detaljer(): String =
-        when (søknad.deltarIntroduksjonsprogrammet) {
+        when (søknad.intro.deltar) {
             true -> "Svart JA i søknaden"
             false -> "Svart NEI i søknaden"
-            else -> "Ikke relevant"
+//            else -> "Ikke relevant"
         }
 
     override fun avgjørUtfall(): Utfall =
-        when (søknad.deltarIntroduksjonsprogrammet) {
+        when (søknad.intro.deltar) {
             true -> Utfall.KREVER_MANUELL_VURDERING
             else -> Utfall.OPPFYLT
         }

@@ -4,8 +4,8 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -68,13 +68,15 @@ internal class SøknadDAO(
                 oppdaterSøknad,
                 mapOf(
                     "id" to søknad.id.toString(),
-                    "fornavn" to søknad.fornavn,
-                    "etternavn" to søknad.etternavn,
-                    "ident" to søknad.ident,
-                    "deltarKvp" to søknad.deltarKvp,
-                    "deltarIntro" to søknad.deltarIntroduksjonsprogrammet,
-                    "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
-                    "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
+                    "fornavn" to søknad.personopplysninger.fornavn,
+                    "etternavn" to søknad.personopplysninger.etternavn,
+                    "ident" to søknad.personopplysninger.ident,
+                    "deltarKvp" to søknad.kvp.deltar,
+                    "kvpFom" to søknad.kvp.periode?.fra,
+                    "kvpTom" to søknad.kvp.periode?.til,
+                    "deltarIntro" to søknad.intro.deltar,
+                    "introFom" to søknad.intro.periode?.fra,
+                    "introTom" to søknad.intro.periode?.til,
                     "instOpphold" to søknad.oppholdInstitusjon,
                     "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
@@ -95,13 +97,15 @@ internal class SøknadDAO(
                     "id" to søknad.id.toString(),
                     "innsendingId" to innsendingId.toString(),
                     "eksternSoknadId" to søknad.søknadId,
-                    "fornavn" to søknad.fornavn,
-                    "etternavn" to søknad.etternavn,
-                    "ident" to søknad.ident,
-                    "deltarKvp" to søknad.deltarKvp,
-                    "deltarIntro" to søknad.deltarIntroduksjonsprogrammet,
-                    "introFom" to søknad.introduksjonsprogrammetDetaljer?.fom,
-                    "introTom" to søknad.introduksjonsprogrammetDetaljer?.tom,
+                    "fornavn" to søknad.personopplysninger.fornavn,
+                    "etternavn" to søknad.personopplysninger.etternavn,
+                    "ident" to søknad.personopplysninger.ident,
+                    "deltarKvp" to søknad.kvp.deltar,
+                    "kvpFom" to søknad.kvp.periode?.fra,
+                    "kvpTom" to søknad.kvp.periode?.til,
+                    "deltarIntro" to søknad.intro.deltar,
+                    "introFom" to søknad.intro.periode?.fra,
+                    "introTom" to søknad.intro.periode?.til,
                     "instOpphold" to søknad.oppholdInstitusjon,
                     "instType" to søknad.typeInstitusjon?.name,
                     "fritekst" to søknad.fritekst,
@@ -121,13 +125,15 @@ internal class SøknadDAO(
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = SøknadId.fromDb(string("id"))
         val søknadId = string("søknad_id")
-        val fornavn = stringOrNull("fornavn")
-        val etternavn = stringOrNull("etternavn")
+        val fornavn = string("fornavn")
+        val etternavn = string("etternavn")
         val ident = string("ident")
         val deltarKvp = boolean("deltar_kvp")
-        val deltarIntroduksjonsprogrammet = booleanOrNull("deltar_intro")
-        val introduksjonsprogrammetFom = localDateOrNull("intro_fom")
-        val introduksjonsprogrammetTom = localDateOrNull("intro_tom")
+        val kvpFom = localDateOrNull("kvp_fom")
+        val kvpTom = localDateOrNull("kvp_tom")
+        val deltarIntro = boolean("deltar_intro")
+        val introFom = localDateOrNull("intro_fom")
+        val introTom = localDateOrNull("intro_tom")
         val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
         val typeInstitusjon = stringOrNull("institusjon_type")?.let { TypeInstitusjon.valueOf(it) }
         val opprettet = localDateTimeOrNull("opprettet")
@@ -143,17 +149,29 @@ internal class SøknadDAO(
         return Søknad(
             id = id,
             søknadId = søknadId,
-            fornavn = fornavn,
-            etternavn = etternavn,
-            ident = ident,
-            deltarKvp = deltarKvp,
-            deltarIntroduksjonsprogrammet = deltarIntroduksjonsprogrammet,
-            introduksjonsprogrammetDetaljer = introduksjonsprogrammetFom?.let {
-                IntroduksjonsprogrammetDetaljer(
-                    introduksjonsprogrammetFom,
-                    introduksjonsprogrammetTom,
-                )
-            },
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = fornavn,
+                etternavn = etternavn,
+            ),
+            kvp = Søknad.Kvp(
+                deltar = deltarKvp,
+                periode = kvpFom?.let {
+                    Periode(
+                        fra = kvpFom,
+                        til = kvpTom!!,
+                    )
+                },
+            ),
+            intro = Søknad.Intro(
+                deltar = deltarIntro,
+                periode = introFom?.let {
+                    Periode(
+                        fra = introFom,
+                        til = introTom!!,
+                    )
+                },
+            ),
             oppholdInstitusjon = oppholdInstitusjon,
             typeInstitusjon = typeInstitusjon,
             opprettet = opprettet,
@@ -178,6 +196,8 @@ internal class SøknadDAO(
             etternavn, 
             ident, 
             deltar_kvp, 
+            kvp_fom,
+            kvp_tom,
             deltar_intro,
             intro_fom,
             intro_tom,
@@ -196,6 +216,8 @@ internal class SøknadDAO(
             :etternavn,
             :ident,
             :deltarKvp,
+            :kvpFom,
+            :kvpTom,
             :deltarIntro,
             :introFom,
             :introTom,
@@ -216,6 +238,8 @@ internal class SøknadDAO(
             etternavn = :etternavn, 
             ident = :ident, 
             deltar_kvp = :deltarKvp, 
+            kvp_fom = :kvpFom,
+            kvp_tom = :kvpTom,
             deltar_intro = :deltarIntro,
             intro_fom = :introFom,
             intro_tom = :introTom,

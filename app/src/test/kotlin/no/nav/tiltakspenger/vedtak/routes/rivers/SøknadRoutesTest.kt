@@ -97,9 +97,11 @@ class SøknadRoutesTest {
             "søknadId": "whatever",
             "journalpostId": "$JOURNALPOSTID",
             "dokumentInfoId": "whatever3",
-            "fornavn": "LEVENDE",
-            "etternavn": "POTET",
-            "ident": "$IDENT",
+            "personopplysninger": {
+                "fornavn": "LEVENDE",
+                "etternavn": "POTET",
+                "ident": "$IDENT"
+            },
             "deltarKvp": false,
             "deltarIntroduksjonsprogrammet": false,
             "introduksjonsprogrammetDetaljer": null,

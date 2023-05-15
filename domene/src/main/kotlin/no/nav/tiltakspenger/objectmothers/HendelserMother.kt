@@ -31,7 +31,13 @@ interface HendelserMother {
     fun nySøknadMottattHendelse(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedArenaTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
     ): SøknadMottattHendelse {
         return SøknadMottattHendelse(

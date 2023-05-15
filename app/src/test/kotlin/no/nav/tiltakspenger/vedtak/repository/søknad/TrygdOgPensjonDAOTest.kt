@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
@@ -90,12 +92,13 @@ internal class TrygdOgPensjonDAOTest {
         søknadId = "41",
         journalpostId = "42",
         dokumentInfoId = "43",
-        fornavn = null,
-        etternavn = null,
-        ident = ident,
-        deltarKvp = false,
-        deltarIntroduksjonsprogrammet = false,
-        introduksjonsprogrammetDetaljer = null,
+        personopplysninger = Søknad.Personopplysninger(
+            fornavn = "fornavn",
+            etternavn = "etternavn",
+            ident = ident,
+        ),
+        kvp = kvpNei(),
+        intro = introNei(),
         oppholdInstitusjon = null,
         typeInstitusjon = null,
         opprettet = null,

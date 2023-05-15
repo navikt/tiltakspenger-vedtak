@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
@@ -130,7 +131,9 @@ internal class PostgresInnsendingRepositoryTest {
         val ident = Random().nextInt().toString()
 
         val søknad = nySøknadMedBrukerTiltak(
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             journalpostId = journalpostId,
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
@@ -176,7 +179,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         val søknad = nySøknadMedBrukerTiltak(
             journalpostId = journalpostId,
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
@@ -192,9 +197,9 @@ internal class PostgresInnsendingRepositoryTest {
         val hentetInnsending = innsendingRepository.findBySøknadId(søknad.søknadId)
         assertNotNull(hentetInnsending)
         assertEquals(ident, innsending.ident)
-        assertEquals(ident, innsending.søknad!!.ident)
+        assertEquals(ident, innsending.søknad!!.personopplysninger.ident)
         assertEquals(ident, hentetInnsending!!.ident)
-        assertEquals(ident, hentetInnsending.søknad!!.ident)
+        assertEquals(ident, hentetInnsending.søknad!!.personopplysninger.ident)
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         hentetInnsending.søknad shouldBe søknad
@@ -207,7 +212,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         val søknad = nySøknadMedArenaTiltak(
             journalpostId = journalpostId,
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             barnetillegg = listOf(barnetilleggUtenIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
@@ -248,7 +255,9 @@ internal class PostgresInnsendingRepositoryTest {
 
         val søknad = nySøknadMedArenaTiltak(
             journalpostId = journalpostId,
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             barnetillegg = listOf(barnetilleggUtenIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )

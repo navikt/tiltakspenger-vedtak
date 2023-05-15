@@ -2,8 +2,8 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
 import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
 import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
-import no.nav.tiltakspenger.vedtak.rivers.IntroduksjonsprogrammetDetaljerDTO.Companion.mapIntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.rivers.VedleggDTO.Companion.mapVedlegg
 import java.time.LocalDate
@@ -23,12 +22,9 @@ data class SøknadDTO(
     val søknadId: String,
     val journalpostId: String,
     val dokumentInfoId: String,
-    val fornavn: String?,
-    val etternavn: String?,
-    val ident: String,
-    val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
-    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljerDTO?,
+    val personopplysninger: PersonopplysningerDTO,
+    val kvalifiseringsprogram: KvalifiseringsprogramDTO,
+    val introduksjonsprogram: IntroduksjonsprogramDTO,
     val oppholdInstitusjon: Boolean,
     val typeInstitusjon: String?,
     val opprettet: LocalDateTime,
@@ -45,12 +41,29 @@ data class SøknadDTO(
                 søknadId = dto.søknadId,
                 journalpostId = dto.journalpostId,
                 dokumentInfoId = dto.dokumentInfoId,
-                fornavn = dto.fornavn,
-                etternavn = dto.etternavn,
-                ident = dto.ident,
-                deltarKvp = dto.deltarKvp,
-                deltarIntroduksjonsprogrammet = dto.deltarIntroduksjonsprogrammet,
-                introduksjonsprogrammetDetaljer = mapIntroduksjonsprogrammetDetaljer(dto.introduksjonsprogrammetDetaljer),
+                personopplysninger = Søknad.Personopplysninger(
+                    fornavn = dto.personopplysninger.fornavn,
+                    etternavn = dto.personopplysninger.etternavn,
+                    ident = dto.personopplysninger.ident,
+                ),
+                kvp = Søknad.Kvp(
+                    deltar = dto.kvalifiseringsprogram.deltar,
+                    periode = dto.kvalifiseringsprogram.periode?.let {
+                        Periode(
+                            fra = it.fra,
+                            til = it.til,
+                        )
+                    },
+                ),
+                intro = Søknad.Intro(
+                    deltar = dto.introduksjonsprogram.deltar,
+                    periode = dto.introduksjonsprogram.periode?.let {
+                        Periode(
+                            fra = it.fra,
+                            til = it.til,
+                        )
+                    },
+                ),
                 oppholdInstitusjon = dto.oppholdInstitusjon,
                 typeInstitusjon = dto.typeInstitusjon?.let { TypeInstitusjonDTO.valueOf(it) }.let {
                     when (it) {
@@ -70,6 +83,27 @@ data class SøknadDTO(
             )
         }
     }
+
+    data class PersonopplysningerDTO(
+        val ident: String,
+        val fornavn: String,
+        val etternavn: String,
+    )
+
+    data class PeriodeDTO(
+        val fra: LocalDate,
+        val til: LocalDate,
+    )
+
+    data class KvalifiseringsprogramDTO(
+        val deltar: Boolean,
+        val periode: PeriodeDTO?,
+    )
+
+    data class IntroduksjonsprogramDTO(
+        val deltar: Boolean,
+        val periode: PeriodeDTO?,
+    )
 }
 
 class BrukerregistrertTiltakDTO(
@@ -128,16 +162,6 @@ class ArenaTiltakDTO(
                 startdato = dto.startdato,
             )
         }
-    }
-}
-
-class IntroduksjonsprogrammetDetaljerDTO(
-    val fom: LocalDate,
-    val tom: LocalDate? = null,
-) {
-    companion object {
-        internal fun mapIntroduksjonsprogrammetDetaljer(dto: IntroduksjonsprogrammetDetaljerDTO?) =
-            dto?.let { IntroduksjonsprogrammetDetaljer(fom = dto.fom, tom = dto.tom) }
     }
 }
 

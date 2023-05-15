@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.Søker
@@ -29,7 +30,9 @@ internal class SøkerServiceTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         val søknad = nySøknadMedBrukerTiltak(
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )
@@ -50,7 +53,9 @@ internal class SøkerServiceTest {
         val ident = Random().nextInt().toString()
         val søker = Søker(ident)
         val søknad = nySøknadMedBrukerTiltak(
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
             barnetillegg = listOf(barnetilleggMedIdent()),
             trygdOgPensjon = listOf(trygdOgPensjon()),
         )

@@ -2,6 +2,7 @@
 
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,12 +12,9 @@ data class Søknad(
     val søknadId: String,
     val journalpostId: String,
     val dokumentInfoId: String,
-    val fornavn: String?,
-    val etternavn: String?,
-    val ident: String,
-    val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
-    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
+    val personopplysninger: Personopplysninger,
+    val kvp: Kvp,
+    val intro: Intro,
     val oppholdInstitusjon: Boolean?,
     val typeInstitusjon: TypeInstitusjon?,
     val opprettet: LocalDateTime?,
@@ -35,17 +33,28 @@ data class Søknad(
     override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
+
+    data class Personopplysninger(
+        val ident: String,
+        val fornavn: String,
+        val etternavn: String,
+    )
+
+    data class Kvp(
+        val deltar: Boolean,
+        val periode: Periode?,
+    )
+
+    data class Intro(
+        val deltar: Boolean,
+        val periode: Periode?,
+    )
 }
 
 data class Vedlegg(
     val journalpostId: String,
     val dokumentInfoId: String,
     val filnavn: String?,
-)
-
-data class IntroduksjonsprogrammetDetaljer(
-    val fom: LocalDate,
-    val tom: LocalDate?,
 )
 
 data class TrygdOgPensjon(

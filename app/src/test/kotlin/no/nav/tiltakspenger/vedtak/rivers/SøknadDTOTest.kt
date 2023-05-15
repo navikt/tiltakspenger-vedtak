@@ -3,11 +3,13 @@ package no.nav.tiltakspenger.vedtak.rivers
 import io.kotest.inspectors.forAtLeastOne
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
+import no.nav.tiltakspenger.felles.oktober
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
+import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.PersonopplysningerDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -27,14 +29,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "annet",
@@ -83,11 +92,11 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.søknadId, søknad.søknadId)
         assertEquals(søknadDTO.journalpostId, søknad.journalpostId)
         assertEquals(søknadDTO.dokumentInfoId, søknad.dokumentInfoId)
-        assertEquals(søknadDTO.fornavn, søknad.fornavn)
-        assertEquals(søknadDTO.etternavn, søknad.etternavn)
-        assertEquals(søknadDTO.ident, søknad.ident)
-        assertEquals(søknadDTO.deltarKvp, søknad.deltarKvp)
-        assertEquals(søknadDTO.deltarIntroduksjonsprogrammet, søknad.deltarIntroduksjonsprogrammet)
+        assertEquals(søknadDTO.personopplysninger.fornavn, søknad.personopplysninger.fornavn)
+        assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
+        assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.ident)
+        assertEquals(søknadDTO.kvalifiseringsprogram.deltar, søknad.kvp.deltar)
+        assertEquals(søknadDTO.introduksjonsprogram.deltar, søknad.intro.deltar)
         assertEquals(søknadDTO.oppholdInstitusjon, søknad.oppholdInstitusjon)
         assertEquals(TypeInstitusjon.ANNET, søknad.typeInstitusjon)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
@@ -106,14 +115,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "annet",
@@ -153,9 +169,9 @@ internal class SøknadDTOTest {
 
         val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
 
-        assertNotNull(søknad.introduksjonsprogrammetDetaljer)
-        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.fom, søknad.introduksjonsprogrammetDetaljer?.fom)
-        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.tom, søknad.introduksjonsprogrammetDetaljer?.tom)
+        assertNotNull(søknad.intro.periode)
+        assertEquals(søknadDTO.introduksjonsprogram.periode?.fra, søknad.intro.periode?.fra)
+        assertEquals(søknadDTO.introduksjonsprogram.periode?.til, søknad.intro.periode?.til)
     }
 
     @Test
@@ -165,14 +181,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -228,14 +251,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -290,14 +320,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -352,14 +389,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -417,14 +461,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -484,14 +535,21 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = "123",
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
-                fom = LocalDate.of(2022, 10, 1),
-                tom = LocalDate.of(2022, 10, 10),
+            personopplysninger = PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = "123",
+            ),
+            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
+                deltar = false,
+                periode = null,
+            ),
+            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
+                deltar = true,
+                SøknadDTO.PeriodeDTO(
+                    fra = 1.oktober(2022),
+                    til = 10.oktober(2022),
+                ),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",

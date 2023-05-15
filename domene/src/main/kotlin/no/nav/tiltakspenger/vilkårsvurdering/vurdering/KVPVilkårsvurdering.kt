@@ -13,16 +13,16 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     override fun lagVurderingFraSøknad() = Vurdering(
         vilkår = vilkår(),
         kilde = KILDE,
-        fom = null,
+        fom = null, // TODO bruke periode eller ikke ?
         tom = null,
         utfall = avgjørUtfall(),
         detaljer = detaljer(),
     )
 
     private fun detaljer(): String =
-        if (søknad.deltarKvp) "Svart JA i søknaden" else "Svart NEI i søknaden"
+        if (søknad.kvp.deltar) "Svart JA i søknaden" else "Svart NEI i søknaden"
 
-    override fun avgjørUtfall() = if (søknad.deltarKvp) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
+    override fun avgjørUtfall() = if (søknad.kvp.deltar) Utfall.KREVER_MANUELL_VURDERING else Utfall.OPPFYLT
 
     override fun vilkår() = Vilkår.KVP
 }

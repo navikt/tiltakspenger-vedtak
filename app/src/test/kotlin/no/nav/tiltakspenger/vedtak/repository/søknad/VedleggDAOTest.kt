@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Vedlegg
@@ -41,7 +42,9 @@ internal class VedleggDAOTest {
         val søknadId = Søknad.randomId()
         val søknad = nySøknadMedArenaTiltak(
             id = søknadId,
-            ident = ident,
+            personopplysninger = personSøknad(
+                ident = ident,
+            ),
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
