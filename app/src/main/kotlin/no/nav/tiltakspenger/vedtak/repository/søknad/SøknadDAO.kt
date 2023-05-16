@@ -96,17 +96,16 @@ internal class SøknadDAO(
         )
     }
 
-    private fun Map<String, PeriodeSpm>.toParametersForPeriodeSpm() =
-        this.toList()
-            .flatMap {
-                listOf(
-                    it.first to lagrePeriodeSpm(it.second),
-                    it.first + "Fom" to lagrePeriodeSpmFra(it.second),
-                    it.first + "Tom" to lagrePeriodeSpmTil(it.second),
-                )
-            }.associate {
-                it.first to it.second as Any
-            }
+    private fun Map<String, PeriodeSpm>.toParametersForPeriodeSpm(): Map<String, Any> =
+        this.flatMap { (k, v) ->
+            listOf(
+                k to lagrePeriodeSpm(v),
+                k + "Fom" to lagrePeriodeSpmFra(v),
+                k + "Tom" to lagrePeriodeSpmTil(v),
+            )
+        }.associate {
+            it.first to it.second as Any
+        }
 
     private fun lagrePeriodeSpmFra(periodeSpm: PeriodeSpm) = when (periodeSpm) {
         is PeriodeSpm.Ja -> periodeSpm.periode.fra
