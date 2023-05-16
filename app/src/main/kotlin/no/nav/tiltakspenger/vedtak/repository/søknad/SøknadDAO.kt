@@ -67,54 +67,46 @@ internal class SøknadDAO(
     }
 
     private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
-        val periodeSpm = listOf(
-            "kvp" to søknad.kvp,
-            "intro" to søknad.intro,
-            "institusjon" to søknad.institusjon,
-            "sykepenger" to søknad.sykepenger,
-            "supplerendeAlder" to søknad.supplerendeStønadAlder,
-            "supplerendeFlyktning" to søknad.supplerendeStønadFlyktning,
-            "jobbsjansen" to søknad.jobbsjansen,
-        ).flatMap {
-            listOf(
-                it.first to lagrePeriodeSpm(it.second),
-                it.first + "Fom" to lagrePeriodeSpmFra(it.second),
-                it.first + "Tom" to lagrePeriodeSpmTil(it.second),
-            )
-        }.associate {
-            it.first to it.second
-        }
 
         txSession.run(
             queryOf(
                 lagreSøknad,
-                periodeSpm +
                 mapOf(
-                    "id" to søknad.id.toString(),
-                    "innsendingId" to innsendingId.toString(),
-                    "eksternSoknadId" to søknad.søknadId,
-                    "fornavn" to søknad.personopplysninger.fornavn,
-                    "etternavn" to søknad.personopplysninger.etternavn,
-                    "ident" to søknad.personopplysninger.ident,
-                    "deltarKvp" to lagrePeriodeSpm(søknad.kvp),
-
-
-                    "supplerendeFlyktning" to lagrePeriodeSpm(søknad.supplerendeStønadFlyktning),
-                    "supplerendeFlyktningFom" to lagrePeriodeSpmFra(søknad.supplerendeStønadFlyktning),
-                    "supplerendeFlyktningTom" to lagrePeriodeSpmTil(søknad.supplerendeStønadFlyktning),
-
-                    "jobbsjansen" to lagrePeriodeSpm(søknad.jobbsjansen),
-                    "jobbsjansenFom" to lagrePeriodeSpmFra(søknad.jobbsjansen),
-                    "jobbsjansenTom" to lagrePeriodeSpmTil(søknad.jobbsjansen),
-
-                    "journalpostId" to søknad.journalpostId,
-                    "dokumentinfoId" to søknad.dokumentInfoId,
-                    "opprettet" to søknad.innsendt,
-                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
-                ),
+                    "kvp" to søknad.kvp,
+                    "intro" to søknad.intro,
+                    "institusjon" to søknad.institusjon,
+                    "sykepenger" to søknad.sykepenger,
+                    "supplerendeAlder" to søknad.supplerendeStønadAlder,
+                    "supplerendeFlyktning" to søknad.supplerendeStønadFlyktning,
+                    "jobbsjansen" to søknad.jobbsjansen,
+                ).toParametersForPeriodeSpm() +
+                    mapOf(
+                        "id" to søknad.id.toString(),
+                        "innsendingId" to innsendingId.toString(),
+                        "eksternSoknadId" to søknad.søknadId,
+                        "fornavn" to søknad.personopplysninger.fornavn,
+                        "etternavn" to søknad.personopplysninger.etternavn,
+                        "ident" to søknad.personopplysninger.ident,
+                        "journalpostId" to søknad.journalpostId,
+                        "dokumentinfoId" to søknad.dokumentInfoId,
+                        "opprettet" to søknad.innsendt,
+                        "tidsstempelHosOss" to søknad.tidsstempelHosOss,
+                    ),
             ).asUpdate,
         )
     }
+
+    private fun Map<String, PeriodeSpm>.toParametersForPeriodeSpm() =
+        this.toList()
+            .flatMap {
+                listOf(
+                    it.first to lagrePeriodeSpm(it.second),
+                    it.first + "Fom" to lagrePeriodeSpmFra(it.second),
+                    it.first + "Tom" to lagrePeriodeSpmTil(it.second),
+                )
+            }.associate {
+                it.first to it.second as Any
+            }
 
     private fun lagrePeriodeSpmFra(periodeSpm: PeriodeSpm) = when (periodeSpm) {
         is PeriodeSpm.Ja -> periodeSpm.periode.fra
@@ -290,8 +282,8 @@ internal class SøknadDAO(
     """.trimIndent()
 
     private val JA =
-    @Language("SQL")
-    private val finnes = "select exists(select 1 from søknad where id = ?)"
+        @Language("SQL")
+        private val finnes = "select exists(select 1 from søknad where id = ?)"
 
     @Language("SQL")
     private val hent = "select * from søknad where innsending_id = ?"
