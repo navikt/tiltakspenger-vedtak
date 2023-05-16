@@ -100,7 +100,7 @@ internal class TrygdOgPensjonDAOTest {
         kvp = kvpNei(),
         intro = introNei(),
         institusjon = null,
-        opprettet = null,
+        innsendt = null,
         barnetillegg = emptyList(),
         tidsstempelHosOss = LocalDateTime.now(),
         tiltak = Tiltak.ArenaTiltak(

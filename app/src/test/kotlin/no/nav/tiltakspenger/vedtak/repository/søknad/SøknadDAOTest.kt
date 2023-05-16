@@ -68,7 +68,7 @@ internal class SøknadDAOTest {
             kvp = kvpNei(),
             intro = introNei(),
             institusjon = null,
-            opprettet = null,
+            innsendt = null,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
@@ -126,16 +126,14 @@ internal class SøknadDAOTest {
             kvp = kvpNei(),
             intro = introNei(),
             institusjon = null,
-            opprettet = null,
+            innsendt = null,
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 0,
-                    ident = "1",
-                    oppholdsland = "NO",
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = "NO",
                     fornavn = "fornavn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
-                    søktBarnetillegg = true,
+                    fødselsdato = "1",
                 ),
             ),
             tidsstempelHosOss = innhentet,
@@ -232,16 +230,14 @@ internal class SøknadDAOTest {
                 til = 30.august(2022),
             ),
             institusjon = true,
-            opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
+            innsendt = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 16,
-                    ident = "1",
-                    oppholdsland = "NO",
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = "NO",
                     fornavn = "foranvn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
-                    søktBarnetillegg = true,
+                    fødselsdato = "1",
                 ),
             ),
             tidsstempelHosOss = innhentet,
@@ -305,9 +301,9 @@ internal class SøknadDAOTest {
         }
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
-        assertEquals(søknad.opprettet, hentet.opprettet)
-        println(søknad.opprettet)
-        assertEquals(søknad.opprettet, hentet.opprettet)
+        assertEquals(søknad.innsendt, hentet.innsendt)
+        println(søknad.innsendt)
+        assertEquals(søknad.innsendt, hentet.innsendt)
         assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
 
         assertEquals(

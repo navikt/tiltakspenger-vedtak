@@ -116,7 +116,7 @@ class BehandlingMapper {
     private fun mapSøknad(søknad: Søknad) = SøknadDTO(
         id = søknad.id.toString(),
         søknadId = søknad.søknadId,
-        søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
+        søknadsdato = (søknad.innsendt ?: søknad.tidsstempelHosOss).toLocalDate(),
         arrangoernavn = søknad.tiltak?.arrangoernavn,
         tiltakskode = if (søknad.tiltak == null) {
             "Ukjent"
@@ -160,10 +160,10 @@ class BehandlingMapper {
             BarnetilleggDTO(
                 navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
                 alder = it.alder,
-                fødselsdato = if (it is Barnetillegg.UtenIdent) {
+                fødselsdato = if (it is Barnetillegg.Manuell) {
                     it.fødselsdato
                 } else {
-                    barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato
+                    barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.FraPdl).fødselsdato }?.fødselsdato
                 },
                 bosatt = it.oppholdsland,
                 kilde = "Søknad",

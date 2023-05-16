@@ -27,10 +27,10 @@ internal class BarnetilleggDAO {
 
     private fun lagreBarnetillegg(søknadId: SøknadId, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
         val paramMap = when (barnetillegg) {
-            is Barnetillegg.MedIdent -> mapOf(
+            is Barnetillegg.FraPdl -> mapOf(
                 "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
                 "soknadId" to søknadId.toString(),
-                "ident" to barnetillegg.ident,
+                "ident" to barnetillegg.fødselsdato,
                 "fodselsdato" to null,
                 "fornavn" to barnetillegg.fornavn,
                 "mellomnavn" to barnetillegg.mellomnavn,
@@ -40,7 +40,7 @@ internal class BarnetilleggDAO {
                 "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
             )
 
-            is Barnetillegg.UtenIdent -> mapOf(
+            is Barnetillegg.Manuell -> mapOf(
                 "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
                 "soknadId" to søknadId.toString(),
                 "ident" to null,
@@ -74,24 +74,20 @@ internal class BarnetilleggDAO {
         val etternavn = stringOrNull("etternavn")
         val søktBarnetillegg = boolean("søkt_barnetillegg")
         return if (ident != null) {
-            Barnetillegg.MedIdent(
-                alder = alder,
-                oppholdsland = oppholdsland,
-                ident = ident,
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = oppholdsland,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
-                søktBarnetillegg = søktBarnetillegg,
+                fødselsdato = ident,
             )
         } else {
-            Barnetillegg.UtenIdent(
-                alder = alder,
-                oppholdsland = oppholdsland,
-                fødselsdato = fødselsdato!!,
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = oppholdsland,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
-                søktBarnetillegg = søktBarnetillegg,
+                fødselsdato = fødselsdato!!,
             )
         }
     }

@@ -99,7 +99,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.introduksjonsprogram.deltar, søknad.intro.deltar)
         assertEquals(søknadDTO.oppholdInstitusjon, søknad.institusjon)
         assertEquals(TypeInstitusjon.ANNET, søknad.typeInstitusjon)
-        assertEquals(søknadDTO.opprettet, søknad.opprettet)
+        assertEquals(søknadDTO.opprettet, søknad.innsendt)
         assertEquals(søknadDTO.fritekst, søknad.fritekst)
         assertEquals(søknadDTO.vedlegg?.first()?.journalpostId, søknad.vedlegg.first().journalpostId)
         assertEquals(søknadDTO.vedlegg?.first()?.dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
@@ -232,12 +232,12 @@ internal class SøknadDTOTest {
             }
             if (barnetilleggDTO.ident != null) {
                 søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.MedIdent>()
-                    it.ident shouldBe barnetilleggDTO.ident
+                    it.shouldBeTypeOf<Barnetillegg.FraPdl>()
+                    it.fødselsdato shouldBe barnetilleggDTO.ident
                 }
             } else {
                 søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.UtenIdent>()
+                    it.shouldBeTypeOf<Barnetillegg.Manuell>()
                     it.fødselsdato shouldBe barnetilleggDTO.fødselsdato
                 }
             }

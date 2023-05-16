@@ -19,6 +19,7 @@ import java.time.LocalDateTime
 
 data class SøknadDTO(
     val søknadId: String,
+    val versjon: String,
     val journalpostId: String,
     val dokumentInfoId: String,
     val personopplysninger: PersonopplysningerDTO,
@@ -64,7 +65,7 @@ data class SøknadDTO(
                     },
                 ),
                 institusjon = dto.oppholdInstitusjon,
-                opprettet = dto.opprettet,
+                innsendt = dto.opprettet,
                 barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
                 tidsstempelHosOss = innhentet,
                 tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
@@ -201,24 +202,20 @@ class BarnetilleggDTO(
     companion object {
         internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
             return if (dto.ident != null) {
-                Barnetillegg.MedIdent(
-                    alder = dto.alder,
-                    oppholdsland = dto.oppholdsland,
-                    ident = dto.ident,
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = dto.oppholdsland,
                     fornavn = dto.fornavn,
                     mellomnavn = dto.mellomnavn,
                     etternavn = dto.etternavn,
-                    søktBarnetillegg = dto.søktBarnetillegg ?: true,
+                    fødselsdato = dto.ident,
                 )
             } else {
-                Barnetillegg.UtenIdent(
-                    alder = dto.alder,
-                    oppholdsland = dto.oppholdsland,
-                    fødselsdato = dto.fødselsdato!!,
+                Barnetillegg.Manuell(
+                    oppholderSegIEØS = dto.oppholdsland,
                     fornavn = dto.fornavn,
                     mellomnavn = dto.mellomnavn,
                     etternavn = dto.etternavn,
-                    søktBarnetillegg = dto.søktBarnetillegg ?: true,
+                    fødselsdato = dto.fødselsdato!!,
                 )
             }
         }

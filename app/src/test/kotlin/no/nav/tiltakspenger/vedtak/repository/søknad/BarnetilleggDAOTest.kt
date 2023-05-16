@@ -52,25 +52,21 @@ internal class BarnetilleggDAOTest {
                 søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
-        val barnetilleggMedIdent =
-            Barnetillegg.MedIdent(
-                alder = 42,
-                oppholdsland = "SWE",
-                ident = "123",
+        val barnetilleggFraPdl =
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = "SWE",
                 fornavn = "fornavn",
                 mellomnavn = "mellomnavn",
                 etternavn = "etternavn",
-                søktBarnetillegg = true,
+                fødselsdato = "123",
             )
-        val barnetilleggUtenIdent =
-            Barnetillegg.UtenIdent(
-                alder = 42,
-                oppholdsland = "SWE",
-                fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
+        val barnetilleggManuell =
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = "SWE",
                 fornavn = "fornavn",
                 mellomnavn = null,
                 etternavn = "etternavn",
-                søktBarnetillegg = true,
+                fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
             )
 
         val barnetilleggDAO = BarnetilleggDAO()
@@ -78,7 +74,7 @@ internal class BarnetilleggDAOTest {
             it.transaction { txSession ->
                 barnetilleggDAO.lagre(
                     søknadId = søknadId,
-                    barnetillegg = listOf(barnetilleggMedIdent, barnetilleggUtenIdent),
+                    barnetillegg = listOf(barnetilleggFraPdl, barnetilleggManuell),
                     txSession,
                 )
             }
@@ -91,8 +87,8 @@ internal class BarnetilleggDAOTest {
         }
 
         assertEquals(2, hentet.size)
-        assertTrue(hentet.contains(barnetilleggMedIdent))
-        assertTrue(hentet.contains(barnetilleggUtenIdent))
+        assertTrue(hentet.contains(barnetilleggFraPdl))
+        assertTrue(hentet.contains(barnetilleggManuell))
     }
 
     private fun enSøknad(id: SøknadId, ident: String) = Søknad(
@@ -108,7 +104,7 @@ internal class BarnetilleggDAOTest {
         kvp = kvpNei(),
         intro = introNei(),
         institusjon = null,
-        opprettet = null,
+        innsendt = null,
         barnetillegg = emptyList(),
         tidsstempelHosOss = LocalDateTime.now(),
         tiltak = Tiltak.ArenaTiltak(

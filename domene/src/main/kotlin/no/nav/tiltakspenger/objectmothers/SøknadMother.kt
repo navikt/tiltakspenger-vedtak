@@ -67,14 +67,12 @@ interface SøknadMother {
         ident: String = Random().nextInt().toString(),
         søktBarnetillegg: Boolean = true,
     ): Barnetillegg {
-        return Barnetillegg.MedIdent(
-            alder = alder,
-            oppholdsland = oppholdsland,
+        return Barnetillegg.FraPdl(
+            oppholderSegIEØS = oppholdsland,
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
-            ident = ident,
-            søktBarnetillegg = søktBarnetillegg,
+            fødselsdato = ident,
         )
     }
 
@@ -87,14 +85,12 @@ interface SøknadMother {
         fødselsdato: LocalDate = 14.juni(2012),
         søktBarnetillegg: Boolean = true,
     ): Barnetillegg {
-        return Barnetillegg.UtenIdent(
-            alder = alder,
-            oppholdsland = oppholdsland,
+        return Barnetillegg.Manuell(
+            oppholderSegIEØS = oppholdsland,
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
             fødselsdato = fødselsdato,
-            søktBarnetillegg = søktBarnetillegg,
         )
     }
 
@@ -125,7 +121,7 @@ interface SøknadMother {
             kvp = kvp,
             intro = intro,
             institusjon = oppholdInstitusjon,
-            opprettet = opprettet,
+            innsendt = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
             tiltak = tiltak,
@@ -162,7 +158,7 @@ interface SøknadMother {
             kvp = kvp,
             intro = intro,
             institusjon = oppholdInstitusjon,
-            opprettet = opprettet,
+            innsendt = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
             tiltak = tiltak,

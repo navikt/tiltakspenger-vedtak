@@ -17,19 +17,18 @@ data class Søknad(
     val kvp: PeriodeSpm,
     val intro: PeriodeSpm,
     val institusjon: PeriodeSpm,
-
-    val etterlønn: Boolean,
-    val alderspensjon: LocalDate?,
+    val etterlønn: JaNeiSpm,
+    val gjenlevendepensjon: FraOgMedDatoSpm,
+    val alderspensjon: FraOgMedDatoSpm,
     val sykepenger: PeriodeSpm,
     val supplerendeStønadAlder: PeriodeSpm,
     val supplerendeStønadFlyktning: PeriodeSpm,
-
-    val opprettet: LocalDateTime?,
-    val barnetillegg: List<Barnetillegg>,
-    val tidsstempelHosOss: LocalDateTime,
+    val jobbsjansen: PeriodeSpm,
+    val trygdOgPensjon: FraOgMedDatoSpm,
     val tiltak: Tiltak?,
-    val trygdOgPensjon: List<TrygdOgPensjon>,
-    val fritekst: String?,
+    val barnetillegg: List<Barnetillegg>,
+    val innsendt: LocalDateTime,
+    val tidsstempelHosOss: LocalDateTime,
     val vedlegg: List<Vedlegg>,
 ) : Tidsstempler {
 
@@ -37,7 +36,7 @@ data class Søknad(
         fun randomId() = SøknadId.random()
     }
 
-    override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
+    override fun tidsstempelKilde(): LocalDateTime = innsendt ?: tidsstempelHosOss()
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
@@ -45,11 +44,6 @@ data class Søknad(
         val ident: String,
         val fornavn: String,
         val etternavn: String,
-    )
-
-    data class Kvp(
-        val deltar: Boolean,
-        val periode: Periode?,
     )
 
     sealed class PeriodeSpm {
@@ -69,20 +63,13 @@ data class Søknad(
     }
 
     sealed class FraOgMedDatoSpm {
-        object IkkeMedISøknaden : JaNeiSpm()
-        object IkkeRelevant : JaNeiSpm()
-        object Ja : JaNeiSpm()
-        object Nei : JaNeiSpm()
+        object IkkeMedISøknaden : FraOgMedDatoSpm()
+        object IkkeRelevant : FraOgMedDatoSpm()
+        data class Ja(
+            val fom: LocalDate,
+        ) : FraOgMedDatoSpm()
+        object Nei : FraOgMedDatoSpm()
     }
-
-//    data class Inddtro(
-//        val erBesvart: Boolean,
-//        val erRelevant: Boolean,
-//        val besvart: Boolean,
-//
-//        val deltar: Boolean,
-//        val periode: Periode?,
-//    )
 }
 
 data class Vedlegg(
@@ -91,73 +78,41 @@ data class Vedlegg(
     val filnavn: String?,
 )
 
-data class TrygdOgPensjon(
-    val utbetaler: String,
-    val prosent: Int? = null,
-    val fom: LocalDate? = null,
-    val tom: LocalDate? = null,
+data class Tiltak(
+    val arenaId: String,
+    val periode: Periode,
+    val opprinneligStartdato: LocalDate,
+    val opprinneligSluttdato: LocalDate?,
+    val arrangør: String,
+    val type: Tiltaksaktivitet.Tiltak,
 )
 
-//data class Tiltak(
-//    val arenaId: String,
-//    val periode: Periode,
-//    val opprinneligStartdato: LocalDate,
-//    val opprinneligSluttdato: LocalDate?,
-//    val arrangør: String,
-//    val type: Tiltaksaktivitet.Tiltak,
-//)
-
-sealed class Tiltak {
-
-    abstract val arrangoernavn: String?
-    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
-    abstract val startdato: LocalDate
-    abstract val sluttdato: LocalDate?
-
-    data class ArenaTiltak(
-        val arenaId: String,
-        override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
-        val harSluttdatoFraArena: Boolean,
-        override val tiltakskode: Tiltaksaktivitet.Tiltak,
-        val erIEndreStatus: Boolean,
-        val opprinneligSluttdato: LocalDate? = null,
-        val opprinneligStartdato: LocalDate,
-        override val sluttdato: LocalDate? = null,
-        override val startdato: LocalDate,
-    ) : Tiltak()
-}
-
 sealed class Barnetillegg {
-    abstract val alder: Int
-    abstract val oppholdsland: String
+    abstract val oppholderSegIEØS: Boolean
     abstract val fornavn: String?
     abstract val mellomnavn: String?
     abstract val etternavn: String?
-    abstract val søktBarnetillegg: Boolean
+    abstract val fødselsdato: LocalDate
 
-    data class MedIdent(
-        override val alder: Int,
-        override val oppholdsland: String,
+    data class FraPdl(
+        override val oppholderSegIEØS: Boolean,
         override val fornavn: String?,
         override val mellomnavn: String?,
         override val etternavn: String?,
-        val ident: String,
-        override val søktBarnetillegg: Boolean,
+        override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 
-    data class UtenIdent(
-        override val alder: Int,
-        override val oppholdsland: String,
+    data class Manuell(
+        override val oppholderSegIEØS: Boolean,
         override val fornavn: String?,
         override val mellomnavn: String?,
         override val etternavn: String?,
-        val fødselsdato: LocalDate,
-        override val søktBarnetillegg: Boolean,
+        override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 }
 
-enum class TypeInstitusjon(val type: String) {
-    BARNEVERN("barneverninstitusjon"),
-    OVERGANGSBOLIG("overgangsbolig"),
-    ANNET("annet"),
-}
+//enum class TypeInstitusjon(val type: String) {
+//    BARNEVERN("barneverninstitusjon"),
+//    OVERGANGSBOLIG("overgangsbolig"),
+//    ANNET("annet"),
+//}
