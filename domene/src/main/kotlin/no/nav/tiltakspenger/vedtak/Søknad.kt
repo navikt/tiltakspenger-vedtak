@@ -66,7 +66,7 @@ data class Søknad(
         object IkkeMedISøknaden : FraOgMedDatoSpm()
         object IkkeRelevant : FraOgMedDatoSpm()
         data class Ja(
-            val fom: LocalDate,
+            val fra: LocalDate,
         ) : FraOgMedDatoSpm()
         object Nei : FraOgMedDatoSpm()
     }

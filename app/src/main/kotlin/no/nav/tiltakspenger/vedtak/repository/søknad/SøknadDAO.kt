@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Søknad.FraOgMedDatoSpm
 import no.nav.tiltakspenger.vedtak.Søknad.PeriodeSpm
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
@@ -81,6 +82,11 @@ internal class SøknadDAO(
                     "jobbsjansen" to søknad.jobbsjansen,
                 ).toParametersForPeriodeSpm() +
                     mapOf(
+                        "gjenlevendepensjon" to søknad.gjenlevendepensjon,
+                        "alderspensjon" to søknad.alderspensjon,
+                        "trygdOgPensjon" to søknad.trygdOgPensjon,
+                    ).toParametersForFraOgMedSpm() +
+                    mapOf(
                         "id" to søknad.id.toString(),
                         "innsendingId" to innsendingId.toString(),
                         "eksternSoknadId" to søknad.søknadId,
@@ -107,6 +113,16 @@ internal class SøknadDAO(
             it.first to it.second as Any
         }
 
+    private fun Map<String, FraOgMedDatoSpm>.toParametersForFraOgMedSpm(): Map<String, Any> =
+        this.flatMap { (k, v) ->
+            listOf(
+                k to lagreFraOgMedDatoSpm(v),
+                k + "Fom" to lagreFraOgMedDatoSpmFra(v),
+            )
+        }.associate {
+            it.first to it.second as Any
+        }
+
     private fun lagrePeriodeSpmFra(periodeSpm: PeriodeSpm) = when (periodeSpm) {
         is PeriodeSpm.Ja -> periodeSpm.periode.fra
         is PeriodeSpm.Nei -> null
@@ -126,6 +142,20 @@ internal class SøknadDAO(
         is PeriodeSpm.Nei -> NEI
         is PeriodeSpm.IkkeRelevant -> IKKE_RELEVANT
         is PeriodeSpm.IkkeMedISøknaden -> IKKE_MED_I_SØKNADEN
+    }
+
+    private fun lagreFraOgMedDatoSpmFra(fraOgMedDatoSpm: FraOgMedDatoSpm) = when (fraOgMedDatoSpm) {
+        is FraOgMedDatoSpm.Ja -> fraOgMedDatoSpm.fra
+        is FraOgMedDatoSpm.Nei -> null
+        is FraOgMedDatoSpm.IkkeRelevant -> null
+        is FraOgMedDatoSpm.IkkeMedISøknaden -> null
+    }
+
+    private fun lagreFraOgMedDatoSpm(fraOgMedDatoSpm: FraOgMedDatoSpm) = when (fraOgMedDatoSpm) {
+        is FraOgMedDatoSpm.Ja -> JA
+        is FraOgMedDatoSpm.Nei -> NEI
+        is FraOgMedDatoSpm.IkkeRelevant -> IKKE_RELEVANT
+        is FraOgMedDatoSpm.IkkeMedISøknaden -> IKKE_MED_I_SØKNADEN
     }
 
     private fun Row.toIdent() = string("ident")
