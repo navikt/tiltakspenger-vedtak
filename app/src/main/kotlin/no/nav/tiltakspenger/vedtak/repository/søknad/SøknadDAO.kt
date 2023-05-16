@@ -7,14 +7,19 @@ import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
+import no.nav.tiltakspenger.vedtak.Søknad.PeriodeSpm
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
+import sun.jvm.hotspot.oops.CellTypeState.value
+
+private const val JA = "Ja"
+private const val NEI = "Nei"
+private const val IKKE_RELEVANT = "IkkeRelevant"
+private const val IKKE_MED_I_SØKNADEN = "IkkeMedISøknaden"
 
 internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
-    private val trygdOgPensjonDAO: TrygdOgPensjonDAO = TrygdOgPensjonDAO(),
     private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
     fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {
@@ -58,41 +63,32 @@ internal class SøknadDAO(
         lagreSøknad(innsendingId, søknad, txSession)
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
-        trygdOgPensjonDAO.lagre(søknad.id, søknad.trygdOgPensjon, txSession)
         vedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
     }
 
-    private fun oppdaterSøknad(søknad: Søknad, txSession: TransactionalSession) {
-        txSession.run(
-            queryOf(
-                oppdaterSøknad,
-                mapOf(
-                    "id" to søknad.id.toString(),
-                    "fornavn" to søknad.personopplysninger.fornavn,
-                    "etternavn" to søknad.personopplysninger.etternavn,
-                    "ident" to søknad.personopplysninger.ident,
-                    "deltarKvp" to søknad.kvp.deltar,
-                    "kvpFom" to søknad.kvp.periode?.fra,
-                    "kvpTom" to søknad.kvp.periode?.til,
-                    "deltarIntro" to søknad.intro.deltar,
-                    "introFom" to søknad.intro.periode?.fra,
-                    "introTom" to søknad.intro.periode?.til,
-                    "instOpphold" to søknad.institusjon,
-                    "instType" to søknad.typeInstitusjon?.name,
-                    "fritekst" to søknad.fritekst,
-                    "journalpostId" to søknad.journalpostId,
-                    "dokumentinfoId" to søknad.dokumentInfoId,
-                    "opprettet" to søknad.innsendt,
-                    "tidsstempelHosOss" to søknad.tidsstempelHosOss,
-                ),
-            ).asUpdate,
-        )
-    }
-
     private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
+        val periodeSpm = listOf(
+            "kvp" to søknad.kvp,
+            "intro" to søknad.intro,
+            "institusjon" to søknad.institusjon,
+            "sykepenger" to søknad.sykepenger,
+            "supplerendeAlder" to søknad.supplerendeStønadAlder,
+            "supplerendeFlyktning" to søknad.supplerendeStønadFlyktning,
+            "jobbsjansen" to søknad.jobbsjansen,
+        ).flatMap {
+            listOf(
+                it.first to lagrePeriodeSpm(it.second),
+                it.first + "Fom" to lagrePeriodeSpmFra(it.second),
+                it.first + "Tom" to lagrePeriodeSpmTil(it.second),
+            )
+        }.associate {
+            it.first to it.second
+        }
+
         txSession.run(
             queryOf(
                 lagreSøknad,
+                periodeSpm +
                 mapOf(
                     "id" to søknad.id.toString(),
                     "innsendingId" to innsendingId.toString(),
@@ -100,43 +96,17 @@ internal class SøknadDAO(
                     "fornavn" to søknad.personopplysninger.fornavn,
                     "etternavn" to søknad.personopplysninger.etternavn,
                     "ident" to søknad.personopplysninger.ident,
-                    "deltarKvp" to when(søknad.kvp) {
-                        is Søknad.PeriodeSpm.Ja -> "ja"
-                        is Søknad.PeriodeSpm.Nei -> "nei"
-                        is Søknad.PeriodeSpm.IkkeRelevant -> "ikkeRelevant"
-                        is Søknad.PeriodeSpm.IkkeMedISøknaden -> "ikkeVurdert"
-                    },
-                    "kvpFom" to when(val kvp = søknad.kvp) {
-                        is Søknad.PeriodeSpm.Ja -> kvp.periode.fra
-                        is Søknad.PeriodeSpm.Nei -> null
-                        is Søknad.PeriodeSpm.IkkeRelevant -> null
-                    },
-                    "kvpTom" to when(val kvp = søknad.kvp) {
-                        is Søknad.PeriodeSpm.Ja -> kvp.periode.til
-                        is Søknad.PeriodeSpm.Nei -> null
-                        is Søknad.PeriodeSpm.IkkeRelevant -> null
-                    },
-                    "deltarIntro" to when(søknad.intro) {
-                        is Søknad.PeriodeSpm.Ja -> true
-                        is Søknad.PeriodeSpm.Nei -> false
-                        is Søknad.PeriodeSpm.IkkeRelevant -> null
-                    },
-                    "introFom" to when(val intro = søknad.intro) {
-                        is Søknad.PeriodeSpm.Ja -> intro.periode.fra
-                        is Søknad.PeriodeSpm.Nei -> null
-                        is Søknad.PeriodeSpm.IkkeRelevant -> null
-                    },
-                    "introTom" to when(val intro = søknad.intro) {
-                        is Søknad.PeriodeSpm.Ja -> intro.periode.til
-                        is Søknad.PeriodeSpm.Nei -> null
-                        is Søknad.PeriodeSpm.IkkeRelevant -> null
-                    },
-                    "deltarIntro" to søknad.intro.deltar,
-                    "introFom" to søknad.intro.periode?.fra,
-                    "introTom" to søknad.intro.periode?.til,
-                    "instOpphold" to søknad.institusjon,
-                    "instType" to søknad.typeInstitusjon?.name,
-                    "fritekst" to søknad.fritekst,
+                    "deltarKvp" to lagrePeriodeSpm(søknad.kvp),
+
+
+                    "supplerendeFlyktning" to lagrePeriodeSpm(søknad.supplerendeStønadFlyktning),
+                    "supplerendeFlyktningFom" to lagrePeriodeSpmFra(søknad.supplerendeStønadFlyktning),
+                    "supplerendeFlyktningTom" to lagrePeriodeSpmTil(søknad.supplerendeStønadFlyktning),
+
+                    "jobbsjansen" to lagrePeriodeSpm(søknad.jobbsjansen),
+                    "jobbsjansenFom" to lagrePeriodeSpmFra(søknad.jobbsjansen),
+                    "jobbsjansenTom" to lagrePeriodeSpmTil(søknad.jobbsjansen),
+
                     "journalpostId" to søknad.journalpostId,
                     "dokumentinfoId" to søknad.dokumentInfoId,
                     "opprettet" to søknad.innsendt,
@@ -144,6 +114,27 @@ internal class SøknadDAO(
                 ),
             ).asUpdate,
         )
+    }
+
+    private fun lagrePeriodeSpmFra(periodeSpm: PeriodeSpm) = when (periodeSpm) {
+        is PeriodeSpm.Ja -> periodeSpm.periode.fra
+        is PeriodeSpm.Nei -> null
+        is PeriodeSpm.IkkeRelevant -> null
+        is PeriodeSpm.IkkeMedISøknaden -> null
+    }
+
+    private fun lagrePeriodeSpmTil(periodeSpm: PeriodeSpm) = when (periodeSpm) {
+        is PeriodeSpm.Ja -> periodeSpm.periode.til
+        is PeriodeSpm.Nei -> null
+        is PeriodeSpm.IkkeRelevant -> null
+        is PeriodeSpm.IkkeMedISøknaden -> null
+    }
+
+    private fun lagrePeriodeSpm(periodeSpm: PeriodeSpm) = when (periodeSpm) {
+        is PeriodeSpm.Ja -> JA
+        is PeriodeSpm.Nei -> NEI
+        is PeriodeSpm.IkkeRelevant -> IKKE_RELEVANT
+        is PeriodeSpm.IkkeMedISøknaden -> IKKE_MED_I_SØKNADEN
     }
 
     private fun Row.toIdent() = string("ident")
@@ -171,7 +162,6 @@ internal class SøknadDAO(
         val fritekst = stringOrNull("fritekst")
         val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
         val tiltak = tiltakDAO.hent(id, txSession)
-        val trygdOgPensjon = trygdOgPensjonDAO.hentTrygdOgPensjonListe(id, txSession)
         val vedlegg = vedleggDAO.hentVedleggListe(id, txSession)
 
         return Søknad(
@@ -194,7 +184,7 @@ internal class SøknadDAO(
                     )
                 },
             ),
-            intro = Søknad.PeriodeSpm(
+            intro = PeriodeSpm(
                 deltar = deltarIntro,
                 periode = introFom?.let {
                     Periode(
@@ -220,6 +210,9 @@ internal class SøknadDAO(
             id,
             innsending_id,
             søknad_id,
+            journalpost_id,
+            dokumentinfo_id,
+            versjon,
             fornavn, 
             etternavn, 
             ident, 
@@ -230,16 +223,36 @@ internal class SøknadDAO(
             intro_fom,
             intro_tom,
             institusjon_opphold, 
-            institusjon_type,
-            fritekst,
-            journalpost_id,
-            dokumentinfo_id,
-            opprettet,
+            institusjon_fom,
+            institusjon_tom,
+            etterlønn,
+            gjenlevendepensjon,
+            gjenlevendepensjonFom,
+            alderspensjon,
+            alderspensjonFom,
+            sykepenger,
+            sykepengerFom,
+            sykepengerTom,
+            supplerendeAlder,
+            supplerendeAlderFom,
+            supplerendeAlderTom,
+            supplerendeFlyktning,
+            supplerendeFlyktningFom,
+            supplerendeFlyktningTom,
+            jobbsjansen,
+            jobbsjansenFom,
+            jobbsjansenTom,
+            privatpensjon,
+            privatpensjonFom,
+            innsendt,
             tidsstempel_hos_oss
         ) values (
-            :id, 
+            :id,
             :innsendingId,
             :eksternSoknadId,
+            :journalpostId,
+            :dokumentinfoId,            
+            :versjon,
             :fornavn, 
             :etternavn,
             :ident,
@@ -250,37 +263,33 @@ internal class SøknadDAO(
             :introFom,
             :introTom,
             :instOpphold,
-            :instType,
-            :fritekst,
-            :journalpostId,
-            :dokumentinfoId,
-            :opprettet,
+            :instFom,
+            :instTom,
+            :etterlonn,
+            :gjenlevendepensjon,
+            :gjenlevendepensjonFom,
+            :alderspensjon,
+            :alderspensjonFom,
+            :sykepenger,
+            :sykepengerFom,
+            :sykepengerTom,
+            :supplerendeAlder,
+            :supplerendeAlderFom,
+            :supplerendeAlderTom,
+            :supplerendeFlyktning,
+            :supplerendeFlyktningFom,
+            :supplerendeFlyktningTom,
+            :jobbsjansen,
+            :jobbsjansenFom,
+            :jobbsjansenTom,
+            :privatpensjon,
+            :privatpensjonFom,
+            :innsendt,
             :tidsstempelHosOss
         )
     """.trimIndent()
 
-    @Language("SQL")
-    private val oppdaterSøknad = """
-        update søknad set  
-            fornavn = :fornavn, 
-            etternavn = :etternavn, 
-            ident = :ident, 
-            deltar_kvp = :deltarKvp, 
-            kvp_fom = :kvpFom,
-            kvp_tom = :kvpTom,
-            deltar_intro = :deltarIntro,
-            intro_fom = :introFom,
-            intro_tom = :introTom,
-            institusjon_opphold = :instOpphold, 
-            institusjon_type = :instType,
-            fritekst = :fritekst,
-            journalpost_id = :journalpostId,
-            dokumentinfo_id = :dokumentinfoId,
-            opprettet = :opprettet,
-            tidsstempel_hos_oss = :tidsstempelHosOss
-        where id = :id
-    """.trimIndent()
-
+    private val JA =
     @Language("SQL")
     private val finnes = "select exists(select 1 from søknad where id = ?)"
 

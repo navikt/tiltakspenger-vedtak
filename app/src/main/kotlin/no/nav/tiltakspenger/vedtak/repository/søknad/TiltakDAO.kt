@@ -51,9 +51,7 @@ internal class TiltakDAO {
                         "soknadId" to søknadId.toString(),
                         "arenaId" to arenaTiltak.arenaId,
                         "arrangoernavn" to arenaTiltak.arrangoernavn,
-                        "harSluttdatoFraArena" to arenaTiltak.harSluttdatoFraArena,
                         "tiltakskode" to arenaTiltak.tiltakskode.name,
-                        "erIEndreStatus" to arenaTiltak.erIEndreStatus,
                         "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
                         "startdato" to arenaTiltak.startdato,
@@ -101,9 +99,7 @@ internal class TiltakDAO {
     private fun Row.toArenatiltak(): Tiltak.ArenaTiltak {
         val arenaId = string("arena_id")
         val arrangoernavn = stringOrNull("arrangoernavn")
-        val harSluttdatoFraArena = boolean("har_sluttdato_fra_arena")
         val tiltakskode = string("tiltakskode")
-        val erIEndreStatus = boolean("er_i_endre_status")
         val opprinneligStartdato = localDate("opprinnelig_startdato")
         val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
         val startdato = localDate("startdato")
@@ -111,9 +107,7 @@ internal class TiltakDAO {
         return Tiltak.ArenaTiltak(
             arenaId = arenaId,
             arrangoernavn = arrangoernavn,
-            harSluttdatoFraArena = harSluttdatoFraArena,
             tiltakskode = tiltakskode.let { Tiltaksaktivitet.Tiltak.valueOf(it) },
-            erIEndreStatus = erIEndreStatus,
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
             sluttdato = sluttdato,
@@ -189,9 +183,7 @@ internal class TiltakDAO {
             søknad_id,
             arena_id,
             arrangoernavn, 
-            har_sluttdato_fra_arena, 
             tiltakskode,
-            er_i_endre_status,
             opprinnelig_startdato,
             opprinnelig_sluttdato,
             startdato,
@@ -201,9 +193,7 @@ internal class TiltakDAO {
             :soknadId,
             :arenaId,
             :arrangoernavn, 
-            :harSluttdatoFraArena,
             :tiltakskode,
-            :erIEndreStatus,
             :opprinneligStartdato,
             :opprinneligSluttdato,
             :startdato,

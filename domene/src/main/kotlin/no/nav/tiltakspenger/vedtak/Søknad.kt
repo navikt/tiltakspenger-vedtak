@@ -78,15 +78,34 @@ data class Vedlegg(
     val filnavn: String?,
 )
 
-data class Tiltak(
-    val arenaId: String,
-    val periode: Periode,
-    val opprinneligStartdato: LocalDate,
-    val opprinneligSluttdato: LocalDate?,
-    val arrangør: String,
-    val type: Tiltaksaktivitet.Tiltak,
-)
+sealed class Tiltak {
 
+    abstract val arrangoernavn: String?
+    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
+    abstract val startdato: LocalDate
+    abstract val sluttdato: LocalDate?
+
+    data class ArenaTiltak(
+        val arenaId: String,
+        override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
+        override val tiltakskode: Tiltaksaktivitet.Tiltak,
+        val opprinneligSluttdato: LocalDate? = null,
+        val opprinneligStartdato: LocalDate,
+        override val sluttdato: LocalDate? = null,
+        override val startdato: LocalDate,
+    ) : Tiltak()
+
+    data class BrukerregistrertTiltak(
+        override val tiltakskode: Tiltaksaktivitet.Tiltak?, // Er null hvis bruker velger "Annet" i søknaden
+        override val arrangoernavn: String?, // Er null om f.eks. kode 6
+        val beskrivelse: String?,
+        override val startdato: LocalDate,
+        override val sluttdato: LocalDate,
+        val adresse: String? = null,
+        val postnummer: String? = null,
+        val antallDager: Int,
+    ) : Tiltak()
+}
 sealed class Barnetillegg {
     abstract val oppholderSegIEØS: Boolean
     abstract val fornavn: String?
