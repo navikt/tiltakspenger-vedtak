@@ -8,6 +8,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Søknad(
+    val versjon: String = "1",
     val id: SøknadId = randomId(),
     val søknadId: String,
     val journalpostId: String,
@@ -22,7 +23,7 @@ data class Søknad(
     val sykepenger: PeriodeSpm,
     val supplerendeStønadAlder: PeriodeSpm,
     val supplerendeStønadFlyktning: PeriodeSpm,
-    
+
     val opprettet: LocalDateTime?,
     val barnetillegg: List<Barnetillegg>,
     val tidsstempelHosOss: LocalDateTime,
