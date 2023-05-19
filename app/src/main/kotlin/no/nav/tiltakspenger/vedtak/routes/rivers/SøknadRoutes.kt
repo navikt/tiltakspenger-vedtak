@@ -41,7 +41,7 @@ fun Route.søknadRoutes(
 
         val identMottattHendelse = IdentMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            ident = søknadDTO.personopplysninger.ident,
+            ident = søknadDTO.ident,
         )
         søkerMediator.håndter(identMottattHendelse)
 

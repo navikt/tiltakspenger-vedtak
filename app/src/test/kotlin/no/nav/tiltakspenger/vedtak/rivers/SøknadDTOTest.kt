@@ -1,14 +1,11 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import io.kotest.inspectors.forAtLeastOne
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeTypeOf
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import no.nav.tiltakspenger.felles.oktober
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.PersonopplysningerDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -28,28 +25,33 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "annet",
+            typeInstitusjon = "Barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -90,12 +92,11 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.søknadId, søknad.søknadId)
         assertEquals(søknadDTO.journalpostId, søknad.journalpostId)
         assertEquals(søknadDTO.dokumentInfoId, søknad.dokumentInfoId)
-        assertEquals(søknadDTO.personopplysninger.fornavn, søknad.personopplysninger.fornavn)
-        assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
-        assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.ident)
+        assertEquals(søknadDTO.fornavn, søknad.personopplysninger.fornavn)
+        assertEquals(søknadDTO.etternavn, søknad.personopplysninger.etternavn)
+        assertEquals(søknadDTO.ident, søknad.personopplysninger.ident)
 
-        // TODO: Må sjekke hva fasiten er..
-        assertTrue(søknad.kvp is Søknad.PeriodeSpm.Ja)
+        assertTrue(søknad.kvp is Søknad.PeriodeSpm.Nei)
         assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
         assertTrue(søknad.institusjon is Søknad.PeriodeSpm.Ja)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
@@ -113,28 +114,33 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -168,8 +174,8 @@ internal class SøknadDTOTest {
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
         assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
         val spm = søknad.intro as Søknad.PeriodeSpm.Ja
-        assertEquals(søknadDTO.introduksjonsprogram.periode?.fra, spm.periode.fra)
-        assertEquals(søknadDTO.introduksjonsprogram.periode?.til, spm.periode.til)
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.fom, spm.periode.fra)
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.tom, spm.periode.til)
     }
 
     @Test
@@ -179,28 +185,33 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -221,23 +232,22 @@ internal class SøknadDTOTest {
         )
 
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
-        søknadDTO.barnetillegg.forEach { barnetilleggDTO ->
-            søknad.barnetillegg.forAtLeastOne {
-                it.fornavn shouldBe barnetilleggDTO.fornavn
-                it.etternavn shouldBe barnetilleggDTO.etternavn
-            }
-            if (barnetilleggDTO.ident != null) {
-                søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.FraPdl>()
-                    it.fødselsdato shouldBe barnetilleggDTO.ident
-                }
-            } else {
-                søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.Manuell>()
-                    it.fødselsdato shouldBe barnetilleggDTO.fødselsdato
-                }
-            }
-        }
+        søknad.barnetillegg shouldContainExactlyInAnyOrder listOf(
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
+                fornavn = "Ola",
+                mellomnavn = null,
+                etternavn = "Hansen",
+                fødselsdato = 10.oktober(2010),
+            ),
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
+                fornavn = "Petter",
+                mellomnavn = null,
+                etternavn = "Davidsen",
+                fødselsdato = LocalDate.now(),
+            ),
+        )
     }
 
     @Test
@@ -247,21 +257,14 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -311,21 +314,14 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "overgangsbolig",
@@ -375,21 +371,14 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -447,21 +436,14 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
@@ -521,27 +503,20 @@ internal class SøknadDTOTest {
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
-            personopplysninger = PersonopplysningerDTO(
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                ident = "123",
-            ),
-            kvalifiseringsprogram = SøknadDTO.KvalifiseringsprogramDTO(
-                deltar = false,
-                periode = null,
-            ),
-            introduksjonsprogram = SøknadDTO.IntroduksjonsprogramDTO(
-                deltar = true,
-                SøknadDTO.PeriodeDTO(
-                    fra = 1.oktober(2022),
-                    til = 10.oktober(2022),
-                ),
+            fornavn = "Ola",
+            etternavn = "Nordmann",
+            ident = "123",
+            deltarKvp = false,
+            deltarIntroduksjonsprogrammet = true,
+            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljerDTO(
+                fom = LocalDate.of(2022, 10, 1),
+                tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
             typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 10, ident = "10101012345", oppholdsland = "NOR"),
                 BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(

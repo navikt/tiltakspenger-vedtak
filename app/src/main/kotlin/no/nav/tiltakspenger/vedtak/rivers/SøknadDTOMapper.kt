@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object SøknadDTOMapper {
 
@@ -17,34 +18,29 @@ object SøknadDTOMapper {
             journalpostId = dto.journalpostId,
             dokumentInfoId = dto.dokumentInfoId,
             personopplysninger = Søknad.Personopplysninger(
-                fornavn = dto.personopplysninger.fornavn,
-                etternavn = dto.personopplysninger.etternavn,
-                ident = dto.personopplysninger.ident,
+                fornavn = dto.fornavn!!,
+                etternavn = dto.etternavn!!,
+                ident = dto.ident,
             ),
-            kvp = try {
-                if (dto.kvalifiseringsprogram.deltar) {
-                    Søknad.PeriodeSpm.Ja(
-                        periode = Periode(
-                            fra = dto.kvalifiseringsprogram.periode!!.fra,
-                            til = dto.kvalifiseringsprogram.periode.til,
-                        ),
-                    )
-                } else {
-                    Søknad.PeriodeSpm.Nei
-                }
-            } catch (e: NullPointerException) {
-                Søknad.PeriodeSpm.FeilaktigBesvart(
-                    svartJa = dto.kvalifiseringsprogram.deltar,
-                    fom = dto.kvalifiseringsprogram.periode?.fra,
-                    tom = dto.kvalifiseringsprogram.periode?.til,
+            kvp =
+            if (dto.deltarKvp) {
+                Søknad.PeriodeSpm.Ja(
+                    periode = Periode(
+                        fra = LocalDate.MIN,
+                        til = LocalDate.MAX,
+                    ),
                 )
+            } else {
+                Søknad.PeriodeSpm.Nei
             },
             intro = try {
-                if (dto.introduksjonsprogram.deltar) {
+                if (dto.deltarIntroduksjonsprogrammet == null) {
+                    Søknad.PeriodeSpm.IkkeBesvart
+                } else if (dto.deltarIntroduksjonsprogrammet) {
                     Søknad.PeriodeSpm.Ja(
                         periode = Periode(
-                            fra = dto.introduksjonsprogram.periode!!.fra,
-                            til = dto.introduksjonsprogram.periode.til,
+                            fra = dto.introduksjonsprogrammetDetaljer!!.fom,
+                            til = dto.introduksjonsprogrammetDetaljer.tom!!,
                         ),
                     )
                 } else {
@@ -52,9 +48,9 @@ object SøknadDTOMapper {
                 }
             } catch (e: NullPointerException) {
                 Søknad.PeriodeSpm.FeilaktigBesvart(
-                    svartJa = dto.introduksjonsprogram.deltar,
-                    fom = dto.introduksjonsprogram.periode?.fra,
-                    tom = dto.introduksjonsprogram.periode?.til,
+                    svartJa = dto.deltarIntroduksjonsprogrammet,
+                    fom = dto.introduksjonsprogrammetDetaljer?.fom,
+                    tom = dto.introduksjonsprogrammetDetaljer?.tom,
                 )
             },
             institusjon = mapInstitusjon(dto.oppholdInstitusjon, dto.typeInstitusjon),
@@ -62,10 +58,10 @@ object SøknadDTOMapper {
             barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
             tidsstempelHosOss = innhentet,
             tiltak = mapArenatiltak(dto.arenaTiltak)
-                ?: BrukerregistrertTiltakDTO.mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
-            trygdOgPensjon = mapTrygdOgPensjon(dto.trygdOgPensjon),
+                ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
+            trygdOgPensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
             vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
-            etterlønn = Søknad.JaNeiSpm.IkkeMedISøknaden,
+            etterlønn = mapTrygdOgPensjon(dto.trygdOgPensjon),
             gjenlevendepensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
             alderspensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
             sykepenger = Søknad.PeriodeSpm.IkkeMedISøknaden,
@@ -75,15 +71,25 @@ object SøknadDTOMapper {
         )
     }
 
-    private fun mapTrygdOgPensjon(trygdOgPensjon: List<TrygdOgPensjonDTO>?): Søknad.FraOgMedDatoSpm {
-        // if(dto.trygdOgPensjon.isNullOrEmpty()) { Søknad.FraOgMedDatoSpm.Nei } else { Søknad.FraOgMedDatoSpm.Ja(fra = ) }
-        // TODO
-        return Søknad.FraOgMedDatoSpm.Nei
+    private fun mapTrygdOgPensjon(trygdOgPensjon: List<TrygdOgPensjonDTO>?): Søknad.JaNeiSpm {
+        return if (trygdOgPensjon.isNullOrEmpty()) {
+            Søknad.JaNeiSpm.Nei
+        } else {
+            Søknad.JaNeiSpm.Ja
+        }
     }
 
     private fun mapInstitusjon(oppholdInstitusjon: Boolean, typeInstitusjon: String?): Søknad.PeriodeSpm {
-        // TODO
-        return Søknad.PeriodeSpm.Nei
+        return if (!oppholdInstitusjon) {
+            Søknad.PeriodeSpm.Nei
+        } else {
+            if (typeInstitusjon.equals("Barneverninstitusjon", ignoreCase = true)) {
+                // TODO: Hvor henter vi datoene fra?
+                Søknad.PeriodeSpm.Ja(periode = Periode(LocalDate.MIN, LocalDate.MAX))
+            } else {
+                Søknad.PeriodeSpm.IkkeBesvart // TODO Ok?
+            }
+        }
     }
 
     fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
@@ -99,6 +105,22 @@ object SøknadDTOMapper {
             startdato = dto.startdato,
         )
     }
+
+    fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
+        if (dto == null) {
+            null
+        } else {
+            Tiltak.BrukerregistrertTiltak(
+                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode), // TODO:test
+                arrangoernavn = dto.arrangoernavn,
+                beskrivelse = dto.beskrivelse,
+                startdato = dto.fom,
+                sluttdato = dto.tom,
+                adresse = dto.adresse,
+                postnummer = dto.postnummer,
+                antallDager = dto.antallDager,
+            )
+        }
 
     fun mapVedlegg(dto: VedleggDTO): Vedlegg {
         return Vedlegg(
@@ -128,7 +150,6 @@ object SøknadDTOMapper {
         }
     }
 
-    private fun toFødselsdato(ident: String): LocalDate {
-        return LocalDate.now() // TODO
-    }
+    private fun toFødselsdato(ident: String): LocalDate =
+        LocalDate.parse(ident.subSequence(0, 6), DateTimeFormatter.ofPattern("ddMMuu"))
 }
