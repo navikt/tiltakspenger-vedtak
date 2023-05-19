@@ -21,8 +21,7 @@ object SøknadDTOMapper {
                 etternavn = dto.personopplysninger.etternavn,
                 ident = dto.personopplysninger.ident,
             ),
-            kvp =
-            try {
+            kvp = try {
                 if (dto.kvalifiseringsprogram.deltar) {
                     Søknad.PeriodeSpm.Ja(
                         periode = Periode(
