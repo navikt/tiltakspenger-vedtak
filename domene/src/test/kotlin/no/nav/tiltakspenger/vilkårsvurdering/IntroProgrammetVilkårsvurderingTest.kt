@@ -18,8 +18,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
         val søknad = nySøknadMedTiltak(
             intro = periodeJa(
-                fra = 1 januar (2022),
-                til = 31 januar (2022),
+                fom = 1 januar (2022),
+                tom = 31 januar (2022),
             ),
         )
 
@@ -102,8 +102,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
         val søknad = nySøknadMedTiltak(
             intro = periodeJa(
-                fra = 1 januar (2022),
-                til = 31 januar (2022),
+                fom = 1 januar (2022),
+                tom = 31 januar (2022),
             ),
         )
 
@@ -126,9 +126,10 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad med mangelfulle data`() {
         val søknad = nySøknadMedTiltak(
-            intro = Søknad.PeriodeSpm(
-                deltar = true,
-                periode = null,
+            intro = Søknad.PeriodeSpm.FeilaktigBesvart(
+                svartJa = true,
+                fom = null,
+                tom = null,
             ),
         )
 

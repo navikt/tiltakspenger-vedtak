@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
@@ -36,7 +36,7 @@ class KommunaleYtelserVilkårsvurderingTest {
     @Test
     fun `Samlet utfall for kommunale ytelser som krever manuell behandling`() {
         val søknad = nySøknadMedTiltak(
-            kvp = kvpJa(),
+            kvp = periodeJa(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))

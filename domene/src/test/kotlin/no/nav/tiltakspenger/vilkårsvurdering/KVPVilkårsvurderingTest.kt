@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.oktober
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import org.junit.jupiter.api.Test
 
@@ -15,7 +15,7 @@ internal class KVPVilkårsvurderingTest {
     @Test
     fun `En vilkårsvurdering har en søknad`() {
         val søknad = nySøknadMedTiltak(
-            kvp = kvpJa(),
+            kvp = periodeJa(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -38,7 +38,7 @@ internal class KVPVilkårsvurderingTest {
     @Test
     fun `En vilkårsvurdering har en søknad og manuell vurdering`() {
         val søknad = nySøknadMedTiltak(
-            kvp = kvpJa(),
+            kvp = periodeJa(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))

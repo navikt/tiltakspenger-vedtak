@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.februarDateTime
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyDagpengerVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
@@ -25,7 +24,7 @@ class InngangsvilkårsvurderingerTest {
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
                     søknad = nySøknadMedTiltak(
-                        kvp = kvpJa(),
+                        kvp = periodeJa(),
                     ),
                 ),
             ),
