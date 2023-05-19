@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.objectmothers.ObjectMother.trygdOgPensjon
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
@@ -34,7 +33,6 @@ internal class SøkerServiceTest {
                 ident = ident,
             ),
             barnetillegg = listOf(barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val innsending = innsendingMedPersonopplysninger(
             ident = ident,
@@ -57,7 +55,6 @@ internal class SøkerServiceTest {
                 ident = ident,
             ),
             barnetillegg = listOf(barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val innsending = innsendingMedSøknad(
             ident = ident,

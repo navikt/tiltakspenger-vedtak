@@ -2,7 +2,9 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
+import no.nav.tiltakspenger.felles.juni
+import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
@@ -54,15 +56,15 @@ internal class BarnetilleggDAOTest {
         }
         val barnetilleggFraPdl =
             Barnetillegg.FraPdl(
-                oppholderSegIEØS = "SWE",
+                oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
                 fornavn = "fornavn",
                 mellomnavn = "mellomnavn",
                 etternavn = "etternavn",
-                fødselsdato = "123",
+                fødselsdato = 14.juni(2012),
             )
         val barnetilleggManuell =
             Barnetillegg.Manuell(
-                oppholderSegIEØS = "SWE",
+                oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
                 fornavn = "fornavn",
                 mellomnavn = null,
                 etternavn = "etternavn",
@@ -101,25 +103,29 @@ internal class BarnetilleggDAOTest {
             etternavn = "etternavn",
             ident = ident,
         ),
-        kvp = kvpNei(),
+        kvp = periodeNei(),
         intro = periodeNei(),
-        institusjon = null,
-        innsendt = null,
+        institusjon = periodeNei(),
+        innsendt = LocalDateTime.now(),
         barnetillegg = emptyList(),
         tidsstempelHosOss = LocalDateTime.now(),
         tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Fest og morro",
-            harSluttdatoFraArena = true,
             tiltakskode = Tiltaksaktivitet.Tiltak.GRUPPEAMO,
-            erIEndreStatus = false,
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
             startdato = LocalDate.now(),
         ),
-        trygdOgPensjon = emptyList(),
-        fritekst = null,
+        trygdOgPensjon = fraOgMedDatoNei(),
         vedlegg = emptyList(),
+        etterlønn = nei(),
+        gjenlevendepensjon = fraOgMedDatoNei(),
+        alderspensjon = fraOgMedDatoNei(),
+        sykepenger = periodeNei(),
+        supplerendeStønadAlder = periodeNei(),
+        supplerendeStønadFlyktning = periodeNei(),
+        jobbsjansen = periodeNei(),
     )
 }

@@ -37,7 +37,7 @@ interface SøknadMother {
     }
 
     fun barnetilleggMedIdent(
-        oppholderSegIEØS: Søknad.JaNeiSpm,
+        oppholderSegIEØS: Søknad.JaNeiSpm = Søknad.JaNeiSpm.Ja,
         fornavn: String = "Fornavn Barn",
         mellomnavn: String? = "Mellomnavn Barn",
         etternavn: String = "Etternavn Barn",
@@ -54,13 +54,11 @@ interface SøknadMother {
     }
 
     fun barnetilleggUtenIdent(
-        alder: Int = 10,
-        oppholderSegIEØS: Søknad.JaNeiSpm,
+        oppholderSegIEØS: Søknad.JaNeiSpm = Søknad.JaNeiSpm.Ja,
         fornavn: String = "Fornavn Barn",
         mellomnavn: String? = "Mellomnavn Barn",
         etternavn: String = "Etternavn Barn",
         fødselsdato: LocalDate = 14.juni(2012),
-        søktBarnetillegg: Boolean = true,
     ): Barnetillegg {
         return Barnetillegg.Manuell(
             oppholderSegIEØS = oppholderSegIEØS,

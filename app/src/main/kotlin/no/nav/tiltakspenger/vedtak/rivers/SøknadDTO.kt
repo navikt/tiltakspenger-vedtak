@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 
 data class SøknadDTO(
     val søknadId: String,
-    val versjon: String,
     val journalpostId: String,
     val dokumentInfoId: String,
     val personopplysninger: PersonopplysningerDTO,

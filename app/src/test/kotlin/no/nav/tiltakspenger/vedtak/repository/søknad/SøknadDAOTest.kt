@@ -3,8 +3,6 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.august
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
@@ -12,7 +10,6 @@ import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer

@@ -135,7 +135,6 @@ internal class PostgresInnsendingRepositoryTest {
             ),
             journalpostId = journalpostId,
             barnetillegg = listOf(barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
         val tiltak =
@@ -182,7 +181,6 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = ident,
             ),
             barnetillegg = listOf(barnetilleggMedIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
 
         val innsending = innsendingMedSøknad(
@@ -215,7 +213,6 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = ident,
             ),
             barnetillegg = listOf(barnetilleggUtenIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
         val tiltak =
@@ -258,7 +255,6 @@ internal class PostgresInnsendingRepositoryTest {
                 ident = ident,
             ),
             barnetillegg = listOf(barnetilleggUtenIdent()),
-            trygdOgPensjon = listOf(trygdOgPensjon()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
 
