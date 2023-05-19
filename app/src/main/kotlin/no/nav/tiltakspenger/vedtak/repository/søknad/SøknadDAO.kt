@@ -4,25 +4,28 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Søknad.FraOgMedDatoSpm
-import no.nav.tiltakspenger.vedtak.Søknad.PeriodeSpm
-import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
-import sun.jvm.hotspot.oops.CellTypeState.value
 
-private const val JA = "Ja"
-private const val NEI = "Nei"
-private const val IKKE_RELEVANT = "IkkeRelevant"
-private const val IKKE_MED_I_SØKNADEN = "IkkeMedISøknaden"
+private const val KVP_FELT = "kvp"
+private const val INTRO_FELT = "intro"
+private const val INSTITUSJON_FELT = "institusjon"
+private const val SYKEPENGER_FELT = "sykepenger"
+private const val SUPPLERENDESTØNAD_ALDER_FELT = "supplerende_alder"
+private const val SUPPLERENDESTØNAD_FLYKTNING_FELT = "supplerende_flyktning"
+private const val JOBBSJANSEN_FELT = "jobbsjansen"
+private const val GJENLEVENDEPENSJON_FELT = "gjenlevendepensjon"
+private const val ALDERSPENSJON_FELT = "alderspensjon"
+private const val TRYGD_OG_PENSJON_FELT = "trygd_og_pensjon"
+private const val ETTERLØNN_FELT = "etterlonn"
 
 internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
+
     fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {
         return txSession.run(
             queryOf(hentIdent, søknadId)
@@ -69,23 +72,32 @@ internal class SøknadDAO(
 
     private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
 
+        val periodeSpmParamMap = mapOf(
+            KVP_FELT to søknad.kvp,
+            INTRO_FELT to søknad.intro,
+            INSTITUSJON_FELT to søknad.institusjon,
+            SYKEPENGER_FELT to søknad.sykepenger,
+            SUPPLERENDESTØNAD_ALDER_FELT to søknad.supplerendeStønadAlder,
+            SUPPLERENDESTØNAD_FLYKTNING_FELT to søknad.supplerendeStønadFlyktning,
+            JOBBSJANSEN_FELT to søknad.jobbsjansen,
+        ).toPeriodeSpmParams()
+
+        val fraOgMedDatoSpmParamMap = mapOf(
+            GJENLEVENDEPENSJON_FELT to søknad.gjenlevendepensjon,
+            ALDERSPENSJON_FELT to søknad.alderspensjon,
+            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
+        ).toFraOgMedDatoSpmParams()
+
+        val jaNeiSpmParamMap = mapOf(
+            ETTERLØNN_FELT to søknad.etterlønn,
+        ).toJaNeiSpmParams()
+
         txSession.run(
             queryOf(
                 lagreSøknad,
-                mapOf(
-                    "kvp" to søknad.kvp,
-                    "intro" to søknad.intro,
-                    "institusjon" to søknad.institusjon,
-                    "sykepenger" to søknad.sykepenger,
-                    "supplerendeAlder" to søknad.supplerendeStønadAlder,
-                    "supplerendeFlyktning" to søknad.supplerendeStønadFlyktning,
-                    "jobbsjansen" to søknad.jobbsjansen,
-                ).toParametersForPeriodeSpm() +
-                    mapOf(
-                        "gjenlevendepensjon" to søknad.gjenlevendepensjon,
-                        "alderspensjon" to søknad.alderspensjon,
-                        "trygdOgPensjon" to søknad.trygdOgPensjon,
-                    ).toParametersForFraOgMedSpm() +
+                periodeSpmParamMap +
+                    fraOgMedDatoSpmParamMap +
+                    jaNeiSpmParamMap +
                     mapOf(
                         "id" to søknad.id.toString(),
                         "innsendingId" to innsendingId.toString(),
@@ -102,61 +114,6 @@ internal class SøknadDAO(
         )
     }
 
-    private fun Map<String, PeriodeSpm>.toParametersForPeriodeSpm(): Map<String, Any> =
-        this.flatMap { (k, v) ->
-            listOf(
-                k to lagrePeriodeSpm(v),
-                k + "Fom" to lagrePeriodeSpmFra(v),
-                k + "Tom" to lagrePeriodeSpmTil(v),
-            )
-        }.associate {
-            it.first to it.second as Any
-        }
-
-    private fun Map<String, FraOgMedDatoSpm>.toParametersForFraOgMedSpm(): Map<String, Any> =
-        this.flatMap { (k, v) ->
-            listOf(
-                k to lagreFraOgMedDatoSpm(v),
-                k + "Fom" to lagreFraOgMedDatoSpmFra(v),
-            )
-        }.associate {
-            it.first to it.second as Any
-        }
-
-    private fun lagrePeriodeSpmFra(periodeSpm: PeriodeSpm) = when (periodeSpm) {
-        is PeriodeSpm.Ja -> periodeSpm.periode.fra
-        is PeriodeSpm.Nei -> null
-        is PeriodeSpm.IkkeRelevant -> null
-        is PeriodeSpm.IkkeMedISøknaden -> null
-    }
-
-    private fun lagrePeriodeSpmTil(periodeSpm: PeriodeSpm) = when (periodeSpm) {
-        is PeriodeSpm.Ja -> periodeSpm.periode.til
-        is PeriodeSpm.Nei -> null
-        is PeriodeSpm.IkkeRelevant -> null
-        is PeriodeSpm.IkkeMedISøknaden -> null
-    }
-
-    private fun lagrePeriodeSpm(periodeSpm: PeriodeSpm) = when (periodeSpm) {
-        is PeriodeSpm.Ja -> JA
-        is PeriodeSpm.Nei -> NEI
-        is PeriodeSpm.IkkeRelevant -> IKKE_RELEVANT
-        is PeriodeSpm.IkkeMedISøknaden -> IKKE_MED_I_SØKNADEN
-    }
-
-    private fun lagreFraOgMedDatoSpmFra(fraOgMedDatoSpm: FraOgMedDatoSpm) = when (fraOgMedDatoSpm) {
-        is FraOgMedDatoSpm.Ja -> fraOgMedDatoSpm.fra
-        is FraOgMedDatoSpm.Nei -> null
-        is FraOgMedDatoSpm.IkkeRelevant -> null
-        is FraOgMedDatoSpm.IkkeMedISøknaden -> null
-    }
-
-    private fun lagreFraOgMedDatoSpm(fraOgMedDatoSpm: FraOgMedDatoSpm) = when (fraOgMedDatoSpm) {
-        is FraOgMedDatoSpm.Ja -> JA
-        is FraOgMedDatoSpm.Nei -> NEI
-        is FraOgMedDatoSpm.IkkeRelevant -> IKKE_RELEVANT
-        is FraOgMedDatoSpm.IkkeMedISøknaden -> IKKE_MED_I_SØKNADEN
-    }
 
     private fun Row.toIdent() = string("ident")
 
@@ -168,23 +125,24 @@ internal class SøknadDAO(
         val fornavn = string("fornavn")
         val etternavn = string("etternavn")
         val ident = string("ident")
-        val deltarKvp = boolean("deltar_kvp")
-        val kvpFom = localDateOrNull("kvp_fom")
-        val kvpTom = localDateOrNull("kvp_tom")
-        val deltarIntro = boolean("deltar_intro")
-        val introFom = localDateOrNull("intro_fom")
-        val introTom = localDateOrNull("intro_tom")
-        val oppholdInstitusjon = booleanOrNull("institusjon_opphold")
-        val typeInstitusjon = stringOrNull("institusjon_type")?.let { TypeInstitusjon.valueOf(it) }
-        val opprettet = localDateTimeOrNull("opprettet")
+        val opprettet = localDateTime("opprettet")
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
-        val fritekst = stringOrNull("fritekst")
         val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
         val tiltak = tiltakDAO.hent(id, txSession)
         val vedlegg = vedleggDAO.hentVedleggListe(id, txSession)
-
+        val kvp = periodeSpm(KVP_FELT)
+        val intro = periodeSpm(INTRO_FELT)
+        val institusjon = periodeSpm(INSTITUSJON_FELT)
+        val etterlønn = jaNeiSpm(ETTERLØNN_FELT)
+        val gjenlevendepensjon = fraOgMedDatoSpm(GJENLEVENDEPENSJON_FELT)
+        val alderspensjon = fraOgMedDatoSpm(ALDERSPENSJON_FELT)
+        val sykepenger = periodeSpm(SYKEPENGER_FELT)
+        val supplerendeStønadAlder = periodeSpm(SUPPLERENDESTØNAD_ALDER_FELT)
+        val supplerendeStønadFlyktning = periodeSpm(SUPPLERENDESTØNAD_FLYKTNING_FELT)
+        val jobbsjansen = periodeSpm(JOBBSJANSEN_FELT)
+        val trygdOgPensjon = fraOgMedDatoSpm(TRYGD_OG_PENSJON_FELT)
         return Søknad(
             id = id,
             søknadId = søknadId,
@@ -195,33 +153,22 @@ internal class SøknadDAO(
                 fornavn = fornavn,
                 etternavn = etternavn,
             ),
-            kvp =
-            kvp = Søknad.Kvp(
-                deltar = deltarKvp,
-                periode = kvpFom?.let {
-                    Periode(
-                        fra = kvpFom,
-                        til = kvpTom!!,
-                    )
-                },
-            ),
-            intro = PeriodeSpm(
-                deltar = deltarIntro,
-                periode = introFom?.let {
-                    Periode(
-                        fra = introFom,
-                        til = introTom!!,
-                    )
-                },
-            ),
-            institusjon = oppholdInstitusjon,
+            kvp = kvp,
+            intro = intro,
+            institusjon = institusjon,
             innsendt = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
             tiltak = tiltak,
-            trygdOgPensjon = trygdOgPensjon,
-            fritekst = fritekst,
             vedlegg = vedlegg,
+            etterlønn = etterlønn,
+            gjenlevendepensjon = gjenlevendepensjon,
+            alderspensjon = alderspensjon,
+            sykepenger = sykepenger,
+            supplerendeStønadAlder = supplerendeStønadAlder,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktning,
+            jobbsjansen = jobbsjansen,
+            trygdOgPensjon = trygdOgPensjon,
         )
     }
 
@@ -237,36 +184,46 @@ internal class SøknadDAO(
             fornavn, 
             etternavn, 
             ident, 
-            deltar_kvp, 
+            innsendt,
+            tidsstempel_hos_oss,
+            kvp_type,
+            kvp_ja,
             kvp_fom,
             kvp_tom,
-            deltar_intro,
+            intro_type,
+            intro_ja,
             intro_fom,
             intro_tom,
-            institusjon_opphold, 
+            institusjon_type,
+            institusjon_ja,
             institusjon_fom,
             institusjon_tom,
-            etterlønn,
-            gjenlevendepensjon,
-            gjenlevendepensjonFom,
-            alderspensjon,
-            alderspensjonFom,
-            sykepenger,
-            sykepengerFom,
-            sykepengerTom,
-            supplerendeAlder,
-            supplerendeAlderFom,
-            supplerendeAlderTom,
-            supplerendeFlyktning,
-            supplerendeFlyktningFom,
-            supplerendeFlyktningTom,
-            jobbsjansen,
-            jobbsjansenFom,
-            jobbsjansenTom,
-            privatpensjon,
-            privatpensjonFom,
-            innsendt,
-            tidsstempel_hos_oss
+            sykepenger_type,
+            sykepenger_ja,
+            sykepenger_fom,
+            sykepenger_tom,
+            supplerende_alder_type,
+            supplerende_alder_ja,
+            supplerende_alder_fom,
+            supplerende_alder_tom,
+            supplerende_flyktning_type,
+            supplerende_flyktning_ja,
+            supplerende_flyktning_fom,
+            supplerende_flyktning_tom,
+            jobbsjansen_type,
+            jobbsjansen_ja,
+            jobbsjansen_fom,
+            jobbsjansen_tom,
+            gjenlevendepensjon_type,
+            gjenlevendepensjon_ja,
+            gjenlevendepensjon_fom,
+            alderspensjon_type,
+            alderspensjon_ja,
+            alderspensjon_fom,
+            trygd_og_pensjon_type,
+            trygd_og_pensjon_ja,
+            trygd_og_pensjon_fom,
+            etterlonn_type   
         ) values (
             :id,
             :innsendingId,
@@ -277,42 +234,53 @@ internal class SøknadDAO(
             :fornavn, 
             :etternavn,
             :ident,
-            :deltarKvp,
-            :kvpFom,
-            :kvpTom,
-            :deltarIntro,
-            :introFom,
-            :introTom,
-            :instOpphold,
-            :instFom,
-            :instTom,
-            :etterlonn,
-            :gjenlevendepensjon,
-            :gjenlevendepensjonFom,
-            :alderspensjon,
-            :alderspensjonFom,
-            :sykepenger,
-            :sykepengerFom,
-            :sykepengerTom,
-            :supplerendeAlder,
-            :supplerendeAlderFom,
-            :supplerendeAlderTom,
-            :supplerendeFlyktning,
-            :supplerendeFlyktningFom,
-            :supplerendeFlyktningTom,
-            :jobbsjansen,
-            :jobbsjansenFom,
-            :jobbsjansenTom,
-            :privatpensjon,
-            :privatpensjonFom,
             :innsendt,
-            :tidsstempelHosOss
+            :tidsstempelHosOss,
+            :kvp_type,
+            :kvp_ja,
+            :kvp_fom,
+            :kvp_tom,
+            :intro_type,
+            :intro_ja,
+            :intro_fom,
+            :intro_tom,
+            :institusjon_type,
+            :institusjon_ja,
+            :institusjon_fom,
+            :institusjon_tom,
+            :sykepenger_type,
+            :sykepenger_ja,
+            :sykepenger_fom,
+            :sykepenger_tom,
+            :supplerende_alder_type,
+            :supplerende_alder_ja,
+            :supplerende_alder_fom,
+            :supplerende_alder_tom,
+            :supplerende_flyktning_type,
+            :supplerende_flyktning_ja,
+            :supplerende_flyktning_fom,
+            :supplerende_flyktning_tom,
+            :jobbsjansen_type,
+            :jobbsjansen_ja,
+            :jobbsjansen_fom,
+            :jobbsjansen_tom,
+            :gjenlevendepensjon_type,
+            :gjenlevendepensjon_ja,
+            :gjenlevendepensjon_fom,
+            :alderspensjon_type,
+            :alderspensjon_ja,
+            :alderspensjon_fom,
+            :trygd_og_pensjon_type,
+            :trygd_og_pensjon_ja,
+            :trygd_og_pensjon_fom,
+            :etterlonn_type
         )
     """.trimIndent()
 
-    private val JA =
-        @Language("SQL")
-        private val finnes = "select exists(select 1 from søknad where id = ?)"
+    // private val JA =
+
+    @Language("SQL")
+    private val finnes = "select exists(select 1 from søknad where id = ?)"
 
     @Language("SQL")
     private val hent = "select * from søknad where innsending_id = ?"

@@ -11,14 +11,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplys
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltaksaktivitet
-import no.nav.tiltakspenger.objectmothers.ObjectMother.trygdOgPensjon
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
