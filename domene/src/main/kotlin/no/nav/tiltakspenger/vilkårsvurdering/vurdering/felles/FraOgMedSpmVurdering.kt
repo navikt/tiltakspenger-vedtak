@@ -11,7 +11,7 @@ class FraOgMedSpmVurdering(
 ) {
 
     companion object {
-        const val KILDE = "SØKNAD"
+        const val KILDE = "Søknad"
     }
 
     fun lagVurderingFraSøknad() =

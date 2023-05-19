@@ -11,7 +11,7 @@ class PeriodeSpmVurdering(
 ) {
 
     companion object {
-        const val KILDE = "SØKNAD"
+        const val KILDE = "Søknad"
     }
 
     fun lagVurderingFraSøknad() =
@@ -24,7 +24,7 @@ class PeriodeSpmVurdering(
                 null
             },
             tom = if (spm is Søknad.PeriodeSpm.Ja) {
-                spm.periode.fra
+                spm.periode.til
             } else {
                 null
             },

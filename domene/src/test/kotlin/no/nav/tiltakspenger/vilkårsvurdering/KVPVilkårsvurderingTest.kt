@@ -15,7 +15,10 @@ internal class KVPVilkårsvurderingTest {
     @Test
     fun `En vilkårsvurdering har en søknad`() {
         val søknad = nySøknadMedTiltak(
-            kvp = periodeJa(),
+            kvp = periodeJa(
+                fom = 1.januar(2022),
+                tom = 31.januar(2022),
+            ),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -24,8 +27,8 @@ internal class KVPVilkårsvurderingTest {
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
         kvpVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
-        kvpVilkårsvurdering.vurderinger().first().fom shouldBe null
-        kvpVilkårsvurdering.vurderinger().first().tom shouldBe null
+        kvpVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
+        kvpVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
 
         kvpVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
@@ -38,7 +41,10 @@ internal class KVPVilkårsvurderingTest {
     @Test
     fun `En vilkårsvurdering har en søknad og manuell vurdering`() {
         val søknad = nySøknadMedTiltak(
-            kvp = periodeJa(),
+            kvp = periodeJa(
+                fom = 1.januar(2022),
+                tom = 31.januar(2022),
+            ),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -56,8 +62,8 @@ internal class KVPVilkårsvurderingTest {
             Vurdering(
                 vilkår = Vilkår.KVP,
                 kilde = "Søknad",
-                fom = null,
-                tom = null,
+                fom = 1.januar(2022),
+                tom = 31.januar(2022),
                 utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "Svart JA i søknaden",
             )

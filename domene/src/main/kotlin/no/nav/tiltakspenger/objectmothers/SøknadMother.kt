@@ -70,6 +70,7 @@ interface SøknadMother {
     }
 
     fun nySøknadMedTiltak(
+        versjon: String = "1",
         id: SøknadId = Søknad.randomId(),
         søknadId: String = "søknadId",
         journalpostId: String = "journalpostId",
@@ -93,6 +94,7 @@ interface SøknadMother {
         jobbsjansen: Søknad.PeriodeSpm = periodeNei(),
     ): Søknad {
         return Søknad(
+            versjon = versjon,
             id = id,
             søknadId = søknadId,
             journalpostId = journalpostId,

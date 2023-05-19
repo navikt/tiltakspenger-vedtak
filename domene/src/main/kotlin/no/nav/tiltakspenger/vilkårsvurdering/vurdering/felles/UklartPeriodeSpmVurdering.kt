@@ -11,17 +11,21 @@ class UklartPeriodeSpmVurdering(
     private val vilkår: Vilkår,
 ) {
 
+    companion object {
+        const val KILDE = "Søknad"
+    }
+
     fun lagVurderingFraSøknad() =
         Vurdering(
             vilkår = vilkår,
-            kilde = KommunalYtelseVilkårsvurdering.KILDE,
+            kilde = KILDE,
             fom = if (spm is Søknad.PeriodeSpm.Ja) {
                 spm.periode.fra
             } else {
                 null
             },
             tom = if (spm is Søknad.PeriodeSpm.Ja) {
-                spm.periode.fra
+                spm.periode.til
             } else {
                 null
             },

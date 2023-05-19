@@ -3,11 +3,16 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.KommunalYtelseVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.UklartPeriodeSpmVurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
-class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
-    KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
+class KVPVilkårsvurdering(
+    søknad: Søknad,
+    vurderingsperiode: Periode,
+) : Vilkårsvurdering() {
+
+    override fun vilkår() = Vilkår.KVP
 
     private val periodeSpmVurdering = UklartPeriodeSpmVurdering(
         spm = søknad.kvp,
@@ -15,9 +20,10 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
         vilkår = vilkår(),
     )
 
-    override fun lagVurderingFraSøknad() = periodeSpmVurdering.lagVurderingFraSøknad()
+    override var manuellVurdering: Vurdering? = null
 
-    override fun avgjørUtfall() = periodeSpmVurdering.avgjørUtfall()
+    override fun detIkkeManuelleUtfallet() = periodeSpmVurdering.avgjørUtfall()
 
-    override fun vilkår() = Vilkår.KVP
+    override fun vurderinger(): List<Vurdering> =
+        listOfNotNull(periodeSpmVurdering.lagVurderingFraSøknad(), manuellVurdering)
 }

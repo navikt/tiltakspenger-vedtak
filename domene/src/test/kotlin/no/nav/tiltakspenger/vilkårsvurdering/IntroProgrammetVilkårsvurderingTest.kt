@@ -141,7 +141,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
+        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Feilaktig besvart i søknaden"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
