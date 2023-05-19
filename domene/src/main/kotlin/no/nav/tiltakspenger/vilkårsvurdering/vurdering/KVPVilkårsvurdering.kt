@@ -4,13 +4,13 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.KommunalYtelseVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.PeriodeSpmVurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.UklartPeriodeSpmVurdering
 
 
 class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
-    private val periodeSpmVurdering = PeriodeSpmVurdering(
+    private val periodeSpmVurdering = UklartPeriodeSpmVurdering(
         spm = søknad.kvp,
         søknadVersjon = søknad.versjon,
         vilkår = vilkår(),

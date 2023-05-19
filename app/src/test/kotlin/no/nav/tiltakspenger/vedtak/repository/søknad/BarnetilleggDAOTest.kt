@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -102,7 +102,7 @@ internal class BarnetilleggDAOTest {
             ident = ident,
         ),
         kvp = kvpNei(),
-        intro = introNei(),
+        intro = periodeNei(),
         institusjon = null,
         innsendt = null,
         barnetillegg = emptyList(),

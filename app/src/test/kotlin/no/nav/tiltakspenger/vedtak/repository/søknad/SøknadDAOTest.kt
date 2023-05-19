@@ -3,10 +3,10 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.august
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -48,6 +48,8 @@ internal class SøknadDAOTest {
     }
 
     @Test
+
+    @Test
     fun `lagre og hente med null-felter`() {
         val ident = "3"
         val journalpostId = Random().nextInt().toString()
@@ -66,7 +68,7 @@ internal class SøknadDAOTest {
                 ident = ident,
             ),
             kvp = kvpNei(),
-            intro = introNei(),
+            intro = periodeNei(),
             institusjon = null,
             innsendt = null,
             barnetillegg = emptyList(),
@@ -74,9 +76,7 @@ internal class SøknadDAOTest {
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Tiltaksarrangør AS",
-                harSluttdatoFraArena = false,
                 tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = false,
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
@@ -124,7 +124,7 @@ internal class SøknadDAOTest {
                 ident = ident,
             ),
             kvp = kvpNei(),
-            intro = introNei(),
+            intro = periodeNei(),
             institusjon = null,
             innsendt = null,
             barnetillegg = listOf(
@@ -225,7 +225,7 @@ internal class SøknadDAOTest {
                 fra = 15.august(2022),
                 til = 30.august(2022),
             ),
-            intro = introJa(
+            intro = periodeJa(
                 fra = 15.august(2022),
                 til = 30.august(2022),
             ),

@@ -2,17 +2,8 @@
 
 package no.nav.tiltakspenger.vedtak.rivers
 
-import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.Vedlegg
-import no.nav.tiltakspenger.vedtak.rivers.ArenaTiltakDTO.Companion.mapArenatiltak
-import no.nav.tiltakspenger.vedtak.rivers.BarnetilleggDTO.Companion.mapBarnetillegg
-import no.nav.tiltakspenger.vedtak.rivers.BrukerregistrertTiltakDTO.Companion.mapBrukerregistrertTiltak
-import no.nav.tiltakspenger.vedtak.rivers.TrygdOgPensjonDTO.Companion.mapTrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.rivers.VedleggDTO.Companion.mapVedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -34,47 +25,6 @@ data class SøknadDTO(
     val fritekst: String?,
     val vedlegg: List<VedleggDTO>? = emptyList(),
 ) {
-    companion object {
-        internal fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
-            return Søknad(
-                søknadId = dto.søknadId,
-                journalpostId = dto.journalpostId,
-                dokumentInfoId = dto.dokumentInfoId,
-                personopplysninger = Søknad.Personopplysninger(
-                    fornavn = dto.personopplysninger.fornavn,
-                    etternavn = dto.personopplysninger.etternavn,
-                    ident = dto.personopplysninger.ident,
-                ),
-                kvp = Søknad.Kvp(
-                    deltar = dto.kvalifiseringsprogram.deltar,
-                    periode = dto.kvalifiseringsprogram.periode?.let {
-                        Periode(
-                            fra = it.fra,
-                            til = it.til,
-                        )
-                    },
-                ),
-                intro = Søknad.PeriodeSpm(
-                    deltar = dto.introduksjonsprogram.deltar,
-                    periode = dto.introduksjonsprogram.periode?.let {
-                        Periode(
-                            fra = it.fra,
-                            til = it.til,
-                        )
-                    },
-                ),
-                institusjon = dto.oppholdInstitusjon,
-                innsendt = dto.opprettet,
-                barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
-                tidsstempelHosOss = innhentet,
-                tiltak = mapArenatiltak(dto.arenaTiltak) ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
-                trygdOgPensjon = dto.trygdOgPensjon?.map { mapTrygdOgPensjon(it) } ?: emptyList(),
-                fritekst = dto.fritekst,
-                vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
-            )
-        }
-    }
-
     data class PersonopplysningerDTO(
         val ident: String,
         val fornavn: String,
@@ -136,57 +86,20 @@ class ArenaTiltakDTO(
     val opprinneligStartdato: LocalDate,
     val sluttdato: LocalDate? = null,
     val startdato: LocalDate,
-) {
-    companion object {
-        internal fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
-            null
-        } else {
-            Tiltak.ArenaTiltak(
-                arenaId = dto.arenaId,
-                arrangoernavn = dto.arrangoer,
-                harSluttdatoFraArena = dto.harSluttdatoFraArena,
-                tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
-                erIEndreStatus = dto.erIEndreStatus,
-                opprinneligSluttdato = dto.opprinneligSluttdato,
-                opprinneligStartdato = dto.opprinneligStartdato,
-                sluttdato = dto.sluttdato,
-                startdato = dto.startdato,
-            )
-        }
-    }
-}
+)
 
 class TrygdOgPensjonDTO(
     val utbetaler: String,
     val prosent: Int? = null,
     val fom: LocalDate? = null,
     val tom: LocalDate? = null,
-) {
-    companion object {
-        internal fun mapTrygdOgPensjon(dto: TrygdOgPensjonDTO): TrygdOgPensjon = TrygdOgPensjon(
-            utbetaler = dto.utbetaler,
-            prosent = dto.prosent,
-            fom = dto.fom,
-            tom = dto.tom,
-        )
-    }
-}
+)
 
 data class VedleggDTO(
     val journalpostId: String,
     val dokumentInfoId: String,
     val filnavn: String?,
-) {
-    companion object {
-        internal fun mapVedlegg(dto: VedleggDTO): Vedlegg {
-            return Vedlegg(
-                journalpostId = dto.journalpostId,
-                dokumentInfoId = dto.dokumentInfoId,
-                filnavn = dto.filnavn,
-            )
-        }
-    }
-}
+)
 
 class BarnetilleggDTO(
     val alder: Int,
@@ -197,29 +110,7 @@ class BarnetilleggDTO(
     val mellomnavn: String? = null,
     val etternavn: String? = null,
     val søktBarnetillegg: Boolean? = null, // Er midlertidig at det er null, endres når alt er i sync
-) {
-    companion object {
-        internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
-            return if (dto.ident != null) {
-                Barnetillegg.FraPdl(
-                    oppholderSegIEØS = dto.oppholdsland,
-                    fornavn = dto.fornavn,
-                    mellomnavn = dto.mellomnavn,
-                    etternavn = dto.etternavn,
-                    fødselsdato = dto.ident,
-                )
-            } else {
-                Barnetillegg.Manuell(
-                    oppholderSegIEØS = dto.oppholdsland,
-                    fornavn = dto.fornavn,
-                    mellomnavn = dto.mellomnavn,
-                    etternavn = dto.etternavn,
-                    fødselsdato = dto.fødselsdato!!,
-                )
-            }
-        }
-    }
-}
+)
 
 @Suppress("ktlint:enum-entry-name-case")
 enum class TypeInstitusjonDTO(val type: String) {

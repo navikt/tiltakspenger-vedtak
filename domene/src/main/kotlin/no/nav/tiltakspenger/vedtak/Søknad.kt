@@ -36,7 +36,7 @@ data class Søknad(
         fun randomId() = SøknadId.random()
     }
 
-    override fun tidsstempelKilde(): LocalDateTime = innsendt ?: tidsstempelHosOss()
+    override fun tidsstempelKilde(): LocalDateTime = innsendt
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
@@ -53,6 +53,13 @@ data class Søknad(
         data class Ja(
             val periode: Periode,
         ) : PeriodeSpm()
+
+        object IkkeBesvart : PeriodeSpm()
+        data class FeilaktigBesvart(
+            val svartJa: Boolean?,
+            val fom: LocalDate?,
+            val tom: LocalDate?,
+        ) : PeriodeSpm()
     }
 
     sealed class JaNeiSpm {
@@ -60,6 +67,7 @@ data class Søknad(
         object IkkeRelevant : JaNeiSpm()
         object Ja : JaNeiSpm()
         object Nei : JaNeiSpm()
+        object IkkeBesvart : JaNeiSpm()
     }
 
     sealed class FraOgMedDatoSpm {
@@ -68,7 +76,13 @@ data class Søknad(
         data class Ja(
             val fra: LocalDate,
         ) : FraOgMedDatoSpm()
+
         object Nei : FraOgMedDatoSpm()
+        object IkkeBesvart : FraOgMedDatoSpm()
+        data class FeilaktigBesvart(
+            val svartJa: Boolean?,
+            val fom: LocalDate?,
+        ) : FraOgMedDatoSpm()
     }
 }
 
@@ -106,26 +120,27 @@ sealed class Tiltak {
         val antallDager: Int,
     ) : Tiltak()
 }
+
 sealed class Barnetillegg {
-    abstract val oppholderSegIEØS: Boolean
-    abstract val fornavn: String?
+    abstract val oppholderSegIEØS: Søknad.JaNeiSpm
+    abstract val fornavn: String
     abstract val mellomnavn: String?
-    abstract val etternavn: String?
+    abstract val etternavn: String
     abstract val fødselsdato: LocalDate
 
     data class FraPdl(
-        override val oppholderSegIEØS: Boolean,
-        override val fornavn: String?,
+        override val oppholderSegIEØS: Søknad.JaNeiSpm,
+        override val fornavn: String,
         override val mellomnavn: String?,
-        override val etternavn: String?,
+        override val etternavn: String,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 
     data class Manuell(
-        override val oppholderSegIEØS: Boolean,
-        override val fornavn: String?,
+        override val oppholderSegIEØS: Søknad.JaNeiSpm,
+        override val fornavn: String,
         override val mellomnavn: String?,
-        override val etternavn: String?,
+        override val etternavn: String,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 }

@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.februarDateTime
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.kvpJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyDagpengerVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårsvurdering
@@ -13,6 +12,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKvpVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
@@ -45,7 +45,7 @@ class InngangsvilkårsvurderingerTest {
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
                     søknad = nySøknadMedTiltak(
-                        intro = introJa(),
+                        intro = periodeJa(),
                     ),
                 ),
             ),

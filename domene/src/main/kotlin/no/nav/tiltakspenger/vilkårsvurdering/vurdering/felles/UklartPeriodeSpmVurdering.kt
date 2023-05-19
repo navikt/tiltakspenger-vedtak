@@ -5,19 +5,16 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
-class PeriodeSpmVurdering(
+class UklartPeriodeSpmVurdering(
     private val spm: Søknad.PeriodeSpm,
+    private val søknadVersjon: String,
     private val vilkår: Vilkår,
 ) {
-
-    companion object {
-        const val KILDE = "SØKNAD"
-    }
 
     fun lagVurderingFraSøknad() =
         Vurdering(
             vilkår = vilkår,
-            kilde = KILDE,
+            kilde = KommunalYtelseVilkårsvurdering.KILDE,
             fom = if (spm is Søknad.PeriodeSpm.Ja) {
                 spm.periode.fra
             } else {
@@ -46,7 +43,12 @@ class PeriodeSpmVurdering(
         when (spm) {
             is Søknad.PeriodeSpm.IkkeMedISøknaden -> Utfall.KREVER_MANUELL_VURDERING
             is Søknad.PeriodeSpm.IkkeRelevant -> Utfall.OPPFYLT
-            is Søknad.PeriodeSpm.Ja -> Utfall.IKKE_OPPFYLT
+            is Søknad.PeriodeSpm.Ja -> if (søknadVersjon == "1") {
+                Utfall.KREVER_MANUELL_VURDERING
+            } else {
+                Utfall.IKKE_OPPFYLT
+            }
+
             is Søknad.PeriodeSpm.Nei -> Utfall.OPPFYLT
             is Søknad.PeriodeSpm.FeilaktigBesvart -> Utfall.KREVER_MANUELL_VURDERING
             is Søknad.PeriodeSpm.IkkeBesvart -> Utfall.KREVER_MANUELL_VURDERING

@@ -2,55 +2,29 @@ package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.PeriodeSpmVurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
-// TODO: Det er ikke avklart ennå at vi kan bruke Inst2 !
 class InstitusjonsoppholdVilkårsvurdering(
-    private val søknad: Søknad,
-    // private val institusjonsopphold: List<Institusjonsopphold>?,
-    private val vurderingsperiode: Periode,
+    søknad: Søknad,
+    private val vurderingsperiode: Periode, //TODO Burde vel strengt tatt brukes?
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
-
-    private val søknadVurdering = lagVurderingFraSøknad()
-
-    // private val inst2Vurderinger = lagVurderingerFraInst2()
+    private val periodeSpmVurdering = PeriodeSpmVurdering(
+        spm = søknad.institusjon,
+        vilkår = vilkår(),
+    )
     override var manuellVurdering: Vurdering? = null
 
-    override fun detIkkeManuelleUtfallet(): Utfall {
-        // val utfall = inst2Vurderinger.map { it.utfall } + søknadVurdering.utfall
-        val utfall = listOf(søknadVurdering.utfall)
-        return when {
-            utfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
-            utfall.any { it == Utfall.KREVER_MANUELL_VURDERING } -> Utfall.KREVER_MANUELL_VURDERING
-            else -> Utfall.OPPFYLT
-        }
-    }
+    fun lagVurderingFraSøknad() = periodeSpmVurdering.lagVurderingFraSøknad()
 
-    private fun lagVurderingFraSøknad(): Vurdering = Vurdering(
-        vilkår = vilkår(),
-        kilde = SØKNADKILDE,
-        fom = null,
-        tom = null,
-        utfall = if (søknad.institusjon == true) utfallFraTypeInstitusjon(søknad.typeInstitusjon) else Utfall.OPPFYLT,
-        detaljer = detaljer(søknad.institusjon, søknad.typeInstitusjon),
-    )
+    override fun vurderinger(): List<Vurdering> = listOfNotNull(lagVurderingFraSøknad(), manuellVurdering)
+    override fun detIkkeManuelleUtfallet(): Utfall = periodeSpmVurdering.avgjørUtfall()
+    // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
 
-    private fun detaljer(oppholdInstitusjon: Boolean?, typeInstitusjon: TypeInstitusjon?): String =
-        if (oppholdInstitusjon == null || oppholdInstitusjon == false) {
-            "Svart NEI i søknaden"
-        } else {
-            when (typeInstitusjon) {
-                TypeInstitusjon.OVERGANGSBOLIG -> "Opphold på overgangsbolig"
-                TypeInstitusjon.BARNEVERN -> "Opphold på barneverninstitusjon"
-                TypeInstitusjon.ANNET -> "Opphold på annen type institusjon"
-                else -> "Opphold på ukjent institusjon"
-            }
-        }
 
     // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:
     // Mulig verdier er "barneverninstitusjon", "overgangsbolig" og "annet".
@@ -60,6 +34,7 @@ class InstitusjonsoppholdVilkårsvurdering(
     // Barneverninstitusjon = oppfylt
     // Annen type institusjon med fri kost og losji = Manuell behandling
     // TODO typeInstitusjon bør bli en enum
+    /*
     private fun utfallFraTypeInstitusjon(typeInstitusjon: TypeInstitusjon?): Utfall =
         when (typeInstitusjon) {
             null -> Utfall.KREVER_MANUELL_VURDERING
@@ -67,7 +42,7 @@ class InstitusjonsoppholdVilkårsvurdering(
             TypeInstitusjon.BARNEVERN -> Utfall.OPPFYLT
             TypeInstitusjon.ANNET -> Utfall.KREVER_MANUELL_VURDERING
         }
-
+    */
     /*
     Institusjonstype:
     Hvilken type institusjon oppholdet var registrert på.
@@ -119,8 +94,6 @@ class InstitusjonsoppholdVilkårsvurdering(
         }
      */
 
-    override fun vurderinger(): List<Vurdering> = listOfNotNull(søknadVurdering, manuellVurdering)
-    // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
 
     companion object {
         private const val SØKNADKILDE = "SØKNAD"

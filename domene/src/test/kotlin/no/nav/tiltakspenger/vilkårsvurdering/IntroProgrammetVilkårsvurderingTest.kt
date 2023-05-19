@@ -5,9 +5,9 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.introNei
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
         val søknad = nySøknadMedTiltak(
-            intro = introJa(
+            intro = periodeJa(
                 fra = 1 januar (2022),
                 til = 31 januar (2022),
             ),
@@ -39,7 +39,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
         val søknad = nySøknadMedTiltak(
-            intro = introNei(),
+            intro = periodeNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -58,7 +58,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne sende inn en manuell vurdering`() {
         val søknad = nySøknadMedTiltak(
-            intro = introNei(),
+            intro = periodeNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -101,7 +101,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
     @Test
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
         val søknad = nySøknadMedTiltak(
-            intro = introJa(
+            intro = periodeJa(
                 fra = 1 januar (2022),
                 til = 31 januar (2022),
             ),
