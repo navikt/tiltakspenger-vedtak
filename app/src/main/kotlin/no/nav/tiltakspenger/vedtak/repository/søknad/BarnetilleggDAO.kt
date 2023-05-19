@@ -6,8 +6,6 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.Barnetillegg
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
 internal class BarnetilleggDAO {
@@ -37,7 +35,7 @@ internal class BarnetilleggDAO {
                 "fornavn" to barnetillegg.fornavn,
                 "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
-                "opphold_i_eos" to barnetillegg.oppholderSegIEØS,
+                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
             )
 
             is Barnetillegg.Manuell -> mapOf(
@@ -48,7 +46,7 @@ internal class BarnetilleggDAO {
                 "fornavn" to barnetillegg.fornavn,
                 "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
-                "opphold_i_eos" to barnetillegg.oppholderSegIEØS,
+                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
             )
         }
         txSession.run(
@@ -64,16 +62,14 @@ internal class BarnetilleggDAO {
 
     private fun Row.toBarnetillegg(): Barnetillegg {
         val type = string("type")
-        val fødselsdato = localDate("fødselsdato")
+        val fødselsdato = localDate("fodselsdato")
         val fornavn = string("fornavn")
         val mellomnavn = stringOrNull("mellomnavn")
         val etternavn = string("etternavn")
-        val oppholderSegIEØS = booleanOrNull("opphold_i_eos")
-        // TODO: Bør lagre som et skikkelig JaNeiSpm, som i Søknad!
+        val oppholderSegIEØS = jaNeiSpm("opphold_i_eos")
         return if (type == "PDL") {
             Barnetillegg.FraPdl(
-                oppholderSegIEØS = oppholderSegIEØS?.let { if (it) Søknad.JaNeiSpm.Ja else Søknad.JaNeiSpm.Nei }
-                    ?: Søknad.JaNeiSpm.IkkeMedISøknaden,
+                oppholderSegIEØS = oppholderSegIEØS,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
@@ -81,8 +77,7 @@ internal class BarnetilleggDAO {
             )
         } else {
             Barnetillegg.Manuell(
-                oppholderSegIEØS = oppholderSegIEØS?.let { if (it) Søknad.JaNeiSpm.Ja else Søknad.JaNeiSpm.Nei }
-                    ?: Søknad.JaNeiSpm.IkkeMedISøknaden,
+                oppholderSegIEØS = oppholderSegIEØS,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
@@ -96,19 +91,21 @@ internal class BarnetilleggDAO {
         insert into søknad_barnetillegg (
             id,
             søknad_id,
-            fødselsdato,
+            type,
+            fodselsdato,
             fornavn,
             mellomnavn,
             etternavn,
-            opphold_i_eos
+            opphold_i_eos_type
         ) values (
             :id,
             :soknadId,
+            :type,
             :fodselsdato,
             :fornavn,
             :mellomnavn,
             :etternavn,
-            :opphold_i_eos
+            :opphold_i_eos_type
         )
     """.trimIndent()
 

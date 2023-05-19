@@ -58,7 +58,7 @@ object SøknadDTOMapper {
                 )
             },
             institusjon = mapInstitusjon(dto.oppholdInstitusjon, dto.typeInstitusjon),
-            innsendt = dto.opprettet,
+            opprettet = dto.opprettet,
             barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
             tidsstempelHosOss = innhentet,
             tiltak = mapArenatiltak(dto.arenaTiltak)

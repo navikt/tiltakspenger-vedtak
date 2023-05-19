@@ -56,36 +56,66 @@ CREATE TABLE personopplysninger
 CREATE TABLE søknad
 (
     id                  VARCHAR PRIMARY KEY,
+    versjon             VARCHAR                  NOT NULL,
     innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
-    deltar_kvp          BOOLEAN                  NOT NULL,
-    deltar_intro        BOOLEAN                  NULL,
-    intro_fom           DATE                     NULL,
-    intro_tom           DATE                     NULL,
-    institusjon_opphold BOOLEAN                  NULL,
-    institusjon_type    VARCHAR                  NULL,
-    fritekst            VARCHAR                  NULL,
     journalpost_id      VARCHAR                  NOT NULL,
     dokumentinfo_id     VARCHAR                  NOT NULL,
     opprettet           TIMESTAMP WITH TIME ZONE NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
+    kvp_type            VARCHAR                  NOT NULL,
+    kvp_ja              BOOLEAN                  NULL,
+    kvp_fom             DATE                     NULL,
+    kvp_tom             DATE                     NULL,
+    intro_type          VARCHAR                  NOT NULL,
+    intro_ja            BOOLEAN                  NULL,
+    intro_fom           DATE                     NULL,
+    intro_tom           DATE                     NULL,
+    institusjon_type    VARCHAR                  NOT NULL,
+    institusjon_ja      BOOLEAN                  NULL,
+    institusjon_fom     DATE                     NULL,
+    institusjon_tom     DATE                     NULL,
+    sykepenger_type            VARCHAR                  NOT NULL,
+    sykepenger_ja              BOOLEAN                  NULL,
+    sykepenger_fom             DATE                     NULL,
+    sykepenger_tom             DATE                     NULL,
+    supplerende_alder_type            VARCHAR                  NOT NULL,
+    supplerende_alder_ja              BOOLEAN                  NULL,
+    supplerende_alder_fom             DATE                     NULL,
+    supplerende_alder_tom             DATE                     NULL,
+    supplerende_flyktning_type            VARCHAR                  NOT NULL,
+    supplerende_flyktning_ja              BOOLEAN                  NULL,
+    supplerende_flyktning_fom             DATE                     NULL,
+    supplerende_flyktning_tom             DATE                     NULL,
+    jobbsjansen_type            VARCHAR                  NOT NULL,
+    jobbsjansen_ja              BOOLEAN                  NULL,
+    jobbsjansen_fom             DATE                     NULL,
+    jobbsjansen_tom             DATE                     NULL,
+    gjenlevendepensjon_type            VARCHAR                  NOT NULL,
+    gjenlevendepensjon_ja              BOOLEAN                  NULL,
+    gjenlevendepensjon_fom             DATE                     NULL,
+    alderspensjon_type            VARCHAR                  NOT NULL,
+    alderspensjon_ja              BOOLEAN                  NULL,
+    alderspensjon_fom             DATE                     NULL,
+    trygd_og_pensjon_type            VARCHAR                  NOT NULL,
+    trygd_og_pensjon_ja              BOOLEAN                  NULL,
+    trygd_og_pensjon_fom             DATE                     NULL,
+    etterlonn_type            VARCHAR                  NOT NULL
 );
 
 CREATE TABLE søknad_barnetillegg
 (
     id                VARCHAR PRIMARY KEY,
     søknad_id         VARCHAR NOT NULL REFERENCES søknad (id),
-    ident             VARCHAR NULL,
-    fødselsdato       DATE    NULL,
+    type              VARCHAR NOT NULL,
+    fodselsdato       DATE    NULL,
     fornavn           VARCHAR NULL,
     mellomnavn        VARCHAR NULL,
     etternavn         VARCHAR NULL,
-    alder             INT     NOT NULL,
-    oppholdsland      VARCHAR NOT NULL,
-    søkt_barnetillegg BOOLEAN NOT NULL
+    opphold_i_eos_type     VARCHAR NOT NULL
 );
 
 CREATE TABLE søknad_brukertiltak
@@ -108,23 +138,11 @@ CREATE TABLE søknad_arenatiltak
     søknad_id               VARCHAR NOT NULL REFERENCES søknad (id),
     arena_id                VARCHAR NOT NULL,
     arrangoernavn           VARCHAR NULL,
-    har_sluttdato_fra_arena BOOLEAN NOT NULL,
     tiltakskode             VARCHAR NOT NULL,
-    er_i_endre_status       BOOLEAN NOT NULL,
     opprinnelig_startdato   DATE    NOT NULL,
     opprinnelig_sluttdato   DATE    NULL,
     startdato               DATE    NOT NULL,
     sluttdato               DATE    NULL
-);
-
-CREATE TABLE søknad_trygdogpensjon
-(
-    id        VARCHAR PRIMARY KEY,
-    søknad_id VARCHAR NOT NULL REFERENCES søknad (id),
-    utbetaler VARCHAR NOT NULL,
-    prosent   INT     NULL,
-    fom       DATE    NULL,
-    tom       DATE    NULL
 );
 
 CREATE TABLE søknad_vedlegg

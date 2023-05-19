@@ -272,9 +272,9 @@ internal class SøknadDAOTest {
         assertEquals(tiltak, hentet.tiltak)
 
         // Sjekker verdiene for noen litt tilfeldige felter også:
-        assertEquals(søknad.innsendt, hentet.innsendt)
-        println(søknad.innsendt)
-        assertEquals(søknad.innsendt, hentet.innsendt)
+        assertEquals(søknad.opprettet, hentet.opprettet)
+        println(søknad.opprettet)
+        assertEquals(søknad.opprettet, hentet.opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
 
         assertEquals(

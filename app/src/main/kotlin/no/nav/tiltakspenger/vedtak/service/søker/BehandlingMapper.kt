@@ -116,7 +116,7 @@ class BehandlingMapper {
     private fun mapSøknad(søknad: Søknad) = SøknadDTO(
         id = søknad.id.toString(),
         søknadId = søknad.søknadId,
-        søknadsdato = (søknad.innsendt ?: søknad.tidsstempelHosOss).toLocalDate(),
+        søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
         arrangoernavn = søknad.tiltak?.arrangoernavn,
         tiltakskode = if (søknad.tiltak == null) {
             "Ukjent"

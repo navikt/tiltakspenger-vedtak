@@ -27,7 +27,7 @@ data class Søknad(
     val trygdOgPensjon: FraOgMedDatoSpm,
     val tiltak: Tiltak?,
     val barnetillegg: List<Barnetillegg>,
-    val innsendt: LocalDateTime,
+    val opprettet: LocalDateTime,
     val tidsstempelHosOss: LocalDateTime,
     val vedlegg: List<Vedlegg>,
 ) : Tidsstempler {
@@ -36,7 +36,7 @@ data class Søknad(
         fun randomId() = SøknadId.random()
     }
 
-    override fun tidsstempelKilde(): LocalDateTime = innsendt
+    override fun tidsstempelKilde(): LocalDateTime = opprettet
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 

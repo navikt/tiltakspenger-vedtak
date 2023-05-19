@@ -98,7 +98,7 @@ internal class SøknadDTOTest {
         assertTrue(søknad.kvp is Søknad.PeriodeSpm.Ja)
         assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
         assertTrue(søknad.institusjon is Søknad.PeriodeSpm.Ja)
-        assertEquals(søknadDTO.opprettet, søknad.innsendt)
+        assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.vedlegg?.first()?.journalpostId, søknad.vedlegg.first().journalpostId)
         assertEquals(søknadDTO.vedlegg?.first()?.dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
         assertEquals(søknadDTO.vedlegg?.first()?.filnavn, søknad.vedlegg.first().filnavn)

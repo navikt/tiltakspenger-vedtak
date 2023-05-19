@@ -99,6 +99,7 @@ internal class SøknadDAO(
                     jaNeiSpmParamMap +
                     mapOf(
                         "id" to søknad.id.toString(),
+                        "versjon" to søknad.versjon,
                         "innsendingId" to innsendingId.toString(),
                         "eksternSoknadId" to søknad.søknadId,
                         "fornavn" to søknad.personopplysninger.fornavn,
@@ -106,7 +107,7 @@ internal class SøknadDAO(
                         "ident" to søknad.personopplysninger.ident,
                         "journalpostId" to søknad.journalpostId,
                         "dokumentinfoId" to søknad.dokumentInfoId,
-                        "opprettet" to søknad.innsendt,
+                        "opprettet" to søknad.opprettet,
                         "tidsstempelHosOss" to søknad.tidsstempelHosOss,
                     ),
             ).asUpdate,
@@ -119,6 +120,7 @@ internal class SøknadDAO(
 
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = SøknadId.fromDb(string("id"))
+        val versjon = string("versjon")
         val søknadId = string("søknad_id")
         val fornavn = string("fornavn")
         val etternavn = string("etternavn")
@@ -143,6 +145,7 @@ internal class SøknadDAO(
         val trygdOgPensjon = fraOgMedDatoSpm(TRYGD_OG_PENSJON_FELT)
         return Søknad(
             id = id,
+            versjon = versjon,
             søknadId = søknadId,
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
@@ -154,7 +157,7 @@ internal class SøknadDAO(
             kvp = kvp,
             intro = intro,
             institusjon = institusjon,
-            innsendt = opprettet,
+            opprettet = opprettet,
             barnetillegg = barnetillegg,
             tidsstempelHosOss = tidsstempelHosOss,
             tiltak = tiltak,
@@ -174,15 +177,15 @@ internal class SøknadDAO(
     private val lagreSøknad = """
         insert into søknad (
             id,
+            versjon,
             innsending_id,
             søknad_id,
             journalpost_id,
             dokumentinfo_id,
-            versjon,
             fornavn, 
             etternavn, 
             ident, 
-            innsendt,
+            opprettet,
             tidsstempel_hos_oss,
             kvp_type,
             kvp_ja,
@@ -224,15 +227,15 @@ internal class SøknadDAO(
             etterlonn_type   
         ) values (
             :id,
+            :versjon,
             :innsendingId,
             :eksternSoknadId,
             :journalpostId,
-            :dokumentinfoId,            
-            :versjon,
+            :dokumentinfoId,
             :fornavn, 
             :etternavn,
             :ident,
-            :innsendt,
+            :opprettet,
             :tidsstempelHosOss,
             :kvp_type,
             :kvp_ja,

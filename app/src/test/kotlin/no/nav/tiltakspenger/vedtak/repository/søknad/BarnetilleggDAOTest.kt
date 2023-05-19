@@ -106,7 +106,7 @@ internal class BarnetilleggDAOTest {
         kvp = periodeNei(),
         intro = periodeNei(),
         institusjon = periodeNei(),
-        innsendt = LocalDateTime.now(),
+        opprettet = LocalDateTime.now(),
         barnetillegg = emptyList(),
         tidsstempelHosOss = LocalDateTime.now(),
         tiltak = Tiltak.ArenaTiltak(

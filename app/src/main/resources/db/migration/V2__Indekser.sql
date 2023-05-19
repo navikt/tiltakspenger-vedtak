@@ -82,12 +82,6 @@ CREATE INDEX søknadBarnetillegg_søknad
          søknad_id
             );
 
-CREATE INDEX søknadTrygdOgPensjon_søknad
-    ON søknad_trygdogpensjon
-        (
-         søknad_id
-            );
-
 CREATE INDEX søknadVedlegg_søknad
     ON søknad_vedlegg
         (
