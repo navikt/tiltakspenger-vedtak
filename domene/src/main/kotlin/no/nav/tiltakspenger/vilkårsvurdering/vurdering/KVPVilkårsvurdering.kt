@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.KommunalYtelseVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.UklartPeriodeSpmVurdering
 
-
 class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     KommunalYtelseVilkårsvurdering(søknad, vurderingsperiode) {
 
@@ -21,5 +20,4 @@ class KVPVilkårsvurdering(søknad: Søknad, vurderingsperiode: Periode) :
     override fun avgjørUtfall() = periodeSpmVurdering.avgjørUtfall()
 
     override fun vilkår() = Vilkår.KVP
-
 }

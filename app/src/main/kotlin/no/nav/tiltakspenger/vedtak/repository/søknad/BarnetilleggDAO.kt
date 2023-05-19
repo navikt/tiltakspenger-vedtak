@@ -69,7 +69,7 @@ internal class BarnetilleggDAO {
         val mellomnavn = stringOrNull("mellomnavn")
         val etternavn = string("etternavn")
         val oppholderSegIEØS = booleanOrNull("opphold_i_eos")
-        //TODO: Bør lagre som et skikkelig JaNeiSpm, som i Søknad!
+        // TODO: Bør lagre som et skikkelig JaNeiSpm, som i Søknad!
         return if (type == "PDL") {
             Barnetillegg.FraPdl(
                 oppholderSegIEØS = oppholderSegIEØS?.let { if (it) Søknad.JaNeiSpm.Ja else Søknad.JaNeiSpm.Nei }

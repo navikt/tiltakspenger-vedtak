@@ -24,5 +24,4 @@ class EtterlønnVilkårsvurdering(
 
     override fun vurderinger(): List<Vurdering> = listOfNotNull(lagVurderingFraSøknad(), manuellVurdering)
     override fun detIkkeManuelleUtfallet(): Utfall = jaNeiSpmVurdering.avgjørUtfall()
-
 }

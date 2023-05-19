@@ -136,7 +136,7 @@ class BehandlingMapper {
         } else {
             null
         },
-        fritekst = "", //TODO Må fjernes
+        fritekst = "", // TODO Må fjernes
         vedlegg = mapVedlegg(søknad.vedlegg),
     )
 
@@ -159,17 +159,17 @@ class BehandlingMapper {
         return barnetillegg.map {
             BarnetilleggDTO(
                 navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
-                alder = 0, //TODO Må fjernes
+                alder = 0, // TODO Må fjernes
                 fødselsdato = if (it is Barnetillegg.Manuell) {
                     it.fødselsdato
                 } else {
                     it.fødselsdato
                     // barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.FraPdl).fødselsdato }?.fødselsdato
                 },
-                bosatt = "TODO", //TODO Må fjernes, var it.oppholdsland
+                bosatt = "TODO", // TODO Må fjernes, var it.oppholdsland
                 kilde = "Søknad",
                 utfall = UtfallDTO.Oppfylt,
-                søktBarnetillegg = true, //TODO Må endres, var it.søktBarnetillegg,
+                søktBarnetillegg = true, // TODO Må endres, var it.søktBarnetillegg,
             )
         }
     }

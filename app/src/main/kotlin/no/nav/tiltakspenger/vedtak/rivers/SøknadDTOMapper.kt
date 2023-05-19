@@ -76,13 +76,13 @@ object SøknadDTOMapper {
     }
 
     private fun mapTrygdOgPensjon(trygdOgPensjon: List<TrygdOgPensjonDTO>?): Søknad.FraOgMedDatoSpm {
-        //if(dto.trygdOgPensjon.isNullOrEmpty()) { Søknad.FraOgMedDatoSpm.Nei } else { Søknad.FraOgMedDatoSpm.Ja(fra = ) }
-        //TODO
+        // if(dto.trygdOgPensjon.isNullOrEmpty()) { Søknad.FraOgMedDatoSpm.Nei } else { Søknad.FraOgMedDatoSpm.Ja(fra = ) }
+        // TODO
         return Søknad.FraOgMedDatoSpm.Nei
     }
 
     private fun mapInstitusjon(oppholdInstitusjon: Boolean, typeInstitusjon: String?): Søknad.PeriodeSpm {
-        //TODO
+        // TODO
         return Søknad.PeriodeSpm.Nei
     }
 
@@ -129,6 +129,6 @@ object SøknadDTOMapper {
     }
 
     private fun toFødselsdato(ident: String): LocalDate {
-        return LocalDate.now() //TODO
+        return LocalDate.now() // TODO
     }
 }

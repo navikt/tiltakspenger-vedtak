@@ -23,5 +23,4 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
 
     override fun vurderinger(): List<Vurdering> = listOfNotNull(lagVurderingFraSøknad(), manuellVurdering)
     override fun detIkkeManuelleUtfallet(): Utfall = fraOgMedSpmVurdering.avgjørUtfall()
-
 }

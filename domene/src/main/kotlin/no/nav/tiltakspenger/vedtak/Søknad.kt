@@ -145,8 +145,8 @@ sealed class Barnetillegg {
     ) : Barnetillegg()
 }
 
-//enum class TypeInstitusjon(val type: String) {
+// enum class TypeInstitusjon(val type: String) {
 //    BARNEVERN("barneverninstitusjon"),
 //    OVERGANGSBOLIG("overgangsbolig"),
 //    ANNET("annet"),
-//}
+// }

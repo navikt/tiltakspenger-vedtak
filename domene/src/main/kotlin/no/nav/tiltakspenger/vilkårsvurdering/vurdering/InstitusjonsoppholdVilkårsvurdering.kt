@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 class InstitusjonsoppholdVilkårsvurdering(
     søknad: Søknad,
-    private val vurderingsperiode: Periode, //TODO Burde vel strengt tatt brukes?
+    private val vurderingsperiode: Periode, // TODO Burde vel strengt tatt brukes?
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.INSTITUSJONSOPPHOLD
     private val periodeSpmVurdering = PeriodeSpmVurdering(
@@ -24,7 +24,6 @@ class InstitusjonsoppholdVilkårsvurdering(
     override fun vurderinger(): List<Vurdering> = listOfNotNull(lagVurderingFraSøknad(), manuellVurdering)
     override fun detIkkeManuelleUtfallet(): Utfall = periodeSpmVurdering.avgjørUtfall()
     // (inst2Vurderinger + søknadVurdering + manuellVurdering).filterNotNull()
-
 
     // Hentet fra https://github.com/navikt/soknadtiltakspenger/blob/1982b68dce426966f2f7d347028419c719cad9c6/app/js/informasjonsside/templates/sporsmalOmInstitusjon.html:
     // Mulig verdier er "barneverninstitusjon", "overgangsbolig" og "annet".
@@ -93,7 +92,6 @@ class InstitusjonsoppholdVilkårsvurdering(
                 }
         }
      */
-
 
     companion object {
         private const val SØKNADKILDE = "SØKNAD"

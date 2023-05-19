@@ -71,7 +71,6 @@ internal class SøknadDAO(
     }
 
     private fun lagreSøknad(innsendingId: InnsendingId, søknad: Søknad, txSession: TransactionalSession) {
-
         val periodeSpmParamMap = mapOf(
             KVP_FELT to søknad.kvp,
             INTRO_FELT to søknad.intro,
@@ -113,7 +112,6 @@ internal class SøknadDAO(
             ).asUpdate,
         )
     }
-
 
     private fun Row.toIdent() = string("ident")
 

@@ -94,7 +94,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
         assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.ident)
 
-        //TODO: Må sjekke hva fasiten er..
+        // TODO: Må sjekke hva fasiten er..
         assertTrue(søknad.kvp is Søknad.PeriodeSpm.Ja)
         assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
         assertTrue(søknad.institusjon is Søknad.PeriodeSpm.Ja)
@@ -147,7 +147,7 @@ internal class SøknadDTOTest {
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
 
-                ),
+            ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
                 tiltakskode = "JOBSOK",
                 arrangoernavn = "Arrangør",
@@ -213,7 +213,7 @@ internal class SøknadDTOTest {
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
 
-                ),
+            ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
             fritekst = "hei",
@@ -278,7 +278,7 @@ internal class SøknadDTOTest {
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
 
-                ),
+            ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
             fritekst = "hei",
@@ -342,7 +342,7 @@ internal class SøknadDTOTest {
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
 
-                ),
+            ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(),
             fritekst = "hei",
@@ -555,7 +555,7 @@ internal class SøknadDTOTest {
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
 
-                ),
+            ),
             brukerregistrertTiltak = null,
             trygdOgPensjon = listOf(
                 TrygdOgPensjonDTO(utbetaler = "Storebrand", prosent = 50, fom = fom, tom = tom),
