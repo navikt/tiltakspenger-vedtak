@@ -22,6 +22,12 @@ object SøknadDTOMapper {
                 etternavn = dto.etternavn!!,
                 ident = dto.ident,
             ),
+            tiltak = mapArenatiltak(dto.arenaTiltak)
+                ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
+            barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
+            opprettet = dto.opprettet,
+            tidsstempelHosOss = innhentet,
+            vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
             kvp =
             if (dto.deltarKvp) {
                 Søknad.PeriodeSpm.Ja(
@@ -54,13 +60,6 @@ object SøknadDTOMapper {
                 )
             },
             institusjon = mapInstitusjon(dto.oppholdInstitusjon, dto.typeInstitusjon),
-            opprettet = dto.opprettet,
-            barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
-            tidsstempelHosOss = innhentet,
-            tiltak = mapArenatiltak(dto.arenaTiltak)
-                ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
-            trygdOgPensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
-            vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
             etterlønn = mapTrygdOgPensjon(dto.trygdOgPensjon),
             gjenlevendepensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
             alderspensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
@@ -68,6 +67,7 @@ object SøknadDTOMapper {
             supplerendeStønadAlder = Søknad.PeriodeSpm.IkkeMedISøknaden,
             supplerendeStønadFlyktning = Søknad.PeriodeSpm.IkkeMedISøknaden,
             jobbsjansen = Søknad.PeriodeSpm.IkkeMedISøknaden,
+            trygdOgPensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
         )
     }
 
