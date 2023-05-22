@@ -1,5 +1,5 @@
 val ktorVersion = "2.3.0"
-val kotestVersion = "5.6.1"
+val kotestVersion = "5.6.2"
 val mockkVersion = "1.13.5"
 val testContainersVersion = "1.18.1"
 val felleslibVersion = "0.0.32"
@@ -52,7 +52,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.22.0")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.17.0")
+    implementation("org.flywaydb:flyway-core:9.18.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
