@@ -23,6 +23,13 @@ CREATE TABLE innsending
     journalpost_id          VARCHAR                  NOT NULL UNIQUE,
     ident                   VARCHAR                  NOT NULL,
     tilstand                VARCHAR                  NOT NULL,
+    tidsstempel_tiltak_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_personopplysninger_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_ytelser_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_skjerming_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_foreldrepengervedtak_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_uførevedtak_innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_overgangsstønadvedtak_innhentet TIMESTAMP WITH TIME ZONE NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -185,6 +192,7 @@ CREATE TABLE personopplysninger_barn_med_ident
     strengt_fortrolig        BOOLEAN                  NOT NULL,
     strengt_fortrolig_utland BOOLEAN                  NOT NULL,
     oppholdsland             VARCHAR                  NULL,
+    skjermet                 BOOLEAN                  NULL,
     tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
@@ -257,4 +265,56 @@ CREATE TABLE aktivitet
     tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL,
     detaljer         JSONB                    NULL,
     kontekster       JSONB                    NOT NULL
+);
+
+CREATE TABLE foreldrepenger_vedtak
+(
+    id                   VARCHAR PRIMARY KEY,
+    innsending_id        VARCHAR                  NOT NULL REFERENCES innsending (id),
+    version              VARCHAR                  NOT NULL,
+    aktør                VARCHAR                  NOT NULL,
+    vedtatt_tidspunkt    TIMESTAMP WITH TIME ZONE NOT NULL,
+    ytelse               VARCHAR                  NOT NULL,
+    saksnummer           VARCHAR                  NULL,
+    vedtakReferanse      VARCHAR                  NOT NULL,
+    ytelseStatus         VARCHAR                  NOT NULL,
+    kildesystem          VARCHAR                  NOT NULL,
+    fra                  DATE                     NOT NULL,
+    til                  DATE                     NOT NULL,
+    tilleggsopplysninger VARCHAR                  NULL,
+    innhentet TIMESTAMP WITH TIME ZONE NULL,
+    tidsstempel_hos_oss  TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE foreldrepenger_anvisning
+(
+    id                       VARCHAR PRIMARY KEY,
+    foreldrepenger_vedtak_id VARCHAR NOT NULL REFERENCES foreldrepenger_vedtak (id),
+    fra                      DATE    NOT NULL,
+    til                      DATE    NOT NULL,
+    beløp                    decimal null,
+    dagsats                  decimal null,
+    utbetalingsgrad          decimal null
+);
+
+CREATE TABLE uføre_vedtak
+(
+    id                  VARCHAR PRIMARY KEY,
+    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
+    har_uforegrad       BOOLEAN                  NOT NULL,
+    dato_ufor           DATE                     NULL,
+    virk_dato           DATE                     NULL,
+    innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE overgangsstønad_vedtak
+(
+    id                  VARCHAR PRIMARY KEY,
+    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
+    fom                 DATE                     NOT NULL,
+    tom                 DATE                     NOT NULL,
+    datakilde           VARCHAR                  NOT NULL,
+    innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );

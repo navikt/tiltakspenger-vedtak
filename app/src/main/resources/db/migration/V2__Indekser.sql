@@ -105,3 +105,39 @@ CREATE INDEX ytelsevedtak_ytelsesak
         (
          ytelsesak_id
             );
+
+CREATE INDEX uførevedtak_innsending
+    ON uføre_vedtak
+        (
+         innsending_id
+            );
+
+CREATE INDEX foreldrepengervedtak_innsending
+    ON foreldrepenger_vedtak
+        (
+         innsending_id
+            );
+
+CREATE INDEX foreldrepengeranvisning_innsending
+    ON foreldrepenger_anvisning
+        (
+         foreldrepenger_vedtak_id
+            );
+
+CREATE INDEX innsending_journalpost_id
+    ON innsending
+        (
+         journalpost_id
+            );
+
+CREATE INDEX søknad_søknad_id
+    ON søknad
+        (
+         søknad_id
+            );
+
+CREATE INDEX overgangsstønad_vedtak_innsending
+    ON overgangsstønad_vedtak
+        (
+         innsending_id
+            );
