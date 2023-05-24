@@ -9,10 +9,10 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKvpVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import org.junit.jupiter.api.Test
 
@@ -23,8 +23,8 @@ class InngangsvilkårsvurderingerTest {
         val vilkårsvurderinger = nyVilkårsvurdering(
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
-                    søknad = nySøknadMedArenaTiltak(
-                        deltarKvp = true,
+                    søknad = nySøknadMedTiltak(
+                        kvp = periodeJa(),
                     ),
                 ),
             ),
@@ -43,12 +43,8 @@ class InngangsvilkårsvurderingerTest {
                 vurderingsperiode = vurderingsperiode,
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
-                    søknad = nySøknadMedArenaTiltak(
-                        deltarIntroduksjonsprogrammet = true,
-                        introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                            fom = vurderingsperiode.fra,
-                            tom = vurderingsperiode.til,
-                        ),
+                    søknad = nySøknadMedTiltak(
+                        intro = periodeJa(),
                     ),
                 ),
             ),

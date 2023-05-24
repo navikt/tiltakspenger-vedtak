@@ -5,8 +5,10 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
+import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import org.junit.jupiter.api.Test
 
@@ -14,9 +16,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en søknad i vilkårsvurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
+        val søknad = nySøknadMedTiltak(
+            intro = periodeJa(
                 fom = 1 januar (2022),
                 tom = 31 januar (2022),
             ),
@@ -37,9 +38,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad hvor vilkåret er oppfylt`() {
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+        val søknad = nySøknadMedTiltak(
+            intro = periodeNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -57,9 +57,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne sende inn en manuell vurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
+        val søknad = nySøknadMedTiltak(
+            intro = periodeNei(),
         )
 
         val vurderingsperiode = Periode(1.januar(2022), 31.januar(2022))
@@ -101,9 +100,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad opp mot en vurderingsperiode i vilkårsvurdering`() {
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
+        val søknad = nySøknadMedTiltak(
+            intro = periodeJa(
                 fom = 1 januar (2022),
                 tom = 31 januar (2022),
             ),
@@ -127,9 +125,12 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
     @Test
     fun `Kunne vurdere en søknad med mangelfulle data`() {
-        val søknad = nySøknadMedArenaTiltak(
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = null,
+        val søknad = nySøknadMedTiltak(
+            intro = Søknad.PeriodeSpm.FeilaktigBesvart(
+                svartJa = true,
+                fom = null,
+                tom = null,
+            ),
         )
 
         val vurderingsperiode = Periode(1.februar(2022), 10.februar(2022))
@@ -140,7 +141,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
+        introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Feilaktig besvart i søknaden"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING

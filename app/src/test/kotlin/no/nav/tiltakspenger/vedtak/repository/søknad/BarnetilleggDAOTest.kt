@@ -2,6 +2,10 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.felles.juni
+import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoNei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nei
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -50,25 +54,21 @@ internal class BarnetilleggDAOTest {
                 søknadDAO.lagre(innsending.id, søknad, txSession)
             }
         }
-        val barnetilleggMedIdent =
-            Barnetillegg.MedIdent(
-                alder = 42,
-                oppholdsland = "SWE",
-                ident = "123",
+        val barnetilleggFraPdl =
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
                 fornavn = "fornavn",
                 mellomnavn = "mellomnavn",
                 etternavn = "etternavn",
-                søktBarnetillegg = true,
+                fødselsdato = 14.juni(2012),
             )
-        val barnetilleggUtenIdent =
-            Barnetillegg.UtenIdent(
-                alder = 42,
-                oppholdsland = "SWE",
-                fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
+        val barnetilleggManuell =
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
                 fornavn = "fornavn",
                 mellomnavn = null,
                 etternavn = "etternavn",
-                søktBarnetillegg = true,
+                fødselsdato = LocalDate.of(2022, Month.AUGUST, 19),
             )
 
         val barnetilleggDAO = BarnetilleggDAO()
@@ -76,7 +76,7 @@ internal class BarnetilleggDAOTest {
             it.transaction { txSession ->
                 barnetilleggDAO.lagre(
                     søknadId = søknadId,
-                    barnetillegg = listOf(barnetilleggMedIdent, barnetilleggUtenIdent),
+                    barnetillegg = listOf(barnetilleggFraPdl, barnetilleggManuell),
                     txSession,
                 )
             }
@@ -89,8 +89,8 @@ internal class BarnetilleggDAOTest {
         }
 
         assertEquals(2, hentet.size)
-        assertTrue(hentet.contains(barnetilleggMedIdent))
-        assertTrue(hentet.contains(barnetilleggUtenIdent))
+        assertTrue(hentet.contains(barnetilleggFraPdl))
+        assertTrue(hentet.contains(barnetilleggManuell))
     }
 
     private fun enSøknad(id: SøknadId, ident: String) = Søknad(
@@ -98,30 +98,35 @@ internal class BarnetilleggDAOTest {
         søknadId = "41",
         journalpostId = "42",
         dokumentInfoId = "43",
-        fornavn = null,
-        etternavn = null,
-        ident = ident,
-        deltarKvp = false,
-        deltarIntroduksjonsprogrammet = false,
-        introduksjonsprogrammetDetaljer = null,
-        oppholdInstitusjon = null,
-        typeInstitusjon = null,
-        opprettet = null,
-        barnetillegg = emptyList(),
-        tidsstempelHosOss = LocalDateTime.now(),
+        filnavn = "filnavn",
+        personopplysninger = Søknad.Personopplysninger(
+            fornavn = "fornavn",
+            etternavn = "etternavn",
+            ident = ident,
+        ),
         tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Fest og morro",
-            harSluttdatoFraArena = true,
             tiltakskode = Tiltaksaktivitet.Tiltak.GRUPPEAMO,
-            erIEndreStatus = false,
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
             startdato = LocalDate.now(),
         ),
-        trygdOgPensjon = emptyList(),
-        fritekst = null,
+        barnetillegg = emptyList(),
+        opprettet = LocalDateTime.now(),
+        tidsstempelHosOss = LocalDateTime.now(),
         vedlegg = emptyList(),
+        kvp = periodeNei(),
+        intro = periodeNei(),
+        institusjon = periodeNei(),
+        etterlønn = nei(),
+        gjenlevendepensjon = fraOgMedDatoNei(),
+        alderspensjon = fraOgMedDatoNei(),
+        sykepenger = periodeNei(),
+        supplerendeStønadAlder = periodeNei(),
+        supplerendeStønadFlyktning = periodeNei(),
+        jobbsjansen = periodeNei(),
+        trygdOgPensjon = fraOgMedDatoNei(),
     )
 }

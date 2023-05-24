@@ -2,57 +2,95 @@
 
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Søknad(
+    val versjon: String = "1",
     val id: SøknadId = randomId(),
-    val søknadId: String,
-    val journalpostId: String,
+    val søknadId: String, // TODO: Bør denne ha et annet navn? Hvor kommer den fra?
+    val journalpostId: String, // TODO: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
     val dokumentInfoId: String,
-    val fornavn: String?,
-    val etternavn: String?,
-    val ident: String,
-    val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
-    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljer?,
-    val oppholdInstitusjon: Boolean?,
-    val typeInstitusjon: TypeInstitusjon?,
-    val opprettet: LocalDateTime?,
-    val barnetillegg: List<Barnetillegg>,
-    val tidsstempelHosOss: LocalDateTime,
+    val filnavn: String,
+    val personopplysninger: Personopplysninger,
     val tiltak: Tiltak?,
-    val trygdOgPensjon: List<TrygdOgPensjon>,
-    val fritekst: String?,
+    val barnetillegg: List<Barnetillegg>,
+    val opprettet: LocalDateTime,
+    val tidsstempelHosOss: LocalDateTime,
     val vedlegg: List<Vedlegg>,
+    val kvp: PeriodeSpm,
+    val intro: PeriodeSpm,
+    val institusjon: PeriodeSpm,
+    val etterlønn: JaNeiSpm,
+    val gjenlevendepensjon: FraOgMedDatoSpm,
+    val alderspensjon: FraOgMedDatoSpm,
+    val sykepenger: PeriodeSpm,
+    val supplerendeStønadAlder: PeriodeSpm,
+    val supplerendeStønadFlyktning: PeriodeSpm,
+    val jobbsjansen: PeriodeSpm,
+    val trygdOgPensjon: FraOgMedDatoSpm,
 ) : Tidsstempler {
 
     companion object {
         fun randomId() = SøknadId.random()
     }
 
-    override fun tidsstempelKilde(): LocalDateTime = opprettet ?: tidsstempelHosOss()
+    override fun tidsstempelKilde(): LocalDateTime = opprettet
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
+
+    data class Personopplysninger(
+        val ident: String,
+        val fornavn: String,
+        val etternavn: String,
+    )
+
+    sealed class PeriodeSpm {
+        object IkkeMedISøknaden : PeriodeSpm()
+        object IkkeRelevant : PeriodeSpm()
+        object Nei : PeriodeSpm()
+        data class Ja(
+            val periode: Periode,
+        ) : PeriodeSpm()
+
+        object IkkeBesvart : PeriodeSpm()
+        data class FeilaktigBesvart(
+            val svartJa: Boolean?,
+            val fom: LocalDate?,
+            val tom: LocalDate?,
+        ) : PeriodeSpm()
+    }
+
+    sealed class JaNeiSpm {
+        object IkkeMedISøknaden : JaNeiSpm()
+        object IkkeRelevant : JaNeiSpm()
+        object Ja : JaNeiSpm()
+        object Nei : JaNeiSpm()
+        object IkkeBesvart : JaNeiSpm()
+    }
+
+    sealed class FraOgMedDatoSpm {
+        object IkkeMedISøknaden : FraOgMedDatoSpm()
+        object IkkeRelevant : FraOgMedDatoSpm()
+        data class Ja(
+            val fra: LocalDate,
+        ) : FraOgMedDatoSpm()
+
+        object Nei : FraOgMedDatoSpm()
+        object IkkeBesvart : FraOgMedDatoSpm()
+        data class FeilaktigBesvart(
+            val svartJa: Boolean?,
+            val fom: LocalDate?,
+        ) : FraOgMedDatoSpm()
+    }
 }
 
 data class Vedlegg(
     val journalpostId: String,
     val dokumentInfoId: String,
     val filnavn: String?,
-)
-
-data class IntroduksjonsprogrammetDetaljer(
-    val fom: LocalDate,
-    val tom: LocalDate?,
-)
-
-data class TrygdOgPensjon(
-    val utbetaler: String,
-    val prosent: Int? = null,
-    val fom: LocalDate? = null,
-    val tom: LocalDate? = null,
 )
 
 sealed class Tiltak {
@@ -65,9 +103,7 @@ sealed class Tiltak {
     data class ArenaTiltak(
         val arenaId: String,
         override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
-        val harSluttdatoFraArena: Boolean,
         override val tiltakskode: Tiltaksaktivitet.Tiltak,
-        val erIEndreStatus: Boolean,
         val opprinneligSluttdato: LocalDate? = null,
         val opprinneligStartdato: LocalDate,
         override val sluttdato: LocalDate? = null,
@@ -87,36 +123,31 @@ sealed class Tiltak {
 }
 
 sealed class Barnetillegg {
-    abstract val alder: Int
-    abstract val oppholdsland: String
-    abstract val fornavn: String?
+    abstract val oppholderSegIEØS: Søknad.JaNeiSpm
+    abstract val fornavn: String
     abstract val mellomnavn: String?
-    abstract val etternavn: String?
-    abstract val søktBarnetillegg: Boolean
+    abstract val etternavn: String
+    abstract val fødselsdato: LocalDate
 
-    data class MedIdent(
-        override val alder: Int,
-        override val oppholdsland: String,
-        override val fornavn: String?,
+    data class FraPdl(
+        override val oppholderSegIEØS: Søknad.JaNeiSpm,
+        override val fornavn: String,
         override val mellomnavn: String?,
-        override val etternavn: String?,
-        val ident: String,
-        override val søktBarnetillegg: Boolean,
+        override val etternavn: String,
+        override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 
-    data class UtenIdent(
-        override val alder: Int,
-        override val oppholdsland: String,
-        override val fornavn: String?,
+    data class Manuell(
+        override val oppholderSegIEØS: Søknad.JaNeiSpm,
+        override val fornavn: String,
         override val mellomnavn: String?,
-        override val etternavn: String?,
-        val fødselsdato: LocalDate,
-        override val søktBarnetillegg: Boolean,
+        override val etternavn: String,
+        override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 }
 
-enum class TypeInstitusjon(val type: String) {
-    BARNEVERN("barneverninstitusjon"),
-    OVERGANGSBOLIG("overgangsbolig"),
-    ANNET("annet"),
-}
+// enum class TypeInstitusjon(val type: String) {
+//    BARNEVERN("barneverninstitusjon"),
+//    OVERGANGSBOLIG("overgangsbolig"),
+//    ANNET("annet"),
+// }

@@ -3,16 +3,16 @@ package no.nav.tiltakspenger.vilkårsvurdering.kategori
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PrivatPensjonsinntektVilkårsvurdering
 
 class PensjonsinntektVilkårsvurderingKategori(
-    val pensjonsinntektVilkårsvurdering: PensjonsinntektVilkårsvurdering,
+    val privatPensjonsinntektVilkårsvurdering: PrivatPensjonsinntektVilkårsvurdering,
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.PENSJONSINNTEKT
 
     override fun samletUtfall(): Utfall =
-        pensjonsinntektVilkårsvurdering.samletUtfall()
+        privatPensjonsinntektVilkårsvurdering.samletUtfall()
 
     override fun vurderinger(): List<Vurdering> =
-        pensjonsinntektVilkårsvurdering.vurderinger()
+        privatPensjonsinntektVilkårsvurdering.vurderinger()
 }

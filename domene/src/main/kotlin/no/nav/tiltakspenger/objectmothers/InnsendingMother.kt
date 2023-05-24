@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedArenaTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyTiltakHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
@@ -34,7 +34,7 @@ import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Random
 
 interface InnsendingMother {
     fun innsendingRegistrert(
@@ -62,7 +62,14 @@ interface InnsendingMother {
     fun innsendingMedSøknad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+            journalpostId = journalpostId,
+        ),
     ): Innsending {
         val innsending = innsendingRegistrert(journalpostId, ident)
         val hendelse = nySøknadMottattHendelse(
@@ -76,7 +83,14 @@ interface InnsendingMother {
     fun innsendingMedPersonopplysninger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+            journalpostId = journalpostId,
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -101,7 +115,14 @@ interface InnsendingMother {
     fun innsendingMedSkjerming(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident, journalpostId = journalpostId),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+            journalpostId = journalpostId,
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -128,7 +149,13 @@ interface InnsendingMother {
     fun innsendingMedTiltak(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -161,7 +188,13 @@ interface InnsendingMother {
     fun innsendingMedYtelse(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -195,7 +228,13 @@ interface InnsendingMother {
     fun innsendingMedForeldrepenger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -234,7 +273,13 @@ interface InnsendingMother {
     fun innsendingMedOvergangsstønad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,
@@ -275,7 +320,13 @@ interface InnsendingMother {
     fun innsendingMedUføre(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedArenaTiltak(ident = ident),
+        søknad: Søknad = nySøknadMedTiltak(
+            personopplysninger = Søknad.Personopplysninger(
+                ident = ident,
+                fornavn = "Fornavn",
+                etternavn = "Etternavn",
+            ),
+        ),
         personopplysninger: List<Personopplysninger> = listOf(
             personopplysningKjedeligFyr(
                 ident = ident,

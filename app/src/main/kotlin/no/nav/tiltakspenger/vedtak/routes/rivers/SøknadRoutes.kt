@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO
+import no.nav.tiltakspenger.vedtak.rivers.SøknadDTOMapper
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -29,7 +30,7 @@ fun Route.søknadRoutes(
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = søknadDTO.journalpostId,
-            søknad = SøknadDTO.mapSøknad(
+            søknad = SøknadDTOMapper.mapSøknad(
                 dto = søknadDTO,
                 innhentet = søknadDTO.opprettet,
             ),

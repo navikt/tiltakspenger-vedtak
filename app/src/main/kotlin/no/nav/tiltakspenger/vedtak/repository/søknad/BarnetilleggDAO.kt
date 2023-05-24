@@ -27,30 +27,26 @@ internal class BarnetilleggDAO {
 
     private fun lagreBarnetillegg(søknadId: SøknadId, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
         val paramMap = when (barnetillegg) {
-            is Barnetillegg.MedIdent -> mapOf(
+            is Barnetillegg.FraPdl -> mapOf(
+                "type" to "PDL",
                 "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
                 "soknadId" to søknadId.toString(),
-                "ident" to barnetillegg.ident,
-                "fodselsdato" to null,
-                "fornavn" to barnetillegg.fornavn,
-                "mellomnavn" to barnetillegg.mellomnavn,
-                "etternavn" to barnetillegg.etternavn,
-                "alder" to barnetillegg.alder,
-                "oppholdsland" to barnetillegg.oppholdsland,
-                "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
-            )
-
-            is Barnetillegg.UtenIdent -> mapOf(
-                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
-                "soknadId" to søknadId.toString(),
-                "ident" to null,
                 "fodselsdato" to barnetillegg.fødselsdato,
                 "fornavn" to barnetillegg.fornavn,
                 "mellomnavn" to barnetillegg.mellomnavn,
                 "etternavn" to barnetillegg.etternavn,
-                "alder" to barnetillegg.alder,
-                "oppholdsland" to barnetillegg.oppholdsland,
-                "soktBarnetillegg" to barnetillegg.søktBarnetillegg,
+                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
+            )
+
+            is Barnetillegg.Manuell -> mapOf(
+                "type" to "MANUELL",
+                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
+                "soknadId" to søknadId.toString(),
+                "fodselsdato" to barnetillegg.fødselsdato,
+                "fornavn" to barnetillegg.fornavn,
+                "mellomnavn" to barnetillegg.mellomnavn,
+                "etternavn" to barnetillegg.etternavn,
+                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
             )
         }
         txSession.run(
@@ -65,33 +61,27 @@ internal class BarnetilleggDAO {
     }
 
     private fun Row.toBarnetillegg(): Barnetillegg {
-        val ident = stringOrNull("ident")
-        val fødselsdato = localDateOrNull("fødselsdato")
-        val alder = int("alder")
-        val oppholdsland = string("oppholdsland")
-        val fornavn = stringOrNull("fornavn")
+        val type = string("type")
+        val fødselsdato = localDate("fodselsdato")
+        val fornavn = string("fornavn")
         val mellomnavn = stringOrNull("mellomnavn")
-        val etternavn = stringOrNull("etternavn")
-        val søktBarnetillegg = boolean("søkt_barnetillegg")
-        return if (ident != null) {
-            Barnetillegg.MedIdent(
-                alder = alder,
-                oppholdsland = oppholdsland,
-                ident = ident,
+        val etternavn = string("etternavn")
+        val oppholderSegIEØS = jaNeiSpm("opphold_i_eos")
+        return if (type == "PDL") {
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = oppholderSegIEØS,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
-                søktBarnetillegg = søktBarnetillegg,
+                fødselsdato = fødselsdato,
             )
         } else {
-            Barnetillegg.UtenIdent(
-                alder = alder,
-                oppholdsland = oppholdsland,
-                fødselsdato = fødselsdato!!,
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = oppholderSegIEØS,
                 fornavn = fornavn,
                 mellomnavn = mellomnavn,
                 etternavn = etternavn,
-                søktBarnetillegg = søktBarnetillegg,
+                fødselsdato = fødselsdato,
             )
         }
     }
@@ -101,25 +91,21 @@ internal class BarnetilleggDAO {
         insert into søknad_barnetillegg (
             id,
             søknad_id,
-            ident,
-            fødselsdato,
+            type,
+            fodselsdato,
             fornavn,
             mellomnavn,
             etternavn,
-            alder,
-            oppholdsland,
-            søkt_barnetillegg
+            opphold_i_eos_type
         ) values (
             :id,
             :soknadId,
-            :ident,
+            :type,
             :fodselsdato,
             :fornavn,
             :mellomnavn,
             :etternavn,
-            :alder,
-            :oppholdsland,
-            :soktBarnetillegg
+            :opphold_i_eos_type
         )
     """.trimIndent()
 

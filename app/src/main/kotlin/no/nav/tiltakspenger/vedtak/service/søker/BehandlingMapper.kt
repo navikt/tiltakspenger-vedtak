@@ -25,17 +25,17 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.EtterlønnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PrivatPensjonsinntektVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
@@ -136,7 +136,7 @@ class BehandlingMapper {
         } else {
             null
         },
-        fritekst = søknad.fritekst,
+        fritekst = "", // TODO Må fjernes
         vedlegg = mapVedlegg(søknad.vedlegg),
     )
 
@@ -159,16 +159,17 @@ class BehandlingMapper {
         return barnetillegg.map {
             BarnetilleggDTO(
                 navn = if (it.fornavn != null) it.fornavn + " " + it.etternavn else null,
-                alder = it.alder,
-                fødselsdato = if (it is Barnetillegg.UtenIdent) {
+                alder = 0, // TODO Må fjernes
+                fødselsdato = if (it is Barnetillegg.Manuell) {
                     it.fødselsdato
                 } else {
-                    barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.MedIdent).ident }?.fødselsdato
+                    it.fødselsdato
+                    // barnMedIdent.firstOrNull { b -> b.ident == (it as Barnetillegg.FraPdl).fødselsdato }?.fødselsdato
                 },
-                bosatt = it.oppholdsland,
+                bosatt = "TODO", // TODO Må fjernes, var it.oppholdsland
                 kilde = "Søknad",
                 utfall = UtfallDTO.Oppfylt,
-                søktBarnetillegg = it.søktBarnetillegg,
+                søktBarnetillegg = true, // TODO Må endres, var it.søktBarnetillegg,
             )
         }
     }
@@ -359,13 +360,13 @@ class BehandlingMapper {
             kvp = KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),
         ),
         pensjonsordninger = PensjonsinntektVilkårsvurderingKategori(
-            pensjonsinntektVilkårsvurdering = PensjonsinntektVilkårsvurdering(
+            privatPensjonsinntektVilkårsvurdering = PrivatPensjonsinntektVilkårsvurdering(
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
             ),
         ),
         lønnsinntekt = LønnsinntektVilkårsvurderingKategori(
-            lønnsinntektVilkårsvurdering = LønnsinntektVilkårsvurdering(
+            etterlønnVilkårsvurdering = EtterlønnVilkårsvurdering(
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
             ),

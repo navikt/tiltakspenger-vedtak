@@ -1,13 +1,11 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import io.kotest.inspectors.forAtLeastOne
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeTypeOf
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import no.nav.tiltakspenger.felles.oktober
 import no.nav.tiltakspenger.vedtak.Barnetillegg
+import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
-import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO.Companion.mapSøknad
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -37,11 +35,23 @@ internal class SøknadDTOTest {
                 tom = LocalDate.of(2022, 10, 10),
             ),
             oppholdInstitusjon = true,
-            typeInstitusjon = "annet",
+            typeInstitusjon = "Barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -53,7 +63,6 @@ internal class SøknadDTOTest {
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = LocalDate.now(),
                 startdato = LocalDate.now(),
-
             ),
             brukerregistrertTiltak = BrukerregistrertTiltakDTO(
                 tiltakskode = "JOBSOK",
@@ -78,20 +87,19 @@ internal class SøknadDTOTest {
             ),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertEquals(søknadDTO.søknadId, søknad.søknadId)
         assertEquals(søknadDTO.journalpostId, søknad.journalpostId)
         assertEquals(søknadDTO.dokumentInfoId, søknad.dokumentInfoId)
-        assertEquals(søknadDTO.fornavn, søknad.fornavn)
-        assertEquals(søknadDTO.etternavn, søknad.etternavn)
-        assertEquals(søknadDTO.ident, søknad.ident)
-        assertEquals(søknadDTO.deltarKvp, søknad.deltarKvp)
-        assertEquals(søknadDTO.deltarIntroduksjonsprogrammet, søknad.deltarIntroduksjonsprogrammet)
-        assertEquals(søknadDTO.oppholdInstitusjon, søknad.oppholdInstitusjon)
-        assertEquals(TypeInstitusjon.ANNET, søknad.typeInstitusjon)
+        assertEquals(søknadDTO.fornavn, søknad.personopplysninger.fornavn)
+        assertEquals(søknadDTO.etternavn, søknad.personopplysninger.etternavn)
+        assertEquals(søknadDTO.ident, søknad.personopplysninger.ident)
+
+        assertTrue(søknad.kvp is Søknad.PeriodeSpm.Nei)
+        assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
+        assertTrue(søknad.institusjon is Søknad.PeriodeSpm.Ja)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
-        assertEquals(søknadDTO.fritekst, søknad.fritekst)
         assertEquals(søknadDTO.vedlegg?.first()?.journalpostId, søknad.vedlegg.first().journalpostId)
         assertEquals(søknadDTO.vedlegg?.first()?.dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
         assertEquals(søknadDTO.vedlegg?.first()?.filnavn, søknad.vedlegg.first().filnavn)
@@ -119,8 +127,20 @@ internal class SøknadDTOTest {
             typeInstitusjon = "annet",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -151,11 +171,11 @@ internal class SøknadDTOTest {
             vedlegg = emptyList(),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
-
-        assertNotNull(søknad.introduksjonsprogrammetDetaljer)
-        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.fom, søknad.introduksjonsprogrammetDetaljer?.fom)
-        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.tom, søknad.introduksjonsprogrammetDetaljer?.tom)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
+        assertTrue(søknad.intro is Søknad.PeriodeSpm.Ja)
+        val spm = søknad.intro as Søknad.PeriodeSpm.Ja
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.fom, spm.periode.fra)
+        assertEquals(søknadDTO.introduksjonsprogrammetDetaljer?.tom, spm.periode.til)
     }
 
     @Test
@@ -178,8 +198,20 @@ internal class SøknadDTOTest {
             typeInstitusjon = "overgangsbolig",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
-                BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
+                BarnetilleggDTO(
+                    fornavn = "Ola",
+                    etternavn = "Hansen",
+                    alder = 10,
+                    ident = "10101012345",
+                    oppholdsland = "NOR",
+                ),
+                BarnetilleggDTO(
+                    fornavn = "Petter",
+                    etternavn = "Davidsen",
+                    alder = 13,
+                    fødselsdato = LocalDate.now(),
+                    oppholdsland = "SWE",
+                ),
             ),
             arenaTiltak = ArenaTiltakDTO(
                 arenaId = "7",
@@ -199,26 +231,23 @@ internal class SøknadDTOTest {
             vedlegg = null,
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
-        søknadDTO.barnetillegg.forEach { barnetilleggDTO ->
-            søknad.barnetillegg.forAtLeastOne {
-                it.oppholdsland shouldBe barnetilleggDTO.oppholdsland
-                it.alder shouldBe barnetilleggDTO.alder
-                it.fornavn shouldBe barnetilleggDTO.fornavn
-                it.etternavn shouldBe barnetilleggDTO.etternavn
-            }
-            if (barnetilleggDTO.ident != null) {
-                søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.MedIdent>()
-                    it.ident shouldBe barnetilleggDTO.ident
-                }
-            } else {
-                søknad.barnetillegg.forAtLeastOne {
-                    it.shouldBeTypeOf<Barnetillegg.UtenIdent>()
-                    it.fødselsdato shouldBe barnetilleggDTO.fødselsdato
-                }
-            }
-        }
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
+        søknad.barnetillegg shouldContainExactlyInAnyOrder listOf(
+            Barnetillegg.FraPdl(
+                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
+                fornavn = "Ola",
+                mellomnavn = null,
+                etternavn = "Hansen",
+                fødselsdato = 10.oktober(2010),
+            ),
+            Barnetillegg.Manuell(
+                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
+                fornavn = "Petter",
+                mellomnavn = null,
+                etternavn = "Davidsen",
+                fødselsdato = LocalDate.now(),
+            ),
+        )
     }
 
     @Test
@@ -259,17 +288,12 @@ internal class SøknadDTOTest {
             vedlegg = null,
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertNotNull(søknad.tiltak)
         assertTrue(søknad.tiltak is Tiltak.ArenaTiltak)
         assertEquals(søknadDTO.arenaTiltak!!.arenaId, (søknad.tiltak as Tiltak.ArenaTiltak).arenaId)
         assertEquals(søknadDTO.arenaTiltak!!.arrangoer, (søknad.tiltak as Tiltak.ArenaTiltak).arrangoernavn)
-        assertEquals(
-            søknadDTO.arenaTiltak!!.harSluttdatoFraArena,
-            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena,
-        )
-        assertEquals(søknadDTO.arenaTiltak!!.erIEndreStatus, (søknad.tiltak as Tiltak.ArenaTiltak).erIEndreStatus)
         assertEquals(Tiltaksaktivitet.Tiltak.JOBBK, (søknad.tiltak as Tiltak.ArenaTiltak).tiltakskode)
         assertEquals(søknadDTO.arenaTiltak!!.startdato, (søknad.tiltak as Tiltak.ArenaTiltak).startdato)
         assertEquals(søknadDTO.arenaTiltak!!.sluttdato, (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato)
@@ -321,17 +345,12 @@ internal class SøknadDTOTest {
             vedlegg = emptyList(),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertNotNull(søknad.tiltak)
         assertTrue(søknad.tiltak is Tiltak.ArenaTiltak)
         assertEquals(søknadDTO.arenaTiltak!!.arenaId, (søknad.tiltak as Tiltak.ArenaTiltak).arenaId)
         assertEquals(søknadDTO.arenaTiltak!!.arrangoer, (søknad.tiltak as Tiltak.ArenaTiltak).arrangoernavn)
-        assertEquals(
-            søknadDTO.arenaTiltak!!.harSluttdatoFraArena,
-            (søknad.tiltak as Tiltak.ArenaTiltak).harSluttdatoFraArena,
-        )
-        assertEquals(søknadDTO.arenaTiltak!!.erIEndreStatus, (søknad.tiltak as Tiltak.ArenaTiltak).erIEndreStatus)
         assertEquals(Tiltaksaktivitet.Tiltak.AMO, (søknad.tiltak as Tiltak.ArenaTiltak).tiltakskode)
         assertEquals(søknadDTO.arenaTiltak!!.startdato, (søknad.tiltak as Tiltak.ArenaTiltak).startdato)
         assertEquals(søknadDTO.arenaTiltak!!.sluttdato, (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato)
@@ -381,7 +400,7 @@ internal class SøknadDTOTest {
             vedlegg = emptyList(),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertNotNull(søknad.tiltak)
         assertTrue(søknad.tiltak is Tiltak.BrukerregistrertTiltak)
@@ -446,7 +465,7 @@ internal class SøknadDTOTest {
             vedlegg = emptyList(),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertNotNull(søknad.tiltak)
         assertTrue(søknad.tiltak is Tiltak.BrukerregistrertTiltak)
@@ -497,7 +516,7 @@ internal class SøknadDTOTest {
             typeInstitusjon = "barneverninstitusjon",
             opprettet = tidsstempel,
             barnetillegg = listOf(
-                BarnetilleggDTO(alder = 10, ident = "456", oppholdsland = "NOR"),
+                BarnetilleggDTO(alder = 10, ident = "10101012345", oppholdsland = "NOR"),
                 BarnetilleggDTO(alder = 13, fødselsdato = LocalDate.now(), oppholdsland = "SWE"),
             ),
             arenaTiltak = ArenaTiltakDTO(
@@ -522,15 +541,7 @@ internal class SøknadDTOTest {
             vedlegg = emptyList(),
         )
 
-        val søknad = mapSøknad(søknadDTO, LocalDateTime.MIN)
-
-        søknadDTO.trygdOgPensjon!!.forEach { trygdOgPensjonDTO ->
-            søknad.trygdOgPensjon.forAtLeastOne {
-                it.utbetaler shouldBe trygdOgPensjonDTO.utbetaler
-                it.prosent shouldBe trygdOgPensjonDTO.prosent
-                it.fom shouldBe trygdOgPensjonDTO.fom
-                it.tom shouldBe trygdOgPensjonDTO.tom
-            }
-        }
+        val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
+        assertTrue(søknad.etterlønn is Søknad.JaNeiSpm.Ja)
     }
 }

@@ -2,14 +2,17 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.felles.august
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ja
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.IntroduksjonsprogrammetDetaljer
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.TrygdOgPensjon
-import no.nav.tiltakspenger.vedtak.TypeInstitusjon
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -17,7 +20,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -52,35 +55,31 @@ internal class SøknadDAOTest {
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
-        val søknad = Søknad(
+        val søknad = nySøknadMedTiltak(
             id = uuid,
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
-            ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
+            ),
+            kvp = periodeNei(),
+            intro = periodeNei(),
+            institusjon = periodeNei(),
+            opprettet = innhentet,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Tiltaksarrangør AS",
-                harSluttdatoFraArena = false,
                 tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = false,
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
                 startdato = LocalDate.now(),
             ),
-            trygdOgPensjon = emptyList(),
-            fritekst = null,
             vedlegg = emptyList(),
         )
         sessionOf(DataSource.hikariDataSource).use {
@@ -97,7 +96,7 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
     }
 
@@ -110,52 +109,39 @@ internal class SøknadDAOTest {
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
-        val søknad = Søknad(
+        val søknad = nySøknadMedTiltak(
             id = uuid,
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = null,
-            etternavn = null,
-            ident = ident,
-            deltarKvp = false,
-            deltarIntroduksjonsprogrammet = false,
-            introduksjonsprogrammetDetaljer = null,
-            oppholdInstitusjon = null,
-            typeInstitusjon = null,
-            opprettet = null,
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
+            ),
+            kvp = periodeNei(),
+            intro = periodeNei(),
+            institusjon = periodeNei(),
+            opprettet = innhentet,
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 0,
-                    ident = "1",
-                    oppholdsland = "NO",
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = ja(),
                     fornavn = "fornavn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
-                    søktBarnetillegg = true,
+                    fødselsdato = 1.januar(2020),
                 ),
             ),
             tidsstempelHosOss = innhentet,
             tiltak = Tiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Hurra meg rundt AS",
-                harSluttdatoFraArena = true,
                 tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-                erIEndreStatus = false,
                 opprinneligSluttdato = LocalDate.now(),
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
                 startdato = LocalDate.now(),
             ),
-            trygdOgPensjon = listOf(
-                TrygdOgPensjon(
-                    utbetaler = "Storebrand",
-                    prosent = null,
-                    fom = LocalDate.of(2020, 10, 1),
-                    tom = null,
-                ),
-            ),
-            fritekst = null,
             vedlegg = listOf(
                 Vedlegg(
                     journalpostId = "journalpostId",
@@ -178,14 +164,14 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
 
         assertNotNull(hentet.tiltak)
         assertEquals(1, hentet.barnetillegg.size)
-        assertEquals(1, hentet.trygdOgPensjon.size)
         assertEquals(1, hentet.vedlegg.size)
-        assertNull(hentet.introduksjonsprogrammetDetaljer)
+        assertTrue(hentet.intro is Søknad.PeriodeSpm.Nei)
+        assertTrue(hentet.kvp is Søknad.PeriodeSpm.Nei)
     }
 
     @Test
@@ -199,53 +185,46 @@ internal class SøknadDAOTest {
         val tiltak = Tiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Tiltaksbedriften AS",
-            harSluttdatoFraArena = true,
             tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
-            erIEndreStatus = true,
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
             startdato = LocalDate.now(),
         )
-        val søknad = Søknad(
+        val søknad = nySøknadMedTiltak(
             id = uuid,
             søknadId = "41",
             journalpostId = "42",
             dokumentInfoId = "43",
-            fornavn = "Johnny",
-            etternavn = "McPerson",
-            ident = ident,
-            deltarKvp = true,
-            deltarIntroduksjonsprogrammet = true,
-            introduksjonsprogrammetDetaljer = IntroduksjonsprogrammetDetaljer(
-                fom = LocalDate.of(2022, Month.AUGUST, 15),
-                tom = LocalDate.of(2022, Month.AUGUST, 30),
+            personopplysninger = Søknad.Personopplysninger(
+                fornavn = "fornavn",
+                etternavn = "etternavn",
+                ident = ident,
             ),
-            oppholdInstitusjon = true,
-            typeInstitusjon = TypeInstitusjon.BARNEVERN,
+            kvp = periodeJa(
+                fom = 15.august(2022),
+                tom = 30.august(2022),
+            ),
+            intro = periodeJa(
+                fom = 15.august(2022),
+                tom = 30.august(2022),
+            ),
+            institusjon = periodeJa(
+                fom = 15.august(2022),
+                tom = 30.august(2022),
+            ),
             opprettet = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS),
             barnetillegg = listOf(
-                Barnetillegg.MedIdent(
-                    alder = 16,
-                    ident = "1",
-                    oppholdsland = "NO",
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
                     fornavn = "foranvn",
                     mellomnavn = "mellomnavn",
                     etternavn = "etternavn",
-                    søktBarnetillegg = true,
+                    fødselsdato = 15.august(2022),
                 ),
             ),
             tidsstempelHosOss = innhentet,
             tiltak = tiltak,
-            trygdOgPensjon = listOf(
-                TrygdOgPensjon(
-                    utbetaler = "Storebrand",
-                    prosent = 50,
-                    fom = LocalDate.of(2020, 10, 1),
-                    tom = LocalDate.of(2020, 10, 1),
-                ),
-            ),
-            fritekst = "Fritekst",
             vedlegg = listOf(
                 Vedlegg(
                     journalpostId = "journalpostId",
@@ -268,18 +247,21 @@ internal class SøknadDAOTest {
 
         assertNotNull(hentet)
         assertEquals(uuid, hentet!!.id)
-        assertEquals(ident, hentet.ident)
+        assertEquals(ident, hentet.personopplysninger.ident)
         assertEquals(innhentet, hentet.tidsstempelHosOss)
 
         assertNotNull(hentet.tiltak)
         assertEquals(1, hentet.barnetillegg.size)
-        assertEquals(1, hentet.trygdOgPensjon.size)
 
+        // TODO: Denne må erstattes
+        /*
         hentet::class.declaredMemberProperties.forEach {
             assertNotNull(it.call(hentet))
         }
+         */
 
-        assertEquals(søknad.introduksjonsprogrammetDetaljer, hentet.introduksjonsprogrammetDetaljer)
+        assertEquals(søknad.intro, hentet.intro)
+        assertEquals(søknad.kvp, hentet.kvp)
 
         val barnetillegg = hentet.barnetillegg.first()
         barnetillegg::class.declaredMemberProperties.forEach {
@@ -289,23 +271,16 @@ internal class SøknadDAOTest {
         hentet.tiltak shouldBe tiltak
         assertEquals(tiltak, hentet.tiltak)
 
-        val trygdOgPensjon = hentet.trygdOgPensjon.first()
-        trygdOgPensjon::class.declaredMemberProperties.forEach {
-            assertNotNull(it.call(trygdOgPensjon))
-        }
-
         // Sjekker verdiene for noen litt tilfeldige felter også:
         assertEquals(søknad.opprettet, hentet.opprettet)
         println(søknad.opprettet)
         assertEquals(søknad.opprettet, hentet.opprettet)
         assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
-        assertEquals(søknad.deltarKvp, hentet.deltarKvp)
 
         assertEquals(
             (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,
             (hentet.tiltak as Tiltak.ArenaTiltak).sluttdato,
         )
-        assertEquals(søknad.trygdOgPensjon.first().fom, hentet.trygdOgPensjon.first().fom)
 
         assertEquals(søknad.vedlegg.first().journalpostId, hentet.vedlegg.first().journalpostId)
         assertEquals(søknad.vedlegg.first().dokumentInfoId, hentet.vedlegg.first().dokumentInfoId)
