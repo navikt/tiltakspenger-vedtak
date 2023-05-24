@@ -6,11 +6,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class SøknadDTO(
-    val versjon: String,
     val søknadId: String,
     val journalpostId: String,
     val dokumentInfoId: String,
-    val filnavn: String,
     val fornavn: String?,
     val etternavn: String?,
     val ident: String,

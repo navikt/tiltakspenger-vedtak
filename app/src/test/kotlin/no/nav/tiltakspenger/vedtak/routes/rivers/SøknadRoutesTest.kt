@@ -94,11 +94,9 @@ class SøknadRoutesTest {
     private val søknadBody =
         """
         {
-            "versjon": "1",
             "søknadId": "whatever",
             "journalpostId": "$JOURNALPOSTID",
             "dokumentInfoId": "whatever3",
-            "filnavn": "filnavn",
             "fornavn": "LEVENDE",
             "etternavn": "POTET",
             "ident": "$IDENT",

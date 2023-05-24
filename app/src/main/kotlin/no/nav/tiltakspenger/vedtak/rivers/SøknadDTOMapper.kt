@@ -14,11 +14,11 @@ object SøknadDTOMapper {
 
     fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
         return Søknad(
-            versjon = dto.versjon,
+            versjon = "1",
             søknadId = dto.søknadId,
             journalpostId = dto.journalpostId,
             dokumentInfoId = dto.dokumentInfoId,
-            filnavn = dto.filnavn,
+            filnavn = "filnavn",
             personopplysninger = Søknad.Personopplysninger(
                 fornavn = dto.fornavn!!,
                 etternavn = dto.etternavn!!,
