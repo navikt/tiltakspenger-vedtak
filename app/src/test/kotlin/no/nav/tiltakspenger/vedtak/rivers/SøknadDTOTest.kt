@@ -22,9 +22,11 @@ internal class SøknadDTOTest {
         val fom = LocalDate.of(2022, Month.SEPTEMBER, 12)
         val tom = LocalDate.of(2022, Month.SEPTEMBER, 14)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -111,9 +113,11 @@ internal class SøknadDTOTest {
         val fom = LocalDate.of(2022, Month.SEPTEMBER, 12)
         val tom = LocalDate.of(2022, Month.SEPTEMBER, 14)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -182,9 +186,11 @@ internal class SøknadDTOTest {
     fun mapBarnetilleggFelter() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -254,9 +260,11 @@ internal class SøknadDTOTest {
     fun mapArenaTiltak() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -311,9 +319,11 @@ internal class SøknadDTOTest {
     fun mapArenaTiltakMedAMO() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "1",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -368,9 +378,11 @@ internal class SøknadDTOTest {
     fun mapBrukerregistrertTiltak() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -433,9 +445,11 @@ internal class SøknadDTOTest {
     fun mapBrukerregistrertTiltakAMO() {
         val tidsstempel = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",
@@ -500,9 +514,11 @@ internal class SøknadDTOTest {
         val fom = LocalDate.of(2022, Month.SEPTEMBER, 12)
         val tom = LocalDate.of(2022, Month.SEPTEMBER, 14)
         val søknadDTO = SøknadDTO(
+            versjon = "1",
             søknadId = "42",
             journalpostId = "43",
             dokumentInfoId = "44",
+            filnavn = "filnavn",
             fornavn = "Ola",
             etternavn = "Nordmann",
             ident = "123",

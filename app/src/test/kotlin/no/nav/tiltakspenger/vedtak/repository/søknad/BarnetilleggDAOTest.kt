@@ -98,6 +98,7 @@ internal class BarnetilleggDAOTest {
         søknadId = "41",
         journalpostId = "42",
         dokumentInfoId = "43",
+        filnavn = "filnavn",
         personopplysninger = Søknad.Personopplysninger(
             fornavn = "fornavn",
             etternavn = "etternavn",

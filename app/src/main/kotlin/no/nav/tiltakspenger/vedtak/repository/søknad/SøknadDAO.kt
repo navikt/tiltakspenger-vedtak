@@ -107,6 +107,7 @@ internal class SøknadDAO(
                         "ident" to søknad.personopplysninger.ident,
                         "journalpostId" to søknad.journalpostId,
                         "dokumentinfoId" to søknad.dokumentInfoId,
+                        "filnavn" to søknad.filnavn,
                         "opprettet" to søknad.opprettet,
                         "tidsstempelHosOss" to søknad.tidsstempelHosOss,
                     ),
@@ -129,6 +130,7 @@ internal class SøknadDAO(
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
+        val filnavn = string("filnavn")
         val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, txSession)
         val tiltak = tiltakDAO.hent(id, txSession)
         val vedlegg = vedleggDAO.hentVedleggListe(id, txSession)
@@ -149,6 +151,7 @@ internal class SøknadDAO(
             søknadId = søknadId,
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
+            filnavn = filnavn,
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = fornavn,
@@ -182,6 +185,7 @@ internal class SøknadDAO(
             søknad_id,
             journalpost_id,
             dokumentinfo_id,
+            filnavn,
             fornavn, 
             etternavn, 
             ident, 
@@ -232,6 +236,7 @@ internal class SøknadDAO(
             :eksternSoknadId,
             :journalpostId,
             :dokumentinfoId,
+            :filnavn,
             :fornavn, 
             :etternavn,
             :ident,

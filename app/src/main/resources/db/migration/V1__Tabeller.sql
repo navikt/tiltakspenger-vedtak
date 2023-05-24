@@ -71,6 +71,7 @@ CREATE TABLE søknad
     etternavn           VARCHAR                  NOT NULL,
     journalpost_id      VARCHAR                  NOT NULL,
     dokumentinfo_id     VARCHAR                  NOT NULL,
+    filnavn             VARCHAR                  NOT NULL,
     opprettet           TIMESTAMP WITH TIME ZONE NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
     kvp_type            VARCHAR                  NOT NULL,

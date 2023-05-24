@@ -13,6 +13,7 @@ data class Søknad(
     val søknadId: String, // TODO: Bør denne ha et annet navn? Hvor kommer den fra?
     val journalpostId: String, // TODO: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
     val dokumentInfoId: String,
+    val filnavn: String,
     val personopplysninger: Personopplysninger,
     val tiltak: Tiltak?,
     val barnetillegg: List<Barnetillegg>,
