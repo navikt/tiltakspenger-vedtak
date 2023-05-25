@@ -18,6 +18,7 @@ class IntroProgrammetVilkårsvurdering(
         spm = søknad.intro,
         søknadVersjon = søknad.versjon,
         vilkår = vilkår(),
+        vurderingsperiode = vurderingsperiode,
     )
 
     override var manuellVurdering: Vurdering? = null

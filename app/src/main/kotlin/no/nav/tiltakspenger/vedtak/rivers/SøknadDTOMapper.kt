@@ -43,7 +43,7 @@ object SøknadDTOMapper {
             },
             intro = try {
                 if (dto.deltarIntroduksjonsprogrammet == null) {
-                    Søknad.PeriodeSpm.IkkeBesvart
+                    Søknad.PeriodeSpm.IkkeRelevant
                 } else if (dto.deltarIntroduksjonsprogrammet) {
                     Søknad.PeriodeSpm.Ja(
                         periode = Periode(

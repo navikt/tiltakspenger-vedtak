@@ -139,8 +139,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
-        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.februar(2022)
+        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 10.februar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Feilaktig besvart i søknaden"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.paragraf shouldBe "§7"
         introProgrammetVilkårsvurdering.vilkår().lovreferanse.ledd shouldBe "3"

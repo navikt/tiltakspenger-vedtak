@@ -16,6 +16,7 @@ class InstitusjonsoppholdVilkårsvurdering(
     private val periodeSpmVurdering = PeriodeSpmVurdering(
         spm = søknad.institusjon,
         vilkår = vilkår(),
+        vurderingsperiode = vurderingsperiode,
     )
     override var manuellVurdering: Vurdering? = null
 

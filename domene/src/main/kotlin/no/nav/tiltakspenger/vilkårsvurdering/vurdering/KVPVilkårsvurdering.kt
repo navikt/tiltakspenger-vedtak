@@ -18,6 +18,7 @@ class KVPVilkårsvurdering(
         spm = søknad.kvp,
         søknadVersjon = søknad.versjon,
         vilkår = vilkår(),
+        vurderingsperiode = vurderingsperiode,
     )
 
     override var manuellVurdering: Vurdering? = null

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -8,6 +9,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 class PeriodeSpmVurdering(
     private val spm: Søknad.PeriodeSpm,
     private val vilkår: Vilkår,
+    private val vurderingsperiode: Periode,
 ) {
 
     companion object {
@@ -18,15 +20,21 @@ class PeriodeSpmVurdering(
         Vurdering(
             vilkår = vilkår,
             kilde = KILDE,
-            fom = if (spm is Søknad.PeriodeSpm.Ja) {
-                spm.periode.fra
-            } else {
-                null
+            fom = when (spm) {
+                is Søknad.PeriodeSpm.IkkeMedISøknaden -> vurderingsperiode.fra
+                is Søknad.PeriodeSpm.IkkeRelevant -> null
+                is Søknad.PeriodeSpm.Ja -> spm.periode.fra
+                is Søknad.PeriodeSpm.Nei -> null
+                is Søknad.PeriodeSpm.FeilaktigBesvart -> vurderingsperiode.fra
+                is Søknad.PeriodeSpm.IkkeBesvart -> vurderingsperiode.fra
             },
-            tom = if (spm is Søknad.PeriodeSpm.Ja) {
-                spm.periode.til
-            } else {
-                null
+            tom = when (spm) {
+                is Søknad.PeriodeSpm.IkkeMedISøknaden -> vurderingsperiode.til
+                is Søknad.PeriodeSpm.IkkeRelevant -> null
+                is Søknad.PeriodeSpm.Ja -> spm.periode.til
+                is Søknad.PeriodeSpm.Nei -> null
+                is Søknad.PeriodeSpm.FeilaktigBesvart -> vurderingsperiode.til
+                is Søknad.PeriodeSpm.IkkeBesvart -> vurderingsperiode.til
             },
             utfall = avgjørUtfall(),
             detaljer = detaljer(),
