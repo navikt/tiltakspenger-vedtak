@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.FraOgMedSpmVurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.JaNeiSpmVurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 class EtterlønnVilkårsvurdering(
@@ -14,8 +14,8 @@ class EtterlønnVilkårsvurdering(
 ) : Vilkårsvurdering() {
     override fun vilkår(): Vilkår = Vilkår.LØNNSINNTEKT
 
-    private val jaNeiSpmVurdering = FraOgMedSpmVurdering(
-        spm = søknad.trygdOgPensjon,
+    private val jaNeiSpmVurdering = JaNeiSpmVurdering(
+        spm = søknad.etterlønn,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
     )
