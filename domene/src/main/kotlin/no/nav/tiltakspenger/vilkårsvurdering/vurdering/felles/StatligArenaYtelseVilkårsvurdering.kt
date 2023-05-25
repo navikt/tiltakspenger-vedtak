@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import java.time.LocalDate
 
 abstract class StatligArenaYtelseVilkårsvurdering(
     val ytelser: List<YtelseSak>,
@@ -35,28 +34,24 @@ abstract class StatligArenaYtelseVilkårsvurdering(
         .filter {
             Periode(
                 it.fomGyldighetsperiode.toLocalDate(),
-                (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX),
+                (it.tomGyldighetsperiode?.toLocalDate() ?: vurderingsperiode.til),
             ).overlapperMed(vurderingsperiode)
         }
         // .filter { it.status == YtelseSak.YtelseSakStatus.AKTIV }
         .filter { it.ytelsestype == type }
         .map {
-            Vurdering(
+            Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
                 kilde = "Arena",
                 fom = it.fomGyldighetsperiode.toLocalDate(),
-                tom = it.tomGyldighetsperiode?.toLocalDate(),
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
+                tom = it.tomGyldighetsperiode?.toLocalDate() ?: vurderingsperiode.til,
                 detaljer = detaljerForManuellVurdering(it),
             )
         }.ifEmpty {
             listOf(
-                Vurdering(
+                Vurdering.Oppfylt(
                     vilkår = vilkår(),
                     kilde = "Arena",
-                    fom = null,
-                    tom = null,
-                    utfall = Utfall.OPPFYLT,
                     detaljer = "",
                 ),
             )

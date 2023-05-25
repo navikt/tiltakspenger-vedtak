@@ -20,13 +20,36 @@ abstract class Vilkårsvurdering {
         utfall: Utfall,
         detaljer: String,
     ) {
-        manuellVurdering = Vurdering(
-            vilkår = vilkår(),
-            kilde = "Saksbehandler",
-            fom = fom,
-            tom = tom,
-            utfall = utfall,
-            detaljer = detaljer,
-        )
+        manuellVurdering = when (utfall) {
+            Utfall.OPPFYLT -> Vurdering.Oppfylt(
+                vilkår = vilkår(),
+                kilde = "Saksbehandler",
+                detaljer = detaljer,
+            )
+
+            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
+                vilkår = vilkår(),
+                kilde = "Saksbehandler",
+                fom = fom,
+                tom = tom,
+                detaljer = detaljer,
+            )
+
+            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
+                vilkår = vilkår(),
+                kilde = "Saksbehandler",
+                fom = fom,
+                tom = tom,
+                detaljer = detaljer,
+            )
+
+            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
+                vilkår = vilkår(),
+                kilde = "Saksbehandler",
+                fom = fom,
+                tom = tom,
+                detaljer = detaljer,
+            )
+        }
     }
 }

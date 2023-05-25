@@ -17,6 +17,7 @@ class EtterlønnVilkårsvurdering(
     private val jaNeiSpmVurdering = FraOgMedSpmVurdering(
         spm = søknad.trygdOgPensjon,
         vilkår = vilkår(),
+        vurderingsperiode = vurderingsperiode,
     )
     override var manuellVurdering: Vurdering? = null
 

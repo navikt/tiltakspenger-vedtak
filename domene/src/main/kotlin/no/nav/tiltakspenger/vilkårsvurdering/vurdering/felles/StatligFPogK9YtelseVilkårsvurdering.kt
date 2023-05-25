@@ -42,22 +42,18 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
         }
         .filter { it.ytelse in type }
         .map {
-            Vurdering(
+            Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
                 kilde = it.kildesystem.name,
                 fom = it.periode.fra,
                 tom = it.periode.til,
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "",
             )
         }.ifEmpty {
             listOf(
-                Vurdering(
+                Vurdering.Oppfylt(
                     vilkår = vilkår(),
                     kilde = kilde,
-                    fom = null,
-                    tom = null,
-                    utfall = Utfall.OPPFYLT,
                     detaljer = "",
                 ),
             )

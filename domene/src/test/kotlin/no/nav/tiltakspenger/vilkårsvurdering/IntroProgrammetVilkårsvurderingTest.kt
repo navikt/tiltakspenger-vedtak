@@ -73,21 +73,17 @@ internal class IntroProgrammetVilkårsvurderingTest {
             detaljer = "",
         )
 
-        val vurderingSøknad = Vurdering(
+        val vurderingSøknad = Vurdering.Oppfylt(
             vilkår = Vilkår.INTROPROGRAMMET,
             kilde = "Søknad",
-            fom = null,
-            tom = null,
-            utfall = Utfall.OPPFYLT,
             detaljer = "Svart NEI i søknaden",
         )
         val vurderingSaksbehandler =
-            Vurdering(
+            Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.INTROPROGRAMMET,
                 kilde = "Saksbehandler",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
-                utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             )
         introProgrammetVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -8,6 +9,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 class FraOgMedSpmVurdering(
     private val spm: Søknad.FraOgMedDatoSpm,
     private val vilkår: Vilkår,
+    private val vurderingsperiode: Periode,
 ) {
 
     companion object {
@@ -15,18 +17,49 @@ class FraOgMedSpmVurdering(
     }
 
     fun lagVurderingFraSøknad() =
-        Vurdering(
-            vilkår = vilkår,
-            kilde = KILDE,
-            fom = if (spm is Søknad.FraOgMedDatoSpm.Ja) {
-                spm.fra
-            } else {
-                null
-            },
-            tom = null,
-            utfall = avgjørUtfall(),
-            detaljer = detaljer(),
-        )
+        when (avgjørUtfall()) {
+            Utfall.OPPFYLT -> Vurdering.Oppfylt(
+                vilkår = vilkår,
+                kilde = KILDE,
+                detaljer = detaljer(),
+            )
+
+            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
+                vilkår = vilkår,
+                kilde = KILDE,
+                fom = if (spm is Søknad.FraOgMedDatoSpm.Ja) {
+                    spm.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = vurderingsperiode.til,
+                detaljer = detaljer(),
+            )
+
+            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
+                vilkår = vilkår,
+                kilde = KILDE,
+                fom = if (spm is Søknad.FraOgMedDatoSpm.Ja) {
+                    spm.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = vurderingsperiode.til,
+                detaljer = detaljer(),
+            )
+
+            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
+                vilkår = vilkår,
+                kilde = KILDE,
+                fom = if (spm is Søknad.FraOgMedDatoSpm.Ja) {
+                    spm.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = vurderingsperiode.til,
+                detaljer = detaljer(),
+            )
+        }
 
     private fun detaljer(): String =
         when (spm) {

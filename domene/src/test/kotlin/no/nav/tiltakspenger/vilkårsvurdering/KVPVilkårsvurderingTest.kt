@@ -59,20 +59,18 @@ internal class KVPVilkårsvurderingTest {
             detaljer = "",
         )
         val vurderingSøknad =
-            Vurdering(
+            Vurdering.KreverManuellVurdering(
                 vilkår = Vilkår.KVP,
                 kilde = "Søknad",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "Svart JA i søknaden",
             )
-        val vurderingSaksbehandler = Vurdering(
+        val vurderingSaksbehandler = Vurdering.IkkeOppfylt(
             vilkår = Vilkår.KVP,
             kilde = "Saksbehandler",
             fom = 1.januar(2022),
             tom = 31.oktober(2022),
-            utfall = Utfall.IKKE_OPPFYLT,
             detaljer = "",
         )
         kvpVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(

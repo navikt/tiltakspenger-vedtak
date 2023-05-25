@@ -16,6 +16,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
     private val fraOgMedSpmVurdering = FraOgMedSpmVurdering(
         spm = søknad.trygdOgPensjon,
         vilkår = vilkår(),
+        vurderingsperiode = vurderingsperiode,
     )
     override var manuellVurdering: Vurdering? = null
 

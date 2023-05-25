@@ -24,9 +24,11 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurd
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.EtterlønnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
@@ -36,7 +38,9 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårs
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PrivatPensjonsinntektVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 
@@ -354,6 +358,10 @@ class BehandlingMapper {
                 overgangsstønadVedtak = innsending.overgangsstønadVedtak!!.overgangsstønadVedtak,
                 vurderingsperiode = vurderingsperiode,
             ),
+            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
+            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
+            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
+            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
         ),
         kommunaleYtelser = KommunaleYtelserVilkårsvurderingKategori(
             intro = IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode),

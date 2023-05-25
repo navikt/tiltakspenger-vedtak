@@ -21,29 +21,60 @@ class UklartPeriodeSpmVurdering(
     }
 
     fun lagVurderingFraSøknad() =
-        Vurdering(
-            vilkår = vilkår,
-            kilde = KILDE,
-            fom = when (spm) {
-                is Søknad.PeriodeSpm.IkkeMedISøknaden -> vurderingsperiode.fra
-                is Søknad.PeriodeSpm.IkkeRelevant -> null
-                is Søknad.PeriodeSpm.Ja -> spm.periode.fra
-                is Søknad.PeriodeSpm.Nei -> null
-                is Søknad.PeriodeSpm.FeilaktigBesvart -> vurderingsperiode.fra
-                is Søknad.PeriodeSpm.IkkeBesvart -> vurderingsperiode.fra
-            },
-            tom = when (spm) {
-                is Søknad.PeriodeSpm.IkkeMedISøknaden -> vurderingsperiode.til
-                is Søknad.PeriodeSpm.IkkeRelevant -> null
-                is Søknad.PeriodeSpm.Ja -> spm.periode.til
-                is Søknad.PeriodeSpm.Nei -> null
-                is Søknad.PeriodeSpm.FeilaktigBesvart -> vurderingsperiode.til
-                is Søknad.PeriodeSpm.IkkeBesvart -> vurderingsperiode.til
-            },
-            utfall = avgjørUtfall(),
-            detaljer = detaljer(),
-        ).also {
-            LOG.info { "Fom er ${it.fom} for intro, søknadsversjon er $søknadVersjon" }
+        when (avgjørUtfall()) {
+            Utfall.OPPFYLT -> Vurdering.Oppfylt(
+                vilkår = vilkår,
+                kilde = PeriodeSpmVurdering.KILDE,
+                detaljer = detaljer(),
+            )
+
+            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
+                vilkår = vilkår,
+                kilde = FraOgMedSpmVurdering.KILDE,
+                fom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.til
+                } else {
+                    vurderingsperiode.til
+                },
+                detaljer = detaljer(),
+            )
+
+            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
+                vilkår = vilkår,
+                kilde = FraOgMedSpmVurdering.KILDE,
+                fom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.til
+                } else {
+                    vurderingsperiode.til
+                },
+                detaljer = detaljer(),
+            )
+
+            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
+                vilkår = vilkår,
+                kilde = FraOgMedSpmVurdering.KILDE,
+                fom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.fra
+                } else {
+                    vurderingsperiode.fra
+                },
+                tom = if (spm is Søknad.PeriodeSpm.Ja) {
+                    spm.periode.til
+                } else {
+                    vurderingsperiode.til
+                },
+                detaljer = detaljer(),
+            )
         }
 
     private fun detaljer(): String =

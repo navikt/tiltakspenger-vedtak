@@ -70,20 +70,18 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering: StatligArenaYtelseVilkårsvurdering,
     ) {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
-            Vurdering(
+            Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
-                utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             ),
-            Vurdering(
+            Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
-                utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             ),
         )
@@ -103,28 +101,23 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         )
 
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
-            Vurdering(
+            Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
-                utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             ),
-            Vurdering(
+            Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = "Arena",
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
-                utfall = Utfall.IKKE_OPPFYLT,
                 detaljer = "",
             ),
-            Vurdering(
+            Vurdering.Oppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = "Saksbehandler",
-                fom = 19.januar(2022),
-                tom = 28.mars(2022),
-                utfall = Utfall.OPPFYLT,
                 detaljer = "",
             ),
         )

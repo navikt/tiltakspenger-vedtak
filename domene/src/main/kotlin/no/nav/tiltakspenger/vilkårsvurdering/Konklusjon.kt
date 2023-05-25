@@ -3,10 +3,9 @@ package no.nav.tiltakspenger.vilkårsvurdering
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.leggSammen
 import no.nav.tiltakspenger.felles.trekkFra
-import java.time.LocalDate
 
 fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
-    fun Vurdering.periode() = Periode(this.fom ?: LocalDate.MIN, this.tom ?: LocalDate.MAX)
+    fun Vurdering.periode() = Periode(this.fom ?: vurderingsperiode.fra, this.tom ?: vurderingsperiode.til)
 
     val oppfylteVurderinger = this.filter { it.utfall == Utfall.OPPFYLT }
     val ikkeOppfyltVurderinger = this.filter { it.utfall == Utfall.IKKE_OPPFYLT }

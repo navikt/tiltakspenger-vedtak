@@ -41,12 +41,9 @@ data class UføreVilkarsvurdering(
 
         if (vurderingsperiode.før(dato)) {
             return listOf(
-                Vurdering(
+                Vurdering.Oppfylt(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = KILDE,
-                    fom = null,
-                    tom = null,
-                    utfall = Utfall.OPPFYLT,
                     detaljer = if (dato.toString() == LocalDate.of(9999, 12, 31)
                             .toString()
                     ) {
@@ -70,24 +67,22 @@ data class UføreVilkarsvurdering(
 //                    utfall = Utfall.OPPFYLT,
 //                    detaljer = "",
 //                ),
-                Vurdering(
+                Vurdering.KreverManuellVurdering(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = KILDE,
                     fom = dato,
-                    tom = null,
-                    utfall = Utfall.KREVER_MANUELL_VURDERING,
+                    tom = vurderingsperiode.til,
                     detaljer = "",
                 ),
             )
         }
 
         return listOf(
-            Vurdering(
+            Vurdering.KreverManuellVurdering(
                 vilkår = Vilkår.UFØRETRYGD,
                 kilde = KILDE,
                 fom = dato,
-                tom = null,
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
+                tom = vurderingsperiode.til,
                 detaljer = "",
             ),
         )

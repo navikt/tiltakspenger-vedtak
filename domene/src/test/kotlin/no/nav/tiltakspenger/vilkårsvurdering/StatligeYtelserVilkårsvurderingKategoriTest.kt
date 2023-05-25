@@ -15,13 +15,17 @@ import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 import org.junit.jupiter.api.Test
 
@@ -167,6 +171,10 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
+            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
+            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
+            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
+            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -311,6 +319,10 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
+            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
+            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
+            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
+            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -375,6 +387,10 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
+            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
+            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
+            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
+            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
@@ -443,6 +459,10 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
+            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
+            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
+            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
+            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING

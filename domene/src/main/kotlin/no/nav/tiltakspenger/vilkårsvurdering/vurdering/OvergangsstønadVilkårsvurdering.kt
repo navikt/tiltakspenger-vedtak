@@ -33,22 +33,18 @@ data class OvergangsstønadVilkårsvurdering(
                 (it.tom),
             ).overlapperMed(vurderingsperiode)
         }.map {
-            Vurdering(
+            Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
                 kilde = it.datakilde,
                 fom = it.fom,
                 tom = it.tom,
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
                 detaljer = "",
             )
         }.ifEmpty {
             listOf(
-                Vurdering(
+                Vurdering.Oppfylt(
                     vilkår = vilkår(),
                     kilde = KILDE,
-                    fom = null,
-                    tom = null,
-                    utfall = Utfall.OPPFYLT,
                     detaljer = "",
                 ),
             )
