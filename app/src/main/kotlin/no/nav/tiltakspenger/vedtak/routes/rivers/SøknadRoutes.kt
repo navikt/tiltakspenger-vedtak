@@ -29,7 +29,7 @@ fun Route.søknadRoutes(
 
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            journalpostId = søknadDTO.journalpostId,
+            journalpostId = søknadDTO.dokInfo.journalpostId,
             søknad = SøknadDTOMapper.mapSøknad(
                 dto = søknadDTO,
                 innhentet = søknadDTO.opprettet,
@@ -41,7 +41,7 @@ fun Route.søknadRoutes(
 
         val identMottattHendelse = IdentMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
-            ident = søknadDTO.ident,
+            ident = søknadDTO.personopplysninger.ident,
         )
         søkerMediator.håndter(identMottattHendelse)
 

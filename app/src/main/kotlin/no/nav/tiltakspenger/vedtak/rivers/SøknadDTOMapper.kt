@@ -16,90 +16,79 @@ object SøknadDTOMapper {
         return Søknad(
             versjon = "1",
             søknadId = dto.søknadId,
-            journalpostId = dto.journalpostId,
-            dokumentInfoId = dto.dokumentInfoId,
-            filnavn = "filnavn",
+            journalpostId = dto.dokInfo.journalpostId,
+            dokumentInfoId = dto.dokInfo.dokumentInfoId,
+            filnavn = dto.dokInfo.filnavn!!,
             personopplysninger = Søknad.Personopplysninger(
-                fornavn = dto.fornavn!!,
-                etternavn = dto.etternavn!!,
-                ident = dto.ident,
+                fornavn = dto.personopplysninger.fornavn,
+                etternavn = dto.personopplysninger.etternavn,
+                ident = dto.personopplysninger.ident,
             ),
             tiltak = mapArenatiltak(dto.arenaTiltak)
-                ?: mapBrukerregistrertTiltak(dto.brukerregistrertTiltak),
-            barnetillegg = dto.barnetillegg.map { mapBarnetillegg(it) },
+                ?: mapBrukerregistrertTiltak(dto.brukerTiltak),
+            barnetillegg = dto.barnetilleggPdl.map { mapBarnetilleggPDL(it) } +
+                dto.barnetilleggManuelle.map { mapBarnetilleggManuelle(it) },
             opprettet = dto.opprettet,
             tidsstempelHosOss = innhentet,
-            vedlegg = dto.vedlegg?.map { mapVedlegg(it) } ?: emptyList(),
-            kvp =
-            if (dto.deltarKvp) {
-                Søknad.PeriodeSpm.Ja(
-                    periode = Periode(
-                        fra = LocalDate.MIN,
-                        til = LocalDate.MAX,
-                    ),
-                )
-            } else {
-                Søknad.PeriodeSpm.Nei
-            },
-            intro = try {
-                if (dto.deltarIntroduksjonsprogrammet == null) {
-                    Søknad.PeriodeSpm.IkkeRelevant
-                } else if (dto.deltarIntroduksjonsprogrammet) {
-                    Søknad.PeriodeSpm.Ja(
-                        periode = Periode(
-                            fra = dto.introduksjonsprogrammetDetaljer!!.fom,
-                            til = dto.introduksjonsprogrammetDetaljer.tom!!,
-                        ),
-                    )
-                } else {
-                    Søknad.PeriodeSpm.Nei
-                }
-            } catch (e: NullPointerException) {
-                Søknad.PeriodeSpm.FeilaktigBesvart(
-                    svartJa = dto.deltarIntroduksjonsprogrammet,
-                    fom = dto.introduksjonsprogrammetDetaljer?.fom,
-                    tom = dto.introduksjonsprogrammetDetaljer?.tom,
-                )
-            },
-            institusjon = mapInstitusjon(dto.oppholdInstitusjon, dto.typeInstitusjon),
-            etterlønn = mapTrygdOgPensjon(dto.trygdOgPensjon),
-            gjenlevendepensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
-            alderspensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
-            sykepenger = Søknad.PeriodeSpm.IkkeMedISøknaden,
-            supplerendeStønadAlder = Søknad.PeriodeSpm.IkkeMedISøknaden,
-            supplerendeStønadFlyktning = Søknad.PeriodeSpm.IkkeMedISøknaden,
-            jobbsjansen = Søknad.PeriodeSpm.IkkeMedISøknaden,
-            trygdOgPensjon = Søknad.FraOgMedDatoSpm.IkkeMedISøknaden,
+            vedlegg = dto.vedlegg.map { mapVedlegg(it) } ?: emptyList(),
+            kvp = mapPeriodeSpm(dto.kvp),
+            intro = mapPeriodeSpm(dto.intro),
+            institusjon = mapPeriodeSpm(dto.institusjon),
+            etterlønn = mapJaNei(dto.etterlønn),
+            gjenlevendepensjon = mapFraOgMedSpm(dto.gjenlevendepensjon),
+            alderspensjon = mapFraOgMedSpm(dto.alderspensjon),
+            sykepenger = mapPeriodeSpm(dto.sykepenger),
+            supplerendeStønadAlder = mapPeriodeSpm(dto.supplerendeStønadAlder),
+            supplerendeStønadFlyktning = mapPeriodeSpm(dto.supplerendeStønadFlyktning),
+            jobbsjansen = mapPeriodeSpm(dto.jobbsjansen),
+            trygdOgPensjon = mapFraOgMedSpm(dto.trygdOgPensjon),
         )
     }
 
-    private fun mapTrygdOgPensjon(trygdOgPensjon: List<TrygdOgPensjonDTO>?): Søknad.JaNeiSpm {
-        return if (trygdOgPensjon.isNullOrEmpty()) {
-            Søknad.JaNeiSpm.Nei
-        } else {
-            Søknad.JaNeiSpm.Ja
+    private fun mapPeriodeSpm(periodeSpmDTO: PeriodeSpmDTO): Søknad.PeriodeSpm {
+        return when (periodeSpmDTO.svar) {
+            SpmSvarDTO.IkkeMedISøknaden -> Søknad.PeriodeSpm.IkkeMedISøknaden
+            SpmSvarDTO.IkkeRelevant -> Søknad.PeriodeSpm.IkkeRelevant
+            SpmSvarDTO.IkkeBesvart -> Søknad.PeriodeSpm.IkkeBesvart
+            SpmSvarDTO.FeilaktigBesvart -> Søknad.PeriodeSpm.FeilaktigBesvart(
+                svartJa = true,
+                fom = periodeSpmDTO.fom,
+                tom = periodeSpmDTO.tom,
+            )
+
+            SpmSvarDTO.Nei -> Søknad.PeriodeSpm.Nei
+            SpmSvarDTO.Ja -> Søknad.PeriodeSpm.Ja(
+                periode = Periode(
+                    fra = periodeSpmDTO.fom!!,
+                    til = periodeSpmDTO.tom!!,
+                ),
+            )
         }
     }
 
-    private fun mapInstitusjon(oppholdInstitusjon: Boolean, typeInstitusjon: String?): Søknad.PeriodeSpm {
-        return if (!oppholdInstitusjon) {
-            Søknad.PeriodeSpm.Nei
-        } else {
-            if (typeInstitusjon.equals("Barneverninstitusjon", ignoreCase = true)) {
-                // TODO: Hvor henter vi datoene fra?
-                Søknad.PeriodeSpm.Ja(periode = Periode(LocalDate.MIN, LocalDate.MAX))
-            } else {
-                Søknad.PeriodeSpm.IkkeBesvart // TODO Ok?
-            }
+    private fun mapFraOgMedSpm(fraOgMedDatoSpmDTO: FraOgMedDatoSpmDTO): Søknad.FraOgMedDatoSpm {
+        return when (fraOgMedDatoSpmDTO.svar) {
+            SpmSvarDTO.IkkeMedISøknaden -> Søknad.FraOgMedDatoSpm.IkkeMedISøknaden
+            SpmSvarDTO.IkkeRelevant -> Søknad.FraOgMedDatoSpm.IkkeRelevant
+            SpmSvarDTO.IkkeBesvart -> Søknad.FraOgMedDatoSpm.IkkeBesvart
+            SpmSvarDTO.FeilaktigBesvart -> Søknad.FraOgMedDatoSpm.FeilaktigBesvart(
+                svartJa = true,
+                fom = fraOgMedDatoSpmDTO.fom,
+            )
+
+            SpmSvarDTO.Nei -> Søknad.FraOgMedDatoSpm.Nei
+            SpmSvarDTO.Ja -> Søknad.FraOgMedDatoSpm.Ja(
+                fra = fraOgMedDatoSpmDTO.fom!!,
+            )
         }
     }
 
-    fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
+    private fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
         null
     } else {
         Tiltak.ArenaTiltak(
             arenaId = dto.arenaId,
-            arrangoernavn = dto.arrangoer,
+            arrangoernavn = dto.arrangoernavn,
             tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,
@@ -108,7 +97,7 @@ object SøknadDTOMapper {
         )
     }
 
-    fun mapBrukerregistrertTiltak(dto: BrukerregistrertTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
+    private fun mapBrukerregistrertTiltak(dto: BrukerTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
         if (dto == null) {
             null
         } else {
@@ -124,7 +113,7 @@ object SøknadDTOMapper {
             )
         }
 
-    fun mapVedlegg(dto: VedleggDTO): Vedlegg {
+    private fun mapVedlegg(dto: DokumentInfoDTO): Vedlegg {
         return Vedlegg(
             journalpostId = dto.journalpostId,
             dokumentInfoId = dto.dokumentInfoId,
@@ -132,23 +121,34 @@ object SøknadDTOMapper {
         )
     }
 
-    internal fun mapBarnetillegg(dto: BarnetilleggDTO): Barnetillegg {
-        return if (dto.ident != null) {
-            Barnetillegg.FraPdl(
-                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
-                fornavn = dto.fornavn ?: "---",
-                mellomnavn = dto.mellomnavn,
-                etternavn = dto.etternavn ?: "---",
-                fødselsdato = toFødselsdato(dto.ident),
-            )
-        } else {
-            Barnetillegg.Manuell(
-                oppholderSegIEØS = Søknad.JaNeiSpm.IkkeMedISøknaden,
-                fornavn = dto.fornavn ?: "---",
-                mellomnavn = dto.mellomnavn,
-                etternavn = dto.etternavn ?: "---",
-                fødselsdato = dto.fødselsdato!!,
-            )
+    private fun mapBarnetilleggManuelle(dto: BarnetilleggDTO): Barnetillegg.FraPdl {
+        return Barnetillegg.FraPdl(
+            oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
+            fornavn = dto.fornavn!!,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn!!,
+            fødselsdato = dto.fødselsdato!!,
+        )
+    }
+
+    private fun mapBarnetilleggPDL(dto: BarnetilleggDTO): Barnetillegg.FraPdl {
+        return Barnetillegg.FraPdl(
+            oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
+            fornavn = dto.fornavn!!,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn!!,
+            fødselsdato = dto.fødselsdato!!,
+        )
+    }
+
+    fun mapJaNei(jaNeiSpmDTO: JaNeiSpmDTO): Søknad.JaNeiSpm {
+        return when (jaNeiSpmDTO.svar) {
+            SpmSvarDTO.IkkeMedISøknaden -> Søknad.JaNeiSpm.IkkeMedISøknaden
+            SpmSvarDTO.IkkeRelevant -> Søknad.JaNeiSpm.IkkeRelevant
+            SpmSvarDTO.IkkeBesvart -> Søknad.JaNeiSpm.IkkeBesvart
+            SpmSvarDTO.FeilaktigBesvart -> Søknad.JaNeiSpm.IkkeBesvart
+            SpmSvarDTO.Nei -> Søknad.JaNeiSpm.Nei
+            SpmSvarDTO.Ja -> Søknad.JaNeiSpm.Ja
         }
     }
 

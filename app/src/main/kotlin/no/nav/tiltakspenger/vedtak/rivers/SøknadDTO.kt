@@ -6,27 +6,52 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class SøknadDTO(
+    val versjon: String,
     val søknadId: String,
-    val journalpostId: String,
-    val dokumentInfoId: String,
-    val fornavn: String?,
-    val etternavn: String?,
-    val ident: String,
-    val deltarKvp: Boolean,
-    val deltarIntroduksjonsprogrammet: Boolean?,
-    val introduksjonsprogrammetDetaljer: IntroduksjonsprogrammetDetaljerDTO?,
-    val oppholdInstitusjon: Boolean,
-    val typeInstitusjon: String?,
-    val opprettet: LocalDateTime,
-    val barnetillegg: List<BarnetilleggDTO>,
+    val dokInfo: DokumentInfoDTO,
+    val personopplysninger: PersonopplysningerDTO,
     val arenaTiltak: ArenaTiltakDTO?,
-    val brukerregistrertTiltak: BrukerregistrertTiltakDTO?,
-    val trygdOgPensjon: List<TrygdOgPensjonDTO>? = emptyList(),
-    val fritekst: String?,
-    val vedlegg: List<VedleggDTO>? = emptyList(),
+    val brukerTiltak: BrukerTiltakDTO?,
+    val barnetilleggPdl: List<BarnetilleggDTO>,
+    val barnetilleggManuelle: List<BarnetilleggDTO>,
+    val vedlegg: List<DokumentInfoDTO>,
+    val kvp: PeriodeSpmDTO,
+    val intro: PeriodeSpmDTO,
+    val institusjon: PeriodeSpmDTO,
+    val etterlønn: JaNeiSpmDTO,
+    val gjenlevendepensjon: FraOgMedDatoSpmDTO,
+    val alderspensjon: FraOgMedDatoSpmDTO,
+    val sykepenger: PeriodeSpmDTO,
+    val supplerendeStønadAlder: PeriodeSpmDTO,
+    val supplerendeStønadFlyktning: PeriodeSpmDTO,
+    val jobbsjansen: PeriodeSpmDTO,
+    val trygdOgPensjon: FraOgMedDatoSpmDTO,
+    val opprettet: LocalDateTime,
 )
 
-data class BrukerregistrertTiltakDTO(
+data class DokumentInfoDTO(
+    val journalpostId: String,
+    val dokumentInfoId: String,
+    val filnavn: String?,
+)
+
+data class PersonopplysningerDTO(
+    val ident: String,
+    val fornavn: String,
+    val etternavn: String,
+)
+
+data class ArenaTiltakDTO(
+    val arenaId: String,
+    val arrangoernavn: String?,
+    val tiltakskode: String,
+    val opprinneligSluttdato: LocalDate? = null,
+    val opprinneligStartdato: LocalDate,
+    val sluttdato: LocalDate? = null,
+    val startdato: LocalDate,
+)
+
+data class BrukerTiltakDTO(
     val tiltakskode: String,
     val arrangoernavn: String?,
     val beskrivelse: String?,
@@ -37,49 +62,34 @@ data class BrukerregistrertTiltakDTO(
     val antallDager: Int,
 )
 
-data class ArenaTiltakDTO(
-    val arenaId: String,
-    val arrangoer: String?,
-    val harSluttdatoFraArena: Boolean,
-    val tiltakskode: String,
-    val erIEndreStatus: Boolean,
-    val opprinneligSluttdato: LocalDate? = null,
-    val opprinneligStartdato: LocalDate,
-    val sluttdato: LocalDate? = null,
-    val startdato: LocalDate,
-)
-
-data class IntroduksjonsprogrammetDetaljerDTO(
-    val fom: LocalDate,
-    val tom: LocalDate? = null,
-)
-
-data class TrygdOgPensjonDTO(
-    val utbetaler: String,
-    val prosent: Int? = null,
-    val fom: LocalDate? = null,
-    val tom: LocalDate? = null,
-)
-
-data class VedleggDTO(
-    val journalpostId: String,
-    val dokumentInfoId: String,
-    val filnavn: String?,
-)
-
 data class BarnetilleggDTO(
-    val alder: Int,
-    val oppholdsland: String,
-    val ident: String? = null,
-    val fødselsdato: LocalDate? = null,
-    val fornavn: String? = null,
-    val mellomnavn: String? = null,
-    val etternavn: String? = null,
-    val søktBarnetillegg: Boolean? = null, // Er midlertidig at det er null, endres når alt er i sync
+    val fødselsdato: LocalDate?,
+    val fornavn: String?,
+    val mellomnavn: String?,
+    val etternavn: String?,
+    val oppholderSegIEØS: JaNeiSpmDTO,
 )
 
-enum class TypeInstitusjonDTO(val type: String) {
-    BARNEVERNINSTITUSJON("barneverninstitusjon"),
-    OVERGANGSBOLIG("overgangsbolig"),
-    ANNET("annet"),
+data class JaNeiSpmDTO(
+    val svar: SpmSvarDTO,
+)
+
+data class PeriodeSpmDTO(
+    val svar: SpmSvarDTO,
+    val fom: LocalDate?,
+    val tom: LocalDate?,
+)
+
+data class FraOgMedDatoSpmDTO(
+    val svar: SpmSvarDTO,
+    val fom: LocalDate?,
+)
+
+enum class SpmSvarDTO {
+    IkkeMedISøknaden,
+    IkkeRelevant,
+    IkkeBesvart,
+    FeilaktigBesvart,
+    Nei,
+    Ja,
 }

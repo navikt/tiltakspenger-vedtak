@@ -91,37 +91,85 @@ class SøknadRoutesTest {
         }
     }
 
-    private val søknadBody =
-        """
+    private val søknadBody = """
         {
-            "søknadId": "whatever",
-            "journalpostId": "$JOURNALPOSTID",
-            "dokumentInfoId": "whatever3",
-            "fornavn": "LEVENDE",
-            "etternavn": "POTET",
-            "ident": "$IDENT",
-            "deltarKvp": false,
-            "deltarIntroduksjonsprogrammet": false,
-            "introduksjonsprogrammetDetaljer": null,
-            "oppholdInstitusjon": false,
-            "typeInstitusjon": null,
-            "opprettet": "2022-06-29T16:24:02.608",
-            "barnetillegg": [],
-            "arenaTiltak" : {
-                 "arenaId" : "id",
-                 "arrangoer" : "navn",
-                 "harSluttdatoFraArena" : false,
-                 "tiltakskode" : "MENTOR",
-                 "erIEndreStatus" : false,
-                 "opprinneligSluttdato": null,
-                 "opprinneligStartdato" : "2022-06-21",
-                 "sluttdato" : "2022-06-29",
-                 "startdato" : "2022-06-21"
+            "versjon": "1",
+            "søknadId": "12304",
+            "dokInfo": {
+              "journalpostId": "$JOURNALPOSTID",
+              "dokumentInfoId": "43",
+              "filnavn": "tiltakspenger.json"
             },
-            "brukerregistrertTiltak": null,
-            "trygdOgPensjon" : null,
-            "fritekst" : null,
-            "vedlegg": []
+            "personopplysninger": {
+              "ident": "$IDENT",
+              "fornavn": "TALENTFULL",
+              "etternavn": "GYNGEHEST"
+            },
+            "arenaTiltak": null,
+            "brukerTiltak": {
+              "tiltakskode": "AMO",
+              "arrangoernavn": "Tiltaksnavn",
+              "beskrivelse": null,
+              "fom": "2022-02-01",
+              "tom": "2022-03-31",
+              "adresse": "Adresse",
+              "postnummer": "0166",
+              "antallDager": 5
+            },
+            "barnetilleggPdl": [],
+            "barnetilleggManuelle": [],
+            "vedlegg": [],
+            "kvp": {
+              "svar": "Nei",
+              "fom": "2022-02-01",
+              "tom": "2022-03-31"
+            },
+            "intro": {
+              "svar": "IkkeBesvart",
+              "fom": null,
+              "tom": null
+            },
+            "institusjon": {
+              "svar": "Nei",
+              "fom": null,
+              "tom": null
+            },
+            "etterlønn": {
+              "svar": "Nei"
+            },
+            "gjenlevendepensjon": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null
+            },
+            "alderspensjon": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null
+            },
+            "sykepenger": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null,
+              "tom": null
+            },
+            "supplerendeStønadAlder": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null,
+              "tom": null
+            },
+            "supplerendeStønadFlyktning": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null,
+              "tom": null
+            },
+            "jobbsjansen": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null,
+              "tom": null
+            },
+            "trygdOgPensjon": {
+              "svar": "IkkeMedISøknaden",
+              "fom": null
+            },
+            "opprettet": "2022-02-08T14:26:42.831"
           }
-        """.trimIndent()
+    """.trimIndent()
 }
