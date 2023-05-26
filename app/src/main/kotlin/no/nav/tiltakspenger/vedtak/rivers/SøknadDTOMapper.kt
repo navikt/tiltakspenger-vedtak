@@ -89,7 +89,8 @@ object SøknadDTOMapper {
         Tiltak.ArenaTiltak(
             arenaId = dto.arenaId,
             arrangoernavn = dto.arrangoernavn,
-            tiltakskode = Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
+            // TODO hack for å sette default tiltakskode for de nye som mangler
+            tiltakskode = if (dto.tiltakskode == "") Tiltaksaktivitet.Tiltak.AMO else Tiltaksaktivitet.Tiltak.valueOf(dto.tiltakskode.uppercase()), // TODO test this
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato,
             sluttdato = dto.sluttdato,
