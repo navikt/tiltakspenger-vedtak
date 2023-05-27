@@ -175,30 +175,20 @@ data class BarnDTO(
 )
 
 data class KonklusjonDTO(
-    val oppfylt: OppfyltDTO? = null,
-    val ikkeOppfylt: IkkeOppfyltDTO? = null,
-    val kreverManuellBehandling: List<KreverManuellBehandlingDTO> = emptyList(),
+    val oppfylt: PeriodeMedVurderingerDTO? = null,
+    val ikkeOppfylt: PeriodeMedVurderingerDTO? = null,
+    val kreverManuellBehandling: List<PeriodeMedVurderingerDTO> = emptyList(),
     val delvisOppfylt: DelvisOppfyltDTO? = null,
 )
 
-data class OppfyltDTO(
-    val periode: PeriodeDTO,
-    val vurderinger: List<KonklusjonVurderingDTO>,
-)
-
-data class IkkeOppfyltDTO(
-    val periode: PeriodeDTO,
-    val vurderinger: List<KonklusjonVurderingDTO>,
-)
-
-data class KreverManuellBehandlingDTO(
+data class PeriodeMedVurderingerDTO(
     val periode: PeriodeDTO,
     val vurderinger: List<KonklusjonVurderingDTO>,
 )
 
 data class DelvisOppfyltDTO(
-    val oppfylt: List<OppfyltDTO>,
-    val ikkeOppfylt: List<IkkeOppfyltDTO>,
+    val oppfylt: List<PeriodeMedVurderingerDTO>,
+    val ikkeOppfylt: List<PeriodeMedVurderingerDTO>,
 )
 
 data class KonklusjonVurderingDTO(

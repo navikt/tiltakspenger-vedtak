@@ -79,8 +79,8 @@ class BehandlingMapper {
             ikkeOppfylt = konklusjon.ikkeOppfylt.map { mapIkkeOppfylt(it) },
         )
 
-    private fun mapOppfylt(konklusjon: Konklusjon.Oppfylt): OppfyltDTO =
-        OppfyltDTO(
+    private fun mapOppfylt(konklusjon: Konklusjon.Oppfylt): PeriodeMedVurderingerDTO =
+        PeriodeMedVurderingerDTO(
             periode = mapPeriode(konklusjon.periodeMedVilkår.first),
             vurderinger = konklusjon.periodeMedVilkår.second.map {
                 KonklusjonVurderingDTO(
@@ -90,8 +90,8 @@ class BehandlingMapper {
             },
         )
 
-    private fun mapIkkeOppfylt(konklusjon: Konklusjon.IkkeOppfylt): IkkeOppfyltDTO =
-        IkkeOppfyltDTO(
+    private fun mapIkkeOppfylt(konklusjon: Konklusjon.IkkeOppfylt): PeriodeMedVurderingerDTO =
+        PeriodeMedVurderingerDTO(
             periode = mapPeriode(konklusjon.periodeMedVilkår.first),
             vurderinger = konklusjon.periodeMedVilkår.second.map {
                 KonklusjonVurderingDTO(
@@ -101,9 +101,9 @@ class BehandlingMapper {
             },
         )
 
-    private fun mapKreverManuellBehandling(konklusjon: Konklusjon.KreverManuellBehandling): List<KreverManuellBehandlingDTO> =
+    private fun mapKreverManuellBehandling(konklusjon: Konklusjon.KreverManuellBehandling): List<PeriodeMedVurderingerDTO> =
         konklusjon.perioderMedVilkår.map { entry ->
-            KreverManuellBehandlingDTO(
+            PeriodeMedVurderingerDTO(
                 periode = mapPeriode(entry.key),
                 vurderinger = entry.value.map {
                     KonklusjonVurderingDTO(
