@@ -33,7 +33,8 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårs
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PrivatPensjonsinntektVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadAlderVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadFlyktningVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.TiltakspengerVilkårsvurdering
@@ -193,6 +194,56 @@ interface VilkårsvurderingerMother {
         )
     }
 
+    fun nySupplerendeStønadAlderVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        søknad: Søknad = nySøknadMedTiltak(),
+    ): SupplerendeStønadAlderVilkårsvurdering {
+        return SupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+        )
+    }
+
+    fun nySupplerendeStønadFlyktningVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        søknad: Søknad = nySøknadMedTiltak(),
+    ): SupplerendeStønadFlyktningVilkårsvurdering {
+        return SupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+        )
+    }
+
+    fun nySykepengerVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        søknad: Søknad = nySøknadMedTiltak(),
+    ): SykepengerVilkårsvurdering {
+        return SykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+        )
+    }
+
+    fun nyGjenlevendepensjonVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        søknad: Søknad = nySøknadMedTiltak(),
+    ): GjenlevendepensjonVilkårsvurdering {
+        return GjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+        )
+    }
+
+    fun nyAlderspensjonVilkårsvurdering(
+        vurderingsperiode: Periode = defaultPeriode,
+        søknad: Søknad = nySøknadMedTiltak(),
+    ): AlderspensjonVilkårsvurdering {
+        return AlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+        )
+    }
+
     fun nyStatligeYtelserVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
         aapVilkårsvurdering: AAPVilkårsvurdering = nyAapVilkårsvurdering(
@@ -225,6 +276,21 @@ interface VilkårsvurderingerMother {
         overgangsstønadVilkårsvurdering: OvergangsstønadVilkårsvurdering = nyOvergangsstønadVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
         ),
+        alderspensjonVilkårsvurdering: AlderspensjonVilkårsvurdering = nyAlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        gjenlevendepensjonVilkårsvurdering: GjenlevendepensjonVilkårsvurdering = nyGjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        sykepengerVilkårsvurdering: SykepengerVilkårsvurdering = nySykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        supplerendeStønadAlderVilkårsvurdering: SupplerendeStønadAlderVilkårsvurdering = nySupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
+        supplerendeStønadFlyktningVilkårsvurdering: SupplerendeStønadFlyktningVilkårsvurdering = nySupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        ),
     ): StatligeYtelserVilkårsvurderingKategori {
         return StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
@@ -237,10 +303,11 @@ interface VilkårsvurderingerMother {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkårsvurdering,
-            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
-            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
-            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
-            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
+            sykepenger = sykepengerVilkårsvurdering,
+            alderspensjon = alderspensjonVilkårsvurdering,
+            gjenlevendepensjon = gjenlevendepensjonVilkårsvurdering,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktningVilkårsvurdering,
+            supplerendeStønadAlder = supplerendeStønadAlderVilkårsvurdering,
         )
     }
 

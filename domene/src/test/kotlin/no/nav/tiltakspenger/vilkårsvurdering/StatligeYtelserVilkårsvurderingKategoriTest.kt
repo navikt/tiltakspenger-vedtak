@@ -7,7 +7,12 @@ import no.nav.tiltakspenger.felles.februarDateTime
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyAlderspensjonVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nyGjenlevendepensjonVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySupplerendeStønadAlderVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySupplerendeStønadFlyktningVilkårsvurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySykepengerVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
@@ -15,17 +20,13 @@ import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.DagpengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.ForeldrepengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
 import org.junit.jupiter.api.Test
 
@@ -63,10 +64,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
         val pleiepengerNærståendeVilkårsvurdering = PleiepengerNærståendeVilkårsvurdering(
             ytelser = listOf(
@@ -78,10 +76,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
         val pleiepengerSyktBarnVilkårsvurdering = PleiepengerSyktBarnVilkårsvurdering(
             ytelser = listOf(
@@ -93,10 +88,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
         val omsorgspengerVilkårsvurdering = OmsorgspengerVilkårsvurdering(
             ytelser = listOf(
@@ -108,10 +100,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
         val opplæringspengerVilkårsvurdering = OpplæringspengerVilkårsvurdering(
             ytelser = listOf(
@@ -123,10 +112,7 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
         val svangerskapspengerVilkårsvurdering = SvangerskapspengerVilkårsvurdering(
             ytelser = listOf(
@@ -138,26 +124,37 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
                     ),
                 ),
             ),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
 
         val uføreVilkarsvurdering = nyUføreVilkårsvurdering(
             uføreVedtak = null,
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
         )
 
         val overgangsstønadVilkarsvurdering = nyOvergangsstønadVilkårsvurdering(
             overgangsstønaderVedtak = emptyList(),
-            vurderingsperiode = Periode(
-                fra = 1.februar(2022),
-                til = 28.februar(2022),
-            ),
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val sykepengerVilkårsvurdering = nySykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val alderspensjonVilkårsvurdering = nyAlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val gjenlevendepensjonVilkårsvurdering = nyGjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadFlyktningVilkårsvurdering = nySupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadAlderVilkårsvurdering = nySupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
         )
 
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
@@ -171,14 +168,15 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
-            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
-            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
-            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
-            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
+            sykepenger = sykepengerVilkårsvurdering,
+            alderspensjon = alderspensjonVilkårsvurdering,
+            gjenlevendepensjon = gjenlevendepensjonVilkårsvurdering,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktningVilkårsvurdering,
+            supplerendeStønadAlder = supplerendeStønadAlderVilkårsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
-        statligeYtelserVilkårsvurderingKategori.vurderinger().size shouldBe 14
+        statligeYtelserVilkårsvurderingKategori.vurderinger().size shouldBe 15
     }
 
     @Test
@@ -308,6 +306,26 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val sykepengerVilkårsvurdering = nySykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val alderspensjonVilkårsvurdering = nyAlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val gjenlevendepensjonVilkårsvurdering = nyGjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadFlyktningVilkårsvurdering = nySupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadAlderVilkårsvurdering = nySupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -319,10 +337,11 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
-            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
-            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
-            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
-            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
+            sykepenger = sykepengerVilkårsvurdering,
+            alderspensjon = alderspensjonVilkårsvurdering,
+            gjenlevendepensjon = gjenlevendepensjonVilkårsvurdering,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktningVilkårsvurdering,
+            supplerendeStønadAlder = supplerendeStønadAlderVilkårsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -376,6 +395,26 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val sykepengerVilkårsvurdering = nySykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val alderspensjonVilkårsvurdering = nyAlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val gjenlevendepensjonVilkårsvurdering = nyGjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadFlyktningVilkårsvurdering = nySupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadAlderVilkårsvurdering = nySupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -387,10 +426,11 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
-            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
-            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
-            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
-            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
+            sykepenger = sykepengerVilkårsvurdering,
+            alderspensjon = alderspensjonVilkårsvurdering,
+            gjenlevendepensjon = gjenlevendepensjonVilkårsvurdering,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktningVilkårsvurdering,
+            supplerendeStønadAlder = supplerendeStønadAlderVilkårsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.OPPFYLT
@@ -448,6 +488,26 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             ),
         )
 
+        val sykepengerVilkårsvurdering = nySykepengerVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val alderspensjonVilkårsvurdering = nyAlderspensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val gjenlevendepensjonVilkårsvurdering = nyGjenlevendepensjonVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadFlyktningVilkårsvurdering = nySupplerendeStønadFlyktningVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
+        val supplerendeStønadAlderVilkårsvurdering = nySupplerendeStønadAlderVilkårsvurdering(
+            vurderingsperiode = vurderingsperiode,
+        )
+
         val statligeYtelserVilkårsvurderingKategori = StatligeYtelserVilkårsvurderingKategori(
             aap = aapVilkårsvurdering,
             dagpenger = dagpengerVilkårsvurdering,
@@ -459,10 +519,11 @@ internal class StatligeYtelserVilkårsvurderingKategoriTest {
             omsorgspenger = omsorgspengerVilkårsvurdering,
             uføretrygd = uføreVilkarsvurdering,
             overgangsstønad = overgangsstønadVilkarsvurdering,
-            sykepenger = SykepengerVilkårsvurdering(vurderingsperiode),
-            alderspensjon = AlderspensjonVilkårsvurdering(vurderingsperiode),
-            gjenlevendepensjon = GjenlevendepensjonVilkårsvurdering(vurderingsperiode),
-            supplerendeStønad = SupplerendeStønadVilkårsvurdering(vurderingsperiode),
+            sykepenger = sykepengerVilkårsvurdering,
+            alderspensjon = alderspensjonVilkårsvurdering,
+            gjenlevendepensjon = gjenlevendepensjonVilkårsvurdering,
+            supplerendeStønadFlyktning = supplerendeStønadFlyktningVilkårsvurdering,
+            supplerendeStønadAlder = supplerendeStønadAlderVilkårsvurdering,
         )
 
         statligeYtelserVilkårsvurderingKategori.samletUtfall() shouldBe Utfall.KREVER_MANUELL_VURDERING

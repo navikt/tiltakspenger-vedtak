@@ -65,9 +65,14 @@ sealed class Vilkår {
         override val lovreferanse: Lovreferanse = Lovreferanse.GJENLEVENDEPENSJON
     }
 
-    object SUPPLERENDESTØNAD : Vilkår() {
+    object SUPPLERENDESTØNADFLYKTNING : Vilkår() {
+        override val tittel: String = "SUPPLERENDESTØNADFLYTNING"
+        override val lovreferanse: Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD_FLYKTNING
+    }
+
+    object SUPPLERENDESTØNADALDER : Vilkår() {
         override val tittel: String = "SUPPLERENDESTØNAD"
-        override val lovreferanse: Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD
+        override val lovreferanse: Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD_ALDER
     }
 
     object ALDERSPENSJON : Vilkår() {

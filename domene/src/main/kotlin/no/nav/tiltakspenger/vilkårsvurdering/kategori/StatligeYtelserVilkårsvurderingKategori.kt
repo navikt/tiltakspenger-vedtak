@@ -16,7 +16,8 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkår
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerNærståendeVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.PleiepengerSyktBarnVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadAlderVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SupplerendeStønadFlyktningVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SvangerskapspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.UføreVilkarsvurdering
@@ -32,7 +33,8 @@ class StatligeYtelserVilkårsvurderingKategori(
     val foreldrepenger: ForeldrepengerVilkårsvurdering,
     val svangerskapspenger: SvangerskapspengerVilkårsvurdering,
     val gjenlevendepensjon: GjenlevendepensjonVilkårsvurdering,
-    val supplerendeStønad: SupplerendeStønadVilkårsvurdering,
+    val supplerendeStønadFlyktning: SupplerendeStønadFlyktningVilkårsvurdering,
+    val supplerendeStønadAlder: SupplerendeStønadAlderVilkårsvurdering,
     val alderspensjon: AlderspensjonVilkårsvurdering,
     val opplæringspenger: OpplæringspengerVilkårsvurdering,
     val omsorgspenger: OmsorgspengerVilkårsvurdering,
@@ -51,7 +53,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             foreldrepenger.samletUtfall(),
             svangerskapspenger.samletUtfall(),
             gjenlevendepensjon.samletUtfall(),
-            supplerendeStønad.samletUtfall(),
+            supplerendeStønadAlder.samletUtfall(),
+            supplerendeStønadFlyktning.samletUtfall(),
             alderspensjon.samletUtfall(),
             opplæringspenger.samletUtfall(),
             omsorgspenger.samletUtfall(),
@@ -75,7 +78,8 @@ class StatligeYtelserVilkårsvurderingKategori(
             foreldrepenger.vurderinger(),
             svangerskapspenger.vurderinger(),
             gjenlevendepensjon.vurderinger(),
-            supplerendeStønad.vurderinger(),
+            supplerendeStønadAlder.vurderinger(),
+            supplerendeStønadFlyktning.vurderinger(),
             alderspensjon.vurderinger(),
             opplæringspenger.vurderinger(),
             omsorgspenger.vurderinger(),

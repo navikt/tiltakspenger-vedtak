@@ -1,15 +1,10 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
-import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.felles.februar
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.SykepengerVilkårsvurdering
-import org.junit.jupiter.api.Test
-import java.time.LocalDate
-
+// TODO: Må skrive tester for PeriodeSpmVurdering ol i stedet for disse.
+// Evt for Sykepenger, Gjenlevendepensjon etc
 internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
 
+    /*
     val vurderingsperiode = Periode(
         1.januar(2020),
         1.februar(2020),
@@ -43,4 +38,6 @@ internal class IkkeImplementerteStatligeYtelserVilkårsvurderingTest {
             detaljer = "",
         )
     }
+
+     */
 }
