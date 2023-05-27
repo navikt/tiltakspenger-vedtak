@@ -176,6 +176,7 @@ data class Tiltaksaktivitet(
         OPPLT2AAR("2-årig opplæringstiltak", Tiltaksgruppe.UTFAS, true),
         AB("To be deleted", Tiltaksgruppe.UTFAS, true),
         OUTDEF("Ukjent", Tiltaksgruppe.UTFAS, true),
+        UKJENT_ELLER_IKKE_OPPGITT("Ukjent", Tiltaksgruppe.UTFAS, true),
     }
 
     enum class DeltakerStatus(val tekst: String) {
