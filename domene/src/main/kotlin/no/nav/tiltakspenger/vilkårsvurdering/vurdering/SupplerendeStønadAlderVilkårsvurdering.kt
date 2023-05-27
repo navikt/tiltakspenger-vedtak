@@ -15,7 +15,7 @@ class SupplerendeStønadAlderVilkårsvurdering(
     override fun vilkår(): Vilkår = Vilkår.SUPPLERENDESTØNADALDER
 
     private val periodeSpmVurdering = PeriodeSpmVurdering(
-        spm = søknad.intro,
+        spm = søknad.supplerendeStønadAlder,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
     )

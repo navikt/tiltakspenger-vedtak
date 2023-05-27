@@ -15,7 +15,7 @@ class SupplerendeStønadFlyktningVilkårsvurdering(
     override fun vilkår(): Vilkår = Vilkår.SUPPLERENDESTØNADFLYKTNING
 
     private val periodeSpmVurdering = PeriodeSpmVurdering(
-        spm = søknad.intro,
+        spm = søknad.supplerendeStønadFlyktning,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
     )

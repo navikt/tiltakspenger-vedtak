@@ -15,7 +15,7 @@ class SykepengerVilkårsvurdering(
     override fun vilkår(): Vilkår = Vilkår.SYKEPENGER
 
     private val periodeSpmVurdering = PeriodeSpmVurdering(
-        spm = søknad.intro,
+        spm = søknad.sykepenger,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
     )
