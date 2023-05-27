@@ -32,7 +32,7 @@ data class SøknadDTO(
 data class DokumentInfoDTO(
     val journalpostId: String,
     val dokumentInfoId: String,
-    val filnavn: String?,
+    val filnavn: String,
 )
 
 data class PersonopplysningerDTO(
