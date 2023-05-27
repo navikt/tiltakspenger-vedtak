@@ -32,7 +32,7 @@ data class IkkeKlarForBehandlingDTO(
 data class KlarForBehandlingDTO(
     val søknad: SøknadDTO,
     val registrerteTiltak: List<TiltakDTO>,
-    val vurderingsperiode: PeriodeDTO,
+    val vurderingsperiode: ÅpenPeriodeDTO,
     val tiltakspengerYtelser: TiltakspengerDTO,
     val statligeYtelser: StatligeYtelserDTO,
     val kommunaleYtelser: KommunaleYtelserDTO,
@@ -41,6 +41,7 @@ data class KlarForBehandlingDTO(
     val institusjonsopphold: InstitusjonsoppholdDTO,
     val barnetillegg: List<BarnetilleggDTO>,
     val alderVilkårsvurdering: AlderVilkårsvurderingDTO,
+    val konklusjon: KonklusjonDTO,
     val hash: String,
 ) : KlarEllerIkkeKlarForBehandlingDTO(true)
 
@@ -67,7 +68,7 @@ data class StatligeYtelserDTO(
 data class VilkårsvurderingDTO(
     val kilde: String,
     val detaljer: String,
-    val periode: PeriodeDTO?,
+    val periode: ÅpenPeriodeDTO?,
     val kreverManuellVurdering: Boolean,
     val utfall: UtfallDTO,
 )
@@ -133,7 +134,7 @@ data class VedleggDTO(
     val filnavn: String?,
 )
 
-data class PeriodeDTO(
+data class ÅpenPeriodeDTO(
     val fra: LocalDate,
     val til: LocalDate?,
 )
@@ -141,7 +142,7 @@ data class PeriodeDTO(
 data class TiltakDTO(
     val arrangør: String?,
     val navn: String,
-    val periode: PeriodeDTO?,
+    val periode: ÅpenPeriodeDTO?,
     val prosent: Float?,
     val dagerIUken: Float?,
     val status: String,
@@ -171,4 +172,41 @@ data class BarnDTO(
     val etternavn: String,
     val ident: String?,
     val bosted: String?,
+)
+
+data class KonklusjonDTO(
+    val oppfylt: OppfyltDTO? = null,
+    val ikkeOppfylt: IkkeOppfyltDTO? = null,
+    val kreverManuellBehandling: List<KreverManuellBehandlingDTO> = emptyList(),
+    val delvisOppfylt: DelvisOppfyltDTO? = null,
+)
+
+data class OppfyltDTO(
+    val periode: PeriodeDTO,
+    val vurderinger: List<KonklusjonVurderingDTO>,
+)
+
+data class IkkeOppfyltDTO(
+    val periode: PeriodeDTO,
+    val vurderinger: List<KonklusjonVurderingDTO>,
+)
+
+data class KreverManuellBehandlingDTO(
+    val periode: PeriodeDTO,
+    val vurderinger: List<KonklusjonVurderingDTO>,
+)
+
+data class DelvisOppfyltDTO(
+    val oppfylt: List<OppfyltDTO>,
+    val ikkeOppfylt: List<IkkeOppfyltDTO>,
+)
+
+data class KonklusjonVurderingDTO(
+    val vilkår: String,
+    val kilde: String,
+)
+
+data class PeriodeDTO(
+    val fra: LocalDate,
+    val til: LocalDate,
 )

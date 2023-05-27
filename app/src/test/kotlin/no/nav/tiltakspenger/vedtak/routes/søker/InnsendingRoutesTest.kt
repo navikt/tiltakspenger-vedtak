@@ -23,9 +23,9 @@ import no.nav.tiltakspenger.vedtak.service.søker.AlderVilkårsvurderingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.InstitusjonsoppholdDTO
 import no.nav.tiltakspenger.vedtak.service.søker.KlarForBehandlingDTO
 import no.nav.tiltakspenger.vedtak.service.søker.KommunaleYtelserDTO
+import no.nav.tiltakspenger.vedtak.service.søker.KonklusjonDTO
 import no.nav.tiltakspenger.vedtak.service.søker.LønnsinntekterDTO
 import no.nav.tiltakspenger.vedtak.service.søker.PensjonsordningerDTO
-import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.service.søker.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.StatligeYtelserDTO
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerDTO
@@ -34,6 +34,7 @@ import no.nav.tiltakspenger.vedtak.service.søker.SøknadDTO
 import no.nav.tiltakspenger.vedtak.service.søker.TiltakspengerDTO
 import no.nav.tiltakspenger.vedtak.service.søker.UtfallDTO
 import no.nav.tiltakspenger.vedtak.service.søker.VilkårsvurderingDTO
+import no.nav.tiltakspenger.vedtak.service.søker.ÅpenPeriodeDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -81,7 +82,7 @@ class InnsendingRoutesTest {
                         vedlegg = emptyList(),
                     ),
                     registrerteTiltak = listOf(),
-                    vurderingsperiode = PeriodeDTO(fra = 18.november(2022), til = null),
+                    vurderingsperiode = ÅpenPeriodeDTO(fra = 18.november(2022), til = null),
                     statligeYtelser = StatligeYtelserDTO(
                         samletUtfall = UtfallDTO.Uavklart,
                         aap = listOf(
@@ -312,6 +313,7 @@ class InnsendingRoutesTest {
                             ),
                         ),
                     ),
+                    konklusjon = KonklusjonDTO(), // TODO: Denne mangler innhold
                     hash = "hash",
                 ),
             ),

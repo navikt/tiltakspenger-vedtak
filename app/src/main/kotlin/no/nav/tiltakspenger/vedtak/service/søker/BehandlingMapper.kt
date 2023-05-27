@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
+import no.nav.tiltakspenger.vilkårsvurdering.Konklusjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -22,6 +23,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
+import no.nav.tiltakspenger.vilkårsvurdering.konklusjonFor
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
@@ -58,6 +60,63 @@ class BehandlingMapper {
         )
     }
 
+    private fun mapKonklusjon(konklusjon: Konklusjon): KonklusjonDTO {
+        return when (konklusjon) {
+            is Konklusjon.Oppfylt -> KonklusjonDTO(oppfylt = mapOppfylt(konklusjon))
+            is Konklusjon.IkkeOppfylt -> KonklusjonDTO(ikkeOppfylt = mapIkkeOppfylt(konklusjon))
+            is Konklusjon.DelvisOppfylt -> KonklusjonDTO(delvisOppfylt = mapDelvisOppfylt(konklusjon))
+            is Konklusjon.KreverManuellBehandling -> KonklusjonDTO(
+                kreverManuellBehandling = mapKreverManuellBehandling(
+                    konklusjon,
+                ),
+            )
+        }
+    }
+
+    private fun mapDelvisOppfylt(konklusjon: Konklusjon.DelvisOppfylt): DelvisOppfyltDTO =
+        DelvisOppfyltDTO(
+            oppfylt = konklusjon.oppfylt.map { mapOppfylt(it) },
+            ikkeOppfylt = konklusjon.ikkeOppfylt.map { mapIkkeOppfylt(it) },
+        )
+
+    private fun mapOppfylt(konklusjon: Konklusjon.Oppfylt): OppfyltDTO =
+        OppfyltDTO(
+            periode = mapPeriode(konklusjon.periodeMedVilkår.first),
+            vurderinger = konklusjon.periodeMedVilkår.second.map {
+                KonklusjonVurderingDTO(
+                    vilkår = it.vilkår.tittel,
+                    kilde = it.kilde,
+                )
+            },
+        )
+
+    private fun mapIkkeOppfylt(konklusjon: Konklusjon.IkkeOppfylt): IkkeOppfyltDTO =
+        IkkeOppfyltDTO(
+            periode = mapPeriode(konklusjon.periodeMedVilkår.first),
+            vurderinger = konklusjon.periodeMedVilkår.second.map {
+                KonklusjonVurderingDTO(
+                    vilkår = it.vilkår.tittel,
+                    kilde = it.kilde,
+                )
+            },
+        )
+
+    private fun mapKreverManuellBehandling(konklusjon: Konklusjon.KreverManuellBehandling): List<KreverManuellBehandlingDTO> =
+        konklusjon.perioderMedVilkår.map { entry ->
+            KreverManuellBehandlingDTO(
+                periode = mapPeriode(entry.key),
+                vurderinger = entry.value.map {
+                    KonklusjonVurderingDTO(
+                        vilkår = it.vilkår.tittel,
+                        kilde = it.kilde,
+                    )
+                },
+            )
+        }
+
+    private fun mapPeriode(periode: Periode): PeriodeDTO =
+        PeriodeDTO(periode.fra, periode.til)
+
     fun mapInnsendingMedSøknad(innsending: Innsending): KlarEllerIkkeKlarForBehandlingDTO? {
         val søknaden = innsending.søknad ?: return null
         return søknaden.let { søknad ->
@@ -69,7 +128,8 @@ class BehandlingMapper {
                         ?: return IkkeKlarForBehandlingDTO(søknad = mapSøknad(søknad))
                             .also { LOG.warn("Fant ikke vurderingsperiode for innsending ${innsending.id}") }
 
-                val vilkårsvurderinger = vilkårsvurderinger(innsending, vurderingsperiode, søknad)
+                val vilkårsvurderinger: Inngangsvilkårsvurderinger =
+                    vilkårsvurderinger(innsending, vurderingsperiode, søknad)
                 KlarForBehandlingDTO(
                     søknad = mapSøknad(søknad),
                     registrerteTiltak = innsending.tiltak!!.tiltaksliste.map { mapTiltak(it) },
@@ -82,6 +142,17 @@ class BehandlingMapper {
                     institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
                     barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
                     alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
+                    konklusjon = mapKonklusjon(
+                        listOf(
+                            vilkårsvurderinger.statligeYtelser.vurderinger(),
+                            vilkårsvurderinger.alder.alderVilkårsvurdering.vurderinger(),
+                            vilkårsvurderinger.lønnsinntekt.vurderinger(),
+                            vilkårsvurderinger.kommunaleYtelser.vurderinger(),
+                            vilkårsvurderinger.institusjonopphold.vurderinger(),
+                            vilkårsvurderinger.pensjonsordninger.vurderinger(),
+                            // Dropper denne inntil videre vilkårsvurderinger.tiltakspengerYtelser.vurderinger(),
+                        ).flatten().konklusjonFor(vurderingsperiode),
+                    ),
                     hash = innsending.endringsHash(),
                 )
             }
@@ -99,7 +170,7 @@ class BehandlingMapper {
         skjermet = it.skjermet ?: false,
     )
 
-    private fun mapVurderingsperiode(vurderingsperiode: Periode) = PeriodeDTO(
+    private fun mapVurderingsperiode(vurderingsperiode: Periode) = ÅpenPeriodeDTO(
         fra = vurderingsperiode.fra,
         til = vurderingsperiode.til,
     )
@@ -108,7 +179,7 @@ class BehandlingMapper {
         arrangør = it.arrangør,
         navn = it.tiltak.navn,
         periode = it.deltakelsePeriode.fom?.let { fom ->
-            PeriodeDTO(
+            ÅpenPeriodeDTO(
                 fra = fom,
                 til = it.deltakelsePeriode.tom,
             )
@@ -286,7 +357,7 @@ class BehandlingMapper {
     private fun mapVurderingToVilkårsvurderingDTO(vurdering: Vurdering) =
         VilkårsvurderingDTO(
             periode = vurdering.fom?.let { fom ->
-                PeriodeDTO(
+                ÅpenPeriodeDTO(
                     fra = fom,
                     til = vurdering.tom,
                 )
