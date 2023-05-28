@@ -14,7 +14,7 @@ object SøknadDTOMapper {
 
     fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
         return Søknad(
-            versjon = "1",
+            versjon = dto.versjon,
             søknadId = dto.søknadId,
             journalpostId = dto.dokInfo.journalpostId,
             dokumentInfoId = dto.dokInfo.dokumentInfoId,
@@ -30,7 +30,7 @@ object SøknadDTOMapper {
                 dto.barnetilleggManuelle.map { mapBarnetilleggManuelle(it) },
             opprettet = dto.opprettet,
             tidsstempelHosOss = innhentet,
-            vedlegg = dto.vedlegg.map { mapVedlegg(it) } ?: emptyList(),
+            vedlegg = dto.vedlegg.map { mapVedlegg(it) },
             kvp = mapPeriodeSpm(dto.kvp),
             intro = mapPeriodeSpm(dto.intro),
             institusjon = mapPeriodeSpm(dto.institusjon),
