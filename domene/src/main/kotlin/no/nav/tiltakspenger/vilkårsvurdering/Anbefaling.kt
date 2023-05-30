@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.leggSammen
 import no.nav.tiltakspenger.felles.trekkFra
 
-fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
+fun List<Vurdering>.anbefalingFor(vurderingsperiode: Periode): Anbefaling {
     fun Vurdering.periode() = Periode(this.fom ?: vurderingsperiode.fra, this.tom ?: vurderingsperiode.til)
 
     val oppfylteVurderinger = this.filter { it.utfall == Utfall.OPPFYLT }
@@ -13,7 +13,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
 
     // For at vurderingsperioden skal være oppfylt i sin helhet, så må alle vilkår være oppfylt
     if (this.all { it.utfall == Utfall.OPPFYLT }) {
-        return Konklusjon.Oppfylt(vurderingsperiode to this.toSet())
+        return Anbefaling.Oppfylt(vurderingsperiode to this.toSet())
     }
 
     val ikkeOppfyltePerioderIVurderingsperioden = ikkeOppfyltVurderinger
@@ -30,7 +30,7 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
         // Merk at dette ikke tar høyde for at det kan være ulike vilkår som gjør at ulike deler av vurderingsperioden
         // ikke er oppfylt, så detaljerte er vi ikke. Ønsker man at for en gitt periode, så skal det være homogent
         // hvilke vilkår som har slått til, så må vi dele det opp mye mer.
-        return Konklusjon.IkkeOppfylt(vurderingsperiode to ikkeOppfyltVurderinger.toSet())
+        return Anbefaling.IkkeOppfylt(vurderingsperiode to ikkeOppfyltVurderinger.toSet())
     }
 
     val manuellePerioderIVurderingsperioden = manuelleVurderinger
@@ -52,35 +52,35 @@ fun List<Vurdering>.konklusjonFor(vurderingsperiode: Periode): Konklusjon {
                     .filter { it.periode().overlapperMed(manuellPeriode) }
                     .toSet()
             }
-        return Konklusjon.KreverManuellBehandling(vurderingPerPeriode)
+        return Anbefaling.KreverManuellBehandling(vurderingPerPeriode)
     }
 
     val oppfyltePerioderIVurderingsperioden: List<Periode> =
         vurderingsperiode.trekkFra(ikkeOppfyltePerioderIVurderingsperioden)
 
-    val oppfylte: List<Konklusjon.Oppfylt> = oppfyltePerioderIVurderingsperioden
+    val oppfylte: List<Anbefaling.Oppfylt> = oppfyltePerioderIVurderingsperioden
         .map { periode ->
             // Alle vilkårene er nødvendigvis oppfylt i de periodene som er oppfylt
-            Konklusjon.Oppfylt(periode to oppfylteVurderinger.toSet())
+            Anbefaling.Oppfylt(periode to oppfylteVurderinger.toSet())
         }
-    val ikkeOppfylte: List<Konklusjon.IkkeOppfylt> = ikkeOppfyltePerioderIVurderingsperioden
+    val ikkeOppfylte: List<Anbefaling.IkkeOppfylt> = ikkeOppfyltePerioderIVurderingsperioden
         .map { ikkeOppfyltPeriode ->
-            Konklusjon.IkkeOppfylt(
+            Anbefaling.IkkeOppfylt(
                 ikkeOppfyltPeriode to ikkeOppfyltVurderinger
                     .filter { it.periode().overlapperMed(ikkeOppfyltPeriode) }
                     .toSet(),
             )
         }
-    return Konklusjon.DelvisOppfylt(oppfylte, ikkeOppfylte)
+    return Anbefaling.DelvisOppfylt(oppfylte, ikkeOppfylte)
 }
 
-sealed interface Konklusjon {
+sealed interface Anbefaling {
 
-    data class Oppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Konklusjon
+    data class Oppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Anbefaling
 
-    data class IkkeOppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Konklusjon
+    data class IkkeOppfylt(val periodeMedVilkår: Pair<Periode, Set<Vurdering>>) : Anbefaling
 
-    data class KreverManuellBehandling(val perioderMedVilkår: Map<Periode, Set<Vurdering>>) : Konklusjon
+    data class KreverManuellBehandling(val perioderMedVilkår: Map<Periode, Set<Vurdering>>) : Anbefaling
 
-    data class DelvisOppfylt(val oppfylt: List<Oppfylt>, val ikkeOppfylt: List<IkkeOppfylt>) : Konklusjon
+    data class DelvisOppfylt(val oppfylt: List<Oppfylt>, val ikkeOppfylt: List<IkkeOppfylt>) : Anbefaling
 }

@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-internal class KonklusjonTest {
+internal class AnbefalingTest {
 
     private fun Vilkår.toOppfyltVurdering() = Vurdering.Oppfylt(this, "", "")
 
@@ -25,8 +25,8 @@ internal class KonklusjonTest {
 
         vilkår
             .map { it.toOppfyltVurdering() }
-            .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.Oppfylt(vurderingsperiode to vilkår.map { it.toOppfyltVurdering() }.toSet()))
+            .anbefalingFor(vurderingsperiode)
+            .shouldBe(Anbefaling.Oppfylt(vurderingsperiode to vilkår.map { it.toOppfyltVurdering() }.toSet()))
     }
 
     @Test
@@ -59,11 +59,11 @@ internal class KonklusjonTest {
             .plus(gjenlevendepensjonVurdering)
             .plus(lønnsinntektVurdering)
             .plus(sykepengerVurdering)
-            .konklusjonFor(vurderingsperiode)
+            .anbefalingFor(vurderingsperiode)
             .shouldBe(
-                Konklusjon.DelvisOppfylt(
+                Anbefaling.DelvisOppfylt(
                     listOf(
-                        Konklusjon.Oppfylt(
+                        Anbefaling.Oppfylt(
                             Periode(
                                 LocalDate.of(2022, 1, 16),
                                 LocalDate.of(2022, 1, 30),
@@ -71,7 +71,7 @@ internal class KonklusjonTest {
                         ),
                     ),
                     listOf(
-                        Konklusjon.IkkeOppfylt(
+                        Anbefaling.IkkeOppfylt(
                             Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 15)) to setOf(
                                 gjenlevendepensjonVurdering,
                                 lønnsinntektVurdering,
@@ -114,9 +114,9 @@ internal class KonklusjonTest {
             .plus(gjenlevendeVurdering)
             .plus(lønnsinntektVurdering)
             .plus(sykepengerVurdering)
-            .konklusjonFor(vurderingsperiode)
+            .anbefalingFor(vurderingsperiode)
             .shouldBe(
-                Konklusjon.KreverManuellBehandling(
+                Anbefaling.KreverManuellBehandling(
                     mapOf(
 
                         Periode(LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 9)) to setOf(
@@ -127,7 +127,7 @@ internal class KonklusjonTest {
                             sykepengerVurdering,
                         ),
 
-                    ),
+                        ),
                 ),
             )
     }
@@ -156,8 +156,8 @@ internal class KonklusjonTest {
         vilkår
             .map { it.toOppfyltVurdering() }
             .plus(gjenlevendeVurdering)
-            .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering)))
+            .anbefalingFor(vurderingsperiode)
+            .shouldBe(Anbefaling.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering)))
     }
 
     @Test
@@ -192,8 +192,8 @@ internal class KonklusjonTest {
             .map { it.toOppfyltVurdering() }
             .plus(gjenlevendeVurdering1)
             .plus(gjenlevendeVurdering2)
-            .konklusjonFor(vurderingsperiode)
-            .shouldBe(Konklusjon.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering1, gjenlevendeVurdering2)))
+            .anbefalingFor(vurderingsperiode)
+            .shouldBe(Anbefaling.IkkeOppfylt(vurderingsperiode to setOf(gjenlevendeVurdering1, gjenlevendeVurdering2)))
     }
 
     @Test
@@ -220,11 +220,11 @@ internal class KonklusjonTest {
         vilkår
             .map { Vurdering.Oppfylt(it, "", "") }
             .plus(gjenlevendeVurdering)
-            .konklusjonFor(vurderingsperiode)
+            .anbefalingFor(vurderingsperiode)
             .shouldBe(
-                Konklusjon.DelvisOppfylt(
+                Anbefaling.DelvisOppfylt(
                     listOf(
-                        Konklusjon.Oppfylt(
+                        Anbefaling.Oppfylt(
                             Periode(
                                 vurderingsperiode.fra,
                                 LocalDate.of(2022, 1, 10),
@@ -232,7 +232,7 @@ internal class KonklusjonTest {
                         ),
                     ),
                     listOf(
-                        Konklusjon.IkkeOppfylt(
+                        Anbefaling.IkkeOppfylt(
                             Periode(
                                 LocalDate.of(2022, 1, 11),
                                 vurderingsperiode.til,

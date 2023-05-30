@@ -10,11 +10,12 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.Vedlegg
+import no.nav.tiltakspenger.vilkårsvurdering.Anbefaling
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
-import no.nav.tiltakspenger.vilkårsvurdering.Konklusjon
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.anbefalingFor
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.KommunaleYtelserVilkårsvurderingKategori
@@ -23,7 +24,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.kategori.PensjonsinntektVilkårsvu
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.StatligeYtelserVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.TiltakspengerVilkårsvurderingKategori
 import no.nav.tiltakspenger.vilkårsvurdering.kategori.VilkårsvurderingKategori
-import no.nav.tiltakspenger.vilkårsvurdering.konklusjonFor
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AAPVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.AlderspensjonVilkårsvurdering
@@ -60,29 +60,29 @@ class BehandlingMapper {
         )
     }
 
-    private fun mapKonklusjon(konklusjon: Konklusjon): KonklusjonDTO {
-        return when (konklusjon) {
-            is Konklusjon.Oppfylt -> KonklusjonDTO(oppfylt = mapOppfylt(konklusjon))
-            is Konklusjon.IkkeOppfylt -> KonklusjonDTO(ikkeOppfylt = mapIkkeOppfylt(konklusjon))
-            is Konklusjon.DelvisOppfylt -> KonklusjonDTO(delvisOppfylt = mapDelvisOppfylt(konklusjon))
-            is Konklusjon.KreverManuellBehandling -> KonklusjonDTO(
+    private fun mapKonklusjon(anbefaling: Anbefaling): KonklusjonDTO {
+        return when (anbefaling) {
+            is Anbefaling.Oppfylt -> KonklusjonDTO(oppfylt = mapOppfylt(anbefaling))
+            is Anbefaling.IkkeOppfylt -> KonklusjonDTO(ikkeOppfylt = mapIkkeOppfylt(anbefaling))
+            is Anbefaling.DelvisOppfylt -> KonklusjonDTO(delvisOppfylt = mapDelvisOppfylt(anbefaling))
+            is Anbefaling.KreverManuellBehandling -> KonklusjonDTO(
                 kreverManuellBehandling = mapKreverManuellBehandling(
-                    konklusjon,
+                    anbefaling,
                 ),
             )
         }
     }
 
-    private fun mapDelvisOppfylt(konklusjon: Konklusjon.DelvisOppfylt): DelvisOppfyltDTO =
+    private fun mapDelvisOppfylt(anbefaling: Anbefaling.DelvisOppfylt): DelvisOppfyltDTO =
         DelvisOppfyltDTO(
-            oppfylt = konklusjon.oppfylt.map { mapOppfylt(it) },
-            ikkeOppfylt = konklusjon.ikkeOppfylt.map { mapIkkeOppfylt(it) },
+            oppfylt = anbefaling.oppfylt.map { mapOppfylt(it) },
+            ikkeOppfylt = anbefaling.ikkeOppfylt.map { mapIkkeOppfylt(it) },
         )
 
-    private fun mapOppfylt(konklusjon: Konklusjon.Oppfylt): PeriodeMedVurderingerDTO =
+    private fun mapOppfylt(anbefaling: Anbefaling.Oppfylt): PeriodeMedVurderingerDTO =
         PeriodeMedVurderingerDTO(
-            periode = mapPeriode(konklusjon.periodeMedVilkår.first),
-            vurderinger = konklusjon.periodeMedVilkår.second.map {
+            periode = mapPeriode(anbefaling.periodeMedVilkår.first),
+            vurderinger = anbefaling.periodeMedVilkår.second.map {
                 KonklusjonVurderingDTO(
                     vilkår = it.vilkår.tittel,
                     kilde = it.kilde,
@@ -90,10 +90,10 @@ class BehandlingMapper {
             },
         )
 
-    private fun mapIkkeOppfylt(konklusjon: Konklusjon.IkkeOppfylt): PeriodeMedVurderingerDTO =
+    private fun mapIkkeOppfylt(anbefaling: Anbefaling.IkkeOppfylt): PeriodeMedVurderingerDTO =
         PeriodeMedVurderingerDTO(
-            periode = mapPeriode(konklusjon.periodeMedVilkår.first),
-            vurderinger = konklusjon.periodeMedVilkår.second.map {
+            periode = mapPeriode(anbefaling.periodeMedVilkår.first),
+            vurderinger = anbefaling.periodeMedVilkår.second.map {
                 KonklusjonVurderingDTO(
                     vilkår = it.vilkår.tittel,
                     kilde = it.kilde,
@@ -101,8 +101,8 @@ class BehandlingMapper {
             },
         )
 
-    private fun mapKreverManuellBehandling(konklusjon: Konklusjon.KreverManuellBehandling): List<PeriodeMedVurderingerDTO> =
-        konklusjon.perioderMedVilkår.map { entry ->
+    private fun mapKreverManuellBehandling(anbefaling: Anbefaling.KreverManuellBehandling): List<PeriodeMedVurderingerDTO> =
+        anbefaling.perioderMedVilkår.map { entry ->
             PeriodeMedVurderingerDTO(
                 periode = mapPeriode(entry.key),
                 vurderinger = entry.value.map {
@@ -151,7 +151,7 @@ class BehandlingMapper {
                             vilkårsvurderinger.institusjonopphold.vurderinger(),
                             vilkårsvurderinger.pensjonsordninger.vurderinger(),
                             // Dropper denne inntil videre vilkårsvurderinger.tiltakspengerYtelser.vurderinger(),
-                        ).flatten().konklusjonFor(vurderingsperiode),
+                        ).flatten().anbefalingFor(vurderingsperiode),
                     ),
                     hash = innsending.endringsHash(),
                 )
