@@ -127,7 +127,7 @@ internal class AnbefalingTest {
                             sykepengerVurdering,
                         ),
 
-                        ),
+                    ),
                 ),
             )
     }
