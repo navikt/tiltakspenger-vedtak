@@ -18,7 +18,7 @@ object SøknadDTOMapper {
             søknadId = dto.søknadId,
             journalpostId = dto.dokInfo.journalpostId,
             dokumentInfoId = dto.dokInfo.dokumentInfoId,
-            filnavn = dto.dokInfo.filnavn!!,
+            filnavn = dto.dokInfo.filnavn,
             personopplysninger = Søknad.Personopplysninger(
                 fornavn = dto.personopplysninger.fornavn,
                 etternavn = dto.personopplysninger.etternavn,
@@ -98,7 +98,7 @@ object SøknadDTOMapper {
                 )
             }, // TODO test this
             opprinneligSluttdato = dto.opprinneligSluttdato,
-            opprinneligStartdato = dto.opprinneligStartdato,
+            opprinneligStartdato = dto.opprinneligStartdato ?: LocalDate.MIN,
             sluttdato = dto.sluttdato,
             startdato = dto.startdato,
         )
