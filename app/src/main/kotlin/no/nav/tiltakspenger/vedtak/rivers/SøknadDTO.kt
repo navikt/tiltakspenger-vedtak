@@ -46,7 +46,7 @@ data class ArenaTiltakDTO(
     val arrangoernavn: String?,
     val tiltakskode: String,
     val opprinneligSluttdato: LocalDate? = null,
-    val opprinneligStartdato: LocalDate,
+    val opprinneligStartdato: LocalDate? = null,
     val sluttdato: LocalDate? = null,
     val startdato: LocalDate,
 )
