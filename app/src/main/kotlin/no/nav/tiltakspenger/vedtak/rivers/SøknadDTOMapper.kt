@@ -90,13 +90,13 @@ object SøknadDTOMapper {
             arenaId = dto.arenaId,
             arrangoernavn = dto.arrangoernavn,
             // TODO hack for å sette default tiltakskode for de nye som mangler
-            tiltakskode = if (dto.tiltakskode == "") {
-                Tiltaksaktivitet.Tiltak.UKJENT_ELLER_IKKE_OPPGITT
-            } else {
+            tiltakskode = try {
                 Tiltaksaktivitet.Tiltak.valueOf(
                     dto.tiltakskode.uppercase(),
                 )
-            }, // TODO test this
+            } catch (t: Throwable) {
+                Tiltaksaktivitet.Tiltak.UKJENT_ELLER_IKKE_OPPGITT
+            },
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = dto.opprinneligStartdato ?: LocalDate.MIN,
             sluttdato = dto.sluttdato,
