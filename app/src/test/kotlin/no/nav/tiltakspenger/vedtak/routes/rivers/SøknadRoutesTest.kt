@@ -77,7 +77,7 @@ class SøknadRoutesTest {
                     path("$søknadpath")
                 },
             ) {
-                setBody(søknadBody)
+                setBody(altBody)
             }
                 .apply {
                     status shouldBe HttpStatusCode.OK
@@ -90,6 +90,103 @@ class SøknadRoutesTest {
             Assertions.assertEquals(IDENT, field(0, "ident").asText())
         }
     }
+
+    private val altBody = """
+        {
+          "versjon": "2",
+          "søknadId": "c79a0043-a97c-4f15-bf57-43e5d9c4d0c8",
+          "dokInfo": {
+            "journalpostId": "$JOURNALPOSTID",
+            "dokumentInfoId": "123",
+            "filnavn": "tiltakspengersoknad.json"
+          },
+          "personopplysninger": {
+            "ident": "$IDENT",
+            "fornavn": "RAVGUL",
+            "etternavn": "ENG"
+          },
+          "arenaTiltak": {
+            "arenaId": "123",
+            "arrangoernavn": "Testarrangør",
+            "tiltakskode": "Annen utdanning",
+            "opprinneligSluttdato": null,
+            "opprinneligStartdato": null,
+            "sluttdato": "2023-06-30",
+            "startdato": "2023-06-01"
+          },
+          "brukerTiltak": null,
+          "barnetilleggPdl": [],
+          "barnetilleggManuelle": [
+            {
+              "fødselsdato": "2023-06-01",
+              "fornavn": "Barn",
+              "mellomnavn": null,
+              "etternavn": "Barnesen",
+              "oppholderSegIEØS": {
+                "svar": "Ja"
+              }
+            }
+          ],
+          "vedlegg": [
+            {
+              "journalpostId": "598147706",
+              "dokumentInfoId": "624897237",
+              "filnavn": "tiltakspengersoknad.json"
+            }
+          ],
+          "kvp": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "intro": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "institusjon": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "etterlønn": {
+            "svar": "Ja"
+          },
+          "gjenlevendepensjon": {
+            "svar": "Ja",
+            "fom": "2023-06-01"
+          },
+          "alderspensjon": {
+            "svar": "Ja",
+            "fom": "2023-06-01"
+          },
+          "sykepenger": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "supplerendeStønadAlder": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "supplerendeStønadFlyktning": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "jobbsjansen": {
+            "svar": "Ja",
+            "fom": "2023-06-01",
+            "tom": "2023-06-30"
+          },
+          "trygdOgPensjon": {
+            "svar": "Ja",
+            "fom": "-999999999-01-01"
+          },
+          "opprettet": "2023-06-05T15:13:21.633164273"
+        }
+    """.trimIndent()
 
     private val søknadBody = """
         {

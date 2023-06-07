@@ -67,18 +67,24 @@ object SøknadDTOMapper {
     }
 
     private fun mapFraOgMedSpm(fraOgMedDatoSpmDTO: FraOgMedDatoSpmDTO): Søknad.FraOgMedDatoSpm {
+        val dato = fraOgMedDatoSpmDTO.fom ?: LocalDate.of(1970, 1, 1)
+        val fraDato = if (dato.isBefore(LocalDate.of(1970, 1, 1))) {
+            LocalDate.of(1970, 1, 1)
+        } else {
+            dato
+        }
         return when (fraOgMedDatoSpmDTO.svar) {
             SpmSvarDTO.IkkeMedISøknaden -> Søknad.FraOgMedDatoSpm.IkkeMedISøknaden
             SpmSvarDTO.IkkeRelevant -> Søknad.FraOgMedDatoSpm.IkkeRelevant
             SpmSvarDTO.IkkeBesvart -> Søknad.FraOgMedDatoSpm.IkkeBesvart
             SpmSvarDTO.FeilaktigBesvart -> Søknad.FraOgMedDatoSpm.FeilaktigBesvart(
                 svartJa = true,
-                fom = fraOgMedDatoSpmDTO.fom,
+                fom = fraDato,
             )
 
             SpmSvarDTO.Nei -> Søknad.FraOgMedDatoSpm.Nei
             SpmSvarDTO.Ja -> Søknad.FraOgMedDatoSpm.Ja(
-                fra = fraOgMedDatoSpmDTO.fom!!,
+                fra = fraDato,
             )
         }
     }
