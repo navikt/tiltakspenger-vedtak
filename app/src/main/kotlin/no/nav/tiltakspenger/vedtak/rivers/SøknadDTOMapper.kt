@@ -86,6 +86,12 @@ object SøknadDTOMapper {
     private fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
         null
     } else {
+        val startDato = dto.opprinneligStartdato ?: LocalDate.of(1970, 1, 1)
+        val startDatoHack = if (startDato.isBefore(LocalDate.of(1970, 1, 1))) {
+            LocalDate.of(1970, 1, 1)
+        } else {
+            startDato
+        }
         Tiltak.ArenaTiltak(
             arenaId = dto.arenaId,
             arrangoernavn = dto.arrangoernavn,
@@ -98,7 +104,7 @@ object SøknadDTOMapper {
                 Tiltaksaktivitet.Tiltak.UKJENT_ELLER_IKKE_OPPGITT
             },
             opprinneligSluttdato = dto.opprinneligSluttdato,
-            opprinneligStartdato = dto.opprinneligStartdato ?: LocalDate.of(1970, 1, 1),
+            opprinneligStartdato = startDatoHack,
             sluttdato = dto.sluttdato,
             startdato = dto.startdato,
         )
