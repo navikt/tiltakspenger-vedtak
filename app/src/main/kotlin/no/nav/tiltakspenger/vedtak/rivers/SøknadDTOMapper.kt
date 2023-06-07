@@ -98,7 +98,7 @@ object SøknadDTOMapper {
                 Tiltaksaktivitet.Tiltak.UKJENT_ELLER_IKKE_OPPGITT
             },
             opprinneligSluttdato = dto.opprinneligSluttdato,
-            opprinneligStartdato = dto.opprinneligStartdato ?: LocalDate.MIN,
+            opprinneligStartdato = dto.opprinneligStartdato ?: LocalDate.of(1970, 1, 1),
             sluttdato = dto.sluttdato,
             startdato = dto.startdato,
         )
