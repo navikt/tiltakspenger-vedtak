@@ -1,1 +1,0 @@
-INSERT INTO public.ytelsevedtak (id, ytelsesak_id, beslutnings_dato, periodetype_for_ytelse, vedtaksperiode_fom, vedtaksperiode_tom, vedtaks_type, status) VALUES ('aved_01GG9QVMBTRVAZ1PX7GEP01VQ3', 'ayt_01GG9QVMBKR85D1FVDBMEJ1RFT', '2022-09-15', 'O', '2022-09-15', null, 'DAGO', 'IVERK');

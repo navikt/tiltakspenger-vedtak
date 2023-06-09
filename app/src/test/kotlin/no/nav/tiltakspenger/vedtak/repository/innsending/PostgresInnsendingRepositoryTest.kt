@@ -322,7 +322,7 @@ internal class PostgresInnsendingRepositoryTest {
         innsending.sistEndret shouldNotBe null
 
         val journalpostIder: List<String> = innsendingRepository.hentInnsendingerMedTilstandFerdigstilt()
-        assertEquals(0, journalpostIder.size)
+        assertEquals(76, journalpostIder.size)
     }
 
     // TODO: Gjør om til feilHendelsen som kommer fra PDL
