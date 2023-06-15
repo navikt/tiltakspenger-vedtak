@@ -35,13 +35,13 @@ object SøknadDTOMapper {
             intro = mapPeriodeSpm(dto.intro),
             institusjon = mapPeriodeSpm(dto.institusjon),
             etterlønn = mapJaNei(dto.etterlønn),
-            gjenlevendepensjon = mapFraOgMedSpm(dto.gjenlevendepensjon),
+            gjenlevendepensjon = mapPeriodeSpm(dto.gjenlevendepensjon),
             alderspensjon = mapFraOgMedSpm(dto.alderspensjon),
             sykepenger = mapPeriodeSpm(dto.sykepenger),
             supplerendeStønadAlder = mapPeriodeSpm(dto.supplerendeStønadAlder),
             supplerendeStønadFlyktning = mapPeriodeSpm(dto.supplerendeStønadFlyktning),
             jobbsjansen = mapPeriodeSpm(dto.jobbsjansen),
-            trygdOgPensjon = mapFraOgMedSpm(dto.trygdOgPensjon),
+            trygdOgPensjon = mapJaNei(dto.trygdOgPensjon),
         )
     }
 

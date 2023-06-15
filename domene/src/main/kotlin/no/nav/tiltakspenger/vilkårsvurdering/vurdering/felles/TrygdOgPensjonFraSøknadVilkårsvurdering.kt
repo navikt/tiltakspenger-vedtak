@@ -13,7 +13,7 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
 
     override fun vilkår(): Vilkår = Vilkår.PENSJONSINNTEKT
 
-    private val fraOgMedSpmVurdering = FraOgMedSpmVurdering(
+    private val fraOgMedSpmVurdering = JaNeiSpmVurdering(
         spm = søknad.trygdOgPensjon,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,

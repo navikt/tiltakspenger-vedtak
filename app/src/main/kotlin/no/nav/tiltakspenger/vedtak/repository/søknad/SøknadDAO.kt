@@ -19,6 +19,7 @@ private const val GJENLEVENDEPENSJON_FELT = "gjenlevendepensjon"
 private const val ALDERSPENSJON_FELT = "alderspensjon"
 private const val TRYGD_OG_PENSJON_FELT = "trygd_og_pensjon"
 private const val ETTERLØNN_FELT = "etterlonn"
+private const val LØNNET_ARBEID_FELT = "lonnetArbeid"
 
 internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
@@ -76,19 +77,21 @@ internal class SøknadDAO(
             INTRO_FELT to søknad.intro,
             INSTITUSJON_FELT to søknad.institusjon,
             SYKEPENGER_FELT to søknad.sykepenger,
+            GJENLEVENDEPENSJON_FELT to søknad.gjenlevendepensjon,
             SUPPLERENDESTØNAD_ALDER_FELT to søknad.supplerendeStønadAlder,
             SUPPLERENDESTØNAD_FLYKTNING_FELT to søknad.supplerendeStønadFlyktning,
             JOBBSJANSEN_FELT to søknad.jobbsjansen,
         ).toPeriodeSpmParams()
 
         val fraOgMedDatoSpmParamMap = mapOf(
-            GJENLEVENDEPENSJON_FELT to søknad.gjenlevendepensjon,
             ALDERSPENSJON_FELT to søknad.alderspensjon,
-            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
+
         ).toFraOgMedDatoSpmParams()
 
         val jaNeiSpmParamMap = mapOf(
             ETTERLØNN_FELT to søknad.etterlønn,
+            LØNNET_ARBEID_FELT to Søknad.JaNeiSpm.Nei,
+            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
         ).toJaNeiSpmParams()
 
         txSession.run(
@@ -138,13 +141,13 @@ internal class SøknadDAO(
         val intro = periodeSpm(INTRO_FELT)
         val institusjon = periodeSpm(INSTITUSJON_FELT)
         val etterlønn = jaNeiSpm(ETTERLØNN_FELT)
-        val gjenlevendepensjon = fraOgMedDatoSpm(GJENLEVENDEPENSJON_FELT)
+        val gjenlevendepensjon = periodeSpm(GJENLEVENDEPENSJON_FELT)
         val alderspensjon = fraOgMedDatoSpm(ALDERSPENSJON_FELT)
         val sykepenger = periodeSpm(SYKEPENGER_FELT)
         val supplerendeStønadAlder = periodeSpm(SUPPLERENDESTØNAD_ALDER_FELT)
         val supplerendeStønadFlyktning = periodeSpm(SUPPLERENDESTØNAD_FLYKTNING_FELT)
         val jobbsjansen = periodeSpm(JOBBSJANSEN_FELT)
-        val trygdOgPensjon = fraOgMedDatoSpm(TRYGD_OG_PENSJON_FELT)
+        val trygdOgPensjon = jaNeiSpm(TRYGD_OG_PENSJON_FELT)
         return Søknad(
             versjon = versjon,
             id = id,
@@ -222,13 +225,15 @@ internal class SøknadDAO(
             gjenlevendepensjon_type,
             gjenlevendepensjon_ja,
             gjenlevendepensjon_fom,
+            gjenlevendepensjon_tom,
             alderspensjon_type,
             alderspensjon_ja,
             alderspensjon_fom,
             trygd_og_pensjon_type,
             trygd_og_pensjon_ja,
             trygd_og_pensjon_fom,
-            etterlonn_type   
+            etterlonn_type, 
+            lønnetArbeid_type 
         ) values (
             :id,
             :versjon,
@@ -273,13 +278,15 @@ internal class SøknadDAO(
             :gjenlevendepensjon_type,
             :gjenlevendepensjon_ja,
             :gjenlevendepensjon_fom,
+            :gjenlevendepensjon_tom,
             :alderspensjon_type,
             :alderspensjon_ja,
             :alderspensjon_fom,
             :trygd_og_pensjon_type,
             :trygd_og_pensjon_ja,
             :trygd_og_pensjon_fom,
-            :etterlonn_type
+            :etterlonn_type,
+            :lonnetArbeid_type
         )
     """.trimIndent()
 

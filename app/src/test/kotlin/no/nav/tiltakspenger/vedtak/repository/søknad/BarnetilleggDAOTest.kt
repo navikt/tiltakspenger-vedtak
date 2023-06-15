@@ -121,12 +121,12 @@ internal class BarnetilleggDAOTest {
         intro = periodeNei(),
         institusjon = periodeNei(),
         etterlønn = nei(),
-        gjenlevendepensjon = fraOgMedDatoNei(),
+        gjenlevendepensjon = periodeNei(),
         alderspensjon = fraOgMedDatoNei(),
         sykepenger = periodeNei(),
         supplerendeStønadAlder = periodeNei(),
         supplerendeStønadFlyktning = periodeNei(),
         jobbsjansen = periodeNei(),
-        trygdOgPensjon = fraOgMedDatoNei(),
+        trygdOgPensjon = nei(),
     )
 }

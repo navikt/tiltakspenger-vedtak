@@ -19,13 +19,13 @@ data class SøknadDTO(
     val intro: PeriodeSpmDTO,
     val institusjon: PeriodeSpmDTO,
     val etterlønn: JaNeiSpmDTO,
-    val gjenlevendepensjon: FraOgMedDatoSpmDTO,
+    val gjenlevendepensjon: PeriodeSpmDTO,
     val alderspensjon: FraOgMedDatoSpmDTO,
     val sykepenger: PeriodeSpmDTO,
     val supplerendeStønadAlder: PeriodeSpmDTO,
     val supplerendeStønadFlyktning: PeriodeSpmDTO,
     val jobbsjansen: PeriodeSpmDTO,
-    val trygdOgPensjon: FraOgMedDatoSpmDTO,
+    val trygdOgPensjon: JaNeiSpmDTO,
     val opprettet: LocalDateTime,
 )
 

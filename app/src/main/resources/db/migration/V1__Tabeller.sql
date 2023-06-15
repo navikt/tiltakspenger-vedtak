@@ -105,13 +105,16 @@ CREATE TABLE søknad
     gjenlevendepensjon_type            VARCHAR                  NOT NULL,
     gjenlevendepensjon_ja              BOOLEAN                  NULL,
     gjenlevendepensjon_fom             DATE                     NULL,
+    gjenlevendepensjon_tom             DATE                     NULL,
     alderspensjon_type            VARCHAR                  NOT NULL,
     alderspensjon_ja              BOOLEAN                  NULL,
     alderspensjon_fom             DATE                     NULL,
     trygd_og_pensjon_type            VARCHAR                  NOT NULL,
     trygd_og_pensjon_ja              BOOLEAN                  NULL,
     trygd_og_pensjon_fom             DATE                     NULL,
-    etterlonn_type            VARCHAR                  NOT NULL
+    trygd_og_pensjon_tom             DATE                     NULL,
+    etterlonn_type            VARCHAR                  NOT NULL,
+    lønnetArbeid_type            VARCHAR                  NOT NULL
 );
 
 CREATE TABLE søknad_barnetillegg

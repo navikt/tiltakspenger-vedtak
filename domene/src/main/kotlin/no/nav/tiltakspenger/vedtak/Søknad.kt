@@ -24,13 +24,13 @@ data class Søknad(
     val intro: PeriodeSpm,
     val institusjon: PeriodeSpm,
     val etterlønn: JaNeiSpm,
-    val gjenlevendepensjon: FraOgMedDatoSpm,
+    val gjenlevendepensjon: PeriodeSpm,
     val alderspensjon: FraOgMedDatoSpm,
     val sykepenger: PeriodeSpm,
     val supplerendeStønadAlder: PeriodeSpm,
     val supplerendeStønadFlyktning: PeriodeSpm,
     val jobbsjansen: PeriodeSpm,
-    val trygdOgPensjon: FraOgMedDatoSpm,
+    val trygdOgPensjon: JaNeiSpm,
 ) : Tidsstempler {
 
     companion object {

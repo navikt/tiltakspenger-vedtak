@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.FraOgMedSpmVurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.PeriodeSpmVurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles.Vilkårsvurdering
 
 class GjenlevendepensjonVilkårsvurdering(
@@ -14,7 +14,7 @@ class GjenlevendepensjonVilkårsvurdering(
 
     override fun vilkår(): Vilkår = Vilkår.GJENLEVENDEPENSJON
 
-    private val fraOgMedSpmVurdering = FraOgMedSpmVurdering(
+    private val periodeSpmVurdering = PeriodeSpmVurdering(
         spm = søknad.gjenlevendepensjon,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
@@ -22,8 +22,8 @@ class GjenlevendepensjonVilkårsvurdering(
 
     override var manuellVurdering: Vurdering? = null
 
-    override fun detIkkeManuelleUtfallet() = fraOgMedSpmVurdering.avgjørUtfall()
+    override fun detIkkeManuelleUtfallet() = periodeSpmVurdering.avgjørUtfall()
 
     override fun vurderinger(): List<Vurdering> =
-        listOfNotNull(fraOgMedSpmVurdering.lagVurderingFraSøknad(), manuellVurdering)
+        listOfNotNull(periodeSpmVurdering.lagVurderingFraSøknad(), manuellVurdering)
 }
