@@ -36,8 +36,9 @@ internal class SøknadDTOTest {
         assertEquals(søknad.sykepenger, Søknad.PeriodeSpm.Nei)
         assertEquals(søknad.alderspensjon, Søknad.FraOgMedDatoSpm.Nei)
         assertEquals(søknad.gjenlevendepensjon, Søknad.PeriodeSpm.Nei)
-        assertEquals(søknad.trygdOgPensjon, Søknad.JaNeiSpm.Nei)
+        assertEquals(søknad.trygdOgPensjon, Søknad.PeriodeSpm.Nei)
         assertEquals(søknad.etterlønn, Søknad.JaNeiSpm.Nei)
+        assertEquals(søknad.lønnetArbeid, Søknad.JaNeiSpm.Nei)
     }
 
     @Test
@@ -54,7 +55,8 @@ internal class SøknadDTOTest {
             sykepenger = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
             alderspensjon = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Ja, fom = fra),
             gjenlevendePensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            trygdOgPensjon = JaNeiSpmDTO(svar = SpmSvarDTO.Ja),
+            trygdOgPensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+            lønnetArbeid = JaNeiSpmDTO(svar = SpmSvarDTO.Ja),
             etterlønn = JaNeiSpmDTO(SpmSvarDTO.Ja),
         )
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -68,8 +70,9 @@ internal class SøknadDTOTest {
         assertEquals(søknad.sykepenger, Søknad.PeriodeSpm.Ja(Periode(fra = fra, til = til)))
         assertEquals(søknad.alderspensjon, Søknad.FraOgMedDatoSpm.Ja(fra = fra))
         assertEquals(søknad.gjenlevendepensjon, Søknad.PeriodeSpm.Ja(Periode(fra = fra, til = til)))
-        assertEquals(søknad.trygdOgPensjon, Søknad.JaNeiSpm.Ja)
+        assertEquals(søknad.trygdOgPensjon, Søknad.PeriodeSpm.Ja(Periode(fra = fra, til = til)))
         assertEquals(søknad.etterlønn, Søknad.JaNeiSpm.Ja)
+        assertEquals(søknad.lønnetArbeid, Søknad.JaNeiSpm.Ja)
     }
 
     private fun søknadDTO(
@@ -119,7 +122,8 @@ internal class SøknadDTOTest {
         supplerendeAlder: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         supplerendeFlykting: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         sykepenger: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
-        trygdOgPensjon: JaNeiSpmDTO = JaNeiSpmDTO(svar = SpmSvarDTO.Nei),
+        trygdOgPensjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
+        lønnetArbeid: JaNeiSpmDTO = JaNeiSpmDTO(svar = SpmSvarDTO.Nei),
         vedlegg: List<DokumentInfoDTO> = listOf(
             DokumentInfoDTO(
                 journalpostId = "journalpostId",
@@ -147,6 +151,7 @@ internal class SøknadDTOTest {
         supplerendeStønadFlyktning = supplerendeFlykting,
         sykepenger = sykepenger,
         trygdOgPensjon = trygdOgPensjon,
+        lønnetArbeid = lønnetArbeid,
         opprettet = opprettet,
         vedlegg = vedlegg,
     )

@@ -25,7 +25,8 @@ data class SøknadDTO(
     val supplerendeStønadAlder: PeriodeSpmDTO,
     val supplerendeStønadFlyktning: PeriodeSpmDTO,
     val jobbsjansen: PeriodeSpmDTO,
-    val trygdOgPensjon: JaNeiSpmDTO,
+    val trygdOgPensjon: PeriodeSpmDTO,
+    val lønnetArbeid: JaNeiSpmDTO,
     val opprettet: LocalDateTime,
 )
 

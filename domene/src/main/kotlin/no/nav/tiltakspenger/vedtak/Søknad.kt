@@ -30,7 +30,8 @@ data class Søknad(
     val supplerendeStønadAlder: PeriodeSpm,
     val supplerendeStønadFlyktning: PeriodeSpm,
     val jobbsjansen: PeriodeSpm,
-    val trygdOgPensjon: JaNeiSpm,
+    val trygdOgPensjon: PeriodeSpm,
+    val lønnetArbeid: JaNeiSpm,
 ) : Tidsstempler {
 
     companion object {

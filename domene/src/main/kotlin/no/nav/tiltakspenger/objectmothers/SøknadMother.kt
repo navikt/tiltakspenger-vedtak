@@ -84,7 +84,7 @@ interface SøknadMother {
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
         tiltak: Tiltak = arenaTiltak(),
-        trygdOgPensjon: Søknad.JaNeiSpm = nei(),
+        trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: List<Vedlegg> = emptyList(),
         etterlønn: Søknad.JaNeiSpm = nei(),
         gjenlevendepensjon: Søknad.PeriodeSpm = periodeNei(),
@@ -93,6 +93,7 @@ interface SøknadMother {
         supplerendeStønadAlder: Søknad.PeriodeSpm = periodeNei(),
         supplerendeStønadFlyktning: Søknad.PeriodeSpm = periodeNei(),
         jobbsjansen: Søknad.PeriodeSpm = periodeNei(),
+        lønnetArbeid: Søknad.JaNeiSpm = nei(),
     ): Søknad {
         return Søknad(
             versjon = versjon,
@@ -118,6 +119,7 @@ interface SøknadMother {
             supplerendeStønadFlyktning = supplerendeStønadFlyktning,
             jobbsjansen = jobbsjansen,
             trygdOgPensjon = trygdOgPensjon,
+            lønnetArbeid = lønnetArbeid,
         )
     }
 
@@ -135,7 +137,7 @@ interface SøknadMother {
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
         tiltak: Tiltak = brukerTiltak(),
-        trygdOgPensjon: Søknad.JaNeiSpm = nei(),
+        trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         fritekst: String? = "fritekst",
         vedlegg: List<Vedlegg> = emptyList(),
         etterlønn: Søknad.JaNeiSpm = nei(),
@@ -145,6 +147,7 @@ interface SøknadMother {
         supplerendeStønadAlder: Søknad.PeriodeSpm = periodeNei(),
         supplerendeStønadFlyktning: Søknad.PeriodeSpm = periodeNei(),
         jobbsjansen: Søknad.PeriodeSpm = periodeNei(),
+        lønnetArbeid: Søknad.JaNeiSpm = nei(),
     ): Søknad {
         return Søknad(
             versjon = "1",
@@ -170,6 +173,7 @@ interface SøknadMother {
             supplerendeStønadFlyktning = supplerendeStønadFlyktning,
             jobbsjansen = jobbsjansen,
             trygdOgPensjon = trygdOgPensjon,
+            lønnetArbeid = lønnetArbeid,
         )
     }
 

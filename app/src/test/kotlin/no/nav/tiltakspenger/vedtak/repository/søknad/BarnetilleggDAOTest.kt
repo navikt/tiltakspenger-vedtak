@@ -127,6 +127,7 @@ internal class BarnetilleggDAOTest {
         supplerendeStønadAlder = periodeNei(),
         supplerendeStønadFlyktning = periodeNei(),
         jobbsjansen = periodeNei(),
-        trygdOgPensjon = nei(),
+        trygdOgPensjon = periodeNei(),
+        lønnetArbeid = nei(),
     )
 }

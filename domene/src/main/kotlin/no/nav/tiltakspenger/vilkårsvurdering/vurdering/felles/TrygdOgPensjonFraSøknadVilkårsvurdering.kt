@@ -13,15 +13,15 @@ abstract class TrygdOgPensjonFraSøknadVilkårsvurdering(
 
     override fun vilkår(): Vilkår = Vilkår.PENSJONSINNTEKT
 
-    private val fraOgMedSpmVurdering = JaNeiSpmVurdering(
+    private val periodeSpmVurdering = PeriodeSpmVurdering(
         spm = søknad.trygdOgPensjon,
         vilkår = vilkår(),
         vurderingsperiode = vurderingsperiode,
     )
     override var manuellVurdering: Vurdering? = null
 
-    fun lagVurderingFraSøknad() = fraOgMedSpmVurdering.lagVurderingFraSøknad()
+    fun lagVurderingFraSøknad() = periodeSpmVurdering.lagVurderingFraSøknad()
 
     override fun vurderinger(): List<Vurdering> = listOfNotNull(lagVurderingFraSøknad(), manuellVurdering)
-    override fun detIkkeManuelleUtfallet(): Utfall = fraOgMedSpmVurdering.avgjørUtfall()
+    override fun detIkkeManuelleUtfallet(): Utfall = periodeSpmVurdering.avgjørUtfall()
 }

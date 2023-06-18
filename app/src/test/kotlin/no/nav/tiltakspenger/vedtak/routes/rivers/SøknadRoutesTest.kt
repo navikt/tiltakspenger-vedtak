@@ -182,6 +182,11 @@ class SøknadRoutesTest {
               "tom": null
             },
             "trygdOgPensjon": {
+              "svar": "Nei",
+              "fom": null,
+              "tom": null
+            },
+            "lønnetArbeid": {
               "svar": "Nei"
             },
             "opprettet": "2023-06-14T21:12:08.447993177"

@@ -81,6 +81,7 @@ internal class SøknadDAO(
             SUPPLERENDESTØNAD_ALDER_FELT to søknad.supplerendeStønadAlder,
             SUPPLERENDESTØNAD_FLYKTNING_FELT to søknad.supplerendeStønadFlyktning,
             JOBBSJANSEN_FELT to søknad.jobbsjansen,
+            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
         ).toPeriodeSpmParams()
 
         val fraOgMedDatoSpmParamMap = mapOf(
@@ -90,8 +91,7 @@ internal class SøknadDAO(
 
         val jaNeiSpmParamMap = mapOf(
             ETTERLØNN_FELT to søknad.etterlønn,
-            LØNNET_ARBEID_FELT to Søknad.JaNeiSpm.Nei,
-            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
+            LØNNET_ARBEID_FELT to søknad.lønnetArbeid,
         ).toJaNeiSpmParams()
 
         txSession.run(
@@ -147,7 +147,8 @@ internal class SøknadDAO(
         val supplerendeStønadAlder = periodeSpm(SUPPLERENDESTØNAD_ALDER_FELT)
         val supplerendeStønadFlyktning = periodeSpm(SUPPLERENDESTØNAD_FLYKTNING_FELT)
         val jobbsjansen = periodeSpm(JOBBSJANSEN_FELT)
-        val trygdOgPensjon = jaNeiSpm(TRYGD_OG_PENSJON_FELT)
+        val trygdOgPensjon = periodeSpm(TRYGD_OG_PENSJON_FELT)
+        val lønnetArbeid = jaNeiSpm("lønnetArbeid")
         return Søknad(
             versjon = versjon,
             id = id,
@@ -176,6 +177,7 @@ internal class SøknadDAO(
             supplerendeStønadFlyktning = supplerendeStønadFlyktning,
             jobbsjansen = jobbsjansen,
             trygdOgPensjon = trygdOgPensjon,
+            lønnetArbeid = lønnetArbeid,
         )
     }
 

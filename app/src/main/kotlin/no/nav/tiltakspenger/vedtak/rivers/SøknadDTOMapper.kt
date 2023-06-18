@@ -41,7 +41,8 @@ object SøknadDTOMapper {
             supplerendeStønadAlder = mapPeriodeSpm(dto.supplerendeStønadAlder),
             supplerendeStønadFlyktning = mapPeriodeSpm(dto.supplerendeStønadFlyktning),
             jobbsjansen = mapPeriodeSpm(dto.jobbsjansen),
-            trygdOgPensjon = mapJaNei(dto.trygdOgPensjon),
+            trygdOgPensjon = mapPeriodeSpm(dto.trygdOgPensjon),
+            lønnetArbeid = mapJaNei(dto.lønnetArbeid),
         )
     }
 
