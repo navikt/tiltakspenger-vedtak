@@ -27,6 +27,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
+import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnetArbeidVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
@@ -62,6 +63,10 @@ interface VilkårsvurderingerMother {
     ): LønnsinntektVilkårsvurderingKategori {
         return LønnsinntektVilkårsvurderingKategori(
             etterlønnVilkårsvurdering = EtterlønnVilkårsvurdering(
+                vurderingsperiode = vurderingsperiode,
+                søknad = søknad,
+            ),
+            lønnetArbeidVilkårsvurdering = LønnetArbeidVilkårsvurdering(
                 vurderingsperiode = vurderingsperiode,
                 søknad = søknad,
             ),
