@@ -234,6 +234,7 @@ internal class SøknadDAO(
             trygd_og_pensjon_type,
             trygd_og_pensjon_ja,
             trygd_og_pensjon_fom,
+            trygd_og_pensjon_tom,
             etterlonn_type, 
             lønnetArbeid_type 
         ) values (
@@ -287,6 +288,7 @@ internal class SøknadDAO(
             :trygd_og_pensjon_type,
             :trygd_og_pensjon_ja,
             :trygd_og_pensjon_fom,
+            :trygd_og_pensjon_tom,
             :etterlonn_type,
             :lonnetArbeid_type
         )
