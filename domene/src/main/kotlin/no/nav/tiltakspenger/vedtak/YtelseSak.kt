@@ -120,6 +120,7 @@ data class YtelseSak(
             UNDM("Bøker og undervisningsmatr.", YtelseSakYtelsetype.ANNET),
             UTESTENG("Utestengning", YtelseSakYtelsetype.ANNET),
             VENT("Ventestønad", YtelseSakYtelsetype.ANNET),
+            FETI("Ferietillegg", YtelseSakYtelsetype.DAGP),
         }
 
         enum class YtelseVedtakStatus(val navn: String) {
