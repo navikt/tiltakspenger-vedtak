@@ -63,9 +63,9 @@ internal class BarnetilleggDAO {
     private fun Row.toBarnetillegg(): Barnetillegg {
         val type = string("type")
         val fødselsdato = localDate("fodselsdato")
-        val fornavn = string("fornavn")
+        val fornavn = stringOrNull("fornavn")
         val mellomnavn = stringOrNull("mellomnavn")
-        val etternavn = string("etternavn")
+        val etternavn = stringOrNull("etternavn")
         val oppholderSegIEØS = jaNeiSpm("opphold_i_eos")
         return if (type == "PDL") {
             Barnetillegg.FraPdl(
@@ -78,9 +78,9 @@ internal class BarnetilleggDAO {
         } else {
             Barnetillegg.Manuell(
                 oppholderSegIEØS = oppholderSegIEØS,
-                fornavn = fornavn,
+                fornavn = fornavn!!,
                 mellomnavn = mellomnavn,
-                etternavn = etternavn,
+                etternavn = etternavn!!,
                 fødselsdato = fødselsdato,
             )
         }
