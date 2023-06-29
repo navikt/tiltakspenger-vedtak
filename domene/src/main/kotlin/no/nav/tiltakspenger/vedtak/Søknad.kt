@@ -125,16 +125,16 @@ sealed class Tiltak {
 
 sealed class Barnetillegg {
     abstract val oppholderSegIEØS: Søknad.JaNeiSpm
-    abstract val fornavn: String
+    abstract val fornavn: String?
     abstract val mellomnavn: String?
-    abstract val etternavn: String
+    abstract val etternavn: String?
     abstract val fødselsdato: LocalDate
 
     data class FraPdl(
         override val oppholderSegIEØS: Søknad.JaNeiSpm,
-        override val fornavn: String,
+        override val fornavn: String?,
         override val mellomnavn: String?,
-        override val etternavn: String,
+        override val etternavn: String?,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg()
 

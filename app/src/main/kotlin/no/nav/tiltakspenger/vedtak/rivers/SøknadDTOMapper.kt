@@ -154,9 +154,9 @@ object SøknadDTOMapper {
     private fun mapBarnetilleggPDL(dto: BarnetilleggDTO): Barnetillegg.FraPdl {
         return Barnetillegg.FraPdl(
             oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
-            fornavn = dto.fornavn!!,
+            fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
-            etternavn = dto.etternavn!!,
+            etternavn = dto.etternavn,
             fødselsdato = dto.fødselsdato!!,
         )
     }
