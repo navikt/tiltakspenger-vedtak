@@ -47,18 +47,6 @@ class FraOgMedSpmVurdering(
                 tom = vurderingsperiode.til,
                 detaljer = detaljer(),
             )
-
-            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
-                vilkår = vilkår,
-                kilde = KILDE,
-                fom = if (spm is Søknad.FraOgMedDatoSpm.Ja) {
-                    spm.fra
-                } else {
-                    vurderingsperiode.fra
-                },
-                tom = vurderingsperiode.til,
-                detaljer = detaljer(),
-            )
         }
 
     private fun detaljer(): String =

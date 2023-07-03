@@ -61,8 +61,8 @@ class InstitusjonsoppholdVilkårsvurdering(
                     kilde = INST2KILDE,
                     fom = null,
                     tom = null,
-                    utfall = Utfall.IKKE_IMPLEMENTERT,
-                    detaljer = "",
+                    utfall = Utfall.KREVER_MANUELL_VURDERING,
+                    detaljer = "Ikke implementert",
                 )
             )
         } else {

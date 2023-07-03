@@ -39,14 +39,4 @@ sealed class Vurdering {
     ) : Vurdering() {
         override val utfall = Utfall.KREVER_MANUELL_VURDERING
     }
-
-    data class IkkeImplementert(
-        override val vilkår: Vilkår,
-        override val kilde: String,
-        override val fom: LocalDate,
-        override val tom: LocalDate,
-        override val detaljer: String,
-    ) : Vurdering() {
-        override val utfall = Utfall.IKKE_IMPLEMENTERT
-    }
 }

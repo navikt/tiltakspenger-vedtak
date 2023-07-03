@@ -42,14 +42,6 @@ abstract class Vilkårsvurdering {
                 tom = tom,
                 detaljer = detaljer,
             )
-
-            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
-                vilkår = vilkår(),
-                kilde = "Saksbehandler",
-                fom = fom,
-                tom = tom,
-                detaljer = detaljer,
-            )
         }
     }
 }

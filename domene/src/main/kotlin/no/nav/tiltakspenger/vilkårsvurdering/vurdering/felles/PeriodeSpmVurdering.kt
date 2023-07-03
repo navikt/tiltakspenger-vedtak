@@ -55,22 +55,6 @@ class PeriodeSpmVurdering(
                 },
                 detaljer = detaljer(),
             )
-
-            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
-                vilkår = vilkår,
-                kilde = FraOgMedSpmVurdering.KILDE,
-                fom = if (spm is Søknad.PeriodeSpm.Ja) {
-                    spm.periode.fra
-                } else {
-                    vurderingsperiode.fra
-                },
-                tom = if (spm is Søknad.PeriodeSpm.Ja) {
-                    spm.periode.til
-                } else {
-                    vurderingsperiode.til
-                },
-                detaljer = detaljer(),
-            )
         }
 
     private fun detaljer(): String =

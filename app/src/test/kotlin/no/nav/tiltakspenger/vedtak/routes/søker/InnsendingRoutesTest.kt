@@ -84,14 +84,14 @@ class InnsendingRoutesTest {
                     registrerteTiltak = listOf(),
                     vurderingsperiode = ÅpenPeriodeDTO(fra = 18.november(2022), til = null),
                     statligeYtelser = StatligeYtelserDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         aap = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         dagpenger = listOf(
@@ -100,7 +100,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         uføre = listOf(
@@ -109,7 +109,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         pleiepengerNærstående = listOf(
@@ -118,7 +118,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         pleiepengerSyktBarn = listOf(
@@ -127,7 +127,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         foreldrepenger = listOf(
@@ -136,7 +136,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         svangerskapspenger = listOf(
@@ -145,7 +145,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         opplæringspenger = listOf(
@@ -154,7 +154,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         omsorgspenger = listOf(
@@ -163,7 +163,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         overgangsstønad = listOf(
@@ -172,7 +172,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         sykepenger = listOf(
@@ -181,7 +181,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         gjenlevendepensjon = listOf(
@@ -190,7 +190,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         alderspensjon = listOf(
@@ -199,7 +199,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         supplerendeStønad = listOf(
@@ -208,7 +208,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         supplerendeStønadFlyktning = listOf(
@@ -217,7 +217,7 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         supplerendeStønadAlder = listOf(
@@ -226,19 +226,19 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                     ),
                     kommunaleYtelser = KommunaleYtelserDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         kvp = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                         introProgrammet = listOf(
@@ -247,57 +247,57 @@ class InnsendingRoutesTest {
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
 
                     ),
                     pensjonsordninger = PensjonsordningerDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                     ),
                     lønnsinntekt = LønnsinntekterDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                     ),
                     institusjonsopphold = InstitusjonsoppholdDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                     ),
                     barnetillegg = emptyList(),
                     tiltakspengerYtelser = TiltakspengerDTO(
-                        samletUtfall = UtfallDTO.Uavklart,
+                        samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
                                 kilde = "",
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
-                                utfall = UtfallDTO.Uavklart,
+                                utfall = UtfallDTO.KreverManuellVurdering,
                             ),
                         ),
                     ),
@@ -438,14 +438,14 @@ class InnsendingRoutesTest {
                 "til": null
               },
               "statligeYtelser": {
-                "samletUtfall": "Uavklart",
+                "samletUtfall": "KreverManuellVurdering",
                 "aap": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "dagpenger": [
@@ -454,7 +454,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "uføre": [
@@ -463,7 +463,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "pleiepengerNærstående": [
@@ -472,7 +472,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "pleiepengerSyktBarn": [
@@ -481,7 +481,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "foreldrepenger": [
@@ -490,7 +490,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "svangerskapspenger": [
@@ -499,7 +499,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "omsorgspenger": [
@@ -508,7 +508,7 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "opplæringspenger": [
@@ -517,19 +517,19 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ]
               },
               "kommunaleYtelser": {
-                "samletUtfall": "Uavklart",
+                "samletUtfall": "KreverManuellVurdering",
                 "kvp": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ],
                 "introProgrammet": [
@@ -538,43 +538,43 @@ class InnsendingRoutesTest {
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ]
               },
               "pensjonsordninger": {
-                "samletUtfall": "Uavklart",
+                "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ]
               },
               "lønnsinntekt": {
-                "samletUtfall": "Uavklart",
+                "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ]
               },
               "institusjonsopphold": {
-                "samletUtfall": "Uavklart",
+                "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
                     "kilde": "",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
-                    "utfall": "Uavklart"
+                    "utfall": "KreverManuellVurdering"
                   }
                 ]
               },

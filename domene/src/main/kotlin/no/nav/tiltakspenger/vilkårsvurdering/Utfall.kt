@@ -4,5 +4,4 @@ enum class Utfall {
     OPPFYLT,
     IKKE_OPPFYLT,
     KREVER_MANUELL_VURDERING,
-    IKKE_IMPLEMENTERT,
 }

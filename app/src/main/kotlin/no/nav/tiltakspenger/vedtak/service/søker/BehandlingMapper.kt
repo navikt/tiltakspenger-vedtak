@@ -501,7 +501,6 @@ class BehandlingMapper {
             Utfall.OPPFYLT -> UtfallDTO.Oppfylt
             Utfall.IKKE_OPPFYLT -> UtfallDTO.IkkeOppfylt
             Utfall.KREVER_MANUELL_VURDERING -> UtfallDTO.KreverManuellVurdering
-            Utfall.IKKE_IMPLEMENTERT -> UtfallDTO.IkkeImplementert
         }
     }
 }

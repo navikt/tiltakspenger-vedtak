@@ -11,17 +11,17 @@ abstract class IkkeImplementertVurdering(
     override fun vurderinger(): List<Vurdering> = listOfNotNull(manuellVurdering)
         .ifEmpty {
             listOf(
-                Vurdering.IkkeImplementert(
+                Vurdering.KreverManuellVurdering(
                     vilkår = vilkår(),
                     kilde = kilde(),
                     fom = vurderingsperiode.fra,
                     tom = vurderingsperiode.til,
-                    detaljer = "",
+                    detaljer = "Ikke implementert",
                 ),
             )
         }
 
-    override fun detIkkeManuelleUtfallet(): Utfall = Utfall.IKKE_IMPLEMENTERT
+    override fun detIkkeManuelleUtfallet(): Utfall = Utfall.KREVER_MANUELL_VURDERING
 
     abstract fun kilde(): String
 }

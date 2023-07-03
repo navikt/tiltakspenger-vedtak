@@ -39,14 +39,6 @@ class JaNeiSpmVurdering(
                 tom = vurderingsperiode.til,
                 detaljer = detaljer(),
             )
-
-            Utfall.IKKE_IMPLEMENTERT -> Vurdering.IkkeImplementert(
-                vilkår = vilkår,
-                kilde = KILDE,
-                fom = vurderingsperiode.fra,
-                tom = vurderingsperiode.til,
-                detaljer = detaljer(),
-            )
         }
 
     private fun detaljer(): String =

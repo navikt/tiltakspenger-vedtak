@@ -150,10 +150,8 @@ data class TiltakDTO(
 
 enum class UtfallDTO {
     Oppfylt,
-    Uavklart, // TODO: Hva er dette??
     IkkeOppfylt,
     KreverManuellVurdering,
-    IkkeImplementert,
 }
 
 data class PersonopplysningerDTO(
