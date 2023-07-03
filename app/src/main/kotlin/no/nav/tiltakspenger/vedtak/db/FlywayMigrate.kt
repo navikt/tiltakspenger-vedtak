@@ -12,6 +12,7 @@ private fun flyway(): Flyway =
 
 private fun localFlyway() = Flyway
     .configure()
+    .loggers("slf4j")
     .encoding("UTF-8")
     .locations("db/migration", "db/local-migration")
     .dataSource(DataSource.hikariDataSource)
@@ -21,6 +22,7 @@ private fun localFlyway() = Flyway
 
 private fun gcpFlyway() = Flyway
     .configure()
+    .loggers("slf4j")
     .encoding("UTF-8")
     .dataSource(DataSource.hikariDataSource)
     .cleanDisabled(false)
