@@ -49,7 +49,7 @@ dependencies {
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("com.auth0:jwks-rsa:0.22.0")
+    implementation("com.auth0:jwks-rsa:0.22.1")
 
     // DB
     implementation("org.flywaydb:flyway-core:9.21.1")
