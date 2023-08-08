@@ -11,5 +11,5 @@ data class Behandling(
     val vurderingsperiode: Periode,
     val innhentedeRådata: Innsending,
     val avklarteSaksopplysninger: List<Saksopplysning>,
-    val vilkårsvurderinger: List<Vilkårsvurderinger>,
+    val vilkårsvurderinger: List<Vilkårsvurdering>,
 )

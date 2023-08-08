@@ -1,5 +1,5 @@
 package no.nav.tiltakspenger.domene
 
-data class Vilkårsvurderinger(
+data class Vilkårsvurdering(
     val utfall: Boolean,
 )
