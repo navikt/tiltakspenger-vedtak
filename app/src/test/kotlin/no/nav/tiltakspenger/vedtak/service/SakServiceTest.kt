@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service
 
 import io.kotest.matchers.shouldNotBe
+import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
@@ -14,9 +15,10 @@ internal class SakServiceTest {
 
     @Test
     fun `mottak av søknad happypath`() {
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.save(any()) } returnsArgument 0
 
         val søknad = nySøknadMedBrukerTiltak()
-//        val periode = Periode(søknad.tiltak!!.startdato, søknad.tiltak!!.sluttdato!!)
         val sak = sakService.motta(søknad)
 
         sak shouldNotBe null
@@ -26,4 +28,4 @@ internal class SakServiceTest {
 //    fun `mottak av søknad uten periode på tiltak`() {
 //    }
 
-    }
+}

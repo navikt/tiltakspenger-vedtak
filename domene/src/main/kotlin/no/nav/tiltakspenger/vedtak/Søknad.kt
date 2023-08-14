@@ -42,6 +42,14 @@ data class Søknad(
 
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
+    fun vurderingsperiode(): Periode {
+        if (tiltak?.sluttdato == null) {
+            throw RuntimeException("Tiltak er null, og det ække lov")
+        }
+
+        return Periode(tiltak.startdato, tiltak.sluttdato!!)
+    }
+
     data class Personopplysninger(
         val ident: String,
         val fornavn: String,

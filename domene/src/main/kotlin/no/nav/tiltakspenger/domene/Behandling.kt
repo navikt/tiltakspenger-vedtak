@@ -1,15 +1,25 @@
 package no.nav.tiltakspenger.domene
 
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
-import java.util.UUID
 
 data class Behandling(
-    val id: UUID,
+    val id: BehandlingId,
     val søknader: List<Søknad>,
     val vurderingsperiode: Periode,
-    val innhentedeRådata: Innsending,
-    val avklarteSaksopplysninger: List<Saksopplysning>,
-    val vilkårsvurderinger: List<Vilkårsvurdering>,
-)
+) {
+    companion object {
+        fun lagBehandling(søknad: Søknad): Behandling {
+            return Behandling(
+                id = BehandlingId.random(),
+                søknader = listOf(søknad),
+                vurderingsperiode = søknad.vurderingsperiode(),
+            )
+        }
+    }
+}
+
+//val innhentedeRådata: Innsending,
+//val avklarteSaksopplysninger: List<Saksopplysning>,
+//val vilkårsvurderinger: List<Vilkårsvurdering>,

@@ -41,6 +41,24 @@ data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid b
     }
 }
 
+data class SakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "sak"
+        fun random() = SakId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
+
+        fun fromDb(stringValue: String) = SakId(ulid = UlidBase(stringValue))
+    }
+}
+
+data class BehandlingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "beh"
+        fun random() = BehandlingId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
+
+        fun fromDb(stringValue: String) = BehandlingId(ulid = UlidBase(stringValue))
+    }
+}
+
 data class SøknadId private constructor(private val ulid: UlidBase) : Ulid by ulid {
     companion object {
         private const val PREFIX = "soknad"

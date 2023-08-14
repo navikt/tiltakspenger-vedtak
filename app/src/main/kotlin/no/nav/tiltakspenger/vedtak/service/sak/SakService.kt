@@ -6,6 +6,6 @@ import no.nav.tiltakspenger.vedtak.Søknad
 
 
 interface SakService {
-    fun motta(søknad: Søknad)
+    fun motta(søknad: Søknad): Sak
     fun henteEllerOppretteSak(periode: Periode, fnr: String): Sak
 }
