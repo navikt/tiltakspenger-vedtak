@@ -14,7 +14,7 @@ class SakServiceImpl(
         val sak: Sak =
             sakRepo.findByFnrAndPeriode(
                 fnr = søknad.personopplysninger.ident,
-                periode = søknad.vurderingsperiode(),
+                periode = søknad.vurderingsperiodeInklKarenstid(),
             ).singleOrNull()?.håndter(søknad = søknad) // Hvis det finnes en sak fra før
                 ?: Sak.lagSak(
                     søknad = søknad,

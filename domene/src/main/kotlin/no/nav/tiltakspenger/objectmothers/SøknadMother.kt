@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.domene.Sak
+import no.nav.tiltakspenger.domene.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
@@ -120,6 +122,16 @@ interface SøknadMother {
             jobbsjansen = jobbsjansen,
             trygdOgPensjon = trygdOgPensjon,
             lønnetArbeid = lønnetArbeid,
+        )
+    }
+
+    fun nySak(
+        søknad: Søknad,
+        saksnummerGenerator: SaksnummerGenerator,
+    ) : Sak {
+        return Sak.lagSak(
+            søknad = søknad,
+            saksnummerGenerator = saksnummerGenerator
         )
     }
 

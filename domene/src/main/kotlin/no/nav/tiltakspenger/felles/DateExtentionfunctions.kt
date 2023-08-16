@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit
 
 infix fun Int.januar(year: Int): LocalDate = LocalDate.of(year, Month.JANUARY, this)
 fun Int.februar(year: Int): LocalDate = LocalDate.of(year, Month.FEBRUARY, this)
-fun Int.mars(year: Int): LocalDate = LocalDate.of(year, Month.MARCH, this)
+infix fun Int.mars(year: Int): LocalDate = LocalDate.of(year, Month.MARCH, this)
 fun Int.april(year: Int): LocalDate = LocalDate.of(year, Month.APRIL, this)
 fun Int.mai(year: Int): LocalDate = LocalDate.of(year, Month.MAY, this)
 fun Int.juni(year: Int): LocalDate = LocalDate.of(year, Month.JUNE, this)
