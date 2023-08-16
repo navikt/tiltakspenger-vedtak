@@ -1,6 +1,6 @@
 val ktorVersion = "2.3.3"
 val kotestVersion = "5.6.2"
-val mockkVersion = "1.13.5"
+val mockkVersion = "1.13.7"
 val testContainersVersion = "1.18.3"
 val felleslibVersion = "0.0.42"
 
