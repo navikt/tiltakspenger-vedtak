@@ -36,9 +36,9 @@ internal class SakServiceTest {
 
         val søknad = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
-                startdato = 1. januar(2023),
-                sluttdato = 31. januar(2023),
-            )
+                startdato = 1.januar(2023),
+                sluttdato = 31.januar(2023),
+            ),
         )
         val sak = sakService.motta(søknad)
 
@@ -46,9 +46,9 @@ internal class SakServiceTest {
 
         val søknad2 = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
-                startdato = 1. mars(2023),
-                sluttdato = 31. mars(2023),
-            )
+                startdato = 1.mars(2023),
+                sluttdato = 31.mars(2023),
+            ),
         )
         val sak2 = sakService.motta(søknad2)
 
@@ -63,19 +63,19 @@ internal class SakServiceTest {
 
         val søknad = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
-                startdato = 1. januar(2023),
-                sluttdato = 31. januar(2023),
-            )
+                startdato = 1.januar(2023),
+                sluttdato = 31.januar(2023),
+            ),
         )
         val sak = sakService.motta(søknad)
 
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns listOf(sak)
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
 
         val søknad2 = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
-                startdato = 1. april(2023),
-                sluttdato = 30. april(2023),
-            )
+                startdato = 1.april(2023),
+                sluttdato = 30.april(2023),
+            ),
         )
         val sak2 = sakService.motta(søknad2)
 
