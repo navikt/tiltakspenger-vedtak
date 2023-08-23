@@ -27,6 +27,7 @@ internal class SakServiceTest {
         val sak = sakService.motta(søknad)
 
         sak shouldNotBe null // TODO sjekk flere felter i sak
+
     }
 
     @Test

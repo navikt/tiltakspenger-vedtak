@@ -8,6 +8,7 @@ data class Behandling(
     val id: BehandlingId,
     val søknader: List<Søknad>,
     val vurderingsperiode: Periode,
+    val vedtak: List<Vedtak> = emptyList(),
 ) {
     companion object {
         fun lagBehandling(søknad: Søknad): Behandling {
