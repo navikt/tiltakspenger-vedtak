@@ -2,8 +2,11 @@ package no.nav.tiltakspenger.vedtak.service
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.beInstanceOf
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.domene.Behandling
+import no.nav.tiltakspenger.domene.Vedtak
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
@@ -27,7 +30,14 @@ internal class SakServiceTest {
         val sak = sakService.motta(søknad)
 
         sak shouldNotBe null // TODO sjekk flere felter i sak
+        sak.behandlinger.size shouldBe 1
 
+        val opprettetBehandling = sak.behandlinger.first() as Behandling.Opprettet
+
+        val iverksattBehandling = opprettetBehandling.vedta()
+
+        iverksattBehandling shouldBe beInstanceOf<Behandling.Iverksatt>()
+        iverksattBehandling.vedtak.first() shouldBe beInstanceOf<Vedtak>()
     }
 
     @Test
