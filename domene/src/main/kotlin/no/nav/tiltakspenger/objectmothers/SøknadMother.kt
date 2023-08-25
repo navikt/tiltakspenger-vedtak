@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.Sak
-import no.nav.tiltakspenger.domene.SaksnummerGenerator
+import no.nav.tiltakspenger.domene.sak.Sak
+import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
@@ -128,10 +128,10 @@ interface SøknadMother {
     fun nySak(
         søknad: Søknad,
         saksnummerGenerator: SaksnummerGenerator,
-    ) : Sak {
+    ): Sak {
         return Sak.lagSak(
             søknad = søknad,
-            saksnummerGenerator = saksnummerGenerator
+            saksnummerGenerator = saksnummerGenerator,
         )
     }
 

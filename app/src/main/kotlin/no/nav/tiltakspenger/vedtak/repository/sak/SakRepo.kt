@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
-import no.nav.tiltakspenger.domene.Sak
+import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.felles.Periode
 
 interface SakRepo {

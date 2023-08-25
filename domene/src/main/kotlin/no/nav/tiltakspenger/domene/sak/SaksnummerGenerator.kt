@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.domene
+package no.nav.tiltakspenger.domene.sak
 
 class SaksnummerGenerator {
     fun genererSaknummer(): Saksnummer =

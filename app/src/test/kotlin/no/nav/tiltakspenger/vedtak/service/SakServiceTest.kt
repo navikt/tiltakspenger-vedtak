@@ -5,8 +5,11 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.beInstanceOf
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.domene.Behandling
-import no.nav.tiltakspenger.domene.Vedtak
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
@@ -32,11 +35,16 @@ internal class SakServiceTest {
         sak shouldNotBe null // TODO sjekk flere felter i sak
         sak.behandlinger.size shouldBe 1
 
-        val opprettetBehandling = sak.behandlinger.first() as Behandling.Opprettet
+        val opprettetBehandling = sak.behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().first()
 
-        val iverksattBehandling = opprettetBehandling.vedta()
+        val vilkårsvurdertBehandling =
+            opprettetBehandling.vilkårsvurder(emptyList()) as BehandlingVilkårsvurdert.Innvilget
 
-        iverksattBehandling shouldBe beInstanceOf<Behandling.Iverksatt>()
+        val saksbehandler =
+            Saksbehandler(navIdent = "ident", brukernavn = "navn", epost = "epost", roller = emptyList())
+        val iverksattBehandling = vilkårsvurdertBehandling.iverksett(saksbehandler = saksbehandler)
+
+        iverksattBehandling shouldBe beInstanceOf<BehandlingIverksatt>()
         iverksattBehandling.vedtak.first() shouldBe beInstanceOf<Vedtak>()
     }
 

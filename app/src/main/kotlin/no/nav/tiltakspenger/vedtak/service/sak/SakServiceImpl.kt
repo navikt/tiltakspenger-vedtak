@@ -1,11 +1,10 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
-import no.nav.tiltakspenger.domene.Sak
-import no.nav.tiltakspenger.domene.SaksnummerGenerator
+import no.nav.tiltakspenger.domene.sak.Sak
+import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
-
 
 class SakServiceImpl(
     val sakRepo: SakRepo,
@@ -27,5 +26,4 @@ class SakServiceImpl(
     override fun henteEllerOppretteSak(periode: Periode, fnr: String): Sak {
         TODO()
     }
-
 }
