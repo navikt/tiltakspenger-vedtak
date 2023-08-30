@@ -14,7 +14,6 @@ data class Sak(
     fun håndter(søknad: Søknad): Sak {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
 
-
 //        behandling.vilkårsvurder()
 
         return this.copy(

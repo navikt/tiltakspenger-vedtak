@@ -23,7 +23,6 @@ class SakServiceImpl(
                     saksnummerGenerator = SaksnummerGenerator(),
                 )
 
-
         // Burde vi gjøre håndter logikken her i stedet for i Sak og bruke behandlingService for å lage ny behandling?
 
         behandlingService.automatiskSaksbehandle(

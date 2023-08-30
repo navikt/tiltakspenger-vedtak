@@ -12,7 +12,7 @@ class BehandlingServiceImpl(
     val behandlingRepo: BehandlingRepo,
 ) : BehandlingService {
     override fun automatiskSaksbehandle(
-        //behandling: Søknadsbehandling.Opprettet,
+        // behandling: Søknadsbehandling.Opprettet,
         søknad: Søknad,
         fakta: List<Fakta>,
         saksbehandler: Saksbehandler,
