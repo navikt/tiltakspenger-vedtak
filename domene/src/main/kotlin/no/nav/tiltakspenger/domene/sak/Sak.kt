@@ -14,6 +14,9 @@ data class Sak(
     fun håndter(søknad: Søknad): Sak {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
 
+
+//        behandling.vilkårsvurder()
+
         return this.copy(
             behandlinger = behandlinger.plus(behandling),
         )
@@ -21,13 +24,13 @@ data class Sak(
 
     companion object {
         fun lagSak(søknad: Søknad, saksnummerGenerator: SaksnummerGenerator): Sak {
-            val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
+//            val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
 
             return Sak(
                 id = SakId.random(),
                 saknummer = saksnummerGenerator.genererSaknummer(),
-                behandlinger = listOf(behandling),
-                periode = behandling.vurderingsperiode,
+                behandlinger = emptyList(), // listOf(behandling),
+                periode = søknad.vurderingsperiode(), //  behandling.vurderingsperiode,
             )
         }
     }

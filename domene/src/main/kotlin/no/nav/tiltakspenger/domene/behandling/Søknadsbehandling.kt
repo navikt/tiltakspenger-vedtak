@@ -15,7 +15,7 @@ sealed interface Søknadsbehandling : Behandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
         //      eller om vi skal beholde denne (eller begge :-) )
         companion object {
-            fun opprettBehandling(søknad: Søknad): Søknadsbehandling {
+            fun opprettBehandling(søknad: Søknad): Søknadsbehandling.Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),
                     søknader = listOf(søknad),
