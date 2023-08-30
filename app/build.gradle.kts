@@ -1,8 +1,8 @@
 val ktorVersion = "2.3.3"
 val kotestVersion = "5.6.2"
-val mockkVersion = "1.13.5"
-val testContainersVersion = "1.18.3"
-val felleslibVersion = "0.0.42"
+val mockkVersion = "1.13.7"
+val testContainersVersion = "1.19.0"
+val felleslibVersion = "0.0.44"
 
 plugins {
     application
@@ -26,7 +26,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("ch.qos.logback:logback-classic:1.4.9")
+    implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -44,7 +44,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2023080113411690890096.310ed8e5ed93")
+    implementation("com.github.navikt:rapids-and-rivers:2023082311481692784104.98e0711da2cd")
     implementation("com.natpryce:konfig:1.6.10.0")
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -52,7 +52,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.22.1")
 
     // DB
-    implementation("org.flywaydb:flyway-core:9.21.1")
+    implementation("org.flywaydb:flyway-core:9.21.2")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -71,5 +71,5 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.2.3.Final")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.3.1")
 }

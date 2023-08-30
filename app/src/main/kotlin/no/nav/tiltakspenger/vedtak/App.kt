@@ -9,7 +9,7 @@ fun main() {
     val securelog = KotlinLogging.logger("tjenestekall")
     log.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
-        log.error { "Uncaught exception logget i securelog" }
+        log.error { e }
         securelog.error(e) { e.message }
     }
 
