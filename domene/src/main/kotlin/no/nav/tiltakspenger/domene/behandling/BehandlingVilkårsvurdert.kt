@@ -13,6 +13,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val fakta: List<Fakta>
     val vilkårsvurderinger: List<Vurdering>
 
+    fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert
+
     data class Innvilget(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
@@ -38,6 +40,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vedtak = vedtak,
             )
         }
+
+        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+            TODO()
+        }
     }
 
     data class Avslag(
@@ -48,6 +54,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
+            TODO()
+        }
+
+        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
             TODO()
         }
     }
@@ -62,6 +72,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.DelvisInnvilget {
             TODO()
         }
+
+        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+            TODO()
+        }
     }
 
     data class Manuell(
@@ -71,8 +85,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val fakta: List<Fakta>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-//        fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
-//            TODO()
-//        }
+        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+            TODO()
+        }
     }
 }

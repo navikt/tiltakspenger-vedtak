@@ -1,9 +1,12 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Fakta
+import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface Søknadsbehandling : Behandling {
@@ -25,15 +28,49 @@ sealed interface Søknadsbehandling : Behandling {
         }
 
         fun vilkårsvurder(fakta: List<Fakta>): BehandlingVilkårsvurdert {
-            // TODO gjør en vilkårsvurdering og returner riktig type (Innvilget/Avslag/Manuell)
-            val vilkårsvurderinger = emptyList<Vurdering>()
+            val vurderinger = fakta.filterIsInstance<Fakta.Aap>().lagVurdering(
+                Fakta.Aap(
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
+                    vilkår = Vilkår.AAP,
+                    kilde = "Arena",
+                    detaljer = "",
+                ),
+            ) + fakta.filterIsInstance<Fakta.Dagpenger>().lagVurdering(
+                    Fakta.Dagpenger(
+                        fom = vurderingsperiode.fra,
+                        tom = vurderingsperiode.til,
+                        vilkår = Vilkår.DAGPENGER,
+                        kilde = "Arena",
+                        detaljer = "",
+                    ),
+                )
 
-            return BehandlingVilkårsvurdert.Innvilget(
+            if (vurderinger.all{it.utfall == Utfall.OPPFYLT}) {
+                return BehandlingVilkårsvurdert.Innvilget(
+                    id = id,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    fakta = fakta,
+                    vilkårsvurderinger = vurderinger,
+                )
+            }
+            if (vurderinger.any{it.utfall == Utfall.IKKE_OPPFYLT}) {
+                return BehandlingVilkårsvurdert.Avslag(
+                    id = id,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    fakta = fakta,
+                    vilkårsvurderinger = vurderinger,
+                )
+            }
+            // TODO Delvis og Manuell. hva gjør vi med de?
+            return BehandlingVilkårsvurdert.Manuell(
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 fakta = fakta,
-                vilkårsvurderinger = vilkårsvurderinger,
+                vilkårsvurderinger = vurderinger,
             )
         }
     }

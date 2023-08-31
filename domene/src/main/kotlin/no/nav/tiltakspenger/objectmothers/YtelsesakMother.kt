@@ -13,8 +13,16 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface YtelsesakMother {
-    fun ytelseSakAAP(): List<YtelseSak> {
-        return listOf(ytelseSak(ytelsestype = YtelseSakYtelsetype.AA))
+    fun ytelseSakAAP(
+        fom: LocalDateTime = 1.januarDateTime(2022),
+        tom: LocalDateTime = 31.januarDateTime(2022),
+    ): List<YtelseSak> {
+        return listOf(
+            ytelseSak(
+                ytelsestype = YtelseSakYtelsetype.AA,
+                fomGyldighetsperiode = fom,
+                tomGyldighetsperiode = tom,
+            ))
     }
 
     fun ytelseSak(

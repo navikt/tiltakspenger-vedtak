@@ -2,7 +2,9 @@ package no.nav.tiltakspenger.domene.saksopplysning
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 sealed class Fakta {
@@ -38,3 +40,22 @@ sealed class Fakta {
         }
     }
 }
+
+fun List<Fakta>.lagVurdering(oppfyltFakta: Fakta): List<Vurdering> =
+    this.map { fakta ->
+        Vurdering.IkkeOppfylt(
+            vilkår = fakta.vilkår,
+            kilde = fakta.kilde,
+            fom = fakta.fom,
+            tom = fakta.tom,
+            detaljer = fakta.detaljer,
+        )
+    }.ifEmpty {
+        listOf(
+            Vurdering.Oppfylt(
+                vilkår = oppfyltFakta.vilkår,
+                kilde = oppfyltFakta.kilde,
+                detaljer = oppfyltFakta.detaljer,
+            ),
+        )
+    }

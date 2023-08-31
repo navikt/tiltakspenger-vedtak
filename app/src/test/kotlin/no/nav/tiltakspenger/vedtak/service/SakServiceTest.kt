@@ -12,9 +12,13 @@ import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedUføre
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSakAAP
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import org.junit.jupiter.api.Test
@@ -23,6 +27,31 @@ internal class SakServiceTest {
 
     val sakRepo: SakRepo = mockk()
     val sakService = SakServiceImpl(sakRepo)
+
+    @Test
+    fun `mottak av innsending happypath`() {
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.save(any()) } returnsArgument 0
+
+        val innsending = innsendingMedUføre(
+            søknad = nySøknadMedBrukerTiltak(
+                tiltak = brukerTiltak(
+                    startdato = 1. januar(2023),
+                    sluttdato = 31. mars(2023),
+                )
+            ),
+            ytelseSak = ytelseSakAAP(
+                fom = 1. januarDateTime(2023),
+                tom = 31. januarDateTime(2023),
+
+            )
+        )
+
+        val sak = sakService.mottaInnsending(innsending)
+        sak shouldNotBe null
+
+
+    }
 
     @Test
     fun `mottak av søknad happypath`() {

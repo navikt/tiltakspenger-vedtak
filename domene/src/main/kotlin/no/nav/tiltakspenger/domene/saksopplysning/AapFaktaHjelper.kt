@@ -19,9 +19,9 @@ class AapFaktaHjelper {
                 .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA }
                 .map {
                     Fakta.Aap(
-                        fom = periode.fra,
-                        tom = periode.til,
-                        vilkår = Vilkår.DAGPENGER,
+                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
+                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
+                        vilkår = Vilkår.AAP,
                         kilde = "Arena",
                         detaljer = "",
                     )

@@ -2,44 +2,55 @@ package no.nav.tiltakspenger.vedtak.service.sak
 
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.domene.saksopplysning.Fakta
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 
 class SakServiceImpl(
     val sakRepo: SakRepo,
-    val behandlingService: BehandlingService,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =
             sakRepo.findByFnrAndPeriode(
                 fnr = søknad.personopplysninger.ident,
                 periode = søknad.vurderingsperiodeInklKarenstid(),
-            ).singleOrNull()?.håndter(søknad = søknad) // Hvis det finnes en sak fra før
-                ?: Sak.lagSak(
-                    søknad = søknad,
-                    saksnummerGenerator = SaksnummerGenerator(),
+            ).singleOrNull() ?: Sak.lagSak(
+                søknad = søknad,
+                saksnummerGenerator = SaksnummerGenerator(),
                 )
 
-        // Burde vi gjøre håndter logikken her i stedet for i Sak og bruke behandlingService for å lage ny behandling?
+        val håndtertSak = sak.håndter(søknad = søknad)
 
-        behandlingService.automatiskSaksbehandle(
-            søknad = søknad,
-            fakta = emptyList(),
-            saksbehandler = Saksbehandler(
-                navIdent = "Automatisk",
-                brukernavn = "Automatisk",
-                epost = "nav@nav.no",
-                roller = emptyList(),
-            ),
+        return sakRepo.save(håndtertSak)
+    }
+
+    // TODO Her må vi finne på noe lurt...
+    fun mottaInnsending(innsending: Innsending): Sak {
+        val sak = sakRepo.findByFnrAndPeriode(
+            fnr = innsending.ident,
+            periode = innsending.vurderingsperiodeForSøknad()!!,
+        ).singleOrNull() ?: Sak.lagSak(
+            søknad = innsending.søknad!!,
+            saksnummerGenerator = SaksnummerGenerator(),
         )
 
-        return sakRepo.save(sak)
+        val sakMedSøknad = sak.håndter(innsending.søknad!!)
+        val sakVilkårsvurdert = sakMedSøknad.mottaFakta(lagFaktaAvInnsending(innsending))
+
+        return sakRepo.save(sakVilkårsvurdert)
     }
 
     override fun henteEllerOppretteSak(periode: Periode, fnr: String): Sak {
         TODO()
+    }
+
+    private fun lagFaktaAvInnsending(innsending: Innsending): List<Fakta> {
+        val faktaDagpenger = Fakta.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        val faktaAap = Fakta.Aap.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        return faktaAap + faktaDagpenger
     }
 }

@@ -19,8 +19,8 @@ class DagpengerFaktaHjelper {
                 .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.DAGP }
                 .map {
                     Fakta.Dagpenger(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
+                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.DAGPENGER,
                         kilde = "Arena",
                         detaljer = detaljerForDagpenger(it),
