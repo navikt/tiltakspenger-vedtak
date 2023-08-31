@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.saksopplysning.Fakta
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -10,16 +10,16 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.util.UUID
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
-    val fakta: List<Fakta>
+    val saksopplysning: List<Saksopplysning>
     val vilkårsvurderinger: List<Vurdering>
 
-    fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert
+    fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert
 
     data class Innvilget(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val fakta: List<Fakta>,
+        override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Innvilget {
@@ -34,14 +34,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                fakta = fakta,
+                saksopplysning = saksopplysning,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
                 vedtak = vedtak,
             )
         }
 
-        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
             TODO()
         }
     }
@@ -50,14 +50,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val fakta: List<Fakta>,
+        override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
             TODO()
         }
 
-        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
             TODO()
         }
     }
@@ -66,14 +66,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val fakta: List<Fakta>,
+        override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.DelvisInnvilget {
             TODO()
         }
 
-        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
             TODO()
         }
     }
@@ -82,10 +82,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val fakta: List<Fakta>,
+        override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-        override fun vurderPåNytt(list: List<Fakta>): BehandlingVilkårsvurdert {
+        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
             TODO()
         }
     }

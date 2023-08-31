@@ -5,9 +5,9 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
 
-class AapFaktaHjelper {
+class AapTolker {
     companion object {
-        fun lagFaktaHjelper(ytelser: List<YtelseSak>?, periode: Periode) =
+        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode) =
             ytelser
                 .orEmpty()
                 .filter {
@@ -18,7 +18,7 @@ class AapFaktaHjelper {
                 }
                 .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.AA }
                 .map {
-                    Fakta.Aap(
+                    Saksopplysning.Aap(
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.AAP,

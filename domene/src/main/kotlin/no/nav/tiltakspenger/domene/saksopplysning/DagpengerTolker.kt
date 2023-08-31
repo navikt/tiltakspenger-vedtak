@@ -5,9 +5,9 @@ import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
 
-class DagpengerFaktaHjelper {
+class DagpengerTolker {
     companion object {
-        fun lagFaktaHjelper(ytelser: List<YtelseSak>?, periode: Periode) =
+        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode) =
             ytelser
                 .orEmpty()
                 .filter {
@@ -18,7 +18,7 @@ class DagpengerFaktaHjelper {
                 }
                 .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.DAGP }
                 .map {
-                    Fakta.Dagpenger(
+                    Saksopplysning.Dagpenger(
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.DAGPENGER,

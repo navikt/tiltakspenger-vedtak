@@ -1,13 +1,12 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.saksopplysning.Fakta
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface Søknadsbehandling : Behandling {
     data class Opprettet(
@@ -27,49 +26,65 @@ sealed interface Søknadsbehandling : Behandling {
             }
         }
 
-        fun vilkårsvurder(fakta: List<Fakta>): BehandlingVilkårsvurdert {
-            val vurderinger = fakta.filterIsInstance<Fakta.Aap>().lagVurdering(
-                Fakta.Aap(
+        fun henteSaksopplysninger() {
+            // TODO Skal vi ha det slik?
+            // Kanskje dette skal gjøres i en service
+        }
+
+        fun vilkårsvurder(saksopplysning: List<Saksopplysning>): BehandlingVilkårsvurdert {
+            // Først lager vi Vurderinger
+            val vurderinger = saksopplysning.filterIsInstance<Saksopplysning.Aap>().lagVurdering(
+                oppfyltSaksopplysning = Saksopplysning.Aap(
                     fom = vurderingsperiode.fra,
                     tom = vurderingsperiode.til,
                     vilkår = Vilkår.AAP,
                     kilde = "Arena",
                     detaljer = "",
                 ),
-            ) + fakta.filterIsInstance<Fakta.Dagpenger>().lagVurdering(
-                    Fakta.Dagpenger(
-                        fom = vurderingsperiode.fra,
-                        tom = vurderingsperiode.til,
-                        vilkår = Vilkår.DAGPENGER,
-                        kilde = "Arena",
-                        detaljer = "",
-                    ),
-                )
+            ) + saksopplysning.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(
+                Saksopplysning.Dagpenger(
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
+                    vilkår = Vilkår.DAGPENGER,
+                    kilde = "Arena",
+                    detaljer = "",
+                ),
+            )
 
-            if (vurderinger.all{it.utfall == Utfall.OPPFYLT}) {
+            // Etter at vi har laget vurderinger, sjekker vi utfallet
+
+            if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
+                return BehandlingVilkårsvurdert.Manuell(
+                    id = id,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    saksopplysning = saksopplysning,
+                    vilkårsvurderinger = vurderinger,
+                )
+            }
+            if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
                 return BehandlingVilkårsvurdert.Innvilget(
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
-                    fakta = fakta,
+                    saksopplysning = saksopplysning,
                     vilkårsvurderinger = vurderinger,
                 )
             }
-            if (vurderinger.any{it.utfall == Utfall.IKKE_OPPFYLT}) {
+            if (vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT }) {
                 return BehandlingVilkårsvurdert.Avslag(
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
-                    fakta = fakta,
+                    saksopplysning = saksopplysning,
                     vilkårsvurderinger = vurderinger,
                 )
             }
-            // TODO Delvis og Manuell. hva gjør vi med de?
-            return BehandlingVilkårsvurdert.Manuell(
+            return BehandlingVilkårsvurdert.DelvisInnvilget(
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                fakta = fakta,
+                saksopplysning = saksopplysning,
                 vilkårsvurderinger = vurderinger,
             )
         }

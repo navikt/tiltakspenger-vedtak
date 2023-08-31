@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.Fakta
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -23,17 +23,17 @@ data class Sak(
         )
     }
 
-    fun mottaFakta(fakta: List<Fakta>) : Sak {
+    fun mottaFakta(saksopplysning: List<Saksopplysning>): Sak {
         val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling>().map { behandling ->
             when (behandling) {
-                is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(fakta)
-                is BehandlingVilkårsvurdert -> behandling.vurderPåNytt(fakta)
+                is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(saksopplysning)
+                is BehandlingVilkårsvurdert -> behandling.vurderPåNytt(saksopplysning)
                 is BehandlingIverksatt -> behandling
             }
         }
 
         return this.copy(
-            behandlinger = behandlinger
+            behandlinger = behandlinger,
         )
     }
 
