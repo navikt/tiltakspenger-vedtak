@@ -17,7 +17,7 @@ sealed class Saksopplysning {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val vilkår: Vilkår,
-        override val kilde: String,
+        override val kilde: String, // "Arena" / "Saksbehandler"
         override val detaljer: String,
     ) : Saksopplysning() {
         companion object {
@@ -40,8 +40,9 @@ sealed class Saksopplysning {
     }
 }
 
-fun List<Saksopplysning>.lagVurdering(oppfyltSaksopplysning: Saksopplysning): List<Vurdering> =
+fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
     // TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
+
     this.map { fakta ->
         Vurdering.IkkeOppfylt(
             vilkår = fakta.vilkår,
@@ -53,9 +54,38 @@ fun List<Saksopplysning>.lagVurdering(oppfyltSaksopplysning: Saksopplysning): Li
     }.ifEmpty {
         listOf(
             Vurdering.Oppfylt(
-                vilkår = oppfyltSaksopplysning.vilkår,
-                kilde = oppfyltSaksopplysning.kilde,
-                detaljer = oppfyltSaksopplysning.detaljer,
+                vilkår = vilkår,
+                kilde = finnKilde(vilkår),
+                detaljer = "",
             ),
         )
     }
+
+private fun finnKilde(vilkår: Vilkår): String {
+    return when (vilkår) {
+        Vilkår.AAP -> "Arena"
+        Vilkår.ALDER -> TODO()
+        Vilkår.ALDERSPENSJON -> TODO()
+        Vilkår.DAGPENGER -> TODO()
+        Vilkår.FORELDREPENGER -> TODO()
+        Vilkår.GJENLEVENDEPENSJON -> TODO()
+        Vilkår.INSTITUSJONSOPPHOLD -> TODO()
+        Vilkår.INTROPROGRAMMET -> TODO()
+        Vilkår.KOMMUNALEYTELSER -> TODO()
+        Vilkår.KVP -> TODO()
+        Vilkår.LØNNSINNTEKT -> TODO()
+        Vilkår.OMSORGSPENGER -> TODO()
+        Vilkår.OPPLÆRINGSPENGER -> TODO()
+        Vilkår.OVERGANGSSTØNAD -> TODO()
+        Vilkår.PENSJONSINNTEKT -> TODO()
+        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> TODO()
+        Vilkår.PLEIEPENGER_SYKT_BARN -> TODO()
+        Vilkår.STATLIGEYTELSER -> TODO()
+        Vilkår.SUPPLERENDESTØNADALDER -> TODO()
+        Vilkår.SUPPLERENDESTØNADFLYKTNING -> TODO()
+        Vilkår.SVANGERSKAPSPENGER -> TODO()
+        Vilkår.SYKEPENGER -> TODO()
+        Vilkår.TILTAKSPENGER -> TODO()
+        Vilkår.UFØRETRYGD -> TODO()
+    }
+}

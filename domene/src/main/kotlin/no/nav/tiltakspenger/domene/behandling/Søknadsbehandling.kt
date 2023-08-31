@@ -33,23 +33,9 @@ sealed interface Søknadsbehandling : Behandling {
 
         fun vilkårsvurder(saksopplysning: List<Saksopplysning>): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
-            val vurderinger = saksopplysning.filterIsInstance<Saksopplysning.Aap>().lagVurdering(
-                oppfyltSaksopplysning = Saksopplysning.Aap(
-                    fom = vurderingsperiode.fra,
-                    tom = vurderingsperiode.til,
-                    vilkår = Vilkår.AAP,
-                    kilde = "Arena",
-                    detaljer = "",
-                ),
-            ) + saksopplysning.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(
-                Saksopplysning.Dagpenger(
-                    fom = vurderingsperiode.fra,
-                    tom = vurderingsperiode.til,
-                    vilkår = Vilkår.DAGPENGER,
-                    kilde = "Arena",
-                    detaljer = "",
-                ),
-            )
+            val vurderinger =
+                saksopplysning.filterIsInstance<Saksopplysning.Aap>().lagVurdering(Vilkår.AAP) +
+                    saksopplysning.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(Vilkår.DAGPENGER)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 
