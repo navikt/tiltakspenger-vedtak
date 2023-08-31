@@ -13,8 +13,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val saksopplysning: List<Saksopplysning>
     val vilkårsvurderinger: List<Vurdering>
 
-    fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert
-
     data class Innvilget(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
@@ -40,10 +38,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vedtak = vedtak,
             )
         }
-
-        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
-            TODO()
-        }
     }
 
     data class Avslag(
@@ -54,10 +48,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
-            TODO()
-        }
-
-        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
             TODO()
         }
     }
@@ -72,10 +62,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.DelvisInnvilget {
             TODO()
         }
-
-        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
-            TODO()
-        }
     }
 
     data class Manuell(
@@ -85,8 +71,12 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-        override fun vurderPåNytt(list: List<Saksopplysning>): BehandlingVilkårsvurdert {
-            TODO()
+        fun vurderPåNytt(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+            ).vilkårsvurder(saksopplysninger)
         }
     }
 }
