@@ -27,7 +27,10 @@ data class Sak(
         val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling>().map { behandling ->
             when (behandling) {
                 is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(saksopplysning)
-                is BehandlingVilkårsvurdert -> behandling.vurderPåNytt(saksopplysning)
+                is BehandlingVilkårsvurdert.Manuell -> behandling.vurderPåNytt(saksopplysning)
+                is BehandlingVilkårsvurdert.Avslag -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Avslag")
+                is BehandlingVilkårsvurdert.DelvisInnvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Delvis Innvilget")
+                is BehandlingVilkårsvurdert.Innvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Innvilget")
                 is BehandlingIverksatt -> behandling
             }
         }
@@ -47,6 +50,4 @@ data class Sak(
             )
         }
     }
-
-
 }

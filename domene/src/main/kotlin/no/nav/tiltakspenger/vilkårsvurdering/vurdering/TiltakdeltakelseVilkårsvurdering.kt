@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.trekkFra
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
@@ -87,7 +88,7 @@ class TiltakdeltakelseVilkårsvurdering(
             .map {
                 Vurdering.KreverManuellVurdering(
                     vilkår = vilkår(),
-                    kilde = "Arena",
+                    kilde = Kilde.ARENA,
                     fom = it.deltakelsePeriode.fom ?: vurderingsperiode.fra,
                     tom = it.deltakelsePeriode.tom ?: vurderingsperiode.til,
                     detaljer = "${it.tiltak.navn} hos ${it.arrangør} er ufullstendig",
@@ -141,7 +142,7 @@ class TiltakdeltakelseVilkårsvurdering(
                 .map {
                     Vurdering.IkkeOppfylt(
                         vilkår = vilkår(),
-                        kilde = "Arena",
+                        kilde = Kilde.ARENA,
                         fom = it.fra,
                         tom = it.til,
                         detaljer = "Søker har ikke tiltak i denne periode",

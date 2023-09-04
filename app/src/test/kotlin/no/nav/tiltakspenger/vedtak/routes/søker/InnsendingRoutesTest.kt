@@ -13,6 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.november
@@ -87,7 +88,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         aap = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.ARENA,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -96,7 +97,7 @@ class InnsendingRoutesTest {
                         ),
                         dagpenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.ARENA,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -105,7 +106,7 @@ class InnsendingRoutesTest {
                         ),
                         uføre = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.EF,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -114,7 +115,7 @@ class InnsendingRoutesTest {
                         ),
                         pleiepengerNærstående = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.FPSAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -123,7 +124,7 @@ class InnsendingRoutesTest {
                         ),
                         pleiepengerSyktBarn = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.FPSAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -132,7 +133,7 @@ class InnsendingRoutesTest {
                         ),
                         foreldrepenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.FPSAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -141,7 +142,7 @@ class InnsendingRoutesTest {
                         ),
                         svangerskapspenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.FPSAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -150,7 +151,7 @@ class InnsendingRoutesTest {
                         ),
                         opplæringspenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.K9SAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -159,7 +160,7 @@ class InnsendingRoutesTest {
                         ),
                         omsorgspenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.FPSAK,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -168,7 +169,7 @@ class InnsendingRoutesTest {
                         ),
                         overgangsstønad = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.EF,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -177,7 +178,7 @@ class InnsendingRoutesTest {
                         ),
                         sykepenger = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SAKSB,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -186,7 +187,7 @@ class InnsendingRoutesTest {
                         ),
                         gjenlevendepensjon = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SAKSB,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -195,7 +196,7 @@ class InnsendingRoutesTest {
                         ),
                         alderspensjon = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -204,7 +205,7 @@ class InnsendingRoutesTest {
                         ),
                         supplerendeStønad = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -213,7 +214,7 @@ class InnsendingRoutesTest {
                         ),
                         supplerendeStønadFlyktning = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -222,7 +223,7 @@ class InnsendingRoutesTest {
                         ),
                         supplerendeStønadAlder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -234,7 +235,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         kvp = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -243,7 +244,7 @@ class InnsendingRoutesTest {
                         ),
                         introProgrammet = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -256,7 +257,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.PESYS,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -268,7 +269,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -280,7 +281,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -293,7 +294,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
                         perioder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.SØKNAD,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -305,7 +306,7 @@ class InnsendingRoutesTest {
                         samletUtfall = UtfallDTO.Oppfylt,
                         perioder = listOf(
                             VilkårsvurderingDTO(
-                                kilde = "",
+                                kilde = Kilde.PDL,
                                 detaljer = "",
                                 periode = null,
                                 kreverManuellVurdering = false,
@@ -441,7 +442,7 @@ class InnsendingRoutesTest {
                 "samletUtfall": "KreverManuellVurdering",
                 "aap": [
                   {
-                    "kilde": "",
+                    "kilde": "ARENA",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -450,7 +451,7 @@ class InnsendingRoutesTest {
                 ],
                 "dagpenger": [
                   {
-                    "kilde": "",
+                    "kilde": "ARENA",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -459,7 +460,7 @@ class InnsendingRoutesTest {
                 ],
                 "uføre": [
                   {
-                    "kilde": "",
+                    "kilde": "EF",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -468,7 +469,7 @@ class InnsendingRoutesTest {
                 ],
                 "pleiepengerNærstående": [
                   {
-                    "kilde": "",
+                    "kilde": "FPSAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -477,7 +478,7 @@ class InnsendingRoutesTest {
                 ],
                 "pleiepengerSyktBarn": [
                   {
-                    "kilde": "",
+                    "kilde": "FPSAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -486,7 +487,7 @@ class InnsendingRoutesTest {
                 ],
                 "foreldrepenger": [
                   {
-                    "kilde": "",
+                    "kilde": "FPSAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -495,7 +496,7 @@ class InnsendingRoutesTest {
                 ],
                 "svangerskapspenger": [
                   {
-                    "kilde": "",
+                    "kilde": "FPSAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -504,7 +505,7 @@ class InnsendingRoutesTest {
                 ],
                 "omsorgspenger": [
                   {
-                    "kilde": "",
+                    "kilde": "FPSAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -513,7 +514,7 @@ class InnsendingRoutesTest {
                 ],
                 "opplæringspenger": [
                   {
-                    "kilde": "",
+                    "kilde": "K9SAK",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -525,7 +526,7 @@ class InnsendingRoutesTest {
                 "samletUtfall": "KreverManuellVurdering",
                 "kvp": [
                   {
-                    "kilde": "",
+                    "kilde": "SØKNAD",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -534,7 +535,7 @@ class InnsendingRoutesTest {
                 ],
                 "introProgrammet": [
                   {
-                    "kilde": "",
+                    "kilde": "SØKNAD",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -546,7 +547,7 @@ class InnsendingRoutesTest {
                 "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
-                    "kilde": "",
+                    "kilde": "PESYS",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -558,7 +559,7 @@ class InnsendingRoutesTest {
                 "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
-                    "kilde": "",
+                    "kilde": "SØKNAD",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,
@@ -570,7 +571,7 @@ class InnsendingRoutesTest {
                 "samletUtfall": "KreverManuellVurdering",
                 "perioder": [
                   {
-                    "kilde": "",
+                    "kilde": "SØKNAD",
                     "detaljer": "",
                     "periode": null,
                     "kreverManuellVurdering": false,

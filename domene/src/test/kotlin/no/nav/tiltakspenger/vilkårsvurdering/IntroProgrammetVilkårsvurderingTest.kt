@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
@@ -28,7 +29,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val introProgrammetVilkårsvurdering =
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -47,7 +48,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val introProgrammetVilkårsvurdering =
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
@@ -75,13 +76,13 @@ internal class IntroProgrammetVilkårsvurderingTest {
 
         val vurderingSøknad = Vurdering.Oppfylt(
             vilkår = Vilkår.INTROPROGRAMMET,
-            kilde = "Søknad",
+            kilde = Kilde.SØKNAD,
             detaljer = "Svart NEI i søknaden",
         )
         val vurderingSaksbehandler =
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.INTROPROGRAMMET,
-                kilde = "Saksbehandler",
+                kilde = Kilde.SAKSB,
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 detaljer = "",
@@ -108,7 +109,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val introProgrammetVilkårsvurdering =
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Svart JA i søknaden"
@@ -134,7 +135,7 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val introProgrammetVilkårsvurdering =
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
         introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.februar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 10.februar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().detaljer shouldBe "Feilaktig besvart i søknaden"

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
@@ -42,7 +43,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
         .map {
             Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
-                kilde = "Arena",
+                kilde = Kilde.ARENA,
                 fom = it.fomGyldighetsperiode.toLocalDate(),
                 tom = it.tomGyldighetsperiode?.toLocalDate() ?: vurderingsperiode.til,
                 detaljer = detaljerForManuellVurdering(it),
@@ -51,7 +52,7 @@ abstract class StatligArenaYtelseVilkårsvurdering(
             listOf(
                 Vurdering.Oppfylt(
                     vilkår = vilkår(),
-                    kilde = "Arena",
+                    kilde = Kilde.ARENA,
                     detaljer = "",
                 ),
             )

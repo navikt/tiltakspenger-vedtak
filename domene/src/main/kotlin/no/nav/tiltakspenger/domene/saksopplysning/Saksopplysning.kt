@@ -10,15 +10,17 @@ sealed class Saksopplysning {
     abstract val fom: LocalDate
     abstract val tom: LocalDate
     abstract val vilkår: Vilkår
-    abstract val kilde: String
+    abstract val kilde: Kilde
     abstract val detaljer: String
+    abstract val opphørTidligereSaksopplysning: Boolean
 
     data class Dagpenger(
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val vilkår: Vilkår,
-        override val kilde: String, // "Arena" / "Saksbehandler"
+        override val kilde: Kilde, // "Arena" / "Saksbehandler"
         override val detaljer: String,
+        override val opphørTidligereSaksopplysning: Boolean,
     ) : Saksopplysning() {
         companion object {
             fun lagFakta(ytelser: List<YtelseSak>?, periode: Periode) =
@@ -30,8 +32,9 @@ sealed class Saksopplysning {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val vilkår: Vilkår,
-        override val kilde: String,
+        override val kilde: Kilde,
         override val detaljer: String,
+        override val opphørTidligereSaksopplysning: Boolean,
     ) : Saksopplysning() {
         companion object {
             fun lagSaksopplysninger(ytelser: List<YtelseSak>?, periode: Periode) =
@@ -40,8 +43,94 @@ sealed class Saksopplysning {
     }
 }
 
+private fun prioriterOverlappendeSaksopplysning() {
+}
+
+private fun lagVurderingerForOppfyltePerioder() {
+}
+
+// Eksempel på bruker som ikke har andre ytelser
+// Saksopplysninger
+// |     fom     |    tom     | Vilkår| Kilde   | opphørTidligereSaksopplysning  |
+
+// Periode som skal vurderes : 2023-01-01 - 2023-03-31
+
+// Vurderinger
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-03-31 |  Oppfylt
+
+// ----
+
+// Eksempel på bruker går på AAP deler av perioden
+// Saksopplysninger
+// |     fom     |    tom     | Vilkår| Kilde   | opphørTidligereSaksopplysning  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Arena   |        false                   |
+
+// Periode som skal vurderes : 2023-01-01 - 2023-03-31
+
+// Vurderinger
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |  IkkeOppfylt
+// |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |  Oppfylt
+
+// ---
+
+// Eksempel med saksbehandler overstyrer saksopplysninger og sier at bruker ikke går på AAP
+// Saksopplysninger
+// |     fom     |    tom     | Vilkår| Kilde           | opphørTidligereSaksopplysning  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Arena           |         false                  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Saksbehandler   |         true                   |
+
+// Periode som skal vurderes : 2023-01-01 - 2023-03-31
+
+// Vurderinger
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |   Oppfylt
+// |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
+// Eller :
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-03-31 |   Oppfylt
+
+// ---
+
+// Eksempel med saksbehandler overstyrer saksopplysninger og sier at bruker ikke går på AAP i deler av perioden
+// Saksopplysninger
+// |     fom     |    tom     | Vilkår| Kilde           | opphørTidligereSaksopplysning  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Arena           |         false                  |
+// |  2023-01-01 | 2023-01-15 |  AAP  | Saksbehandler   |         true                   |
+
+// Periode som skal vurderes : 2023-01-01 - 2023-03-31
+
+// Vurderinger
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-01-15 |   Oppfylt
+// |   AAP  | Arena  | 2023-01-16 | 2023-01-31 |   IkkeOppfylt
+// |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
+
+// ---
+
+// Eksempel med saksbehandler overstyrer saksopplysninger og sier at bruker går på AAP
+// Saksopplysninger
+// |     fom     |    tom     | Vilkår| Kilde           | opphørTidligereSaksopplysning  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Saksbehandler   |         false                  |
+
+// Periode som skal vurderes : 2023-01-01 - 2023-03-31
+
+// Vurderinger
+// | Vilkår | kilde  |    fom     |    tom     |
+// |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |   IkkeOppfylt
+// |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
+
 fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
-    // TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
+// TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
+
+// Lag liste med Vurdering av alle Saksopplysninger som har opphør... false (egentlig alle som er kilde != SAKSB + kilde == SAKSB && Opphør == true )
+
+// Trenger vi å slå sammen overlappende perioder her ?
+
+// Lag liste med Vurderinger av alle Saksopplysniger som har opphør.. true
+// Fjern disse periodene fra den første listen
+    // Slå sammen periodene
 
     this.map { fakta ->
         Vurdering.IkkeOppfylt(
@@ -55,18 +144,18 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
         listOf(
             Vurdering.Oppfylt(
                 vilkår = vilkår,
-                kilde = finnKilde(vilkår),
+                kilde = settKilde(vilkår),
                 detaljer = "",
             ),
         )
     }
 
-private fun finnKilde(vilkår: Vilkår): String {
+private fun settKilde(vilkår: Vilkår): Kilde {
     return when (vilkår) {
-        Vilkår.AAP -> "Arena"
+        Vilkår.AAP -> Kilde.ARENA
         Vilkår.ALDER -> TODO()
         Vilkår.ALDERSPENSJON -> TODO()
-        Vilkår.DAGPENGER -> TODO()
+        Vilkår.DAGPENGER -> Kilde.ARENA
         Vilkår.FORELDREPENGER -> TODO()
         Vilkår.GJENLEVENDEPENSJON -> TODO()
         Vilkår.INSTITUSJONSOPPHOLD -> TODO()
@@ -88,4 +177,15 @@ private fun finnKilde(vilkår: Vilkår): String {
         Vilkår.TILTAKSPENGER -> TODO()
         Vilkår.UFØRETRYGD -> TODO()
     }
+}
+
+enum class Kilde(val navn: String) {
+    ARENA("Arena"),
+    PDL("Pdl"),
+    EF("EF"),
+    FPSAK("FPSAK"),
+    K9SAK("K9SAK"),
+    PESYS("pesys"),
+    SØKNAD("Søknad"),
+    SAKSB("Saksbehandler"),
 }

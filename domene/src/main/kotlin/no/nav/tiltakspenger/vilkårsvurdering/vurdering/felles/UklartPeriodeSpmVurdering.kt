@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
@@ -15,22 +16,17 @@ class UklartPeriodeSpmVurdering(
     private val vilkår: Vilkår,
     private val vurderingsperiode: Periode,
 ) {
-
-    companion object {
-        const val KILDE = "Søknad"
-    }
-
     fun lagVurderingFraSøknad() =
         when (avgjørUtfall()) {
             Utfall.OPPFYLT -> Vurdering.Oppfylt(
                 vilkår = vilkår,
-                kilde = PeriodeSpmVurdering.KILDE,
+                kilde = Kilde.SØKNAD,
                 detaljer = detaljer(),
             )
 
             Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
                 vilkår = vilkår,
-                kilde = FraOgMedSpmVurdering.KILDE,
+                kilde = Kilde.SØKNAD,
                 fom = if (spm is Søknad.PeriodeSpm.Ja) {
                     spm.periode.fra
                 } else {
@@ -46,7 +42,7 @@ class UklartPeriodeSpmVurdering(
 
             Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
                 vilkår = vilkår,
-                kilde = FraOgMedSpmVurdering.KILDE,
+                kilde = Kilde.SØKNAD,
                 fom = if (spm is Søknad.PeriodeSpm.Ja) {
                     spm.periode.fra
                 } else {

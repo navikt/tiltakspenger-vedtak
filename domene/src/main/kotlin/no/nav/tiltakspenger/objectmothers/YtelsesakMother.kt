@@ -22,7 +22,8 @@ interface YtelsesakMother {
                 ytelsestype = YtelseSakYtelsetype.AA,
                 fomGyldighetsperiode = fom,
                 tomGyldighetsperiode = tom,
-            ))
+            ),
+        )
     }
 
     fun ytelseSak(

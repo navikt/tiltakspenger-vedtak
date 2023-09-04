@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
@@ -15,7 +16,7 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
 
     abstract fun ytelseType(): List<ForeldrepengerVedtak.Ytelser>
 
-    abstract fun kilde(): String
+    abstract fun kilde(): Kilde
 
     override fun vurderinger(): List<Vurdering> = (ytelseVurderinger + manuellVurdering).filterNotNull()
 
@@ -32,7 +33,7 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
         ytelser: List<ForeldrepengerVedtak>,
         vurderingsperiode: Periode,
         type: List<ForeldrepengerVedtak.Ytelser>,
-        kilde: String,
+        kilde: Kilde,
     ): List<Vurdering> = ytelser
         .filter {
             Periode(
@@ -44,7 +45,7 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
         .map {
             Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
-                kilde = it.kildesystem.name,
+                kilde = Kilde.valueOf(it.kildesystem.name),
                 fom = it.periode.fra,
                 tom = it.periode.til,
                 detaljer = "",

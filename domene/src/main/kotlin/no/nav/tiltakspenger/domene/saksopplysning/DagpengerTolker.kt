@@ -22,8 +22,9 @@ class DagpengerTolker {
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.DAGPENGER,
-                        kilde = "Arena",
+                        kilde = Kilde.ARENA,
                         detaljer = detaljerForDagpenger(it),
+                        opphørTidligereSaksopplysning = false,
                     )
                 }
 

@@ -9,6 +9,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.Periode
@@ -53,18 +54,18 @@ internal class SakServiceTest {
 
         val sak = sakService.mottaInnsending(innsending)
         sak shouldNotBe null
-        sak.behandlinger.first() shouldBe beInstanceOf<BehandlingVilkårsvurdert.Avslag>()
-        val behandling = sak.behandlinger.filterIsInstance<BehandlingVilkårsvurdert.Avslag>().first()
+        sak.behandlinger.first() shouldBe beInstanceOf<BehandlingVilkårsvurdert.DelvisInnvilget>()
+        val behandling = sak.behandlinger.filterIsInstance<BehandlingVilkårsvurdert.DelvisInnvilget>().first()
         behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
         behandling.søknader.first() shouldBe søknad
         behandling.saksopplysning shouldContain Saksopplysning.Aap(
             fom = 1.januar(2023),
             tom = 31.januar(2023),
             Vilkår.AAP,
-            "Arena",
+            Kilde.ARENA,
             "",
+            opphørTidligereSaksopplysning = false,
         )
-
     }
 
     @Test

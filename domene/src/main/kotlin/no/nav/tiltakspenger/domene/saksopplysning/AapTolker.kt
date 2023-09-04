@@ -22,8 +22,9 @@ class AapTolker {
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.AAP,
-                        kilde = "Arena",
+                        kilde = Kilde.ARENA,
                         detaljer = "",
+                        opphørTidligereSaksopplysning = false,
                     )
                 }
     }

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
 import java.time.LocalDate
@@ -66,7 +67,7 @@ data class StatligeYtelserDTO(
 )
 
 data class VilkårsvurderingDTO(
-    val kilde: String,
+    val kilde: Kilde,
     val detaljer: String,
     val periode: ÅpenPeriodeDTO?,
     val kreverManuellVurdering: Boolean,
@@ -191,7 +192,7 @@ data class DelvisOppfyltDTO(
 
 data class KonklusjonVurderingDTO(
     val vilkår: String,
-    val kilde: String,
+    val kilde: Kilde,
 )
 
 data class PeriodeDTO(
