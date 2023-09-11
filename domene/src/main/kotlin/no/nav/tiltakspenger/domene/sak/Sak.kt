@@ -16,10 +16,16 @@ data class Sak(
     val behandlinger: List<Behandling>,
 ) {
     fun håndter(søknad: Søknad): Sak {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
+        val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().firstOrNull()?.let {
+            listOf(
+                it.copy(
+                    søknader = it.søknader + søknad
+                )
+            )
+        } ?: listOf(Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad))
 
         return this.copy(
-            behandlinger = behandlinger.plus(behandling),
+            behandlinger = behandlinger
         )
     }
 

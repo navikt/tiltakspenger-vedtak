@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
@@ -19,6 +20,7 @@ interface BehandlingIverksatt : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
+        override val innsending: Innsending?,
         override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: Saksbehandler,
@@ -31,6 +33,7 @@ interface BehandlingIverksatt : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
+        override val innsending: Innsending?,
         override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: Saksbehandler,
@@ -43,6 +46,7 @@ interface BehandlingIverksatt : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
+        override val innsending: Innsending?,
         override val saksopplysning: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: Saksbehandler,

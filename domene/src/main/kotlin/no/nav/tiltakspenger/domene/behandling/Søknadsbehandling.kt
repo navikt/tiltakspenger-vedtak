@@ -4,15 +4,19 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
+import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface Søknadsbehandling : Behandling {
     data class Opprettet(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
+        override val innsending: Innsending?,
     ) : Søknadsbehandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
         //      eller om vi skal beholde denne (eller begge :-) )
@@ -22,8 +26,13 @@ sealed interface Søknadsbehandling : Behandling {
                     id = BehandlingId.random(),
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
+                    innsending = null,
                 )
             }
+        }
+
+        fun søknad() : Søknad? {
+            return søknader.maxByOrNull { it.id }
         }
 
         fun henteSaksopplysninger() {
@@ -31,6 +40,24 @@ sealed interface Søknadsbehandling : Behandling {
             // Kanskje dette skal gjøres i en service
         }
 
+//        fun vilkårsvurder(): BehandlingVilkårsvurdert {
+//            if (innsending == null) {
+//                return BehandlingVilkårsvurdert.Manuell(
+//                    id = id,
+//                    søknader = søknader,
+//                    vurderingsperiode = vurderingsperiode,
+//                    saksopplysning = emptyList(),
+//                    vilkårsvurderinger = emptyList(),
+//                    innsending = innsending,
+//                )
+//            }
+//            val saksopplysning = lagFaktaAvInnsending(innsending)
+//
+//        }
+
+//        private fun lagVilkårsvurderingerAvSaksopplysninger(): List<Vurdering> {
+//
+//        }
         fun vilkårsvurder(saksopplysning: List<Saksopplysning>): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             val vurderinger =
@@ -44,6 +71,7 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
+                    innsending = innsending,
                     saksopplysning = saksopplysning,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -53,6 +81,7 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
+                    innsending = innsending,
                     saksopplysning = saksopplysning,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -62,6 +91,7 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
+                    innsending = innsending,
                     saksopplysning = saksopplysning,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -70,9 +100,18 @@ sealed interface Søknadsbehandling : Behandling {
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
+                innsending = innsending,
                 saksopplysning = saksopplysning,
                 vilkårsvurderinger = vurderinger,
             )
+        }
+
+        private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
+            val saksopplysningDagpenger =
+                Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+            val saksopplysningAap =
+                Saksopplysning.Aap.lagSaksopplysninger(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+            return saksopplysningAap + saksopplysningDagpenger
         }
     }
 }

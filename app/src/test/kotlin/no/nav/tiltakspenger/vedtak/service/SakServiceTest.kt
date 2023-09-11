@@ -33,6 +33,58 @@ internal class SakServiceTest {
     val sakService = SakServiceImpl(sakRepo)
 
     @Test
+    fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.save(any()) } returnsArgument 0
+
+        val søknad = nySøknadMedBrukerTiltak(
+            tiltak = brukerTiltak(
+                startdato = 1.januar(2023),
+                sluttdato = 31.mars(2023),
+            ),
+        )
+
+        val sak = sakService.motta(søknad)
+
+        sak.behandlinger.size shouldBe 1
+        sak.behandlinger.first() shouldBe beInstanceOf<Søknadsbehandling.Opprettet>()
+
+        val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().first()
+        behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
+        behandling.søknader.first() shouldBe søknad
+    }
+
+    @Test
+    fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.save(any()) } returnsArgument 0
+
+        val søknad = nySøknadMedBrukerTiltak(
+            journalpostId = "søknad1",
+            tiltak = brukerTiltak(
+                startdato = 1.januar(2023),
+                sluttdato = 31.januar(2023),
+            ),
+        )
+        val sak = sakService.motta(søknad)
+
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns listOf(sak)
+
+        val søknad2 = nySøknadMedBrukerTiltak(
+            journalpostId = "søknad2",
+            tiltak = brukerTiltak(
+                startdato = 1.mars(2023),
+                sluttdato = 31.mars(2023),
+            ),
+        )
+        val sak2 = sakService.motta(søknad2)
+
+        sak2.behandlinger.size shouldBe 1
+        sak.id shouldBe sak2.id
+        sak2.behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().first().søknad() shouldBe søknad2
+    }
+
+    @Test
     fun `søknad med AAP i deler av perioden blir DelvisInnvilget`() {
         every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
         every { sakRepo.save(any()) } returnsArgument 0
@@ -90,60 +142,5 @@ internal class SakServiceTest {
 
         iverksattBehandling shouldBe beInstanceOf<BehandlingIverksatt>()
         iverksattBehandling.vedtak.first() shouldBe beInstanceOf<Vedtak>()
-    }
-
-    @Test
-    fun `mottak av ny søknad med ikke overlappende eksisterende søknad innenfor karenstid`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
-
-        val søknad = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.januar(2023),
-            ),
-        )
-        val sak = sakService.motta(søknad)
-
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns listOf(sak)
-
-        val søknad2 = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.mars(2023),
-                sluttdato = 31.mars(2023),
-            ),
-        )
-        val sak2 = sakService.motta(søknad2)
-
-        sak2.behandlinger.size shouldBe 2
-        sak.id shouldBe sak2.id
-    }
-
-    @Test
-    fun `mottak av ny søknad med ikke overlappende eksisterende søknad utenfor karenstid`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
-
-        val søknad = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.januar(2023),
-            ),
-        )
-        val sak = sakService.motta(søknad)
-
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-
-        val søknad2 = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.april(2023),
-                sluttdato = 30.april(2023),
-            ),
-        )
-        val sak2 = sakService.motta(søknad2)
-
-        sak.behandlinger.size shouldBe 1
-        sak2.behandlinger.size shouldBe 1
-        sak.id shouldNotBe sak2.id
     }
 }
