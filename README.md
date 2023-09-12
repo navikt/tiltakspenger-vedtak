@@ -20,7 +20,7 @@ For å bygge artifaktene:
 ```sh
 ./gradlew build
 ```
-For å gjøre spørringer mot databasen fra lokal maskin, må [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) kjøre:
+For å gjøre spørringer mot GCP-databasene (DEV eller PROD) fra lokal maskin, må [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) kjøre:
 
 ```sh
 cloud_sql_proxy -instances=tpts-dev-6211:europe-north1:tiltakspenger-vedtak=tcp:5432 -enable_iam_login
