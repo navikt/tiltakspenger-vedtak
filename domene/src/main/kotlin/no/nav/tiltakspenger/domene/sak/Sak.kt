@@ -19,13 +19,13 @@ data class Sak(
         val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().firstOrNull()?.let {
             listOf(
                 it.copy(
-                    søknader = it.søknader + søknad
-                )
+                    søknader = it.søknader + søknad,
+                ),
             )
         } ?: listOf(Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad))
 
         return this.copy(
-            behandlinger = behandlinger
+            behandlinger = behandlinger,
         )
     }
 

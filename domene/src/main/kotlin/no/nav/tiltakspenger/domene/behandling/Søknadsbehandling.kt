@@ -4,12 +4,10 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface Søknadsbehandling : Behandling {
     data class Opprettet(
@@ -31,7 +29,7 @@ sealed interface Søknadsbehandling : Behandling {
             }
         }
 
-        fun søknad() : Søknad? {
+        fun søknad(): Søknad? {
             return søknader.maxByOrNull { it.id }
         }
 

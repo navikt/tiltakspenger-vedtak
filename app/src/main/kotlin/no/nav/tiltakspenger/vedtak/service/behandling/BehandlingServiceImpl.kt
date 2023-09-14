@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
@@ -28,5 +29,9 @@ class BehandlingServiceImpl(
             is BehandlingVilkårsvurdert.Innvilget -> behandlingVilkårsvurdert.iverksett(saksbehandler)
             is BehandlingVilkårsvurdert.Manuell -> return behandlingVilkårsvurdert
         }
+    }
+
+    override fun hentBehandling(behandlingId: BehandlingId): Behandling {
+        return behandlingRepo.hent(behandlingId)
     }
 }
