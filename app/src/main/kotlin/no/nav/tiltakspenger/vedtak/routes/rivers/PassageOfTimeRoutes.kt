@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.rivers
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -29,8 +28,9 @@ fun Route.passageOfTimeRoutes(
 
         LOG.info { "Vi ble kallt med systembruker : $systembruker" }
 
-        val dayHasBegun = call.receive<DayHasBegunEvent>()
-        eventMediator.håndter(dayHasBegun)
+        // Vi skal slutte å trigge oppdatering av alle innsendinger hver natt
+        // val dayHasBegun = call.receive<DayHasBegunEvent>()
+        // eventMediator.håndter(dayHasBegun)
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
