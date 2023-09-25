@@ -50,13 +50,13 @@ data class Søknad(
         return Periode(tiltak.startdato, tiltak.sluttdato!!)
     }
 
-    fun vurderingsperiodeInklKarenstid(): Periode {
-        if (tiltak?.sluttdato == null) {
-            throw RuntimeException("Tiltak er null, og det ække lov")
-        }
-
-        return Periode(tiltak.startdato.minusMonths(3), tiltak.sluttdato!!.plusMonths(3))
-    }
+    //    fun vurderingsperiodeInklKarenstid(): Periode {
+//        if (tiltak?.sluttdato == null) {
+//            throw RuntimeException("Tiltak er null, og det ække lov")
+//        }
+//
+//        return Periode(tiltak.startdato.minusMonths(3), tiltak.sluttdato!!.plusMonths(3))
+//    }
     data class Personopplysninger(
         val ident: String,
         val fornavn: String,

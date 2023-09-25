@@ -17,9 +17,11 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -32,6 +34,7 @@ class SøknadRoutesTest {
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
@@ -42,6 +45,8 @@ class SøknadRoutesTest {
         søkerRepository = søkerRepository,
         rapidsConnection = testRapid,
     )
+
+    private val sakService = SakServiceImpl(sakRepo)
 
     @AfterEach
     fun reset() {
@@ -59,6 +64,9 @@ class SøknadRoutesTest {
             ident = IDENT,
         )
 
+        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.save(any()) } returnsArgument 0
+
         testApplication {
             application {
                 // vedtakTestApi()
@@ -67,6 +75,7 @@ class SøknadRoutesTest {
                     søknadRoutes(
                         innsendingMediator = innsendingMediator,
                         søkerMediator = søkerMediator,
+                        sakService = sakService,
                     )
                 }
             }

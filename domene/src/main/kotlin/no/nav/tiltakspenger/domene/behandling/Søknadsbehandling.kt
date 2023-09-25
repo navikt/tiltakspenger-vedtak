@@ -10,20 +10,31 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 
 sealed interface Søknadsbehandling : Behandling {
+    val søknader: List<Søknad>
+    val innsending: Innsending?
+
     data class Opprettet(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
+        override val saksopplysninger: List<Saksopplysning>,
+//        override val saksopplysningerFraFakta: List<Saksopplysning>,
+//        override val saksopplysningerFraSaksbehandler: List<Saksopplysning>,
+//        override val saksopplysningerFraSøknad: List<Saksopplysning>,
         override val innsending: Innsending?,
     ) : Søknadsbehandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
         //      eller om vi skal beholde denne (eller begge :-) )
         companion object {
-            fun opprettBehandling(søknad: Søknad): Søknadsbehandling.Opprettet {
+            fun opprettBehandling(søknad: Søknad): Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
+                    saksopplysninger = listOf(
+                        Saksopplysning.Dagpenger.initSaksopplysning(søknad.vurderingsperiode()),
+                        Saksopplysning.Aap.initSaksopplysning(søknad.vurderingsperiode()),
+                    ),
                     innsending = null,
                 )
             }
@@ -53,14 +64,14 @@ sealed interface Søknadsbehandling : Behandling {
 //
 //        }
 
-//        private fun lagVilkårsvurderingerAvSaksopplysninger(): List<Vurdering> {
+        //        private fun lagVilkårsvurderingerAvSaksopplysninger(): List<Vurdering> {
 //
 //        }
-        fun vilkårsvurder(saksopplysning: List<Saksopplysning>): BehandlingVilkårsvurdert {
+        fun vilkårsvurder(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             val vurderinger =
-                saksopplysning.filterIsInstance<Saksopplysning.Aap>().lagVurdering(Vilkår.AAP) +
-                    saksopplysning.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(Vilkår.DAGPENGER)
+                saksopplysninger.filterIsInstance<Saksopplysning.Aap>().lagVurdering(Vilkår.AAP) +
+                    saksopplysninger.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(Vilkår.DAGPENGER)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 
@@ -70,7 +81,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     innsending = innsending,
-                    saksopplysning = saksopplysning,
+                    saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -80,7 +91,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     innsending = innsending,
-                    saksopplysning = saksopplysning,
+                    saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -90,7 +101,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     innsending = innsending,
-                    saksopplysning = saksopplysning,
+                    saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -99,7 +110,7 @@ sealed interface Søknadsbehandling : Behandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 innsending = innsending,
-                saksopplysning = saksopplysning,
+                saksopplysninger = saksopplysninger,
                 vilkårsvurderinger = vurderinger,
             )
         }
@@ -108,7 +119,10 @@ sealed interface Søknadsbehandling : Behandling {
             val saksopplysningDagpenger =
                 Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
             val saksopplysningAap =
-                Saksopplysning.Aap.lagSaksopplysninger(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+                Saksopplysning.Aap.lagSaksopplysninger(
+                    innsending.ytelser?.ytelserliste,
+                    innsending.filtreringsperiode(),
+                )
             return saksopplysningAap + saksopplysningDagpenger
         }
     }

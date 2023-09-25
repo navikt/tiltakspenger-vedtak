@@ -6,13 +6,19 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
+enum class TypeSaksopplysning {
+    IKKE_INNHENTET_ENDA,
+    HAR_YTELSE,
+    HAR_IKKE_YTELSE,
+}
+
 sealed class Saksopplysning {
     abstract val fom: LocalDate
     abstract val tom: LocalDate
     abstract val vilkår: Vilkår
     abstract val kilde: Kilde
     abstract val detaljer: String
-    abstract val opphørTidligereSaksopplysning: Boolean
+    abstract val typeSaksopplysning: TypeSaksopplysning
 
     data class Dagpenger(
         override val fom: LocalDate,
@@ -20,9 +26,20 @@ sealed class Saksopplysning {
         override val vilkår: Vilkår,
         override val kilde: Kilde, // "Arena" / "Saksbehandler"
         override val detaljer: String,
-        override val opphørTidligereSaksopplysning: Boolean,
+        override val typeSaksopplysning: TypeSaksopplysning,
     ) : Saksopplysning() {
         companion object {
+            fun initSaksopplysning(periode: Periode): Dagpenger {
+                return Dagpenger(
+                    fom = periode.fra,
+                    tom = periode.til,
+                    vilkår = Vilkår.DAGPENGER,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+                )
+            }
+
             fun lagFakta(ytelser: List<YtelseSak>?, periode: Periode) =
                 DagpengerTolker.tolkeData(ytelser, periode)
         }
@@ -34,9 +51,20 @@ sealed class Saksopplysning {
         override val vilkår: Vilkår,
         override val kilde: Kilde,
         override val detaljer: String,
-        override val opphørTidligereSaksopplysning: Boolean,
+        override val typeSaksopplysning: TypeSaksopplysning,
     ) : Saksopplysning() {
         companion object {
+            fun initSaksopplysning(periode: Periode): Aap {
+                return Aap(
+                    fom = periode.fra,
+                    tom = periode.til,
+                    vilkår = Vilkår.AAP,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+                )
+            }
+
             fun lagSaksopplysninger(ytelser: List<YtelseSak>?, periode: Periode) =
                 AapTolker.tolkeData(ytelser, periode)
         }

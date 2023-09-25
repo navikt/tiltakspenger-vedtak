@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO
 import no.nav.tiltakspenger.vedtak.rivers.SøknadDTOMapper
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -22,11 +23,21 @@ val søknadpath = "/rivers/soknad"
 fun Route.søknadRoutes(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
+    sakService: SakService,
 ) {
     post("$søknadpath") {
         LOG.info { "Vi har mottatt søknad fra river" }
         val søknadDTO = call.receive<SøknadDTO>()
 
+        // Oppretter sak med søknad og lagrer den
+        sakService.motta(
+            søknad = SøknadDTOMapper.mapSøknad(
+                dto = søknadDTO,
+                innhentet = søknadDTO.opprettet,
+            ),
+        )
+
+        // Lager hendelse og trigger Innending innhenting
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = søknadDTO.dokInfo.journalpostId,
@@ -39,6 +50,7 @@ fun Route.søknadRoutes(
         SECURELOG.info { " Mottatt søknad og laget hendelse : $søknadMottattHendelse" }
         innsendingMediator.håndter(søknadMottattHendelse)
 
+        // Lager hendelse og trigger oppretelse av Søker hvis den ikke finnes
         val identMottattHendelse = IdentMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             ident = søknadDTO.personopplysninger.ident,

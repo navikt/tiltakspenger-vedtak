@@ -20,7 +20,7 @@ class BehandlingServiceImpl(
     ): Behandling {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad)
         val behandlingVilkårsvurdert = behandling.vilkårsvurder(
-            saksopplysning = saksopplysning,
+            saksopplysninger = saksopplysning,
         )
 
         return when (behandlingVilkårsvurdert) {

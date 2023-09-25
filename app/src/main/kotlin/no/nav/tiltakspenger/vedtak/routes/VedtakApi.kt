@@ -47,6 +47,7 @@ import no.nav.tiltakspenger.vedtak.routes.søker.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
@@ -61,6 +62,7 @@ internal fun Application.vedtakApi(
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søkerService: SøkerService,
+    sakService: SakService,
     behandlingService: BehandlingService,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
@@ -89,7 +91,7 @@ internal fun Application.vedtakApi(
             resettInnsendingerRoute(innsendingAdminService)
         }
         authenticate("systemtoken") {
-            søknadRoutes(innsendingMediator, søkerMediator)
+            søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator)
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)

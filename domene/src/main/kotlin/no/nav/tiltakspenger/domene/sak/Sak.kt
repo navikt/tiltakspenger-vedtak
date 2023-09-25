@@ -14,6 +14,7 @@ data class Sak(
     val saknummer: Saksnummer,
     val periode: Periode,
     val behandlinger: List<Behandling>,
+//    val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
         val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().firstOrNull()?.let {
@@ -34,9 +35,9 @@ data class Sak(
             when (behandling) {
                 is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(saksopplysning)
                 is BehandlingVilkårsvurdert.Manuell -> behandling.vurderPåNytt(saksopplysning)
-                is BehandlingVilkårsvurdert.Avslag -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Avslag")
-                is BehandlingVilkårsvurdert.DelvisInnvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Delvis Innvilget")
-                is BehandlingVilkårsvurdert.Innvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Innvilget")
+                is BehandlingVilkårsvurdert.Avslag -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
+                is BehandlingVilkårsvurdert.DelvisInnvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
+                is BehandlingVilkårsvurdert.Innvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
                 is BehandlingIverksatt -> behandling
             }
         }

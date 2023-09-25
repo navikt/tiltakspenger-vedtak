@@ -1,44 +1,34 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
-import java.util.UUID
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
-    val saksopplysning: List<Saksopplysning>
+    //    val saksopplysning: List<Saksopplysning>
     val vilkårsvurderinger: List<Vurdering>
 
     data class Innvilget(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val saksopplysning: List<Saksopplysning>,
+        override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Innvilget {
-            val vedtak = listOf(
-                Vedtak(
-                    id = UUID.randomUUID(),
-                ),
-            )
-            // TODO Her må vi faktisk lage et skikkelig vedtak
-
             return BehandlingIverksatt.Innvilget(
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 innsending = innsending,
-                saksopplysning = saksopplysning,
+                saksopplysninger = saksopplysninger,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
-                vedtak = vedtak,
             )
         }
     }
@@ -47,7 +37,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val saksopplysning: List<Saksopplysning>,
+        override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
@@ -60,7 +50,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val saksopplysning: List<Saksopplysning>,
+        override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
@@ -73,7 +63,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
-        override val saksopplysning: List<Saksopplysning>,
+        override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
@@ -82,6 +72,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
                 innsending = innsending,
             ).vilkårsvurder(saksopplysninger)
         }
