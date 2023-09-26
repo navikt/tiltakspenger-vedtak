@@ -12,6 +12,14 @@ enum class TypeSaksopplysning {
     HAR_IKKE_YTELSE,
 }
 
+data class SaksopplysningDTO(
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val vilkårstittel: String,
+    val begrunnelse: String,
+    val harYtelse: Boolean,
+)
+
 sealed class Saksopplysning {
     abstract val fom: LocalDate
     abstract val tom: LocalDate
@@ -62,6 +70,16 @@ sealed class Saksopplysning {
                     kilde = Kilde.ARENA,
                     detaljer = "",
                     typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+                )
+            }
+            fun lagSaksopplysningFraSBH(fom: LocalDate, tom: LocalDate, detaljer: String, typeSaksopplysning: TypeSaksopplysning): Aap {
+                return Aap(
+                    fom = fom,
+                    tom = tom,
+                    vilkår = Vilkår.AAP,
+                    kilde = Kilde.SAKSB,
+                    detaljer = detaljer,
+                    typeSaksopplysning = typeSaksopplysning,
                 )
             }
 
