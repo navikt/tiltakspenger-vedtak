@@ -78,7 +78,7 @@ sealed class Saksopplysning {
                     tom = tom,
                     vilkår = Vilkår.AAP,
                     kilde = Kilde.SAKSB,
-                    detaljer = detaljer,
+                    detaljer = detaljer, // Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
                     typeSaksopplysning = typeSaksopplysning,
                 )
             }

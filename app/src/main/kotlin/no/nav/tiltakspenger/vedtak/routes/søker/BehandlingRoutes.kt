@@ -45,5 +45,6 @@ fun Route.behandlingRoutes(
             )
             else -> null
         }
+        if (saksopplysning != null) behandling.leggTilSaksopplysning(saksopplysning)
     }
 }
