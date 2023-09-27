@@ -13,6 +13,21 @@ sealed interface Søknadsbehandling : Behandling {
     val søknader: List<Søknad>
     val innsending: Innsending?
 
+    fun søknad(): Søknad {
+        return søknader.maxBy { it.id }
+    }
+
+    override fun toDTO(): BehandlingDTO {
+        return BehandlingDTO(
+            behandlingId = this.id.toString(),
+            fom = this.vurderingsperiode.fra,
+            tom = this.vurderingsperiode.til,
+            søknad = this.søknad(),
+            saksopplysninger = this.saksopplysninger,
+            vurderinger = emptyList(),
+        )
+    }
+
     data class Opprettet(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
@@ -38,10 +53,6 @@ sealed interface Søknadsbehandling : Behandling {
                     innsending = null,
                 )
             }
-        }
-
-        fun søknad(): Søknad? {
-            return søknader.maxByOrNull { it.id }
         }
 
         fun henteSaksopplysninger() {

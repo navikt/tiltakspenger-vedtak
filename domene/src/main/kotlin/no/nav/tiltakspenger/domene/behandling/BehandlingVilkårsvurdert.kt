@@ -11,6 +11,21 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
 
+    override fun søknad(): Søknad {
+        return søknader.maxBy { it.id }
+    }
+
+    override fun toDTO(): BehandlingDTO {
+        return BehandlingDTO(
+            behandlingId = this.id.toString(),
+            fom = this.vurderingsperiode.fra,
+            tom = this.vurderingsperiode.til,
+            søknad = this.søknad(),
+            saksopplysninger = this.saksopplysninger,
+            vurderinger = emptyList(),
+        )
+    }
+
     data class Innvilget(
         override val id: BehandlingId,
         override val søknader: List<Søknad>,
@@ -30,6 +45,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksbehandler = saksbehandler,
             )
         }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
@@ -48,6 +64,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
             TODO()
         }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
@@ -72,6 +89,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 innsending = innsending,
             ).vilkårsvurder(saksopplysninger)
         }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
