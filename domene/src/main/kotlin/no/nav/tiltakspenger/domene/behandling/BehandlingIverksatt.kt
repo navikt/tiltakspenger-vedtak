@@ -36,5 +36,4 @@ interface BehandlingIverksatt : Søknadsbehandling {
     ) : BehandlingIverksatt {
         // trenger denne funksjoner?
     }
-
 }

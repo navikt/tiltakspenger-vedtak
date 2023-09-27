@@ -25,7 +25,6 @@ class BehandlingServiceImpl(
 
         return when (behandlingVilkårsvurdert) {
             is BehandlingVilkårsvurdert.Avslag -> behandlingVilkårsvurdert.iverksett(saksbehandler)
-            is BehandlingVilkårsvurdert.DelvisInnvilget -> behandlingVilkårsvurdert.iverksett(saksbehandler)
             is BehandlingVilkårsvurdert.Innvilget -> behandlingVilkårsvurdert.iverksett(saksbehandler)
             is BehandlingVilkårsvurdert.Manuell -> return behandlingVilkårsvurdert
         }

@@ -28,6 +28,7 @@ fun Route.behandlingRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
         val behandling = behandlingService.hentBehandling(behandlingId)
+        call.respond(status = HttpStatusCode.OK, behandling)
     }
 
     post("$behandlingPath/{behandlingId}") {

@@ -36,7 +36,6 @@ data class Sak(
                 is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(saksopplysning)
                 is BehandlingVilkårsvurdert.Manuell -> behandling.vurderPåNytt(saksopplysning)
                 is BehandlingVilkårsvurdert.Avslag -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
-                is BehandlingVilkårsvurdert.DelvisInnvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
                 is BehandlingVilkårsvurdert.Innvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
                 is BehandlingIverksatt -> behandling
             }

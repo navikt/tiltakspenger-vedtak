@@ -30,9 +30,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksbehandler = saksbehandler,
             )
         }
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning
+                saksopplysninger = saksopplysninger + saksopplysning,
             )
         }
     }
@@ -48,9 +48,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
             TODO()
         }
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning
+                saksopplysninger = saksopplysninger + saksopplysning,
             )
         }
     }
@@ -72,9 +72,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 innsending = innsending,
             ).vilkårsvurder(saksopplysninger)
         }
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning
+                saksopplysninger = saksopplysninger + saksopplysning,
             )
         }
     }

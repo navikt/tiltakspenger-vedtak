@@ -9,7 +9,7 @@ interface Behandling {
     val vurderingsperiode: Periode
     val saksopplysninger: List<Saksopplysning>
 
-    fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 }

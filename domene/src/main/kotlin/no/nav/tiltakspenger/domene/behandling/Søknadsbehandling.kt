@@ -126,9 +126,9 @@ sealed interface Søknadsbehandling : Behandling {
             return saksopplysningAap + saksopplysningDagpenger
         }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning
+                saksopplysninger = saksopplysninger + saksopplysning,
             )
         }
     }
