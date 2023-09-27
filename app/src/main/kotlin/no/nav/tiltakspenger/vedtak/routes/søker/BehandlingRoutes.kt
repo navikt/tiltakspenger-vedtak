@@ -46,5 +46,7 @@ fun Route.behandlingRoutes(
             else -> null
         }
         if (saksopplysning != null) behandling.leggTilSaksopplysning(saksopplysning)
+
+        call.respond(status = HttpStatusCode.OK, "Saksopplysning ble lagret i behandlingen")
     }
 }

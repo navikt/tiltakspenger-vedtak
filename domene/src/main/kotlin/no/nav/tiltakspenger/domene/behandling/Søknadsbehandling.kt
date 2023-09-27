@@ -105,7 +105,7 @@ sealed interface Søknadsbehandling : Behandling {
                     vilkårsvurderinger = vurderinger,
                 )
             }
-            return BehandlingVilkårsvurdert.DelvisInnvilget(
+            return BehandlingVilkårsvurdert.Avslag(
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,

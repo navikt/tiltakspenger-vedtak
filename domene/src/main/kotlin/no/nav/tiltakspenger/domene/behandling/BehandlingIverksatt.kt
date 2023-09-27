@@ -37,15 +37,4 @@ interface BehandlingIverksatt : Søknadsbehandling {
         // trenger denne funksjoner?
     }
 
-    data class DelvisInnvilget(
-        override val id: BehandlingId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val innsending: Innsending?,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: Saksbehandler,
-    ) : BehandlingIverksatt {
-        // trenger denne funksjoner?
-    }
 }

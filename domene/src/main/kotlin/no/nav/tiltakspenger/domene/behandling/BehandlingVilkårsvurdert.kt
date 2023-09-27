@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
-    //    val saksopplysning: List<Saksopplysning>
     val vilkårsvurderinger: List<Vurdering>
 
     data class Innvilget(
@@ -31,6 +30,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksbehandler = saksbehandler,
             )
         }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+            return this.copy(
+                saksopplysninger = saksopplysninger + saksopplysning
+            )
+        }
     }
 
     data class Avslag(
@@ -44,18 +48,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
             TODO()
         }
-    }
-
-    data class DelvisInnvilget(
-        override val id: BehandlingId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val innsending: Innsending?,
-    ) : BehandlingVilkårsvurdert {
-        fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.DelvisInnvilget {
-            TODO()
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+            return this.copy(
+                saksopplysninger = saksopplysninger + saksopplysning
+            )
         }
     }
 
@@ -75,6 +71,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 innsending = innsending,
             ).vilkårsvurder(saksopplysninger)
+        }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning) : Søknadsbehandling {
+            return this.copy(
+                saksopplysninger = saksopplysninger + saksopplysning
+            )
         }
     }
 }
