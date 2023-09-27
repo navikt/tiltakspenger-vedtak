@@ -22,7 +22,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             tom = this.vurderingsperiode.til,
             søknad = this.søknad(),
             saksopplysninger = this.saksopplysninger,
-            vurderinger = emptyList(),
+            vurderinger = this.vilkårsvurderinger,
         )
     }
 
