@@ -25,6 +25,14 @@ sealed interface Søknadsbehandling : Behandling {
             søknad = this.søknad(),
             saksopplysninger = this.saksopplysninger,
             vurderinger = emptyList(),
+            personopplysninger = PersonopplysningerDTO(
+                ident = "12345678901",
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                skjerming = true,
+                strengtFortrolig = true,
+                fortrolig = true,
+            ),
         )
     }
 

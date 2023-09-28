@@ -23,6 +23,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             søknad = this.søknad(),
             saksopplysninger = this.saksopplysninger,
             vurderinger = this.vilkårsvurderinger,
+            personopplysninger = PersonopplysningerDTO(
+                ident = "12345678901",
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                skjerming = false,
+                strengtFortrolig = false,
+                fortrolig = false,
+            ),
         )
     }
 

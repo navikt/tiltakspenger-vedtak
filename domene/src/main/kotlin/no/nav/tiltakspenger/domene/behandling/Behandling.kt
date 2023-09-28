@@ -28,4 +28,14 @@ data class BehandlingDTO(
     val søknad: Søknad,
     val saksopplysninger: List<Saksopplysning>,
     val vurderinger: List<Vurdering>,
+    val personopplysninger: PersonopplysningerDTO,
+)
+
+data class PersonopplysningerDTO(
+    val ident: String,
+    val fornavn: String,
+    val etternavn: String,
+    val skjerming: Boolean,
+    val strengtFortrolig: Boolean,
+    val fortrolig: Boolean,
 )
