@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.domene.behandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
@@ -25,7 +24,7 @@ data class BehandlingDTO(
     val behandlingId: String,
     val fom: LocalDate,
     val tom: LocalDate,
-    val søknad: Søknad,
+    val søknad: SøknadDTO,
     val saksopplysninger: List<Saksopplysning>,
     val vurderinger: List<Vurdering>,
     val personopplysninger: PersonopplysningerDTO,
@@ -38,4 +37,13 @@ data class PersonopplysningerDTO(
     val skjerming: Boolean,
     val strengtFortrolig: Boolean,
     val fortrolig: Boolean,
+)
+
+data class SøknadDTO(
+    val søknadsdato: LocalDate,
+    val arrangoernavn: String,
+    val tiltakstype: String,
+    val startdato: LocalDate,
+    val sluttdato: LocalDate,
+    val antallDager: Int,
 )

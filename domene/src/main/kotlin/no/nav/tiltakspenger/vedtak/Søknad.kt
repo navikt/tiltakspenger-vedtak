@@ -2,6 +2,7 @@
 
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.domene.behandling.SøknadDTO
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
@@ -167,3 +168,14 @@ sealed class Barnetillegg {
 //    OVERGANGSBOLIG("overgangsbolig"),
 //    ANNET("annet"),
 // }
+
+fun Søknad.toDTO(): SøknadDTO {
+    return SøknadDTO(
+        søknadsdato = this.opprettet.toLocalDate(),
+        arrangoernavn = this.tiltak?.arrangoernavn!!,
+        tiltakstype = this.tiltak.tiltakskode?.name!!,
+        startdato = this.tiltak.startdato,
+        sluttdato = this.tiltak.sluttdato!!,
+        antallDager = -1, // TODO(Må hentes ut fra arena)
+    )
+}
