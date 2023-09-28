@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.toDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -13,7 +12,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
 
     override fun søknad(): Søknad {
-        return søknader.maxBy { it.id }
+        return søknader.maxBy { it.opprettet }
     }
 
     override fun toDTO(): BehandlingDTO {
@@ -41,14 +40,12 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
-        override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Innvilget {
             return BehandlingIverksatt.Innvilget(
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                innsending = innsending,
                 saksopplysninger = saksopplysninger,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
@@ -68,7 +65,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
-        override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
             TODO()
@@ -87,7 +83,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
-        override val innsending: Innsending?,
     ) : BehandlingVilkårsvurdert {
         fun vurderPåNytt(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
             return Søknadsbehandling.Opprettet(
@@ -95,7 +90,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
-                innsending = innsending,
             ).vilkårsvurder(saksopplysninger)
         }
 

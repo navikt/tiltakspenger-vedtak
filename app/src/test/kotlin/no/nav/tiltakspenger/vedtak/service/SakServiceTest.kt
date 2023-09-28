@@ -59,6 +59,7 @@ internal class SakServiceTest {
                 startdato = 1.januar(2023),
                 sluttdato = 31.januar(2023),
             ),
+            opprettet = 1.januarDateTime(2023),
         )
         val sak = sakService.motta(søknad)
 
@@ -70,6 +71,7 @@ internal class SakServiceTest {
                 startdato = 1.mars(2023),
                 sluttdato = 31.mars(2023),
             ),
+            opprettet = 2.januarDateTime(2023),
         )
         val sak2 = sakService.motta(søknad2)
 

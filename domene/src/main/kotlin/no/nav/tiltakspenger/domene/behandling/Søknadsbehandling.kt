@@ -12,10 +12,9 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 
 sealed interface Søknadsbehandling : Behandling {
     val søknader: List<Søknad>
-    val innsending: Innsending?
 
     fun søknad(): Søknad {
-        return søknader.maxBy { it.id }
+        return søknader.maxBy { it.opprettet }
     }
 
     override fun toDTO(): BehandlingDTO {
@@ -45,7 +44,6 @@ sealed interface Søknadsbehandling : Behandling {
 //        override val saksopplysningerFraFakta: List<Saksopplysning>,
 //        override val saksopplysningerFraSaksbehandler: List<Saksopplysning>,
 //        override val saksopplysningerFraSøknad: List<Saksopplysning>,
-        override val innsending: Innsending?,
     ) : Søknadsbehandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
         //      eller om vi skal beholde denne (eller begge :-) )
@@ -59,7 +57,6 @@ sealed interface Søknadsbehandling : Behandling {
                         Saksopplysning.Dagpenger.initSaksopplysning(søknad.vurderingsperiode()),
                         Saksopplysning.Aap.initSaksopplysning(søknad.vurderingsperiode()),
                     ),
-                    innsending = null,
                 )
             }
         }
@@ -100,7 +97,6 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
-                    innsending = innsending,
                     saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -110,7 +106,6 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
-                    innsending = innsending,
                     saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -120,7 +115,6 @@ sealed interface Søknadsbehandling : Behandling {
                     id = id,
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
-                    innsending = innsending,
                     saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vurderinger,
                 )
@@ -129,7 +123,6 @@ sealed interface Søknadsbehandling : Behandling {
                 id = id,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                innsending = innsending,
                 saksopplysninger = saksopplysninger,
                 vilkårsvurderinger = vurderinger,
             )
