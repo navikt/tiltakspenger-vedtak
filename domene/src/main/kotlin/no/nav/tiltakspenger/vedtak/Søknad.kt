@@ -173,7 +173,7 @@ fun Søknad.toDTO(): SøknadDTO {
     return SøknadDTO(
         søknadsdato = this.opprettet.toLocalDate(),
         arrangoernavn = this.tiltak?.arrangoernavn!!,
-        tiltakstype = this.tiltak.tiltakskode?.name!!,
+        tiltakstype = this.tiltak.tiltakskode?.navn!!,
         startdato = this.tiltak.startdato,
         sluttdato = this.tiltak.sluttdato!!,
         antallDager = -1, // TODO(Må hentes ut fra arena)

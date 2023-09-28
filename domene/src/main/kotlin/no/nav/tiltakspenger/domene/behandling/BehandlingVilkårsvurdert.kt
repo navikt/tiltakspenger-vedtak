@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.toDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
@@ -20,7 +21,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             behandlingId = this.id.toString(),
             fom = this.vurderingsperiode.fra,
             tom = this.vurderingsperiode.til,
-            søknad = this.søknad(),
+            søknad = this.søknad().toDTO(),
             saksopplysninger = this.saksopplysninger,
             vurderinger = this.vilkårsvurderinger,
             personopplysninger = PersonopplysningerDTO(
