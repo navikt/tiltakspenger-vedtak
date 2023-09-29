@@ -30,7 +30,7 @@ data class SammenstillingForBehandlingDTO(
     val fom: LocalDate,
     val tom: LocalDate,
     val søknad: SøknadDTO,
-    val saksopplysninger: List<Saksopplysning>,
+    val saksopplysninger: List<SaksopplysningUtDTO>,
     val vurderinger: List<Vurdering>,
     val personopplysninger: PersonopplysningerDTO,
 )
@@ -53,6 +53,17 @@ data class SøknadDTO(
     val antallDager: Int,
 )
 
+data class SaksopplysningUtDTO(
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val kilde: String,
+    val detaljer: String,
+    val typeSaksopplysning: String,
+    val vilkårTittel: String,
+    val vilkårParagraf: String,
+    val vilkårLedd: String,
+)
+
 fun mapSammenstillingDTO(
     behandling: Søknadsbehandling,
     personopplysninger: List<Personopplysninger>,
@@ -69,7 +80,18 @@ fun mapSammenstillingDTO(
             sluttdato = behandling.søknad().tiltak?.sluttdato!!,
             antallDager = 2,
         ),
-        saksopplysninger = behandling.saksopplysninger,
+        saksopplysninger = behandling.saksopplysninger.map {
+            SaksopplysningUtDTO(
+                fom = it.fom,
+                tom = it.tom,
+                kilde = it.kilde.navn,
+                detaljer = it.detaljer,
+                typeSaksopplysning = it.typeSaksopplysning.name,
+                vilkårTittel = it.vilkår.tittel,
+                vilkårParagraf = it.vilkår.lovreferanse.paragraf,
+                vilkårLedd = it.vilkår.lovreferanse.ledd,
+            )
+        },
         vurderinger = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger else emptyList(),
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
             PersonopplysningerDTO(
