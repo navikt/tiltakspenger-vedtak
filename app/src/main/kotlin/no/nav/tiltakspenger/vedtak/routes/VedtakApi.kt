@@ -85,7 +85,11 @@ internal fun Application.vedtakApi(
         authenticate("saksbehandling") {
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
-            behandlingRoutes(innloggetSaksbehandlerProvider, behandlingService)
+            behandlingRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                behandlingService = behandlingService,
+                sakService = sakService,
+            )
         }
         authenticate("admin") {
             resettInnsendingerRoute(innsendingAdminService)
@@ -102,6 +106,7 @@ internal fun Application.vedtakApi(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
+                sakService = sakService,
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,

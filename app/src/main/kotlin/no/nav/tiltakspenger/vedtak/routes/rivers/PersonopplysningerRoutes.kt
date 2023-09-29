@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -42,6 +43,7 @@ fun Route.personopplysningerRoutes(
     innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
+    sakService: SakService,
 ) {
     post("$personopplysningerPath") {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
@@ -67,15 +69,17 @@ fun Route.personopplysningerRoutes(
             }
 
             personopplysningerMottattDTO.personopplysninger.person != null -> {
+                val personopplysninger = mapPersonopplysninger(
+                    personopplysningerMottattDTO.personopplysninger.person!!,
+                    personopplysningerMottattDTO.innhentet,
+                    personopplysningerMottattDTO.ident,
+                )
+                sakService.mottaPersonopplysninger(personopplysninger)
                 val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
                     aktivitetslogg = Aktivitetslogg(),
                     journalpostId = personopplysningerMottattDTO.journalpostId,
                     ident = personopplysningerMottattDTO.ident,
-                    personopplysninger = mapPersonopplysninger(
-                        personopplysningerMottattDTO.personopplysninger.person!!,
-                        personopplysningerMottattDTO.innhentet,
-                        personopplysningerMottattDTO.ident,
-                    ),
+                    personopplysninger = personopplysninger,
                     tidsstempelPersonopplysningerInnhentet = personopplysningerMottattDTO.innhentet,
                 )
                 innsendingMediator.håndter(personopplysningerMottattHendelse)

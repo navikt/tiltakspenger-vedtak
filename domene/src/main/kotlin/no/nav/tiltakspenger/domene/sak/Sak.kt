@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søknad
 
 data class Sak(
@@ -14,6 +15,7 @@ data class Sak(
     val saknummer: Saksnummer,
     val periode: Periode,
     val behandlinger: List<Behandling>,
+    val personopplysninger: List<Personopplysninger>,
 //    val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
@@ -53,6 +55,7 @@ data class Sak(
                 saknummer = saksnummerGenerator.genererSaknummer(),
                 behandlinger = emptyList(),
                 periode = søknad.vurderingsperiode(),
+                personopplysninger = emptyList(),
             )
         }
     }

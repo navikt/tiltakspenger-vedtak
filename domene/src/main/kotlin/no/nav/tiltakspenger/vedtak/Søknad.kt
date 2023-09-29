@@ -2,7 +2,6 @@
 
 package no.nav.tiltakspenger.vedtak
 
-import no.nav.tiltakspenger.domene.behandling.SøknadDTO
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
 import java.time.LocalDate
@@ -51,13 +50,6 @@ data class Søknad(
         return Periode(tiltak.startdato, tiltak.sluttdato!!)
     }
 
-    //    fun vurderingsperiodeInklKarenstid(): Periode {
-//        if (tiltak?.sluttdato == null) {
-//            throw RuntimeException("Tiltak er null, og det ække lov")
-//        }
-//
-//        return Periode(tiltak.startdato.minusMonths(3), tiltak.sluttdato!!.plusMonths(3))
-//    }
     data class Personopplysninger(
         val ident: String,
         val fornavn: String,
@@ -161,21 +153,4 @@ sealed class Barnetillegg {
         override val etternavn: String,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg()
-}
-
-// enum class TypeInstitusjon(val type: String) {
-//    BARNEVERN("barneverninstitusjon"),
-//    OVERGANGSBOLIG("overgangsbolig"),
-//    ANNET("annet"),
-// }
-
-fun Søknad.toDTO(): SøknadDTO {
-    return SøknadDTO(
-        søknadsdato = this.opprettet.toLocalDate(),
-        arrangoernavn = this.tiltak?.arrangoernavn!!,
-        tiltakstype = this.tiltak.tiltakskode?.navn!!,
-        startdato = this.tiltak.startdato,
-        sluttdato = this.tiltak.sluttdato!!,
-        antallDager = -1, // TODO(Må hentes ut fra arena)
-    )
 }

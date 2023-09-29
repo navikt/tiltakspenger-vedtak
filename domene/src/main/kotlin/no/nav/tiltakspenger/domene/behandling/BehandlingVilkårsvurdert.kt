@@ -5,7 +5,6 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.toDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
@@ -13,25 +12,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
     override fun søknad(): Søknad {
         return søknader.maxBy { it.opprettet }
-    }
-
-    override fun toDTO(): BehandlingDTO {
-        return BehandlingDTO(
-            behandlingId = this.id.toString(),
-            fom = this.vurderingsperiode.fra,
-            tom = this.vurderingsperiode.til,
-            søknad = this.søknad().toDTO(),
-            saksopplysninger = this.saksopplysninger,
-            vurderinger = this.vilkårsvurderinger,
-            personopplysninger = PersonopplysningerDTO(
-                ident = "12345678901",
-                fornavn = "Ola",
-                etternavn = "Nordmann",
-                skjerming = false,
-                strengtFortrolig = false,
-                fortrolig = false,
-            ),
-        )
     }
 
     data class Innvilget(
