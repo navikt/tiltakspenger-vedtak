@@ -81,6 +81,15 @@ sealed interface Søknadsbehandling : Behandling {
                     vilkårsvurderinger = vurderinger,
                 )
             }
+            if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
+                return BehandlingVilkårsvurdert.Manuell(
+                    id = id,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    saksopplysninger = saksopplysninger,
+                    vilkårsvurderinger = vurderinger,
+                )
+            }
             if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
                 return BehandlingVilkårsvurdert.Innvilget(
                     id = id,

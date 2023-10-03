@@ -179,13 +179,29 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
     // Slå sammen periodene
 
     this.map { fakta ->
-        Vurdering.IkkeOppfylt(
-            vilkår = fakta.vilkår,
-            kilde = fakta.kilde,
-            fom = fakta.fom,
-            tom = fakta.tom,
-            detaljer = fakta.detaljer,
-        )
+        when (fakta.typeSaksopplysning) {
+            TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
+                vilkår = fakta.vilkår,
+                kilde = fakta.kilde,
+                fom = fakta.fom,
+                tom = fakta.tom,
+                detaljer = fakta.detaljer,
+            )
+            TypeSaksopplysning.HAR_YTELSE -> Vurdering.IkkeOppfylt(
+                vilkår = fakta.vilkår,
+                kilde = fakta.kilde,
+                fom = fakta.fom,
+                tom = fakta.tom,
+                detaljer = fakta.detaljer,
+            )
+            TypeSaksopplysning.HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
+                vilkår = fakta.vilkår,
+                kilde = fakta.kilde,
+                fom = fakta.fom,
+                tom = fakta.tom,
+                detaljer = fakta.detaljer,
+            )
+        }
     }.ifEmpty {
         listOf(
             Vurdering.Oppfylt(

@@ -15,9 +15,9 @@ sealed class Vurdering {
         override val vilkår: Vilkår,
         override val kilde: Kilde,
         override val detaljer: String,
+        override val fom: LocalDate? = null,
+        override val tom: LocalDate? = null,
     ) : Vurdering() {
-        override val fom = null
-        override val tom = null
         override val utfall = Utfall.OPPFYLT
     }
 
