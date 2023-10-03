@@ -18,7 +18,8 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
@@ -31,7 +32,6 @@ data class SammenstillingForBehandlingDTO(
     val tom: LocalDate,
     val søknad: SøknadDTO,
     val saksopplysninger: List<SaksopplysningUtDTO>,
-    val vurderinger: List<Vurdering>,
     val personopplysninger: PersonopplysningerDTO,
 )
 
@@ -62,6 +62,8 @@ data class SaksopplysningUtDTO(
     val vilkårTittel: String,
     val vilkårParagraf: String,
     val vilkårLedd: String,
+    val fakta: String,
+    val utfall: String,
 )
 
 fun mapSammenstillingDTO(
@@ -90,9 +92,10 @@ fun mapSammenstillingDTO(
                 vilkårTittel = it.vilkår.tittel,
                 vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                 vilkårLedd = it.vilkår.lovreferanse.ledd,
+                fakta = faktatekst(it.vilkår, it.typeSaksopplysning),
+                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger.first { vurdering -> vurdering.vilkår == it.vilkår && vurdering.fom == it.fom }.utfall.name else Utfall.KREVER_MANUELL_VURDERING.name,
             )
         },
-        vurderinger = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger else emptyList(),
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
             PersonopplysningerDTO(
                 ident = it.ident,
@@ -104,6 +107,41 @@ fun mapSammenstillingDTO(
             )
         }.first(),
     )
+}
+
+enum class Faktatekst(val harYtelse: String, val harIkkeYtelse: String) {
+    AAP("Bruker mottar AAP", "Bruker mottar ikke AAP"),
+    DAGPENGER("Bruker mottar dagpenger", "Bruker mottar ikke dagpenger"),
+}
+
+fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String {
+    if (typeSaksopplysning == TypeSaksopplysning.IKKE_INNHENTET_ENDA) return "Ikke innhentet"
+    return when (vilkår) {
+        Vilkår.AAP -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.AAP.harYtelse else Faktatekst.AAP.harIkkeYtelse
+        Vilkår.ALDER -> TODO()
+        Vilkår.ALDERSPENSJON -> TODO()
+        Vilkår.DAGPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.DAGPENGER.harYtelse else Faktatekst.DAGPENGER.harIkkeYtelse
+        Vilkår.FORELDREPENGER -> TODO()
+        Vilkår.GJENLEVENDEPENSJON -> TODO()
+        Vilkår.INSTITUSJONSOPPHOLD -> TODO()
+        Vilkår.INTROPROGRAMMET -> TODO()
+        Vilkår.KOMMUNALEYTELSER -> TODO()
+        Vilkår.KVP -> TODO()
+        Vilkår.LØNNSINNTEKT -> TODO()
+        Vilkår.OMSORGSPENGER -> TODO()
+        Vilkår.OPPLÆRINGSPENGER -> TODO()
+        Vilkår.OVERGANGSSTØNAD -> TODO()
+        Vilkår.PENSJONSINNTEKT -> TODO()
+        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> TODO()
+        Vilkår.PLEIEPENGER_SYKT_BARN -> TODO()
+        Vilkår.STATLIGEYTELSER -> TODO()
+        Vilkår.SUPPLERENDESTØNADALDER -> TODO()
+        Vilkår.SUPPLERENDESTØNADFLYKTNING -> TODO()
+        Vilkår.SVANGERSKAPSPENGER -> TODO()
+        Vilkår.SYKEPENGER -> TODO()
+        Vilkår.TILTAKSPENGER -> TODO()
+        Vilkår.UFØRETRYGD -> TODO()
+    }
 }
 
 fun Route.behandlingRoutes(
