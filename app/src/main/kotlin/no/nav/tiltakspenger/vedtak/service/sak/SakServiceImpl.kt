@@ -4,7 +4,9 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -16,6 +18,7 @@ import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 
 class SakServiceImpl(
     val sakRepo: SakRepo,
@@ -82,7 +85,21 @@ class SakServiceImpl(
             saknummer = Saksnummer("123"),
             periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),
             behandlinger = listOf(
-                behandling.vilkårsvurder(behandling.saksopplysninger),
+                behandling.vilkårsvurder(
+                    listOf(
+                        Saksopplysning.Aap(
+                            fom = 1.januar(2023),
+                            tom = 31.januar(2023),
+                            vilkår = Vilkår.AAP,
+                            kilde = Kilde.ARENA,
+                            detaljer = "",
+                            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                        ),
+                        Saksopplysning.Dagpenger.initSaksopplysning(
+                            periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),
+                        ),
+                    ),
+                ),
             ),
             personopplysninger = listOf(ObjectMother.personopplysningMaxFyr()),
 
