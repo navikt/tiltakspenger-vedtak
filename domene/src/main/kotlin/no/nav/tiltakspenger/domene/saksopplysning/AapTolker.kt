@@ -7,10 +7,10 @@ import java.time.LocalDate
 
 class AapTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning.Aap> {
+        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning> {
             if (ytelser == null) {
                 return listOf(
-                    Saksopplysning.Aap(
+                    Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
                         vilkår = Vilkår.AAP,
@@ -33,7 +33,7 @@ class AapTolker {
 
             if (ytelseListe.isEmpty()) {
                 return listOf(
-                    Saksopplysning.Aap(
+                    Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
                         vilkår = Vilkår.AAP,
@@ -47,7 +47,7 @@ class AapTolker {
 
             return ytelseListe
                 .map {
-                    Saksopplysning.Aap(
+                    Saksopplysning(
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.AAP,

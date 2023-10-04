@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -34,8 +33,8 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
                     saksopplysninger = listOf(
-                        Saksopplysning.Dagpenger.initSaksopplysning(søknad.vurderingsperiode()),
-                        Saksopplysning.Aap.initSaksopplysning(søknad.vurderingsperiode()),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.DAGPENGER),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.AAP),
                     ),
                 )
             }
@@ -66,9 +65,10 @@ sealed interface Søknadsbehandling : Behandling {
 //        }
         fun vilkårsvurder(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
+            // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
             val vurderinger =
-                saksopplysninger.filterIsInstance<Saksopplysning.Aap>().lagVurdering(Vilkår.AAP) +
-                    saksopplysninger.filterIsInstance<Saksopplysning.Dagpenger>().lagVurdering(Vilkår.DAGPENGER)
+                saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 
@@ -117,16 +117,16 @@ sealed interface Søknadsbehandling : Behandling {
             )
         }
 
-        private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
-            val saksopplysningDagpenger =
-                Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
-            val saksopplysningAap =
-                Saksopplysning.Aap.lagSaksopplysninger(
-                    innsending.ytelser?.ytelserliste,
-                    innsending.filtreringsperiode(),
-                )
-            return saksopplysningAap + saksopplysningDagpenger
-        }
+//        private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
+//            val saksopplysningDagpenger =
+//                Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+//            val saksopplysningAap =
+//                Saksopplysning.Aap.lagSaksopplysninger(
+//                    innsending.ytelser?.ytelserliste,
+//                    innsending.filtreringsperiode(),
+//                )
+//            return saksopplysningAap + saksopplysningDagpenger
+//        }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
             return this.copy(

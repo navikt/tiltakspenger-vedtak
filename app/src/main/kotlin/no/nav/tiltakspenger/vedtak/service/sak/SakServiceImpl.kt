@@ -4,6 +4,8 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.domene.saksopplysning.AapTolker
+import no.nav.tiltakspenger.domene.saksopplysning.DagpengerTolker
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
@@ -78,8 +80,6 @@ class SakServiceImpl(
             ),
         )
 
-        println("Vi lager behandling :")
-        println("$behandling")
         return Sak(
             id = SakId.random(),
             saknummer = Saksnummer("123"),
@@ -87,7 +87,7 @@ class SakServiceImpl(
             behandlinger = listOf(
                 behandling.vilkårsvurder(
                     listOf(
-                        Saksopplysning.Aap(
+                        Saksopplysning(
                             fom = 1.januar(2023),
                             tom = 31.januar(2023),
                             vilkår = Vilkår.AAP,
@@ -95,8 +95,9 @@ class SakServiceImpl(
                             detaljer = "",
                             typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                         ),
-                        Saksopplysning.Dagpenger.initSaksopplysning(
+                        Saksopplysning.initFakta(
                             periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),
+                            vilkår = Vilkår.DAGPENGER,
                         ),
                     ),
                 ),
@@ -107,10 +108,8 @@ class SakServiceImpl(
     }
 
     private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
-        val saksopplysningDagpenger =
-            Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
-        val saksopplysningAap =
-            Saksopplysning.Aap.lagSaksopplysninger(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        val saksopplysningDagpenger = AapTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        val saksopplysningAap = DagpengerTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
         return saksopplysningAap + saksopplysningDagpenger
     }
 }

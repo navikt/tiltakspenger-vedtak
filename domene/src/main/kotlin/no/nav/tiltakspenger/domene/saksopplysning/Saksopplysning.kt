@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene.saksopplysning
 
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
@@ -12,79 +11,34 @@ enum class TypeSaksopplysning {
     HAR_IKKE_YTELSE,
 }
 
-data class SaksopplysningDTO(
+data class Saksopplysning(
     val fom: LocalDate,
     val tom: LocalDate,
-    val vilkårstittel: String,
-    val begrunnelse: String,
-    val harYtelse: Boolean,
-)
-
-sealed class Saksopplysning {
-    abstract val fom: LocalDate
-    abstract val tom: LocalDate
-    abstract val vilkår: Vilkår
-    abstract val kilde: Kilde
-    abstract val detaljer: String
-    abstract val typeSaksopplysning: TypeSaksopplysning
-
-    data class Dagpenger(
-        override val fom: LocalDate,
-        override val tom: LocalDate,
-        override val vilkår: Vilkår,
-        override val kilde: Kilde, // "Arena" / "Saksbehandler"
-        override val detaljer: String,
-        override val typeSaksopplysning: TypeSaksopplysning,
-    ) : Saksopplysning() {
-        companion object {
-            fun initSaksopplysning(periode: Periode): Dagpenger {
-                return Dagpenger(
-                    fom = periode.fra,
-                    tom = periode.til,
-                    vilkår = Vilkår.DAGPENGER,
-                    kilde = Kilde.ARENA,
-                    detaljer = "",
-                    typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
-                )
-            }
-
-            fun lagFakta(ytelser: List<YtelseSak>?, periode: Periode) =
-                DagpengerTolker.tolkeData(ytelser, periode)
+    val kilde: Kilde,
+    val vilkår: Vilkår,
+    val detaljer: String,
+    val typeSaksopplysning: TypeSaksopplysning,
+) {
+    companion object {
+        fun initFakta(periode: Periode, vilkår: Vilkår): Saksopplysning {
+            return Saksopplysning(
+                fom = periode.fra,
+                tom = periode.til,
+                vilkår = vilkår,
+                kilde = Kilde.ARENA,
+                detaljer = "",
+                typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+            )
         }
-    }
-
-    data class Aap(
-        override val fom: LocalDate,
-        override val tom: LocalDate,
-        override val vilkår: Vilkår,
-        override val kilde: Kilde,
-        override val detaljer: String,
-        override val typeSaksopplysning: TypeSaksopplysning,
-    ) : Saksopplysning() {
-        companion object {
-            fun initSaksopplysning(periode: Periode): Aap {
-                return Aap(
-                    fom = periode.fra,
-                    tom = periode.til,
-                    vilkår = Vilkår.AAP,
-                    kilde = Kilde.ARENA,
-                    detaljer = "",
-                    typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
-                )
-            }
-            fun lagSaksopplysningFraSBH(fom: LocalDate, tom: LocalDate, detaljer: String, typeSaksopplysning: TypeSaksopplysning): Aap {
-                return Aap(
-                    fom = fom,
-                    tom = tom,
-                    vilkår = Vilkår.AAP,
-                    kilde = Kilde.SAKSB,
-                    detaljer = detaljer, // Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
-                    typeSaksopplysning = typeSaksopplysning,
-                )
-            }
-
-            fun lagSaksopplysninger(ytelser: List<YtelseSak>?, periode: Periode) =
-                AapTolker.tolkeData(ytelser, periode)
+        fun lagSaksopplysningFraSBH(fom: LocalDate, tom: LocalDate, vilkår: Vilkår, detaljer: String, typeSaksopplysning: TypeSaksopplysning): Saksopplysning {
+            return Saksopplysning(
+                fom = fom,
+                tom = tom,
+                vilkår = vilkår,
+                kilde = Kilde.SAKSB,
+                detaljer = detaljer, // Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
+                typeSaksopplysning = typeSaksopplysning,
+            )
         }
     }
 }

@@ -7,10 +7,10 @@ import java.time.LocalDate
 
 class DagpengerTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning.Dagpenger> {
+        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning> {
             if (ytelser == null) {
                 return listOf(
-                    Saksopplysning.Dagpenger(
+                    Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
                         vilkår = Vilkår.AAP,
@@ -33,7 +33,7 @@ class DagpengerTolker {
 
             if (ytelseListe.isEmpty()) {
                 return listOf(
-                    Saksopplysning.Dagpenger(
+                    Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
                         vilkår = Vilkår.AAP,
@@ -46,7 +46,7 @@ class DagpengerTolker {
             }
             return ytelseListe
                 .map {
-                    Saksopplysning.Dagpenger(
+                    Saksopplysning(
                         fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
                         tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.DAGPENGER,

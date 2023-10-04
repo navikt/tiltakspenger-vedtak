@@ -11,7 +11,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.SaksopplysningDTO
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -64,6 +63,14 @@ data class SaksopplysningUtDTO(
     val vilkårLedd: String,
     val fakta: String,
     val utfall: String,
+)
+
+data class SaksopplysningDTO(
+    val fom: String,
+    val tom: String,
+    val vilkår: String,
+    val begrunnelse: String,
+    val harYtelse: Boolean,
 )
 
 fun mapSammenstillingDTO(
@@ -168,22 +175,37 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/")
-        val nySaksopplysning = call.receive<SaksopplysningDTO>()
+        LOG.info(call.toString())
+        try {
+            val nySaksopplysning = call.receive<Any>()
+            println(nySaksopplysning)
+        } catch (e: Exception) {
+            println(e)
+        }
+//
+
+//        println(nySaksopplysning)
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
         val behandling = behandlingService.hentBehandling(behandlingId)
-        val saksopplysning = when (nySaksopplysning.vilkårstittel) {
-            "AAP" -> Saksopplysning.Aap.lagSaksopplysningFraSBH(
-                fom = nySaksopplysning.fom,
-                tom = nySaksopplysning.tom,
-                detaljer = nySaksopplysning.begrunnelse,
-                typeSaksopplysning = if (nySaksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
-            )
-
-            else -> null
-        }
-        if (saksopplysning != null) behandling.leggTilSaksopplysning(saksopplysning)
+//        behandling.leggTilSaksopplysning(lagSaksopplysningMedVilkår(nySaksopplysning))
 
         call.respond(status = HttpStatusCode.OK, "Saksopplysning ble lagret i behandlingen")
     }
+}
+
+private fun lagSaksopplysningMedVilkår(saksopplysning: SaksopplysningDTO): Saksopplysning {
+    val vilkår = when (saksopplysning.vilkår) {
+        "AAP" -> Vilkår.AAP
+        "DAGPENGER" -> Vilkår.DAGPENGER
+        else -> throw IllegalStateException("Kan ikke lage saksopplysning for vilkår ${saksopplysning.vilkår}")
+    }
+
+    return Saksopplysning.lagSaksopplysningFraSBH(
+        fom = LocalDate.parse(saksopplysning.fom),
+        tom = LocalDate.parse(saksopplysning.tom),
+        vilkår = vilkår,
+        detaljer = saksopplysning.begrunnelse,
+        typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+    )
 }
