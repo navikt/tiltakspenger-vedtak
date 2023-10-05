@@ -119,6 +119,7 @@ fun mapSammenstillingDTO(
 enum class Faktatekst(val harYtelse: String, val harIkkeYtelse: String) {
     AAP("Bruker mottar AAP", "Bruker mottar ikke AAP"),
     DAGPENGER("Bruker mottar dagpenger", "Bruker mottar ikke dagpenger"),
+    KVP("Bruker går på KVP", "Bruker går ikke på KVP"),
 }
 
 fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String {
@@ -133,7 +134,7 @@ fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String
         Vilkår.INSTITUSJONSOPPHOLD -> TODO()
         Vilkår.INTROPROGRAMMET -> TODO()
         Vilkår.KOMMUNALEYTELSER -> TODO()
-        Vilkår.KVP -> TODO()
+        Vilkår.KVP -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.KVP.harYtelse else Faktatekst.KVP.harIkkeYtelse
         Vilkår.LØNNSINNTEKT -> TODO()
         Vilkår.OMSORGSPENGER -> TODO()
         Vilkår.OPPLÆRINGSPENGER -> TODO()
@@ -175,22 +176,13 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/")
-        LOG.info(call.toString())
-        try {
-            val nySaksopplysning = call.receive<Any>()
-            println(nySaksopplysning)
-        } catch (e: Exception) {
-            println(e)
-        }
-//
-
-//        println(nySaksopplysning)
+        val nySaksopplysning = call.receive<SaksopplysningDTO>()
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
         val behandling = behandlingService.hentBehandling(behandlingId)
-//        behandling.leggTilSaksopplysning(lagSaksopplysningMedVilkår(nySaksopplysning))
+        behandling.leggTilSaksopplysning(lagSaksopplysningMedVilkår(nySaksopplysning))
 
-        call.respond(status = HttpStatusCode.OK, "Saksopplysning ble lagret i behandlingen")
+        call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 }
 

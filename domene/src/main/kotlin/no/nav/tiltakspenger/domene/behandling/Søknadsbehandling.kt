@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraSøknadForKvp
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -35,6 +36,7 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = listOf(
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.DAGPENGER),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.AAP),
+                        lagFaktaFraSøknadForKvp(søknad),
                     ),
                 )
             }
@@ -68,7 +70,8 @@ sealed interface Søknadsbehandling : Behandling {
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
             val vurderinger =
                 saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER)
+                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.KVP }.lagVurdering(Vilkår.KVP)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 

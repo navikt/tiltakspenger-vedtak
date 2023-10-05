@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene.saksopplysning
 
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
@@ -40,6 +41,28 @@ data class Saksopplysning(
                 typeSaksopplysning = typeSaksopplysning,
             )
         }
+    }
+}
+
+fun lagFaktaFraSøknadForKvp(søknad: Søknad): Saksopplysning {
+    if (søknad.kvp is Søknad.PeriodeSpm.Ja) {
+        return Saksopplysning(
+            fom = søknad.kvp.periode.fra,
+            tom = søknad.kvp.periode.til,
+            vilkår = Vilkår.KVP,
+            kilde = Kilde.SØKNAD,
+            detaljer = "Har svart Ja i søknaden",
+            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+        )
+    } else {
+        return Saksopplysning(
+            fom = søknad.vurderingsperiode().fra,
+            tom = søknad.vurderingsperiode().til,
+            vilkår = Vilkår.KVP,
+            kilde = Kilde.SØKNAD,
+            detaljer = "Har svart Nei i søknaden",
+            typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
+        )
     }
 }
 
@@ -177,7 +200,7 @@ private fun settKilde(vilkår: Vilkår): Kilde {
         Vilkår.INSTITUSJONSOPPHOLD -> TODO()
         Vilkår.INTROPROGRAMMET -> TODO()
         Vilkår.KOMMUNALEYTELSER -> TODO()
-        Vilkår.KVP -> TODO()
+        Vilkår.KVP -> Kilde.SØKNAD
         Vilkår.LØNNSINNTEKT -> TODO()
         Vilkår.OMSORGSPENGER -> TODO()
         Vilkår.OPPLÆRINGSPENGER -> TODO()
