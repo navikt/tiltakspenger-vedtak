@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraSøknadForKvp
+import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraPeriodespørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -36,7 +36,39 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = listOf(
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.DAGPENGER),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.AAP),
-                        lagFaktaFraSøknadForKvp(søknad),
+                        // Legg til flere saksopplysninger her
+                        lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
+                        lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
+                        lagFaktaFraPeriodespørsmål(
+                            Vilkår.INSTITUSJONSOPPHOLD,
+                            søknad.institusjon,
+                            søknad.vurderingsperiode(),
+                        ),
+                        lagFaktaFraPeriodespørsmål(
+                            Vilkår.GJENLEVENDEPENSJON,
+                            søknad.gjenlevendepensjon,
+                            søknad.vurderingsperiode(),
+                        ),
+                        lagFaktaFraPeriodespørsmål(Vilkår.SYKEPENGER, søknad.sykepenger, søknad.vurderingsperiode()),
+                        lagFaktaFraPeriodespørsmål(
+                            Vilkår.SUPPLERENDESTØNADALDER,
+                            søknad.supplerendeStønadAlder,
+                            søknad.vurderingsperiode(),
+                        ),
+                        lagFaktaFraPeriodespørsmål(
+                            Vilkår.SUPPLERENDESTØNADFLYKTNING,
+                            søknad.supplerendeStønadFlyktning,
+                            søknad.vurderingsperiode(),
+                        ),
+                        lagFaktaFraPeriodespørsmål(Vilkår.JOBBSJANSEN, søknad.jobbsjansen, søknad.vurderingsperiode()),
+                        lagFaktaFraPeriodespørsmål(
+                            Vilkår.PENSJONSINNTEKT,
+                            søknad.trygdOgPensjon,
+                            søknad.vurderingsperiode(),
+                        ),
+
+                        // TODO: Her må vi finne på noe lurt
+                        // lagFaktaFraPeriodespørsmål(Vilkår.ALDERSPENSJON, søknad.alderspensjon, søknad.vurderingsperiode()),
                     ),
                 )
             }
@@ -71,7 +103,21 @@ sealed interface Søknadsbehandling : Behandling {
             val vurderinger =
                 saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP) +
                     saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.KVP }.lagVurdering(Vilkår.KVP)
+                    // Legg til flere vurderinger her
+                    saksopplysninger.filter { it.vilkår == Vilkår.KVP }.lagVurdering(Vilkår.KVP) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }
+                        .lagVurdering(Vilkår.INTROPROGRAMMET) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.INSTITUSJONSOPPHOLD }
+                        .lagVurdering(Vilkår.INSTITUSJONSOPPHOLD) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.GJENLEVENDEPENSJON }
+                        .lagVurdering(Vilkår.GJENLEVENDEPENSJON) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.SYKEPENGER }.lagVurdering(Vilkår.SYKEPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADALDER }
+                        .lagVurdering(Vilkår.SUPPLERENDESTØNADALDER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADFLYKTNING }
+                        .lagVurdering(Vilkår.SUPPLERENDESTØNADFLYKTNING) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.JOBBSJANSEN }.lagVurdering(Vilkår.JOBBSJANSEN) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.PENSJONSINNTEKT }.lagVurdering(Vilkår.PENSJONSINNTEKT)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 

@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.domene.saksopplysning
 
+import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
+import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -31,7 +33,14 @@ data class Saksopplysning(
                 typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
             )
         }
-        fun lagSaksopplysningFraSBH(fom: LocalDate, tom: LocalDate, vilkår: Vilkår, detaljer: String, typeSaksopplysning: TypeSaksopplysning): Saksopplysning {
+
+        fun lagSaksopplysningFraSBH(
+            fom: LocalDate,
+            tom: LocalDate,
+            vilkår: Vilkår,
+            detaljer: String,
+            typeSaksopplysning: TypeSaksopplysning,
+        ): Saksopplysning {
             return Saksopplysning(
                 fom = fom,
                 tom = tom,
@@ -44,7 +53,7 @@ data class Saksopplysning(
     }
 }
 
-fun lagFaktaFraSøknadForKvp(søknad: Søknad): Saksopplysning {
+fun lagFaktaFraSøknad(søknad: Søknad): Saksopplysning {
     if (søknad.kvp is Søknad.PeriodeSpm.Ja) {
         return Saksopplysning(
             fom = søknad.kvp.periode.fra,
@@ -52,7 +61,7 @@ fun lagFaktaFraSøknadForKvp(søknad: Søknad): Saksopplysning {
             vilkår = Vilkår.KVP,
             kilde = Kilde.SØKNAD,
             detaljer = "Har svart Ja i søknaden",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+            typeSaksopplysning = HAR_YTELSE,
         )
     } else {
         return Saksopplysning(
@@ -61,9 +70,20 @@ fun lagFaktaFraSøknadForKvp(søknad: Søknad): Saksopplysning {
             vilkår = Vilkår.KVP,
             kilde = Kilde.SØKNAD,
             detaljer = "Har svart Nei i søknaden",
-            typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
+            typeSaksopplysning = HAR_IKKE_YTELSE,
         )
     }
+}
+
+fun lagFaktaFraPeriodespørsmål(vilkår: Vilkår, periodeSpm: Søknad.PeriodeSpm, periode: Periode): Saksopplysning {
+    return Saksopplysning(
+        fom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
+        tom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
+        vilkår = vilkår,
+        kilde = Kilde.SØKNAD,
+        detaljer = "",
+        typeSaksopplysning = if (periodeSpm is Søknad.PeriodeSpm.Ja) HAR_YTELSE else HAR_IKKE_YTELSE,
+    )
 }
 
 private fun prioriterOverlappendeSaksopplysning() {
@@ -164,14 +184,14 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
                 tom = fakta.tom,
                 detaljer = fakta.detaljer,
             )
-            TypeSaksopplysning.HAR_YTELSE -> Vurdering.IkkeOppfylt(
+            HAR_YTELSE -> Vurdering.IkkeOppfylt(
                 vilkår = fakta.vilkår,
                 kilde = fakta.kilde,
                 fom = fakta.fom,
                 tom = fakta.tom,
                 detaljer = fakta.detaljer,
             )
-            TypeSaksopplysning.HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
+            HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
                 vilkår = fakta.vilkår,
                 kilde = fakta.kilde,
                 fom = fakta.fom,
@@ -192,29 +212,32 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
 private fun settKilde(vilkår: Vilkår): Kilde {
     return when (vilkår) {
         Vilkår.AAP -> Kilde.ARENA
-        Vilkår.ALDER -> TODO()
-        Vilkår.ALDERSPENSJON -> TODO()
+        Vilkår.ALDER -> Kilde.PDL
+        Vilkår.ALDERSPENSJON -> Kilde.SØKNAD
         Vilkår.DAGPENGER -> Kilde.ARENA
-        Vilkår.FORELDREPENGER -> TODO()
-        Vilkår.GJENLEVENDEPENSJON -> TODO()
-        Vilkår.INSTITUSJONSOPPHOLD -> TODO()
-        Vilkår.INTROPROGRAMMET -> TODO()
-        Vilkår.KOMMUNALEYTELSER -> TODO()
+        Vilkår.FORELDREPENGER -> Kilde.FPSAK
+        Vilkår.GJENLEVENDEPENSJON -> Kilde.SØKNAD
+        Vilkår.INSTITUSJONSOPPHOLD -> Kilde.SØKNAD
+        Vilkår.INTROPROGRAMMET -> Kilde.SØKNAD
         Vilkår.KVP -> Kilde.SØKNAD
-        Vilkår.LØNNSINNTEKT -> TODO()
-        Vilkår.OMSORGSPENGER -> TODO()
-        Vilkår.OPPLÆRINGSPENGER -> TODO()
-        Vilkår.OVERGANGSSTØNAD -> TODO()
-        Vilkår.PENSJONSINNTEKT -> TODO()
-        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> TODO()
-        Vilkår.PLEIEPENGER_SYKT_BARN -> TODO()
-        Vilkår.STATLIGEYTELSER -> TODO()
-        Vilkår.SUPPLERENDESTØNADALDER -> TODO()
-        Vilkår.SUPPLERENDESTØNADFLYKTNING -> TODO()
-        Vilkår.SVANGERSKAPSPENGER -> TODO()
-        Vilkår.SYKEPENGER -> TODO()
-        Vilkår.TILTAKSPENGER -> TODO()
-        Vilkår.UFØRETRYGD -> TODO()
+        Vilkår.LØNNSINNTEKT -> Kilde.SØKNAD
+        Vilkår.OMSORGSPENGER -> Kilde.K9SAK
+        Vilkår.OPPLÆRINGSPENGER -> Kilde.K9SAK
+        Vilkår.OVERGANGSSTØNAD -> Kilde.EF
+        Vilkår.PENSJONSINNTEKT -> Kilde.SØKNAD
+        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> Kilde.K9SAK
+        Vilkår.PLEIEPENGER_SYKT_BARN -> Kilde.K9SAK
+        Vilkår.SUPPLERENDESTØNADALDER -> Kilde.SØKNAD
+        Vilkår.SUPPLERENDESTØNADFLYKTNING -> Kilde.SØKNAD
+        Vilkår.SVANGERSKAPSPENGER -> Kilde.FPSAK
+        Vilkår.SYKEPENGER -> Kilde.SØKNAD
+        Vilkår.TILTAKSPENGER -> Kilde.ARENA
+        Vilkår.UFØRETRYGD -> Kilde.PESYS
+
+        // TODO: Slett ubrukte vilkår
+        else -> {
+            throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
+        }
     }
 }
 

@@ -19,6 +19,7 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     ALDERSPENSJON("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OPPLÆRINGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OMSORGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
+    JOBBSJANSEN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Forholdet til andre ytelser"), // TODO:!!
     INTROPROGRAMMET("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KVP("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KOMMUNALE_YTELSER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
