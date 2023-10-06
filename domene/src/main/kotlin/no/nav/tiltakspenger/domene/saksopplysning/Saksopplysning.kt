@@ -184,6 +184,7 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
                 tom = fakta.tom,
                 detaljer = fakta.detaljer,
             )
+
             HAR_YTELSE -> Vurdering.IkkeOppfylt(
                 vilkår = fakta.vilkår,
                 kilde = fakta.kilde,
@@ -191,6 +192,7 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
                 tom = fakta.tom,
                 detaljer = fakta.detaljer,
             )
+
             HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
                 vilkår = fakta.vilkår,
                 kilde = fakta.kilde,
@@ -219,6 +221,7 @@ private fun settKilde(vilkår: Vilkår): Kilde {
         Vilkår.GJENLEVENDEPENSJON -> Kilde.SØKNAD
         Vilkår.INSTITUSJONSOPPHOLD -> Kilde.SØKNAD
         Vilkår.INTROPROGRAMMET -> Kilde.SØKNAD
+        Vilkår.JOBBSJANSEN -> Kilde.SØKNAD
         Vilkår.KVP -> Kilde.SØKNAD
         Vilkår.LØNNSINNTEKT -> Kilde.SØKNAD
         Vilkår.OMSORGSPENGER -> Kilde.K9SAK
@@ -233,11 +236,8 @@ private fun settKilde(vilkår: Vilkår): Kilde {
         Vilkår.SYKEPENGER -> Kilde.SØKNAD
         Vilkår.TILTAKSPENGER -> Kilde.ARENA
         Vilkår.UFØRETRYGD -> Kilde.PESYS
-
-        // TODO: Slett ubrukte vilkår
-        else -> {
-            throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
-        }
+        Vilkår.KOMMUNALEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
+        Vilkår.STATLIGEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
     }
 }
 

@@ -174,11 +174,8 @@ fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String
         Vilkår.SYKEPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SYKEPENGER.harYtelse else Faktatekst.SYKEPENGER.harIkkeYtelse
         Vilkår.TILTAKSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.TILTAKSPENGER.harYtelse else Faktatekst.TILTAKSPENGER.harIkkeYtelse
         Vilkår.UFØRETRYGD -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.UFØRETRYGD.harYtelse else Faktatekst.UFØRETRYGD.harIkkeYtelse
-
-        // TODO: Slett ubrukte vilkår
-        else -> {
-            throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
-        }
+        Vilkår.KOMMUNALEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
+        Vilkår.STATLIGEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
     }
 }
 
