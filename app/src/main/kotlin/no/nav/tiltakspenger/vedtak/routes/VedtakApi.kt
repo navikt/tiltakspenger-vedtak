@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.overgangsstønadRoutes
@@ -43,7 +44,6 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
-import no.nav.tiltakspenger.vedtak.routes.søker.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService

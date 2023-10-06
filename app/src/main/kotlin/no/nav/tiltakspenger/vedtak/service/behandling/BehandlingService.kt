@@ -17,4 +17,6 @@ interface BehandlingService {
     fun hentBehandling(
         behandlingId: BehandlingId,
     ): Behandling
+
+    fun lagreBehandling(behandling: Behandling)
 }

@@ -1,29 +1,12 @@
-package no.nav.tiltakspenger.vedtak.routes.søker
+package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
-import io.ktor.server.response.respond
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
-
-private val LOG = KotlinLogging.logger {}
-
-internal const val behandlingPath = "/behandling"
 
 data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
@@ -63,14 +46,6 @@ data class SaksopplysningUtDTO(
     val vilkårLedd: String,
     val fakta: String,
     val utfall: String,
-)
-
-data class SaksopplysningDTO(
-    val fom: String,
-    val tom: String,
-    val vilkår: String,
-    val begrunnelse: String,
-    val harYtelse: Boolean,
 )
 
 fun mapSammenstillingDTO(
@@ -177,54 +152,4 @@ fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String
         Vilkår.KOMMUNALEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
         Vilkår.STATLIGEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
     }
-}
-
-fun Route.behandlingRoutes(
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-    behandlingService: BehandlingService,
-    sakService: SakService,
-) {
-    get("$behandlingPath/{behandlingId}") {
-        LOG.debug("Mottatt request på $behandlingPath/behandlingId")
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val sak = sakService.henteMedBehandlingsId(behandlingId)
-
-        val behandling = sak.behandlinger.first() //  .find { it.id == behandlingId }
-//        val behandling = behandlingService.hentBehandling(behandlingId)
-        println("Behandling vi har hentet : $behandling")
-        if (behandling !is Søknadsbehandling) throw IllegalStateException("Kan foreløpig bare hente Søknadsbehandlinger")
-        val dto = mapSammenstillingDTO(
-            behandling = behandling,
-            personopplysninger = sak.personopplysninger,
-        )
-        call.respond(status = HttpStatusCode.OK, dto)
-    }
-
-    post("$behandlingPath/{behandlingId}") {
-        LOG.debug("Mottatt request på $behandlingPath/")
-        val nySaksopplysning = call.receive<SaksopplysningDTO>()
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val behandling = behandlingService.hentBehandling(behandlingId)
-        behandling.leggTilSaksopplysning(lagSaksopplysningMedVilkår(nySaksopplysning))
-
-        call.respond(status = HttpStatusCode.OK, message = "{}")
-    }
-}
-
-private fun lagSaksopplysningMedVilkår(saksopplysning: SaksopplysningDTO): Saksopplysning {
-    val vilkår = when (saksopplysning.vilkår) {
-        "AAP" -> Vilkår.AAP
-        "DAGPENGER" -> Vilkår.DAGPENGER
-        else -> throw IllegalStateException("Kan ikke lage saksopplysning for vilkår ${saksopplysning.vilkår}")
-    }
-
-    return Saksopplysning.lagSaksopplysningFraSBH(
-        fom = LocalDate.parse(saksopplysning.fom),
-        tom = LocalDate.parse(saksopplysning.tom),
-        vilkår = vilkår,
-        detaljer = saksopplysning.begrunnelse,
-        typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
-    )
 }

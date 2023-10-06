@@ -33,4 +33,10 @@ class BehandlingServiceImpl(
     override fun hentBehandling(behandlingId: BehandlingId): Behandling {
         return behandlingRepo.hent(behandlingId)
     }
+
+    override fun lagreBehandling(behandling: Behandling) {
+        when (behandling) {
+            is Søknadsbehandling -> behandlingRepo.lagre(behandling)
+        }
+    }
 }
