@@ -28,7 +28,7 @@ data class Saksopplysning(
                 fom = periode.fra,
                 tom = periode.til,
                 vilkår = vilkår,
-                kilde = Kilde.ARENA,
+                kilde = settKilde(vilkår),
                 detaljer = "",
                 typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
             )
@@ -83,6 +83,28 @@ fun lagFaktaFraPeriodespørsmål(vilkår: Vilkår, periodeSpm: Søknad.PeriodeSp
         kilde = Kilde.SØKNAD,
         detaljer = "",
         typeSaksopplysning = if (periodeSpm is Søknad.PeriodeSpm.Ja) HAR_YTELSE else HAR_IKKE_YTELSE,
+    )
+}
+
+fun lagFaktaFraJaNeiSpørsmål(vilkår: Vilkår, jaNeiSpm: Søknad.JaNeiSpm, periode: Periode): Saksopplysning {
+    return Saksopplysning(
+        fom = periode.fra,
+        tom = periode.til,
+        vilkår = vilkår,
+        kilde = Kilde.SØKNAD,
+        detaljer = "",
+        typeSaksopplysning = if (jaNeiSpm is Søknad.JaNeiSpm.Ja) HAR_YTELSE else HAR_IKKE_YTELSE,
+    )
+}
+
+fun lagFaktaFraFraOgMedDatospørsmål(vilkår: Vilkår, fraOgMedDatoSpm: Søknad.FraOgMedDatoSpm, periode: Periode): Saksopplysning {
+    return Saksopplysning(
+        fom = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) fraOgMedDatoSpm.fra else periode.fra,
+        tom = periode.til,
+        vilkår = vilkår,
+        kilde = Kilde.SØKNAD,
+        detaljer = "",
+        typeSaksopplysning = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) HAR_YTELSE else HAR_IKKE_YTELSE,
     )
 }
 
@@ -211,7 +233,7 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
         )
     }
 
-private fun settKilde(vilkår: Vilkår): Kilde {
+fun settKilde(vilkår: Vilkår): Kilde {
     return when (vilkår) {
         Vilkår.AAP -> Kilde.ARENA
         Vilkår.ALDER -> Kilde.PDL
@@ -236,6 +258,7 @@ private fun settKilde(vilkår: Vilkår): Kilde {
         Vilkår.SYKEPENGER -> Kilde.SØKNAD
         Vilkår.TILTAKSPENGER -> Kilde.ARENA
         Vilkår.UFØRETRYGD -> Kilde.PESYS
+        Vilkår.ETTERLØNN -> Kilde.SØKNAD
         Vilkår.KOMMUNALEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
         Vilkår.STATLIGEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
     }

@@ -121,6 +121,7 @@ enum class Faktatekst(val harYtelse: String, val harIkkeYtelse: String) {
     SYKEPENGER("Bruker mottar sykepenger", "Bruker mottar ikke sykepenger"),
     TILTAKSPENGER("Bruker mottar tiltakspenger", "Bruker mottar ikke tiltakspenger"),
     UFØRETRYGD("Bruker mottar uføretrygd", "Bruker mottar ikke uføretrygd"),
+    ETTERLØNN("Bruker mottar etterlønn", "Bruker mottar ikke etterlønn"),
 }
 
 fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String {
@@ -149,6 +150,7 @@ fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String
         Vilkår.SYKEPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SYKEPENGER.harYtelse else Faktatekst.SYKEPENGER.harIkkeYtelse
         Vilkår.TILTAKSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.TILTAKSPENGER.harYtelse else Faktatekst.TILTAKSPENGER.harIkkeYtelse
         Vilkår.UFØRETRYGD -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.UFØRETRYGD.harYtelse else Faktatekst.UFØRETRYGD.harIkkeYtelse
+        Vilkår.ETTERLØNN -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.ETTERLØNN.harYtelse else Faktatekst.ETTERLØNN.harIkkeYtelse
         Vilkår.KOMMUNALEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
         Vilkår.STATLIGEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
     }

@@ -19,7 +19,7 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     ALDERSPENSJON("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OPPLÆRINGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OMSORGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
-    JOBBSJANSEN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Forholdet til andre ytelser"), // TODO:!!
+    JOBBSJANSEN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Forholdet til andre ytelser"), // Denne er ikke riktig, fiks!
     INTROPROGRAMMET("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KVP("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KOMMUNALE_YTELSER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
@@ -27,4 +27,5 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     INSTITUSJONSOPPHOLD("Tiltakspengeforskriften", "§9", "1", "Institusjonsopphold med kost og losji"),
     PENSJONSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Institusjonsopphold med kost og losji"),
     LØNNSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Institusjonsopphold med kost og losji"),
+    ETTERLØNN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Institusjonsopphold med kost og losji"), // Denne er ikke riktig, fiks!
 }
