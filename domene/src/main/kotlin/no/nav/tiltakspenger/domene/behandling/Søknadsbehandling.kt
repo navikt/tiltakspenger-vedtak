@@ -39,7 +39,12 @@ sealed interface Søknadsbehandling : Behandling {
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_NÆRSTÅENDE),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_SYKT_BARN),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.FORELDREPENGER),
-                        // Legg til flere saksopplysninger her
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OPPLÆRINGSPENGER),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OMSORGSPENGER),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.ALDER),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.TILTAKSPENGER),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.UFØRETRYGD),
+                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
                         lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
                         lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
                         lagFaktaFraPeriodespørsmål(
@@ -121,9 +126,19 @@ sealed interface Søknadsbehandling : Behandling {
             val vurderinger =
                 saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP) +
                     saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_NÆRSTÅENDE }.lagVurdering(Vilkår.PLEIEPENGER_NÆRSTÅENDE) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_SYKT_BARN }.lagVurdering(Vilkår.PLEIEPENGER_SYKT_BARN) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_NÆRSTÅENDE }
+                        .lagVurdering(Vilkår.PLEIEPENGER_NÆRSTÅENDE) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_SYKT_BARN }
+                        .lagVurdering(Vilkår.PLEIEPENGER_SYKT_BARN) +
                     saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.lagVurdering(Vilkår.FORELDREPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.OPPLÆRINGSPENGER }
+                        .lagVurdering(Vilkår.OPPLÆRINGSPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.OMSORGSPENGER }.lagVurdering(Vilkår.OMSORGSPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.ALDER }.lagVurdering(Vilkår.ALDER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.TILTAKSPENGER }.lagVurdering(Vilkår.TILTAKSPENGER) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.UFØRETRYGD }.lagVurdering(Vilkår.UFØRETRYGD) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.SVANGERSKAPSPENGER }
+                        .lagVurdering(Vilkår.SVANGERSKAPSPENGER) +
                     // Legg til flere vurderinger her
                     saksopplysninger.filter { it.vilkår == Vilkår.KVP }.lagVurdering(Vilkår.KVP) +
                     saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }
@@ -138,7 +153,8 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADFLYKTNING }
                         .lagVurdering(Vilkår.SUPPLERENDESTØNADFLYKTNING) +
                     saksopplysninger.filter { it.vilkår == Vilkår.JOBBSJANSEN }.lagVurdering(Vilkår.JOBBSJANSEN) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PENSJONSINNTEKT }.lagVurdering(Vilkår.PENSJONSINNTEKT) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.PENSJONSINNTEKT }
+                        .lagVurdering(Vilkår.PENSJONSINNTEKT) +
                     saksopplysninger.filter { it.vilkår == Vilkår.LØNNSINNTEKT }.lagVurdering(Vilkår.LØNNSINNTEKT) +
                     saksopplysninger.filter { it.vilkår == Vilkår.ETTERLØNN }.lagVurdering(Vilkår.ETTERLØNN) +
                     saksopplysninger.filter { it.vilkår == Vilkår.ALDERSPENSJON }.lagVurdering(Vilkår.ALDERSPENSJON)
