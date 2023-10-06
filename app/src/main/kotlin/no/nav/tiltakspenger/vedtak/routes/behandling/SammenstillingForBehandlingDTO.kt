@@ -2,10 +2,8 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
 
 data class SammenstillingForBehandlingDTO(
@@ -44,8 +42,13 @@ data class SaksopplysningUtDTO(
     val vilkårTittel: String,
     val vilkårParagraf: String,
     val vilkårLedd: String,
-    val fakta: String,
+    val fakta: FaktaDTO,
     val utfall: String,
+)
+
+data class FaktaDTO(
+    val harYtelse: String,
+    val harIkkeYtelse: String,
 )
 
 fun mapSammenstillingDTO(
@@ -65,6 +68,7 @@ fun mapSammenstillingDTO(
             antallDager = 2,
         ),
         saksopplysninger = behandling.saksopplysninger.map {
+            val fakta = fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
             SaksopplysningUtDTO(
                 fom = it.fom,
                 tom = it.tom,
@@ -74,7 +78,7 @@ fun mapSammenstillingDTO(
                 vilkårTittel = it.vilkår.tittel,
                 vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                 vilkårLedd = it.vilkår.lovreferanse.ledd,
-                fakta = faktatekst(it.vilkår, it.typeSaksopplysning),
+                fakta = fakta,
                 utfall = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger.first { vurdering -> vurdering.vilkår == it.vilkår && vurdering.fom == it.fom }.utfall.name else Utfall.KREVER_MANUELL_VURDERING.name,
             )
         },
@@ -91,67 +95,88 @@ fun mapSammenstillingDTO(
     )
 }
 
-// TODO: Gå gjennom med fag og finn riktige tekster
-enum class Faktatekst(val harYtelse: String, val harIkkeYtelse: String) {
-    AAP("Bruker mottar AAP", "Bruker mottar ikke AAP"),
-    ALDER("Bruker er over 18 år", "Bruker er under 18 år"),
-    ALDERSPENSJON("Bruker mottar alderspensjon", "Bruker mottar ikke alderspensjon"),
-    DAGPENGER("Bruker mottar dagpenger", "Bruker mottar ikke dagpenger"),
-    FORELDREPENGER("Bruker mottar foreldrepenger", "Bruker mottar ikke foreldrepenger"),
-    GJENLEVENDEPENSJON("Bruker mottar gjenlevendepensjon", "Bruker mottar ikke gjenlevendepensjon"),
-    INSTITUSJONSOPPHOLD("Bruker har institusjonsopphold", "Bruker har ikke institusjonsopphold"),
-    INTROPROGRAMMET("Bruker mottar introprogrammet", "Bruker mottar ikke introprogrammet"),
-    JOBBSJANSEN("Bruker deltar på jobbsjansen", "Bruker deltar ikke på jobbsjansen"),
-    KOMMUNALEYTELSER("Bruker mottar kommunaleytelser", "Bruker mottar ikke kommunaleytelser"),
-    KVP("Bruker går på KVP", "Bruker går ikke på KVP"),
-    LØNNSINNTEKT("Bruker mottar lønnsinntekt", "Bruker mottar ikke lønnsinntekt"),
-    OMSORGSPENGER("Bruker mottar omsorgspenger", "Bruker mottar ikke omsorgspenger"),
-    OPPLÆRINGSPENGER("Bruker mottar opplæringspenger", "Bruker mottar ikke opplæringspenger"),
-    OVERGANGSSTØNAD("Bruker mottar overgangsstønad", "Bruker mottar ikke overgangsstønad"),
-    PENSJONSINNTEKT("Bruker mottar pensjonsinntekt", "Bruker mottar ikke pensjonsinntekt"),
-    PLEIEPENGER_NÆRSTÅENDE("Bruker mottar pleiepenger nærstående", "Bruker mottar ikke pleiepenger nærstående"),
-    PLEIEPENGER_SYKT_BARN("Bruker mottar pleiepenger sykt barn", "Bruker mottar ikke pleiepenger sykt barn"),
-    STATLIGEYTELSER("Bruker mottar statligeytelser", "Bruker mottar ikke statligeytelser"),
-    SUPPLERENDESTØNADALDER("Bruker mottar supplerendestønadalder", "Bruker mottar ikke supplerendestønadalder"),
-    SUPPLERENDESTØNADFLYKTNING(
-        "Bruker mottar supplerende stønad flyktning",
-        "Bruker mottar ikke supplerende stønad flyktning",
+val fakta = hashMapOf(
+    "AAP" to FaktaDTO(harYtelse = "Bruker mottar AAP", harIkkeYtelse = ""),
+    "ALDER" to FaktaDTO(harYtelse = "Bruker er over 18 år", harIkkeYtelse = "Bruker er under 18 år"),
+    "ALDERSPENSJON" to FaktaDTO(
+        harYtelse = "Bruker mottar alderspensjon",
+        harIkkeYtelse = "Bruker mottar ikke alderspensjon",
     ),
-    SVANGERSKAPSPENGER("Bruker mottar svangerskapspenger", "Bruker mottar ikke svangerskapspenger"),
-    SYKEPENGER("Bruker mottar sykepenger", "Bruker mottar ikke sykepenger"),
-    TILTAKSPENGER("Bruker mottar tiltakspenger", "Bruker mottar ikke tiltakspenger"),
-    UFØRETRYGD("Bruker mottar uføretrygd", "Bruker mottar ikke uføretrygd"),
-    ETTERLØNN("Bruker mottar etterlønn", "Bruker mottar ikke etterlønn"),
-}
-
-fun faktatekst(vilkår: Vilkår, typeSaksopplysning: TypeSaksopplysning): String {
-    if (typeSaksopplysning == TypeSaksopplysning.IKKE_INNHENTET_ENDA) return "Ikke innhentet"
-    return when (vilkår) {
-        Vilkår.AAP -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.AAP.harYtelse else Faktatekst.AAP.harIkkeYtelse
-        Vilkår.ALDER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.ALDER.harYtelse else Faktatekst.ALDER.harIkkeYtelse
-        Vilkår.ALDERSPENSJON -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.ALDERSPENSJON.harYtelse else Faktatekst.ALDERSPENSJON.harIkkeYtelse
-        Vilkår.DAGPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.DAGPENGER.harYtelse else Faktatekst.DAGPENGER.harIkkeYtelse
-        Vilkår.FORELDREPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.FORELDREPENGER.harYtelse else Faktatekst.FORELDREPENGER.harIkkeYtelse
-        Vilkår.GJENLEVENDEPENSJON -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.GJENLEVENDEPENSJON.harYtelse else Faktatekst.GJENLEVENDEPENSJON.harIkkeYtelse
-        Vilkår.INSTITUSJONSOPPHOLD -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.INSTITUSJONSOPPHOLD.harYtelse else Faktatekst.INSTITUSJONSOPPHOLD.harIkkeYtelse
-        Vilkår.INTROPROGRAMMET -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.INTROPROGRAMMET.harYtelse else Faktatekst.INTROPROGRAMMET.harIkkeYtelse
-        Vilkår.JOBBSJANSEN -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.JOBBSJANSEN.harYtelse else Faktatekst.JOBBSJANSEN.harIkkeYtelse
-        Vilkår.KVP -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.KVP.harYtelse else Faktatekst.KVP.harIkkeYtelse
-        Vilkår.LØNNSINNTEKT -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.LØNNSINNTEKT.harYtelse else Faktatekst.LØNNSINNTEKT.harIkkeYtelse
-        Vilkår.OMSORGSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.OMSORGSPENGER.harYtelse else Faktatekst.OMSORGSPENGER.harIkkeYtelse
-        Vilkår.OPPLÆRINGSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.OPPLÆRINGSPENGER.harYtelse else Faktatekst.OPPLÆRINGSPENGER.harIkkeYtelse
-        Vilkår.OVERGANGSSTØNAD -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.OVERGANGSSTØNAD.harYtelse else Faktatekst.OVERGANGSSTØNAD.harIkkeYtelse
-        Vilkår.PENSJONSINNTEKT -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.PENSJONSINNTEKT.harYtelse else Faktatekst.PENSJONSINNTEKT.harIkkeYtelse
-        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.PLEIEPENGER_NÆRSTÅENDE.harYtelse else Faktatekst.PLEIEPENGER_NÆRSTÅENDE.harIkkeYtelse
-        Vilkår.PLEIEPENGER_SYKT_BARN -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.PLEIEPENGER_SYKT_BARN.harYtelse else Faktatekst.PLEIEPENGER_SYKT_BARN.harIkkeYtelse
-        Vilkår.SUPPLERENDESTØNADALDER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SUPPLERENDESTØNADALDER.harYtelse else Faktatekst.SUPPLERENDESTØNADALDER.harIkkeYtelse
-        Vilkår.SUPPLERENDESTØNADFLYKTNING -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SUPPLERENDESTØNADFLYKTNING.harYtelse else Faktatekst.SUPPLERENDESTØNADFLYKTNING.harIkkeYtelse
-        Vilkår.SVANGERSKAPSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SVANGERSKAPSPENGER.harYtelse else Faktatekst.SVANGERSKAPSPENGER.harIkkeYtelse
-        Vilkår.SYKEPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.SYKEPENGER.harYtelse else Faktatekst.SYKEPENGER.harIkkeYtelse
-        Vilkår.TILTAKSPENGER -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.TILTAKSPENGER.harYtelse else Faktatekst.TILTAKSPENGER.harIkkeYtelse
-        Vilkår.UFØRETRYGD -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.UFØRETRYGD.harYtelse else Faktatekst.UFØRETRYGD.harIkkeYtelse
-        Vilkår.ETTERLØNN -> if (typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE) Faktatekst.ETTERLØNN.harYtelse else Faktatekst.ETTERLØNN.harIkkeYtelse
-        Vilkår.KOMMUNALEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
-        Vilkår.STATLIGEYTELSER -> throw IllegalArgumentException("Vi har ikke støtte for denne vilkårstypen: $vilkår")
-    }
-}
+    "DAGPENGER" to FaktaDTO(harYtelse = "Bruker mottar dagpenger", harIkkeYtelse = "Bruker mottar ikke dagpenger"),
+    "FORELDREPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar foreldrepenger",
+        harIkkeYtelse = "Bruker mottar ikke foreldrepenger",
+    ),
+    "GJENLEVENDEPENSJON" to FaktaDTO(
+        harYtelse = "Bruker mottar gjenlevendepensjon",
+        harIkkeYtelse = "Bruker mottar ikke gjenlevendepensjon",
+    ),
+    "INSTITUSJONSOPPHOLD" to FaktaDTO(
+        harYtelse = "Bruker har institusjonsopphold",
+        harIkkeYtelse = "Bruker har ikke institusjonsopphold",
+    ),
+    "INTROPROGRAMMET" to FaktaDTO(
+        harYtelse = "Bruker mottar introprogrammet",
+        harIkkeYtelse = "Bruker mottar ikke introprogrammet",
+    ),
+    "JOBBSJANSEN" to FaktaDTO(
+        harYtelse = "Bruker deltar på jobbsjansen",
+        harIkkeYtelse = "Bruker deltar ikke på jobbsjansen",
+    ),
+    "KOMMUNALEYTELSER" to FaktaDTO(
+        harYtelse = "Bruker mottar kommunaleytelser",
+        harIkkeYtelse = "Bruker mottar ikke kommunaleytelser",
+    ),
+    "KVP" to FaktaDTO(harYtelse = "Bruker går på KVP", harIkkeYtelse = "Bruker går ikke på KVP"),
+    "LØNNSINNTEKT" to FaktaDTO(
+        harYtelse = "Bruker mottar lønnsinntekt",
+        harIkkeYtelse = "Bruker mottar ikke lønnsinntekt",
+    ),
+    "OMSORGSPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar omsorgspenger",
+        harIkkeYtelse = "Bruker mottar ikke omsorgspenger",
+    ),
+    "OPPLÆRINGSPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar opplæringspenger",
+        harIkkeYtelse = "Bruker mottar ikke opplæringspenger",
+    ),
+    "OVERGANGSSTØNAD" to FaktaDTO(
+        harYtelse = "Bruker mottar overgangsstønad",
+        harIkkeYtelse = "Bruker mottar ikke overgangsstønad",
+    ),
+    "PENSJONSINNTEKT" to FaktaDTO(
+        harYtelse = "Bruker mottar pensjonsinntekt",
+        harIkkeYtelse = "Bruker mottar ikke pensjonsinntekt",
+    ),
+    "PLEIEPENGER_NÆRSTÅENDE" to FaktaDTO(
+        harYtelse = "Bruker mottar pleiepenger nærstående",
+        harIkkeYtelse = "Bruker mottar ikke pleiepenger nærstående",
+    ),
+    "PLEIEPENGER_SYKT_BARN" to FaktaDTO(
+        harYtelse = "Bruker mottar pleiepenger sykt barn",
+        harIkkeYtelse = "Bruker mottar ikke pleiepenger sykt barn",
+    ),
+    "STATLIGEYTELSER" to FaktaDTO(
+        harYtelse = "Bruker mottar statligeytelser",
+        harIkkeYtelse = "Bruker mottar ikke statligeytelser",
+    ),
+    "SUPPLERENDESTØNADALDER" to FaktaDTO(
+        harYtelse = "Bruker mottar supplerendestønadalder",
+        harIkkeYtelse = "Bruker mottar ikke supplerendestønadalder",
+    ),
+    "SUPPLERENDESTØNADFLYKTNING" to FaktaDTO(
+        harYtelse = "Bruker mottar supplerende stønad flyktning",
+        harIkkeYtelse = "Bruker mottar ikke supplerende stønad flyktning",
+    ),
+    "SVANGERSKAPSPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar svangerskapspenger",
+        harIkkeYtelse = "Bruker mottar ikke svangerskapspenger",
+    ),
+    "SYKEPENGER" to FaktaDTO(harYtelse = "Bruker mottar sykepenger", harIkkeYtelse = "Bruker mottar ikke sykepenger"),
+    "TILTAKSPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar tiltakspenger",
+        harIkkeYtelse = "Bruker mottar ikke tiltakspenger",
+    ),
+    "UFØRETRYGD" to FaktaDTO(harYtelse = "Bruker mottar uføretrygd", harIkkeYtelse = "Bruker mottar ikke uføretrygd"),
+    "ETTERLØNN" to FaktaDTO(harYtelse = "Bruker mottar etterlønn", harIkkeYtelse = "Bruker mottar ikke etterlønn"),
+)
