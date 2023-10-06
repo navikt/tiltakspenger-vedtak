@@ -46,9 +46,8 @@ fun Route.behandlingRoutes(
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val behandling = behandlingService.hentBehandling(behandlingId)
-        behandling.leggTilSaksopplysning(lagSaksopplysningMedVilkår(nySaksopplysning))
-        behandlingService.lagreBehandling(behandling) // skal service kun lagre behandlingen, eller skal leggTilSaksopplysning flyttes til servicen?
+
+        behandlingService.leggTilSaksopplysning(behandlingId, lagSaksopplysningMedVilkår(nySaksopplysning))
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

@@ -18,5 +18,5 @@ interface BehandlingService {
         behandlingId: BehandlingId,
     ): Behandling
 
-    fun lagreBehandling(behandling: Behandling)
+    fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
 }

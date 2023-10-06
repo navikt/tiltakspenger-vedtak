@@ -5,7 +5,6 @@ import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsm
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraPeriodespørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
-import no.nav.tiltakspenger.domene.saksopplysning.settKilde
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
