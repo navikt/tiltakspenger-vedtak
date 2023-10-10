@@ -1,13 +1,14 @@
 package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
 internal class AnbefalingTest {
 
-    private fun Vilkår.toOppfyltVurdering() = Vurdering.Oppfylt(this, "", "")
+    private fun Vilkår.toOppfyltVurdering() = Vurdering.Oppfylt(this, Kilde.SAKSB, "")
 
     @Test
     fun `Skal få oppfylt når alle vurderinger er oppfylt`() {
@@ -35,21 +36,21 @@ internal class AnbefalingTest {
         val vilkår: List<Vilkår> = listOf(Vilkår.DAGPENGER, Vilkår.AAP)
         val gjenlevendepensjonVurdering = Vurdering.IkkeOppfylt(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 1),
             LocalDate.of(2022, 1, 7),
             "",
         )
         val lønnsinntektVurdering = Vurdering.IkkeOppfylt(
             Vilkår.LØNNSINNTEKT,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 5),
             LocalDate.of(2022, 1, 10),
             "",
         )
         val sykepengerVurdering = Vurdering.IkkeOppfylt(
             Vilkår.SYKEPENGER,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 9),
             LocalDate.of(2022, 1, 15),
             "",
@@ -90,21 +91,21 @@ internal class AnbefalingTest {
 
         val gjenlevendeVurdering = Vurdering.KreverManuellVurdering(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 1),
             LocalDate.of(2022, 1, 7),
             "",
         )
         val lønnsinntektVurdering = Vurdering.KreverManuellVurdering(
             Vilkår.LØNNSINNTEKT,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 5),
             LocalDate.of(2022, 1, 9),
             "",
         )
         val sykepengerVurdering = Vurdering.KreverManuellVurdering(
             Vilkår.SYKEPENGER,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 12),
             LocalDate.of(2022, 1, 15),
             "",
@@ -148,7 +149,7 @@ internal class AnbefalingTest {
 
         val gjenlevendeVurdering = Vurdering.IkkeOppfylt(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             vurderingsperiode.fra,
             vurderingsperiode.til,
             "",
@@ -176,14 +177,14 @@ internal class AnbefalingTest {
 
         val gjenlevendeVurdering1 = Vurdering.IkkeOppfylt(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             vurderingsperiode.fra,
             LocalDate.of(2022, 1, 10),
             "",
         )
         val gjenlevendeVurdering2 = Vurdering.IkkeOppfylt(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 11),
             vurderingsperiode.til,
             "",
@@ -212,13 +213,13 @@ internal class AnbefalingTest {
 
         val gjenlevendeVurdering = Vurdering.IkkeOppfylt(
             Vilkår.GJENLEVENDEPENSJON,
-            "",
+            Kilde.SAKSB,
             LocalDate.of(2022, 1, 11),
             vurderingsperiode.til,
             "",
         )
         vilkår
-            .map { Vurdering.Oppfylt(it, "", "") }
+            .map { Vurdering.Oppfylt(it, Kilde.SAKSB, "") }
             .plus(gjenlevendeVurdering)
             .anbefalingFor(vurderingsperiode)
             .shouldBe(

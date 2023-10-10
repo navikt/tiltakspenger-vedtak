@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.oktober
@@ -26,7 +27,7 @@ internal class KVPVilkårsvurderingTest {
         val kvpVilkårsvurdering =
             KVPVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
-        kvpVilkårsvurdering.vurderinger().first().kilde shouldBe "Søknad"
+        kvpVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
         kvpVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
         kvpVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         kvpVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
@@ -61,14 +62,14 @@ internal class KVPVilkårsvurderingTest {
         val vurderingSøknad =
             Vurdering.KreverManuellVurdering(
                 vilkår = Vilkår.KVP,
-                kilde = "Søknad",
+                kilde = Kilde.SØKNAD,
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 detaljer = "Svart JA i søknaden",
             )
         val vurderingSaksbehandler = Vurdering.IkkeOppfylt(
             vilkår = Vilkår.KVP,
-            kilde = "Saksbehandler",
+            kilde = Kilde.SAKSB,
             fom = 1.januar(2022),
             tom = 31.oktober(2022),
             detaljer = "",

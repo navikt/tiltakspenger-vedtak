@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.overgangsstønadRoutes
@@ -44,7 +45,9 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
@@ -59,6 +62,8 @@ internal fun Application.vedtakApi(
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søkerService: SøkerService,
+    sakService: SakService,
+    behandlingService: BehandlingService,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
@@ -80,12 +85,17 @@ internal fun Application.vedtakApi(
         authenticate("saksbehandling") {
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
+            behandlingRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                behandlingService = behandlingService,
+                sakService = sakService,
+            )
         }
         authenticate("admin") {
             resettInnsendingerRoute(innsendingAdminService)
         }
         authenticate("systemtoken") {
-            søknadRoutes(innsendingMediator, søkerMediator)
+            søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator)
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)
@@ -96,6 +106,7 @@ internal fun Application.vedtakApi(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
+                sakService = sakService,
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,

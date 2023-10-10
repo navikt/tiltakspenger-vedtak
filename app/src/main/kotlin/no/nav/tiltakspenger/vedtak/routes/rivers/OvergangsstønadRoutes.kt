@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.libs.overgangsstonad.Feilmelding
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadPeriodeDTO
@@ -88,7 +89,7 @@ private fun mapToOvergangsstønadVedtak(
         id = OvergangsstønadVedtakId.random(),
         fom = LocalDate.parse(dto.fom), // TODO flytt parsing til faktainnhenter
         tom = LocalDate.parse(dto.tom),
-        datakilde = dto.datakilde,
+        datakilde = Kilde.valueOf(dto.datakilde),
         innhentet = innhentet,
     )
 }

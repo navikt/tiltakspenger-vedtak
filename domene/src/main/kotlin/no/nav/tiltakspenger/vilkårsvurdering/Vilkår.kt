@@ -15,6 +15,11 @@ sealed class Vilkår {
         override val lovreferanse: Lovreferanse = Lovreferanse.TILTAKSPENGER
     }
 
+    object JOBBSJANSEN : Vilkår() {
+        override val tittel: String = "JOBBSJANSEN"
+        override val lovreferanse: Lovreferanse = Lovreferanse.JOBBSJANSEN
+    }
+
     object AAP : Vilkår() {
         override val tittel: String = "AAP"
         override val lovreferanse: Lovreferanse = Lovreferanse.AAP
@@ -123,5 +128,10 @@ sealed class Vilkår {
     object LØNNSINNTEKT : Vilkår() {
         override val tittel: String = "LØNNSINNTEKT"
         override val lovreferanse: Lovreferanse = Lovreferanse.LØNNSINNTEKT
+    }
+
+    object ETTERLØNN : Vilkår() {
+        override val tittel: String = "ETTERLØNN"
+        override val lovreferanse: Lovreferanse = Lovreferanse.ETTERLØNN
     }
 }

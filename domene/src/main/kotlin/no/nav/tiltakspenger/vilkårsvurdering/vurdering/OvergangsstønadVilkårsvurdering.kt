@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
@@ -44,13 +45,9 @@ data class OvergangsstønadVilkårsvurdering(
             listOf(
                 Vurdering.Oppfylt(
                     vilkår = vilkår(),
-                    kilde = KILDE,
+                    kilde = Kilde.EF,
                     detaljer = "",
                 ),
             )
         }
-
-    companion object {
-        private const val KILDE = "EF"
-    }
 }

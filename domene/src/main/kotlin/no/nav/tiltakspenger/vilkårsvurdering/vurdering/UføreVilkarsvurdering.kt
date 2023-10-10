@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.toDisplayDate
 import no.nav.tiltakspenger.vedtak.UføreVedtak
@@ -43,7 +44,7 @@ data class UføreVilkarsvurdering(
             return listOf(
                 Vurdering.Oppfylt(
                     vilkår = Vilkår.UFØRETRYGD,
-                    kilde = KILDE,
+                    kilde = Kilde.PESYS,
                     detaljer = if (dato.toString() == LocalDate.of(9999, 12, 31)
                             .toString()
                     ) {
@@ -69,7 +70,7 @@ data class UføreVilkarsvurdering(
 //                ),
                 Vurdering.KreverManuellVurdering(
                     vilkår = Vilkår.UFØRETRYGD,
-                    kilde = KILDE,
+                    kilde = Kilde.PESYS,
                     fom = dato,
                     tom = vurderingsperiode.til,
                     detaljer = "",
@@ -80,15 +81,11 @@ data class UføreVilkarsvurdering(
         return listOf(
             Vurdering.KreverManuellVurdering(
                 vilkår = Vilkår.UFØRETRYGD,
-                kilde = KILDE,
+                kilde = Kilde.PESYS,
                 fom = dato,
                 tom = vurderingsperiode.til,
                 detaljer = "",
             ),
         )
-    }
-
-    companion object {
-        private const val KILDE = "pesys"
     }
 }

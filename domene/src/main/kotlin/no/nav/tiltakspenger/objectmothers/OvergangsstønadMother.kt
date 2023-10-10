@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -12,7 +13,7 @@ interface OvergangsstønadMother {
         id: OvergangsstønadVedtakId = OvergangsstønadVedtakId.random(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.januar(2022),
-        datakilde: String = "Kilde",
+        datakilde: Kilde = Kilde.EF,
         innhentet: LocalDateTime = 1.januarDateTime(2022),
     ): OvergangsstønadVedtak =
         OvergangsstønadVedtak(

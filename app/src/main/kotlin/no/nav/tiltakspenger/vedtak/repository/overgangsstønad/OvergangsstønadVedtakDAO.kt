@@ -4,6 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
@@ -49,7 +50,7 @@ class OvergangsstønadVedtakDAO() {
                     "innsending_id" to innsendingId.toString(),
                     "fom" to overgangsstønadVedtak.fom,
                     "tom" to overgangsstønadVedtak.tom,
-                    "datakilde" to overgangsstønadVedtak.datakilde,
+                    "datakilde" to overgangsstønadVedtak.datakilde.navn,
                     "innhentet" to overgangsstønadVedtak.innhentet,
                     "tidsstempel_hos_oss" to LocalDateTime.now(),
                 ),
@@ -67,7 +68,7 @@ class OvergangsstønadVedtakDAO() {
             id = OvergangsstønadVedtakId.fromDb(string("id")),
             fom = localDate("fom"),
             tom = localDate("tom"),
-            datakilde = string("datakilde"),
+            datakilde = Kilde.valueOf(string("datakilde")),
             innhentet = localDateTime("innhentet"),
         )
     }

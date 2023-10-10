@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 sealed class Personopplysninger {
+    abstract fun avklartSkjerming(): Boolean
     data class Søker(
         val ident: String,
         val fødselsdato: LocalDate,
@@ -20,6 +21,7 @@ sealed class Personopplysninger {
     ) : Tidsstempler, Personopplysninger() {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
+        override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
     }
 
     data class BarnUtenIdent(
@@ -31,6 +33,7 @@ sealed class Personopplysninger {
     ) : Tidsstempler, Personopplysninger() {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
+        override fun avklartSkjerming(): Boolean = false
     }
 
     data class BarnMedIdent(
@@ -48,5 +51,6 @@ sealed class Personopplysninger {
     ) : Tidsstempler, Personopplysninger() {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
+        override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
     }
 }

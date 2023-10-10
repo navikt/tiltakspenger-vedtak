@@ -572,6 +572,9 @@ class Innsending private constructor(
             uføreMottattHendelse.info("Fikk info om uføreVedtak: ${uføreMottattHendelse.uføreVedtak()}")
             innsending.mottaUføreVedtak(uføreMottattHendelse)
             innsending.tilstand(uføreMottattHendelse, InnsendingFerdigstilt)
+
+            // TODO her kan vi trigge vilkårsvurdering av en behandling
+            //      eller vi kan gjøre det fortløpende etter hver fakta innhenting
         }
     }
 

@@ -182,7 +182,7 @@ class OvergangsstønadRoutesTest {
                 {
                   "fom": "2022-01-01",
                   "tom": "2022-01-31",  
-                  "datakilde": "kilde"
+                  "datakilde": "EF"
                 }
               ],
               "feil": null

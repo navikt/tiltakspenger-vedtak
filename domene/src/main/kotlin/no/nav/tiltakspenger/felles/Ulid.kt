@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.felles
 
 import com.github.guepardoapps.kulid.ULID
 
-interface Ulid {
+interface Ulid : Comparable<Ulid> {
 
     fun prefixPart(): String
     fun ulidPart(): String
@@ -30,6 +30,16 @@ data class UlidBase(private val stringValue: String) : Ulid {
     override fun prefixPart(): String = stringValue.split("_").first()
     override fun ulidPart(): String = ULID.fromString(stringValue.split("_").last())
     override fun toString() = stringValue
+    override fun compareTo(other: Ulid): Int {
+        // todo be noen voksne om å skrive denne litt finere
+        val o = other.toString()
+        val me = this.toString()
+        return when {
+            me == o -> 0
+            me > o -> 1
+            else -> -1
+        }
+    }
 }
 
 data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
@@ -38,6 +48,24 @@ data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid b
         fun random() = InnsendingId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
 
         fun fromDb(stringValue: String) = InnsendingId(ulid = UlidBase(stringValue))
+    }
+}
+
+data class SakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "sak"
+        fun random() = SakId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
+
+        fun fromDb(stringValue: String) = SakId(ulid = UlidBase(stringValue))
+    }
+}
+
+data class BehandlingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "beh"
+        fun random() = BehandlingId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
+
+        fun fromDb(stringValue: String) = BehandlingId(ulid = UlidBase(stringValue))
     }
 }
 

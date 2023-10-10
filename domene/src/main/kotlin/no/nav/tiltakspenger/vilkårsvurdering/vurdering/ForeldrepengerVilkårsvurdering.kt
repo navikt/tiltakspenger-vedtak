@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak.Ytelser.FORELDREPENGER
@@ -12,5 +13,5 @@ class ForeldrepengerVilkårsvurdering(
 ) : StatligFPogK9YtelseVilkårsvurdering(ytelser, vurderingsperiode) {
     override fun vilkår(): Vilkår = Vilkår.FORELDREPENGER
     override fun ytelseType() = listOf(FORELDREPENGER)
-    override fun kilde() = "FPSAK"
+    override fun kilde() = Kilde.FPSAK
 }

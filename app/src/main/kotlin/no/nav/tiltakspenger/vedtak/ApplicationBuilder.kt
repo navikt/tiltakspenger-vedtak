@@ -5,9 +5,13 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
+import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
@@ -26,6 +30,8 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
                 søkerService = søkerService,
+                sakService = sakService,
+                behandlingService = behandlingService,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
@@ -36,7 +42,11 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     val innsendingRepository = InnsendingRepositoryBuilder.build()
     private val søkerRepository = SøkerRepository()
+    private val behandlingRepo = PostgresBehandlingRepo()
+    private val sakRepo = PostgresSakRepo()
     private val søkerService = SøkerServiceImpl(søkerRepository, innsendingRepository)
+    private val sakService = SakServiceImpl(sakRepo = sakRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo)
 
     val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,

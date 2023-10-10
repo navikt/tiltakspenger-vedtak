@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vilkårsvurdering
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
@@ -72,14 +73,14 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
-                kilde = "Arena",
+                kilde = Kilde.ARENA,
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 detaljer = "",
             ),
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
-                kilde = "Arena",
+                kilde = Kilde.ARENA,
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
                 detaljer = "",
@@ -103,21 +104,21 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
         statligVilkårsvurdering.vurderinger() shouldContainExactlyInAnyOrder listOf(
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
-                kilde = "Arena",
+                kilde = Kilde.ARENA,
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
                 detaljer = "",
             ),
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.SYKEPENGER,
-                kilde = "Arena",
+                kilde = Kilde.ARENA,
                 fom = 1.mars(2022),
                 tom = 31.mars(2022),
                 detaljer = "",
             ),
             Vurdering.Oppfylt(
                 vilkår = Vilkår.SYKEPENGER,
-                kilde = "Saksbehandler",
+                kilde = Kilde.SAKSB,
                 detaljer = "",
             ),
         )

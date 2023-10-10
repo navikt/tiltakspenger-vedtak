@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
@@ -71,14 +72,14 @@ class AlderVilkårsvurdering(vurderingsperiode: Periode, søkersFødselsdato: Lo
     private fun lagOppfyltVurdering(fra: LocalDate?, til: LocalDate?): Vurdering =
         Vurdering.Oppfylt(
             vilkår = vilkår(),
-            kilde = "PDL",
+            kilde = Kilde.PDL,
             detaljer = "-",
         )
 
     private fun lagIkkeOppfyltVurdering(fra: LocalDate, til: LocalDate, detaljer: String?): Vurdering =
         Vurdering.IkkeOppfylt(
             vilkår = vilkår(),
-            kilde = "PDL",
+            kilde = Kilde.PDL,
             fom = fra,
             tom = til,
             detaljer = if (detaljer.isNullOrEmpty()) "-" else detaljer,

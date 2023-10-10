@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vilkårsvurdering.vurdering.felles
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -23,13 +24,13 @@ abstract class Vilkårsvurdering {
         manuellVurdering = when (utfall) {
             Utfall.OPPFYLT -> Vurdering.Oppfylt(
                 vilkår = vilkår(),
-                kilde = "Saksbehandler",
+                kilde = Kilde.SAKSB,
                 detaljer = detaljer,
             )
 
             Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
                 vilkår = vilkår(),
-                kilde = "Saksbehandler",
+                kilde = Kilde.SAKSB,
                 fom = fom,
                 tom = tom,
                 detaljer = detaljer,
@@ -37,7 +38,7 @@ abstract class Vilkårsvurdering {
 
             Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
                 vilkår = vilkår(),
-                kilde = "Saksbehandler",
+                kilde = Kilde.SAKSB,
                 fom = fom,
                 tom = tom,
                 detaljer = detaljer,
