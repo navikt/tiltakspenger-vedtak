@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 
 data class Sak(
     val id: SakId,
+    val ident: String,
     val saknummer: Saksnummer,
     val periode: Periode,
     val behandlinger: List<Behandling>,
@@ -52,6 +53,7 @@ data class Sak(
         fun lagSak(søknad: Søknad, saksnummerGenerator: SaksnummerGenerator): Sak {
             return Sak(
                 id = SakId.random(),
+                ident = søknad.personopplysninger.ident,
                 saknummer = saksnummerGenerator.genererSaknummer(),
                 behandlinger = emptyList(),
                 periode = søknad.vurderingsperiode(),

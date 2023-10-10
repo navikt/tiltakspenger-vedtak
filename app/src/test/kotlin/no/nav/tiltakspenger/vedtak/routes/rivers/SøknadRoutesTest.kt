@@ -64,8 +64,8 @@ class SøknadRoutesTest {
             ident = IDENT,
         )
 
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
 
         testApplication {
             application {

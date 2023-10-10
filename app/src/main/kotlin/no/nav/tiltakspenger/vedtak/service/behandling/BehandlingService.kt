@@ -14,9 +14,7 @@ interface BehandlingService {
         saksbehandler: Saksbehandler,
     ): Behandling
 
-    fun hentBehandling(
-        behandlingId: BehandlingId,
-    ): Behandling
+    fun hentBehandling(behandlingId: BehandlingId): Behandling?
 
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
 }

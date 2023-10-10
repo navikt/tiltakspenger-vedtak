@@ -1,3 +1,27 @@
+CREATE INDEX sak_behandling
+    ON behandling
+        (
+         sakId
+            );
+
+CREATE INDEX saksopplysning_behandling
+    ON saksopplysning
+        (
+         behandlingId
+            );
+
+CREATE INDEX vurdering_behandling
+    ON vurdering
+        (
+         behandlingId
+            );
+
+CREATE INDEX saks_ident
+    ON sak
+        (
+         ident
+            );
+
 CREATE INDEX aktivitet_innsending
     ON aktivitet
         (

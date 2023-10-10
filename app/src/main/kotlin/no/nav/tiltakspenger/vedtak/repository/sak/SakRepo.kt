@@ -4,6 +4,6 @@ import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.felles.Periode
 
 interface SakRepo {
-    fun findByFnrAndPeriode(fnr: String, periode: Periode): List<Sak>
-    fun save(sak: Sak): Sak
+    fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak>
+    fun lagre(sak: Sak): Sak
 }

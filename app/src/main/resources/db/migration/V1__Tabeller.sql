@@ -17,6 +17,59 @@ $$
     END
 $$;
 
+CREATE TABLE sak
+(
+    id                      VARCHAR                  PRIMARY KEY,
+    ident                   VARCHAR                  NOT NULL,
+    saksnummer              VARCHAR                  NOT NULL,
+    fom                     DATE                     NOT NULL,
+    tom                     DATE                     NOT NULL,
+    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE behandling
+(
+    id                      VARCHAR                  PRIMARY KEY,
+    sakId                   VARCHAR                  NOT NULL REFERENCES sak (id),
+    fom                     DATE                     NOT NULL,
+    tom                     DATE                     NOT NULL,
+    saksbehandler           VARCHAR                  NULL,
+    attestant               VARCHAR                  NULL,
+    iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
+    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE saksopplysning
+(
+    id                      VARCHAR                  PRIMARY KEY,
+    behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
+    fom                     DATE                     NOT NULL,
+    tom                     DATE                     NOT NULL,
+    kilde                   VARCHAR                  NOT NULL,
+    vilkår                  VARCHAR                  NOT NULL,
+    detaljer                VARCHAR                  NOT NULL,
+    typeSaksopplysning      VARCHAR                  NOT NULL,
+    saksbehandler           VARCHAR                  NULL,
+    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE vurdering
+(
+    id                      VARCHAR                  PRIMARY KEY,
+    behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
+    fom                     DATE                     NOT NULL,
+    tom                     DATE                     NOT NULL,
+    kilde                   VARCHAR                  NOT NULL,
+    vilkår                  VARCHAR                  NOT NULL,
+    detaljer                VARCHAR                  NOT NULL,
+    utfall                  VARCHAR                  NOT NULL,
+    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 CREATE TABLE innsending
 (
     id                      VARCHAR                  PRIMARY KEY,

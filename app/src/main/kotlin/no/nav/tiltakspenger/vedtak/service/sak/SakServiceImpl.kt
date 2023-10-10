@@ -24,7 +24,7 @@ class SakServiceImpl(
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =
-            sakRepo.findByFnrAndPeriode(
+            sakRepo.hentForIdentMedPeriode(
                 fnr = søknad.personopplysninger.ident,
                 periode = søknad.vurderingsperiode(),
             ).singleOrNull() ?: Sak.lagSak(
@@ -36,7 +36,7 @@ class SakServiceImpl(
 
         // TODO kanskje man her skal hente saksopplysninger via sak eller behandling?
 
-        return sakRepo.save(håndtertSak)
+        return sakRepo.lagre(håndtertSak)
     }
 
     override fun mottaPersonopplysninger(personopplysninger: List<Personopplysninger>): Sak {
@@ -45,7 +45,7 @@ class SakServiceImpl(
 
     // TODO Her må vi finne på noe lurt... Denne er midlertidig til vi finner ut av hvordan vi skal hente Saksopplysninger
     override fun mottaInnsending(innsending: Innsending): Sak {
-        val sak = sakRepo.findByFnrAndPeriode(
+        val sak = sakRepo.hentForIdentMedPeriode(
             fnr = innsending.ident,
             periode = innsending.vurderingsperiodeForSøknad()!!,
         ).singleOrNull() ?: Sak.lagSak(
@@ -56,7 +56,7 @@ class SakServiceImpl(
         val sakMedSøknad = sak.håndter(innsending.søknad!!)
         val sakVilkårsvurdert = sakMedSøknad.mottaFakta(lagFaktaAvInnsending(innsending))
 
-        return sakRepo.save(sakVilkårsvurdert)
+        return sakRepo.lagre(sakVilkårsvurdert)
     }
 
     override fun henteEllerOppretteSak(periode: Periode, fnr: String): Sak {
@@ -79,6 +79,7 @@ class SakServiceImpl(
 
         return Sak(
             id = SakId.random(),
+            ident = ObjectMother.personopplysningMaxFyr().ident,
             saknummer = Saksnummer("123"),
             periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),
             behandlinger = listOf(
@@ -90,8 +91,10 @@ class SakServiceImpl(
     }
 
     private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
-        val saksopplysningDagpenger = AapTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
-        val saksopplysningAap = DagpengerTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        val saksopplysningDagpenger =
+            AapTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
+        val saksopplysningAap =
+            DagpengerTolker.tolkeData(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
         return saksopplysningAap + saksopplysningDagpenger
     }
 }

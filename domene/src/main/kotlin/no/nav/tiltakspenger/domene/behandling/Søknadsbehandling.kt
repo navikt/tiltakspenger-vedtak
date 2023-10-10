@@ -28,6 +28,20 @@ sealed interface Søknadsbehandling : Behandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
         //      eller om vi skal beholde denne (eller begge :-) )
         companion object {
+            fun fromDb(
+                id: BehandlingId,
+                søknader: List<Søknad>,
+                vurderingsperiode: Periode,
+                saksopplysninger: List<Saksopplysning>,
+            ): Opprettet {
+                return Opprettet(
+                    id = id,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    saksopplysninger = saksopplysninger,
+                )
+            }
+
             fun opprettBehandling(søknad: Søknad): Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),

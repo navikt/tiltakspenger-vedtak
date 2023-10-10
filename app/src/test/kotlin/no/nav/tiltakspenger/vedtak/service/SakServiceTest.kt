@@ -28,8 +28,8 @@ internal class SakServiceTest {
 
     @Test
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
 
         val søknad = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
@@ -50,8 +50,8 @@ internal class SakServiceTest {
 
     @Test
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
 
         val søknad = nySøknadMedBrukerTiltak(
             journalpostId = "søknad1",
@@ -63,7 +63,7 @@ internal class SakServiceTest {
         )
         val sak = sakService.motta(søknad)
 
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns listOf(sak)
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns listOf(sak)
 
         val søknad2 = nySøknadMedBrukerTiltak(
             journalpostId = "søknad2",
@@ -82,8 +82,8 @@ internal class SakServiceTest {
 
     @Test
     fun `søknad med AAP i deler av perioden blir DelvisInnvilget`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
 
         val søknad = nySøknadMedBrukerTiltak(
             tiltak = brukerTiltak(
@@ -119,8 +119,8 @@ internal class SakServiceTest {
 
     @Test
     fun `mottak av søknad happypath`() {
-        every { sakRepo.findByFnrAndPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.save(any()) } returnsArgument 0
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
 
         val søknad = nySøknadMedBrukerTiltak()
         val sak = sakService.motta(søknad)
