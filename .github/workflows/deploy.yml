@@ -10,9 +10,11 @@ jobs:
   build:
     name: Test, build and push
     runs-on: ubuntu-latest
+    permissions:
+      packages: 'write'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -61,7 +63,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
@@ -70,17 +72,17 @@ jobs:
           VAR: image=${{ env.IMAGE }},name=${{ github.event.repository.name }}
           VARS: .nais/vars/dev.yml
 
-  deploy-prod:
-    name: Deploy to NAIS prod
-    needs: deploy-dev
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-gcp
-          RESOURCE: .nais/nais.yml
-          VAR: image=${{ env.IMAGE }},name=${{ github.event.repository.name }}
-          VARS: .nais/vars/prod.yml
+#  deploy-prod:
+#    name: Deploy to NAIS prod
+#    needs: deploy-dev
+#    if: github.ref == 'refs/heads/main'
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: nais/deploy/actions/deploy@v1
+#        env:
+#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+#          CLUSTER: prod-gcp
+#          RESOURCE: .nais/nais.yml
+#          VAR: image=${{ env.IMAGE }},name=${{ github.event.repository.name }}
+#          VARS: .nais/vars/prod.yml
