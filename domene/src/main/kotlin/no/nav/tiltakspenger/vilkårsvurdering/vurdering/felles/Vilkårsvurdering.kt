@@ -25,6 +25,8 @@ abstract class Vilkårsvurdering {
             Utfall.OPPFYLT -> Vurdering.Oppfylt(
                 vilkår = vilkår(),
                 kilde = Kilde.SAKSB,
+                fom = fom,
+                tom = tom,
                 detaljer = detaljer,
             )
 

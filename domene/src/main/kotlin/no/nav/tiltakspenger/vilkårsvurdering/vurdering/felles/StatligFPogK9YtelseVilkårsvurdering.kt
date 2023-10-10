@@ -55,6 +55,8 @@ abstract class StatligFPogK9YtelseVilkårsvurdering(
                 Vurdering.Oppfylt(
                     vilkår = vilkår(),
                     kilde = kilde,
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
                     detaljer = "",
                 ),
             )

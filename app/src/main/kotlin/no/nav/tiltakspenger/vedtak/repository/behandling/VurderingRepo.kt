@@ -3,40 +3,31 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import org.intellij.lang.annotations.Language
 
 internal class VurderingDAO {
-    fun hent(behandlingId: BehandlingId): List<Vurdering> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentVurderinger,
-                        mapOf(
-                            "behandlingId" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVurdering()
-                    }.asList,
-                )
-            }
-        }
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Vurdering> {
+        return txSession.run(
+            queryOf(
+                sqlHentVurderinger,
+                mapOf(
+                    "behandlingId" to behandlingId.toString(),
+                ),
+            ).map { row ->
+                row.toVurdering()
+            }.asList,
+        )
     }
 
-    fun lagre(behandlingId: BehandlingId, vurderinger: List<Vurdering>) {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                slett(behandlingId, txSession)
-                vurderinger.forEach { vurdering ->
-                    lagre(behandlingId, vurdering, txSession)
-                }
-            }
+    fun lagre(behandlingId: BehandlingId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
+        slett(behandlingId, txSession)
+        vurderinger.forEach { vurdering ->
+            lagre(behandlingId, vurdering, txSession)
         }
     }
 
@@ -52,6 +43,7 @@ internal class VurderingDAO {
                     "vilkar" to vurdering.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
                     "detaljer" to vurdering.detaljer,
                     "utfall" to vurdering.utfall.name,
+                    "opprettet" to nå(),
                 ),
             ).asUpdate,
         )
@@ -75,8 +67,8 @@ internal class VurderingDAO {
                 vilkår = vilkår,
                 kilde = kilde,
                 detaljer = detaljer,
-                fom = localDateOrNull("fom"),
-                tom = localDateOrNull("tom"),
+                fom = localDate("fom"),
+                tom = localDate("tom"),
             )
 
             "IKKE_OPPFYLT" -> Vurdering.IkkeOppfylt(
@@ -110,7 +102,8 @@ internal class VurderingDAO {
             kilde,
             vilkår,
             detaljer,
-            utfall
+            utfall,
+            opprettet
         ) values (
             :behandlingId,
             :fom,
@@ -118,7 +111,8 @@ internal class VurderingDAO {
             :kilde,
             :vilkar,
             :detaljer,
-            :utfall
+            :utfall,
+            :opprettet
         )
     """.trimIndent()
 

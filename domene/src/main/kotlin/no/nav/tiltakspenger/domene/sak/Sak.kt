@@ -26,7 +26,7 @@ data class Sak(
                     søknader = it.søknader + søknad,
                 ),
             )
-        } ?: listOf(Søknadsbehandling.Opprettet.opprettBehandling(søknad = søknad))
+        } ?: listOf(Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad))
 
         return this.copy(
             behandlinger = behandlinger,

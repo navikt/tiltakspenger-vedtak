@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -24,7 +24,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningDAO: SaksopplysningDAO = SaksopplysningDAO(),
+    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
     private val vurderingDAO: VurderingDAO = VurderingDAO(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
@@ -73,13 +73,13 @@ internal class PostgresBehandlingRepo(
                     when (behandling) {
                         // søknadDAO.lagre(behandling.id, behandling.søknader)
                         is BehandlingIverksatt -> {
-                            saksopplysningDAO.lagre(behandling.id, behandling.saksopplysninger)
-                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger)
+                            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
+                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
                         is BehandlingVilkårsvurdert -> {
-                            saksopplysningDAO.lagre(behandling.id, behandling.saksopplysninger)
-                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger)
+                            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
+                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
                         is Søknadsbehandling.Opprettet -> {}
@@ -91,7 +91,7 @@ internal class PostgresBehandlingRepo(
     }
 
     private fun oppdaterBehandling(
-        sistEndret: LocalDate,
+        sistEndret: LocalDateTime,
         behandling: Søknadsbehandling,
         txSession: TransactionalSession,
     ): Behandling {
@@ -102,9 +102,11 @@ internal class PostgresBehandlingRepo(
                 SqlOppdaterBehandling,
                 mapOf(
                     "id" to behandling.id.toString(),
+                    "sakId" to behandling.sakId.toString(),
                     "fom" to behandling.vurderingsperiode.fra,
                     "tom" to behandling.vurderingsperiode.til,
                     "tilstand" to finnTilstand(behandling),
+                    "status" to finnStatus(behandling),
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                 ),
@@ -119,63 +121,70 @@ internal class PostgresBehandlingRepo(
     private fun opprettBehandling(behandling: Søknadsbehandling, txSession: TransactionalSession): Behandling {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
+        val nå = nå()
+
         txSession.run(
             queryOf(
                 sqlOpprettBehandling,
                 mapOf(
                     "id" to behandling.id.toString(),
+                    "sakId" to behandling.sakId.toString(),
                     "fom" to behandling.vurderingsperiode.fra,
                     "tom" to behandling.vurderingsperiode.til,
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
-                    "sistEndret" to nå(),
+                    "sistEndret" to nå,
+                    "opprettet" to nå,
                 ),
             ).asUpdate,
         )
         return behandling
     }
 
-    private fun hentSistEndret(behandlingId: BehandlingId, txSession: TransactionalSession): LocalDate? =
+    private fun hentSistEndret(behandlingId: BehandlingId, txSession: TransactionalSession): LocalDateTime? =
         txSession.run(
             queryOf(
                 sqlHentSistEndret,
                 mapOf(
                     "id" to behandlingId.toString(),
                 ),
-            ).map { row -> row.localDate("sist_endret") }.asSingle,
+            ).map { row -> row.localDateTime("sist_endret") }.asSingle,
         )
 
     private fun Row.toBehandling(txSession: TransactionalSession): Søknadsbehandling {
         val id = BehandlingId.fromDb(string("id"))
+        val sakId = SakId.fromDb(string("sakId"))
         val fom = localDate("fom")
         val tom = localDate("tom")
         val status = string("status")
-        val saksbehandler = string("saksbehandler")
         return when (val type = string("tilstand")) {
             "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
                 id = id,
+                sakId = sakId,
                 søknader = listOf(ObjectMother.nySøknadMedTiltak()),
                 vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningDAO.hent(id),
+                saksopplysninger = saksopplysningRepo.hent(id, txSession),
             )
 
-            "behandlingVilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
+            "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
                 id = id,
+                sakId = sakId,
                 søknader = listOf(ObjectMother.nySøknadMedTiltak()),
                 vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningDAO.hent(id),
-                vilkårsvurderinger = vurderingDAO.hent(id),
+                saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                vilkårsvurderinger = vurderingDAO.hent(id, txSession),
                 status = status,
             )
 
-            "behandlingIverksatt" -> BehandlingIverksatt.fromDb(
+            "Iverksatt" -> BehandlingIverksatt.fromDb(
                 id = id,
+                sakId = sakId,
                 søknader = listOf(ObjectMother.nySøknadMedTiltak()),
                 vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningDAO.hent(id),
-                vilkårsvurderinger = vurderingDAO.hent(id),
+                saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                vilkårsvurderinger = vurderingDAO.hent(id, txSession),
                 status = status,
-                saksbehandler = saksbehandler,
+                saksbehandler = string("saksbehandler"),
             )
 
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
@@ -184,7 +193,7 @@ internal class PostgresBehandlingRepo(
 
     private fun finnTilstand(behandling: Søknadsbehandling) =
         when (behandling) {
-            is Søknadsbehandling.Opprettet -> "Opprettet"
+            is Søknadsbehandling.Opprettet -> "søknadsbehandling"
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
             is BehandlingIverksatt -> "Iverksatt"
         }
@@ -212,7 +221,8 @@ internal class PostgresBehandlingRepo(
             tom,
             tilstand,
             status,
-            sist_endret
+            sist_endret,
+            opprettet
         ) values (
             :id,
             :sakId,
@@ -220,7 +230,8 @@ internal class PostgresBehandlingRepo(
             :tom,
             :tilstand,
             :status,
-            :sistEndret
+            :sistEndret,
+            :opprettet
         )
     """.trimIndent()
 
@@ -232,7 +243,7 @@ internal class PostgresBehandlingRepo(
             sakId = :sakId,
             tilstand = :tilstand,
             status = :status,
-            sist_endret = :sistEndret,
+            sist_endret = :sistEndret
         where id = :id
           and sist_endret = :sistEndretOld
     """.trimIndent()

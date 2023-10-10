@@ -3,40 +3,31 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.felles.nå
 import org.intellij.lang.annotations.Language
 
-internal class SaksopplysningDAO {
-    fun hent(behandlingId: BehandlingId): List<Saksopplysning> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentSaksopplysninger,
-                        mapOf(
-                            "behandlingId" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toSaksopplysning()
-                    }.asList,
-                )
-            }
-        }
+internal class SaksopplysningRepo {
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Saksopplysning> {
+        return txSession.run(
+            queryOf(
+                sqlHentSaksopplysninger,
+                mapOf(
+                    "behandlingId" to behandlingId.toString(),
+                ),
+            ).map { row ->
+                row.toSaksopplysning()
+            }.asList,
+        )
     }
 
-    fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>) {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                slett(behandlingId, txSession)
-                saksopplysninger.forEach { saksopplysning ->
-                    lagre(behandlingId, saksopplysning, txSession)
-                }
-            }
+    fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
+        slett(behandlingId, txSession)
+        saksopplysninger.forEach { saksopplysning ->
+            lagre(behandlingId, saksopplysning, txSession)
         }
     }
 
@@ -52,6 +43,7 @@ internal class SaksopplysningDAO {
                     "vilkar" to saksopplysning.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
                     "detaljer" to saksopplysning.detaljer,
                     "typeSaksopplysning" to saksopplysning.typeSaksopplysning.name,
+                    "opprettet" to nå(),
                 ),
             ).asUpdate,
         )
@@ -95,7 +87,8 @@ internal class SaksopplysningDAO {
                 kilde,
                 vilkår,
                 detaljer,
-                typeSaksopplysning
+                typeSaksopplysning,
+                opprettet
             ) values (
                 :behandlingId,
                 :fom,
@@ -103,7 +96,8 @@ internal class SaksopplysningDAO {
                 :kilde,
                 :vilkar,
                 :detaljer,
-                :typeSaksopplysning
+                :typeSaksopplysning,
+                :opprettet
             )
     """.trimIndent()
 }

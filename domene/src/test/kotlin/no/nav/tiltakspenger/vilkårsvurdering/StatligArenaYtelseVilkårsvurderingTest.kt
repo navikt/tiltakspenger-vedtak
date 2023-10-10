@@ -119,6 +119,8 @@ internal class StatligArenaYtelseVilkårsvurderingTest {
             Vurdering.Oppfylt(
                 vilkår = Vilkår.SYKEPENGER,
                 kilde = Kilde.SAKSB,
+                fom = 19.januar(2022),
+                tom = 28.mars(2022),
                 detaljer = "",
             ),
         )

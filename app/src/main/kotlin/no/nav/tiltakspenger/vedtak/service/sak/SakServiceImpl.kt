@@ -64,7 +64,9 @@ class SakServiceImpl(
     }
 
     override fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak {
+        val sakId = SakId.random()
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+            sakId = sakId,
             søknad = ObjectMother.nySøknadMedTiltak(
                 tiltak = ObjectMother.arenaTiltak(
                     arrangoernavn = "Art Vandeley",
@@ -78,7 +80,7 @@ class SakServiceImpl(
         )
 
         return Sak(
-            id = SakId.random(),
+            id = sakId,
             ident = ObjectMother.personopplysningMaxFyr().ident,
             saknummer = Saksnummer("123"),
             periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),

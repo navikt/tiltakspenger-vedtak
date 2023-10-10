@@ -45,6 +45,8 @@ data class UføreVilkarsvurdering(
                 Vurdering.Oppfylt(
                     vilkår = Vilkår.UFØRETRYGD,
                     kilde = Kilde.PESYS,
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
                     detaljer = if (dato.toString() == LocalDate.of(9999, 12, 31)
                             .toString()
                     ) {

@@ -46,6 +46,8 @@ data class OvergangsstønadVilkårsvurdering(
                 Vurdering.Oppfylt(
                     vilkår = vilkår(),
                     kilde = Kilde.EF,
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
                     detaljer = "",
                 ),
             )

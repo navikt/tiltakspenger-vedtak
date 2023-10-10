@@ -17,6 +17,8 @@ class JaNeiSpmVurdering(
             Utfall.OPPFYLT -> Vurdering.Oppfylt(
                 vilkår = vilkår,
                 kilde = Kilde.SØKNAD,
+                fom = vurderingsperiode.fra,
+                tom = vurderingsperiode.til,
                 detaljer = detaljer(),
             )
 

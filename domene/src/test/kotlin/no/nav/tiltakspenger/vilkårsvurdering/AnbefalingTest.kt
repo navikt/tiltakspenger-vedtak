@@ -8,7 +8,13 @@ import java.time.LocalDate
 
 internal class AnbefalingTest {
 
-    private fun Vilkår.toOppfyltVurdering() = Vurdering.Oppfylt(this, Kilde.SAKSB, "")
+    private fun Vilkår.toOppfyltVurdering() = Vurdering.Oppfylt(
+        vilkår = this,
+        kilde = Kilde.SAKSB,
+        fom = LocalDate.of(2022, 1, 1),
+        tom = LocalDate.of(2022, 1, 31),
+        detaljer = "",
+    )
 
     @Test
     fun `Skal få oppfylt når alle vurderinger er oppfylt`() {
@@ -219,7 +225,7 @@ internal class AnbefalingTest {
             "",
         )
         vilkår
-            .map { Vurdering.Oppfylt(it, Kilde.SAKSB, "") }
+            .map { Vurdering.Oppfylt(it, Kilde.SAKSB, "", LocalDate.of(2022, 1, 1), LocalDate.of(2022, 1, 31)) }
             .plus(gjenlevendeVurdering)
             .anbefalingFor(vurderingsperiode)
             .shouldBe(

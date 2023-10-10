@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import org.intellij.lang.annotations.Language
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -60,15 +60,15 @@ class PostgresSakRepo(
         }
     }
 
-    private fun hentSistEndret(sakId: SakId, txSession: TransactionalSession): LocalDate? = txSession.run(
+    private fun hentSistEndret(sakId: SakId, txSession: TransactionalSession): LocalDateTime? = txSession.run(
         queryOf(
             sqlHentSistEndret,
             mapOf("id" to sakId.toString()),
-        ).map { row -> row.localDate("sist_endret") }.asSingle,
+        ).map { row -> row.localDateTime("sist_endret") }.asSingle,
     )
 
     private fun oppdaterSak(
-        sistEndret: LocalDate,
+        sistEndret: LocalDateTime,
         sak: Sak,
         txSession: TransactionalSession,
     ): Sak {
@@ -79,6 +79,8 @@ class PostgresSakRepo(
                 sqlOppdaterSak,
                 mapOf(
                     "id" to sak.id.toString(),
+                    "fom" to sak.periode.fra,
+                    "tom" to sak.periode.til,
                     "ident" to sak.ident,
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
@@ -94,15 +96,19 @@ class PostgresSakRepo(
     private fun opprettSak(sak: Sak, txSession: TransactionalSession): Sak {
         SECURELOG.info { "Oppretter sak ${sak.id}" }
 
+        val nå = nå()
+
         txSession.run(
             queryOf(
                 sqlOpprettSak,
                 mapOf(
                     "id" to sak.id.toString(),
                     "ident" to sak.ident,
+                    "saksnummer" to sak.saknummer.verdi,
                     "fom" to sak.periode.fra,
                     "tom" to sak.periode.til,
-                    "sistEndret" to nå(),
+                    "sistEndret" to nå,
+                    "opprettet" to nå,
                 ),
             ).asUpdate,
         )
@@ -126,15 +132,19 @@ class PostgresSakRepo(
         insert into sak (
             id,
             ident,
+            saksnummer,
             fom,
             tom,
-            sist_endret
+            sist_endret,
+            opprettet
         ) values (
             :id,
             :ident,
+            :saksnummer,
             :fom,
             :tom,
-            :sistEndret
+            :sistEndret,
+            :opprettet
         )
     """.trimIndent()
 
@@ -142,7 +152,9 @@ class PostgresSakRepo(
     private val sqlOppdaterSak =
         """update sak set 
               ident = :ident,
-              sist_endret = :sistEndret,
+              fom   = :fom,
+              tom   = :tom,
+              sist_endret = :sistEndret
            where id = :id
              and sist_endret = :sistEndretOld
         """.trimMargin()

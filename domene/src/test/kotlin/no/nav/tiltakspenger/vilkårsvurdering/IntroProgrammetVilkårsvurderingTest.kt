@@ -49,8 +49,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
             IntroProgrammetVilkårsvurdering(søknad = søknad, vurderingsperiode = vurderingsperiode)
 
         introProgrammetVilkårsvurdering.vurderinger().first().kilde shouldBe Kilde.SØKNAD
-        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe null
-        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe null
+        introProgrammetVilkårsvurdering.vurderinger().first().fom shouldBe 1.januar(2022)
+        introProgrammetVilkårsvurdering.vurderinger().first().tom shouldBe 31.januar(2022)
         introProgrammetVilkårsvurdering.vurderinger().first().utfall shouldBe Utfall.OPPFYLT
 
         introProgrammetVilkårsvurdering.samletUtfall() shouldBe Utfall.OPPFYLT
@@ -77,6 +77,8 @@ internal class IntroProgrammetVilkårsvurderingTest {
         val vurderingSøknad = Vurdering.Oppfylt(
             vilkår = Vilkår.INTROPROGRAMMET,
             kilde = Kilde.SØKNAD,
+            fom = 1.januar(2022),
+            tom = 31.januar(2022),
             detaljer = "Svart NEI i søknaden",
         )
         val vurderingSaksbehandler =

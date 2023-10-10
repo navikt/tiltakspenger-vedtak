@@ -186,7 +186,7 @@ private fun lagVurderingerForOppfyltePerioder() {
 // |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |   IkkeOppfylt
 // |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
 
-fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
+fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<Vurdering> =
 // TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
 
 // Lag liste med Vurdering av alle Saksopplysninger som har opphør... false (egentlig alle som er kilde != SAKSB + kilde == SAKSB && Opphør == true )
@@ -228,6 +228,8 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår): List<Vurdering> =
             Vurdering.Oppfylt(
                 vilkår = vilkår,
                 kilde = settKilde(vilkår),
+                fom = periode.fra,
+                tom = periode.til,
                 detaljer = "",
             ),
         )
