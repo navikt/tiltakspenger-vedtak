@@ -80,7 +80,7 @@ internal class SaksopplysningRepo {
 
     @Language("SQL")
     private val sqlLagreSaksopplysning = """
-        insert into saksbehandling (
+        insert into saksopplysning (
                 behandlingId,
                 fom,
                 tom,

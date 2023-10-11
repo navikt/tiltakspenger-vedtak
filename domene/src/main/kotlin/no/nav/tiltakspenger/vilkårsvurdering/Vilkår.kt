@@ -71,12 +71,12 @@ sealed class Vilkår {
     }
 
     object SUPPLERENDESTØNADFLYKTNING : Vilkår() {
-        override val tittel: String = "SUPPLERENDESTØNADFLYTNING"
+        override val tittel: String = "SUPPLERENDESTØNADFLYKTNING"
         override val lovreferanse: Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD_FLYKTNING
     }
 
     object SUPPLERENDESTØNADALDER : Vilkår() {
-        override val tittel: String = "SUPPLERENDESTØNAD"
+        override val tittel: String = "SUPPLERENDESTØNADALDER"
         override val lovreferanse: Lovreferanse = Lovreferanse.SUPPLERENDESTØNAD_ALDER
     }
 

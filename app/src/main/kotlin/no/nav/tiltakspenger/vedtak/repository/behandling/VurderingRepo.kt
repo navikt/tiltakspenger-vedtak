@@ -130,9 +130,29 @@ internal class VurderingDAO {
 fun hentVilkår(vilkår: String) =
     when (vilkår) {
         "AAP" -> Vilkår.AAP
-        "DAGPENGER" -> Vilkår.DAGPENGER
         "ALDER" -> Vilkår.ALDER
-        // TODO her er det maaange flere....
+        "ALDERSPENSJON" -> Vilkår.ALDERSPENSJON
+        "DAGPENGER" -> Vilkår.DAGPENGER
+        "FORELDREPENGER" -> Vilkår.FORELDREPENGER
+        "GJENLEVENDEPENSJON" -> Vilkår.GJENLEVENDEPENSJON
+        "INSTITUSJONSOPPHOLD" -> Vilkår.INSTITUSJONSOPPHOLD
+        "INTROPROGRAMMET" -> Vilkår.INTROPROGRAMMET
+        "JOBBSJANSEN" -> Vilkår.JOBBSJANSEN
+        "KVP" -> Vilkår.KVP
+        "LØNNSINNTEKT" -> Vilkår.LØNNSINNTEKT
+        "OMSORGSPENGER" -> Vilkår.OMSORGSPENGER
+        "OPPLÆRINGSPENGER" -> Vilkår.OPPLÆRINGSPENGER
+        "OVERGANGSSTØNAD" -> Vilkår.OVERGANGSSTØNAD
+        "PENSJONSINNTEKT" -> Vilkår.PENSJONSINNTEKT
+        "PLEIEPENGER_NÆRSTÅENDE" -> Vilkår.PLEIEPENGER_NÆRSTÅENDE
+        "PLEIEPENGER_SYKT_BARN" -> Vilkår.PLEIEPENGER_SYKT_BARN
+        "SUPPLERENDESTØNADALDER" -> Vilkår.SUPPLERENDESTØNADALDER
+        "SUPPLERENDESTØNADFLYKTNING" -> Vilkår.SUPPLERENDESTØNADFLYKTNING
+        "SVANGERSKAPSPENGER" -> Vilkår.SVANGERSKAPSPENGER
+        "SYKEPENGER" -> Vilkår.SYKEPENGER
+        "TILTAKSPENGER" -> Vilkår.TILTAKSPENGER
+        "UFØRETRYGD" -> Vilkår.UFØRETRYGD
+        "ETTERLØNN" -> Vilkår.ETTERLØNN
         else -> {
             throw IllegalStateException("Vurdering med ukjent vilkår $vilkår")
         }

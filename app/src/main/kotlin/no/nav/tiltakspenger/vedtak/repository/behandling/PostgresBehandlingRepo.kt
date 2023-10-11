@@ -5,7 +5,6 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -70,15 +69,14 @@ internal class PostgresBehandlingRepo(
                 } else {
                     oppdaterBehandling(sistEndret, behandling, txSession)
                 }.also {
+                    saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
                     when (behandling) {
                         // søknadDAO.lagre(behandling.id, behandling.søknader)
                         is BehandlingIverksatt -> {
-                            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
                             vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
                         is BehandlingVilkårsvurdert -> {
-                            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
                             vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
@@ -94,7 +92,7 @@ internal class PostgresBehandlingRepo(
         sistEndret: LocalDateTime,
         behandling: Søknadsbehandling,
         txSession: TransactionalSession,
-    ): Behandling {
+    ): Søknadsbehandling {
         SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
 
         val antRaderOppdatert = txSession.run(
@@ -118,7 +116,7 @@ internal class PostgresBehandlingRepo(
         return behandling
     }
 
-    private fun opprettBehandling(behandling: Søknadsbehandling, txSession: TransactionalSession): Behandling {
+    private fun opprettBehandling(behandling: Søknadsbehandling, txSession: TransactionalSession): Søknadsbehandling {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
         val nå = nå()
