@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.SakspplysningId
 import no.nav.tiltakspenger.felles.nå
 import org.intellij.lang.annotations.Language
 
@@ -36,6 +37,7 @@ internal class SaksopplysningRepo {
             queryOf(
                 sqlLagreSaksopplysning,
                 mapOf(
+                    "id" to SakspplysningId.random().toString(),
                     "behandlingId" to behandlingId.toString(),
                     "fom" to saksopplysning.fom,
                     "tom" to saksopplysning.tom,
@@ -81,6 +83,7 @@ internal class SaksopplysningRepo {
     @Language("SQL")
     private val sqlLagreSaksopplysning = """
         insert into saksopplysning (
+                id,
                 behandlingId,
                 fom,
                 tom,
@@ -90,6 +93,7 @@ internal class SaksopplysningRepo {
                 typeSaksopplysning,
                 opprettet
             ) values (
+                :id,
                 :behandlingId,
                 :fom,
                 :tom,

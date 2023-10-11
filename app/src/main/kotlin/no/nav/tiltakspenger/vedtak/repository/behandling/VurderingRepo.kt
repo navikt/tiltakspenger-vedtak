@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -36,6 +37,7 @@ internal class VurderingDAO {
             queryOf(
                 sqlLagreVurdering,
                 mapOf(
+                    "id" to VurderingId.random().toString(),
                     "behandlingId" to behandlingId.toString(),
                     "fom" to vurdering.fom,
                     "tom" to vurdering.tom,
@@ -96,6 +98,7 @@ internal class VurderingDAO {
     @Language("SQL")
     private val sqlLagreVurdering = """
         insert into vurdering (
+            id,
             behandlingId,
             fom,
             tom,
@@ -105,6 +108,7 @@ internal class VurderingDAO {
             utfall,
             opprettet
         ) values (
+            :id,
             :behandlingId,
             :fom,
             :tom,

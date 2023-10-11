@@ -45,6 +45,7 @@ CREATE TABLE behandling
 
 CREATE TABLE saksopplysning
 (
+    id                      VARCHAR                  PRIMARY KEY,
     behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
@@ -58,6 +59,7 @@ CREATE TABLE saksopplysning
 
 CREATE TABLE vurdering
 (
+    id                      VARCHAR                  PRIMARY KEY,
     behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
