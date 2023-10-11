@@ -74,7 +74,7 @@ fun Route.personopplysningerRoutes(
                     personopplysningerMottattDTO.innhentet,
                     personopplysningerMottattDTO.ident,
                 )
-                //sakService.mottaPersonopplysninger(personopplysninger)
+                // sakService.mottaPersonopplysninger(personopplysninger)
                 val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
                     aktivitetslogg = Aktivitetslogg(),
                     journalpostId = personopplysningerMottattDTO.journalpostId,
