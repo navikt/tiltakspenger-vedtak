@@ -12,5 +12,5 @@ interface SakService {
     fun mottaPersonopplysninger(personopplysninger: List<Personopplysninger>): Sak
     fun mottaInnsending(innsending: Innsending): Sak
     fun henteEllerOppretteSak(periode: Periode, fnr: String): Sak
-    fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak
+    fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak?
 }

@@ -32,7 +32,7 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun hentBehandling(behandlingId: BehandlingId): Behandling? {
+    override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
         return behandlingRepo.hent(behandlingId)!!
     }
 

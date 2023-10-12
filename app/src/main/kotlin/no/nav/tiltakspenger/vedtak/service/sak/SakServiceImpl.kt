@@ -17,10 +17,12 @@ import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 
 class SakServiceImpl(
     val sakRepo: SakRepo,
+    val behandlingRepo: BehandlingRepo,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =
@@ -63,33 +65,10 @@ class SakServiceImpl(
         TODO()
     }
 
-    override fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak {
-        val sakId = SakId.random()
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
-            sakId = sakId,
-            søknad = ObjectMother.nySøknadMedTiltak(
-                tiltak = ObjectMother.arenaTiltak(
-                    arrangoernavn = "Art Vandeley",
-                    tiltakskode = Tiltaksaktivitet.Tiltak.AMO,
-                    opprinneligStartdato = 1.januar(2023),
-                    opprinneligSluttdato = 31.mars(2023),
-                    startdato = 1.januar(2023),
-                    sluttdato = 31.mars(2023),
-                ),
-            ),
-        )
+    override fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak? {
+        val behandling = behandlingRepo.hent(behandlingId) ?: return null
+        return sakRepo.hent(behandling.sakId)
 
-        return Sak(
-            id = sakId,
-            ident = ObjectMother.personopplysningMaxFyr().ident,
-            saknummer = Saksnummer("123"),
-            periode = Periode(fra = 1.januar(2023), til = 31.mars(2023)),
-            behandlinger = listOf(
-                behandling.vilkårsvurder(behandling.saksopplysninger),
-            ),
-            personopplysninger = listOf(ObjectMother.personopplysningMaxFyr()),
-
-        )
     }
 
     private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {

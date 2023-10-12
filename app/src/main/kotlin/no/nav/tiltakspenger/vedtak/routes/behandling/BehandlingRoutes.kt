@@ -28,9 +28,12 @@ fun Route.behandlingRoutes(
         LOG.debug("Mottatt request på $behandlingPath/behandlingId")
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val sak = sakService.henteMedBehandlingsId(behandlingId)
+        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
 
-        val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
+            it.id == behandlingId
+        } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
         // her burde vi nok ikke bare hente den første, men finne den riktige og evnt feilmelding hvis vi ikke finner den
         // val behandling = behandlingService.hentBehandling(behandlingId) Skal vi hente behandling direkte eller via sak?
 
