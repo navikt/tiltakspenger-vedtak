@@ -1,22 +1,15 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.domene.saksopplysning.AapTolker
 import no.nav.tiltakspenger.domene.saksopplysning.DagpengerTolker
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 
@@ -68,7 +61,6 @@ class SakServiceImpl(
     override fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak? {
         val behandling = behandlingRepo.hent(behandlingId) ?: return null
         return sakRepo.hent(behandling.sakId)
-
     }
 
     private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {

@@ -45,7 +45,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val behandlingRepo = PostgresBehandlingRepo()
     private val sakRepo = PostgresSakRepo()
     private val søkerService = SøkerServiceImpl(søkerRepository, innsendingRepository)
-    private val sakService = SakServiceImpl(sakRepo = sakRepo)
+    private val sakService = SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo)
     private val behandlingService = BehandlingServiceImpl(behandlingRepo)
 
     val innsendingMediator = InnsendingMediator(

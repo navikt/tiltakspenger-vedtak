@@ -17,14 +17,16 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedUføre
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSakAAP
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
 
-    val sakRepo: SakRepo = mockk()
-    val sakService = SakServiceImpl(sakRepo)
+    private val sakRepo: SakRepo = mockk()
+    private val behandlingRepo: BehandlingRepo = mockk()
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo)
 
     @Test
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
