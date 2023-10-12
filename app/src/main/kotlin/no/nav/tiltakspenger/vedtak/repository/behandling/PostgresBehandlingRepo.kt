@@ -24,7 +24,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
     private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingDAO: VurderingDAO = VurderingDAO(),
+    private val vurderingRepo: VurderingRepo = VurderingRepo(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -73,11 +73,11 @@ internal class PostgresBehandlingRepo(
                     when (behandling) {
                         // søknadDAO.lagre(behandling.id, behandling.søknader)
                         is BehandlingIverksatt -> {
-                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
+                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
                         is BehandlingVilkårsvurdert -> {
-                            vurderingDAO.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
+                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
                         is Søknadsbehandling.Opprettet -> {}
@@ -170,7 +170,7 @@ internal class PostgresBehandlingRepo(
                 søknader = listOf(ObjectMother.nySøknadMedTiltak()),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                vilkårsvurderinger = vurderingDAO.hent(id, txSession),
+                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
             )
 
@@ -180,7 +180,7 @@ internal class PostgresBehandlingRepo(
                 søknader = listOf(ObjectMother.nySøknadMedTiltak()),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                vilkårsvurderinger = vurderingDAO.hent(id, txSession),
+                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
                 saksbehandler = string("saksbehandler"),
             )

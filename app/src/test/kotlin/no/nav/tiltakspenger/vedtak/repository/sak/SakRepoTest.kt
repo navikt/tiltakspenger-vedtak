@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import org.junit.jupiter.api.BeforeEach
@@ -37,17 +36,17 @@ internal class SakRepoTest {
         val startDato = 1.januar(2023)
         val sluttdato = 31.mars(2023)
 
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-            journalpostId = journalpostId,
-            personopplysninger = ObjectMother.personSøknad(
-                ident = ident,
-            ),
-            tiltak = ObjectMother.brukerTiltak(
-                startdato = startDato,
-                sluttdato = sluttdato,
-            ),
-            barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
-        )
+//        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
+//            journalpostId = journalpostId,
+//            personopplysninger = ObjectMother.personSøknad(
+//                ident = ident,
+//            ),
+//            tiltak = ObjectMother.brukerTiltak(
+//                startdato = startDato,
+//                sluttdato = sluttdato,
+//            ),
+//            barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
+//        )
 
         val sak = Sak(
             id = SakId.random(),

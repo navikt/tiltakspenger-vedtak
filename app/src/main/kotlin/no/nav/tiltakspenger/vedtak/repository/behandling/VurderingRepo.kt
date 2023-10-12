@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import org.intellij.lang.annotations.Language
 
-internal class VurderingDAO {
+internal class VurderingRepo {
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Vurdering> {
         return txSession.run(
             queryOf(

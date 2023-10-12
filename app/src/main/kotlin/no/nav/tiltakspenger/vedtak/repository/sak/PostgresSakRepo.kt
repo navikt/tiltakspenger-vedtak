@@ -14,16 +14,15 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-class PostgresSakRepo(
+internal class PostgresSakRepo(
     private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
-    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
+    private val personopplysningerRepo: PersonopplysningerRepo = PersonopplysningerRepo(),
 ) : SakRepo {
     override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -33,7 +32,7 @@ class PostgresSakRepo(
                         sqlHentSakerForIdent,
                         mapOf("ident" to fnr),
                     ).map { row ->
-                        row.toSak()
+                        row.toSak(txSession)
                     }.asList,
                 )
             }
@@ -51,6 +50,11 @@ class PostgresSakRepo(
                 } else {
                     oppdaterSak(sistEndret, sak, txSession)
                 }
+                personopplysningerRepo.lagre(
+                    sakId = sak.id,
+                    personopplysninger = sak.personopplysninger,
+                    txSession = txSession,
+                )
                 opprettetSak
             }.also { sak ->
                 sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach {
@@ -115,7 +119,7 @@ class PostgresSakRepo(
         return sak
     }
 
-    private fun Row.toSak(): Sak {
+    private fun Row.toSak(txSession: TransactionalSession): Sak {
         val id = SakId.fromDb(string("id"))
         return Sak(
             id = id,
@@ -123,7 +127,7 @@ class PostgresSakRepo(
             saknummer = Saksnummer(verdi = string("saksnummer")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
             behandlinger = behandlingRepo.hentForSak(id),
-            personopplysninger = emptyList(), // todo personopplysningerDAO.hent()
+            personopplysninger = personopplysningerRepo.hent(id, txSession),
         )
     }
 
