@@ -50,7 +50,7 @@ internal class PostgresBehandlingRepo(
                     queryOf(
                         SqlHentBehandlingForSak,
                         mapOf(
-                            "sakId" to sakId,
+                            "sakId" to sakId.toString(),
                         ),
                     ).map { row ->
                         row.toBehandling(txSession)
@@ -253,7 +253,7 @@ internal class PostgresBehandlingRepo(
 
     @Language("SQL")
     private val SqlHentBehandlingForSak = """
-        select * from behandling where sakId = :sakid
+        select * from behandling where sakId = :sakId
     """.trimIndent()
 
 //    override fun hent(behandlingId: BehandlingId): Behandling? {
