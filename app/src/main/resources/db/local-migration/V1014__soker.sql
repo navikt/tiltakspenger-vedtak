@@ -12,3 +12,4 @@ INSERT INTO public.søker (id, ident, sist_endret, opprettet) VALUES ('soker_01H
 INSERT INTO public.søker (id, ident, sist_endret, opprettet) VALUES ('soker_01H2AR582BF3SB1AZDVAK81RZC', '24915898331', '2023-06-07 10:59:05.932505 +00:00', '2023-06-07 10:59:05.932505 +00:00');
 INSERT INTO public.søker (id, ident, sist_endret, opprettet) VALUES ('soker_01H2B1TRXERA3R15673JYA1D5K', '26859799883', '2023-06-07 13:48:08.496384 +00:00', '2023-06-07 13:48:08.496384 +00:00');
 INSERT INTO public.søker (id, ident, sist_endret, opprettet) VALUES ('soker_01H2D0HW9XD6160TC7YKMV1PT3', '02858899373', '2023-06-08 08:04:17.343319 +00:00', '2023-06-08 08:04:17.343319 +00:00');
+INSERT INTO public.søker (id, ident, sist_endret, opprettet) VALUES ('soker_01HCHE8XEGR6JP1GNGFPDA0AXN', '26878898396', '2023-10-12 07:57:59.635159 +00:00', '2023-10-12 07:57:59.635159 +00:00');
