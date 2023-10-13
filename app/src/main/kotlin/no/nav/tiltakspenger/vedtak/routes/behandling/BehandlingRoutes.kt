@@ -18,6 +18,12 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 private val LOG = KotlinLogging.logger {}
 
 internal const val behandlingPath = "/behandling"
+internal const val behandlingerPath = "/behandlinger"
+
+data class BehandlingDTO(
+    val id: String,
+    val ident: String,
+)
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -42,6 +48,15 @@ fun Route.behandlingRoutes(
             personopplysninger = sak.personopplysninger,
         )
         call.respond(status = HttpStatusCode.OK, dto)
+    }
+
+    get(behandlingerPath) {
+        LOG.debug("Mottatt request på $behandlingerPath")
+        val behandlinger = behandlingService.hentAlleBehandlinger().map {
+            BehandlingDTO(id = it.id.toString(), ident = it.søknad().personopplysninger.ident)
+        }
+
+        call.respond(status = HttpStatusCode.OK, behandlinger)
     }
 
     post("$behandlingPath/{behandlingId}") {

@@ -17,6 +17,7 @@ interface BehandlingService {
     ): Behandling
 
     fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling?
+    fun hentAlleBehandlinger(): List<Søknadsbehandling>
 
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
 }

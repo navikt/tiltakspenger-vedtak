@@ -82,6 +82,7 @@ internal fun Application.vedtakApi(
     jacksonSerialization()
     auth(config)
     routing {
+        søknadRoutes(innsendingMediator, søkerMediator, sakService)
         authenticate("saksbehandling") {
             søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
@@ -95,7 +96,7 @@ internal fun Application.vedtakApi(
             resettInnsendingerRoute(innsendingAdminService)
         }
         authenticate("systemtoken") {
-            søknadRoutes(innsendingMediator, søkerMediator, sakService)
+            // søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator, sakService)
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)

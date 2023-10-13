@@ -44,6 +44,20 @@ internal class PostgresBehandlingRepo(
         }
     }
 
+    override fun hentAlle(): List<Søknadsbehandling> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        SqlHentAlleBehandlinger,
+                    ).map { row ->
+                        row.toBehandling(txSession)
+                    }.asList,
+                )
+            }
+        }
+    }
+
     override fun hentForSak(sakId: SakId): List<Søknadsbehandling> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -257,12 +271,8 @@ internal class PostgresBehandlingRepo(
         select * from behandling where sakId = :sakId
     """.trimIndent()
 
-//    override fun hent(behandlingId: BehandlingId): Behandling? {
-//
-//
-//        // TODO: Denne skal ikke opprette behandling på sikt, men skal hente ut fra databasen.
-//        return Søknadsbehandling.Opprettet.opprettBehandling(
-//            søknad = ObjectMother.nySøknadMedTiltak(),
-//        )
-//    }
+    @Language("SQL")
+    private val SqlHentAlleBehandlinger = """
+        select * from behandling
+    """.trimIndent()
 }

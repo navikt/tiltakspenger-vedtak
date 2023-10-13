@@ -36,6 +36,10 @@ class BehandlingServiceImpl(
         return behandlingRepo.hent(behandlingId)!!
     }
 
+    override fun hentAlleBehandlinger(): List<Søknadsbehandling> {
+        return behandlingRepo.hentAlle()
+    }
+
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         val behandling = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
             ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
