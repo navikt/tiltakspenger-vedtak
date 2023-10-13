@@ -110,8 +110,7 @@ internal class SøknadDAO(
 
         val fraOgMedDatoSpmParamMap = mapOf(
             ALDERSPENSJON_FELT to søknad.alderspensjon,
-
-            ).toFraOgMedDatoSpmParams()
+        ).toFraOgMedDatoSpmParams()
 
         val jaNeiSpmParamMap = mapOf(
             ETTERLØNN_FELT to søknad.etterlønn,
