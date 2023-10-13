@@ -201,10 +201,15 @@ internal class PostgresSakRepo(
 
     @Language("SQL")
     private val sqlHentForJournalpost = """
-        select * from sak where id = (select sakid 
-                                        from søknad 
-                                       where journalpost_id = :journalpostId
-                                       )
+        select * 
+          from sak 
+         where id = (select sakid 
+                       from behandling 
+                      where id = (select behandlingid
+                                    from søknad
+                                   where journalpost_id = :journalpostId
+                                    )
+                       )
     """.trimIndent()
 
     @Language("SQL")
