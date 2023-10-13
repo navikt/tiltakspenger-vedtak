@@ -163,6 +163,7 @@ CREATE TABLE søknad
 (
     id                  VARCHAR PRIMARY KEY,
     versjon             VARCHAR                  NOT NULL,
+    behandlingId        VARCHAR                  NULL REFERENCES behandling (id),
     innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,

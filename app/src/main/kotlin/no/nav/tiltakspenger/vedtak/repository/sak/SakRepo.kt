@@ -9,4 +9,5 @@ interface SakRepo {
     fun lagre(sak: Sak): Sak
 
     fun hent(sakId: SakId): Sak?
+    fun hentForJournalpostId(journalpostId: String): Sak?
 }

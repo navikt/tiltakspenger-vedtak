@@ -12,8 +12,8 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -25,6 +25,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresBehandlingRepo(
     private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
     private val vurderingRepo: VurderingRepo = VurderingRepo(),
+    private val søknadDAO: SøknadDAO = SøknadDAO(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -70,8 +71,8 @@ internal class PostgresBehandlingRepo(
                     oppdaterBehandling(sistEndret, behandling, txSession)
                 }.also {
                     saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
+                    søknadDAO.oppdaterBehandlingId(behandling.id, behandling.søknader, txSession)
                     when (behandling) {
-                        // søknadDAO.lagre(behandling.id, behandling.søknader)
                         is BehandlingIverksatt -> {
                             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
@@ -159,7 +160,7 @@ internal class PostgresBehandlingRepo(
             "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = listOf(ObjectMother.nySøknadMedTiltak()),
+                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
             )
@@ -167,7 +168,7 @@ internal class PostgresBehandlingRepo(
             "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = listOf(ObjectMother.nySøknadMedTiltak()),
+                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
@@ -177,7 +178,7 @@ internal class PostgresBehandlingRepo(
             "Iverksatt" -> BehandlingIverksatt.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = listOf(ObjectMother.nySøknadMedTiltak()),
+                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),

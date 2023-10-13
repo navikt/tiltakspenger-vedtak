@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.vedtak.Søknad
@@ -51,8 +52,31 @@ internal class SøknadDAO(
         )
     }
 
+    fun hentMedBehandlingId(behandlingId: BehandlingId, txSession: TransactionalSession): List<Søknad> {
+        return txSession.run(
+            queryOf(hentMedBehandlingId, behandlingId.toString())
+                .map { row -> row.toSøknad(txSession) }
+                .asList,
+        )
+    }
+
     fun lagre(innsendingId: InnsendingId, søknad: Søknad?, txSession: TransactionalSession) {
         søknad?.let { lagreHeleSøknaden(innsendingId, it, txSession) } // TODO: Burde vel egentlig slette søknaden..
+    }
+
+    fun oppdaterBehandlingId(behandlingId: BehandlingId, søknader: List<Søknad>, txSession: TransactionalSession) {
+        søknader.forEach {
+            txSession.run {
+                queryOf(
+                    oppdaterBehandlingId,
+                    mapOf(
+                        "behandlingId" to behandlingId.toString(),
+                        "journalpostId" to it.journalpostId,
+                        "dokumentInfoId" to it.dokumentInfoId,
+                    ),
+                ).asUpdate
+            }
+        }
     }
 
     private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
@@ -303,5 +327,16 @@ internal class SøknadDAO(
     private val hent = "select * from søknad where innsending_id = ?"
 
     @Language("SQL")
+    private val hentMedBehandlingId = "select * from søknad where behandlingId = ?"
+
+    @Language("SQL")
     private val hentIdent = "select * from søknad where søknad_id = ?"
+
+    @Language("SQL")
+    private val oppdaterBehandlingId = """
+        update søknad set
+          behandlingId = :behandlingId
+        where journalpost_id = :journalpostId
+          and dokumentinfo_id = : dokumentInfoId
+    """.trimIndent()
 }

@@ -106,6 +106,12 @@ CREATE INDEX søknad_innsending
          innsending_id
             );
 
+CREATE INDEX søknad_behandling
+    ON søknad
+        (
+         behandlingId
+            );
+
 CREATE INDEX søknadArenatiltak_søknad
     ON søknad_arenatiltak
         (

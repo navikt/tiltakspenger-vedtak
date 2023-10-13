@@ -31,7 +31,7 @@ internal class SakRepoTest {
 
     @Test
     fun `lagre og hente en sak med en søknad`() {
-        val journalpostId = Random().nextInt().toString()
+//        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
         val startDato = 1.januar(2023)
         val sluttdato = 31.mars(2023)

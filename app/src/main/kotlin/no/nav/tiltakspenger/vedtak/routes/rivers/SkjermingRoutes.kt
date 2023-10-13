@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.SkjermingPerson
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import java.time.LocalDateTime
 
 data class SkjermingDTO(
@@ -29,7 +30,10 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 val skjermingpath = "/rivers/skjerming"
 
-fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
+fun Route.skjermingRoutes(
+    innsendingMediator: InnsendingMediator,
+    sakService: SakService,
+) {
     post("$skjermingpath") {
         LOG.info { "Vi har mottatt skjerming fra river" }
         val skjermingDTO = call.receive<SkjermingDTO>()
@@ -50,23 +54,15 @@ fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
 
             skjermingDTO.skjerming.skjermingForPersoner != null -> {
                 skjermingDTO.skjerming.skjermingForPersoner?.let { dto ->
+                    val skjerming = mapSkjerming(dto, skjermingDTO.innhentet)
+
+                    sakService.mottaSkjerming(skjermingDTO.journalpostId, skjerming)
+
                     val skjermingHendelse = SkjermingMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),
                         journalpostId = skjermingDTO.journalpostId,
                         ident = skjermingDTO.ident,
-                        skjerming = Skjerming(
-                            søker = SkjermingPerson(
-                                ident = dto.søker.ident,
-                                skjerming = dto.søker.skjerming,
-                            ),
-                            barn = dto.barn.map { barn ->
-                                SkjermingPerson(
-                                    ident = barn.ident,
-                                    skjerming = barn.skjerming,
-                                )
-                            },
-                            innhentet = skjermingDTO.innhentet,
-                        ),
+                        skjerming = skjerming,
                         tidsstempelSkjermingInnhentet = skjermingDTO.innhentet,
                     )
                     SECURELOG.info { " Mottatt skjerming og laget hendelse : $skjermingHendelse" }
@@ -79,4 +75,23 @@ fun Route.skjermingRoutes(innsendingMediator: InnsendingMediator) {
                 throw IllegalStateException("Mottatt en skjerming som ikke har hverken skjerming eller feil")
         }
     }
+}
+
+private fun mapSkjerming(
+    dto: no.nav.tiltakspenger.libs.skjerming.SkjermingDTO,
+    innhentet: LocalDateTime,
+): Skjerming {
+    return Skjerming(
+        søker = SkjermingPerson(
+            ident = dto.søker.ident,
+            skjerming = dto.søker.skjerming,
+        ),
+        barn = dto.barn.map { barn ->
+            SkjermingPerson(
+                ident = barn.ident,
+                skjerming = barn.skjerming,
+            )
+        },
+        innhentet = innhentet,
+    )
 }

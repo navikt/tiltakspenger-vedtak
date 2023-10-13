@@ -79,7 +79,7 @@ internal class SakServiceTest {
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id
-        sak2.behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().first().søknad() shouldBe søknad2
+        sak2.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first().søknad() shouldBe søknad2
     }
 
     @Test
