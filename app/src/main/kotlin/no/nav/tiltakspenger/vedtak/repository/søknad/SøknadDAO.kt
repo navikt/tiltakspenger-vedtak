@@ -327,7 +327,7 @@ internal class SøknadDAO(
     private val hent = "select * from søknad where innsending_id = ?"
 
     @Language("SQL")
-    private val hentMedBehandlingId = "select * from søknad where behandlingId = ?"
+    private val hentMedBehandlingId = "select * from søknad where behandling_id = ?"
 
     @Language("SQL")
     private val hentIdent = "select * from søknad where søknad_id = ?"
@@ -335,7 +335,7 @@ internal class SøknadDAO(
     @Language("SQL")
     private val oppdaterBehandlingId = """
         update søknad set
-          behandlingId = :behandlingId
+          behandling_id = :behandlingId
         where journalpost_id = :journalpostId
           and dokumentinfo_id = : dokumentInfoId
     """.trimIndent()

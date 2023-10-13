@@ -205,7 +205,7 @@ internal class PostgresSakRepo(
           from sak 
          where id = (select sakid 
                        from behandling 
-                      where id = (select behandlingid
+                      where id = (select behandling_id
                                     from søknad
                                    where journalpost_id = :journalpostId
                                     )
