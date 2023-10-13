@@ -20,16 +20,19 @@ data class Sak(
 //    val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
-        val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().firstOrNull()?.let {
-            listOf(
-                it.copy(
-                    søknader = it.søknader + søknad,
-                ).vilkårsvurder(it.saksopplysninger),
+        val behandlinger =
+            behandlinger.filterIsInstance<Søknadsbehandling.Opprettet>().firstOrNull()?.let { behandling ->
+                listOf(
+                    behandling.copy(
+                        søknader = behandling.søknader + søknad,
+                    ).vilkårsvurder(behandling.saksopplysninger),
+                )
+            } ?: listOf(
+                Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad)
+                    .also {
+                        it.vilkårsvurder(it.saksopplysninger)
+                    },
             )
-        } ?: listOf(
-            Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad)
-                .also { it.vilkårsvurder(it.saksopplysninger) },
-        )
 
         return this.copy(
             behandlinger = behandlinger,

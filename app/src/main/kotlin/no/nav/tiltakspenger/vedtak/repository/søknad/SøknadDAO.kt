@@ -66,7 +66,7 @@ internal class SøknadDAO(
 
     fun oppdaterBehandlingId(behandlingId: BehandlingId, søknader: List<Søknad>, txSession: TransactionalSession) {
         søknader.forEach {
-            txSession.run {
+            txSession.run(
                 queryOf(
                     oppdaterBehandlingId,
                     mapOf(
@@ -74,8 +74,8 @@ internal class SøknadDAO(
                         "journalpostId" to it.journalpostId,
                         "dokumentInfoId" to it.dokumentInfoId,
                     ),
-                ).asUpdate
-            }
+                ).asUpdate,
+            )
         }
     }
 
@@ -111,7 +111,7 @@ internal class SøknadDAO(
         val fraOgMedDatoSpmParamMap = mapOf(
             ALDERSPENSJON_FELT to søknad.alderspensjon,
 
-        ).toFraOgMedDatoSpmParams()
+            ).toFraOgMedDatoSpmParams()
 
         val jaNeiSpmParamMap = mapOf(
             ETTERLØNN_FELT to søknad.etterlønn,
@@ -337,6 +337,6 @@ internal class SøknadDAO(
         update søknad set
           behandling_id = :behandlingId
         where journalpost_id = :journalpostId
-          and dokumentinfo_id = : dokumentInfoId
+          and dokumentinfo_id = :dokumentInfoId
     """.trimIndent()
 }
