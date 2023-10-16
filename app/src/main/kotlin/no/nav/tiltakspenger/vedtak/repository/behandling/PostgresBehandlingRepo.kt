@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -92,6 +93,10 @@ internal class PostgresBehandlingRepo(
                         }
 
                         is BehandlingVilkårsvurdert -> {
+                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
+                        }
+
+                        is BehandlingTilBeslutter -> {
                             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
                         }
 
@@ -189,7 +194,7 @@ internal class PostgresBehandlingRepo(
                 status = status,
             )
 
-            "Iverksatt" -> BehandlingIverksatt.fromDb(
+            "TilAttestering" -> BehandlingTilBeslutter.fromDb(
                 id = id,
                 sakId = sakId,
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
@@ -200,6 +205,18 @@ internal class PostgresBehandlingRepo(
                 saksbehandler = string("saksbehandler"),
             )
 
+            "Iverksatt" -> BehandlingIverksatt.fromDb(
+                id = id,
+                sakId = sakId,
+                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
+                vurderingsperiode = Periode(fom, tom),
+                saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                status = status,
+                saksbehandler = string("saksbehandler"),
+                beslutter = string("attestant"),
+            )
+
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
     }
@@ -208,6 +225,7 @@ internal class PostgresBehandlingRepo(
         when (behandling) {
             is Søknadsbehandling.Opprettet -> "søknadsbehandling"
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
+            is BehandlingTilBeslutter -> "TilAttestering"
             is BehandlingIverksatt -> "Iverksatt"
         }
 
@@ -219,6 +237,8 @@ internal class PostgresBehandlingRepo(
             is BehandlingVilkårsvurdert.Manuell -> "Manuell"
             is BehandlingIverksatt.Avslag -> "Avslag"
             is BehandlingIverksatt.Innvilget -> "Innvilget"
+            is BehandlingTilBeslutter.Avslag -> "Avslag"
+            is BehandlingTilBeslutter.Innvilget -> "Innvilget"
         }
 
     private val sqlHentSistEndret = """

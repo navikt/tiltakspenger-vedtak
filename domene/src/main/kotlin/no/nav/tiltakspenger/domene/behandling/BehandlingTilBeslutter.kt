@@ -7,11 +7,13 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
-sealed interface BehandlingIverksatt : Søknadsbehandling {
+sealed interface BehandlingTilBeslutter : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
     val saksbehandler: String
-    val beslutter: String
-    // TODO Trenger vi flere props/felter?
+
+    override fun søknad(): Søknad {
+        return søknader.maxBy { it.opprettet }
+    }
 
     companion object {
         fun fromDb(
@@ -23,10 +25,9 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String,
-            beslutter: String,
-        ): BehandlingIverksatt {
-            return when (status) {
-                "Innvilget" -> Innvilget(
+        ): BehandlingTilBeslutter {
+            when (status) {
+                "Innvilget" -> return Innvilget(
                     id = id,
                     sakId = sakId,
                     søknader = søknader,
@@ -34,7 +35,6 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
-                    beslutter = beslutter,
                 )
 
                 "Avslag" -> return Avslag(
@@ -45,10 +45,9 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
-                    beslutter = beslutter,
                 )
 
-                else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
+                else -> throw IllegalStateException("Ukjent BehandlingTilAttestering $id med status $status")
             }
         }
     }
@@ -61,9 +60,19 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
-        override val beslutter: String,
-    ) : BehandlingIverksatt {
-        // trenger denne funksjoner?
+    ) : BehandlingTilBeslutter {
+        fun iverksettAvBeslutter(beslutter: String): BehandlingIverksatt.Innvilget {
+            return BehandlingIverksatt.Innvilget(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
+                beslutter = beslutter,
+            )
+        }
     }
 
     data class Avslag(
@@ -74,8 +83,18 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
-        override val beslutter: String,
-    ) : BehandlingIverksatt {
-        // trenger denne funksjoner?
+    ) : BehandlingTilBeslutter {
+        fun iverksettAvBeslutter(beslutter: String): BehandlingIverksatt.Avslag {
+            return BehandlingIverksatt.Avslag(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
+                beslutter = beslutter,
+            )
+        }
     }
 }

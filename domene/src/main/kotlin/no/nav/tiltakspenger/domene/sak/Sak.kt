@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.domene.sak
 
 import no.nav.tiltakspenger.domene.behandling.Behandling
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.Periode
@@ -43,13 +41,7 @@ data class Sak(
 
     fun mottaFakta(saksopplysning: List<Saksopplysning>): Sak {
         val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling>().map { behandling ->
-            when (behandling) {
-                is Søknadsbehandling.Opprettet -> behandling.vilkårsvurder(saksopplysning)
-                is BehandlingVilkårsvurdert.Manuell -> behandling.vurderPåNytt(saksopplysning)
-                is BehandlingVilkårsvurdert.Avslag -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
-                is BehandlingVilkårsvurdert.Innvilget -> throw RuntimeException("kan ikke endre saksopplysninger til en Behandling som er Iverksatt")
-                is BehandlingIverksatt -> behandling
-            }
+            behandling.leggTilSaksopplysning(saksopplysning.first())
         }
 
         return this.copy(

@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
@@ -13,6 +12,16 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
     override fun søknad(): Søknad {
         return søknader.maxBy { it.opprettet }
+    }
+
+    fun vurderPåNytt(): BehandlingVilkårsvurdert {
+        return Søknadsbehandling.Opprettet(
+            id = id,
+            sakId = sakId,
+            søknader = søknader,
+            vurderingsperiode = vurderingsperiode,
+            saksopplysninger = saksopplysninger,
+        ).vilkårsvurder(saksopplysninger)
     }
 
     companion object {
@@ -66,7 +75,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-        fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Innvilget {
+        fun iverksett(): BehandlingIverksatt.Innvilget {
             return BehandlingIverksatt.Innvilget(
                 id = id,
                 sakId = sakId,
@@ -74,14 +83,29 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = saksbehandler.navIdent,
+                saksbehandler = "Automatisk",
+                beslutter = "Automatisk",
+            )
+        }
+
+        fun tilAttestering(saksbehandler: String): BehandlingTilBeslutter.Innvilget {
+            return BehandlingTilBeslutter.Innvilget(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
             )
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            return this.copy(
+            val behandling = this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
             )
+
+            return behandling.vurderPåNytt()
         }
     }
 
@@ -93,14 +117,37 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-        fun iverksett(saksbehandler: Saksbehandler): BehandlingIverksatt.Avslag {
-            TODO()
+        fun iverksett(): BehandlingIverksatt.Avslag {
+            return BehandlingIverksatt.Avslag(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = "Automatisk",
+                beslutter = "Automatisk",
+            )
+        }
+
+        fun tilAttestering(saksbehandler: String): BehandlingTilBeslutter.Avslag {
+            return BehandlingTilBeslutter.Avslag(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
+            )
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            return this.copy(
+            val behandling = this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
             )
+
+            return behandling.vurderPåNytt()
         }
     }
 
@@ -112,20 +159,13 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
-        fun vurderPåNytt(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-            ).vilkårsvurder(saksopplysninger)
-        }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            return this.copy(
+            val behandling = this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
             )
+
+            return behandling.vurderPåNytt()
         }
     }
 }
