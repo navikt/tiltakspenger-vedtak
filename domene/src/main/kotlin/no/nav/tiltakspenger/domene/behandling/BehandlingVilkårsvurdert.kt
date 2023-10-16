@@ -21,7 +21,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             søknader = søknader,
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
-        ).vilkårsvurder(saksopplysninger)
+        ).vilkårsvurder()
     }
 
     companion object {

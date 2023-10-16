@@ -139,23 +139,29 @@ sealed interface Søknadsbehandling : Behandling {
         //        private fun lagVilkårsvurderingerAvSaksopplysninger(): List<Vurdering> {
 //
 //        }
-        fun vilkårsvurder(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
+        fun vilkårsvurder(): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
             val vurderinger =
                 saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }
+                        .lagVurdering(Vilkår.DAGPENGER, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_NÆRSTÅENDE }
                         .lagVurdering(Vilkår.PLEIEPENGER_NÆRSTÅENDE, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_SYKT_BARN }
                         .lagVurdering(Vilkår.PLEIEPENGER_SYKT_BARN, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.lagVurdering(Vilkår.FORELDREPENGER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }
+                        .lagVurdering(Vilkår.FORELDREPENGER, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.OPPLÆRINGSPENGER }
                         .lagVurdering(Vilkår.OPPLÆRINGSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.OMSORGSPENGER }.lagVurdering(Vilkår.OMSORGSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ALDER }.lagVurdering(Vilkår.ALDER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.TILTAKSPENGER }.lagVurdering(Vilkår.TILTAKSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.UFØRETRYGD }.lagVurdering(Vilkår.UFØRETRYGD, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.OMSORGSPENGER }
+                        .lagVurdering(Vilkår.OMSORGSPENGER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.ALDER }
+                        .lagVurdering(Vilkår.ALDER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.TILTAKSPENGER }
+                        .lagVurdering(Vilkår.TILTAKSPENGER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.UFØRETRYGD }
+                        .lagVurdering(Vilkår.UFØRETRYGD, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.SVANGERSKAPSPENGER }
                         .lagVurdering(Vilkår.SVANGERSKAPSPENGER, vurderingsperiode) +
                     // Legg til flere vurderinger her
@@ -166,17 +172,22 @@ sealed interface Søknadsbehandling : Behandling {
                         .lagVurdering(Vilkår.INSTITUSJONSOPPHOLD, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.GJENLEVENDEPENSJON }
                         .lagVurdering(Vilkår.GJENLEVENDEPENSJON, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.SYKEPENGER }.lagVurdering(Vilkår.SYKEPENGER, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.SYKEPENGER }
+                        .lagVurdering(Vilkår.SYKEPENGER, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADALDER }
                         .lagVurdering(Vilkår.SUPPLERENDESTØNADALDER, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADFLYKTNING }
                         .lagVurdering(Vilkår.SUPPLERENDESTØNADFLYKTNING, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.JOBBSJANSEN }.lagVurdering(Vilkår.JOBBSJANSEN, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.JOBBSJANSEN }
+                        .lagVurdering(Vilkår.JOBBSJANSEN, vurderingsperiode) +
                     saksopplysninger.filter { it.vilkår == Vilkår.PENSJONSINNTEKT }
                         .lagVurdering(Vilkår.PENSJONSINNTEKT, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.LØNNSINNTEKT }.lagVurdering(Vilkår.LØNNSINNTEKT, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ETTERLØNN }.lagVurdering(Vilkår.ETTERLØNN, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ALDERSPENSJON }.lagVurdering(Vilkår.ALDERSPENSJON, vurderingsperiode)
+                    saksopplysninger.filter { it.vilkår == Vilkår.LØNNSINNTEKT }
+                        .lagVurdering(Vilkår.LØNNSINNTEKT, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.ETTERLØNN }
+                        .lagVurdering(Vilkår.ETTERLØNN, vurderingsperiode) +
+                    saksopplysninger.filter { it.vilkår == Vilkår.ALDERSPENSJON }
+                        .lagVurdering(Vilkår.ALDERSPENSJON, vurderingsperiode)
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 
@@ -242,9 +253,10 @@ sealed interface Søknadsbehandling : Behandling {
 //        }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            return this.copy(
+            val beh = this.copy(
                 saksopplysninger = saksopplysninger + saksopplysning,
             )
+            return beh.vilkårsvurder()
         }
     }
 }

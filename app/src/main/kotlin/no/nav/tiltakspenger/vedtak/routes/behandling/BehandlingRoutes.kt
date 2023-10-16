@@ -10,6 +10,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
@@ -34,7 +35,10 @@ fun Route.behandlingRoutes(
         LOG.debug("Mottatt request på $behandlingPath/behandlingId")
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
+        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(
+            message = "Sak ikke funnet",
+            status = HttpStatusCode.NotFound,
+        )
 
         val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
             it.id == behandlingId
@@ -61,11 +65,17 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/")
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.leggTilSaksopplysning(behandlingId, lagSaksopplysningMedVilkår(nySaksopplysning))
+        behandlingService.leggTilSaksopplysning(
+            behandlingId,
+            lagSaksopplysningMedVilkår(saksbehandler.navIdent, nySaksopplysning),
+        )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

@@ -107,7 +107,7 @@ internal class BehandlingRepoTest {
 
         val hentBehandling = behandlingRepo.hent(behandling.id)
         if (hentBehandling is Søknadsbehandling.Opprettet) {
-            val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder(listOf())
+            val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
             behandlingRepo.lagre(behandlingVilkårsvurdert)
             behandlingVilkårsvurdert shouldNotBe null
         }

@@ -10,7 +10,7 @@ class BehandlingServiceImpl(
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
-        return behandlingRepo.hent(behandlingId)!!
+        return behandlingRepo.hent(behandlingId)
     }
 
     override fun hentAlleBehandlinger(): List<Søknadsbehandling> {

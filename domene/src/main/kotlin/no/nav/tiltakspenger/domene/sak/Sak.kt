@@ -24,13 +24,13 @@ data class Sak(
                     behandling.copy(
                         søknader = behandling.søknader + søknad,
                     ).let {
-                        it.vilkårsvurder(it.saksopplysninger)
+                        it.vilkårsvurder()
                     },
                 )
             } ?: listOf(
                 Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad)
                     .let {
-                        it.vilkårsvurder(it.saksopplysninger)
+                        it.vilkårsvurder()
                     },
             )
 
