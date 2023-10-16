@@ -34,7 +34,10 @@ fun Route.behandlingRoutes(
         LOG.debug("Mottatt request på $behandlingPath/behandlingId")
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
+        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(
+            message = "Sak ikke funnet",
+            status = HttpStatusCode.NotFound,
+        )
 
         val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
             it.id == behandlingId
@@ -66,6 +69,18 @@ fun Route.behandlingRoutes(
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
         behandlingService.leggTilSaksopplysning(behandlingId, lagSaksopplysningMedVilkår(nySaksopplysning))
+
+        call.respond(status = HttpStatusCode.OK, message = "{}")
+    }
+
+    post("$behandlingPath/beslutter/{behandlingId}") {
+        LOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
+        val status = call.receive<TilBeslutterDTO>()
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
+        // sjekke om behandlingen har riktig tilstand (vilkårsvurdert)
+        // konverter behandlingen til en "BehandlingTilBeslutter"
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
