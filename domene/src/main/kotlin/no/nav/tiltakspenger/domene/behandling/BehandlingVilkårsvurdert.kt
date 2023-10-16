@@ -88,7 +88,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        fun tilAttestering(saksbehandler: String): BehandlingTilBeslutter.Innvilget {
+        fun tilBeslutting(saksbehandler: String): BehandlingTilBeslutter.Innvilget {
             return BehandlingTilBeslutter.Innvilget(
                 id = id,
                 sakId = sakId,
@@ -130,7 +130,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        fun tilAttestering(saksbehandler: String): BehandlingTilBeslutter.Avslag {
+        fun tilBeslutting(saksbehandler: String): BehandlingTilBeslutter.Avslag {
             return BehandlingTilBeslutter.Avslag(
                 id = id,
                 sakId = sakId,

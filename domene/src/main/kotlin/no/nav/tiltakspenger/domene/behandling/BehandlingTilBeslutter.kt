@@ -47,7 +47,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     saksbehandler = saksbehandler,
                 )
 
-                else -> throw IllegalStateException("Ukjent BehandlingTilAttestering $id med status $status")
+                else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
             }
         }
     }
@@ -61,7 +61,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
     ) : BehandlingTilBeslutter {
-        fun iverksettAvBeslutter(beslutter: String): BehandlingIverksatt.Innvilget {
+        fun iverksettAvBelutter(beslutter: String): BehandlingIverksatt.Innvilget {
             return BehandlingIverksatt.Innvilget(
                 id = id,
                 sakId = sakId,
