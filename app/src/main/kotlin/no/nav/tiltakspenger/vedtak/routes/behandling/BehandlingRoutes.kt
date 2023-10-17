@@ -36,7 +36,6 @@ private fun finnTilstand(behandling: Søknadsbehandling) =
         is BehandlingIverksatt -> "Iverksatt"
     }
 
-
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
