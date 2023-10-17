@@ -40,6 +40,13 @@ fun Route.behandlingRoutes(
             status = HttpStatusCode.NotFound,
         )
 
+        if (sak.personopplysninger.isEmpty()) {
+            return@get call.respond(
+                message = "Sak mangler personopplysninger",
+                status = HttpStatusCode.NotFound,
+            )
+        }
+
         val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
             it.id == behandlingId
         } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)

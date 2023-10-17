@@ -208,17 +208,8 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<
 // |  2023-01-01 | 2023-01-31 |  AAP  | Arena           |         false                  |
 // |  2023-01-01 | 2023-01-15 |  AAP  | Saksbehandler   |         true                   |
 
-    // TODO Denne må det jobbes mere med......
-    val saksopplysning: Saksopplysning = this.fold(
-        Saksopplysning(
-            vilkår = vilkår,
-            kilde = settKilde(vilkår),
-            fom = periode.fra,
-            tom = periode.til,
-            detaljer = "",
-            typeSaksopplysning = HAR_IKKE_YTELSE,
-        ),
-    ) { acc, saksopplysning ->
+//    // TODO Denne må det jobbes mere med......
+    val saksopplysning: Saksopplysning = this.reduce { acc, saksopplysning ->
         if (saksopplysning.kilde == Kilde.SAKSB) {
             saksopplysning
         } else {

@@ -67,7 +67,7 @@ fun mapSammenstillingDTO(
             sluttdato = behandling.søknad().tiltak?.sluttdato!!,
             antallDager = 2,
         ),
-        saksopplysninger = behandling.saksopplysninger.map {
+        saksopplysninger = behandling.saksopplysninger().map {
             val fakta = fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
             SaksopplysningUtDTO(
                 fom = it.fom,
@@ -79,7 +79,7 @@ fun mapSammenstillingDTO(
                 vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                 vilkårLedd = it.vilkår.lovreferanse.ledd,
                 fakta = fakta,
-                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger.first { vurdering -> vurdering.vilkår == it.vilkår && vurdering.fom == it.fom }.utfall.name else Utfall.KREVER_MANUELL_VURDERING.name,
+                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger.first { vurdering -> vurdering.vilkår == it.vilkår }.utfall.name else Utfall.KREVER_MANUELL_VURDERING.name,
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
