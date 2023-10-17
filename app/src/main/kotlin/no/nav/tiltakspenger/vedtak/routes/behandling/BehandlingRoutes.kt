@@ -17,7 +17,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import kotlin.reflect.typeOf
 
 private val LOG = KotlinLogging.logger {}
 
@@ -88,13 +87,13 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/beslutter/{behandlingId}") {
         LOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
-        val saksbehandler = call.receive<TilBeslutterDTO>().saksbehandler
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        // sjekke om behandlingen har riktig tilstand (vilkårsvurdert)
-        // konverter behandlingen til en "BehandlingTilBeslutter"
-        behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
+
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler.navIdent)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
