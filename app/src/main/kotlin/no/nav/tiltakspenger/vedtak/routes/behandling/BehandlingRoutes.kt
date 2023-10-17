@@ -8,12 +8,16 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import kotlin.reflect.typeOf
 
 private val LOG = KotlinLogging.logger {}
 
@@ -24,6 +28,15 @@ data class BehandlingDTO(
     val id: String,
     val ident: String,
 )
+
+private fun finnTilstand(behandling: Søknadsbehandling) =
+    when (behandling) {
+        is Søknadsbehandling.Opprettet -> "søknadsbehandling"
+        is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
+        is BehandlingTilBeslutter -> "TilBeslutting"
+        is BehandlingIverksatt -> "Iverksatt"
+    }
+
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -75,12 +88,13 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/beslutter/{behandlingId}") {
         LOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
-        val status = call.receive<TilBeslutterDTO>()
+        val saksbehandler = call.receive<TilBeslutterDTO>().saksbehandler
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
         // sjekke om behandlingen har riktig tilstand (vilkårsvurdert)
         // konverter behandlingen til en "BehandlingTilBeslutter"
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

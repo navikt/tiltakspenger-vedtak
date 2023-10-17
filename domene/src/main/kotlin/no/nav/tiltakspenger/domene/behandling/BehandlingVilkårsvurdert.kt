@@ -168,4 +168,5 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             return behandling.vurderPåNytt()
         }
     }
+
 }

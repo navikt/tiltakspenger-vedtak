@@ -14,8 +14,4 @@ interface Behandling {
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
-
-//    fun toDTO(): BehandlingDTO {
-//        throw IllegalStateException("Kan ikke gjøres om til en DTO")
-//    }
 }
