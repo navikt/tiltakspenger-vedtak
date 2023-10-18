@@ -13,18 +13,11 @@ interface Behandling {
     val saksopplysninger: List<Saksopplysning>
 
     fun saksopplysninger(): List<Saksopplysning> {
-        val saksopplysningerMap = saksopplysninger.groupBy { it.vilkår }
-        val liste = mutableListOf<Saksopplysning>()
-
-        for ((_, saksopplysninger) in saksopplysningerMap) {
-            val saksopplysning = saksopplysninger.find { it.kilde == Kilde.SAKSB }
-                ?: saksopplysninger.firstOrNull()
-
-            saksopplysning?.let {
-                liste.add(it)
+        return saksopplysninger.groupBy { it.vilkår }.map { entry ->
+            entry.value.reduce { acc, saksopplysning ->
+                if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
             }
         }
-        return liste
     }
 
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {

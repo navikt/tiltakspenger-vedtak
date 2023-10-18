@@ -79,7 +79,7 @@ fun mapSammenstillingDTO(
                 vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                 vilkårLedd = it.vilkår.lovreferanse.ledd,
                 fakta = fakta,
-                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.vilkårsvurderinger.first { vurdering -> vurdering.vilkår == it.vilkår }.utfall.name else Utfall.KREVER_MANUELL_VURDERING.name,
+                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.utfallForVilkår(it.vilkår).name else Utfall.KREVER_MANUELL_VURDERING.name,
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {

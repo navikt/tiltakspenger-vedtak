@@ -193,7 +193,7 @@ private fun lagVurderingerForOppfyltePerioder() {
 // |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |   IkkeOppfylt
 // |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
 
-fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<Vurdering> {
+fun Saksopplysning.lagVurdering(periode: Periode): List<Vurdering> {
 // TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
 
 // Lag liste med Vurdering av alle Saksopplysninger som har opphør... false (egentlig alle som er kilde != SAKSB + kilde == SAKSB && Opphør == true )
@@ -209,38 +209,50 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<
 // |  2023-01-01 | 2023-01-15 |  AAP  | Saksbehandler   |         true                   |
 
 //    // TODO Denne må det jobbes mere med......
-    val saksopplysning: Saksopplysning = this.reduce { acc, saksopplysning ->
-        if (saksopplysning.kilde == Kilde.SAKSB) {
-            saksopplysning
-        } else {
-            if (acc.kilde == Kilde.SAKSB) acc else saksopplysning
-        }
-    }
+//    val saksopplysning: Saksopplysning = this.reduce { acc, saksopplysning ->
+//        if (saksopplysning.kilde == Kilde.SAKSB) {
+//            saksopplysning
+//        } else {
+//            if (acc.kilde == Kilde.SAKSB) acc else saksopplysning
+//        }
+//    }
 
-    val vurdering = when (saksopplysning.typeSaksopplysning) {
+    val vurdering = when (this.typeSaksopplysning) {
         TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
-            vilkår = saksopplysning.vilkår,
-            kilde = saksopplysning.kilde,
-            fom = saksopplysning.fom,
-            tom = saksopplysning.tom,
-            detaljer = saksopplysning.detaljer,
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
         )
 
         HAR_YTELSE -> Vurdering.IkkeOppfylt(
-            vilkår = saksopplysning.vilkår,
-            kilde = saksopplysning.kilde,
-            fom = saksopplysning.fom,
-            tom = saksopplysning.tom,
-            detaljer = saksopplysning.detaljer,
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
         )
 
         HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
-            vilkår = saksopplysning.vilkår,
-            kilde = saksopplysning.kilde,
-            fom = saksopplysning.fom,
-            tom = saksopplysning.tom,
-            detaljer = saksopplysning.detaljer,
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
         )
+    }
+
+    if (vurdering is Vurdering.IkkeOppfylt) {
+        val ikkeOverlappendePeriode = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom))
+        val oppfylt = Vurdering.Oppfylt(
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = ikkeOverlappendePeriode.first().fra,
+            tom = ikkeOverlappendePeriode.first().til,
+            detaljer = this.detaljer,
+        )
+        return listOf(vurdering, oppfylt)
     }
     return listOf(vurdering)
 }
