@@ -1,2 +1,0 @@
-INSERT INTO public.foreldrepenger_anvisning (id, foreldrepenger_vedtak_id, fra, til, beløp, dagsats, utbetalingsgrad) VALUES ('fpan_01H2EGDAW8KHNY0WY4QAGF1CF3', 'fpve_01H2EGDAW55J2R0ZBE943W0627', '2023-01-02', '2023-01-06', null, 2308, 100);
-INSERT INTO public.foreldrepenger_anvisning (id, foreldrepenger_vedtak_id, fra, til, beløp, dagsats, utbetalingsgrad) VALUES ('fpan_01H2EGDAW9TK8K1KTARDPF1519', 'fpve_01H2EGDAW55J2R0ZBE943W0627', '2023-01-09', '2023-01-13', null, 2308, 100);

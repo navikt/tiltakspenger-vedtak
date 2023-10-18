@@ -45,6 +45,7 @@ internal class SaksopplysningRepo {
                     "vilkar" to saksopplysning.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
                     "detaljer" to saksopplysning.detaljer,
                     "typeSaksopplysning" to saksopplysning.typeSaksopplysning.name,
+                    "saksbehandler" to saksopplysning.saksbehandler,
                     "opprettet" to nå(),
                 ),
             ).asUpdate,
@@ -69,6 +70,7 @@ internal class SaksopplysningRepo {
             vilkår = vilkår,
             detaljer = string("detaljer"),
             typeSaksopplysning = TypeSaksopplysning.valueOf(string("typeSaksopplysning")),
+            saksbehandler = stringOrNull("saksbehandler"),
         )
     }
 
@@ -91,6 +93,7 @@ internal class SaksopplysningRepo {
                 vilkår,
                 detaljer,
                 typeSaksopplysning,
+                saksbehandler,
                 opprettet
             ) values (
                 :id,
@@ -101,6 +104,7 @@ internal class SaksopplysningRepo {
                 :vilkar,
                 :detaljer,
                 :typeSaksopplysning,
+                :saksbehandler,
                 :opprettet
             )
     """.trimIndent()

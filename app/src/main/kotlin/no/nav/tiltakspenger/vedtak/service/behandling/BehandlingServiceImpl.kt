@@ -12,7 +12,7 @@ class BehandlingServiceImpl(
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
-        return behandlingRepo.hent(behandlingId)!!
+        return behandlingRepo.hent(behandlingId)
     }
 
     override fun hentAlleBehandlinger(): List<Søknadsbehandling> {
@@ -33,6 +33,5 @@ class BehandlingServiceImpl(
             is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
             else -> throw IllegalStateException("Behandlingen har feil status og kan ikke sendes til beslutting. BehandlingId: $behandlingId")
         }
-        behandlingRepo.lagre(behandling)
     }
 }

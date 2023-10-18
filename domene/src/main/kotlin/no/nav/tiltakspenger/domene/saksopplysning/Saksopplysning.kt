@@ -21,6 +21,7 @@ data class Saksopplysning(
     val vilkår: Vilkår,
     val detaljer: String,
     val typeSaksopplysning: TypeSaksopplysning,
+    val saksbehandler: String? = null,
 ) {
     companion object {
         fun initFakta(periode: Periode, vilkår: Vilkår): Saksopplysning {
@@ -40,6 +41,7 @@ data class Saksopplysning(
             vilkår: Vilkår,
             detaljer: String,
             typeSaksopplysning: TypeSaksopplysning,
+            saksbehandler: String,
         ): Saksopplysning {
             return Saksopplysning(
                 fom = fom,
@@ -48,6 +50,7 @@ data class Saksopplysning(
                 kilde = Kilde.SAKSB,
                 detaljer = detaljer, // Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
                 typeSaksopplysning = typeSaksopplysning,
+                saksbehandler = saksbehandler,
             )
         }
     }
@@ -97,7 +100,11 @@ fun lagFaktaFraJaNeiSpørsmål(vilkår: Vilkår, jaNeiSpm: Søknad.JaNeiSpm, per
     )
 }
 
-fun lagFaktaFraFraOgMedDatospørsmål(vilkår: Vilkår, fraOgMedDatoSpm: Søknad.FraOgMedDatoSpm, periode: Periode): Saksopplysning {
+fun lagFaktaFraFraOgMedDatospørsmål(
+    vilkår: Vilkår,
+    fraOgMedDatoSpm: Søknad.FraOgMedDatoSpm,
+    periode: Periode,
+): Saksopplysning {
     return Saksopplysning(
         fom = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) fraOgMedDatoSpm.fra else periode.fra,
         tom = periode.til,
@@ -186,7 +193,7 @@ private fun lagVurderingerForOppfyltePerioder() {
 // |   AAP  | Arena  | 2023-01-01 | 2023-01-31 |   IkkeOppfylt
 // |   AAP  | Arena  | 2023-02-01 | 2023-03-31 |   Oppfylt
 
-fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<Vurdering> =
+fun Saksopplysning.lagVurdering(periode: Periode): List<Vurdering> {
 // TODO Her må vi kanskje lage Vurderinger for Oppfylte perioder for at vi skal kunne lage DelvisInnvilget?
 
 // Lag liste med Vurdering av alle Saksopplysninger som har opphør... false (egentlig alle som er kilde != SAKSB + kilde == SAKSB && Opphør == true )
@@ -197,43 +204,58 @@ fun List<Saksopplysning>.lagVurdering(vilkår: Vilkår, periode: Periode): List<
 // Fjern disse periodene fra den første listen
     // Slå sammen periodene
 
-    this.map { fakta ->
-        when (fakta.typeSaksopplysning) {
-            TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
-                vilkår = fakta.vilkår,
-                kilde = fakta.kilde,
-                fom = fakta.fom,
-                tom = fakta.tom,
-                detaljer = fakta.detaljer,
-            )
+// |     fom     |    tom     | Vilkår| Kilde           | opphørTidligereSaksopplysning  |
+// |  2023-01-01 | 2023-01-31 |  AAP  | Arena           |         false                  |
+// |  2023-01-01 | 2023-01-15 |  AAP  | Saksbehandler   |         true                   |
 
-            HAR_YTELSE -> Vurdering.IkkeOppfylt(
-                vilkår = fakta.vilkår,
-                kilde = fakta.kilde,
-                fom = fakta.fom,
-                tom = fakta.tom,
-                detaljer = fakta.detaljer,
-            )
+//    // TODO Denne må det jobbes mere med......
+//    val saksopplysning: Saksopplysning = this.reduce { acc, saksopplysning ->
+//        if (saksopplysning.kilde == Kilde.SAKSB) {
+//            saksopplysning
+//        } else {
+//            if (acc.kilde == Kilde.SAKSB) acc else saksopplysning
+//        }
+//    }
 
-            HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
-                vilkår = fakta.vilkår,
-                kilde = fakta.kilde,
-                fom = fakta.fom,
-                tom = fakta.tom,
-                detaljer = fakta.detaljer,
-            )
-        }
-    }.ifEmpty {
-        listOf(
-            Vurdering.Oppfylt(
-                vilkår = vilkår,
-                kilde = settKilde(vilkår),
-                fom = periode.fra,
-                tom = periode.til,
-                detaljer = "",
-            ),
+    val vurdering = when (this.typeSaksopplysning) {
+        TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
+        )
+
+        HAR_YTELSE -> Vurdering.IkkeOppfylt(
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
+        )
+
+        HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = this.fom,
+            tom = this.tom,
+            detaljer = this.detaljer,
         )
     }
+
+    if (vurdering is Vurdering.IkkeOppfylt) {
+        val ikkeOverlappendePeriode = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom))
+        val oppfylt = Vurdering.Oppfylt(
+            vilkår = this.vilkår,
+            kilde = this.kilde,
+            fom = ikkeOverlappendePeriode.first().fra,
+            tom = ikkeOverlappendePeriode.first().til,
+            detaljer = this.detaljer,
+        )
+        return listOf(vurdering, oppfylt)
+    }
+    return listOf(vurdering)
+}
 
 fun settKilde(vilkår: Vilkår): Kilde {
     return when (vilkår) {

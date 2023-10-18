@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
@@ -116,67 +117,13 @@ sealed interface Søknadsbehandling : Behandling {
             }
         }
 
-        fun henteSaksopplysninger() {
-            // TODO Skal vi ha det slik?
-            // Kanskje dette skal gjøres i en service
-        }
-
-//        fun vilkårsvurder(): BehandlingVilkårsvurdert {
-//            if (innsending == null) {
-//                return BehandlingVilkårsvurdert.Manuell(
-//                    id = id,
-//                    søknader = søknader,
-//                    vurderingsperiode = vurderingsperiode,
-//                    saksopplysning = emptyList(),
-//                    vilkårsvurderinger = emptyList(),
-//                    innsending = innsending,
-//                )
-//            }
-//            val saksopplysning = lagFaktaAvInnsending(innsending)
-//
-//        }
-
-        //        private fun lagVilkårsvurderingerAvSaksopplysninger(): List<Vurdering> {
-//
-//        }
-        fun vilkårsvurder(saksopplysninger: List<Saksopplysning>): BehandlingVilkårsvurdert {
+        fun vilkårsvurder(): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
-            val vurderinger =
-                saksopplysninger.filter { it.vilkår == Vilkår.AAP }.lagVurdering(Vilkår.AAP, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.DAGPENGER }.lagVurdering(Vilkår.DAGPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_NÆRSTÅENDE }
-                        .lagVurdering(Vilkår.PLEIEPENGER_NÆRSTÅENDE, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PLEIEPENGER_SYKT_BARN }
-                        .lagVurdering(Vilkår.PLEIEPENGER_SYKT_BARN, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.lagVurdering(Vilkår.FORELDREPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.OPPLÆRINGSPENGER }
-                        .lagVurdering(Vilkår.OPPLÆRINGSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.OMSORGSPENGER }.lagVurdering(Vilkår.OMSORGSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ALDER }.lagVurdering(Vilkår.ALDER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.TILTAKSPENGER }.lagVurdering(Vilkår.TILTAKSPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.UFØRETRYGD }.lagVurdering(Vilkår.UFØRETRYGD, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.SVANGERSKAPSPENGER }
-                        .lagVurdering(Vilkår.SVANGERSKAPSPENGER, vurderingsperiode) +
-                    // Legg til flere vurderinger her
-                    saksopplysninger.filter { it.vilkår == Vilkår.KVP }.lagVurdering(Vilkår.KVP, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }
-                        .lagVurdering(Vilkår.INTROPROGRAMMET, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.INSTITUSJONSOPPHOLD }
-                        .lagVurdering(Vilkår.INSTITUSJONSOPPHOLD, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.GJENLEVENDEPENSJON }
-                        .lagVurdering(Vilkår.GJENLEVENDEPENSJON, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.SYKEPENGER }.lagVurdering(Vilkår.SYKEPENGER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADALDER }
-                        .lagVurdering(Vilkår.SUPPLERENDESTØNADALDER, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.SUPPLERENDESTØNADFLYKTNING }
-                        .lagVurdering(Vilkår.SUPPLERENDESTØNADFLYKTNING, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.JOBBSJANSEN }.lagVurdering(Vilkår.JOBBSJANSEN, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.PENSJONSINNTEKT }
-                        .lagVurdering(Vilkår.PENSJONSINNTEKT, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.LØNNSINNTEKT }.lagVurdering(Vilkår.LØNNSINNTEKT, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ETTERLØNN }.lagVurdering(Vilkår.ETTERLØNN, vurderingsperiode) +
-                    saksopplysninger.filter { it.vilkår == Vilkår.ALDERSPENSJON }.lagVurdering(Vilkår.ALDERSPENSJON, vurderingsperiode)
+
+            val vurderinger = saksopplysninger().flatMap {
+                it.lagVurdering(vurderingsperiode)
+            }
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
 
@@ -241,10 +188,9 @@ sealed interface Søknadsbehandling : Behandling {
 //            return saksopplysningAap + saksopplysningDagpenger
 //        }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            return this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning,
-            )
-        }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
+            this.copy(
+                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+            ).vilkårsvurder()
     }
 }

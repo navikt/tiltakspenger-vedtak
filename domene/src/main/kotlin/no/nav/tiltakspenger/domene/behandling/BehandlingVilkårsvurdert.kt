@@ -1,17 +1,30 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+
+val log = KotlinLogging.logger {}
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
 
     override fun søknad(): Søknad {
         return søknader.maxBy { it.opprettet }
+    }
+
+    fun utfallForVilkår(vilkår: Vilkår): Utfall {
+        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
+        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
+        if (vilkårsvurderinger.filter { it.vilkår == Vilkår.KVP }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
+        throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
@@ -21,7 +34,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             søknader = søknader,
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
-        ).vilkårsvurder(saksopplysninger)
+        ).vilkårsvurder()
     }
 
     companion object {
@@ -100,13 +113,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            val behandling = this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning,
-            )
-
-            return behandling.vurderPåNytt()
-        }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
+            this.copy(
+                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+            ).vurderPåNytt()
     }
 
     data class Avslag(
@@ -142,13 +152,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            val behandling = this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning,
-            )
-
-            return behandling.vurderPåNytt()
-        }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
+            this.copy(
+                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+            ).vurderPåNytt()
     }
 
     data class Manuell(
@@ -160,12 +167,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
-            val behandling = this.copy(
-                saksopplysninger = saksopplysninger + saksopplysning,
-            )
-
-            return behandling.vurderPåNytt()
-        }
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
+            this.copy(
+                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+            ).vurderPåNytt()
     }
 }
