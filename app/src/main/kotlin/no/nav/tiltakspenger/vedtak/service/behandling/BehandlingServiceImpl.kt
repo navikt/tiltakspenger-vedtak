@@ -33,5 +33,6 @@ class BehandlingServiceImpl(
             is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
             else -> throw IllegalStateException("Behandlingen har feil status og kan ikke sendes til beslutting. BehandlingId: $behandlingId")
         }
+        behandlingRepo.lagre(behandling)
     }
 }
