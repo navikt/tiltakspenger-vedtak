@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -10,6 +11,8 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
+val log = KotlinLogging.logger {}
+
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
 
@@ -18,9 +21,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     }
 
     fun utfallForVilkår(vilkår: Vilkår): Utfall {
+        log.info { "lager utfall for vilkår $vilkår og sjekker om den er lik $vilkårsvurderinger " }
         if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
         if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
         if (vilkårsvurderinger.all { it.vilkår == vilkår && it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
+        log.info { "Vi klarte ikke å finne Utfall" }
         throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
