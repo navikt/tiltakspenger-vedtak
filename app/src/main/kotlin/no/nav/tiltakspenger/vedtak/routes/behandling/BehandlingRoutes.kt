@@ -8,6 +8,9 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -25,6 +28,14 @@ data class BehandlingDTO(
     val id: String,
     val ident: String,
 )
+
+private fun finnTilstand(behandling: Søknadsbehandling) =
+    when (behandling) {
+        is Søknadsbehandling.Opprettet -> "søknadsbehandling"
+        is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
+        is BehandlingTilBeslutter -> "TilBeslutting"
+        is BehandlingIverksatt -> "Iverksatt"
+    }
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -83,6 +94,19 @@ fun Route.behandlingRoutes(
             behandlingId,
             lagSaksopplysningMedVilkår(saksbehandler.navIdent, nySaksopplysning),
         )
+
+        call.respond(status = HttpStatusCode.OK, message = "{}")
+    }
+
+    post("$behandlingPath/beslutter/{behandlingId}") {
+        LOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
+
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler.navIdent)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

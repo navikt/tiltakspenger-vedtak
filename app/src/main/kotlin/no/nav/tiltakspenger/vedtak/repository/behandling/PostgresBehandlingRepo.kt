@@ -194,7 +194,7 @@ internal class PostgresBehandlingRepo(
                 status = status,
             )
 
-            "TilAttestering" -> BehandlingTilBeslutter.fromDb(
+            "TilBeslutting" -> BehandlingTilBeslutter.fromDb(
                 id = id,
                 sakId = sakId,
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
@@ -225,7 +225,7 @@ internal class PostgresBehandlingRepo(
         when (behandling) {
             is Søknadsbehandling.Opprettet -> "søknadsbehandling"
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
-            is BehandlingTilBeslutter -> "TilAttestering"
+            is BehandlingTilBeslutter -> "TilBeslutting"
             is BehandlingIverksatt -> "Iverksatt"
         }
 

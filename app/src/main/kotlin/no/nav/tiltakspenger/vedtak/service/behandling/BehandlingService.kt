@@ -9,4 +9,5 @@ interface BehandlingService {
     fun hentAlleBehandlinger(): List<Søknadsbehandling>
 
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
+    fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String)
 }
