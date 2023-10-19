@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingTilBeslutter : Søknadsbehandling {
@@ -13,6 +14,10 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
 
     override fun søknad(): Søknad {
         return søknader.maxBy { it.opprettet }
+    }
+
+    fun hentUtfallForSaksopplysning(saksopplysning: Saksopplysning): Utfall {
+        return vilkårsvurderinger.first { v -> v.vilkår == saksopplysning.vilkår }.utfall
     }
 
     companion object {
