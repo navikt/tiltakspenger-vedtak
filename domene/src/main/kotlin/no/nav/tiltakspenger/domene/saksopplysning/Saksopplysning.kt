@@ -244,15 +244,17 @@ fun Saksopplysning.lagVurdering(periode: Periode): List<Vurdering> {
     }
 
     if (vurdering is Vurdering.IkkeOppfylt) {
-        val ikkeOverlappendePeriode = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom))
-        val oppfylt = Vurdering.Oppfylt(
-            vilkår = this.vilkår,
-            kilde = this.kilde,
-            fom = ikkeOverlappendePeriode.first().fra,
-            tom = ikkeOverlappendePeriode.first().til,
-            detaljer = this.detaljer,
-        )
-        return listOf(vurdering, oppfylt)
+        val oppfyltePerioder = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom)).map {
+            Vurdering.Oppfylt(
+                vilkår = this.vilkår,
+                kilde = this.kilde,
+                fom = it.fra,
+                tom = it.til,
+                detaljer = this.detaljer,
+            )
+        }
+
+        return oppfyltePerioder + vurdering
     }
     return listOf(vurdering)
 }

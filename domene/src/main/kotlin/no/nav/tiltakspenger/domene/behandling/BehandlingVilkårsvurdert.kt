@@ -23,7 +23,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     fun utfallForVilkår(vilkår: Vilkår): Utfall {
         if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
         if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
-        if (vilkårsvurderinger.filter { it.vilkår == Vilkår.KVP }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
+        if (vilkårsvurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
         throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
