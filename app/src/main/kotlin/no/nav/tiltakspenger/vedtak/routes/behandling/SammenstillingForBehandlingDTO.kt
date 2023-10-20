@@ -100,8 +100,8 @@ fun mapSammenstillingDTO(
 
 fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
     return when (behandling) {
-        is BehandlingVilkårsvurdert -> behandling.utfallForVilkår(saksopplysning.vilkår).name
-        is BehandlingTilBeslutter -> behandling.hentUtfallForSaksopplysning(saksopplysning).name
+        is BehandlingVilkårsvurdert -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
+        is BehandlingTilBeslutter -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
         else -> Utfall.KREVER_MANUELL_VURDERING.name
     }
 }

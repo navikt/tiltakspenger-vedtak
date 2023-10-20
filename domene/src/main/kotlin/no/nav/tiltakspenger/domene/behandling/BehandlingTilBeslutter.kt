@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingTilBeslutter : Søknadsbehandling {
@@ -16,8 +17,12 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         return søknader.maxBy { it.opprettet }
     }
 
-    fun hentUtfallForSaksopplysning(saksopplysning: Saksopplysning): Utfall {
-        return vilkårsvurderinger.first { v -> v.vilkår == saksopplysning.vilkår }.utfall
+    // Denne kan sikkert generaliseres for alle søknadsbehandlinger med vilkårsvurderinger
+    fun hentUtfallForVilkår(vilkår: Vilkår): Utfall {
+        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
+        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
+        if (vilkårsvurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
+        throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
     companion object {
