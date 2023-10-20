@@ -1,7 +1,10 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import java.time.LocalDate
@@ -79,7 +82,7 @@ fun mapSammenstillingDTO(
                 vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                 vilkårLedd = it.vilkår.lovreferanse.ledd,
                 fakta = fakta,
-                utfall = if (behandling is BehandlingVilkårsvurdert) behandling.utfallForVilkår(it.vilkår).name else Utfall.KREVER_MANUELL_VURDERING.name,
+                utfall = settUtfall(behandling = behandling, saksopplysning = it),
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
@@ -93,6 +96,14 @@ fun mapSammenstillingDTO(
             )
         }.first(),
     )
+}
+
+fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
+    return when (behandling) {
+        is BehandlingVilkårsvurdert -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
+        is BehandlingTilBeslutter -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
+        else -> Utfall.KREVER_MANUELL_VURDERING.name
+    }
 }
 
 val fakta = hashMapOf(
