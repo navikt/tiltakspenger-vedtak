@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -16,6 +17,7 @@ data class SammenstillingForBehandlingDTO(
     val søknad: SøknadDTO,
     val saksopplysninger: List<SaksopplysningUtDTO>,
     val personopplysninger: PersonopplysningerDTO,
+    val tilstand: String,
 )
 
 data class PersonopplysningerDTO(
@@ -95,6 +97,12 @@ fun mapSammenstillingDTO(
                 fortrolig = it.fortrolig,
             )
         }.first(),
+        tilstand = when (behandling) {
+            is BehandlingIverksatt -> "iverksatt"
+            is BehandlingTilBeslutter -> "tilBeslutter"
+            is BehandlingVilkårsvurdert -> "vilkårsvurdert"
+            is Søknadsbehandling.Opprettet -> "opprettet"
+        },
     )
 }
 
