@@ -25,6 +25,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
+    fun sendTilbake(): BehandlingVilkårsvurdert
+
     companion object {
         fun fromDb(
             id: BehandlingId,
@@ -83,6 +85,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 beslutter = beslutter,
             )
         }
+
+        override fun sendTilbake(): BehandlingVilkårsvurdert.Innvilget {
+            return BehandlingVilkårsvurdert.Innvilget(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
+            )
+        }
     }
 
     data class Avslag(
@@ -104,6 +117,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
+            )
+        }
+
+        override fun sendTilbake(): BehandlingVilkårsvurdert.Avslag {
+            return BehandlingVilkårsvurdert.Avslag(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                vilkårsvurderinger = vilkårsvurderinger,
             )
         }
     }

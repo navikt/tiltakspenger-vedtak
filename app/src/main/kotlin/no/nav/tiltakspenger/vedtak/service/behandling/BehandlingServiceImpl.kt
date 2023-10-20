@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
 import io.ktor.server.plugins.NotFoundException
+import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
@@ -32,6 +33,15 @@ class BehandlingServiceImpl(
             is BehandlingVilkårsvurdert.Avslag -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
             is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
             else -> throw IllegalStateException("Behandlingen har feil status og kan ikke sendes til beslutting. BehandlingId: $behandlingId")
+        }
+    }
+
+    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId) {
+        val behandling = hentBehandling(behandlingId)
+            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        when (behandling) {
+            is BehandlingTilBeslutter -> behandlingRepo.lagre(behandling.sendTilbake())
+            else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
         }
     }
 }

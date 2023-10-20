@@ -110,4 +110,16 @@ fun Route.behandlingRoutes(
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
+
+    post("$behandlingPath/sendtilbake/{behandlingId}") {
+        LOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
+
+        // TODO her må vi få inn saksbehandlerId og begrunnelse
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId)
+
+        call.respond(status = HttpStatusCode.OK, message = "{}")
+    }
 }
