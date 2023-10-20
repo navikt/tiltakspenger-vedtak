@@ -28,6 +28,7 @@ object DataSource {
             addDataSourceProperty("databaseName", getEnvOrProp(DB_DATABASE_KEY))
             addDataSourceProperty("user", getEnvOrProp(DB_USERNAME_KEY))
             addDataSourceProperty("password", getEnvOrProp(DB_PASSWORD_KEY))
+            initializationFailTimeout = 5000
             maximumPoolSize = MAX_POOLS
         }
     }
