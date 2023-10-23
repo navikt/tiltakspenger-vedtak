@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.ForeldrepengerTolker
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
@@ -18,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ForeldrepengerDTO(
@@ -31,8 +33,11 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 val foreldrepengerpath = "/rivers/foreldrepenger"
 
-fun Route.foreldrepengerRoutes(innsendingMediator: InnsendingMediator) {
-    post("$foreldrepengerpath") {
+fun Route.foreldrepengerRoutes(
+    innsendingMediator: InnsendingMediator,
+    behandlingService: BehandlingService,
+) {
+    post(foreldrepengerpath) {
         LOG.info { "Vi har mottatt foreldrepenger fra river" }
         val foreldrepengerDTO = call.receive<ForeldrepengerDTO>()
 
@@ -52,16 +57,30 @@ fun Route.foreldrepengerRoutes(innsendingMediator: InnsendingMediator) {
 
             foreldrepengerDTO.foreldrepenger.ytelser != null -> {
                 foreldrepengerDTO.foreldrepenger.ytelser?.let { dto ->
+                    val foreldrepengerVedtakListe = dto.map {
+                        mapFPYtelser(
+                            ytelseV1DTO = it,
+                            innhentet = foreldrepengerDTO.innhentet,
+                        )
+                    }
+
+                    behandlingService.hentBehandlingForJournalpostId(foreldrepengerDTO.journalpostId)?.let { behandling ->
+                        ForeldrepengerTolker.tolkeData(
+                            foreldrepengerVedtakListe,
+                            behandling.vurderingsperiode,
+                        ).forEach { saksopplysning ->
+                            behandlingService.leggTilSaksopplysning(
+                                behandlingId = behandling.id,
+                                saksopplysning = saksopplysning,
+                            )
+                        }
+                    }
+
                     val foreldrepengerHendelse = ForeldrepengerMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),
                         journalpostId = foreldrepengerDTO.journalpostId,
                         ident = foreldrepengerDTO.ident,
-                        foreldrepengerVedtakListe = dto.map {
-                            mapFPYtelser(
-                                ytelseV1DTO = it,
-                                innhentet = foreldrepengerDTO.innhentet,
-                            )
-                        },
+                        foreldrepengerVedtakListe = foreldrepengerVedtakListe,
                         tidsstempelForeldrepengerVedtakInnhentet = foreldrepengerDTO.innhentet,
                     )
                     SECURELOG.info { " Mottatt foreldrepenger og laget hendelse : $foreldrepengerHendelse" }

@@ -16,6 +16,10 @@ class BehandlingServiceImpl(
         return behandlingRepo.hent(behandlingId)
     }
 
+    override fun hentBehandlingForJournalpostId(journalpostId: String): Søknadsbehandling? {
+        return behandlingRepo.hentForJournalpostId(journalpostId)
+    }
+
     override fun hentAlleBehandlinger(): List<Søknadsbehandling> {
         return behandlingRepo.hentAlle()
     }

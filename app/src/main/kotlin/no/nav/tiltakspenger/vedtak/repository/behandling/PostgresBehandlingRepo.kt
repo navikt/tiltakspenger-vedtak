@@ -76,6 +76,23 @@ internal class PostgresBehandlingRepo(
         }
     }
 
+    override fun hentForJournalpostId(journalpostId: String): Søknadsbehandling? {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        SqlHentBehandlingForJournalpostId,
+                        mapOf(
+                            "journalpostId" to journalpostId,
+                        ),
+                    ).map { row ->
+                        row.toBehandling(txSession)
+                    }.asSingle,
+                )
+            }
+        }
+    }
+
     override fun lagre(behandling: Søknadsbehandling): Søknadsbehandling {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -291,6 +308,15 @@ internal class PostgresBehandlingRepo(
     @Language("SQL")
     private val SqlHentBehandlingForSak = """
         select * from behandling where sakId = :sakId
+    """.trimIndent()
+
+    @Language("SQL")
+    private val SqlHentBehandlingForJournalpostId = """
+        select * from behandling 
+         where id = 
+            (select behandling_id 
+             from søknad 
+             where journalpost_id = :journalpostId)
     """.trimIndent()
 
     @Language("SQL")

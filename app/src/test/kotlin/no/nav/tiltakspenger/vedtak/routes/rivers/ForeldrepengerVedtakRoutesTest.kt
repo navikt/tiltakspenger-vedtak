@@ -12,11 +12,15 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -29,6 +33,7 @@ class ForeldrepengerVedtakRoutesTest {
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
+    private val behandlingService = mockk<BehandlingService>(relaxed = true)
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
@@ -42,10 +47,17 @@ class ForeldrepengerVedtakRoutesTest {
 
     @Test
     fun `sjekk at kall til river foreldrepenger route sender ut et behov`() {
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+            sakId = SakId.random(),
+            søknad = nySøknadMedBrukerTiltak(),
+        )
+
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
         )
+        every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
+        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -54,6 +66,7 @@ class ForeldrepengerVedtakRoutesTest {
                 routing {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
                     )
                 }
             }
@@ -91,6 +104,7 @@ class ForeldrepengerVedtakRoutesTest {
                 routing {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
                     )
                 }
             }
@@ -116,6 +130,13 @@ class ForeldrepengerVedtakRoutesTest {
 
     @Test
     fun `sjekk at kall til river foreldrepenger route med null i saksnummer går ok`() {
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+            sakId = SakId.random(),
+            søknad = nySøknadMedBrukerTiltak(),
+        )
+        every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
+        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
@@ -128,6 +149,7 @@ class ForeldrepengerVedtakRoutesTest {
                 routing {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
                     )
                 }
             }
@@ -180,7 +202,7 @@ class ForeldrepengerVedtakRoutesTest {
                   "kildesystem": "FPSAK",
                   "periode": {
                     "fom": "2022-01-01",
-                    "tom": "2022-01-31"
+                    "tom": "2022-01-15"
                   },
                   "tilleggsopplysninger": "Tillegg",
                   "anvist": [

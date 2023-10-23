@@ -100,7 +100,7 @@ internal fun Application.vedtakApi(
             skjermingRoutes(innsendingMediator, sakService)
             tiltakRoutes(innsendingMediator)
             ytelseRoutes(innsendingMediator)
-            foreldrepengerRoutes(innsendingMediator)
+            foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)
             uføreRoutes(innsendingMediator)
             personopplysningerRoutes(
