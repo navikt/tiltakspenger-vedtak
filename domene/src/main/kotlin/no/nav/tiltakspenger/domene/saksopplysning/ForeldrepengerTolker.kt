@@ -10,7 +10,7 @@ class ForeldrepengerTolker {
             vedtak: List<ForeldrepengerVedtak>,
             periode: Periode,
         ): List<Saksopplysning> {
-            return ForeldrepengerVedtak.Ytelser.entries.flatMap { type ->
+            return ForeldrepengerVedtak.Ytelser.entries.filter { it.rettTilTiltakspenger }.flatMap { type ->
                 tolkeForEttVilkår(
                     vedtak = vedtak,
                     periode = periode,
@@ -20,10 +20,9 @@ class ForeldrepengerTolker {
                         ForeldrepengerVedtak.Ytelser.PLEIEPENGER_NÆRSTÅENDE -> Vilkår.PLEIEPENGER_NÆRSTÅENDE
                         ForeldrepengerVedtak.Ytelser.OMSORGSPENGER -> Vilkår.OMSORGSPENGER
                         ForeldrepengerVedtak.Ytelser.OPPLÆRINGSPENGER -> Vilkår.OPPLÆRINGSPENGER
-                        ForeldrepengerVedtak.Ytelser.ENGANGSTØNAD -> Vilkår.FORELDREPENGER // TODO()
                         ForeldrepengerVedtak.Ytelser.FORELDREPENGER -> Vilkår.FORELDREPENGER
                         ForeldrepengerVedtak.Ytelser.SVANGERSKAPSPENGER -> Vilkår.SVANGERSKAPSPENGER
-                        ForeldrepengerVedtak.Ytelser.FRISINN -> Vilkår.FORELDREPENGER // TODO()
+                        else -> throw IllegalStateException("Ukjent ytelsestype ${type.name}")
                     },
                 )
             }
@@ -64,13 +63,7 @@ private fun tolkeForEttVilkår(
                     fom = periode.fra,
                     tom = periode.til,
                     vilkår = vilkår,
-                    kilde = when (vilkår) {
-                        Vilkår.OMSORGSPENGER -> Kilde.K9SAK
-                        Vilkår.OPPLÆRINGSPENGER -> Kilde.K9SAK
-                        Vilkår.PLEIEPENGER_NÆRSTÅENDE -> Kilde.K9SAK
-                        Vilkår.PLEIEPENGER_SYKT_BARN -> Kilde.K9SAK
-                        else -> Kilde.FPSAK
-                    },
+                    kilde = type.kilde,
                     detaljer = "",
                     typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 ),
