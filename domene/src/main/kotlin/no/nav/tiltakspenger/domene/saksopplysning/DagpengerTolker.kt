@@ -16,13 +16,13 @@ class DagpengerTolker {
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
-//                        opphørTidligereSaksopplysning = false,
                         typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
                     ),
                 )
             }
 
             val ytelseListe = ytelser
+                .filterNot { it.fomGyldighetsperiode.isAfter(it.tomGyldighetsperiode) } // Arena sender noen ganger ugyldig periode
                 .filter {
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
@@ -39,7 +39,6 @@ class DagpengerTolker {
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
-//                        opphørTidligereSaksopplysning = false,
                         typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
                     ),
                 )
@@ -52,7 +51,6 @@ class DagpengerTolker {
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = detaljerForDagpenger(it),
-//                        opphørTidligereSaksopplysning = false,
                         typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                     )
                 }

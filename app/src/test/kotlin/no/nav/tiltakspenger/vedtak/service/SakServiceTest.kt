@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service
 
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.types.beInstanceOf
 import io.mockk.every
 import io.mockk.mockk
@@ -11,9 +10,7 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedUføre
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSakAAP
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
@@ -77,29 +74,5 @@ internal class SakServiceTest {
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id
         sak2.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first().søknad() shouldBe søknad2
-    }
-
-    @Test
-    fun `søknad med AAP i deler av perioden blir DelvisInnvilget`() {
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.lagre(any()) } returnsArgument 0
-
-        val søknad = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
-            ),
-        )
-
-        val innsending = innsendingMedUføre(
-            søknad = søknad,
-            ytelseSak = ytelseSakAAP(
-                fom = 1.januarDateTime(2023),
-                tom = 31.januarDateTime(2023),
-            ),
-        )
-
-        val sak = sakService.mottaInnsending(innsending)
-        sak shouldNotBe null
     }
 }

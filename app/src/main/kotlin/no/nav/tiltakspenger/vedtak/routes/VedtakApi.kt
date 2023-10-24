@@ -98,7 +98,7 @@ internal fun Application.vedtakApi(
             søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator, sakService)
             tiltakRoutes(innsendingMediator)
-            ytelseRoutes(innsendingMediator)
+            ytelseRoutes(innsendingMediator, behandlingService)
             foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)
             uføreRoutes(innsendingMediator)

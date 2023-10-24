@@ -7,11 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.AapTolker
+import no.nav.tiltakspenger.domene.saksopplysning.DagpengerTolker
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ArenaYtelserMottattDTO(
@@ -25,19 +28,33 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 val ytelsepath = "/rivers/ytelser"
 
-fun Route.ytelseRoutes(innsendingMediator: InnsendingMediator) {
+fun Route.ytelseRoutes(
+    innsendingMediator: InnsendingMediator,
+    behandlingService: BehandlingService,
+) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }
 
         val arenaYtelser = call.receive<ArenaYtelserMottattDTO>()
 
+        val ytelser = mapYtelser(
+            ytelseSakDTO = arenaYtelser.respons.saker!!, // Hvis denne smeller må vi kode opp en FeilHendelse
+            tidsstempelHosOss = arenaYtelser.innhentet,
+        )
+
+        behandlingService.hentBehandlingForJournalpostId(arenaYtelser.journalpostId)?.let { behandling ->
+            AapTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+            }
+            DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+            }
+        }
+
         val ytelserMottattHendelse = YtelserMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
             journalpostId = arenaYtelser.journalpostId,
-            ytelseSak = mapYtelser(
-                ytelseSakDTO = arenaYtelser.respons.saker!!, // Hvis denne smeller må vi kode opp en FeilHendelse
-                tidsstempelHosOss = arenaYtelser.innhentet,
-            ),
+            ytelseSak = ytelser,
             tidsstempelYtelserInnhentet = arenaYtelser.innhentet,
         )
         SECURELOG.info { " Mottatt ytelser og laget hendelse : $ytelserMottattHendelse" }
