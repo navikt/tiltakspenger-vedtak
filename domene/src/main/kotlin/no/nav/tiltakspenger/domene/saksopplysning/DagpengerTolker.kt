@@ -13,7 +13,7 @@ class DagpengerTolker {
                     Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
-                        vilkår = Vilkår.AAP,
+                        vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = "",
                         typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
@@ -36,7 +36,7 @@ class DagpengerTolker {
                     Saksopplysning(
                         fom = periode.fra,
                         tom = periode.til,
-                        vilkår = Vilkår.AAP,
+                        vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = "",
                         typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
