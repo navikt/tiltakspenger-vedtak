@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
 import java.math.BigDecimal
@@ -32,20 +33,20 @@ data class ForeldrepengerVedtak(
         val utbetalingsgrad: BigDecimal?,
     )
 
-    enum class Ytelser {
+    enum class Ytelser(val rettTilTiltakspenger: Boolean, val kilde: Kilde) {
         /** Folketrygdloven K9 ytelser.  */
-        PLEIEPENGER_SYKT_BARN,
-        PLEIEPENGER_NÆRSTÅENDE,
-        OMSORGSPENGER,
-        OPPLÆRINGSPENGER,
+        PLEIEPENGER_SYKT_BARN(true, Kilde.K9SAK),
+        PLEIEPENGER_NÆRSTÅENDE(true, Kilde.K9SAK),
+        OMSORGSPENGER(true, Kilde.K9SAK),
+        OPPLÆRINGSPENGER(true, Kilde.K9SAK),
 
         /** Folketrygdloven K14 ytelser.  */
-        ENGANGSTØNAD,
-        FORELDREPENGER,
-        SVANGERSKAPSPENGER,
+        ENGANGSTØNAD(false, Kilde.FPSAK),
+        FORELDREPENGER(true, Kilde.FPSAK),
+        SVANGERSKAPSPENGER(true, Kilde.FPSAK),
 
         /** Midlertidig ytelse for Selvstendig næringsdrivende og Frilansere (Anmodning 10).  */
-        FRISINN,
+        FRISINN(false, Kilde.FPSAK),
     }
 
     enum class Status {

@@ -115,7 +115,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+                saksopplysninger = saksopplysninger
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
+                    saksopplysning,
             ).vurderPåNytt()
     }
 
@@ -154,7 +157,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+                saksopplysninger = saksopplysninger
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
+                    saksopplysning,
             ).vurderPåNytt()
     }
 
@@ -169,7 +175,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB } + saksopplysning,
+                saksopplysninger = saksopplysninger
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
+                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
+                    saksopplysning,
             ).vurderPåNytt()
     }
 }
