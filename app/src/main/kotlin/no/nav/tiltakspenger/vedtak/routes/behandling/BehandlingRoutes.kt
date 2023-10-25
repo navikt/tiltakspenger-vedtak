@@ -14,6 +14,9 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.vedtak.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
@@ -41,6 +44,7 @@ fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
+    innsendingMediator: InnsendingMediator,
 ) {
     get("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/behandlingId")
@@ -121,5 +125,26 @@ fun Route.behandlingRoutes(
         behandlingService.sendTilbakeTilSaksbehandler(behandlingId)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
+    }
+
+    post("$behandlingPath/oppdater/{behandlingId}") {
+        LOG.debug { "Vi har mottatt melding om oppfriskning av fakta" }
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        LOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
+
+        behandlingService.hentBehandling(behandlingId)?.let {
+            val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
+                aktivitetslogg = Aktivitetslogg(),
+                journalpostId = it.søknad().journalpostId,
+            )
+            innsendingMediator.håndter(innsendingUtdatertHendelse)
+        } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
+        call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }

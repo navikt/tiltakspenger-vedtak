@@ -84,6 +84,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 sakService = sakService,
+                innsendingMediator = innsendingMediator,
             )
         }
         authenticate("admin") {
@@ -109,7 +110,6 @@ internal fun Application.vedtakApi(
             innsendingUtdatertRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
-                behandlingService = behandlingService,
             )
         }
         staticResources(
