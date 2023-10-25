@@ -115,6 +115,7 @@ internal fun Application.vedtakApi(
             innsendingUtdatertRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
+                behandlingService = behandlingService,
             )
         }
         static("/") {
