@@ -13,10 +13,7 @@ import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
-import io.ktor.server.http.content.defaultResource
-import io.ktor.server.http.content.resource
-import io.ktor.server.http.content.static
-import io.ktor.server.http.content.staticBasePackage
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.callid.callIdMdc
 import io.ktor.server.plugins.callloging.CallLogging
@@ -28,7 +25,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
@@ -67,7 +63,6 @@ internal fun Application.vedtakApi(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
-    eventMediator: EventMediator,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -110,7 +105,6 @@ internal fun Application.vedtakApi(
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
-                eventMediator = eventMediator,
             )
             innsendingUtdatertRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
@@ -118,11 +112,14 @@ internal fun Application.vedtakApi(
                 behandlingService = behandlingService,
             )
         }
-        static("/") {
-            staticBasePackage = "static"
-            resource("index.html")
-            defaultResource("index.html")
-        }
+        staticResources(
+            remotePath = "/",
+            basePackage = "static",
+            index = "index.html",
+            block = {
+                default("index.html")
+            },
+        )
     }
 }
 

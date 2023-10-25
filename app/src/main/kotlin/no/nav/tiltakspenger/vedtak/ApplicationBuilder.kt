@@ -35,7 +35,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
-                eventMediator = eventMediator,
             )
         }
         .build()

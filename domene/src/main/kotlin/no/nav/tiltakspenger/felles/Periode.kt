@@ -62,7 +62,7 @@ class Periode(fra: LocalDate, til: LocalDate) {
     // TODO: Trenger tester!
     fun overlappenderPerioder(perioder: List<Periode>): List<Periode> {
         val rangeSet: RangeSet<LocalDate> = TreeRangeSet.create()
-        perioder.forEach { periode -> this.overlappendePeriode(periode)?.range.let { rangeSet.add(it) } }
+        perioder.forEach { periode -> this.overlappendePeriode(periode)?.range.let { rangeSet.add(it!!) } }
         return rangeSet.asRanges().toPerioder()
     }
 

@@ -141,7 +141,7 @@ class BehandlingMapper {
                     pensjonsordninger = mapPensjonsordninger(vilkårsvurderinger.pensjonsordninger),
                     lønnsinntekt = mapLønnsinntekt(vilkårsvurderinger.lønnsinntekt),
                     institusjonsopphold = mapInstitusjonsopphold(vilkårsvurderinger.institusjonopphold),
-                    barnetillegg = mapBarnetillegg(søknad.barnetillegg, innsending.personopplysningerBarnMedIdent()),
+                    barnetillegg = mapBarnetillegg(søknad.barnetillegg),
                     alderVilkårsvurdering = mapAlderVilkårsvurdering(vilkårsvurderinger.alder),
                     konklusjon = mapKonklusjon(
                         listOf(
@@ -193,7 +193,7 @@ class BehandlingMapper {
     private fun mapSøknad(søknad: Søknad) = SøknadDTO(
         id = søknad.id.toString(),
         søknadId = søknad.søknadId,
-        søknadsdato = (søknad.opprettet ?: søknad.tidsstempelHosOss).toLocalDate(),
+        søknadsdato = (søknad.opprettet).toLocalDate(),
         arrangoernavn = søknad.tiltak?.arrangoernavn,
         tiltakskode = if (søknad.tiltak == null) {
             "Ukjent"
@@ -231,7 +231,6 @@ class BehandlingMapper {
 
     private fun mapBarnetillegg(
         barnetillegg: List<Barnetillegg>,
-        barnMedIdent: List<Personopplysninger.BarnMedIdent>,
     ): List<BarnetilleggDTO> {
         return barnetillegg.map {
             BarnetilleggDTO(

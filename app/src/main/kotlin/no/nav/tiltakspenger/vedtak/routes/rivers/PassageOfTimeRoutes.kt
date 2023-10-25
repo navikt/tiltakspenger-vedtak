@@ -7,7 +7,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.vedtak.EventMediator
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDate
 
@@ -19,9 +18,8 @@ data class DayHasBegunEvent(val date: LocalDate)
 
 fun Route.passageOfTimeRoutes(
     innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
-    eventMediator: EventMediator,
 ) {
-    post("$dayHasBegunRoute") {
+    post(dayHasBegunRoute) {
         LOG.info { "Vi har mottatt DayHasBegun fra river" }
         val systembruker: Systembruker = innloggetSystembrukerProvider.hentInnloggetSystembruker(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
