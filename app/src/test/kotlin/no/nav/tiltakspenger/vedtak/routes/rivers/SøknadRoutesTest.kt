@@ -22,6 +22,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -48,7 +49,8 @@ class SøknadRoutesTest {
         rapidsConnection = testRapid,
     )
 
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo)
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach
     fun reset() {

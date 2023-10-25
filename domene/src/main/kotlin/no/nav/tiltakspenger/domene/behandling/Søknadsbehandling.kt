@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
@@ -177,23 +176,9 @@ sealed interface Søknadsbehandling : Behandling {
             )
         }
 
-//        private fun lagFaktaAvInnsending(innsending: Innsending): List<Saksopplysning> {
-//            val saksopplysningDagpenger =
-//                Saksopplysning.Dagpenger.lagFakta(innsending.ytelser?.ytelserliste, innsending.filtreringsperiode())
-//            val saksopplysningAap =
-//                Saksopplysning.Aap.lagSaksopplysninger(
-//                    innsending.ytelser?.ytelserliste,
-//                    innsending.filtreringsperiode(),
-//                )
-//            return saksopplysningAap + saksopplysningDagpenger
-//        }
-
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
-                    saksopplysning,
+                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
             ).vilkårsvurder()
     }
 }

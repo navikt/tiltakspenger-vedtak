@@ -9,4 +9,5 @@ object ObjectMother :
     SaksbehandlerMother,
     SøknadMother,
     VilkårsvurderingerMother,
-    YtelsesakMother
+    YtelsesakMother,
+    SakMother

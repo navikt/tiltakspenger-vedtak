@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.vedtak.Søknad
 
 interface SakService {
     fun motta(søknad: Søknad): Sak
-    fun mottaPersonopplysninger(journalpostId: String, personopplysninger: List<Personopplysninger>): Sak
+    fun mottaPersonopplysninger(journalpostId: String, personopplysninger: List<Personopplysninger>): Sak?
     fun mottaSkjerming(journalpostId: String, skjerming: Skjerming): Sak
     fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak?
 }

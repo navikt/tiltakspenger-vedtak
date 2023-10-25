@@ -115,10 +115,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
-                    saksopplysning,
+                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
             ).vurderPåNytt()
     }
 
@@ -157,10 +154,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
-                    saksopplysning,
+                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
             ).vurderPåNytt()
     }
 
@@ -175,10 +169,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
             this.copy(
-                saksopplysninger = saksopplysninger
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
-                    .filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == saksopplysning.kilde } +
-                    saksopplysning,
+                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
             ).vurderPåNytt()
     }
 }
+
+fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
+    if (saksopplysning.kilde != Kilde.SAKSB) {
+        this.filterNot { it.vilkår == saksopplysning.vilkår }
+    } else {
+        this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
+    }.plus(saksopplysning)
