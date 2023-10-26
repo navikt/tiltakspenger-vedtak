@@ -97,7 +97,7 @@ internal fun Application.vedtakApi(
             ytelseRoutes(innsendingMediator, behandlingService)
             foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)
-            uføreRoutes(innsendingMediator)
+            uføreRoutes(innsendingMediator, behandlingService)
             personopplysningerRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,

@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -29,6 +30,7 @@ class UføreVedtakRoutesTest {
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
+    private val behandlingService = mockk<BehandlingService>(relaxed = true)
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
@@ -54,6 +56,7 @@ class UføreVedtakRoutesTest {
                 routing {
                     uføreRoutes(
                         innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
                     )
                 }
             }
@@ -61,7 +64,7 @@ class UføreVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$uførepath")
+                    path(uførepath)
                 },
             ) {
                 setBody(uføreBody)

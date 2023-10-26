@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.saksopplysning.UføreTolker
 import no.nav.tiltakspenger.felles.UføreVedtakId
 import no.nav.tiltakspenger.libs.ufore.Feilmelding
 import no.nav.tiltakspenger.libs.ufore.UforeResponsDTO
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class UføreDTO(
@@ -28,10 +30,13 @@ data class UføreDTO(
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
-val uførepath = "/rivers/ufore"
+const val uførepath = "/rivers/ufore"
 
-fun Route.uføreRoutes(innsendingMediator: InnsendingMediator) {
-    post("$uførepath") {
+fun Route.uføreRoutes(
+    innsendingMediator: InnsendingMediator,
+    behandlingService: BehandlingService,
+) {
+    post(uførepath) {
         LOG.info { "Vi har mottatt uførevedtak fra river" }
         val uføreDTO = call.receive<UføreDTO>()
 
@@ -52,11 +57,19 @@ fun Route.uføreRoutes(innsendingMediator: InnsendingMediator) {
 
             uføreDTO.uføre.uføregrad != null -> {
                 uføreDTO.uføre.uføregrad?.let { dto ->
+                    val uføreVedtak = mapUføre(dto, uføreDTO.innhentet)
+
+                    behandlingService.hentBehandlingForJournalpostId(uføreDTO.journalpostId)?.let { behandling ->
+                        UføreTolker.tolkeData(uføreVedtak, behandling.vurderingsperiode).forEach { saksopplysning ->
+                            behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+                        }
+                    }
+
                     val uføreMottattHendelse = UføreMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),
                         journalpostId = uføreDTO.journalpostId,
                         ident = uføreDTO.ident,
-                        uføreVedtak = mapUføre(dto, uføreDTO.innhentet),
+                        uføreVedtak = uføreVedtak,
                         tidsstempelUføreVedtakInnhentet = uføreDTO.innhentet,
                     )
                     SECURELOG.info { " Mottatt uførevedtak og laget hendelse : $uføreMottattHendelse" }
