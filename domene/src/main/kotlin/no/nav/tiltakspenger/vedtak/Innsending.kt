@@ -490,7 +490,9 @@ class Innsending private constructor(
             personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
         ) {
             innsending.mottaPersonopplysninger(personopplysningerMottattHendelse)
-            innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
+            // Denne er flyttet inn i mottaPersonopplysninger for å vente med innhenting av Skjerming
+            // til vi har fått svar fra pdl også ved oppdatering av fakta
+            // innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
             innsending.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
@@ -589,7 +591,8 @@ class Innsending private constructor(
                 "Mottatt InnsendingUtdatertHendelse, trenger å oppdatere faktaene vi har hentet inn",
             )
             innsending.trengerPersonopplysninger(innsendingUtdatertHendelse)
-            innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
+            // Denne har vi flyttet inn i mottaPersonopplysninger for å vente på pdl
+            // innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
             innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
             innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
@@ -849,6 +852,8 @@ class Innsending private constructor(
             tidsstempelInnhentet = personopplysningerMottattHendelse.tidsstempelPersonopplysningerInnhentet(),
             personopplysningerliste = personopplysningerMottattHendelse.personopplysninger(),
         )
+        // Dette er for at vi også skal hente skjerming ved oppdatering av fakta
+        this.trengerSkjermingdata(personopplysningerMottattHendelse)
     }
 
     private fun mottaTiltak(
