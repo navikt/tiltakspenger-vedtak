@@ -116,7 +116,7 @@ fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
 
 val fakta = hashMapOf(
     "AAP" to FaktaDTO(harYtelse = "Bruker mottar AAP", harIkkeYtelse = ""),
-    "ALDER" to FaktaDTO(harYtelse = "Bruker er over 18 år", harIkkeYtelse = "Bruker er under 18 år"),
+    "ALDER" to FaktaDTO(harYtelse = "Bruker er under 18 år", harIkkeYtelse = "Bruker er over 18 år"),
     "ALDERSPENSJON" to FaktaDTO(
         harYtelse = "Bruker mottar alderspensjon",
         harIkkeYtelse = "Bruker mottar ikke alderspensjon",
