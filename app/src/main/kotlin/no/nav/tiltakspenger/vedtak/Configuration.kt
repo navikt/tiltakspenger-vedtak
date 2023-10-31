@@ -41,6 +41,7 @@ object Configuration {
         "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
         "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
         "logback.configurationFile" to "logback.xml",
+        "SCOPE_UTBETALING" to System.getenv("SCOPE_UTBETALING"),
     )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
@@ -54,6 +55,7 @@ object Configuration {
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
             Rolle.SKJERMING.name to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d",
             Rolle.ADMIN.name to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
+            "SCOPE_UTBETALING" to "localhost",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -64,6 +66,7 @@ object Configuration {
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
             Rolle.SKJERMING.name to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d",
             Rolle.ADMIN.name to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
+            "SCOPE_UTBETALING" to "api://dev-gcp.tpts.tiltakspenger-utbetaling/.default",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -74,6 +77,7 @@ object Configuration {
             Rolle.STRENGT_FORTROLIG_ADRESSE.name to "ad7b87a6-9180-467c-affc-20a566b0fec0",
             Rolle.SKJERMING.name to "e750ceb5-b70b-4d94-b4fa-9d22467b786b",
             Rolle.ADMIN.name to "0405ed09-1248-47f7-a6e3-e998bc90feca",
+            "SCOPE_UTBETALING" to "api://prod-gcp.tpts.tiltakspenger-utbetaling/.default",
         ),
     )
 
@@ -106,6 +110,10 @@ object Configuration {
         AdRolle(Rolle.ADMIN, UUID.fromString(config()[Key(Rolle.ADMIN.name, stringType)])),
     )
 
+    data class ClientConfig(
+        val baseUrl: String,
+    )
+
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     data class TokenVerificationConfig(
@@ -114,5 +122,9 @@ object Configuration {
         val clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         val leeway: Long = 1000,
         val roles: List<AdRolle> = alleAdRoller(),
+    )
+
+    data class UtbetalingTokenConfig(
+        val scope: String = config()[Key("SCOPE_UTBETALING", stringType)]
     )
 }

@@ -147,4 +147,13 @@ fun Route.behandlingRoutes(
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
+
+    post("$behandlingPath/godkjenn/{behandlingId}") {
+        LOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        utbetalingService.iverksett(behandlingId) ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+    }
 }
