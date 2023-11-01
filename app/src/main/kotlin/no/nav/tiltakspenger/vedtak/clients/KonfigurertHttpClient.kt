@@ -3,9 +3,6 @@ package no.nav.tiltakspenger.vedtak.clients
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
@@ -69,9 +66,9 @@ private fun HttpClient.config(timeout: Long) = this.config {
     expectSuccess = true
 }
 
-fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
-    .addModule(KotlinModule.Builder().build())
-    .addModule(JavaTimeModule())
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    .build()
+//fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
+//    .addModule(KotlinModule.Builder().build())
+//    .addModule(JavaTimeModule())
+//    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+//    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+//    .build()

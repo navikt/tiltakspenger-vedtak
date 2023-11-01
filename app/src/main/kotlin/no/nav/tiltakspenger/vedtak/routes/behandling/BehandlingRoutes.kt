@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
@@ -44,6 +45,7 @@ fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
+    utbetalingService: UtbetalingServiceImpl,
     innsendingMediator: InnsendingMediator,
 ) {
     get("$behandlingPath/{behandlingId}") {
@@ -154,6 +156,9 @@ fun Route.behandlingRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        utbetalingService.iverksett(behandlingId) ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+        val behandling = behandlingService.hentBehandling(behandlingId)
+            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
+        utbetalingService.sendBehandlingTilUtbetaling(behandling)
     }
 }

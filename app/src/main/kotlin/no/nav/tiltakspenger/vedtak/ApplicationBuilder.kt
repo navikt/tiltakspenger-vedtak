@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.vedtak.clients.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -13,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
@@ -48,6 +51,11 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
+    private val tokenProviderUtbetaling: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
+
+    private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
+    private val utbetalingServiceImpl = UtbetalingServiceImpl(utbetalingClient)
     val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,
