@@ -120,7 +120,7 @@ internal class PostgresInnsendingRepository(
                         mapOf(
                             "tilstand1" to InnsendingTilstandType.FaktainnhentingFeilet.name,
                             "tilstand2" to InnsendingTilstandType.InnsendingFerdigstilt.name,
-                            "sistEndret" to LocalDateTime.now().minusHours(24),
+                            "sistEndret" to LocalDateTime.now().minusHours(1),
                         ),
                     ).map { row ->
                         // row.toInnsending(txSession)
