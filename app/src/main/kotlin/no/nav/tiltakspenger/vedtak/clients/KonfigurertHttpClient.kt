@@ -18,7 +18,6 @@ import io.ktor.serialization.jackson.jackson
 import mu.KotlinLogging
 import java.time.Duration
 
-
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
@@ -66,7 +65,7 @@ private fun HttpClient.config(timeout: Long) = this.config {
     expectSuccess = true
 }
 
-//fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
+// fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
 //    .addModule(KotlinModule.Builder().build())
 //    .addModule(JavaTimeModule())
 //    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

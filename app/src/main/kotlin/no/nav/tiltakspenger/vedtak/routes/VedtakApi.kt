@@ -45,6 +45,7 @@ import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
@@ -63,6 +64,7 @@ internal fun Application.vedtakApi(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
+    utbetalingService: UtbetalingServiceImpl,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -85,6 +87,7 @@ internal fun Application.vedtakApi(
                 behandlingService = behandlingService,
                 sakService = sakService,
                 innsendingMediator = innsendingMediator,
+                utbetalingService = utbetalingService,
             )
         }
         authenticate("admin") {

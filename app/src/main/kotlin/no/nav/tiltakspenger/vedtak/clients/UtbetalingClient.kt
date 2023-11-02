@@ -38,7 +38,7 @@ class UtbetalingClient(
 
     override suspend fun iverksett(behandling: Behandling): String {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/api/external/deltakelser") {
+            httpClient.post("${config.baseUrl}/utbetaling") {
                 header(navCallIdHeader, "tiltakspenger-vedtak")
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
