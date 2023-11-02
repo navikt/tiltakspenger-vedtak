@@ -1,8 +1,9 @@
-val ktorVersion = "2.3.3"
+val ktorVersion = "2.3.4"
 val kotestVersion = "5.6.2"
 val mockkVersion = "1.13.7"
 val testContainersVersion = "1.19.0"
 val felleslibVersion = "0.0.44"
+val tokenSupportVersion = "3.1.5"
 
 plugins {
     application
@@ -25,10 +26,12 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:fp-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
+
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.11")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
+
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
@@ -46,10 +49,23 @@ dependencies {
     implementation("io.ktor:ktor-utils:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2023082311481692784104.98e0711da2cd")
     implementation("com.natpryce:konfig:1.6.10.0")
+
+    // Http
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation("io.ktor:ktor-http:$ktorVersion")
+
     // Auth
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("com.auth0:jwks-rsa:0.22.1")
+
+    // TokenX
+    implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
+    implementation("no.nav.security:token-client-core:$tokenSupportVersion")
+
 
     // DB
     implementation("org.flywaydb:flyway-core:9.22.0")
