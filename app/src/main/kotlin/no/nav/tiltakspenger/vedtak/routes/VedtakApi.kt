@@ -96,7 +96,7 @@ internal fun Application.vedtakApi(
         authenticate("systemtoken") {
             søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator, sakService)
-            tiltakRoutes(innsendingMediator)
+            tiltakRoutes(innsendingMediator, behandlingService)
             ytelseRoutes(innsendingMediator, behandlingService)
             foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)

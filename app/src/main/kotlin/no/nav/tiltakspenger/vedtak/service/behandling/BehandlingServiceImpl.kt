@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 
 class BehandlingServiceImpl(
@@ -27,6 +28,12 @@ class BehandlingServiceImpl(
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         val behandling = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
             ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
+        behandlingRepo.lagre(behandling)
+    }
+
+    override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
+        val behandling = hentBehandling(behandlingId)?.oppdaterTiltak(tiltak)
+            ?: throw IllegalStateException("Kunnde ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
         behandlingRepo.lagre(behandling)
     }
 

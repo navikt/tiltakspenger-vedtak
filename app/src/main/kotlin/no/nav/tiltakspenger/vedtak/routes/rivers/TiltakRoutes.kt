@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class TiltakMottattDTO(
@@ -25,7 +26,10 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 const val tiltakpath = "/rivers/tiltak"
 
-fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
+fun Route.tiltakRoutes(
+    innsendingMediator: InnsendingMediator,
+    behandlingService: BehandlingService,
+) {
     post(tiltakpath) {
         LOG.info { "Vi har mottatt tiltak fra river" }
         val tiltakDTO: TiltakMottattDTO = try {
@@ -37,15 +41,20 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
         }
 
         if (tiltakDTO.respons.tiltak != null) {
+            val tiltak = mapTiltak(
+                tiltakDTO = tiltakDTO.respons.tiltak!!,
+                innhentet = tiltakDTO.innhentet,
+            )
             val tiltakMottattHendelse = TiltakMottattHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = tiltakDTO.journalpostId,
-                tiltaks = mapTiltak(
-                    tiltakDTO = tiltakDTO.respons.tiltak!!,
-                    innhentet = tiltakDTO.innhentet,
-                ),
+                tiltaks = tiltak,
                 tidsstempelTiltakInnhentet = tiltakDTO.innhentet,
             )
+
+            behandlingService.hentBehandlingForJournalpostId(tiltakDTO.journalpostId)?.let { behandling ->
+                behandlingService.oppdaterTiltak(behandling.id, tiltak)
+            }
 
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $tiltakMottattHendelse" }
             innsendingMediator.håndter(tiltakMottattHendelse)
