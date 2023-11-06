@@ -7,15 +7,15 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.libs.arena.tiltak.ArenaTiltaksaktivitetResponsDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
 import java.time.LocalDateTime
 
-data class ArenaTiltakMottattDTO(
-    val respons: ArenaTiltaksaktivitetResponsDTO,
+data class TiltakMottattDTO(
+    val respons: TiltakResponsDTO,
     val ident: String,
     val journalpostId: String,
     val innhentet: LocalDateTime,
@@ -23,12 +23,12 @@ data class ArenaTiltakMottattDTO(
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
-val tiltakpath = "/rivers/tiltak"
+const val tiltakpath = "/rivers/tiltak"
 
 fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
-    post("$tiltakpath") {
+    post(tiltakpath) {
         LOG.info { "Vi har mottatt tiltak fra river" }
-        val arenaTiltak: ArenaTiltakMottattDTO = try {
+        val tiltakDTO: TiltakMottattDTO = try {
             call.receive()
         } catch (t: Throwable) {
             LOG.info("Feil ved mapping fra json")
@@ -36,58 +36,54 @@ fun Route.tiltakRoutes(innsendingMediator: InnsendingMediator) {
             throw t
         }
 
-        if (arenaTiltak.respons.tiltaksaktiviteter != null) {
-            val arenaTiltakMottattHendelse = ArenaTiltakMottattHendelse(
+        if (tiltakDTO.respons.tiltak != null) {
+            val tiltakMottattHendelse = TiltakMottattHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = arenaTiltak.journalpostId,
-                tiltaksaktivitet = mapArenaTiltak(
-                    tiltaksaktivitetDTO = arenaTiltak.respons.tiltaksaktiviteter!!,
-                    innhentet = arenaTiltak.innhentet,
+                journalpostId = tiltakDTO.journalpostId,
+                tiltaks = mapTiltak(
+                    tiltakDTO = tiltakDTO.respons.tiltak!!,
+                    innhentet = tiltakDTO.innhentet,
                 ),
-                tidsstempelTiltakInnhentet = arenaTiltak.innhentet,
+                tidsstempelTiltakInnhentet = tiltakDTO.innhentet,
             )
 
-            SECURELOG.info { "Mottatt tiltak og laget hendelse : $arenaTiltakMottattHendelse" }
-            innsendingMediator.håndter(arenaTiltakMottattHendelse)
+            SECURELOG.info { "Mottatt tiltak og laget hendelse : $tiltakMottattHendelse" }
+            innsendingMediator.håndter(tiltakMottattHendelse)
             call.respond(message = "OK", status = HttpStatusCode.OK)
         } else {
-            LOG.error { "Mottok en feil må skrive kode for å håndtere den ${arenaTiltak.respons.feil}" }
-            throw RuntimeException("Mottok en feil ifm arenatiltak")
+            LOG.error { "Mottok en feil må skrive kode for å håndtere den ${tiltakDTO.respons.feil}" }
+            throw RuntimeException("Mottok en feil ifm tiltak")
         }
     }
 }
 
-private fun mapArenaTiltak(
-    tiltaksaktivitetDTO: List<ArenaTiltaksaktivitetResponsDTO.TiltaksaktivitetDTO>,
+private fun mapTiltak(
+    tiltakDTO: List<TiltakResponsDTO.TiltakDTO>,
     innhentet: LocalDateTime,
-): List<Tiltaksaktivitet> {
-    return tiltaksaktivitetDTO.map {
-        Tiltaksaktivitet(
-            tiltak = mapTiltaksnavn(it.tiltakType),
-            aktivitetId = it.aktivitetId,
-            tiltakLokaltNavn = it.tiltakLokaltNavn,
-            arrangør = it.arrangoer,
-            bedriftsnummer = it.bedriftsnummer,
-            deltakelsePeriode = Tiltaksaktivitet.DeltakelsesPeriode(
-                it.deltakelsePeriode?.fom,
-                it.deltakelsePeriode?.tom,
+): List<Tiltak> {
+    return tiltakDTO.map {
+        Tiltak(
+            id = it.id,
+            gjennomføring = Tiltak.Gjennomføring(
+                id = it.gjennomforing.id,
+                arrangørnavn = it.gjennomforing.arrangørnavn,
+                typeNavn = it.gjennomforing.typeNavn,
+                typeKode = it.gjennomforing.arenaKode.name,
+                rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
+                fom = it.gjennomforing.fom,
+                tom = it.gjennomforing.tom,
             ),
+            deltakelseFom = it.deltakelseFom,
+            deltakelseTom = it.deltakelseTom,
+            deltakelseStatus = Tiltak.DeltakerStatus(
+                status = it.deltakelseStatus.name,
+                rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
+            ),
+            deltakelseDagerUke = it.deltakelseDagerUke,
             deltakelseProsent = it.deltakelseProsent,
-            deltakerStatus = mapDeltakerStatus(it.deltakerStatusType),
-            statusSistEndret = it.statusSistEndret,
-            begrunnelseInnsøking = it.begrunnelseInnsoeking,
-            antallDagerPerUke = it.antallDagerPerUke,
-            tidsstempelHosOss = innhentet,
+            kilde = it.kilde,
+            registrertDato = it.registrertDato,
+            innhentet = innhentet,
         )
     }
-}
-
-// TODO: Skrive om til en when
-private fun mapDeltakerStatus(dtoDeltakerStatus: ArenaTiltaksaktivitetResponsDTO.DeltakerStatusType): Tiltaksaktivitet.DeltakerStatus {
-    return Tiltaksaktivitet.DeltakerStatus.valueOf(dtoDeltakerStatus.name)
-}
-
-// TODO: Skrive om til en when
-private fun mapTiltaksnavn(dtoTiltaksnavn: ArenaTiltaksaktivitetResponsDTO.TiltakType): Tiltaksaktivitet.Tiltak {
-    return Tiltaksaktivitet.Tiltak.valueOf(dtoTiltaksnavn.name)
 }

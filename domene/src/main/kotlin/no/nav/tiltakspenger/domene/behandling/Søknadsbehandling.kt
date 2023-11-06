@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 
@@ -25,6 +26,7 @@ sealed interface Søknadsbehandling : Behandling {
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
 
     ) : Søknadsbehandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
@@ -36,6 +38,7 @@ sealed interface Søknadsbehandling : Behandling {
                 søknader: List<Søknad>,
                 vurderingsperiode: Periode,
                 saksopplysninger: List<Saksopplysning>,
+                tiltak: List<Tiltak>,
             ): Opprettet {
                 return Opprettet(
                     id = id,
@@ -43,6 +46,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                 )
             }
 
@@ -112,6 +116,7 @@ sealed interface Søknadsbehandling : Behandling {
                         // TODO: Her må vi finne på noe lurt
                         // lagFaktaFraPeriodespørsmål(Vilkår.ALDERSPENSJON, søknad.alderspensjon, søknad.vurderingsperiode()),
                     ),
+                    tiltak = emptyList(),
                 )
             }
         }
@@ -133,6 +138,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -143,6 +149,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -153,6 +160,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -163,6 +171,7 @@ sealed interface Søknadsbehandling : Behandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                 )
             }
@@ -172,6 +181,7 @@ sealed interface Søknadsbehandling : Behandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 vilkårsvurderinger = vurderinger,
             )
         }
@@ -180,5 +190,10 @@ sealed interface Søknadsbehandling : Behandling {
             this.copy(
                 saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
             ).vilkårsvurder()
+
+        override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
+            this.copy(
+                tiltak = tiltak,
+            )
     }
 }

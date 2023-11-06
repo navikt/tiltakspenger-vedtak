@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
@@ -18,6 +17,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.Duration
@@ -36,7 +36,7 @@ class Innsending private constructor(
     søknad: Søknad?,
     sistEndret: LocalDateTime?,
     personopplysninger: InnhentedePersonopplysninger?,
-    tiltak: InnhentedeTiltak?,
+//    tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
     overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak?,
@@ -54,7 +54,7 @@ class Innsending private constructor(
         listOfNotNull(
             søknad?.tidsstempelHosOss,
             personopplysninger?.tidsstempelInnhentet,
-            tiltak?.tidsstempelInnhentet,
+//            tiltak?.tidsstempelInnhentet,
             ytelser?.tidsstempelInnhentet,
             foreldrepengerVedtak?.tidsstempelInnhentet,
             uføreVedtak?.tidsstempelInnhentet,
@@ -79,11 +79,11 @@ class Innsending private constructor(
             dirtyChecker.set("personopplysninger")
         }
 
-    var tiltak: InnhentedeTiltak? = tiltak
-        set(value) {
-            field = value
-            dirtyChecker.set("tiltak")
-        }
+//    var tiltak: InnhentedeTiltak? = tiltak
+//        set(value) {
+//            field = value
+//            dirtyChecker.set("tiltak")
+//        }
 
     var ytelser: InnhentedeArenaYtelser? = ytelser
         private set(value) {
@@ -120,15 +120,15 @@ class Innsending private constructor(
     fun personopplysningerBarnUtenIdent() =
         personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.BarnUtenIdent>() ?: emptyList()
 
-    fun personopplysningerBarnMedIdent() =
+    private fun personopplysningerBarnMedIdent() =
         personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.BarnMedIdent>() ?: emptyList()
 
-    fun arenaTiltaksaktivitetForSøknad(søknad: Søknad): Tiltaksaktivitet? =
-        if (søknad.tiltak is Tiltak.ArenaTiltak) {
-            this.tiltak?.tiltaksliste?.firstOrNull { it.aktivitetId == søknad.tiltak.arenaId } // TODO: Denne vil aldri slå til, man sammenligner epler og pærer
-        } else {
-            null
-        }
+//    fun tiltakForSøknad(søknad: Søknad): Tiltak? =
+//        if (søknad.tiltak is SøknadsTiltak.ArenaTiltak) {
+//            this.tiltak?.tiltaksliste?.firstOrNull { it.id == søknad.tiltak.arenaId } // TODO: Denne vil aldri slå til, man sammenligner epler og pærer
+//        } else {
+//            null
+//        }
 
     private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate?, LocalDate?> {
         fun tidligsteDato(dato: LocalDate?, vararg datoer: LocalDate?): LocalDate? =
@@ -142,13 +142,14 @@ class Innsending private constructor(
         val søknadFom: LocalDate? = søknad.tiltak?.startdato
         val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
 
-        val tiltakFom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.fom
-        val tiltakTom: LocalDate? = arenaTiltaksaktivitetForSøknad(søknad)?.deltakelsePeriode?.tom
+//        val tiltakFom: LocalDate? = tiltakForSøknad(søknad)?.deltakelseFom
+//        val tiltakTom: LocalDate? = tiltakForSøknad(søknad)?.deltakelseTom
 
-        val tidligsteFom: LocalDate? = tidligsteDato(søknadFom, tiltakFom)
-
-        val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
-        return Pair(tidligsteFom, senesteTom)
+//        val tidligsteFom: LocalDate? = tidligsteDato(søknadFom, tiltakFom)
+//
+//        val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
+//        return Pair(tidligsteFom, senesteTom)
+        return Pair(søknadFom, søknadTom)
     }
 
     fun oppdaterSistEndret(sistEndret: LocalDateTime) {
@@ -163,7 +164,7 @@ class Innsending private constructor(
     }
 
     // TODO: MIN eller EPOCH ? MAX eller LocalDate.of(9999,12,31)
-    fun filtreringsperiode(): Periode {
+    private fun filtreringsperiode(): Periode {
         return søknad?.let {
             val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
             Periode(
@@ -186,7 +187,7 @@ class Innsending private constructor(
         søknad = null,
         sistEndret = null,
         personopplysninger = null,
-        tiltak = null,
+//        tiltak = null,
         ytelser = null,
         foreldrepengerVedtak = null,
         overgangsstønadVedtak = null,
@@ -209,9 +210,9 @@ class Innsending private constructor(
             overgangsstønadVedtak: List<OvergangsstønadVedtak>,
             uføreVedtak: UføreVedtak?,
             personopplysningerliste: List<Personopplysninger>,
-            tiltaksliste: List<Tiltaksaktivitet>,
+//            tiltaksliste: List<Tiltaksaktivitet>,
             ytelserliste: List<YtelseSak>,
-            tidsstempelTiltakInnhentet: LocalDateTime?,
+//            tidsstempelTiltakInnhentet: LocalDateTime?,
             tidsstempelYtelserInnhentet: LocalDateTime?,
             tidsstempelPersonopplysningerInnhentet: LocalDateTime?,
             tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime?,
@@ -234,7 +235,7 @@ class Innsending private constructor(
                         tidsstempelSkjermingInnhentet = tidsstempelSkjermingInnhentet,
                     )
                 },
-                tiltak = tidsstempelTiltakInnhentet?.let { InnhentedeTiltak(tiltaksliste, it) },
+//                tiltak = tidsstempelTiltakInnhentet?.let { InnhentedeTiltak(tiltaksliste, it) },
                 ytelser = tidsstempelYtelserInnhentet?.let { InnhentedeArenaYtelser(ytelserliste, it) },
                 foreldrepengerVedtak = tidsstempelForeldrepengerVedtakInnhentet?.let {
                     InnhentedeForeldrepengerVedtak(
@@ -305,13 +306,13 @@ class Innsending private constructor(
         tilstand.håndter(this, skjermingMottattHendelse)
     }
 
-    fun håndter(arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-        if (journalpostId != arenaTiltakMottattHendelse.journalpostId()) return
+    fun håndter(tiltakMottattHendelse: TiltakMottattHendelse) {
+        if (journalpostId != tiltakMottattHendelse.journalpostId()) return
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(arenaTiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
-        tilstand.håndter(this, arenaTiltakMottattHendelse)
+        kontekst(tiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
+        tilstand.håndter(this, tiltakMottattHendelse)
     }
 
     fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
@@ -412,8 +413,8 @@ class Innsending private constructor(
             innsending.mottaSkjermingsdata(skjermingMottattHendelse, false)
         }
 
-        fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            innsending.mottaTiltak(arenaTiltakMottattHendelse)
+        fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
+//            innsending.mottaTiltak(tiltakMottattHendelse)
         }
 
         fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
@@ -468,11 +469,6 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
             DomeneMetrikker.søknadMottattCounter().increment()
-            søknadMottattHendelse.søknad().tiltak?.tiltakskode?.let {
-                if (it.tiltaksgruppe == Tiltaksaktivitet.Tiltaksgruppe.UTFAS) {
-                    DomeneMetrikker.utfasCounter(it)
-                }
-            }
             innsending.søknad = søknadMottattHendelse.søknad()
             innsending.trengerPersonopplysninger(søknadMottattHendelse)
             innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
@@ -516,10 +512,10 @@ class Innsending private constructor(
         override val timeout: Duration
             get() = Duration.ofDays(1)
 
-        override fun håndter(innsending: Innsending, arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse) {
-            innsending.mottaTiltak(arenaTiltakMottattHendelse)
-            innsending.trengerArenaYtelse(arenaTiltakMottattHendelse)
-            innsending.tilstand(arenaTiltakMottattHendelse, AvventerYtelser)
+        override fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
+//            innsending.mottaTiltak(tiltakMottattHendelse)
+            innsending.trengerArenaYtelse(tiltakMottattHendelse)
+            innsending.tilstand(tiltakMottattHendelse, AvventerYtelser)
         }
     }
 
@@ -856,56 +852,56 @@ class Innsending private constructor(
         this.trengerSkjermingdata(personopplysningerMottattHendelse)
     }
 
-    private fun mottaTiltak(
-        arenaTiltakMottattHendelse: ArenaTiltakMottattHendelse,
-    ) {
-        if (this.tiltak != null &&
-            !arenaTiltakMottattHendelse.tidsstempelTiltakInnhentet()
-                .isAfter(this.tiltak!!.tidsstempelInnhentet)
-        ) {
-            arenaTiltakMottattHendelse.info("Fikk utdatert info om arenaTiltak, lagrer ikke")
-            return
-        }
-
-        fun earliest(fom: LocalDate?, tom: LocalDate?) =
-            when {
-                fom != null && tom != null -> if (tom.isBefore(fom)) {
-                    LOG.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
-                    tom
-                } else {
-                    fom
-                }
-
-                else -> fom ?: LocalDate.MIN
-            }
-
-        fun latest(fom: LocalDate?, tom: LocalDate?) =
-            when {
-                fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
-                else -> tom ?: LocalDate.MAX
-            }
-
-        arenaTiltakMottattHendelse
-            .info("Fikk info om arenaTiltak: ${arenaTiltakMottattHendelse.tiltaksaktivitet()}")
-
-        this.tiltak = InnhentedeTiltak(
-            tidsstempelInnhentet = arenaTiltakMottattHendelse.tidsstempelTiltakInnhentet(),
-            tiltaksliste = arenaTiltakMottattHendelse.tiltaksaktivitet().filter {
-                LOG.info { "filtreringsperiode : ${this.filtreringsperiode()}" }
-                LOG.info { "deltakelsePeriode.fom : ${it.deltakelsePeriode.fom}" }
-                LOG.info { "deltakelsePeriode.tom : ${it.deltakelsePeriode.tom}" }
-                val periode = Periode(
-                    earliest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
-                    latest(it.deltakelsePeriode.fom, it.deltakelsePeriode.tom),
-                )
-                LOG.info { "periode : $periode" }
-                this.filtreringsperiode().overlapperMed(periode)
-            }.also {
-                val antall = arenaTiltakMottattHendelse.tiltaksaktivitet().size - it.size
-                LOG.info { "Filtrerte bort $antall gamle tiltak" }
-            },
-        )
-    }
+//    private fun mottaTiltak(
+//        tiltakMottattHendelse: TiltakMottattHendelse,
+//    ) {
+//        if (this.tiltak != null &&
+//            !tiltakMottattHendelse.tidsstempelTiltakInnhentet()
+//                .isAfter(this.tiltak!!.tidsstempelInnhentet)
+//        ) {
+//            tiltakMottattHendelse.info("Fikk utdatert info om tiltak, lagrer ikke")
+//            return
+//        }
+//
+//        fun earliest(fom: LocalDate?, tom: LocalDate?) =
+//            when {
+//                fom != null && tom != null -> if (tom.isBefore(fom)) {
+//                    LOG.warn { "fom er etter tom, så vi bytter om de to datoene på tiltaket" }
+//                    tom
+//                } else {
+//                    fom
+//                }
+//
+//                else -> fom ?: LocalDate.MIN
+//            }
+//
+//        fun latest(fom: LocalDate?, tom: LocalDate?) =
+//            when {
+//                fom != null && tom != null -> if (fom.isAfter(tom)) fom else tom
+//                else -> tom ?: LocalDate.MAX
+//            }
+//
+//        tiltakMottattHendelse
+//            .info("Fikk info om tiltak: ${tiltakMottattHendelse.tiltaksaktivitet()}")
+//
+//        this.tiltak = InnhentedeTiltak(
+//            tidsstempelInnhentet = tiltakMottattHendelse.tidsstempelTiltakInnhentet(),
+//            tiltaksliste = tiltakMottattHendelse.tiltaksaktivitet().filter {
+//                LOG.info { "filtreringsperiode : ${this.filtreringsperiode()}" }
+//                LOG.info { "startDato : ${it.deltakelseFom}" }
+//                LOG.info { "sluttDato : ${it.deltakelseTom}" }
+//                val periode = Periode(
+//                    earliest(it.deltakelseFom, it.deltakelseTom),
+//                    latest(it.deltakelseFom, it.deltakelseTom),
+//                )
+//                LOG.info { "periode : $periode" }
+//                this.filtreringsperiode().overlapperMed(periode)
+//            }.also {
+//                val antall = tiltakMottattHendelse.tiltaksaktivitet().size - it.size
+//                LOG.info { "Filtrerte bort $antall gamle tiltak" }
+//            },
+//        )
+//    }
 
     private fun mottaForeldrepengerVedtak(
         foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse,

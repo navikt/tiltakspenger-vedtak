@@ -311,22 +311,26 @@ CREATE TABLE personopplysninger_barn_uten_ident
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE tiltaksaktivitet
+CREATE TABLE tiltak
 (
     id                     VARCHAR PRIMARY KEY,
-    innsending_id          VARCHAR                  NOT NULL REFERENCES innsending (id),
-    tiltak                 VARCHAR                  NOT NULL,
-    aktivitet_id           VARCHAR                  NOT NULL,
-    tiltak_lokalt_navn     VARCHAR                  NULL,
-    arrangør               VARCHAR                  NULL,
-    bedriftsnummer         VARCHAR                  NULL,
-    deltakelse_periode_fom DATE                     NULL,
-    deltakelse_periode_tom DATE                     NULL,
+    behandling_id          VARCHAR                  NOT NULL REFERENCES behandling (id),
+    ekstern_id             VARCHAR                  NOT NULL,
+    gjennomføring_id       VARCHAR                  NOT NULL,
+    tiltaktype_kode        VARCHAR                  NOT NULL,
+    tiltaktype_navn        VARCHAR                  NOT NULL,
+    tiltak_fom             DATE                     NULL,
+    tiltak_tom             DATE                     NULL,
+    arrangørnavn           VARCHAR                  NOT NULL,
+    rett_på_tiltakspenger  BOOLEAN                  NOT NULL,
+    deltakelse_fom         DATE                     NULL,
+    deltakelse_tom         DATE                     NULL,
     deltakelse_prosent     FLOAT                    NULL,
-    deltaker_status        VARCHAR                  NOT NULL,
-    status_sist_endret     DATE                     NULL,
-    begrunnelse_innsøking  VARCHAR                  NULL,
-    antall_dager_per_uke   FLOAT                    NULL,
+    deltakelse_dager_uke   FLOAT                    NULL,
+    deltakelse_status      VARCHAR                  NOT NULL,
+    rett_til_å_søke        BOOLEAN                  NOT NULL,
+    kilde                  VARCHAR                  NOT NULL,
+    tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

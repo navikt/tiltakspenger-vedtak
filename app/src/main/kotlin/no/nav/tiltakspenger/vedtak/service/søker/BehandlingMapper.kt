@@ -7,8 +7,7 @@ import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vilkårsvurdering.Anbefaling
 import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
@@ -133,7 +132,7 @@ class BehandlingMapper {
                     vilkårsvurderinger(innsending, vurderingsperiode, søknad)
                 KlarForBehandlingDTO(
                     søknad = mapSøknad(søknad),
-                    registrerteTiltak = innsending.tiltak!!.tiltaksliste.map { mapTiltak(it) },
+//                    registrerteTiltak = innsending.tiltak!!.tiltaksliste.map { mapTiltak(it) },
                     vurderingsperiode = mapVurderingsperiode(vurderingsperiode),
                     tiltakspengerYtelser = mapTiltakspenger(vilkårsvurderinger.tiltakspengerYtelser),
                     statligeYtelser = mapStatligeYtelser(vilkårsvurderinger.statligeYtelser),
@@ -176,19 +175,19 @@ class BehandlingMapper {
         til = vurderingsperiode.til,
     )
 
-    private fun mapTiltak(it: Tiltaksaktivitet) = TiltakDTO(
-        arrangør = it.arrangør,
-        navn = it.tiltak.navn,
-        periode = it.deltakelsePeriode.fom?.let { fom ->
-            ÅpenPeriodeDTO(
-                fra = fom,
-                til = it.deltakelsePeriode.tom,
-            )
-        },
-        prosent = it.deltakelseProsent,
-        dagerIUken = it.antallDagerPerUke,
-        status = it.deltakerStatus.tekst,
-    )
+//    private fun mapTiltak(it: Tiltak) = TiltakDTO(
+//        arrangør = it.arrangør,
+//        navn = it.tiltak.navn,
+//        periode = it.deltakelsePeriode.fom?.let { fom ->
+//            ÅpenPeriodeDTO(
+//                fra = fom,
+//                til = it.deltakelsePeriode.tom,
+//            )
+//        },
+//        prosent = it.deltakelseProsent,
+//        dagerIUken = it.antallDagerPerUke,
+//        status = it.deltakelseStatus.tekst,
+//    )
 
     private fun mapSøknad(søknad: Søknad) = SøknadDTO(
         id = søknad.id.toString(),
@@ -198,18 +197,18 @@ class BehandlingMapper {
         tiltakskode = if (søknad.tiltak == null) {
             "Ukjent"
         } else {
-            (søknad.tiltak as Tiltak).tiltakskode?.navn
+            (søknad.tiltak as SøknadsTiltak).tiltakskode
                 ?: "Annet"
         },
         beskrivelse = when (søknad.tiltak) {
-            is Tiltak.ArenaTiltak -> null
-            is Tiltak.BrukerregistrertTiltak -> (søknad.tiltak as Tiltak.BrukerregistrertTiltak).beskrivelse
+            is SøknadsTiltak.ArenaTiltak -> null
+            is SøknadsTiltak.BrukerregistrertTiltak -> (søknad.tiltak as SøknadsTiltak.BrukerregistrertTiltak).beskrivelse
             else -> null
         },
         startdato = søknad.tiltak?.startdato,
         sluttdato = søknad.tiltak?.sluttdato,
-        antallDager = if (søknad.tiltak is Tiltak.BrukerregistrertTiltak) {
-            (søknad.tiltak as Tiltak.BrukerregistrertTiltak).antallDager
+        antallDager = if (søknad.tiltak is SøknadsTiltak.BrukerregistrertTiltak) {
+            (søknad.tiltak as SøknadsTiltak.BrukerregistrertTiltak).antallDager
         } else {
             null
         },

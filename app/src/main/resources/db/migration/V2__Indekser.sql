@@ -136,10 +136,10 @@ CREATE INDEX søknadVedlegg_søknad
          søknad_id
             );
 
-CREATE INDEX tiltaksaktivitet_innsending
-    ON tiltaksaktivitet
+CREATE INDEX tiltak_behandling
+    ON tiltak
         (
-         innsending_id
+         behandling_id
             );
 
 CREATE INDEX ytelsesak_innsending

@@ -32,7 +32,7 @@ data class IkkeKlarForBehandlingDTO(
 
 data class KlarForBehandlingDTO(
     val søknad: SøknadDTO,
-    val registrerteTiltak: List<TiltakDTO>,
+//    val registrerteTiltak: List<TiltakDTO>,
     val vurderingsperiode: ÅpenPeriodeDTO,
     val tiltakspengerYtelser: TiltakspengerDTO,
     val statligeYtelser: StatligeYtelserDTO,

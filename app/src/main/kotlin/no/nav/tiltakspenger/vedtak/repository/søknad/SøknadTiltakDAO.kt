@@ -5,41 +5,43 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import org.intellij.lang.annotations.Language
 
-internal class TiltakDAO {
+internal class SøknadTiltakDAO {
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): Tiltak? =
+    fun hent(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak? =
         hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)
 
-    private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.ArenaTiltak? {
+    private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak.ArenaTiltak? {
         return txSession.run(
             queryOf(hentArenaTiltak, søknadId.toString()).map { row -> row.toArenatiltak() }.asSingle,
         )
     }
 
-    private fun hentBrukerTiltak(søknadId: SøknadId, txSession: TransactionalSession): Tiltak.BrukerregistrertTiltak? {
+    private fun hentBrukerTiltak(
+        søknadId: SøknadId,
+        txSession: TransactionalSession,
+    ): SøknadsTiltak.BrukerregistrertTiltak? {
         return txSession.run(
             queryOf(hentBrukerregistrertTiltak, søknadId.toString()).map { row -> row.toBrukertiltak() }.asSingle,
         )
     }
 
-    fun lagre(søknadId: SøknadId, tiltak: Tiltak?, txSession: TransactionalSession) {
+    fun lagre(søknadId: SøknadId, tiltak: SøknadsTiltak?, txSession: TransactionalSession) {
         slettArenatiltak(søknadId, txSession)
         slettBrukertiltak(søknadId, txSession)
 
         when (tiltak) {
-            is Tiltak.ArenaTiltak -> lagreArenatiltak(søknadId, tiltak, txSession)
-            is Tiltak.BrukerregistrertTiltak -> lagreBrukertiltak(søknadId, tiltak, txSession)
+            is SøknadsTiltak.ArenaTiltak -> lagreArenatiltak(søknadId, tiltak, txSession)
+            is SøknadsTiltak.BrukerregistrertTiltak -> lagreBrukertiltak(søknadId, tiltak, txSession)
             else -> {}
         }
     }
 
     private fun lagreArenatiltak(
         søknadId: SøknadId,
-        arenaTiltak: Tiltak.ArenaTiltak?,
+        arenaTiltak: SøknadsTiltak.ArenaTiltak?,
         txSession: TransactionalSession,
     ) {
         if (arenaTiltak != null) {
@@ -51,7 +53,7 @@ internal class TiltakDAO {
                         "soknadId" to søknadId.toString(),
                         "arenaId" to arenaTiltak.arenaId,
                         "arrangoernavn" to arenaTiltak.arrangoernavn,
-                        "tiltakskode" to arenaTiltak.tiltakskode.name,
+                        "tiltakskode" to arenaTiltak.tiltakskode,
                         "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
                         "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
                         "startdato" to arenaTiltak.startdato,
@@ -64,7 +66,7 @@ internal class TiltakDAO {
 
     private fun lagreBrukertiltak(
         søknadId: SøknadId,
-        brukerregistrertTiltak: Tiltak.BrukerregistrertTiltak?,
+        brukerregistrertTiltak: SøknadsTiltak.BrukerregistrertTiltak?,
         txSession: TransactionalSession,
     ) {
         if (brukerregistrertTiltak != null) {
@@ -74,7 +76,7 @@ internal class TiltakDAO {
                     mapOf(
                         "id" to random(ULID_PREFIX_BRUKERTILTAK).toString(),
                         "soknadId" to søknadId.toString(),
-                        "tiltakskode" to brukerregistrertTiltak.tiltakskode?.name,
+                        "tiltakskode" to brukerregistrertTiltak.tiltakskode,
                         "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,
                         "beskrivelse" to brukerregistrertTiltak.beskrivelse,
                         "startdato" to brukerregistrertTiltak.startdato,
@@ -96,7 +98,7 @@ internal class TiltakDAO {
         txSession.run(queryOf(slettBrukerregistrertTiltak, søknadId.toString()).asUpdate)
     }
 
-    private fun Row.toArenatiltak(): Tiltak.ArenaTiltak {
+    private fun Row.toArenatiltak(): SøknadsTiltak.ArenaTiltak {
         val arenaId = string("arena_id")
         val arrangoernavn = stringOrNull("arrangoernavn")
         val tiltakskode = string("tiltakskode")
@@ -104,10 +106,10 @@ internal class TiltakDAO {
         val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
         val startdato = localDate("startdato")
         val sluttdato = localDateOrNull("sluttdato")
-        return Tiltak.ArenaTiltak(
+        return SøknadsTiltak.ArenaTiltak(
             arenaId = arenaId,
             arrangoernavn = arrangoernavn,
-            tiltakskode = tiltakskode.let { Tiltaksaktivitet.Tiltak.valueOf(it) },
+            tiltakskode = tiltakskode,
             opprinneligSluttdato = opprinneligSluttdato,
             opprinneligStartdato = opprinneligStartdato,
             sluttdato = sluttdato,
@@ -115,8 +117,8 @@ internal class TiltakDAO {
         )
     }
 
-    private fun Row.toBrukertiltak(): Tiltak.BrukerregistrertTiltak {
-        val tiltakskode = stringOrNull("tiltakskode")?.let { Tiltaksaktivitet.Tiltak.valueOf(it) }
+    private fun Row.toBrukertiltak(): SøknadsTiltak.BrukerregistrertTiltak {
+        val tiltakskode = stringOrNull("tiltakskode")
         val arrangoernavn = stringOrNull("arrangoernavn")
         val beskrivelse = stringOrNull("beskrivelse")
         val fom = localDate("startdato")
@@ -125,7 +127,7 @@ internal class TiltakDAO {
         val postnummer = stringOrNull("postnummer")
         val antallDager = int("antall_dager")
 
-        return Tiltak.BrukerregistrertTiltak(
+        return SøknadsTiltak.BrukerregistrertTiltak(
             tiltakskode = tiltakskode,
             arrangoernavn = arrangoernavn,
             beskrivelse = beskrivelse,

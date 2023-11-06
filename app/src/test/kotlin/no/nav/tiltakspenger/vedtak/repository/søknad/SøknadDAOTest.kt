@@ -11,8 +11,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -71,10 +70,10 @@ internal class SøknadDAOTest {
             opprettet = innhentet,
             barnetillegg = emptyList(),
             tidsstempelHosOss = innhentet,
-            tiltak = Tiltak.ArenaTiltak(
+            tiltak = SøknadsTiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Tiltaksarrangør AS",
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                tiltakskode = "ARBTREN",
                 opprinneligSluttdato = null,
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
@@ -133,10 +132,10 @@ internal class SøknadDAOTest {
                 ),
             ),
             tidsstempelHosOss = innhentet,
-            tiltak = Tiltak.ArenaTiltak(
+            tiltak = SøknadsTiltak.ArenaTiltak(
                 arenaId = "123",
                 arrangoernavn = "Hurra meg rundt AS",
-                tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+                tiltakskode = "ARBTREN",
                 opprinneligSluttdato = LocalDate.now(),
                 opprinneligStartdato = LocalDate.now(),
                 sluttdato = null,
@@ -182,10 +181,10 @@ internal class SøknadDAOTest {
         repository.lagre(innsending)
         val innhentet = LocalDateTime.of(2022, Month.AUGUST, 15, 23, 23)
         val uuid = Søknad.randomId()
-        val tiltak = Tiltak.ArenaTiltak(
+        val tiltak = SøknadsTiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Tiltaksbedriften AS",
-            tiltakskode = Tiltaksaktivitet.Tiltak.ARBTREN,
+            tiltakskode = "ARBTREN",
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),
@@ -278,8 +277,8 @@ internal class SøknadDAOTest {
         assertEquals(søknad.tidsstempelHosOss, hentet.tidsstempelHosOss)
 
         assertEquals(
-            (søknad.tiltak as Tiltak.ArenaTiltak).sluttdato,
-            (hentet.tiltak as Tiltak.ArenaTiltak).sluttdato,
+            (søknad.tiltak as SøknadsTiltak.ArenaTiltak).sluttdato,
+            (hentet.tiltak as SøknadsTiltak.ArenaTiltak).sluttdato,
         )
 
         assertEquals(søknad.vedlegg.first().journalpostId, hentet.vedlegg.first().journalpostId)

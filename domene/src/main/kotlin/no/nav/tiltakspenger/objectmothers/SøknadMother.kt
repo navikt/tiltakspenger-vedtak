@@ -8,8 +8,7 @@ import no.nav.tiltakspenger.felles.juni
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Søknad.Personopplysninger
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -19,13 +18,13 @@ interface SøknadMother {
     fun arenaTiltak(
         arenaId: String = "arenaId",
         arrangoernavn: String? = "arrangørnavn",
-        tiltakskode: Tiltaksaktivitet.Tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
+        tiltakskode: String = "JOBBK",
         opprinneligStartdato: LocalDate = 1.januar(2022),
         opprinneligSluttdato: LocalDate? = 31.januar(2022),
         startdato: LocalDate = 1.januar(2022),
         sluttdato: LocalDate? = 31.januar(2022),
-    ): Tiltak.ArenaTiltak {
-        return Tiltak.ArenaTiltak(
+    ): SøknadsTiltak.ArenaTiltak {
+        return SøknadsTiltak.ArenaTiltak(
             arenaId = arenaId,
             arrangoernavn = arrangoernavn,
             tiltakskode = tiltakskode,
@@ -83,7 +82,7 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        tiltak: Tiltak = arenaTiltak(),
+        tiltak: SøknadsTiltak = arenaTiltak(),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: List<Vedlegg> = emptyList(),
         etterlønn: Søknad.JaNeiSpm = nei(),
@@ -136,7 +135,7 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        tiltak: Tiltak = brukerTiltak(),
+        tiltak: SøknadsTiltak = brukerTiltak(),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         fritekst: String? = "fritekst",
         vedlegg: List<Vedlegg> = emptyList(),
@@ -178,7 +177,7 @@ interface SøknadMother {
     }
 
     fun brukerTiltak(
-        tiltakskode: Tiltaksaktivitet.Tiltak? = Tiltaksaktivitet.Tiltak.JOBBK,
+        tiltakskode: String? = "JOBBK",
         arrangoernavn: String? = "arrangørnavn",
         beskrivelse: String? = "beskrivelse",
         startdato: LocalDate = 1.januar(2022),
@@ -186,8 +185,8 @@ interface SøknadMother {
         adresse: String? = "adresse",
         postnummer: String? = "1234",
         antallDager: Int = 30,
-    ): Tiltak.BrukerregistrertTiltak {
-        return Tiltak.BrukerregistrertTiltak(
+    ): SøknadsTiltak.BrukerregistrertTiltak {
+        return SøknadsTiltak.BrukerregistrertTiltak(
             tiltakskode = tiltakskode,
             arrangoernavn = arrangoernavn,
             beskrivelse = beskrivelse,

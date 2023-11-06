@@ -24,7 +24,7 @@ private const val LØNNET_ARBEID_FELT = "lonnetArbeid"
 
 internal class SøknadDAO(
     private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
-    private val tiltakDAO: TiltakDAO = TiltakDAO(),
+    private val tiltakDAO: SøknadTiltakDAO = SøknadTiltakDAO(),
     private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
 

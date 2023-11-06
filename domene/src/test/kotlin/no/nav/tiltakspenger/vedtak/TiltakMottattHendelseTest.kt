@@ -2,9 +2,8 @@ package no.nav.tiltakspenger.vedtak
 
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.util.*
 
-class ArenaTiltakMottattHendelseTest {
+class TiltakMottattHendelseTest {
     @Test
     @Disabled("Denne håndteres annerledes nå, faktainnhenteren sender tom liste!")
     fun `lagre og hente en med feil i tiltak fra Arena`() {

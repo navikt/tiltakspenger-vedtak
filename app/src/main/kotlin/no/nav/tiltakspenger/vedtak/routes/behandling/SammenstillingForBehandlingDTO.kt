@@ -67,7 +67,7 @@ fun mapSammenstillingDTO(
         søknad = SøknadDTO(
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
             arrangoernavn = behandling.søknad().tiltak?.arrangoernavn!!,
-            tiltakstype = behandling.søknad().tiltak?.tiltakskode?.navn!!,
+            tiltakstype = behandling.søknad().tiltak?.tiltakskode!!,
             startdato = behandling.søknad().tiltak?.startdato!!,
             sluttdato = behandling.søknad().tiltak?.sluttdato!!,
             antallDager = 2,

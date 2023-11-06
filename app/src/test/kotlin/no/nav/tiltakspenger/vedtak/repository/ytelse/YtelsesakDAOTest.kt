@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.ytelse
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomYtelsesak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseVedtak
@@ -33,7 +33,7 @@ class YtelsesakDAOTest {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val innsending = innsendingMedTiltak(ident = ident)
+        val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
         val ytelseSak = tomYtelsesak()
@@ -59,7 +59,7 @@ class YtelsesakDAOTest {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val innsending = innsendingMedTiltak(ident = ident)
+        val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
         val ytelseSak = ytelseSak()
@@ -92,7 +92,7 @@ class YtelsesakDAOTest {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
         val ident = Random().nextInt().toString()
-        val innsending = innsendingMedTiltak(ident = ident)
+        val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
         val ytelseSak = ytelseSak(vedtak = listOf(ytelseVedtak()))

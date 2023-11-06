@@ -80,22 +80,24 @@ class TiltakRoutesTest {
     private val tiltakBody = """
         {
         "respons": {
-            "tiltaksaktiviteter" : [
+            "tiltak" : [
                 {
-                  "tiltakType": "ARBTREN",
-                  "aktivitetId": "TA6734563",
-                  "tiltakLokaltNavn": "Arbeidstrening",
-                  "arrangoer": "STENDI SENIOR AS",
-                  "bedriftsnummer": "986164189",
-                  "deltakelsePeriode": {
-                    "fom": "2022-07-04",
-                    "tom": "2022-08-31"
+                  "id": "TA6418307",
+                  "gjennomforing": {
+                    "id": "",
+                    "arrangørnavn": "Kommunerevisjonen",
+                    "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
+                    "arenaKode": "ENKFAGYRKE",
+                    "fom": null,
+                    "tom": null
                   },
-                  "deltakelseProsent": 100,
-                  "deltakerStatusType": "GJENN",
-                  "statusSistEndret": "2022-08-09",
-                  "begrunnelseInnsoeking": "Trenger tiltaksplass",
-                  "antallDagerPerUke": null
+                  "deltakelseFom": "2023-08-20",
+                  "deltakelseTom": "2024-06-30",
+                  "deltakelseStatus": "DELTAR",
+                  "deltakelseDagerUke": null,
+                  "deltakelseProsent": 100.0,
+                  "kilde": "Komet",
+                  "registrertDato": "2023-10-27T00:00:00"
                 }
             ],
             "feil" : null

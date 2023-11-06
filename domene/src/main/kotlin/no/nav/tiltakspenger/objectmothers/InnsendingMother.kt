@@ -19,7 +19,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.InnhentedeTiltak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -27,9 +26,8 @@ import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.SkjermingPerson
 import no.nav.tiltakspenger.vedtak.Søker
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakelsesPeriode
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet.DeltakerStatus
+import no.nav.tiltakspenger.vedtak.Tiltak
+import no.nav.tiltakspenger.vedtak.Tiltak.DeltakerStatus
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
 import java.time.LocalDate
@@ -163,10 +161,10 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-            tiltaksliste = listOf(tiltaksaktivitet()),
-            tidsstempelInnhentet = 1.januarDateTime(2022),
-        ),
+//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+//            tiltaksliste = listOf(tiltaksaktivitet()),
+//            tidsstempelInnhentet = 1.januarDateTime(2022),
+//        ),
     ): Innsending {
         val innsending = innsendingMedSkjerming(
             journalpostId = journalpostId,
@@ -178,8 +176,8 @@ interface InnsendingMother {
         innsending.håndter(
             nyTiltakHendelse(
                 journalpostId = journalpostId,
-                tiltaksaktivitet = tiltak.tiltaksliste,
-                tidsstempelTiltakInnhentet = tiltak.tidsstempelInnhentet,
+                tiltak = emptyList(),
+                tidsstempelTiltakInnhentet = LocalDateTime.now(),
             ),
         )
         return innsending
@@ -202,10 +200,10 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-            tiltaksliste = listOf(tiltaksaktivitet()),
-            tidsstempelInnhentet = 1.januarDateTime(2022),
-        ),
+//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+//            tiltaksliste = listOf(tiltaksaktivitet()),
+//            tidsstempelInnhentet = 1.januarDateTime(2022),
+//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
     ): Innsending {
         val innsending = innsendingMedTiltak(
@@ -214,7 +212,7 @@ interface InnsendingMother {
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-            tiltak = tiltak,
+//            tiltak = tiltak,
         )
         innsending.håndter(
             nyYtelseHendelse(
@@ -242,10 +240,10 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-            tiltaksliste = listOf(tiltaksaktivitet()),
-            tidsstempelInnhentet = 1.januarDateTime(2022),
-        ),
+//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+//            tiltaksliste = listOf(tiltaksaktivitet()),
+//            tidsstempelInnhentet = 1.januarDateTime(2022),
+//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
     ): Innsending {
@@ -255,7 +253,7 @@ interface InnsendingMother {
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-            tiltak = tiltak,
+//            tiltak = tiltak,
             ytelseSak = ytelseSak,
         )
 
@@ -287,10 +285,10 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-            tiltaksliste = listOf(tiltaksaktivitet()),
-            tidsstempelInnhentet = 1.januarDateTime(2022),
-        ),
+//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+//            tiltaksliste = listOf(tiltaksaktivitet()),
+//            tidsstempelInnhentet = 1.januarDateTime(2022),
+//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
         overgangsstønader: List<OvergangsstønadVedtak> = listOf(overgangsstønadVedtak()),
@@ -301,7 +299,7 @@ interface InnsendingMother {
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-            tiltak = tiltak,
+//            tiltak = tiltak,
             ytelseSak = ytelseSak,
             foreldrepengerVedtakListe = foreldrepengerVedtakListe,
         )
@@ -334,10 +332,10 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-            tiltaksliste = listOf(tiltaksaktivitet()),
-            tidsstempelInnhentet = 1.januarDateTime(2022),
-        ),
+//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
+//            tiltaksliste = listOf(tiltaksaktivitet()),
+//            tidsstempelInnhentet = 1.januarDateTime(2022),
+//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
         uføreVedtak: UføreVedtak = uføreVedtak(),
@@ -348,7 +346,7 @@ interface InnsendingMother {
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-            tiltak = tiltak,
+//            tiltak = tiltak,
             ytelseSak = ytelseSak,
             foreldrepengerVedtakListe = foreldrepengerVedtakListe,
         )
@@ -476,33 +474,37 @@ interface InnsendingMother {
         )
     }
 
-    fun tiltaksaktivitet(
-        tiltak: Tiltaksaktivitet.Tiltak = Tiltaksaktivitet.Tiltak.JOBBK,
-        aktivitetId: String = "aktivitetId",
-        tiltakLokaltNavn: String? = "LokaltNavn",
-        arrangør: String? = "arrangør",
-        bedriftsnummer: String? = "bedriftsnummer",
-        deltakelsePeriode: DeltakelsesPeriode = DeltakelsesPeriode(fom = 1.januar(2022), tom = 31.januar(2022)),
+    fun tiltak(
+        id: String = "123,",
+        gjennomføring: Tiltak.Gjennomføring = Tiltak.Gjennomføring(
+            id = "123",
+            arrangørnavn = "arrangør",
+            typeNavn = "Arbeidsmarkedsopplæring (AMO)",
+            typeKode = "AMO",
+            rettPåTiltakspenger = true,
+            fom = 1.januar(2022),
+            tom = 31.januar(2022),
+        ),
+        deltakelseFom: LocalDate = 1.januar(2022),
+        deltakelseTom: LocalDate = 31.januar(2022),
+        kilde: String = "Komet",
         deltakelseProsent: Float? = 100F,
-        deltakerStatus: DeltakerStatus = DeltakerStatus.AKTUELL,
-        statusSistEndret: LocalDate? = 1.januar(2022),
-        begrunnelseInnsøking: String? = "begrunnelse",
+        deltakerStatus: DeltakerStatus = DeltakerStatus("DELTAR", true),
         antallDagerPerUke: Float? = 1F,
-        tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-    ): Tiltaksaktivitet {
-        return Tiltaksaktivitet(
-            tiltak = tiltak,
-            aktivitetId = aktivitetId,
-            tiltakLokaltNavn = tiltakLokaltNavn,
-            arrangør = arrangør,
-            bedriftsnummer = bedriftsnummer,
-            deltakelsePeriode = deltakelsePeriode,
+        registrertDato: LocalDateTime = 1.januarDateTime(2022),
+        innhentet: LocalDateTime = 1.januarDateTime(2022),
+    ): Tiltak {
+        return Tiltak(
+            id = id,
+            gjennomføring = gjennomføring,
+            deltakelseFom = deltakelseFom,
+            deltakelseTom = deltakelseTom,
+            deltakelseStatus = deltakerStatus,
+            deltakelseDagerUke = antallDagerPerUke,
             deltakelseProsent = deltakelseProsent,
-            deltakerStatus = deltakerStatus,
-            statusSistEndret = statusSistEndret,
-            begrunnelseInnsøking = begrunnelseInnsøking,
-            antallDagerPerUke = antallDagerPerUke,
-            tidsstempelHosOss = tidsstempelHosOss,
+            kilde = kilde,
+            registrertDato = registrertDato,
+            innhentet = innhentet,
         )
     }
 }

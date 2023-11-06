@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltaksaktivitet
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.Feil
@@ -12,16 +12,16 @@ import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.UføreVedtak
 import no.nav.tiltakspenger.vedtak.YtelseSak
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import java.time.LocalDateTime
@@ -82,13 +82,13 @@ interface HendelserMother {
 
     fun nyTiltakHendelse(
         journalpostId: String = Random().nextInt().toString(),
-        tiltaksaktivitet: List<Tiltaksaktivitet> = listOf(tiltaksaktivitet()),
+        tiltak: List<Tiltak> = listOf(tiltak()),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
         tidsstempelTiltakInnhentet: LocalDateTime = LocalDateTime.now(),
-    ): ArenaTiltakMottattHendelse {
-        return ArenaTiltakMottattHendelse(
+    ): TiltakMottattHendelse {
+        return TiltakMottattHendelse(
             journalpostId = journalpostId,
-            tiltaksaktivitet = tiltaksaktivitet,
+            tiltaks = tiltak,
             aktivitetslogg = aktivitetslogg,
             tidsstempelTiltakInnhentet = tidsstempelTiltakInnhentet,
         )
