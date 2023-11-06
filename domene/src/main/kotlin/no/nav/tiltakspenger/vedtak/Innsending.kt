@@ -311,7 +311,7 @@ class Innsending private constructor(
         // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
         // til Søker sin aktivitetslogg (Søker sin blir forelder)
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(tiltakMottattHendelse, "Registrert ArenaTiltakMottattHendelse")
+        kontekst(tiltakMottattHendelse, "Registrert TiltakMottattHendelse")
         tilstand.håndter(this, tiltakMottattHendelse)
     }
 
@@ -625,8 +625,8 @@ class Innsending private constructor(
 
     private fun trengerTiltak(hendelse: InnsendingHendelse) {
         hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenatiltak,
-            melding = "Trenger arenatiltak",
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.tiltak,
+            melding = "Trenger tiltak",
             detaljer = mapOf("ident" to this.ident),
         )
     }
