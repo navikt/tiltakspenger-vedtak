@@ -66,6 +66,7 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 
     // DB
     implementation("org.flywaydb:flyway-core:9.22.0")
@@ -88,4 +89,6 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.3.1")
+
+
 }

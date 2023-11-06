@@ -16,6 +16,8 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.vedtak.exception.types.BehandlingIkkeFunnetException
+import no.nav.tiltakspenger.vedtak.exception.types.UnauthorizedException
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -51,7 +53,7 @@ fun Route.behandlingRoutes(
     get("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/behandlingId")
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
         val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(
             message = "Sak ikke funnet",
             status = HttpStatusCode.NotFound,
@@ -90,11 +92,11 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/{behandlingId}") {
         LOG.debug("Mottatt request på $behandlingPath/")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+            ?: throw UnauthorizedException("JWTToken ikke funnet")
 
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         behandlingService.leggTilSaksopplysning(
             behandlingId,
@@ -107,7 +109,7 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/beslutter/{behandlingId}") {
         LOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+            ?: throw UnauthorizedException("JWTToken ikke funnet")
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
@@ -121,7 +123,7 @@ fun Route.behandlingRoutes(
         LOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         // TODO her må vi få inn saksbehandlerId og begrunnelse
         behandlingService.sendTilbakeTilSaksbehandler(behandlingId)
@@ -132,10 +134,10 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/oppdater/{behandlingId}") {
         LOG.debug { "Vi har mottatt melding om oppfriskning av fakta" }
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+            ?: throw UnauthorizedException("JWTToken ikke funnet")
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         LOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
@@ -145,7 +147,7 @@ fun Route.behandlingRoutes(
                 journalpostId = it.søknad().journalpostId,
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
-        } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+        } ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
@@ -154,10 +156,10 @@ fun Route.behandlingRoutes(
         LOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         val behandling = behandlingService.hentBehandling(behandlingId)
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw BehandlingIkkeFunnetException("Behandling med behandlingId $it ikke funnet")
 
         utbetalingService.sendBehandlingTilUtbetaling(behandling)
     }

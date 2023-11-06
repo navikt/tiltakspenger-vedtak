@@ -50,6 +50,8 @@ import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
 import java.util.UUID
+import io.ktor.server.plugins.statuspages.*
+import no.nav.tiltakspenger.vedtak.exception.ExceptionHandler
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -252,6 +254,14 @@ fun Application.jacksonSerialization() {
             configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
             registerModule(JavaTimeModule())
             registerModule(KotlinModule.Builder().build())
+        }
+    }
+}
+
+fun Application.configureExceptions() {
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            ExceptionHandler.handle(call, cause)
         }
     }
 }
