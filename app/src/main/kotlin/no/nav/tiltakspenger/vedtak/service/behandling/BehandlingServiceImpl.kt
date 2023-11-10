@@ -26,9 +26,9 @@ class BehandlingServiceImpl(
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandling = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
+        val behandlingRespons = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
             ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
-        behandlingRepo.lagre(behandling)
+        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {

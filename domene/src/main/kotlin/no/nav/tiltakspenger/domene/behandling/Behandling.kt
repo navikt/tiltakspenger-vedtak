@@ -7,6 +7,11 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Tiltak
 
+data class LeggTilSaksopplysningRespons(
+    val behandling: Søknadsbehandling,
+    val erEndret: Boolean,
+)
+
 interface Behandling {
     val id: BehandlingId
     val sakId: SakId
@@ -22,7 +27,7 @@ interface Behandling {
         }
     }
 
-    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling {
+    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 

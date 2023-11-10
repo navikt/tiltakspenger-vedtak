@@ -39,16 +39,17 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknadMedBrukerTiltak()).vilkårsvurder()
+        val behandling =
+            Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknadMedBrukerTiltak()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
-        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning)
+        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
         behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
         behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
         behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
-        val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning)
+        val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning).behandling
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }

@@ -28,6 +28,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
 
     fun sendTilbake(): BehandlingVilkårsvurdert
 
+    fun vurderPåNytt(): BehandlingVilkårsvurdert {
+        return Søknadsbehandling.Opprettet(
+            id = id,
+            sakId = sakId,
+            søknader = søknader,
+            vurderingsperiode = vurderingsperiode,
+            saksopplysninger = saksopplysninger,
+            tiltak = tiltak,
+        ).vilkårsvurder()
+    }
+
     companion object {
         fun fromDb(
             id: BehandlingId,
@@ -103,6 +114,21 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 vilkårsvurderinger = vilkårsvurderinger,
             )
         }
+
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
+        }
     }
 
     data class Avslag(
@@ -139,6 +165,21 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
             )
+        }
+
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
         }
     }
 }

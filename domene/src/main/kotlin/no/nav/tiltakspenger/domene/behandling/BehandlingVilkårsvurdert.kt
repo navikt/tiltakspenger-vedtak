@@ -122,10 +122,20 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
-            this.copy(
-                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
-            ).vurderPåNytt()
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
+        }
 
         override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
             this.copy(
@@ -169,10 +179,20 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
-            this.copy(
-                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
-            ).vurderPåNytt()
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
+        }
 
         override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
             this.copy(
@@ -190,10 +210,20 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
 
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Søknadsbehandling =
-            this.copy(
-                saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning),
-            ).vurderPåNytt()
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
+        }
 
         override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
             this.copy(

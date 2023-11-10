@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Skjerming
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.erLik
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -36,8 +37,26 @@ class SakServiceImpl(
         val sak = sakRepo.hentForJournalpostId(journalpostId)
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
+        val personopplysningerMedSkjerming = personopplysninger.map {
+            when (it) {
+                is Personopplysninger.BarnMedIdent -> it.copy(
+                    skjermet = sak.personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
+                        .firstOrNull { barn -> barn.ident == it.ident }?.skjermet,
+                )
+
+                is Personopplysninger.BarnUtenIdent -> it
+                is Personopplysninger.Søker -> it.copy(
+                    skjermet = sak.personopplysninger.filterIsInstance<Personopplysninger.Søker>()
+                        .firstOrNull { søker -> søker.ident == it.ident }?.skjermet,
+                )
+            }
+        }
+
+        // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
+        if (personopplysningerMedSkjerming.erLik(sak.personopplysninger)) return sak
+
         val oppdatertSak = sak.copy(
-            personopplysninger = personopplysninger,
+            personopplysninger = personopplysningerMedSkjerming,
         )
 
         sakRepo.lagre(oppdatertSak)

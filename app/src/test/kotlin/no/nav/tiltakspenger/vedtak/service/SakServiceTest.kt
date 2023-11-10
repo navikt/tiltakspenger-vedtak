@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.service
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -18,18 +19,35 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.Random
 
 internal class SakServiceTest {
+    private lateinit var sakRepo: SakRepo
+    private lateinit var behandlingRepo: BehandlingRepo
+    private lateinit var behandlingService: BehandlingService
+    private lateinit var sakService: SakService
 
-    private val sakRepo: SakRepo = mockk()
-    private val behandlingRepo: BehandlingRepo = mockk()
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo)
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
+    @BeforeEach
+    fun setup() {
+        sakRepo = mockk()
+        behandlingRepo = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo)
+        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        clearAllMocks()
+    }
 
     @Test
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
@@ -86,9 +104,13 @@ internal class SakServiceTest {
     }
 
     @Test
-    fun `motta personopplysninger oppdaterer saksopplysning for ALDER`() {
+    fun `motta personopplysninger oppdaterer saksopplysning for ALDER hvis det er en endring`() {
         val periode = Periode(1.januar(2023), 31.mars(2023))
-        val sak = sakMedOpprettetBehandling(periode = periode)
+        val ident = Random().nextInt().toString()
+        val sak = sakMedOpprettetBehandling(
+            ident = ident,
+            periode = periode,
+        )
         every { sakRepo.hent(any()) } returns sak
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
@@ -96,7 +118,15 @@ internal class SakServiceTest {
         every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
-        sakService.mottaPersonopplysninger("123", listOf(personopplysningKjedeligFyr()))
+        sakService.mottaPersonopplysninger(
+            "123",
+            listOf(
+                personopplysningKjedeligFyr(
+                    ident = ident,
+                    fornavn = "Et endret fornavn",
+                ),
+            ),
+        )
 
         verify {
             behandlingRepo.lagre(
@@ -110,9 +140,36 @@ internal class SakServiceTest {
     }
 
     @Test
+    fun `motta personopplysninger oppdaterer ikke saksopplysning hvis personopplysninger ikke har endret seg`() {
+        val periode = Periode(1.januar(2023), 31.mars(2023))
+        val person = personopplysningKjedeligFyr()
+        val sak = sakMedOpprettetBehandling(
+            ident = person.ident,
+            personopplysninger = listOf(person),
+            periode = periode,
+        )
+        every { sakRepo.hent(any()) } returns sak
+        every { sakRepo.hentForJournalpostId(any()) } returns sak
+        every { sakRepo.lagre(any()) } returnsArgument 0
+
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+
+        sakService.mottaPersonopplysninger(
+            "123",
+            listOf(person),
+        )
+
+        verify(exactly = 0) { behandlingRepo.lagre(any()) }
+    }
+
+    @Test
     fun `motta personopplysninger for en person som blir 18 midt i perioden`() {
         val periode = Periode(1.januar(2023), 31.mars(2023))
-        val sak = sakMedOpprettetBehandling(periode = periode)
+        val ident = Random().nextInt().toString()
+        val sak = sakMedOpprettetBehandling(
+            ident = ident,
+            periode = periode,
+        )
         every { sakRepo.hent(any()) } returns sak
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
@@ -122,7 +179,12 @@ internal class SakServiceTest {
 
         sakService.mottaPersonopplysninger(
             journalpostId = "123",
-            personopplysninger = listOf(personopplysningKjedeligFyr(fødselsdato = 31.januar(2023).minusYears(18))),
+            personopplysninger = listOf(
+                personopplysningKjedeligFyr(
+                    ident = ident,
+                    fødselsdato = 31.januar(2023).minusYears(18),
+                ),
+            ),
         )
 
         verify {
