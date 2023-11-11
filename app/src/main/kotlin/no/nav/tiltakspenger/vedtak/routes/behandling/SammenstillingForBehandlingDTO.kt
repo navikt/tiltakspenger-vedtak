@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import io.ktor.client.utils.EmptyContent.status
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -7,6 +8,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import java.time.LocalDate
 
@@ -15,6 +17,7 @@ data class SammenstillingForBehandlingDTO(
     val fom: LocalDate,
     val tom: LocalDate,
     val søknad: SøknadDTO,
+    val registrerteTiltak: List<RegistrertTiltakDTO>,
     val saksopplysninger: List<SaksopplysningUtDTO>,
     val personopplysninger: PersonopplysningerDTO,
     val tilstand: String,
@@ -29,13 +32,21 @@ data class PersonopplysningerDTO(
     val fortrolig: Boolean,
 )
 
+data class RegistrertTiltakDTO(
+    val arrangør: String,
+    val dagerIUken: Int,
+    val navn: String,
+    val periode: PeriodeDTO,
+    val prosent: Int,
+    val status: String,
+)
+
 data class SøknadDTO(
     val søknadsdato: LocalDate,
     val arrangoernavn: String,
     val tiltakstype: String,
     val startdato: LocalDate,
     val sluttdato: LocalDate,
-    val antallDager: Int,
 )
 
 data class SaksopplysningUtDTO(
@@ -70,8 +81,20 @@ fun mapSammenstillingDTO(
             tiltakstype = behandling.søknad().tiltak?.tiltakskode!!,
             startdato = behandling.søknad().tiltak?.startdato!!,
             sluttdato = behandling.søknad().tiltak?.sluttdato!!,
-            antallDager = 2,
         ),
+        registrerteTiltak = behandling.tiltak.map {
+            RegistrertTiltakDTO(
+                arrangør = it.gjennomføring.arrangørnavn,
+                dagerIUken = it.deltakelseDagerUke?.toInt() ?: 0,
+                navn = it.gjennomføring.typeNavn,
+                periode = PeriodeDTO(
+                    fra = it.deltakelseFom ?: LocalDate.MIN,
+                    til = it.deltakelseTom ?: LocalDate.MAX,
+                ),
+                prosent = it.deltakelseProsent?.toInt() ?: 0,
+                status = it.deltakelseStatus.status,
+            )
+        },
         saksopplysninger = behandling.saksopplysninger().map {
             val fakta = fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
             SaksopplysningUtDTO(
