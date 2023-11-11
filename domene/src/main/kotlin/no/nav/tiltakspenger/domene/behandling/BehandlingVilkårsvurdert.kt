@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -231,10 +230,3 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
     }
 }
-
-fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
-    if (saksopplysning.kilde != Kilde.SAKSB) {
-        this.filterNot { it.vilkår == saksopplysning.vilkår }
-    } else {
-        this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
-    }.plus(saksopplysning)

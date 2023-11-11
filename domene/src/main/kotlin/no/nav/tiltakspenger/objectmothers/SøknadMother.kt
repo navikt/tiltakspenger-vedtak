@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.juni
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
 import no.nav.tiltakspenger.vedtak.Søknad.Personopplysninger
@@ -69,6 +70,7 @@ interface SøknadMother {
     }
 
     fun nySøknadMedTiltak(
+        periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         versjon: String = "1",
         id: SøknadId = Søknad.randomId(),
         søknadId: String = "søknadId",
@@ -82,7 +84,7 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        tiltak: SøknadsTiltak = arenaTiltak(),
+        tiltak: SøknadsTiltak = arenaTiltak(startdato = periode.fra, sluttdato = periode.til),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: List<Vedlegg> = emptyList(),
         etterlønn: Søknad.JaNeiSpm = nei(),

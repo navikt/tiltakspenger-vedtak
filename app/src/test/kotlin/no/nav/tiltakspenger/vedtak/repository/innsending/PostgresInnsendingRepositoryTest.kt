@@ -5,6 +5,8 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
@@ -207,6 +209,7 @@ internal class PostgresInnsendingRepositoryTest {
         val journalpostId = Random().nextInt().toString()
 
         val søknad = nySøknadMedTiltak(
+            periode = Periode(1.januar(2022), 31.januar(2022)),
             journalpostId = journalpostId,
             personopplysninger = personSøknad(
                 ident = ident,

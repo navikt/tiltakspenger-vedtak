@@ -2,6 +2,7 @@
 
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -184,9 +185,11 @@ interface InnsendingMother {
     }
 
     fun innsendingMedYtelse(
+        periode: Periode = Periode(1.januar(2022), 31.januar(2022)),
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
         søknad: Søknad = nySøknadMedTiltak(
+            periode = periode,
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",

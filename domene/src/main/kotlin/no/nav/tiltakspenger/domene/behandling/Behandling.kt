@@ -35,3 +35,14 @@ interface Behandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
     }
 }
+
+fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
+    if (saksopplysning.kilde != Kilde.SAKSB) {
+        if (this.first { it.vilkår == saksopplysning.vilkår && it.kilde != Kilde.SAKSB } == saksopplysning) {
+            this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde != Kilde.SAKSB }
+        } else {
+            this.filterNot { it.vilkår == saksopplysning.vilkår }
+        }
+    } else {
+        this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
+    }.plus(saksopplysning)
