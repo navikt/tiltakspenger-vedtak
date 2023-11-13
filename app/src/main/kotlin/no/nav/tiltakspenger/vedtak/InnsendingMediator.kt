@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.meldinger.ArenaTiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
@@ -11,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
@@ -43,7 +43,7 @@ class InnsendingMediator(
                     hentInnsendingEllerFeil(hendelse)?.let { innsending ->
                         observatører.forEach { innsending.addObserver(it) }
                         when (hendelse) {
-                            is ArenaTiltakMottattHendelse -> innsending.håndter(hendelse)
+                            is TiltakMottattHendelse -> innsending.håndter(hendelse)
                             is YtelserMottattHendelse -> innsending.håndter(hendelse)
                             is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
                             is SkjermingMottattHendelse -> innsending.håndter(hendelse)

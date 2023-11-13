@@ -44,7 +44,7 @@ internal class BehovMediatorTest {
                 "aktørId" to "12344",
             ),
         )
-        hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
+        hendelse.behov(Behovtype.tiltak, "Trenger tiltak")
         hendelse.behov(Behovtype.skjerming, "Trenger Skjermingdata")
 
         behovMediator.håndter(hendelse)
@@ -60,7 +60,7 @@ internal class BehovMediatorTest {
             assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
             assertTrue(it.hasNonNull("@opprettet"))
             assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
-            assertEquals(listOf("personopplysninger", "arenatiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
+            assertEquals(listOf("personopplysninger", "tiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
             assertEquals("behov", it["@event_name"].asText())
             assertEquals("12344", it["aktørId"].asText())
             assertEquals(journalpostId, it["journalpostId"].asText())
@@ -93,8 +93,8 @@ internal class BehovMediatorTest {
     internal fun `kan ikke produsere samme behov`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(innsending)
-        hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
-        hendelse.behov(Behovtype.arenatiltak, "Trenger Arenatiltak")
+        hendelse.behov(Behovtype.tiltak, "Trenger tiltak")
+        hendelse.behov(Behovtype.tiltak, "Trenger tiltak")
 
         assertThrows<IllegalArgumentException> { behovMediator.håndter(hendelse) }
     }

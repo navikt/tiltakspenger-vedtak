@@ -9,8 +9,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeNei
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -104,10 +103,10 @@ internal class BarnetilleggDAOTest {
             etternavn = "etternavn",
             ident = ident,
         ),
-        tiltak = Tiltak.ArenaTiltak(
+        tiltak = SøknadsTiltak.ArenaTiltak(
             arenaId = "123",
             arrangoernavn = "Fest og morro",
-            tiltakskode = Tiltaksaktivitet.Tiltak.GRUPPEAMO,
+            tiltakskode = "GRUPPEAMO",
             opprinneligSluttdato = LocalDate.now(),
             opprinneligStartdato = LocalDate.now(),
             sluttdato = LocalDate.now(),

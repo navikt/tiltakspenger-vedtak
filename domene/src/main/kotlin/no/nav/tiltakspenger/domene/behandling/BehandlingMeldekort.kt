@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.vedtak.Tiltak
 import java.time.LocalDate
 
 data class MeldekortDTO(
@@ -18,16 +19,23 @@ sealed interface BehandlingMeldekort : Behandling {
         override val sakId: SakId,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
 
     ) : BehandlingMeldekort {
 
         companion object {
-            fun opprettBehandling(sakId: SakId, periode: Periode, saksopplysninger: List<Saksopplysning>): Opprettet {
+            fun opprettBehandling(
+                sakId: SakId,
+                periode: Periode,
+                saksopplysninger: List<Saksopplysning>,
+                tiltak: List<Tiltak>,
+            ): Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),
                     sakId = sakId,
                     vurderingsperiode = periode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                 )
             }
         }
@@ -41,6 +49,7 @@ sealed interface BehandlingMeldekort : Behandling {
                 sakId = sakId,
                 vurderingsperiode = Periode(fra = meldekortDTO.fom, til = meldekortDTO.tom),
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 meldekort = meldekortDTO,
             )
         }
@@ -51,6 +60,7 @@ sealed interface BehandlingMeldekort : Behandling {
         override val sakId: SakId,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
         val meldekort: MeldekortDTO,
 
     ) : BehandlingMeldekort {
@@ -60,6 +70,7 @@ sealed interface BehandlingMeldekort : Behandling {
                 sakId = sakId,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 meldekort = meldekort,
             )
         }
@@ -70,6 +81,7 @@ sealed interface BehandlingMeldekort : Behandling {
         override val sakId: SakId,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
         val meldekort: MeldekortDTO,
     ) : BehandlingMeldekort
 }

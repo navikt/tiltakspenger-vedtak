@@ -15,7 +15,7 @@ data class Søknad(
     val dokumentInfoId: String,
     val filnavn: String,
     val personopplysninger: Personopplysninger,
-    val tiltak: Tiltak?,
+    val tiltak: SøknadsTiltak?,
     val barnetillegg: List<Barnetillegg>,
     val opprettet: LocalDateTime,
     val tidsstempelHosOss: LocalDateTime,
@@ -102,25 +102,25 @@ data class Vedlegg(
     val filnavn: String?,
 )
 
-sealed class Tiltak {
+sealed class SøknadsTiltak {
 
     abstract val arrangoernavn: String?
-    abstract val tiltakskode: Tiltaksaktivitet.Tiltak?
+    abstract val tiltakskode: String?
     abstract val startdato: LocalDate
     abstract val sluttdato: LocalDate?
 
     data class ArenaTiltak(
         val arenaId: String,
         override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
-        override val tiltakskode: Tiltaksaktivitet.Tiltak,
+        override val tiltakskode: String,
         val opprinneligSluttdato: LocalDate? = null,
         val opprinneligStartdato: LocalDate,
         override val sluttdato: LocalDate? = null,
         override val startdato: LocalDate,
-    ) : Tiltak()
+    ) : SøknadsTiltak()
 
     data class BrukerregistrertTiltak(
-        override val tiltakskode: Tiltaksaktivitet.Tiltak?, // Er null hvis bruker velger "Annet" i søknaden
+        override val tiltakskode: String?, // Er null hvis bruker velger "Annet" i søknaden
         override val arrangoernavn: String?, // Er null om f.eks. kode 6
         val beskrivelse: String?,
         override val startdato: LocalDate,
@@ -128,7 +128,7 @@ sealed class Tiltak {
         val adresse: String? = null,
         val postnummer: String? = null,
         val antallDager: Int,
-    ) : Tiltak()
+    ) : SøknadsTiltak()
 }
 
 sealed class Barnetillegg {

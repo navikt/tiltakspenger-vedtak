@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
@@ -27,6 +28,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
 
     fun sendTilbake(): BehandlingVilkårsvurdert
 
+    fun vurderPåNytt(): BehandlingVilkårsvurdert {
+        return Søknadsbehandling.Opprettet(
+            id = id,
+            sakId = sakId,
+            søknader = søknader,
+            vurderingsperiode = vurderingsperiode,
+            saksopplysninger = saksopplysninger,
+            tiltak = tiltak,
+        ).vilkårsvurder()
+    }
+
     companion object {
         fun fromDb(
             id: BehandlingId,
@@ -34,6 +46,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             søknader: List<Søknad>,
             vurderingsperiode: Periode,
             saksopplysninger: List<Saksopplysning>,
+            tiltak: List<Tiltak>,
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String,
@@ -45,6 +58,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
                 )
@@ -55,6 +69,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     søknader = søknader,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
                 )
@@ -70,6 +85,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
     ) : BehandlingTilBeslutter {
@@ -80,6 +96,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
@@ -93,8 +110,24 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
             )
+        }
+
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
         }
     }
 
@@ -104,6 +137,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val søknader: List<Søknad>,
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
+        override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
     ) : BehandlingTilBeslutter {
@@ -114,6 +148,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
@@ -127,8 +162,24 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
             )
+        }
+
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                LeggTilSaksopplysningRespons(
+                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                    erEndret = true,
+                )
+            }
         }
     }
 }

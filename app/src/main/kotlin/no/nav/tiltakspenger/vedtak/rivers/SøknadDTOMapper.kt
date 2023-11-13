@@ -3,8 +3,7 @@ package no.nav.tiltakspenger.vedtak.rivers
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
 import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vedtak.Tiltaksaktivitet
+import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import no.nav.tiltakspenger.vedtak.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -90,7 +89,7 @@ object SøknadDTOMapper {
         }
     }
 
-    private fun mapArenatiltak(dto: ArenaTiltakDTO?): Tiltak.ArenaTiltak? = if (dto == null) {
+    private fun mapArenatiltak(dto: ArenaTiltakDTO?): SøknadsTiltak.ArenaTiltak? = if (dto == null) {
         null
     } else {
         val startDato = dto.opprinneligStartdato ?: LocalDate.of(1970, 1, 1)
@@ -99,17 +98,11 @@ object SøknadDTOMapper {
         } else {
             startDato
         }
-        Tiltak.ArenaTiltak(
+        SøknadsTiltak.ArenaTiltak(
             arenaId = dto.arenaId,
             arrangoernavn = dto.arrangoernavn,
             // TODO hack for å sette default tiltakskode for de nye som mangler
-            tiltakskode = try {
-                Tiltaksaktivitet.Tiltak.valueOf(
-                    dto.tiltakskode.uppercase(),
-                )
-            } catch (t: Throwable) {
-                Tiltaksaktivitet.Tiltak.UKJENT_ELLER_IKKE_OPPGITT
-            },
+            tiltakskode = dto.tiltakskode.uppercase(),
             opprinneligSluttdato = dto.opprinneligSluttdato,
             opprinneligStartdato = startDatoHack,
             sluttdato = dto.sluttdato,
@@ -117,12 +110,12 @@ object SøknadDTOMapper {
         )
     }
 
-    private fun mapBrukerregistrertTiltak(dto: BrukerTiltakDTO?): Tiltak.BrukerregistrertTiltak? =
+    private fun mapBrukerregistrertTiltak(dto: BrukerTiltakDTO?): SøknadsTiltak.BrukerregistrertTiltak? =
         if (dto == null) {
             null
         } else {
-            Tiltak.BrukerregistrertTiltak(
-                tiltakskode = Tiltaksaktivitet.mapTiltaksType(dto.tiltakskode), // TODO:test
+            SøknadsTiltak.BrukerregistrertTiltak(
+                tiltakskode = dto.tiltakskode,
                 arrangoernavn = dto.arrangoernavn,
                 beskrivelse = dto.beskrivelse,
                 startdato = dto.fom,

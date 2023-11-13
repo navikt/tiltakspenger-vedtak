@@ -76,7 +76,7 @@ class SkjermingRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("arenatiltak", field(0, "@behov")[0].asText())
+            Assertions.assertEquals("tiltak", field(0, "@behov")[0].asText())
         }
     }
 

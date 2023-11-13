@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.domene.sak
 
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.vedtak.Personopplysninger
@@ -33,16 +32,6 @@ data class Sak(
                         it.vilkårsvurder()
                     },
             )
-
-        return this.copy(
-            behandlinger = behandlinger,
-        )
-    }
-
-    fun mottaFakta(saksopplysning: List<Saksopplysning>): Sak {
-        val behandlinger = behandlinger.filterIsInstance<Søknadsbehandling>().map { behandling ->
-            behandling.leggTilSaksopplysning(saksopplysning.first())
-        }
 
         return this.copy(
             behandlinger = behandlinger,

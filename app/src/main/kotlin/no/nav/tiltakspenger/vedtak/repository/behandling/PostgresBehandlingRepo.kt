@@ -27,6 +27,7 @@ internal class PostgresBehandlingRepo(
     private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
     private val vurderingRepo: VurderingRepo = VurderingRepo(),
     private val søknadDAO: SøknadDAO = SøknadDAO(),
+    private val tiltakDAO: TiltakDAO = TiltakDAO(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -104,6 +105,7 @@ internal class PostgresBehandlingRepo(
                 }.also {
                     saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
                     søknadDAO.oppdaterBehandlingId(behandling.id, behandling.søknader, txSession)
+                    tiltakDAO.lagre(behandling.id, behandling.tiltak, txSession)
                     when (behandling) {
                         is BehandlingIverksatt -> {
                             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
@@ -200,6 +202,7 @@ internal class PostgresBehandlingRepo(
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                tiltak = tiltakDAO.hent(id, txSession),
             )
 
             "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
@@ -208,6 +211,7 @@ internal class PostgresBehandlingRepo(
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
             )
@@ -218,6 +222,7 @@ internal class PostgresBehandlingRepo(
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
                 saksbehandler = string("saksbehandler"),
@@ -229,6 +234,7 @@ internal class PostgresBehandlingRepo(
                 søknader = søknadDAO.hentMedBehandlingId(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
                 saksbehandler = string("saksbehandler"),

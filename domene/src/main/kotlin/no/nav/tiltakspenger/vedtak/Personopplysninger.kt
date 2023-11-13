@@ -22,6 +22,21 @@ sealed class Personopplysninger {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
         override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is Søker) return false
+            return this.ident == other.ident &&
+                this.fødselsdato == other.fødselsdato &&
+                this.fornavn == other.fornavn &&
+                this.mellomnavn == other.mellomnavn &&
+                this.etternavn == other.etternavn &&
+                this.fortrolig == other.fortrolig &&
+                this.strengtFortrolig == other.strengtFortrolig &&
+                this.strengtFortroligUtland == other.strengtFortroligUtland &&
+                this.skjermet == other.skjermet &&
+                this.kommune == other.kommune &&
+                this.bydel == other.bydel
+        }
     }
 
     data class BarnUtenIdent(
@@ -34,6 +49,14 @@ sealed class Personopplysninger {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
         override fun avklartSkjerming(): Boolean = false
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is BarnUtenIdent) return false
+            return this.fødselsdato == other.fødselsdato &&
+                this.fornavn == other.fornavn &&
+                this.etternavn == other.etternavn &&
+                this.mellomnavn == other.mellomnavn
+        }
     }
 
     data class BarnMedIdent(
@@ -52,5 +75,43 @@ sealed class Personopplysninger {
         override fun tidsstempelKilde(): LocalDateTime = tidsstempelHosOss
         override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
         override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
+
+        override fun equals(other: Any?): Boolean {
+            if (other !is BarnMedIdent) return false
+            return this.ident == other.ident &&
+                this.fødselsdato == other.fødselsdato &&
+                this.fornavn == other.fornavn &&
+                this.etternavn == other.etternavn &&
+                this.mellomnavn == other.mellomnavn &&
+                this.fortrolig == other.fortrolig &&
+                this.strengtFortrolig == other.strengtFortrolig &&
+                this.strengtFortroligUtland == other.strengtFortroligUtland &&
+                this.skjermet == other.skjermet &&
+                this.oppholdsland == other.oppholdsland
+        }
+    }
+}
+
+fun List<Personopplysninger>.erLik(personopplysninger: List<Personopplysninger>): Boolean {
+    if (this.size != personopplysninger.size) return false
+    return this.all { person ->
+        personopplysninger.any { it == person }
+
+//        when (person) {
+//            is Personopplysninger.BarnMedIdent -> (
+//                personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
+//                    .any { it == person }
+//                )
+//
+//            is Personopplysninger.BarnUtenIdent -> (
+//                personopplysninger.filterIsInstance<Personopplysninger.BarnUtenIdent>()
+//                    .any { it == person }
+//                )
+//
+//            is Personopplysninger.Søker -> (
+//                personopplysninger.filterIsInstance<Personopplysninger.Søker>()
+//                    .any { it == person }
+//                )
+//        }
     }
 }

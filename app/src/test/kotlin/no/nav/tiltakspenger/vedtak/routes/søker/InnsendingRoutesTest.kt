@@ -82,7 +82,7 @@ class InnsendingRoutesTest {
                         fritekst = null,
                         vedlegg = emptyList(),
                     ),
-                    registrerteTiltak = listOf(),
+//                    registrerteTiltak = listOf(),
                     vurderingsperiode = ÅpenPeriodeDTO(fra = 18.november(2022), til = null),
                     statligeYtelser = StatligeYtelserDTO(
                         samletUtfall = UtfallDTO.KreverManuellVurdering,
@@ -433,7 +433,6 @@ class InnsendingRoutesTest {
                 "antallDager": 0,
                 "vedlegg": []
               },
-              "registrerteTiltak": [],
               "vurderingsperiode": {
                 "fra": "2022-11-18",
                 "til": null

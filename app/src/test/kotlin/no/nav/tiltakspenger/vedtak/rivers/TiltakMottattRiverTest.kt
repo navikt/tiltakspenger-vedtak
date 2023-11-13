@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
 /*
-internal class ArenaTiltakMottattRiverTest {
+internal class TiltakMottattRiverTest {
 
     private companion object {
         const val IDENT = "04927799109"

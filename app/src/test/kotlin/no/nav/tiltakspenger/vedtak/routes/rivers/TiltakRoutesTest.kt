@@ -12,11 +12,15 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -28,6 +32,7 @@ class TiltakRoutesTest {
     }
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
+    private val behandlingService = mockk<BehandlingService>()
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
@@ -42,10 +47,17 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at kall til river tiltak route sender ut et behov`() {
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+            sakId = SakId.random(),
+            søknad = ObjectMother.nySøknadMedBrukerTiltak(),
+        )
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedSkjerming(
             ident = IDENT,
             journalpostId = JOURNALPOSTID,
         )
+        every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
+        every { behandlingService.hentBehandling(any()) } returns behandling
+        every { behandlingService.oppdaterTiltak(any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -54,6 +66,7 @@ class TiltakRoutesTest {
                 routing {
                     tiltakRoutes(
                         innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
                     )
                 }
             }
@@ -80,22 +93,24 @@ class TiltakRoutesTest {
     private val tiltakBody = """
         {
         "respons": {
-            "tiltaksaktiviteter" : [
+            "tiltak" : [
                 {
-                  "tiltakType": "ARBTREN",
-                  "aktivitetId": "TA6734563",
-                  "tiltakLokaltNavn": "Arbeidstrening",
-                  "arrangoer": "STENDI SENIOR AS",
-                  "bedriftsnummer": "986164189",
-                  "deltakelsePeriode": {
-                    "fom": "2022-07-04",
-                    "tom": "2022-08-31"
+                  "id": "TA6418307",
+                  "gjennomforing": {
+                    "id": "",
+                    "arrangørnavn": "Kommunerevisjonen",
+                    "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
+                    "arenaKode": "ENKFAGYRKE",
+                    "fom": null,
+                    "tom": null
                   },
-                  "deltakelseProsent": 100,
-                  "deltakerStatusType": "GJENN",
-                  "statusSistEndret": "2022-08-09",
-                  "begrunnelseInnsoeking": "Trenger tiltaksplass",
-                  "antallDagerPerUke": null
+                  "deltakelseFom": "2023-08-20",
+                  "deltakelseTom": "2024-06-30",
+                  "deltakelseStatus": "DELTAR",
+                  "deltakelseDagerUke": null,
+                  "deltakelseProsent": 100.0,
+                  "kilde": "Komet",
+                  "registrertDato": "2023-10-27T00:00:00"
                 }
             ],
             "feil" : null
