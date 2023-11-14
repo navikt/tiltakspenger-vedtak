@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.rivers
+package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Barnetillegg
@@ -23,8 +23,7 @@ object SøknadDTOMapper {
                 etternavn = dto.personopplysninger.etternavn,
                 ident = dto.personopplysninger.ident,
             ),
-            tiltak = mapArenatiltak(dto.arenaTiltak)
-                ?: mapBrukerregistrertTiltak(dto.brukerTiltak),
+            tiltak = mapTiltak(dto.tiltak),
             barnetillegg = dto.barnetilleggPdl.map { mapBarnetilleggPDL(it) } +
                 dto.barnetilleggManuelle.map { mapBarnetilleggManuelle(it) },
             opprettet = dto.opprettet,
@@ -41,21 +40,11 @@ object SøknadDTOMapper {
             supplerendeStønadFlyktning = mapPeriodeSpm(dto.supplerendeStønadFlyktning),
             jobbsjansen = mapPeriodeSpm(dto.jobbsjansen),
             trygdOgPensjon = mapPeriodeSpm(dto.trygdOgPensjon),
-            lønnetArbeid = mapJaNei(dto.lønnetArbeid),
         )
     }
 
     private fun mapPeriodeSpm(periodeSpmDTO: PeriodeSpmDTO): Søknad.PeriodeSpm {
         return when (periodeSpmDTO.svar) {
-            SpmSvarDTO.IkkeMedISøknaden -> Søknad.PeriodeSpm.IkkeMedISøknaden
-            SpmSvarDTO.IkkeRelevant -> Søknad.PeriodeSpm.IkkeRelevant
-            SpmSvarDTO.IkkeBesvart -> Søknad.PeriodeSpm.IkkeBesvart
-            SpmSvarDTO.FeilaktigBesvart -> Søknad.PeriodeSpm.FeilaktigBesvart(
-                svartJa = true,
-                fom = periodeSpmDTO.fom,
-                tom = periodeSpmDTO.tom,
-            )
-
             SpmSvarDTO.Nei -> Søknad.PeriodeSpm.Nei
             SpmSvarDTO.Ja -> Søknad.PeriodeSpm.Ja(
                 periode = Periode(
@@ -67,64 +56,26 @@ object SøknadDTOMapper {
     }
 
     private fun mapFraOgMedSpm(fraOgMedDatoSpmDTO: FraOgMedDatoSpmDTO): Søknad.FraOgMedDatoSpm {
-        val dato = fraOgMedDatoSpmDTO.fom ?: LocalDate.of(1970, 1, 1)
-        val fraDato = if (dato.isBefore(LocalDate.of(1970, 1, 1))) {
-            LocalDate.of(1970, 1, 1)
-        } else {
-            dato
+        if (fraOgMedDatoSpmDTO.svar == SpmSvarDTO.Ja && fraOgMedDatoSpmDTO.fom == null) {
+            throw IllegalStateException("Det skal ikke være mulig med null i fradato hvis man har svart JA")
         }
         return when (fraOgMedDatoSpmDTO.svar) {
-            SpmSvarDTO.IkkeMedISøknaden -> Søknad.FraOgMedDatoSpm.IkkeMedISøknaden
-            SpmSvarDTO.IkkeRelevant -> Søknad.FraOgMedDatoSpm.IkkeRelevant
-            SpmSvarDTO.IkkeBesvart -> Søknad.FraOgMedDatoSpm.IkkeBesvart
-            SpmSvarDTO.FeilaktigBesvart -> Søknad.FraOgMedDatoSpm.FeilaktigBesvart(
-                svartJa = true,
-                fom = fraDato,
-            )
-
             SpmSvarDTO.Nei -> Søknad.FraOgMedDatoSpm.Nei
             SpmSvarDTO.Ja -> Søknad.FraOgMedDatoSpm.Ja(
-                fra = fraDato,
+                fra = fraOgMedDatoSpmDTO.fom!!,
             )
         }
     }
 
-    private fun mapArenatiltak(dto: ArenaTiltakDTO?): SøknadsTiltak.ArenaTiltak? = if (dto == null) {
-        null
-    } else {
-        val startDato = dto.opprinneligStartdato ?: LocalDate.of(1970, 1, 1)
-        val startDatoHack = if (startDato.isBefore(LocalDate.of(1970, 1, 1))) {
-            LocalDate.of(1970, 1, 1)
-        } else {
-            startDato
-        }
-        SøknadsTiltak.ArenaTiltak(
-            arenaId = dto.arenaId,
-            arrangoernavn = dto.arrangoernavn,
-            // TODO hack for å sette default tiltakskode for de nye som mangler
-            tiltakskode = dto.tiltakskode.uppercase(),
-            opprinneligSluttdato = dto.opprinneligSluttdato,
-            opprinneligStartdato = startDatoHack,
-            sluttdato = dto.sluttdato,
-            startdato = dto.startdato,
+    private fun mapTiltak(dto: SøknadsTiltakDTO): SøknadsTiltak =
+        SøknadsTiltak(
+            id = dto.id,
+            deltakelseFom = dto.deltakelseFom,
+            deltakelseTom = dto.deltakelseTom,
+            arrangør = dto.arrangør,
+            typeKode = dto.typeKode,
+            typeNavn = dto.typeNavn,
         )
-    }
-
-    private fun mapBrukerregistrertTiltak(dto: BrukerTiltakDTO?): SøknadsTiltak.BrukerregistrertTiltak? =
-        if (dto == null) {
-            null
-        } else {
-            SøknadsTiltak.BrukerregistrertTiltak(
-                tiltakskode = dto.tiltakskode,
-                arrangoernavn = dto.arrangoernavn,
-                beskrivelse = dto.beskrivelse,
-                startdato = dto.fom,
-                sluttdato = dto.tom,
-                adresse = dto.adresse,
-                postnummer = dto.postnummer,
-                antallDager = dto.antallDager,
-            )
-        }
 
     private fun mapVedlegg(dto: DokumentInfoDTO): Vedlegg {
         return Vedlegg(
@@ -154,12 +105,8 @@ object SøknadDTOMapper {
         )
     }
 
-    fun mapJaNei(jaNeiSpmDTO: JaNeiSpmDTO): Søknad.JaNeiSpm {
+    private fun mapJaNei(jaNeiSpmDTO: JaNeiSpmDTO): Søknad.JaNeiSpm {
         return when (jaNeiSpmDTO.svar) {
-            SpmSvarDTO.IkkeMedISøknaden -> Søknad.JaNeiSpm.IkkeMedISøknaden
-            SpmSvarDTO.IkkeRelevant -> Søknad.JaNeiSpm.IkkeRelevant
-            SpmSvarDTO.IkkeBesvart -> Søknad.JaNeiSpm.IkkeBesvart
-            SpmSvarDTO.FeilaktigBesvart -> Søknad.JaNeiSpm.IkkeBesvart
             SpmSvarDTO.Nei -> Søknad.JaNeiSpm.Nei
             SpmSvarDTO.Ja -> Søknad.JaNeiSpm.Ja
         }

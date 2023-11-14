@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.rivers
+package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -12,20 +12,18 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.rivers.SøknadDTO
-import no.nav.tiltakspenger.vedtak.rivers.SøknadDTOMapper
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
-val søknadpath = "/rivers/soknad"
+const val søknadpath = "/rivers/soknad"
 
 fun Route.søknadRoutes(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     sakService: SakService,
 ) {
-    post("$søknadpath") {
+    post(søknadpath) {
         LOG.info { "Vi har mottatt søknad fra river" }
         val søknadDTO = call.receive<SøknadDTO>()
 

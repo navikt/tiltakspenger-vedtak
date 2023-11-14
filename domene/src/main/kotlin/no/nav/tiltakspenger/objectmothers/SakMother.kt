@@ -7,10 +7,10 @@ import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.arenaTiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.Søknad
 import java.util.Random
@@ -24,13 +24,11 @@ interface SakMother {
         behandlinger: List<Søknadsbehandling> = listOf(
             Søknadsbehandling.Opprettet.opprettBehandling(
                 id,
-                nySøknadMedTiltak(
+                nySøknad(
                     personopplysninger = personSøknad(ident = ident),
-                    tiltak = arenaTiltak(
-                        opprinneligStartdato = periode.fra,
-                        opprinneligSluttdato = periode.til,
-                        startdato = periode.fra,
-                        sluttdato = periode.til,
+                    tiltak = søknadTiltak(
+                        deltakelseFom = periode.fra,
+                        deltakelseTom = periode.til,
                     ),
                 ),
             ),

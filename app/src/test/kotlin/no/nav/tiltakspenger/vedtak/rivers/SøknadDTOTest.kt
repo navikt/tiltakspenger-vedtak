@@ -2,6 +2,16 @@ package no.nav.tiltakspenger.vedtak.rivers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.Søknad
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.BarnetilleggDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.DokumentInfoDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.FraOgMedDatoSpmDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.JaNeiSpmDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.PeriodeSpmDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SpmSvarDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SøknadDTO
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SøknadDTOMapper
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SøknadsTiltakDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -38,7 +48,6 @@ internal class SøknadDTOTest {
         assertEquals(søknad.gjenlevendepensjon, Søknad.PeriodeSpm.Nei)
         assertEquals(søknad.trygdOgPensjon, Søknad.PeriodeSpm.Nei)
         assertEquals(søknad.etterlønn, Søknad.JaNeiSpm.Nei)
-        assertEquals(søknad.lønnetArbeid, Søknad.JaNeiSpm.Nei)
     }
 
     @Test
@@ -56,7 +65,6 @@ internal class SøknadDTOTest {
             alderspensjon = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Ja, fom = fra),
             gjenlevendePensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
             trygdOgPensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            lønnetArbeid = JaNeiSpmDTO(svar = SpmSvarDTO.Ja),
             etterlønn = JaNeiSpmDTO(SpmSvarDTO.Ja),
         )
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
@@ -72,7 +80,6 @@ internal class SøknadDTOTest {
         assertEquals(søknad.gjenlevendepensjon, Søknad.PeriodeSpm.Ja(Periode(fra = fra, til = til)))
         assertEquals(søknad.trygdOgPensjon, Søknad.PeriodeSpm.Ja(Periode(fra = fra, til = til)))
         assertEquals(søknad.etterlønn, Søknad.JaNeiSpm.Ja)
-        assertEquals(søknad.lønnetArbeid, Søknad.JaNeiSpm.Ja)
     }
 
     private fun søknadDTO(
@@ -96,24 +103,13 @@ internal class SøknadDTOTest {
         barnetilleggPdl: List<BarnetilleggDTO> = emptyList(),
         barnetilleggManuelle: List<BarnetilleggDTO> = emptyList(),
         opprettet: LocalDateTime = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0),
-        arenaTiltak: ArenaTiltakDTO = ArenaTiltakDTO(
-            arenaId = "arenaId",
-            arrangoernavn = "Arrangørnavn",
-            tiltakskode = "AMO",
-            opprinneligSluttdato = til,
-            opprinneligStartdato = fra,
-            sluttdato = til,
-            startdato = fra,
-        ),
-        brukerTiltak: BrukerTiltakDTO = BrukerTiltakDTO(
-            tiltakskode = "AMO",
-            arrangoernavn = "Arrangørnavn",
-            beskrivelse = "Beskrivelse",
-            fom = fra,
-            tom = til,
-            adresse = "Adresse",
-            postnummer = "0111",
-            antallDager = 2,
+        tiltak: SøknadsTiltakDTO = SøknadsTiltakDTO(
+            id = "arenaId",
+            arrangør = "Arrangørnavn",
+            typeKode = "AMO",
+            typeNavn = "AMO",
+            deltakelseFom = fra,
+            deltakelseTom = til,
         ),
         alderspensjon: FraOgMedDatoSpmDTO = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Nei, fom = null),
         etterlønn: JaNeiSpmDTO = JaNeiSpmDTO(SpmSvarDTO.Nei),
@@ -123,7 +119,6 @@ internal class SøknadDTOTest {
         supplerendeFlykting: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         sykepenger: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         trygdOgPensjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
-        lønnetArbeid: JaNeiSpmDTO = JaNeiSpmDTO(svar = SpmSvarDTO.Nei),
         vedlegg: List<DokumentInfoDTO> = listOf(
             DokumentInfoDTO(
                 journalpostId = "journalpostId",
@@ -141,8 +136,7 @@ internal class SøknadDTOTest {
         institusjon = institusjon,
         barnetilleggPdl = barnetilleggPdl,
         barnetilleggManuelle = barnetilleggManuelle,
-        arenaTiltak = arenaTiltak,
-        brukerTiltak = brukerTiltak,
+        tiltak = tiltak,
         alderspensjon = alderspensjon,
         etterlønn = etterlønn,
         gjenlevendepensjon = gjenlevendePensjon,
@@ -151,7 +145,6 @@ internal class SøknadDTOTest {
         supplerendeStønadFlyktning = supplerendeFlykting,
         sykepenger = sykepenger,
         trygdOgPensjon = trygdOgPensjon,
-        lønnetArbeid = lønnetArbeid,
         opprettet = opprettet,
         vedlegg = vedlegg,
     )

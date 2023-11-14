@@ -125,27 +125,27 @@ internal class TiltakDAOTest {
 
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val startDato = 1.januar(2023)
-        val sluttdato = 31.mars(2023)
+        val deltakelseFom = 1.januar(2023)
+        val deltakelseTom = 31.mars(2023)
         val sakId = SakId.random()
         val sak = Sak(
             id = sakId,
             ident = ident,
             saknummer = Saksnummer(verdi = "123"),
-            periode = Periode(fra = startDato, til = sluttdato),
+            periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = listOf(),
         )
         sakRepo.lagre(sak)
 
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
+        val søknad = ObjectMother.nySøknad(
             journalpostId = journalpostId,
             personopplysninger = ObjectMother.personSøknad(
                 ident = ident,
             ),
-            tiltak = ObjectMother.brukerTiltak(
-                startdato = startDato,
-                sluttdato = sluttdato,
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
             ),
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )

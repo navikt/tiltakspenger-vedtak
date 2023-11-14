@@ -5,10 +5,10 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.felles.nå
-import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedOvergangsstønad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.vedtak.InnhentetUføre
 import org.junit.jupiter.api.Test
@@ -23,12 +23,14 @@ internal class HåndterUføreHendelseTest {
         val innhentet = nå()
 
         val innsending = innsendingMedOvergangsstønad(
+            fom = 1.januar(2023),
+            tom = 31.januar(2023),
             ident = ident,
             journalpostId = journalpostId,
-            søknad = nySøknadMedBrukerTiltak(
-                tiltak = brukerTiltak(
-                    startdato = 1.januar(2023),
-                    sluttdato = 31.januar(2023),
+            søknad = nySøknad(
+                tiltak = søknadTiltak(
+                    deltakelseFom = 1.januar(2023),
+                    deltakelseTom = 31.januar(2023),
                 ),
             ),
         )

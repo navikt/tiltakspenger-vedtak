@@ -103,11 +103,6 @@ sealed interface Søknadsbehandling : Behandling {
                             søknad.vurderingsperiode(),
                         ),
                         lagFaktaFraJaNeiSpørsmål(
-                            Vilkår.LØNNSINNTEKT,
-                            søknad.lønnetArbeid,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraJaNeiSpørsmål(
                             Vilkår.ETTERLØNN,
                             søknad.etterlønn,
                             søknad.vurderingsperiode(),

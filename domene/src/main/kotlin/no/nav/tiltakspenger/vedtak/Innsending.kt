@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.vedtak.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
@@ -32,11 +31,11 @@ class Innsending private constructor(
     val id: InnsendingId,
     val journalpostId: String,
     val ident: String,
+    val fom: LocalDate,
+    val tom: LocalDate,
     tilstand: Tilstand,
-    søknad: Søknad?,
     sistEndret: LocalDateTime?,
     personopplysninger: InnhentedePersonopplysninger?,
-//    tiltak: InnhentedeTiltak?,
     ytelser: InnhentedeArenaYtelser?,
     foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
     overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak?,
@@ -52,9 +51,7 @@ class Innsending private constructor(
 
     fun endringsHash(): String =
         listOfNotNull(
-            søknad?.tidsstempelHosOss,
             personopplysninger?.tidsstempelInnhentet,
-//            tiltak?.tidsstempelInnhentet,
             ytelser?.tidsstempelInnhentet,
             foreldrepengerVedtak?.tidsstempelInnhentet,
             uføreVedtak?.tidsstempelInnhentet,
@@ -67,23 +64,11 @@ class Innsending private constructor(
             dirtyChecker.set("tilstand")
         }
 
-    var søknad: Søknad? = søknad
-        private set(value) {
-            field = value
-            dirtyChecker.set("søknad")
-        }
-
     var personopplysninger: InnhentedePersonopplysninger? = personopplysninger
         private set(value) {
             field = value
             dirtyChecker.set("personopplysninger")
         }
-
-//    var tiltak: InnhentedeTiltak? = tiltak
-//        set(value) {
-//            field = value
-//            dirtyChecker.set("tiltak")
-//        }
 
     var ytelser: InnhentedeArenaYtelser? = ytelser
         private set(value) {
@@ -123,55 +108,12 @@ class Innsending private constructor(
     private fun personopplysningerBarnMedIdent() =
         personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.BarnMedIdent>() ?: emptyList()
 
-//    fun tiltakForSøknad(søknad: Søknad): Tiltak? =
-//        if (søknad.tiltak is SøknadsTiltak.ArenaTiltak) {
-//            this.tiltak?.tiltaksliste?.firstOrNull { it.id == søknad.tiltak.arenaId } // TODO: Denne vil aldri slå til, man sammenligner epler og pærer
-//        } else {
-//            null
-//        }
-
-    private fun finnFomOgTom(søknad: Søknad): Pair<LocalDate?, LocalDate?> {
-        fun tidligsteDato(dato: LocalDate?, vararg datoer: LocalDate?): LocalDate? =
-            (datoer.toList() + dato).filterNotNull().minOrNull()
-
-        fun senesteDato(dato: LocalDate, vararg datoer: LocalDate?): LocalDate =
-            (datoer.toList() + dato).filterNotNull().max()
-
-        fun senesteDato(vararg datoer: LocalDate?): LocalDate? = datoer.filterNotNull().maxOrNull()
-
-        val søknadFom: LocalDate? = søknad.tiltak?.startdato
-        val søknadTom: LocalDate? = søknad.tiltak?.sluttdato
-
-//        val tiltakFom: LocalDate? = tiltakForSøknad(søknad)?.deltakelseFom
-//        val tiltakTom: LocalDate? = tiltakForSøknad(søknad)?.deltakelseTom
-
-//        val tidligsteFom: LocalDate? = tidligsteDato(søknadFom, tiltakFom)
-//
-//        val senesteTom: LocalDate? = senesteDato(søknadTom, tiltakTom)
-//        return Pair(tidligsteFom, senesteTom)
-        return Pair(søknadFom, søknadTom)
-    }
-
     fun oppdaterSistEndret(sistEndret: LocalDateTime) {
         this.sistEndret = sistEndret
     }
 
-    fun vurderingsperiodeForSøknad(): Periode? {
-        return this.søknad?.let {
-            val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
-            if (tidligsteFom != null && senesteTom != null) Periode(tidligsteFom, senesteTom) else null
-        }
-    }
-
-    // TODO: MIN eller EPOCH ? MAX eller LocalDate.of(9999,12,31)
     private fun filtreringsperiode(): Periode {
-        return søknad?.let {
-            val (tidligsteFom: LocalDate?, senesteTom: LocalDate?) = finnFomOgTom(it)
-            Periode(
-                tidligsteFom ?: LocalDate.EPOCH,
-                senesteTom ?: 31.desember(9999),
-            )
-        } ?: Periode(LocalDate.EPOCH, 31.desember(9999))
+        return Periode(this.fom, this.tom)
     }
 
     fun erFerdigstilt() = tilstand.type == InnsendingTilstandType.InnsendingFerdigstilt
@@ -179,15 +121,17 @@ class Innsending private constructor(
     constructor(
         journalpostId: String,
         ident: String,
+        fom: LocalDate,
+        tom: LocalDate,
     ) : this(
         id = randomId(),
         ident = ident,
         journalpostId = journalpostId,
+        fom = fom,
+        tom = tom,
         tilstand = InnsendingRegistrert,
-        søknad = null,
         sistEndret = null,
         personopplysninger = null,
-//        tiltak = null,
         ytelser = null,
         foreldrepengerVedtak = null,
         overgangsstønadVedtak = null,
@@ -203,16 +147,15 @@ class Innsending private constructor(
             id: InnsendingId,
             journalpostId: String,
             ident: String,
+            fom: LocalDate,
+            tom: LocalDate,
             tilstand: String,
-            søknad: Søknad?,
             sistEndret: LocalDateTime,
             foreldrepengerVedtak: List<ForeldrepengerVedtak>,
             overgangsstønadVedtak: List<OvergangsstønadVedtak>,
             uføreVedtak: UføreVedtak?,
             personopplysningerliste: List<Personopplysninger>,
-//            tiltaksliste: List<Tiltaksaktivitet>,
             ytelserliste: List<YtelseSak>,
-//            tidsstempelTiltakInnhentet: LocalDateTime?,
             tidsstempelYtelserInnhentet: LocalDateTime?,
             tidsstempelPersonopplysningerInnhentet: LocalDateTime?,
             tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime?,
@@ -225,8 +168,9 @@ class Innsending private constructor(
                 id = id,
                 journalpostId = journalpostId,
                 ident = ident,
+                fom = fom,
+                tom = tom,
                 tilstand = convertTilstand(tilstand),
-                søknad = søknad,
                 sistEndret = sistEndret,
                 personopplysninger = tidsstempelPersonopplysningerInnhentet?.let {
                     InnhentedePersonopplysninger(
@@ -235,7 +179,6 @@ class Innsending private constructor(
                         tidsstempelSkjermingInnhentet = tidsstempelSkjermingInnhentet,
                     )
                 },
-//                tiltak = tidsstempelTiltakInnhentet?.let { InnhentedeTiltak(tiltaksliste, it) },
                 ytelser = tidsstempelYtelserInnhentet?.let { InnhentedeArenaYtelser(ytelserliste, it) },
                 foreldrepengerVedtak = tidsstempelForeldrepengerVedtakInnhentet?.let {
                     InnhentedeForeldrepengerVedtak(
@@ -469,7 +412,6 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
             DomeneMetrikker.søknadMottattCounter().increment()
-            innsending.søknad = søknadMottattHendelse.søknad()
             innsending.trengerPersonopplysninger(søknadMottattHendelse)
             innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
         }

@@ -1,6 +1,6 @@
 @file:Suppress("LongParameterList")
 
-package no.nav.tiltakspenger.vedtak.rivers
+package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -10,8 +10,7 @@ data class SøknadDTO(
     val søknadId: String,
     val dokInfo: DokumentInfoDTO,
     val personopplysninger: PersonopplysningerDTO,
-    val arenaTiltak: ArenaTiltakDTO?,
-    val brukerTiltak: BrukerTiltakDTO?,
+    val tiltak: SøknadsTiltakDTO,
     val barnetilleggPdl: List<BarnetilleggDTO>,
     val barnetilleggManuelle: List<BarnetilleggDTO>,
     val vedlegg: List<DokumentInfoDTO>,
@@ -26,7 +25,6 @@ data class SøknadDTO(
     val supplerendeStønadFlyktning: PeriodeSpmDTO,
     val jobbsjansen: PeriodeSpmDTO,
     val trygdOgPensjon: PeriodeSpmDTO,
-    val lønnetArbeid: JaNeiSpmDTO,
     val opprettet: LocalDateTime,
 )
 
@@ -42,25 +40,13 @@ data class PersonopplysningerDTO(
     val etternavn: String,
 )
 
-data class ArenaTiltakDTO(
-    val arenaId: String,
-    val arrangoernavn: String?,
-    val tiltakskode: String,
-    val opprinneligSluttdato: LocalDate? = null,
-    val opprinneligStartdato: LocalDate? = null,
-    val sluttdato: LocalDate? = null,
-    val startdato: LocalDate,
-)
-
-data class BrukerTiltakDTO(
-    val tiltakskode: String,
-    val arrangoernavn: String?,
-    val beskrivelse: String?,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val adresse: String? = null,
-    val postnummer: String? = null,
-    val antallDager: Int,
+data class SøknadsTiltakDTO(
+    val id: String,
+    val deltakelseFom: LocalDate,
+    val deltakelseTom: LocalDate,
+    val arrangør: String,
+    val typeKode: String,
+    val typeNavn: String,
 )
 
 data class BarnetilleggDTO(
@@ -87,10 +73,6 @@ data class FraOgMedDatoSpmDTO(
 )
 
 enum class SpmSvarDTO {
-    IkkeMedISøknaden,
-    IkkeRelevant,
-    IkkeBesvart,
-    FeilaktigBesvart,
     Nei,
     Ja,
 }

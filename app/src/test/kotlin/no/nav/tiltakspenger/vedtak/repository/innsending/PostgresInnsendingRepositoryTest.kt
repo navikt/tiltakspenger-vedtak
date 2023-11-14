@@ -7,24 +7,20 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
+import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -49,11 +45,15 @@ internal class PostgresInnsendingRepositoryTest {
     @Test
     fun `skal telle antall innsendinger korrekt`() {
         var antallInnsendinger = innsendingRepository.antall()
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
 
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
+                fom = fom,
+                tom = tom,
             ),
         )
         antallInnsendinger++
@@ -63,6 +63,8 @@ internal class PostgresInnsendingRepositoryTest {
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
+                fom = fom,
+                tom = tom,
             ),
         )
         antallInnsendinger++
@@ -70,6 +72,8 @@ internal class PostgresInnsendingRepositoryTest {
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
+                fom = fom,
+                tom = tom,
             ),
         )
         antallInnsendinger++
@@ -77,6 +81,8 @@ internal class PostgresInnsendingRepositoryTest {
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
+                fom = fom,
+                tom = tom,
             ),
         )
         antallInnsendinger++
@@ -99,10 +105,15 @@ internal class PostgresInnsendingRepositoryTest {
         // men sjekker iallefall om spørringen feiler eller ikke..
         innsendingRepository.antallStoppetUnderBehandling() shouldBe 1
 
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+
         innsendingRepository.lagre(
             Innsending(
                 journalpostId = Random().nextInt().toString(),
                 ident = Random().nextInt().toString(),
+                fom = fom,
+                tom = tom,
             ),
         )
         // sist_endret er ikke gammel nok, så denne skal heller ikke telles med
@@ -113,7 +124,14 @@ internal class PostgresInnsendingRepositoryTest {
     fun `lagre og hente bare innsending`() {
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        val innsending = Innsending(
+            journalpostId = journalpostId,
+            ident = ident,
+            fom = fom,
+            tom = tom,
+        )
 
         innsendingRepository.lagre(innsending)
 
@@ -126,89 +144,11 @@ internal class PostgresInnsendingRepositoryTest {
     }
 
     @Test
-    fun `lagre og hente hele aggregatet med BrukerTiltak`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
-
-        val søknad = nySøknadMedBrukerTiltak(
-            personopplysninger = personSøknad(
-                ident = ident,
-            ),
-            journalpostId = journalpostId,
-            barnetillegg = listOf(barnetilleggMedIdent()),
-        )
-        val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
-//        val tiltak =
-//            InnhentedeTiltak(tiltaksliste = listOf(tiltaksaktivitet()), tidsstempelInnhentet = LocalDateTime.now())
-        val ytelseSak = listOf(ytelseSak())
-
-        val innsending = innsendingMedYtelse(
-            journalpostId = journalpostId,
-            ident = ident,
-            søknad = søknad,
-            personopplysninger = listOf(personopplysninger),
-            skjerming = skjermingFalse(ident = ident),
-//            tiltak = tiltak,
-            ytelseSak = ytelseSak,
-        )
-
-        innsendingRepository.lagre(innsending)
-
-        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
-
-        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
-        assertEquals(innsending.ident, hentetInnsending.ident)
-        assertEquals(innsending.id, hentetInnsending.id)
-        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        hentetInnsending.søknad shouldBe søknad
-        hentetInnsending.personopplysninger!!.personopplysningerliste shouldContainExactly listOf(
-            personopplysninger.copy(
-                skjermet = false,
-            ),
-        )
-//        hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
-        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
-        hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
-    }
-
-    @Test
-    fun `lagre og hente basert på søknadId`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
-
-        val søknad = nySøknadMedBrukerTiltak(
-            journalpostId = journalpostId,
-            personopplysninger = personSøknad(
-                ident = ident,
-            ),
-            barnetillegg = listOf(barnetilleggMedIdent()),
-        )
-
-        val innsending = innsendingMedSøknad(
-            journalpostId = journalpostId,
-            ident = ident,
-            søknad = søknad,
-        )
-
-        innsendingRepository.lagre(innsending)
-
-        val hentetInnsending = innsendingRepository.findBySøknadId(søknad.søknadId)
-        assertNotNull(hentetInnsending)
-        assertEquals(ident, innsending.ident)
-        assertEquals(ident, innsending.søknad!!.personopplysninger.ident)
-        assertEquals(ident, hentetInnsending!!.ident)
-        assertEquals(ident, hentetInnsending.søknad!!.personopplysninger.ident)
-        assertEquals(innsending.id, hentetInnsending.id)
-        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        hentetInnsending.søknad shouldBe søknad
-    }
-
-    @Test
     fun `lagre og hente hele aggregatet med ArenaTiltak`() {
         val ident = Random().nextInt().toString()
         val journalpostId = Random().nextInt().toString()
 
-        val søknad = nySøknadMedTiltak(
+        val søknad = ObjectMother.nySøknad(
             periode = Periode(1.januar(2022), 31.januar(2022)),
             journalpostId = journalpostId,
             personopplysninger = personSøknad(
@@ -217,8 +157,6 @@ internal class PostgresInnsendingRepositoryTest {
             barnetillegg = listOf(barnetilleggUtenIdent()),
         )
         val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
-//        val tiltak =
-//            InnhentedeTiltak(tiltaksliste = listOf(tiltaksaktivitet()), tidsstempelInnhentet = LocalDateTime.now())
         val ytelseSak = listOf(ytelseSak())
 
         val innsending = innsendingMedYtelse(
@@ -227,7 +165,6 @@ internal class PostgresInnsendingRepositoryTest {
             søknad = søknad,
             personopplysninger = listOf(personopplysninger),
             skjerming = skjermingTrue(ident = ident),
-//            tiltak = tiltak,
             ytelseSak = ytelseSak,
         )
 
@@ -239,9 +176,9 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.ident, hentetInnsending.ident)
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        hentetInnsending.søknad shouldBe søknad
+        assertEquals(innsending.fom, hentetInnsending.fom)
+        assertEquals(innsending.tom, hentetInnsending.tom)
         hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
-//        hentetInnsending.tiltak!!.tiltaksliste shouldContainExactly tiltak.tiltaksliste
         hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
@@ -251,7 +188,7 @@ internal class PostgresInnsendingRepositoryTest {
         val ident = Random().nextInt().toString()
         val journalpostId = Random().nextInt().toString()
 
-        val søknad = nySøknadMedTiltak(
+        val søknad = ObjectMother.nySøknad(
             journalpostId = journalpostId,
             personopplysninger = personSøknad(
                 ident = ident,
@@ -284,7 +221,8 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.ident, hentetInnsending.ident)
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        hentetInnsending.søknad shouldBe søknad
+        assertEquals(innsending.fom, hentetInnsending.fom)
+        assertEquals(innsending.tom, hentetInnsending.tom)
         hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
         hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
@@ -293,7 +231,14 @@ internal class PostgresInnsendingRepositoryTest {
     fun `sjekk optimistisk locking`() {
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        var innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        var innsending = Innsending(
+            journalpostId = journalpostId,
+            ident = ident,
+            fom = fom,
+            tom = tom,
+        )
 
         innsending.sistEndret shouldBe null
 
@@ -308,22 +253,6 @@ internal class PostgresInnsendingRepositoryTest {
             innsendingRepository.lagre(innsending)
         }
     }
-
-//    @Test
-//    fun `skal hente journalpostId for innsendinger som er ferdigstilt og ikke for gamle`() {
-//        val journalpostId = Random().nextInt().toString()
-//        val ident = Random().nextInt().toString()
-//        var innsending = Innsending(journalpostId = journalpostId, ident = ident)
-//
-//        innsending.sistEndret shouldBe null
-//
-//        innsending = innsendingRepository.lagre(innsending)
-//
-//        innsending.sistEndret shouldNotBe null
-//
-//        val journalpostIder: List<String> = innsendingRepository.hentInnsendingerMedTilstandFerdigstilt()
-//        assertEquals(65, journalpostIder.size)
-//    }
 
     // TODO: Gjør om til feilHendelsen som kommer fra PDL
     @Test

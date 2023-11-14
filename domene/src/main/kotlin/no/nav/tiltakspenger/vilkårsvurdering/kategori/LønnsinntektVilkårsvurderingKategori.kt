@@ -4,18 +4,15 @@ import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.EtterlønnVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnetArbeidVilkårsvurdering
 
 class LønnsinntektVilkårsvurderingKategori(
     val etterlønnVilkårsvurdering: EtterlønnVilkårsvurdering,
-    val lønnetArbeidVilkårsvurdering: LønnetArbeidVilkårsvurdering,
 ) : VilkårsvurderingKategori {
     override fun vilkår(): Vilkår = Vilkår.LØNNSINNTEKT
 
     override fun samletUtfall(): Utfall {
         val lønnsinntektUtfall = listOf(
             etterlønnVilkårsvurdering.samletUtfall(),
-            lønnetArbeidVilkårsvurdering.samletUtfall(),
         )
         return when {
             lønnsinntektUtfall.any { it == Utfall.IKKE_OPPFYLT } -> Utfall.IKKE_OPPFYLT
@@ -27,6 +24,5 @@ class LønnsinntektVilkårsvurderingKategori(
     override fun vurderinger(): List<Vurdering> =
         listOf(
             etterlønnVilkårsvurdering.vurderinger(),
-            lønnetArbeidVilkårsvurdering.vurderinger(),
         ).flatten()
 }

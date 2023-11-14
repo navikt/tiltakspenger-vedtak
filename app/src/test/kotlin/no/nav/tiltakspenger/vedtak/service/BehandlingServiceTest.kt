@@ -42,10 +42,10 @@ internal class BehandlingServiceTest {
     @Test
     fun `legg til saksopplysning fra saksbehandler legger seg til i tillegg`() {
         val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-            tiltak = ObjectMother.arenaTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
+        val søknad = ObjectMother.nySøknad(
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
             ),
         )
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
@@ -79,10 +79,10 @@ internal class BehandlingServiceTest {
     @Test
     fun `legg til saksopplysning som ikke er saksbehandler erstatter den gamle`() {
         val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-            tiltak = ObjectMother.arenaTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
+        val søknad = ObjectMother.nySøknad(
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
             ),
         )
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()

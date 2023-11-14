@@ -121,6 +121,8 @@ CREATE TABLE innsending
     id                      VARCHAR                  PRIMARY KEY,
     journalpost_id          VARCHAR                  NOT NULL UNIQUE,
     ident                   VARCHAR                  NOT NULL,
+    tiltak_fom              DATE                     NOT NULL,
+    tiltak_tom              DATE                     NOT NULL,
     tilstand                VARCHAR                  NOT NULL,
     tidsstempel_tiltak_innhentet TIMESTAMP WITH TIME ZONE NULL,
     tidsstempel_personopplysninger_innhentet TIMESTAMP WITH TIME ZONE NULL,
@@ -164,7 +166,6 @@ CREATE TABLE søknad
     id                  VARCHAR PRIMARY KEY,
     versjon             VARCHAR                  NOT NULL,
     behandling_id       VARCHAR                  NULL REFERENCES behandling (id),
-    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
     søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
@@ -213,8 +214,7 @@ CREATE TABLE søknad
     trygd_og_pensjon_ja              BOOLEAN                  NULL,
     trygd_og_pensjon_fom             DATE                     NULL,
     trygd_og_pensjon_tom             DATE                     NULL,
-    etterlonn_type            VARCHAR                  NOT NULL,
-    lønnetArbeid_type            VARCHAR                  NOT NULL
+    etterlonn_type            VARCHAR                  NOT NULL
 );
 
 CREATE TABLE søknad_barnetillegg
@@ -229,31 +229,16 @@ CREATE TABLE søknad_barnetillegg
     opphold_i_eos_type     VARCHAR NOT NULL
 );
 
-CREATE TABLE søknad_brukertiltak
-(
-    id            VARCHAR PRIMARY KEY,
-    søknad_id     VARCHAR NOT NULL REFERENCES søknad (id),
-    tiltakskode   VARCHAR NULL,
-    arrangoernavn VARCHAR NULL,
-    beskrivelse   VARCHAR NULL,
-    startdato     DATE    NOT NULL,
-    sluttdato     DATE    NOT NULL,
-    adresse       VARCHAR NULL,
-    postnummer    VARCHAR NULL,
-    antall_dager  INT     NOT NULL
-);
-
-CREATE TABLE søknad_arenatiltak
+CREATE TABLE søknad_tiltak
 (
     id                      VARCHAR PRIMARY KEY,
     søknad_id               VARCHAR NOT NULL REFERENCES søknad (id),
-    arena_id                VARCHAR NOT NULL,
-    arrangoernavn           VARCHAR NULL,
-    tiltakskode             VARCHAR NOT NULL,
-    opprinnelig_startdato   DATE    NOT NULL,
-    opprinnelig_sluttdato   DATE    NULL,
-    startdato               DATE    NOT NULL,
-    sluttdato               DATE    NULL
+    ekstern_id              VARCHAR NOT NULL,
+    arrangørnavn            VARCHAR NULL,
+    typekode                VARCHAR NOT NULL,
+    typenavn                VARCHAR NOT NULL,
+    deltakelse_fom          DATE    NOT NULL,
+    deltakelse_tom          DATE    NULL
 );
 
 CREATE TABLE søknad_vedlegg

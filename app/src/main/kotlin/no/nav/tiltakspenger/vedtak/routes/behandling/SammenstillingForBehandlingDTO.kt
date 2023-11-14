@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import io.ktor.client.utils.EmptyContent.status
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -45,8 +44,8 @@ data class SøknadDTO(
     val søknadsdato: LocalDate,
     val arrangoernavn: String,
     val tiltakstype: String,
-    val startdato: LocalDate,
-    val sluttdato: LocalDate,
+    val deltakelseFom: LocalDate,
+    val deltakelseTom: LocalDate,
 )
 
 data class SaksopplysningUtDTO(
@@ -77,10 +76,10 @@ fun mapSammenstillingDTO(
         tom = behandling.vurderingsperiode.til,
         søknad = SøknadDTO(
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
-            arrangoernavn = behandling.søknad().tiltak?.arrangoernavn!!,
-            tiltakstype = behandling.søknad().tiltak?.tiltakskode!!,
-            startdato = behandling.søknad().tiltak?.startdato!!,
-            sluttdato = behandling.søknad().tiltak?.sluttdato!!,
+            arrangoernavn = behandling.søknad().tiltak.arrangør,
+            tiltakstype = behandling.søknad().tiltak.typeKode,
+            deltakelseFom = behandling.søknad().tiltak.deltakelseFom,
+            deltakelseTom = behandling.søknad().tiltak.deltakelseTom,
         ),
         registrerteTiltak = behandling.tiltak.map {
             RegistrertTiltakDTO(

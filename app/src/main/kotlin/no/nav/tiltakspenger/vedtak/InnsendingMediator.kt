@@ -73,7 +73,12 @@ class InnsendingMediator(
             }
 
             else -> {
-                val nyInnsending = Innsending(hendelse.journalpostId(), hendelse.søknad().personopplysninger.ident)
+                val nyInnsending = Innsending(
+                    journalpostId = hendelse.journalpostId(),
+                    ident = hendelse.søknad().personopplysninger.ident,
+                    fom = hendelse.søknad().tiltak.deltakelseFom,
+                    tom = hendelse.søknad().tiltak.deltakelseTom,
+                )
                 innsendingRepository.lagre(nyInnsending)
                 SECURELOG.info { "Opprettet Innsending for ${hendelse.journalpostId()}" }
                 nyInnsending

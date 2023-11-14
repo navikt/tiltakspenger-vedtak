@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.oktober
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
 import org.junit.jupiter.api.Test
@@ -15,7 +15,7 @@ internal class KVPVilkårsvurderingTest {
 
     @Test
     fun `En vilkårsvurdering har en søknad`() {
-        val søknad = nySøknadMedTiltak(
+        val søknad = nySøknad(
             kvp = periodeJa(
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),
@@ -41,7 +41,7 @@ internal class KVPVilkårsvurderingTest {
 
     @Test
     fun `En vilkårsvurdering har en søknad og manuell vurdering`() {
-        val søknad = nySøknadMedTiltak(
+        val søknad = nySøknad(
             kvp = periodeJa(
                 fom = 1.januar(2022),
                 tom = 31.januar(2022),

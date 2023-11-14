@@ -100,26 +100,14 @@ CREATE INDEX søknad_ident
          ident
             );
 
-CREATE INDEX søknad_innsending
-    ON søknad
-        (
-         innsending_id
-            );
-
 CREATE INDEX søknad_behandling
     ON søknad
         (
          behandling_id
             );
 
-CREATE INDEX søknadArenatiltak_søknad
-    ON søknad_arenatiltak
-        (
-         søknad_id
-            );
-
-CREATE INDEX søknadBrukertiltak_søknad
-    ON søknad_brukertiltak
+CREATE INDEX søknadTiltak_søknad
+    ON søknad_tiltak
         (
          søknad_id
             );

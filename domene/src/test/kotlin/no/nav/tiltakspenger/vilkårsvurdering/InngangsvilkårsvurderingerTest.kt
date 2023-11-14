@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyIntroprogrammetVilkårs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKommunaleYtelserVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyKvpVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyStatligeYtelserVilkårsvurdering
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyVilkårsvurdering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
@@ -23,7 +23,7 @@ class InngangsvilkårsvurderingerTest {
         val vilkårsvurderinger = nyVilkårsvurdering(
             kommunaleYtelserVilkårsvurderingKategori = nyKommunaleYtelserVilkårsvurdering(
                 kvpVilkårsvurdering = nyKvpVilkårsvurdering(
-                    søknad = nySøknadMedTiltak(
+                    søknad = nySøknad(
                         kvp = periodeJa(),
                     ),
                 ),
@@ -43,7 +43,7 @@ class InngangsvilkårsvurderingerTest {
                 vurderingsperiode = vurderingsperiode,
                 introProgrammetVilkårsvurdering = nyIntroprogrammetVilkårsvurdering(
                     vurderingsperiode = vurderingsperiode,
-                    søknad = nySøknadMedTiltak(
+                    søknad = nySøknad(
                         intro = periodeJa(),
                     ),
                 ),

@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import kotlin.test.Test
@@ -40,7 +40,7 @@ internal class SaksopplysningTest {
             )
 
         val behandling =
-            Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknadMedBrukerTiltak()).vilkårsvurder()
+            Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 

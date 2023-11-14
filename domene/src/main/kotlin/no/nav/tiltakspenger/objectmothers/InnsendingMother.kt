@@ -6,12 +6,13 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyTiltakHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
@@ -39,10 +40,14 @@ interface InnsendingMother {
     fun innsendingRegistrert(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
     ): Innsending {
         return Innsending(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
         )
     }
 
@@ -61,7 +66,10 @@ interface InnsendingMother {
     fun innsendingMedSøknad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -70,7 +78,7 @@ interface InnsendingMother {
             journalpostId = journalpostId,
         ),
     ): Innsending {
-        val innsending = innsendingRegistrert(journalpostId, ident)
+        val innsending = innsendingRegistrert(journalpostId, ident, fom, tom)
         val hendelse = nySøknadMottattHendelse(
             journalpostId = journalpostId,
             søknad = søknad,
@@ -82,7 +90,10 @@ interface InnsendingMother {
     fun innsendingMedPersonopplysninger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -100,6 +111,8 @@ interface InnsendingMother {
         val innsending = innsendingMedSøknad(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
         )
         innsending.håndter(
@@ -114,7 +127,10 @@ interface InnsendingMother {
     fun innsendingMedSkjerming(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -133,6 +149,8 @@ interface InnsendingMother {
         val innsending = innsendingMedPersonopplysninger(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
         )
@@ -148,7 +166,10 @@ interface InnsendingMother {
     fun innsendingMedTiltak(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -162,14 +183,12 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-//            tiltaksliste = listOf(tiltaksaktivitet()),
-//            tidsstempelInnhentet = 1.januarDateTime(2022),
-//        ),
     ): Innsending {
         val innsending = innsendingMedSkjerming(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
@@ -185,11 +204,12 @@ interface InnsendingMother {
     }
 
     fun innsendingMedYtelse(
-        periode: Periode = Periode(1.januar(2022), 31.januar(2022)),
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
-            periode = periode,
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -203,19 +223,16 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-//            tiltaksliste = listOf(tiltaksaktivitet()),
-//            tidsstempelInnhentet = 1.januarDateTime(2022),
-//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
     ): Innsending {
         val innsending = innsendingMedTiltak(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-//            tiltak = tiltak,
         )
         innsending.håndter(
             nyYtelseHendelse(
@@ -229,7 +246,10 @@ interface InnsendingMother {
     fun innsendingMedForeldrepenger(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -243,20 +263,17 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-//            tiltaksliste = listOf(tiltaksaktivitet()),
-//            tidsstempelInnhentet = 1.januarDateTime(2022),
-//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
     ): Innsending {
         val innsending = innsendingMedYtelse(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-//            tiltak = tiltak,
             ytelseSak = ytelseSak,
         )
 
@@ -274,7 +291,10 @@ interface InnsendingMother {
     fun innsendingMedOvergangsstønad(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -288,10 +308,6 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-//            tiltaksliste = listOf(tiltaksaktivitet()),
-//            tidsstempelInnhentet = 1.januarDateTime(2022),
-//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
         overgangsstønader: List<OvergangsstønadVedtak> = listOf(overgangsstønadVedtak()),
@@ -299,10 +315,11 @@ interface InnsendingMother {
         val innsending = innsendingMedForeldrepenger(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-//            tiltak = tiltak,
             ytelseSak = ytelseSak,
             foreldrepengerVedtakListe = foreldrepengerVedtakListe,
         )
@@ -321,7 +338,10 @@ interface InnsendingMother {
     fun innsendingMedUføre(
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
-        søknad: Søknad = nySøknadMedTiltak(
+        fom: LocalDate = 1.januar(2022),
+        tom: LocalDate = 31.mars(2022),
+        søknad: Søknad = nySøknad(
+            periode = Periode(fom, tom),
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
                 fornavn = "Fornavn",
@@ -335,10 +355,6 @@ interface InnsendingMother {
             ),
         ),
         skjerming: Skjerming = skjermingFalse(ident = ident),
-//        tiltak: InnhentedeTiltak = InnhentedeTiltak(
-//            tiltaksliste = listOf(tiltaksaktivitet()),
-//            tidsstempelInnhentet = 1.januarDateTime(2022),
-//        ),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
         uføreVedtak: UføreVedtak = uføreVedtak(),
@@ -346,10 +362,11 @@ interface InnsendingMother {
         val innsending = innsendingMedOvergangsstønad(
             journalpostId = journalpostId,
             ident = ident,
+            fom = fom,
+            tom = tom,
             søknad = søknad,
             personopplysninger = personopplysninger,
             skjerming = skjerming,
-//            tiltak = tiltak,
             ytelseSak = ytelseSak,
             foreldrepengerVedtakListe = foreldrepengerVedtakListe,
         )
@@ -478,7 +495,7 @@ interface InnsendingMother {
     }
 
     fun tiltak(
-        id: String = "123,",
+        id: String = "123",
         gjennomføring: Tiltak.Gjennomføring = Tiltak.Gjennomføring(
             id = "123",
             arrangørnavn = "arrangør",

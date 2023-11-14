@@ -12,7 +12,7 @@ interface BehandlingMother {
     fun behandling(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
-        søknad: Søknad = ObjectMother.nySøknadMedTiltak(periode = periode),
+        søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): Søknadsbehandling.Opprettet {
         return Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = sakId,
@@ -23,7 +23,7 @@ interface BehandlingMother {
     fun behandlingVilkårsvurdert(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
-        søknad: Søknad = ObjectMother.nySøknadMedTiltak(periode = periode),
+        søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
         return behandling(periode, sakId, søknad).vilkårsvurder()
     }

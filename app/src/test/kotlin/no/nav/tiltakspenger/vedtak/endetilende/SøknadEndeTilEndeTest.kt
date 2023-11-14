@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers
 internal class SøknadEndeTilEndeTest {
     private val søknadDAO = SøknadDAO()
-    private val repository = PostgresInnsendingRepository(søknadDAO)
+    private val repository = PostgresInnsendingRepository()
 
     companion object {
         @Container

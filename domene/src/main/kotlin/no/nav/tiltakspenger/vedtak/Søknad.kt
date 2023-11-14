@@ -15,7 +15,7 @@ data class Søknad(
     val dokumentInfoId: String,
     val filnavn: String,
     val personopplysninger: Personopplysninger,
-    val tiltak: SøknadsTiltak?,
+    val tiltak: SøknadsTiltak,
     val barnetillegg: List<Barnetillegg>,
     val opprettet: LocalDateTime,
     val tidsstempelHosOss: LocalDateTime,
@@ -31,7 +31,6 @@ data class Søknad(
     val supplerendeStønadFlyktning: PeriodeSpm,
     val jobbsjansen: PeriodeSpm,
     val trygdOgPensjon: PeriodeSpm,
-    val lønnetArbeid: JaNeiSpm,
 ) : Tidsstempler {
 
     companion object {
@@ -43,11 +42,7 @@ data class Søknad(
     override fun tidsstempelHosOss(): LocalDateTime = tidsstempelHosOss
 
     fun vurderingsperiode(): Periode {
-        if (tiltak?.sluttdato == null) {
-            throw RuntimeException("Tiltak er null, og det ække lov")
-        }
-
-        return Periode(tiltak.startdato, tiltak.sluttdato!!)
+        return Periode(tiltak.deltakelseFom, tiltak.deltakelseTom)
     }
 
     data class Personopplysninger(
@@ -57,41 +52,21 @@ data class Søknad(
     )
 
     sealed class PeriodeSpm {
-        object IkkeMedISøknaden : PeriodeSpm()
-        object IkkeRelevant : PeriodeSpm()
-        object Nei : PeriodeSpm()
+        data object Nei : PeriodeSpm()
         data class Ja(
             val periode: Periode,
-        ) : PeriodeSpm()
-
-        object IkkeBesvart : PeriodeSpm()
-        data class FeilaktigBesvart(
-            val svartJa: Boolean?,
-            val fom: LocalDate?,
-            val tom: LocalDate?,
         ) : PeriodeSpm()
     }
 
     sealed class JaNeiSpm {
-        object IkkeMedISøknaden : JaNeiSpm()
-        object IkkeRelevant : JaNeiSpm()
-        object Ja : JaNeiSpm()
-        object Nei : JaNeiSpm()
-        object IkkeBesvart : JaNeiSpm()
+        data object Ja : JaNeiSpm()
+        data object Nei : JaNeiSpm()
     }
 
     sealed class FraOgMedDatoSpm {
-        object IkkeMedISøknaden : FraOgMedDatoSpm()
-        object IkkeRelevant : FraOgMedDatoSpm()
+        data object Nei : FraOgMedDatoSpm()
         data class Ja(
             val fra: LocalDate,
-        ) : FraOgMedDatoSpm()
-
-        object Nei : FraOgMedDatoSpm()
-        object IkkeBesvart : FraOgMedDatoSpm()
-        data class FeilaktigBesvart(
-            val svartJa: Boolean?,
-            val fom: LocalDate?,
         ) : FraOgMedDatoSpm()
     }
 }
@@ -102,34 +77,14 @@ data class Vedlegg(
     val filnavn: String?,
 )
 
-sealed class SøknadsTiltak {
-
-    abstract val arrangoernavn: String?
-    abstract val tiltakskode: String?
-    abstract val startdato: LocalDate
-    abstract val sluttdato: LocalDate?
-
-    data class ArenaTiltak(
-        val arenaId: String,
-        override val arrangoernavn: String?, // Er null hvis arrangør er NAV selv.
-        override val tiltakskode: String,
-        val opprinneligSluttdato: LocalDate? = null,
-        val opprinneligStartdato: LocalDate,
-        override val sluttdato: LocalDate? = null,
-        override val startdato: LocalDate,
-    ) : SøknadsTiltak()
-
-    data class BrukerregistrertTiltak(
-        override val tiltakskode: String?, // Er null hvis bruker velger "Annet" i søknaden
-        override val arrangoernavn: String?, // Er null om f.eks. kode 6
-        val beskrivelse: String?,
-        override val startdato: LocalDate,
-        override val sluttdato: LocalDate,
-        val adresse: String? = null,
-        val postnummer: String? = null,
-        val antallDager: Int,
-    ) : SøknadsTiltak()
-}
+data class SøknadsTiltak(
+    val id: String,
+    val deltakelseFom: LocalDate,
+    val deltakelseTom: LocalDate,
+    val arrangør: String,
+    val typeKode: String,
+    val typeNavn: String,
+)
 
 sealed class Barnetillegg {
     abstract val oppholderSegIEØS: Søknad.JaNeiSpm

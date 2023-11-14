@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
 import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
@@ -16,8 +17,8 @@ internal class InnsendingTest {
 
     @Test
     fun `å motta samme søknad to ganger resulterer i Info i aktivitetsloggen og ingen behov`() {
-        val innsending = innsendingMedSøknad()
-        val søknad = innsending.søknad
+        val søknad = nySøknad()
+        val innsending = innsendingMedSøknad(søknad = søknad)
         val sizeBefore = innsending.aktivitetslogg.aktiviteter().size
         val behovCountBefore = innsending.aktivitetslogg.aktiviteter().filter { it.alvorlighetsgrad == 50 }.size
 
@@ -25,7 +26,7 @@ internal class InnsendingTest {
             SøknadMottattHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = innsending.journalpostId,
-                søknad = søknad!!,
+                søknad = søknad,
             ),
         )
 

@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak
 
 import com.fasterxml.jackson.databind.JsonNode
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.vedtak.Aktivitetslogg.Aktivitet.Behov.Behovtype
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -25,7 +27,7 @@ internal class BehovMediatorTest {
 
     @BeforeEach
     fun setup() {
-        innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = 1.januar(2022), tom = 31.mars(2022))
         aktivitetslogg = Aktivitetslogg()
         behovMediator = BehovMediator(
             rapidsConnection = testRapid,

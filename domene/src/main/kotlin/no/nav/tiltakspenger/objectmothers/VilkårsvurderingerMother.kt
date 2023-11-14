@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
 import no.nav.tiltakspenger.vedtak.Institusjonsopphold
 import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
@@ -27,7 +27,6 @@ import no.nav.tiltakspenger.vilkårsvurdering.vurdering.GjenlevendepensjonVilkå
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.InstitusjonsoppholdVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.IntroProgrammetVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.KVPVilkårsvurdering
-import no.nav.tiltakspenger.vilkårsvurdering.vurdering.LønnetArbeidVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OmsorgspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OpplæringspengerVilkårsvurdering
 import no.nav.tiltakspenger.vilkårsvurdering.vurdering.OvergangsstønadVilkårsvurdering
@@ -47,7 +46,7 @@ private val defaultPeriode: Periode = Periode(1.januar(2022), 31.januar(2022))
 interface VilkårsvurderingerMother {
     fun nyPensjonsinntektVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): PensjonsinntektVilkårsvurderingKategori {
         return PensjonsinntektVilkårsvurderingKategori(
             privatPensjonsinntektVilkårsvurdering = PrivatPensjonsinntektVilkårsvurdering(
@@ -59,14 +58,10 @@ interface VilkårsvurderingerMother {
 
     fun nyLønnsinntektVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): LønnsinntektVilkårsvurderingKategori {
         return LønnsinntektVilkårsvurderingKategori(
             etterlønnVilkårsvurdering = EtterlønnVilkårsvurdering(
-                vurderingsperiode = vurderingsperiode,
-                søknad = søknad,
-            ),
-            lønnetArbeidVilkårsvurdering = LønnetArbeidVilkårsvurdering(
                 vurderingsperiode = vurderingsperiode,
                 søknad = søknad,
             ),
@@ -75,7 +70,7 @@ interface VilkårsvurderingerMother {
 
     fun nyInstitusjonsVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
         institusjonsopphold: List<Institusjonsopphold> = emptyList(),
     ): InstitusjonVilkårsvurderingKategori {
         return InstitusjonVilkårsvurderingKategori(
@@ -201,7 +196,7 @@ interface VilkårsvurderingerMother {
 
     fun nySupplerendeStønadAlderVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): SupplerendeStønadAlderVilkårsvurdering {
         return SupplerendeStønadAlderVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
@@ -211,7 +206,7 @@ interface VilkårsvurderingerMother {
 
     fun nySupplerendeStønadFlyktningVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): SupplerendeStønadFlyktningVilkårsvurdering {
         return SupplerendeStønadFlyktningVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
@@ -221,7 +216,7 @@ interface VilkårsvurderingerMother {
 
     fun nySykepengerVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): SykepengerVilkårsvurdering {
         return SykepengerVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
@@ -231,7 +226,7 @@ interface VilkårsvurderingerMother {
 
     fun nyGjenlevendepensjonVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): GjenlevendepensjonVilkårsvurdering {
         return GjenlevendepensjonVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
@@ -241,7 +236,7 @@ interface VilkårsvurderingerMother {
 
     fun nyAlderspensjonVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): AlderspensjonVilkårsvurdering {
         return AlderspensjonVilkårsvurdering(
             vurderingsperiode = vurderingsperiode,
@@ -318,7 +313,7 @@ interface VilkårsvurderingerMother {
 
     fun nyIntroprogrammetVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): IntroProgrammetVilkårsvurdering {
         return IntroProgrammetVilkårsvurdering(
             søknad = søknad,
@@ -328,7 +323,7 @@ interface VilkårsvurderingerMother {
 
     fun nyKvpVilkårsvurdering(
         vurderingsperiode: Periode = defaultPeriode,
-        søknad: Søknad = nySøknadMedTiltak(),
+        søknad: Søknad = nySøknad(),
     ): KVPVilkårsvurdering {
         return KVPVilkårsvurdering(
             søknad = søknad,

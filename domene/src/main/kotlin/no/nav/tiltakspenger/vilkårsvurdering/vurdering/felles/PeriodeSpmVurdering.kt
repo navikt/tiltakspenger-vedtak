@@ -57,21 +57,13 @@ class PeriodeSpmVurdering(
 
     private fun detaljer(): String =
         when (spm) {
-            is Søknad.PeriodeSpm.IkkeMedISøknaden -> "Ikke med i søknaden"
-            is Søknad.PeriodeSpm.IkkeRelevant -> "Vurdert som ikke relevant å spørre om"
             is Søknad.PeriodeSpm.Ja -> "Svart JA i søknaden"
             is Søknad.PeriodeSpm.Nei -> "Svart NEI i søknaden"
-            is Søknad.PeriodeSpm.FeilaktigBesvart -> "Feilaktig besvart i søknaden"
-            is Søknad.PeriodeSpm.IkkeBesvart -> "Ikke besvart i søknaden"
         }
 
     fun avgjørUtfall() =
         when (spm) {
-            is Søknad.PeriodeSpm.IkkeMedISøknaden -> Utfall.KREVER_MANUELL_VURDERING
-            is Søknad.PeriodeSpm.IkkeRelevant -> Utfall.OPPFYLT
             is Søknad.PeriodeSpm.Ja -> Utfall.IKKE_OPPFYLT
             is Søknad.PeriodeSpm.Nei -> Utfall.OPPFYLT
-            is Søknad.PeriodeSpm.FeilaktigBesvart -> Utfall.KREVER_MANUELL_VURDERING
-            is Søknad.PeriodeSpm.IkkeBesvart -> Utfall.KREVER_MANUELL_VURDERING
         }
 }
