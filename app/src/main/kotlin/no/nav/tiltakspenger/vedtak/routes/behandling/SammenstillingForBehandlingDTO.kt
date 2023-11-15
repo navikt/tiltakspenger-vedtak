@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vilkårsvurdering.Utfall
+import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import java.time.LocalDate
 
 data class SammenstillingForBehandlingDTO(
@@ -17,7 +18,7 @@ data class SammenstillingForBehandlingDTO(
     val tom: LocalDate,
     val søknad: SøknadDTO,
     val registrerteTiltak: List<RegistrertTiltakDTO>,
-    val saksopplysninger: List<SaksopplysningUtDTO>,
+    val saksopplysninger: List<KategoriserteSaksopplysningerDTO>,
     val personopplysninger: PersonopplysningerDTO,
     val tilstand: String,
 )
@@ -61,6 +62,11 @@ data class SaksopplysningUtDTO(
     val utfall: String,
 )
 
+data class KategoriserteSaksopplysningerDTO(
+    val kategoriTittel: String,
+    val saksopplysninger: List<SaksopplysningUtDTO>,
+)
+
 data class FaktaDTO(
     val harYtelse: String,
     val harIkkeYtelse: String,
@@ -94,19 +100,24 @@ fun mapSammenstillingDTO(
                 status = it.deltakelseStatus.status,
             )
         },
-        saksopplysninger = behandling.saksopplysninger().map {
-            val fakta = fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
-            SaksopplysningUtDTO(
-                fom = it.fom,
-                tom = it.tom,
-                kilde = it.kilde.navn,
-                detaljer = it.detaljer,
-                typeSaksopplysning = it.typeSaksopplysning.name,
-                vilkårTittel = it.vilkår.tittel,
-                vilkårParagraf = it.vilkår.lovreferanse.paragraf,
-                vilkårLedd = it.vilkår.lovreferanse.ledd,
-                fakta = fakta,
-                utfall = settUtfall(behandling = behandling, saksopplysning = it),
+        saksopplysninger = Kategori.entries.map { kategori ->
+            KategoriserteSaksopplysningerDTO(
+                kategoriTittel = kategori.tittel,
+                saksopplysninger = behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }.map {
+                    val fakta = fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
+                    SaksopplysningUtDTO(
+                        fom = it.fom,
+                        tom = it.tom,
+                        kilde = it.kilde.navn,
+                        detaljer = it.detaljer,
+                        typeSaksopplysning = it.typeSaksopplysning.name,
+                        vilkårTittel = it.vilkår.tittel,
+                        vilkårParagraf = it.vilkår.lovreferanse.paragraf,
+                        vilkårLedd = it.vilkår.lovreferanse.ledd,
+                        fakta = fakta,
+                        utfall = settUtfall(behandling = behandling, saksopplysning = it),
+                    )
+                },
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
@@ -137,7 +148,7 @@ fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
 }
 
 val fakta = hashMapOf(
-    "AAP" to FaktaDTO(harYtelse = "Bruker mottar AAP", harIkkeYtelse = ""),
+    "AAP" to FaktaDTO(harYtelse = "Bruker mottar AAP", harIkkeYtelse = "Bruker mottar ikke AAP"),
     "ALDER" to FaktaDTO(harYtelse = "Bruker er under 18 år", harIkkeYtelse = "Bruker er over 18 år"),
     "ALDERSPENSJON" to FaktaDTO(
         harYtelse = "Bruker mottar alderspensjon",
@@ -221,3 +232,36 @@ val fakta = hashMapOf(
     "UFØRETRYGD" to FaktaDTO(harYtelse = "Bruker mottar uføretrygd", harIkkeYtelse = "Bruker mottar ikke uføretrygd"),
     "ETTERLØNN" to FaktaDTO(harYtelse = "Bruker mottar etterlønn", harIkkeYtelse = "Bruker mottar ikke etterlønn"),
 )
+
+enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
+    ALDER("Alder", listOf(Vilkår.ALDER)),
+    TILTAK("Tiltak", listOf(Vilkår.TILTAKSPENGER)),
+    INTROKVP("Introduksjonsprogrammet og Kvalifikasjonsprogrammet", listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP)),
+    UTBETALINGER(
+        "Utbetalinger",
+        listOf(
+            Vilkår.FORELDREPENGER,
+            Vilkår.PLEIEPENGER_SYKT_BARN,
+            Vilkår.PLEIEPENGER_NÆRSTÅENDE,
+            Vilkår.ALDERSPENSJON,
+            Vilkår.PENSJONSINNTEKT,
+            Vilkår.ETTERLØNN,
+            Vilkår.AAP,
+            Vilkår.DAGPENGER,
+            Vilkår.GJENLEVENDEPENSJON,
+            Vilkår.FORELDREPENGER,
+            Vilkår.JOBBSJANSEN,
+            Vilkår.UFØRETRYGD,
+            Vilkår.OMSORGSPENGER,
+            Vilkår.OPPLÆRINGSPENGER,
+            Vilkår.OVERGANGSSTØNAD,
+            Vilkår.SYKEPENGER,
+            Vilkår.SVANGERSKAPSPENGER,
+            Vilkår.SUPPLERENDESTØNADFLYKTNING,
+            Vilkår.STATLIGEYTELSER,
+            Vilkår.KOMMUNALEYTELSER,
+
+        ),
+    ),
+    INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
+}
