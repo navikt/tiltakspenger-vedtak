@@ -6,12 +6,12 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
-import no.nav.tiltakspenger.vedtak.YtelseSak.YtelseVedtak
+import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
 import org.intellij.lang.annotations.Language
 
 class YtelsevedtakDAO {
 
-    fun hentForVedtak(ytelsesakId: UlidBase, txSession: TransactionalSession): List<YtelseVedtak> {
+    fun hentForVedtak(ytelsesakId: UlidBase, txSession: TransactionalSession): List<YtelseSak.YtelseVedtak> {
         return txSession.run(
             queryOf(hentYtelsevedtak, ytelsesakId.toString())
                 .map { row -> row.toYtelsevedtak() }
@@ -19,12 +19,12 @@ class YtelsevedtakDAO {
         )
     }
 
-    fun lagre(ytelsesakId: UlidBase, ytelseVedtak: List<YtelseVedtak>, txSession: TransactionalSession) {
+    fun lagre(ytelsesakId: UlidBase, ytelseVedtak: List<YtelseSak.YtelseVedtak>, txSession: TransactionalSession) {
         // slettVedtak(ytelsesakId, txSession)
         ytelseVedtak.forEach { vedtak -> lagreVedtak(ytelsesakId, vedtak, txSession) }
     }
 
-    private fun lagreVedtak(ytelsesakId: UlidBase, ytelseVedtak: YtelseVedtak, txSession: TransactionalSession) {
+    private fun lagreVedtak(ytelsesakId: UlidBase, ytelseVedtak: YtelseSak.YtelseVedtak, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 lagreYtelseVedtak,
@@ -46,19 +46,19 @@ class YtelsevedtakDAO {
         txSession.run(queryOf(slettYtelsevedtak, innsendingId.toString()).asUpdate)
     }
 
-    private fun Row.toYtelsevedtak(): YtelseVedtak {
-        return YtelseVedtak(
+    private fun Row.toYtelsevedtak(): YtelseSak.YtelseVedtak {
+        return YtelseSak.YtelseVedtak(
             beslutningsDato = localDateOrNull("beslutnings_dato"),
             periodetypeForYtelse = stringOrNull("periodetype_for_ytelse")?.let {
-                YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse.valueOf(it)
+                YtelseSak.YtelseVedtak.YtelseVedtakPeriodeTypeForYtelse.valueOf(it)
             },
             vedtaksperiodeFom = localDateOrNull("vedtaksperiode_fom"),
             vedtaksperiodeTom = localDateOrNull("vedtaksperiode_tom"),
             vedtaksType = stringOrNull("vedtaks_type")?.let {
-                YtelseVedtak.YtelseVedtakVedtakstype.valueOf(it)
+                YtelseSak.YtelseVedtak.YtelseVedtakVedtakstype.valueOf(it)
             },
             status = stringOrNull("status")?.let {
-                YtelseVedtak.YtelseVedtakStatus.valueOf(it)
+                YtelseSak.YtelseVedtak.YtelseVedtakStatus.valueOf(it)
             },
         )
     }

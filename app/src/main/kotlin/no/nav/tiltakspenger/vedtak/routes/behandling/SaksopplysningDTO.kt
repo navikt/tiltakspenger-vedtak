@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 data class SaksopplysningDTO(

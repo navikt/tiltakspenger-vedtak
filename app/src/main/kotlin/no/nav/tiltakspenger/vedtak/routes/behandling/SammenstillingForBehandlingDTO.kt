@@ -4,11 +4,11 @@ import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.vedtak.Personopplysninger
+import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
 import java.time.LocalDate
 
 data class SammenstillingForBehandlingDTO(

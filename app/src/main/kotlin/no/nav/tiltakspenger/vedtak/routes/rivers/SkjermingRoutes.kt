@@ -9,13 +9,13 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.skjerming.Feilmelding.IdentIkkeFunnet
 import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.SkjermingPerson
-import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Feil
+import no.nav.tiltakspenger.vedtak.innsending.Skjerming
+import no.nav.tiltakspenger.vedtak.innsending.SkjermingPerson
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import java.time.LocalDateTime
 

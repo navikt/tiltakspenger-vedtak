@@ -7,11 +7,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.IdentMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 
 private val LOG = KotlinLogging.logger {}

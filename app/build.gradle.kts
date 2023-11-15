@@ -15,6 +15,7 @@ application {
 
 dependencies {
     implementation(project(":domene"))
+    testImplementation(project(":common"))
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))

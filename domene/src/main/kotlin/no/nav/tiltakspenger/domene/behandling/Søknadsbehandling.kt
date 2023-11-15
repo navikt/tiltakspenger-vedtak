@@ -5,13 +5,11 @@ import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsm
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraPeriodespørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
+import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 
 sealed interface Søknadsbehandling : Behandling {
     val søknader: List<Søknad>

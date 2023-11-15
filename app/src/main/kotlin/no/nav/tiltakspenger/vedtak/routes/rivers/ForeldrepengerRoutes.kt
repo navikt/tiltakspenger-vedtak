@@ -7,18 +7,17 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.ForeldrepengerTolker
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Feil
-import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Feil
+import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.tolkere.ForeldrepengerTolker
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
@@ -102,7 +101,7 @@ private fun mapFPYtelser(ytelseV1DTO: FPResponsDTO.YtelseV1DTO, innhentet: Local
         aktør = ytelseV1DTO.aktør,
         vedtattTidspunkt = ytelseV1DTO.vedtattTidspunkt,
         ytelse = when (ytelseV1DTO.ytelse) {
-            YtelserOutput.PLEIEPENGER_SYKT_BARN -> PLEIEPENGER_SYKT_BARN
+            YtelserOutput.PLEIEPENGER_SYKT_BARN -> ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN
             YtelserOutput.PLEIEPENGER_NÆRSTÅENDE -> ForeldrepengerVedtak.Ytelser.PLEIEPENGER_NÆRSTÅENDE
             YtelserOutput.OMSORGSPENGER -> ForeldrepengerVedtak.Ytelser.OMSORGSPENGER
             YtelserOutput.OPPLÆRINGSPENGER -> ForeldrepengerVedtak.Ytelser.OPPLÆRINGSPENGER

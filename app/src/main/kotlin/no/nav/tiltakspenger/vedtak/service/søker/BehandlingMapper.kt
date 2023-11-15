@@ -10,9 +10,9 @@ package no.nav.tiltakspenger.vedtak.service.søker
 // import no.nav.tiltakspenger.vedtak.Vedlegg
 // import no.nav.tiltakspenger.vilkårsvurdering.Anbefaling
 // import no.nav.tiltakspenger.vilkårsvurdering.Inngangsvilkårsvurderinger
-// import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-// import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-// import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
+// import no.nav.tiltakspenger.domene.vilkår.Utfall
+// import no.nav.tiltakspenger.domene.vilkår.Vilkår
+// import no.nav.tiltakspenger.domene.vilkår.Vurdering
 // import no.nav.tiltakspenger.vilkårsvurdering.anbefalingFor
 // import no.nav.tiltakspenger.vilkårsvurdering.kategori.AlderVilkårsvurderingKategori
 // import no.nav.tiltakspenger.vilkårsvurdering.kategori.InstitusjonVilkårsvurderingKategori
