@@ -22,7 +22,7 @@ internal class SaksopplysningTest {
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
-                vilkår = Vilkår.AAP,
+                vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
                 typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 saksbehandler = null,
@@ -33,7 +33,7 @@ internal class SaksopplysningTest {
                 fom = 15.januar(2023),
                 tom = 15.mars(2023),
                 kilde = Kilde.ARENA,
-                vilkår = Vilkår.AAP,
+                vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
                 typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                 saksbehandler = null,
@@ -41,17 +41,17 @@ internal class SaksopplysningTest {
 
         val behandling =
             Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
-        behandling.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        behandling.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
+        behandling.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
-        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 2
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
         val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning).behandling
-        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.AAP }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
+        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
     @Test
@@ -63,7 +63,7 @@ internal class SaksopplysningTest {
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
                 kilde = Kilde.SAKSB,
-                vilkår = Vilkår.AAP,
+                vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
                 typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                 saksbehandler = null,
@@ -71,14 +71,14 @@ internal class SaksopplysningTest {
 
         saksopplysning.lagVurdering(periode) shouldContainAll listOf(
             Vurdering.IkkeOppfylt(
-                vilkår = Vilkår.AAP,
+                vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,
                 detaljer = "",
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
             ),
             Vurdering.Oppfylt(
-                vilkår = Vilkår.AAP,
+                vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,
                 detaljer = "",
                 fom = 1.februar(2023),

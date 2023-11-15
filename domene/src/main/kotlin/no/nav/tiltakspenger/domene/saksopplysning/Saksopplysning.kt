@@ -226,13 +226,23 @@ fun Saksopplysning.lagVurdering(periode: Periode): List<Vurdering> {
             detaljer = this.detaljer,
         )
 
-        HAR_YTELSE -> Vurdering.IkkeOppfylt(
-            vilkår = this.vilkår,
-            kilde = this.kilde,
-            fom = this.fom,
-            tom = this.tom,
-            detaljer = this.detaljer,
-        )
+        HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) {
+            Vurdering.KreverManuellVurdering(
+                vilkår = this.vilkår,
+                kilde = this.kilde,
+                fom = this.fom,
+                tom = this.tom,
+                detaljer = this.detaljer,
+            )
+        } else {
+            Vurdering.IkkeOppfylt(
+                vilkår = this.vilkår,
+                kilde = this.kilde,
+                fom = this.fom,
+                tom = this.tom,
+                detaljer = this.detaljer,
+            )
+        }
 
         HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
             vilkår = this.vilkår,
