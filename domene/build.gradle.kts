@@ -3,7 +3,6 @@ val kotestVersion = "5.6.2"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    testImplementation(project(":common"))
     implementation(kotlin("stdlib"))
     implementation("com.google.guava:guava:32.1.2-jre")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -22,4 +21,5 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":common"))
 }

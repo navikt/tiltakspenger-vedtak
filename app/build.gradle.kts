@@ -15,7 +15,6 @@ application {
 
 dependencies {
     implementation(project(":domene"))
-    testImplementation(project(":common"))
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
@@ -89,4 +88,5 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.3.1")
+    testImplementation(project(":common"))
 }
