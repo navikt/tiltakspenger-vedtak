@@ -179,6 +179,17 @@ sealed interface Søknadsbehandling : Behandling {
             )
         }
 
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {

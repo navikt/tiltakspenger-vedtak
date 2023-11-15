@@ -5,7 +5,6 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-// import no.nav.tiltakspenger.vedtak.Tiltak
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Søknadsbehandling,
@@ -25,6 +24,10 @@ interface Behandling {
                 if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
             }
         }
+    }
+
+    fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+        throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }
 
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {

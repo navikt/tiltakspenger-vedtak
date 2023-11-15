@@ -52,6 +52,13 @@ class SakServiceImpl(
             }
         }
 
+        val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
+        sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
+            AlderTolker.tolkeData(fdato, sak.periode).forEach {
+                behandlingService.leggTilSaksopplysning(behandling.id, it)
+            }
+        }
+
         // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
         if (personopplysningerMedSkjerming.erLik(sak.personopplysninger)) return sak
 
@@ -60,14 +67,6 @@ class SakServiceImpl(
         )
 
         sakRepo.lagre(oppdatertSak)
-
-        val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
-        oppdatertSak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
-            AlderTolker.tolkeData(fdato, sak.periode).forEach {
-                behandlingService.leggTilSaksopplysning(behandling.id, it)
-            }
-        }
-
         return sakRepo.hent(oppdatertSak.id)
     }
 

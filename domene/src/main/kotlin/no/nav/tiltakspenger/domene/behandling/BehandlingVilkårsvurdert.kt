@@ -119,6 +119,17 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
@@ -176,6 +187,17 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
@@ -206,6 +228,17 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
     ) : BehandlingVilkårsvurdert {
+
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)

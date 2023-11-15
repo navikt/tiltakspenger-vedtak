@@ -113,6 +113,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             )
         }
 
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
@@ -151,6 +162,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
             )
+        }
+
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
         }
 
         override fun sendTilbake(): BehandlingVilkårsvurdert.Avslag {

@@ -153,13 +153,14 @@ internal class SakServiceTest {
         every { sakRepo.lagre(any()) } returnsArgument 0
 
         every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
             "123",
             listOf(person),
         )
 
-        verify(exactly = 0) { behandlingRepo.lagre(any()) }
+        verify(exactly = 0) { sakRepo.lagre(any()) }
     }
 
     @Test
