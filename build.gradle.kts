@@ -1,4 +1,4 @@
-val javaVersion = JavaVersion.VERSION_20
+val javaVersion = JavaVersion.VERSION_17
 
 plugins {
     kotlin("jvm") version "1.9.10"
