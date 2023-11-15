@@ -35,7 +35,7 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.overgangsstønadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.søknadRoutes
+import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes

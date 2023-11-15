@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.domene.saksopplysning
 
+import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 import java.time.LocalDate
 
 enum class TypeSaksopplysning {

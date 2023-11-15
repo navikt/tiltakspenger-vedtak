@@ -1,4 +1,4 @@
-val jacksonVersion = "2.15.2"
+val jacksonVersion = "2.15.3"
 val kotestVersion = "5.6.2"
 
 dependencies {
@@ -11,7 +11,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.github.guepardoapps:kulid:2.0.0.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("io.micrometer:micrometer-core:1.11.3")
+    implementation("io.micrometer:micrometer-core:1.11.5")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -21,4 +21,5 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":common"))
 }

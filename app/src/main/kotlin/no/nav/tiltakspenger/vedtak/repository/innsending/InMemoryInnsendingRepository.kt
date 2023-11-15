@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.innsending
 
-import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
+import no.nav.tiltakspenger.vedtak.innsending.Innsending
+import no.nav.tiltakspenger.vedtak.innsending.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 class InMemoryInnsendingRepository : InnsendingRepository {
@@ -15,9 +15,9 @@ class InMemoryInnsendingRepository : InnsendingRepository {
         return innsending
     }
 
-    override fun findBySøknadId(søknadId: String): Innsending? {
-        return null
-    }
+//    override fun findBySøknadId(søknadId: String): Innsending? {
+//        return null
+//    }
 
     override fun findByIdent(ident: String): List<Innsending> = emptyList()
 

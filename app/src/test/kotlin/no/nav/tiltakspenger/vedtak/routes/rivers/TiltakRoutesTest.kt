@@ -49,7 +49,7 @@ class TiltakRoutesTest {
     fun `sjekk at kall til river tiltak route sender ut et behov`() {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = SakId.random(),
-            søknad = ObjectMother.nySøknadMedBrukerTiltak(),
+            søknad = ObjectMother.nySøknad(),
         )
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedSkjerming(
             ident = IDENT,

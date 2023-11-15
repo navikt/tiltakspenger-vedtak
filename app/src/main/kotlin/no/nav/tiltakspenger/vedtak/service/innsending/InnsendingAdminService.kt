@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.service.innsending
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 private val LOG = KotlinLogging.logger {}

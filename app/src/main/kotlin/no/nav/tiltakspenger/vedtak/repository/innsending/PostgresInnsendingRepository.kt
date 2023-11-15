@@ -7,15 +7,14 @@ import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.nå
-import no.nav.tiltakspenger.vedtak.Innsending
-import no.nav.tiltakspenger.vedtak.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.innsending.Innsending
+import no.nav.tiltakspenger.vedtak.innsending.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.overgangsstønad.OvergangsstønadVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.personopplysninger.PersonopplysningerDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.uføre.UføreVedtakDAO
 import no.nav.tiltakspenger.vedtak.repository.ytelse.YtelsesakDAO
 import org.intellij.lang.annotations.Language
@@ -25,8 +24,6 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresInnsendingRepository(
-    private val søknadDAO: SøknadDAO = SøknadDAO(),
-//    private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
     private val ytelsesakDAO: YtelsesakDAO = YtelsesakDAO(),
     private val foreldrepengerVedtakDAO: ForeldrepengerVedtakDAO = ForeldrepengerVedtakDAO(),
@@ -122,7 +119,6 @@ internal class PostgresInnsendingRepository(
                             "sistEndret" to LocalDateTime.now().minusHours(1),
                         ),
                     ).map { row ->
-                        // row.toInnsending(txSession)
                         row.toJournalpostId()
                     }.asList,
                 )
@@ -177,33 +173,21 @@ internal class PostgresInnsendingRepository(
                     lagretInnsending
                 }.also {
                     val tid1 = System.currentTimeMillis()
-                    søknadDAO.lagre(innsendingId = innsending.id, søknad = innsending.søknad, txSession = txSession)
-                    val tid2 = System.currentTimeMillis()
-                    LOG.info { "søknadDAO.lagre tid tok ${tid2 - tid1} ms" }
-
-//                    tiltakDAO.lagre(
-//                        innsendingId = innsending.id,
-//                        tiltaksaktiviteter = innsending.tiltak?.tiltaksliste ?: emptyList(),
-//                        txSession = txSession,
-//                    )
-//                    val tid3 = System.currentTimeMillis()
-//                    LOG.info { "tiltaksaktivitetDAO.lagre tid tok ${tid3 - tid2} ms" }
-
                     ytelsesakDAO.lagre(
                         innsendingId = innsending.id,
                         ytelsesaker = innsending.ytelser?.ytelserliste ?: emptyList(),
                         txSession = txSession,
                     )
-                    val tid4 = System.currentTimeMillis()
-                    LOG.info { "ytelsesakDAO.lagre tid tok ${tid4 - tid2} ms" }
+                    val tid2 = System.currentTimeMillis()
+                    LOG.info { "ytelsesakDAO.lagre tid tok ${tid2 - tid1} ms" }
 
                     personopplysningerDAO.lagre(
                         innsendingId = innsending.id,
                         personopplysninger = innsending.personopplysninger?.personopplysningerliste ?: emptyList(),
                         txSession = txSession,
                     )
-                    val tid5 = System.currentTimeMillis()
-                    LOG.info { "personopplysningerDAO.lagre tid tok ${tid5 - tid4} ms" }
+                    val tid3 = System.currentTimeMillis()
+                    LOG.info { "personopplysningerDAO.lagre tid tok ${tid3 - tid2} ms" }
 
                     foreldrepengerVedtakDAO.lagre(
                         innsendingId = innsending.id,
@@ -211,8 +195,8 @@ internal class PostgresInnsendingRepository(
                             ?: emptyList(),
                         txSession = txSession,
                     )
-                    val tid6 = System.currentTimeMillis()
-                    LOG.info { "foreldrepengerVedtakDAO.lagre tid tok ${tid6 - tid5} ms" }
+                    val tid4 = System.currentTimeMillis()
+                    LOG.info { "foreldrepengerVedtakDAO.lagre tid tok ${tid4 - tid3} ms" }
 
                     overgangsstønadVedtakDAO.lagre(
                         innsendingId = innsending.id,
@@ -221,8 +205,8 @@ internal class PostgresInnsendingRepository(
                         txSession = txSession,
                     )
 
-                    val tid7 = System.currentTimeMillis()
-                    LOG.info { "overgangsstønadVedtakDAO.lagre tid tok ${tid7 - tid6} ms" }
+                    val tid5 = System.currentTimeMillis()
+                    LOG.info { "overgangsstønadVedtakDAO.lagre tid tok ${tid5 - tid4} ms" }
 
                     uføreVedtakDAO.lagre(
                         innsendingId = innsending.id,
@@ -230,30 +214,21 @@ internal class PostgresInnsendingRepository(
                         txSession = txSession,
                     )
 
-                    val tid8 = System.currentTimeMillis()
-                    LOG.info { "uføreVedtakDAO.lagre tid tok ${tid8 - tid7} ms" }
+                    val tid6 = System.currentTimeMillis()
+                    LOG.info { "uføreVedtakDAO.lagre tid tok ${tid6 - tid5} ms" }
 
                     aktivitetsloggDAO.lagre(
                         innsendingId = innsending.id,
                         aktivitetslogg = innsending.aktivitetslogg,
                         txSession = txSession,
                     )
-                    val tid9 = System.currentTimeMillis()
-                    LOG.info { "aktivitetsloggDAO.lagre tid tok ${tid9 - tid8} ms" }
+                    val tid7 = System.currentTimeMillis()
+                    LOG.info { "aktivitetsloggDAO.lagre tid tok ${tid7 - tid6} ms" }
                 }
             }
         }
         LOG.info { "PostgresInnsendingRepository.lagre tok ${(System.currentTimeMillis() - start)} ms" }
         return returnValue
-    }
-
-    override fun findBySøknadId(søknadId: String): Innsending? {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                return søknadDAO.finnJournalpostId(søknadId, txSession)
-                    ?.let { journalpostId -> this.hentMedTxSession(journalpostId, txSession) }
-            }
-        }
     }
 
     private fun Row.toAntall(): Long {
@@ -268,17 +243,16 @@ internal class PostgresInnsendingRepository(
             id = id,
             journalpostId = string("journalpost_id"),
             ident = string("ident"),
+            fom = localDate("tiltak_fom"),
+            tom = localDate("tiltak_tom"),
             tilstand = string("tilstand"),
             sistEndret = localDateTime("sist_endret"),
-            søknad = søknadDAO.hent(id, txSession),
-//            tidsstempelTiltakInnhentet = localDateTimeOrNull("tidsstempel_tiltak_innhentet"),
             tidsstempelPersonopplysningerInnhentet = localDateTimeOrNull("tidsstempel_personopplysninger_innhentet"),
             tidsstempelSkjermingInnhentet = localDateTimeOrNull("tidsstempel_skjerming_innhentet"),
             tidsstempelYtelserInnhentet = localDateTimeOrNull("tidsstempel_ytelser_innhentet"),
             tidsstempelForeldrepengerVedtakInnhentet = localDateTimeOrNull("tidsstempel_foreldrepengervedtak_innhentet"),
             tidsstempelOvergangsstønadVedtakInnhentet = localDateTimeOrNull("tidsstempel_overgangsstønadvedtak_innhentet"),
             tidsstempelUføreInnhentet = localDateTimeOrNull("tidsstempel_uførevedtak_innhentet"),
-//            tiltaksliste = tiltakDAO.hent(id, txSession),
             ytelserliste = ytelsesakDAO.hentForInnsending(id, txSession),
             personopplysningerliste = personopplysningerDAO.hent(id, txSession),
             foreldrepengerVedtak = foreldrepengerVedtakDAO.hentForInnsending(id, txSession),
@@ -304,8 +278,9 @@ internal class PostgresInnsendingRepository(
                     "id" to innsending.id.toString(),
                     "journalpostId" to innsending.journalpostId,
                     "ident" to innsending.ident,
+                    "fom" to innsending.fom,
+                    "tom" to innsending.tom,
                     "tilstand" to innsending.tilstand.type.name,
-//                    "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
                     "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
@@ -332,7 +307,6 @@ internal class PostgresInnsendingRepository(
                 mapOf(
                     "id" to innsending.id.toString(),
                     "tilstand" to innsending.tilstand.type.name,
-//                    "tidsstempel_tiltak_innhentet" to innsending.tiltak?.tidsstempelInnhentet,
                     "tidsstempel_personopplysninger_innhentet" to innsending.personopplysninger?.tidsstempelInnhentet,
                     "tidsstempel_skjerming_innhentet" to innsending.personopplysninger?.tidsstempelSkjermingInnhentet,
                     "tidsstempel_ytelser_innhentet" to innsending.ytelser?.tidsstempelInnhentet,
@@ -356,6 +330,8 @@ internal class PostgresInnsendingRepository(
             id, 
             journalpost_id, 
             ident, 
+            tiltak_fom,
+            tiltak_tom,
             tilstand, 
             tidsstempel_tiltak_innhentet, 
             tidsstempel_personopplysninger_innhentet, 
@@ -370,6 +346,8 @@ internal class PostgresInnsendingRepository(
             :id, 
             :journalpostId, 
             :ident, 
+            :fom,
+            :tom,
             :tilstand, 
             :tidsstempel_tiltak_innhentet, 
             :tidsstempel_personopplysninger_innhentet, 

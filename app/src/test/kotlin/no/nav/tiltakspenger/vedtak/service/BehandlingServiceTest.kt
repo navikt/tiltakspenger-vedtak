@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.februar
@@ -18,7 +19,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,10 +42,10 @@ internal class BehandlingServiceTest {
     @Test
     fun `legg til saksopplysning fra saksbehandler legger seg til i tillegg`() {
         val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-            tiltak = ObjectMother.arenaTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
+        val søknad = ObjectMother.nySøknad(
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
             ),
         )
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
@@ -79,10 +79,10 @@ internal class BehandlingServiceTest {
     @Test
     fun `legg til saksopplysning som ikke er saksbehandler erstatter den gamle`() {
         val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-            tiltak = ObjectMother.arenaTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
+        val søknad = ObjectMother.nySøknad(
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
             ),
         )
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()

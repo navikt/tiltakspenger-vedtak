@@ -2,9 +2,11 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.meldinger.IdentMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.ISøkerHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Søker
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.IdentMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import org.slf4j.MDC
 

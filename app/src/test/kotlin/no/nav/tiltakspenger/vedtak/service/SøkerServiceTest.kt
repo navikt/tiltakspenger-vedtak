@@ -3,13 +3,14 @@ package no.nav.tiltakspenger.vedtak.service
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.vedtak.Søker
+import no.nav.tiltakspenger.vedtak.innsending.Søker
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
@@ -27,8 +28,7 @@ internal class SøkerServiceTest {
     @Test
     fun `skal kunne hente behandlingDTO`() {
         val ident = Random().nextInt().toString()
-        val søker = Søker(ident)
-        val søknad = nySøknadMedBrukerTiltak(
+        val søknad = nySøknad(
             personopplysninger = personSøknad(
                 ident = ident,
             ),
@@ -39,18 +39,23 @@ internal class SøkerServiceTest {
             søknad = søknad,
         )
 
+        val søker = Søker.fromDb(
+            søkerId = SøkerId.random(),
+            ident = ident,
+            personopplysninger = innsending.personopplysningerSøker(),
+        )
         every { innsendingRepo.findByIdent(søker.ident) } returns listOf(innsending)
         every { søkerRepo.hent(søker.søkerId) } returns søker
+        every { søkerRepo.findByIdent(any()) } returns søker
 
-        val søkerDTO = service.hentSøkerOgSøknader(søker.søkerId, saksbehandler())
+        val søkerDTO = service.hentSøkerId(ident, saksbehandler())
         assertNotNull(søkerDTO)
     }
 
     @Test
     fun `skal ikke ha tilgang`() {
         val ident = Random().nextInt().toString()
-        val søker = Søker(ident)
-        val søknad = nySøknadMedBrukerTiltak(
+        val søknad = nySøknad(
             personopplysninger = personSøknad(
                 ident = ident,
             ),
@@ -61,11 +66,18 @@ internal class SøkerServiceTest {
             søknad = søknad,
         )
 
+        val søker = Søker.fromDb(
+            søkerId = SøkerId.random(),
+            ident = ident,
+            personopplysninger = innsending.personopplysningerSøker(),
+        )
+
         every { innsendingRepo.findByIdent(søker.ident) } returns listOf(innsending)
         every { søkerRepo.hent(søker.søkerId) } returns søker
+        every { søkerRepo.findByIdent(any()) } returns søker
 
         assertThrows<TilgangException> {
-            service.hentSøkerOgSøknader(søker.søkerId, saksbehandler())
+            service.hentSøkerId(ident, saksbehandler())
         }
     }
 }

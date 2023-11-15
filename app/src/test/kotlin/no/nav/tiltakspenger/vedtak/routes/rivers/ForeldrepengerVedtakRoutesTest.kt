@@ -15,7 +15,7 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -49,7 +49,7 @@ class ForeldrepengerVedtakRoutesTest {
     fun `sjekk at kall til river foreldrepenger route sender ut et behov`() {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = SakId.random(),
-            søknad = nySøknadMedBrukerTiltak(),
+            søknad = nySøknad(),
         )
 
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
@@ -74,7 +74,7 @@ class ForeldrepengerVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$foreldrepengerpath")
+                    path(foreldrepengerpath)
                 },
             ) {
                 setBody(fpBody)
@@ -112,7 +112,7 @@ class ForeldrepengerVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$foreldrepengerpath")
+                    path(foreldrepengerpath)
                 },
             ) {
                 setBody(tomBody)
@@ -132,7 +132,7 @@ class ForeldrepengerVedtakRoutesTest {
     fun `sjekk at kall til river foreldrepenger route med null i saksnummer går ok`() {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = SakId.random(),
-            søknad = nySøknadMedBrukerTiltak(),
+            søknad = nySøknad(),
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
         every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
@@ -157,7 +157,7 @@ class ForeldrepengerVedtakRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$foreldrepengerpath")
+                    path(foreldrepengerpath)
                 },
             ) {
                 setBody(saksnummerNullable)

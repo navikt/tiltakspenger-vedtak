@@ -104,7 +104,7 @@ internal class PostgresBehandlingRepo(
                     oppdaterBehandling(sistEndret, behandling, txSession)
                 }.also {
                     saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
-                    søknadDAO.oppdaterBehandlingId(behandling.id, behandling.søknader, txSession)
+                    søknadDAO.lagre(behandling.id, behandling.søknader, txSession)
                     tiltakDAO.lagre(behandling.id, behandling.tiltak, txSession)
                     when (behandling) {
                         is BehandlingIverksatt -> {
@@ -199,7 +199,7 @@ internal class PostgresBehandlingRepo(
             "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
+                søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
@@ -208,7 +208,7 @@ internal class PostgresBehandlingRepo(
             "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
+                søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
@@ -219,7 +219,7 @@ internal class PostgresBehandlingRepo(
             "TilBeslutting" -> BehandlingTilBeslutter.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
+                søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
@@ -231,7 +231,7 @@ internal class PostgresBehandlingRepo(
             "Iverksatt" -> BehandlingIverksatt.fromDb(
                 id = id,
                 sakId = sakId,
-                søknader = søknadDAO.hentMedBehandlingId(id, txSession),
+                søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),

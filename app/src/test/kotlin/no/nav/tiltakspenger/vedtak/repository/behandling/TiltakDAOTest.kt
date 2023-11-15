@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.felles.Periode
@@ -11,7 +12,6 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.vedtak.Tiltak
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -125,27 +125,27 @@ internal class TiltakDAOTest {
 
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val startDato = 1.januar(2023)
-        val sluttdato = 31.mars(2023)
+        val deltakelseFom = 1.januar(2023)
+        val deltakelseTom = 31.mars(2023)
         val sakId = SakId.random()
         val sak = Sak(
             id = sakId,
             ident = ident,
             saknummer = Saksnummer(verdi = "123"),
-            periode = Periode(fra = startDato, til = sluttdato),
+            periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = listOf(),
         )
         sakRepo.lagre(sak)
 
-        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
+        val søknad = ObjectMother.nySøknad(
             journalpostId = journalpostId,
             personopplysninger = ObjectMother.personSøknad(
                 ident = ident,
             ),
-            tiltak = ObjectMother.brukerTiltak(
-                startdato = startDato,
-                sluttdato = sluttdato,
+            tiltak = ObjectMother.søknadTiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
             ),
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )

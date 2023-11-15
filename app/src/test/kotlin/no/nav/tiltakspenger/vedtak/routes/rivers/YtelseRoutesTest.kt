@@ -49,7 +49,7 @@ class YtelseRoutesTest {
     fun `sjekk at kall til river ytelse route ikke sender ut et behov`() {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = SakId.random(),
-            søknad = ObjectMother.nySøknadMedBrukerTiltak(),
+            søknad = ObjectMother.nySøknad(),
         )
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedTiltak(
             ident = IDENT,
@@ -93,7 +93,7 @@ class YtelseRoutesTest {
     fun `sjekk at kall til river ytelse route ikke tryner med tom tidligere enn fom`() {
         val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = SakId.random(),
-            søknad = ObjectMother.nySøknadMedBrukerTiltak(),
+            søknad = ObjectMother.nySøknad(),
         )
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedTiltak(
             ident = IDENT,

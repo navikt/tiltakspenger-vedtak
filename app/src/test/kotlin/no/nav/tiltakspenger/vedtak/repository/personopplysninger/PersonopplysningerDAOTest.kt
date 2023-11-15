@@ -4,13 +4,15 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.InnsendingId
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningMaxFyr
-import no.nav.tiltakspenger.vedtak.Innsending
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.innsending.Innsending
 import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,7 +41,9 @@ internal class PersonopplysningerDAOTest {
         // given
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
         repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningMaxFyr(ident))
 
@@ -63,7 +67,9 @@ internal class PersonopplysningerDAOTest {
         // given
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
         repository.lagre(innsending)
         val personopplysninger = listOf(personopplysningKjedeligFyr(ident = ident))
 
@@ -101,7 +107,9 @@ internal class PersonopplysningerDAOTest {
         // given
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
         repository.lagre(innsending)
         val gamlePersonopplysninger = personopplysningKjedeligFyr(ident, strengtFortroligUtland = false)
 
@@ -134,7 +142,9 @@ internal class PersonopplysningerDAOTest {
     fun `lagre barn og hent opp igjen`() {
         val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
-        val innsending = Innsending(journalpostId = journalpostId, ident = ident)
+        val fom = 1.januar(2022)
+        val tom = 31.mars(2022)
+        val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
         val barn1 = barn()
         val barn2 = barn()
         val personopplysninger = personopplysningKjedeligFyr(ident = ident)

@@ -2,17 +2,20 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.ForeldrepengerMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.ResetInnsendingHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Innsending
+import no.nav.tiltakspenger.vedtak.innsending.InnsendingHendelse
+import no.nav.tiltakspenger.vedtak.innsending.InnsendingObserver
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.OvergangsstønadMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.ResetInnsendingHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.TiltakMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.UføreMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import org.slf4j.MDC
 import kotlin.system.measureTimeMillis
@@ -73,7 +76,12 @@ class InnsendingMediator(
             }
 
             else -> {
-                val nyInnsending = Innsending(hendelse.journalpostId(), hendelse.søknad().personopplysninger.ident)
+                val nyInnsending = Innsending(
+                    journalpostId = hendelse.journalpostId(),
+                    ident = hendelse.søknad().personopplysninger.ident,
+                    fom = hendelse.søknad().tiltak.deltakelseFom,
+                    tom = hendelse.søknad().tiltak.deltakelseTom,
+                )
                 innsendingRepository.lagre(nyInnsending)
                 SECURELOG.info { "Opprettet Innsending for ${hendelse.journalpostId()}" }
                 nyInnsending

@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
@@ -16,13 +17,12 @@ import no.nav.tiltakspenger.libs.person.BarnUtenFolkeregisteridentifikator
 import no.nav.tiltakspenger.libs.person.Feilmelding
 import no.nav.tiltakspenger.libs.person.Person
 import no.nav.tiltakspenger.libs.person.PersonRespons
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.Personopplysninger
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Feil
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDate

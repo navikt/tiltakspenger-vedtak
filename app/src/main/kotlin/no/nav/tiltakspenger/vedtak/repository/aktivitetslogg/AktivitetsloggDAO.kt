@@ -4,13 +4,13 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.IAktivitetslogg
-import no.nav.tiltakspenger.vedtak.Kontekst
 import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.objectMapper
 import no.nav.tiltakspenger.vedtak.db.readMap
 import no.nav.tiltakspenger.vedtak.db.serialize
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.IAktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Kontekst
 import org.intellij.lang.annotations.Language
 import java.util.*
 

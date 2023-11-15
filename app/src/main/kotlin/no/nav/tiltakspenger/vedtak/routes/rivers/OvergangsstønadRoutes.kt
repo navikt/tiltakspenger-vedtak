@@ -12,12 +12,12 @@ import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.libs.overgangsstonad.Feilmelding
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadPeriodeDTO
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadResponsDTO
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Feil
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.meldinger.OvergangsstønadMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Feil
+import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.vedtak.innsending.meldinger.OvergangsstønadMottattHendelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 

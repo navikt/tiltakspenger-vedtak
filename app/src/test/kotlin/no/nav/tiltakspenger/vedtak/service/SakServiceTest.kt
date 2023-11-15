@@ -9,22 +9,22 @@ import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.objectmothers.ObjectMother.brukerTiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMedBrukerTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,10 +54,10 @@ internal class SakServiceTest {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        val søknad = nySøknadMedBrukerTiltak(
-            tiltak = brukerTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.mars(2023),
+        val søknad = nySøknad(
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
             ),
         )
 
@@ -76,11 +76,11 @@ internal class SakServiceTest {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        val søknad = nySøknadMedBrukerTiltak(
+        val søknad = nySøknad(
             journalpostId = "søknad1",
-            tiltak = brukerTiltak(
-                startdato = 1.januar(2023),
-                sluttdato = 31.januar(2023),
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.januar(2023),
             ),
             opprettet = 1.januarDateTime(2023),
         )
@@ -88,11 +88,11 @@ internal class SakServiceTest {
 
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns listOf(sak)
 
-        val søknad2 = nySøknadMedBrukerTiltak(
+        val søknad2 = nySøknad(
             journalpostId = "søknad2",
-            tiltak = brukerTiltak(
-                startdato = 1.mars(2023),
-                sluttdato = 31.mars(2023),
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.mars(2023),
+                deltakelseTom = 31.mars(2023),
             ),
             opprettet = 2.januarDateTime(2023),
         )

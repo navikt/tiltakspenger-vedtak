@@ -2,13 +2,12 @@ package no.nav.tiltakspenger.vedtak.service.søker
 
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.SøkerId
 import java.time.LocalDate
 
 interface SøkerService {
     fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
-    fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO?
-    fun finnHashForInnsending(søknadId: String): String?
+//    fun hentSøkerOgSøknader(søkerId: SøkerId, saksbehandler: Saksbehandler): SøkerDTO?
+//    fun finnHashForInnsending(søknadId: String): String?
 }
 
 data class SøkerIdDTO(

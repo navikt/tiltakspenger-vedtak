@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.domene.sak
 
 import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.Søknad
 
 data class Sak(
     val id: SakId,

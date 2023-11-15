@@ -3,208 +3,100 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import no.nav.tiltakspenger.domene.behandling.SøknadsTiltak
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
-import no.nav.tiltakspenger.vedtak.SøknadsTiltak
 import org.intellij.lang.annotations.Language
 
 internal class SøknadTiltakDAO {
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak? =
-        hentArenaTiltak(søknadId, txSession) ?: hentBrukerTiltak(søknadId, txSession)
+    fun hent(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak =
+        hentTiltak(søknadId, txSession)!!
 
-    private fun hentArenaTiltak(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak.ArenaTiltak? {
+    private fun hentTiltak(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak? {
         return txSession.run(
-            queryOf(hentArenaTiltak, søknadId.toString()).map { row -> row.toArenatiltak() }.asSingle,
+            queryOf(hentTiltak, søknadId.toString()).map { row -> row.toTiltak() }.asSingle,
         )
     }
 
-    private fun hentBrukerTiltak(
-        søknadId: SøknadId,
-        txSession: TransactionalSession,
-    ): SøknadsTiltak.BrukerregistrertTiltak? {
-        return txSession.run(
-            queryOf(hentBrukerregistrertTiltak, søknadId.toString()).map { row -> row.toBrukertiltak() }.asSingle,
-        )
+    fun lagre(søknadId: SøknadId, tiltak: SøknadsTiltak, txSession: TransactionalSession) {
+        slettTiltak(søknadId, txSession)
+        lagreTiltak(søknadId, tiltak, txSession)
     }
 
-    fun lagre(søknadId: SøknadId, tiltak: SøknadsTiltak?, txSession: TransactionalSession) {
-        slettArenatiltak(søknadId, txSession)
-        slettBrukertiltak(søknadId, txSession)
-
-        when (tiltak) {
-            is SøknadsTiltak.ArenaTiltak -> lagreArenatiltak(søknadId, tiltak, txSession)
-            is SøknadsTiltak.BrukerregistrertTiltak -> lagreBrukertiltak(søknadId, tiltak, txSession)
-            else -> {}
-        }
-    }
-
-    private fun lagreArenatiltak(
+    private fun lagreTiltak(
         søknadId: SøknadId,
-        arenaTiltak: SøknadsTiltak.ArenaTiltak?,
+        tiltak: SøknadsTiltak,
         txSession: TransactionalSession,
     ) {
-        if (arenaTiltak != null) {
-            txSession.run(
-                queryOf(
-                    lagreArenaTiltak,
-                    mapOf(
-                        "id" to random(ULID_PREFIX_ARENATILTAK).toString(),
-                        "soknadId" to søknadId.toString(),
-                        "arenaId" to arenaTiltak.arenaId,
-                        "arrangoernavn" to arenaTiltak.arrangoernavn,
-                        "tiltakskode" to arenaTiltak.tiltakskode,
-                        "opprinneligStartdato" to arenaTiltak.opprinneligStartdato,
-                        "opprinneligSluttdato" to arenaTiltak.opprinneligSluttdato,
-                        "startdato" to arenaTiltak.startdato,
-                        "sluttdato" to arenaTiltak.sluttdato,
-                    ),
-                ).asUpdate,
-            )
-        }
-    }
-
-    private fun lagreBrukertiltak(
-        søknadId: SøknadId,
-        brukerregistrertTiltak: SøknadsTiltak.BrukerregistrertTiltak?,
-        txSession: TransactionalSession,
-    ) {
-        if (brukerregistrertTiltak != null) {
-            txSession.run(
-                queryOf(
-                    lagreBrukerTiltak,
-                    mapOf(
-                        "id" to random(ULID_PREFIX_BRUKERTILTAK).toString(),
-                        "soknadId" to søknadId.toString(),
-                        "tiltakskode" to brukerregistrertTiltak.tiltakskode,
-                        "arrangoernavn" to brukerregistrertTiltak.arrangoernavn,
-                        "beskrivelse" to brukerregistrertTiltak.beskrivelse,
-                        "startdato" to brukerregistrertTiltak.startdato,
-                        "sluttdato" to brukerregistrertTiltak.sluttdato,
-                        "adresse" to brukerregistrertTiltak.adresse,
-                        "postnummer" to brukerregistrertTiltak.postnummer,
-                        "antallDager" to brukerregistrertTiltak.antallDager,
-                    ),
-                ).asUpdate,
-            )
-        }
-    }
-
-    private fun slettArenatiltak(søknadId: SøknadId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettArenaTiltak, søknadId.toString()).asUpdate)
-    }
-
-    private fun slettBrukertiltak(søknadId: SøknadId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettBrukerregistrertTiltak, søknadId.toString()).asUpdate)
-    }
-
-    private fun Row.toArenatiltak(): SøknadsTiltak.ArenaTiltak {
-        val arenaId = string("arena_id")
-        val arrangoernavn = stringOrNull("arrangoernavn")
-        val tiltakskode = string("tiltakskode")
-        val opprinneligStartdato = localDate("opprinnelig_startdato")
-        val opprinneligSluttdato = localDateOrNull("opprinnelig_sluttdato")
-        val startdato = localDate("startdato")
-        val sluttdato = localDateOrNull("sluttdato")
-        return SøknadsTiltak.ArenaTiltak(
-            arenaId = arenaId,
-            arrangoernavn = arrangoernavn,
-            tiltakskode = tiltakskode,
-            opprinneligSluttdato = opprinneligSluttdato,
-            opprinneligStartdato = opprinneligStartdato,
-            sluttdato = sluttdato,
-            startdato = startdato,
+        txSession.run(
+            queryOf(
+                lagreTiltak,
+                mapOf(
+                    "id" to random(ULID_PREFIX_TILTAK).toString(),
+                    "soknadId" to søknadId.toString(),
+                    "eksternId" to tiltak.id,
+                    "arrangornavn" to tiltak.arrangør,
+                    "typekode" to tiltak.typeKode,
+                    "typenavn" to tiltak.typeNavn,
+                    "deltakelseFom" to tiltak.deltakelseFom,
+                    "deltakelseTom" to tiltak.deltakelseTom,
+                ),
+            ).asUpdate,
         )
     }
 
-    private fun Row.toBrukertiltak(): SøknadsTiltak.BrukerregistrertTiltak {
-        val tiltakskode = stringOrNull("tiltakskode")
-        val arrangoernavn = stringOrNull("arrangoernavn")
-        val beskrivelse = stringOrNull("beskrivelse")
-        val fom = localDate("startdato")
-        val tom = localDate("sluttdato")
-        val adresse = stringOrNull("adresse")
-        val postnummer = stringOrNull("postnummer")
-        val antallDager = int("antall_dager")
+    private fun slettTiltak(søknadId: SøknadId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
+    }
 
-        return SøknadsTiltak.BrukerregistrertTiltak(
-            tiltakskode = tiltakskode,
-            arrangoernavn = arrangoernavn,
-            beskrivelse = beskrivelse,
-            startdato = fom,
-            sluttdato = tom,
-            adresse = adresse,
-            postnummer = postnummer,
-            antallDager = antallDager,
+    private fun Row.toTiltak(): SøknadsTiltak {
+        val eksternId = string("ekstern_id")
+        val arrangørnavn = string("arrangørnavn")
+        val typekode = string("typekode")
+        val typenavn = string("typenavn")
+        val deltakelseFom = localDate("deltakelse_fom")
+        val deltakelseTom = localDate("deltakelse_tom")
+        return SøknadsTiltak(
+            id = eksternId,
+            deltakelseFom = deltakelseFom,
+            deltakelseTom = deltakelseTom,
+            arrangør = arrangørnavn,
+            typeKode = typekode,
+            typeNavn = typenavn,
         )
     }
 
     @Language("SQL")
-    private val hentBrukerregistrertTiltak = "select * from søknad_brukertiltak where søknad_id = ?"
+    private val hentTiltak = "select * from søknad_tiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val hentArenaTiltak = "select * from søknad_arenatiltak where søknad_id = ?"
+    private val slettTiltak = "delete from søknad_tiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val slettBrukerregistrertTiltak = "delete from søknad_brukertiltak where søknad_id = ?"
-
-    @Language("SQL")
-    private val slettArenaTiltak = "delete from søknad_arenatiltak where søknad_id = ?"
-
-    @Language("SQL")
-    private val lagreBrukerTiltak = """
-        insert into søknad_brukertiltak (
+    private val lagreTiltak = """
+        insert into søknad_tiltak (
             id,
             søknad_id,
-            tiltakskode,
-            arrangoernavn, 
-            beskrivelse, 
-            startdato,
-            sluttdato,
-            adresse,
-            postnummer,
-            antall_dager
+            ekstern_id,
+            arrangørnavn, 
+            typekode,
+            typenavn,
+            deltakelse_fom,
+            deltakelse_tom
         ) values (
             :id,
             :soknadId,
-            :tiltakskode,
-            :arrangoernavn, 
-            :beskrivelse,
-            :startdato,
-            :sluttdato,
-            :adresse,
-            :postnummer,
-            :antallDager
-        )
-    """.trimIndent()
-
-    @Language("SQL")
-    private val lagreArenaTiltak = """
-        insert into søknad_arenatiltak (
-            id,
-            søknad_id,
-            arena_id,
-            arrangoernavn, 
-            tiltakskode,
-            opprinnelig_startdato,
-            opprinnelig_sluttdato,
-            startdato,
-            sluttdato
-        ) values (
-            :id,
-            :soknadId,
-            :arenaId,
-            :arrangoernavn, 
-            :tiltakskode,
-            :opprinneligStartdato,
-            :opprinneligSluttdato,
-            :startdato,
-            :sluttdato
+            :eksternId,
+            :arrangornavn, 
+            :typekode,
+            :typenavn,
+            :deltakelseFom,
+            :deltakelseTom
         )
     """.trimIndent()
 
     companion object {
-        private const val ULID_PREFIX_ARENATILTAK = "atilt"
-        private const val ULID_PREFIX_BRUKERTILTAK = "btilt"
+        private const val ULID_PREFIX_TILTAK = "tilt"
     }
 }
