@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.vedtak.innsending.tolkere.AapTolker
 import no.nav.tiltakspenger.vedtak.innsending.tolkere.DagpengerTolker
+import no.nav.tiltakspenger.vedtak.innsending.tolkere.TiltakspengerTolker
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
@@ -47,6 +48,9 @@ fun Route.ytelseRoutes(
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
             DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+            }
+            TiltakspengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
         }
