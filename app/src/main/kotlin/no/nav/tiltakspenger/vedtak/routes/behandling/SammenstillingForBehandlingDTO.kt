@@ -137,13 +137,22 @@ fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
 }
 
 val fakta = hashMapOf(
-    "AAP" to FaktaDTO(harYtelse = "Bruker mottar AAP", harIkkeYtelse = ""),
-    "ALDER" to FaktaDTO(harYtelse = "Bruker er under 18 år", harIkkeYtelse = "Bruker er over 18 år"),
+    "AAP" to FaktaDTO(
+        harYtelse = "Bruker mottar AAP",
+        harIkkeYtelse = "Bruker mottar ikke AAP",
+    ),
+    "ALDER" to FaktaDTO(
+        harYtelse = "Bruker er under 18 år",
+        harIkkeYtelse = "Bruker er over 18 år",
+    ),
     "ALDERSPENSJON" to FaktaDTO(
         harYtelse = "Bruker mottar alderspensjon",
         harIkkeYtelse = "Bruker mottar ikke alderspensjon",
     ),
-    "DAGPENGER" to FaktaDTO(harYtelse = "Bruker mottar dagpenger", harIkkeYtelse = "Bruker mottar ikke dagpenger"),
+    "DAGPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar dagpenger",
+        harIkkeYtelse = "Bruker mottar ikke dagpenger",
+    ),
     "FORELDREPENGER" to FaktaDTO(
         harYtelse = "Bruker mottar foreldrepenger",
         harIkkeYtelse = "Bruker mottar ikke foreldrepenger",
@@ -168,7 +177,10 @@ val fakta = hashMapOf(
         harYtelse = "Bruker mottar kommunaleytelser",
         harIkkeYtelse = "Bruker mottar ikke kommunaleytelser",
     ),
-    "KVP" to FaktaDTO(harYtelse = "Bruker går på KVP", harIkkeYtelse = "Bruker går ikke på KVP"),
+    "KVP" to FaktaDTO(
+        harYtelse = "Bruker går på KVP",
+        harIkkeYtelse = "Bruker går ikke på KVP",
+    ),
     "LØNNSINNTEKT" to FaktaDTO(
         harYtelse = "Bruker mottar lønnsinntekt",
         harIkkeYtelse = "Bruker mottar ikke lønnsinntekt",
@@ -213,11 +225,20 @@ val fakta = hashMapOf(
         harYtelse = "Bruker mottar svangerskapspenger",
         harIkkeYtelse = "Bruker mottar ikke svangerskapspenger",
     ),
-    "SYKEPENGER" to FaktaDTO(harYtelse = "Bruker mottar sykepenger", harIkkeYtelse = "Bruker mottar ikke sykepenger"),
+    "SYKEPENGER" to FaktaDTO(
+        harYtelse = "Bruker mottar sykepenger",
+        harIkkeYtelse = "Bruker mottar ikke sykepenger",
+    ),
     "TILTAKSPENGER" to FaktaDTO(
         harYtelse = "Bruker mottar tiltakspenger",
         harIkkeYtelse = "Bruker mottar ikke tiltakspenger",
     ),
-    "UFØRETRYGD" to FaktaDTO(harYtelse = "Bruker mottar uføretrygd", harIkkeYtelse = "Bruker mottar ikke uføretrygd"),
-    "ETTERLØNN" to FaktaDTO(harYtelse = "Bruker mottar etterlønn", harIkkeYtelse = "Bruker mottar ikke etterlønn"),
+    "UFØRETRYGD" to FaktaDTO(
+        harYtelse = "Bruker mottar uføretrygd",
+        harIkkeYtelse = "Bruker mottar ikke uføretrygd",
+    ),
+    "ETTERLØNN" to FaktaDTO(
+        harYtelse = "Bruker mottar etterlønn",
+        harIkkeYtelse = "Bruker mottar ikke etterlønn",
+    ),
 )
