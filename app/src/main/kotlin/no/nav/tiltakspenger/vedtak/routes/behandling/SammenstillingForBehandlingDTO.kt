@@ -77,7 +77,7 @@ fun mapSammenstillingDTO(
         søknad = SøknadDTO(
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
             arrangoernavn = behandling.søknad().tiltak.arrangør,
-            tiltakstype = behandling.søknad().tiltak.typeKode,
+            tiltakstype = behandling.søknad().tiltak.typeNavn,
             deltakelseFom = behandling.søknad().tiltak.deltakelseFom,
             deltakelseTom = behandling.søknad().tiltak.deltakelseTom,
         ),
