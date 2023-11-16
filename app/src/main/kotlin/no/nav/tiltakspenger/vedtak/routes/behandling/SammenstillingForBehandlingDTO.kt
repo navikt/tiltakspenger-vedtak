@@ -119,7 +119,7 @@ fun mapSammenstillingDTO(
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
                 },
-                samletUtfall = settSamletUtfall(behandling),
+                samletUtfall = settSamletUtfall(behandling, behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }),
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
@@ -141,10 +141,11 @@ fun mapSammenstillingDTO(
     )
 }
 
-fun settSamletUtfall(behandling: Behandling): String {
-    behandling.saksopplysninger.forEach() {
-        if (settUtfall(behandling, it) == Utfall.IKKE_OPPFYLT.name) return Utfall.IKKE_OPPFYLT.name
-        if (settUtfall(behandling, it) == Utfall.KREVER_MANUELL_VURDERING.name) return Utfall.KREVER_MANUELL_VURDERING.name
+fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
+    for(saksopplysning in saksopplysninger) {
+        return if (settUtfall(behandling, saksopplysning) == Utfall.KREVER_MANUELL_VURDERING.name) Utfall.KREVER_MANUELL_VURDERING.name
+        else if (settUtfall(behandling, saksopplysning) == Utfall.IKKE_OPPFYLT.name) Utfall.IKKE_OPPFYLT.name
+        else continue
     }
     return Utfall.OPPFYLT.name
 }
