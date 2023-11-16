@@ -112,7 +112,7 @@ fun mapSammenstillingDTO(
                         kilde = it.kilde.navn,
                         detaljer = it.detaljer,
                         typeSaksopplysning = it.typeSaksopplysning.name,
-                        vilkårTittel = it.vilkår.tittel,
+                        vilkårTittel = it.vilkår.flateTittel,
                         vilkårParagraf = it.vilkår.lovreferanse.paragraf,
                         vilkårLedd = it.vilkår.lovreferanse.ledd,
                         fakta = fakta,
