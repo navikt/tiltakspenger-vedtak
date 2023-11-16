@@ -8,9 +8,7 @@ import no.nav.tiltakspenger.felles.SakId
 
 sealed interface BehandlingIverksatt : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
-    val saksbehandler: String
     val beslutter: String
-    // TODO Trenger vi flere props/felter?
 
     companion object {
         fun fromDb(

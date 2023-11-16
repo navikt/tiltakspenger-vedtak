@@ -33,6 +33,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
+            saksbehandler = saksbehandler,
         ).vilkårsvurder()
     }
 
@@ -46,6 +47,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             tiltak: List<Tiltak>,
             vilkårsvurderinger: List<Vurdering>,
             status: String,
+            saksbehandler: String?,
         ): BehandlingVilkårsvurdert {
             when (status) {
                 "Innvilget" -> return Innvilget(
@@ -56,6 +58,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    saksbehandler = saksbehandler,
                 )
 
                 "Avslag" -> return Avslag(
@@ -66,6 +69,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    saksbehandler = saksbehandler,
                 )
 
                 "Manuell" -> return Manuell(
@@ -76,6 +80,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    saksbehandler = saksbehandler,
                 )
 
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
@@ -91,6 +96,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
+        override val saksbehandler: String?,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(): BehandlingIverksatt.Innvilget {
             return BehandlingIverksatt.Innvilget(
@@ -106,7 +112,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        fun tilBeslutting(saksbehandler: String): BehandlingTilBeslutter.Innvilget {
+        fun tilBeslutting(): BehandlingTilBeslutter.Innvilget {
             return BehandlingTilBeslutter.Innvilget(
                 id = id,
                 sakId = sakId,
@@ -115,7 +121,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = saksbehandler,
+                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                beslutter = null,
             )
         }
 
@@ -127,6 +134,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 
@@ -159,6 +167,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
+        override val saksbehandler: String?,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(): BehandlingIverksatt.Avslag {
             return BehandlingIverksatt.Avslag(
@@ -174,7 +183,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
-        fun tilBeslutting(saksbehandler: String): BehandlingTilBeslutter.Avslag {
+        fun tilBeslutting(): BehandlingTilBeslutter.Avslag {
             return BehandlingTilBeslutter.Avslag(
                 id = id,
                 sakId = sakId,
@@ -183,7 +192,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = saksbehandler,
+                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                beslutter = null,
             )
         }
 
@@ -195,6 +205,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 
@@ -227,6 +238,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
+        override val saksbehandler: String?,
     ) : BehandlingVilkårsvurdert {
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
@@ -237,6 +249,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 

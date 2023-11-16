@@ -40,9 +40,10 @@ class BehandlingServiceImpl(
     override fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        check(saksbehandler == behandling.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         when (behandling) {
-            is BehandlingVilkårsvurdert.Avslag -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
-            is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting(saksbehandler))
+            is BehandlingVilkårsvurdert.Avslag -> behandlingRepo.lagre(behandling.tilBeslutting())
+            is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting())
             else -> throw IllegalStateException("Behandlingen har feil status og kan ikke sendes til beslutting. BehandlingId: $behandlingId")
         }
     }

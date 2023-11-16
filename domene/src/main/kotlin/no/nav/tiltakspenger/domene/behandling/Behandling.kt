@@ -17,6 +17,7 @@ interface Behandling {
     val vurderingsperiode: Periode
     val saksopplysninger: List<Saksopplysning>
     val tiltak: List<Tiltak>
+    val saksbehandler: String?
 
     fun saksopplysninger(): List<Saksopplysning> {
         return saksopplysninger.groupBy { it.vilkår }.map { entry ->

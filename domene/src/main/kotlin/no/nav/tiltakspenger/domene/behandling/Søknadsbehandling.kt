@@ -25,6 +25,7 @@ sealed interface Søknadsbehandling : Behandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
+        override val saksbehandler: String?,
 
     ) : Søknadsbehandling {
         // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
@@ -37,6 +38,7 @@ sealed interface Søknadsbehandling : Behandling {
                 vurderingsperiode: Periode,
                 saksopplysninger: List<Saksopplysning>,
                 tiltak: List<Tiltak>,
+                saksbehandler: String?,
             ): Opprettet {
                 return Opprettet(
                     id = id,
@@ -45,6 +47,7 @@ sealed interface Søknadsbehandling : Behandling {
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
+                    saksbehandler = saksbehandler,
                 )
             }
 
@@ -66,50 +69,9 @@ sealed interface Søknadsbehandling : Behandling {
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.TILTAKSPENGER),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.UFØRETRYGD),
                         Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
-                        lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
-                        lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
-                        lagFaktaFraPeriodespørsmål(
-                            Vilkår.INSTITUSJONSOPPHOLD,
-                            søknad.institusjon,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraPeriodespørsmål(
-                            Vilkår.GJENLEVENDEPENSJON,
-                            søknad.gjenlevendepensjon,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraPeriodespørsmål(Vilkår.SYKEPENGER, søknad.sykepenger, søknad.vurderingsperiode()),
-                        lagFaktaFraPeriodespørsmål(
-                            Vilkår.SUPPLERENDESTØNADALDER,
-                            søknad.supplerendeStønadAlder,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraPeriodespørsmål(
-                            Vilkår.SUPPLERENDESTØNADFLYKTNING,
-                            søknad.supplerendeStønadFlyktning,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraPeriodespørsmål(Vilkår.JOBBSJANSEN, søknad.jobbsjansen, søknad.vurderingsperiode()),
-                        lagFaktaFraPeriodespørsmål(
-                            Vilkår.PENSJONSINNTEKT,
-                            søknad.trygdOgPensjon,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraFraOgMedDatospørsmål(
-                            Vilkår.ALDERSPENSJON,
-                            søknad.alderspensjon,
-                            søknad.vurderingsperiode(),
-                        ),
-                        lagFaktaFraJaNeiSpørsmål(
-                            Vilkår.ETTERLØNN,
-                            søknad.etterlønn,
-                            søknad.vurderingsperiode(),
-                        ),
-
-                        // TODO: Her må vi finne på noe lurt
-                        // lagFaktaFraPeriodespørsmål(Vilkår.ALDERSPENSJON, søknad.alderspensjon, søknad.vurderingsperiode()),
-                    ),
+                    ) + lagFaktaAvSøknad(søknad),
                     tiltak = emptyList(),
+                    saksbehandler = null,
                 )
             }
         }
@@ -133,6 +95,7 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
+                    saksbehandler = saksbehandler,
                 )
             }
             if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
@@ -144,6 +107,7 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
+                    saksbehandler = saksbehandler,
                 )
             }
             if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
@@ -155,6 +119,7 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
+                    saksbehandler = saksbehandler,
                 )
             }
             if (vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT }) {
@@ -166,6 +131,7 @@ sealed interface Søknadsbehandling : Behandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
+                    saksbehandler = saksbehandler,
                 )
             }
             return BehandlingVilkårsvurdert.Avslag(
@@ -176,6 +142,7 @@ sealed interface Søknadsbehandling : Behandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vurderinger,
+                saksbehandler = saksbehandler,
             )
         }
 
@@ -187,6 +154,7 @@ sealed interface Søknadsbehandling : Behandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 
@@ -210,4 +178,48 @@ sealed interface Søknadsbehandling : Behandling {
                 tiltak = tiltak,
             )
     }
+}
+
+private fun lagFaktaAvSøknad(søknad: Søknad): List<Saksopplysning> {
+    return listOf(
+        lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.INSTITUSJONSOPPHOLD,
+            søknad.institusjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.GJENLEVENDEPENSJON,
+            søknad.gjenlevendepensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(Vilkår.SYKEPENGER, søknad.sykepenger, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.SUPPLERENDESTØNADALDER,
+            søknad.supplerendeStønadAlder,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.SUPPLERENDESTØNADFLYKTNING,
+            søknad.supplerendeStønadFlyktning,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(Vilkår.JOBBSJANSEN, søknad.jobbsjansen, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.PENSJONSINNTEKT,
+            søknad.trygdOgPensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraFraOgMedDatospørsmål(
+            Vilkår.ALDERSPENSJON,
+            søknad.alderspensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraJaNeiSpørsmål(
+            Vilkår.ETTERLØNN,
+            søknad.etterlønn,
+            søknad.vurderingsperiode(),
+        ),
+    )
 }

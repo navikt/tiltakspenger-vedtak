@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -16,6 +17,10 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
@@ -37,6 +42,34 @@ internal class BehandlingServiceTest {
     @AfterEach
     fun tearDown() {
         clearAllMocks()
+    }
+
+    @Test
+    fun `ikke lov å sende en behandling til beslutter uten saksbehandler`() {
+        val innvilget = behandlingVilkårsvurdertInnvilget()
+        val avslag = behandlingVilkårsvurdertAvslag()
+
+        shouldThrow<IllegalStateException> {
+            innvilget.tilBeslutting()
+        }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
+
+        shouldThrow<IllegalStateException> {
+            avslag.tilBeslutting()
+        }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
+    }
+
+    @Test
+    fun `ikke lov å iverksette en behandling uten beslutter`() {
+        val innvilget = behandlingTilBeslutterInnvilget()
+        val avslag = behandlingTilBeslutterAvslag()
+
+        shouldThrow<IllegalStateException> {
+            innvilget.iverksettAvBeslutter()
+        }.message shouldBe "Ikke lov å iverksette uten beslutter"
+
+        shouldThrow<IllegalStateException> {
+            avslag.iverksettAvBeslutter()
+        }.message shouldBe "Ikke lov å iverksette uten beslutter"
     }
 
     @Test
@@ -111,7 +144,7 @@ internal class BehandlingServiceTest {
 
     @Test
     fun `hvis saksopplysning har en annen verdi enn den orginale skal saksbehandler fjernes`() {
-        val behandling = ObjectMother.behandlingVilkårsvurdert(
+        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
             periode = Periode(1.januar(2023), 31.mars(2023)),
         ).leggTilSaksopplysning(
             Saksopplysning(
@@ -150,7 +183,7 @@ internal class BehandlingServiceTest {
 
     @Test
     fun `hvis saksopplysning har samme verdi som den orginale skal saksbehandler ikke fjernes`() {
-        val behandling = ObjectMother.behandlingVilkårsvurdert(
+        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
             periode = Periode(1.januar(2023), 31.mars(2023)),
         ).leggTilSaksopplysning(
             Saksopplysning(

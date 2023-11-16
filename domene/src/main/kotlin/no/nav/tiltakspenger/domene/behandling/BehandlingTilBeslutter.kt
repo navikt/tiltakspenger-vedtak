@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.felles.SakId
 
 sealed interface BehandlingTilBeslutter : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
-    val saksbehandler: String
+    val beslutter: String?
 
     override fun søknad(): Søknad {
         return søknader.maxBy { it.opprettet }
@@ -34,6 +34,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
+            saksbehandler = saksbehandler,
         ).vilkårsvurder()
     }
 
@@ -48,6 +49,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String,
+            beslutter: String?,
         ): BehandlingTilBeslutter {
             when (status) {
                 "Innvilget" -> return Innvilget(
@@ -59,6 +61,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
+                    beslutter = beslutter,
                 )
 
                 "Avslag" -> return Avslag(
@@ -70,6 +73,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
+                    beslutter = beslutter,
                 )
 
                 else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
@@ -86,8 +90,10 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
+        override val beslutter: String?,
     ) : BehandlingTilBeslutter {
-        fun iverksettAvBelutter(beslutter: String): BehandlingIverksatt.Innvilget {
+        fun iverksettAvBeslutter(): BehandlingIverksatt.Innvilget {
+            checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
             return BehandlingIverksatt.Innvilget(
                 id = id,
                 sakId = sakId,
@@ -110,6 +116,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
             )
         }
 
@@ -121,6 +128,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 
@@ -149,8 +157,10 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
+        override val beslutter: String?,
     ) : BehandlingTilBeslutter {
-        fun iverksettAvBeslutter(beslutter: String): BehandlingIverksatt.Avslag {
+        fun iverksettAvBeslutter(): BehandlingIverksatt.Avslag {
+            checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
             return BehandlingIverksatt.Avslag(
                 id = id,
                 sakId = sakId,
@@ -172,6 +182,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
             ).vilkårsvurder()
         }
 
@@ -184,6 +195,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
             )
         }
 

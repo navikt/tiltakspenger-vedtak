@@ -195,6 +195,8 @@ internal class PostgresBehandlingRepo(
         val fom = localDate("fom")
         val tom = localDate("tom")
         val status = string("status")
+        val saksbehandler = stringOrNull("saksbehandler")
+        val beslutter = stringOrNull("attestant")
         return when (val type = string("tilstand")) {
             "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
                 id = id,
@@ -203,6 +205,7 @@ internal class PostgresBehandlingRepo(
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
+                saksbehandler = saksbehandler,
             )
 
             "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
@@ -213,6 +216,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                saksbehandler = saksbehandler,
                 status = status,
             )
 
@@ -225,7 +229,8 @@ internal class PostgresBehandlingRepo(
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
-                saksbehandler = string("saksbehandler"),
+                saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
+                beslutter = beslutter,
             )
 
             "Iverksatt" -> BehandlingIverksatt.fromDb(
@@ -237,8 +242,8 @@ internal class PostgresBehandlingRepo(
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 status = status,
-                saksbehandler = string("saksbehandler"),
-                beslutter = string("attestant"),
+                saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
+                beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
             )
 
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")

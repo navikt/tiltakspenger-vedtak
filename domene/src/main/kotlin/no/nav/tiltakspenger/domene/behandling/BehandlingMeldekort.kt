@@ -19,6 +19,7 @@ sealed interface BehandlingMeldekort : Behandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
+        override val saksbehandler: String?,
 
     ) : BehandlingMeldekort {
 
@@ -28,6 +29,7 @@ sealed interface BehandlingMeldekort : Behandling {
                 periode: Periode,
                 saksopplysninger: List<Saksopplysning>,
                 tiltak: List<Tiltak>,
+                saksbehandler: String?,
             ): Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),
@@ -35,6 +37,7 @@ sealed interface BehandlingMeldekort : Behandling {
                     vurderingsperiode = periode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
+                    saksbehandler = saksbehandler,
                 )
             }
         }
@@ -49,6 +52,7 @@ sealed interface BehandlingMeldekort : Behandling {
                 vurderingsperiode = Periode(fra = meldekortDTO.fom, til = meldekortDTO.tom),
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
                 meldekort = meldekortDTO,
             )
         }
@@ -60,6 +64,7 @@ sealed interface BehandlingMeldekort : Behandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
+        override val saksbehandler: String?,
         val meldekort: MeldekortDTO,
 
     ) : BehandlingMeldekort {
@@ -70,6 +75,7 @@ sealed interface BehandlingMeldekort : Behandling {
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                saksbehandler = saksbehandler,
                 meldekort = meldekort,
             )
         }
@@ -81,6 +87,7 @@ sealed interface BehandlingMeldekort : Behandling {
         override val vurderingsperiode: Periode,
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
+        override val saksbehandler: String?,
         val meldekort: MeldekortDTO,
     ) : BehandlingMeldekort
 }
