@@ -142,10 +142,14 @@ fun mapSammenstillingDTO(
 }
 
 fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
-    for(saksopplysning in saksopplysninger) {
-        return if (settUtfall(behandling, saksopplysning) == Utfall.KREVER_MANUELL_VURDERING.name) Utfall.KREVER_MANUELL_VURDERING.name
-        else if (settUtfall(behandling, saksopplysning) == Utfall.IKKE_OPPFYLT.name) Utfall.IKKE_OPPFYLT.name
-        else continue
+    for (saksopplysning in saksopplysninger) {
+        return if (settUtfall(behandling, saksopplysning) == Utfall.KREVER_MANUELL_VURDERING.name) {
+            Utfall.KREVER_MANUELL_VURDERING.name
+        } else if (settUtfall(behandling, saksopplysning) == Utfall.IKKE_OPPFYLT.name) {
+            Utfall.IKKE_OPPFYLT.name
+        } else {
+            continue
+        }
     }
     return Utfall.OPPFYLT.name
 }
