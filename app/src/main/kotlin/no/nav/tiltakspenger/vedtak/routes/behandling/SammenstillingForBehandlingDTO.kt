@@ -65,7 +65,7 @@ data class SaksopplysningUtDTO(
 data class KategoriserteSaksopplysningerDTO(
     val kategoriTittel: String,
     val saksopplysninger: List<SaksopplysningUtDTO>,
-    val samletUtfall: String
+    val samletUtfall: String,
 )
 
 data class FaktaDTO(
@@ -119,7 +119,7 @@ fun mapSammenstillingDTO(
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
                 },
-                samletUtfall = settSamletUtfall(behandling)
+                samletUtfall = settSamletUtfall(behandling),
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
