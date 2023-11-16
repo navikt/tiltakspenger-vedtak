@@ -4,12 +4,12 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
-import no.nav.tiltakspenger.vedtak.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.Kontekst
-import no.nav.tiltakspenger.vedtak.KontekstLogable
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.vedtak.innsending.Kontekst
+import no.nav.tiltakspenger.vedtak.innsending.KontekstLogable
 import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

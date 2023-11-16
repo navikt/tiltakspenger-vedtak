@@ -1,14 +1,12 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.Tiltak
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
-import no.nav.tiltakspenger.vilkårsvurdering.Vurdering
 
 sealed interface BehandlingTilBeslutter : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
@@ -115,6 +113,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             )
         }
 
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
+        }
+
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
@@ -153,6 +162,17 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
             )
+        }
+
+        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+            return Søknadsbehandling.Opprettet(
+                id = id,
+                sakId = sakId,
+                søknader = søknader + søknad,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+            ).vilkårsvurder()
         }
 
         override fun sendTilbake(): BehandlingVilkårsvurdert.Avslag {

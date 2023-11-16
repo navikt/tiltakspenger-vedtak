@@ -1,9 +1,9 @@
 val ktorVersion = "2.3.4"
 val kotestVersion = "5.6.2"
 val mockkVersion = "1.13.8"
-val testContainersVersion = "1.19.1"
-val felleslibVersion = "0.0.49"
-val tokenSupportVersion = "3.1.5"
+val testContainersVersion = "1.19.0"
+val felleslibVersion = "0.0.50"
+val tokenSupportVersion = "3.1.8"
 
 plugins {
     application
@@ -88,4 +88,5 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.3.1")
+    testImplementation(project(":common"))
 }

@@ -21,4 +21,5 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":common"))
 }

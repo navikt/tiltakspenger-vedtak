@@ -1,14 +1,14 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
+import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.erLik
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
-import no.nav.tiltakspenger.domene.saksopplysning.AlderTolker
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.vedtak.Personopplysninger
-import no.nav.tiltakspenger.vedtak.Skjerming
-import no.nav.tiltakspenger.vedtak.Søknad
-import no.nav.tiltakspenger.vedtak.erLik
+import no.nav.tiltakspenger.vedtak.innsending.Skjerming
+import no.nav.tiltakspenger.vedtak.innsending.tolkere.AlderTolker
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -52,6 +52,13 @@ class SakServiceImpl(
             }
         }
 
+        val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
+        sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
+            AlderTolker.tolkeData(fdato, sak.periode).forEach {
+                behandlingService.leggTilSaksopplysning(behandling.id, it)
+            }
+        }
+
         // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
         if (personopplysningerMedSkjerming.erLik(sak.personopplysninger)) return sak
 
@@ -60,14 +67,6 @@ class SakServiceImpl(
         )
 
         sakRepo.lagre(oppdatertSak)
-
-        val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
-        oppdatertSak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
-            AlderTolker.tolkeData(fdato, sak.periode).forEach {
-                behandlingService.leggTilSaksopplysning(behandling.id, it)
-            }
-        }
-
         return sakRepo.hent(oppdatertSak.id)
     }
 

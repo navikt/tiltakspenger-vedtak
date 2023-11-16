@@ -9,6 +9,8 @@ import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -23,8 +25,6 @@ import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.vilkårsvurdering.Utfall
-import no.nav.tiltakspenger.vilkårsvurdering.Vilkår
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -153,13 +153,14 @@ internal class SakServiceTest {
         every { sakRepo.lagre(any()) } returnsArgument 0
 
         every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
             "123",
             listOf(person),
         )
 
-        verify(exactly = 0) { behandlingRepo.lagre(any()) }
+        verify(exactly = 0) { sakRepo.lagre(any()) }
     }
 
     @Test
