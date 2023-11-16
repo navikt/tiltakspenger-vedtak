@@ -65,6 +65,7 @@ data class SaksopplysningUtDTO(
 data class KategoriserteSaksopplysningerDTO(
     val kategoriTittel: String,
     val saksopplysninger: List<SaksopplysningUtDTO>,
+    val samletUtfall: String
 )
 
 data class FaktaDTO(
@@ -118,6 +119,7 @@ fun mapSammenstillingDTO(
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
                 },
+                samletUtfall = settSamletUtfall(behandling)
             )
         },
         personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
@@ -137,6 +139,14 @@ fun mapSammenstillingDTO(
             is Søknadsbehandling.Opprettet -> "opprettet"
         },
     )
+}
+
+fun settSamletUtfall(behandling: Behandling): String {
+    behandling.saksopplysninger.forEach() {
+        if (settUtfall(behandling, it) == Utfall.IKKE_OPPFYLT.name) return Utfall.IKKE_OPPFYLT.name
+        if (settUtfall(behandling, it) == Utfall.KREVER_MANUELL_VURDERING.name) return Utfall.KREVER_MANUELL_VURDERING.name
+    }
+    return Utfall.OPPFYLT.name
 }
 
 fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
