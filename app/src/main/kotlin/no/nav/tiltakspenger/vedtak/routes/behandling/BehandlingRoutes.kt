@@ -28,22 +28,6 @@ private val LOG = KotlinLogging.logger {}
 internal const val behandlingPath = "/behandling"
 internal const val behandlingerPath = "/behandlinger"
 
-data class BehandlingDTO(
-    val id: String,
-    val ident: String,
-    val status: String,
-    val saksbehandler: String?,
-    val beslutter: String?,
-)
-
-private fun finnTilstand(behandling: Søknadsbehandling) =
-    when (behandling) {
-        is Søknadsbehandling.Opprettet -> "søknadsbehandling"
-        is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
-        is BehandlingTilBeslutter -> "TilBeslutting"
-        is BehandlingIverksatt -> "Iverksatt"
-    }
-
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
@@ -93,13 +77,7 @@ fun Route.behandlingRoutes(
                     is BehandlingTilBeslutter -> it.beslutter
                     else -> null
                 },
-                status = when (it) {
-                    is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
-                    is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
-                    is BehandlingTilBeslutter -> if (it.beslutter == null) "Klar til beslutning" else "Under beslutning"
-                    is BehandlingVilkårsvurdert -> if (it.saksbehandler == null) "Klar til behandling" else "Under behandling"
-                    is Søknadsbehandling.Opprettet -> "Klar til behandling"
-                },
+                status = finnStatus(it),
             )
         }.sortedBy { it.id }
 
@@ -209,3 +187,12 @@ fun Route.behandlingRoutes(
         utbetalingService.sendBehandlingTilUtbetaling(behandling)
     }
 }
+
+private fun finnStatus(behandling: Søknadsbehandling) =
+    when (behandling) {
+        is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
+        is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
+        is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
+        is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
+        is Søknadsbehandling.Opprettet -> "Klar til behandling"
+    }
