@@ -178,13 +178,15 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/godkjenn/{behandlingId}") {
         LOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        val behandling = behandlingService.hentBehandling(behandlingId)
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-
-        utbetalingService.sendBehandlingTilUtbetaling(behandling)
+        behandlingService.iverksett(behandlingId, saksbehandler.navIdent)
+        call.respond(message = "{}", status = HttpStatusCode.OK)
+//        utbetalingService.sendBehandlingTilUtbetaling(behandling)
     }
 }
 

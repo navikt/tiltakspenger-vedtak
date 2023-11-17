@@ -57,6 +57,21 @@ class BehandlingServiceImpl(
         }
     }
 
+    override fun iverksett(behandlingId: BehandlingId, saksbehandler: String) {
+        val behandling = hentBehandling(behandlingId)
+            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+
+        if (behandling is BehandlingTilBeslutter) {
+            check(behandling.saksbehandler != null) { "Kan ikke iverksette en behandling uten saksbehandler" }
+            check(behandling.beslutter == saksbehandler) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
+        }
+
+        when (behandling) {
+            is BehandlingTilBeslutter -> behandlingRepo.lagre(behandling.iverksett())
+            else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
+        }
+    }
+
     override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")

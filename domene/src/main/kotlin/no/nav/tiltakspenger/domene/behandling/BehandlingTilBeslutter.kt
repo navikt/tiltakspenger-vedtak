@@ -24,6 +24,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
     }
 
+    fun iverksett(): BehandlingIverksatt
+
     fun sendTilbake(): BehandlingVilkårsvurdert
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
@@ -92,7 +94,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val saksbehandler: String,
         override val beslutter: String?,
     ) : BehandlingTilBeslutter {
-        fun iverksettAvBeslutter(): BehandlingIverksatt.Innvilget {
+        override fun iverksett(): BehandlingIverksatt.Innvilget {
             checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
             return BehandlingIverksatt.Innvilget(
                 id = id,
@@ -166,7 +168,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val saksbehandler: String,
         override val beslutter: String?,
     ) : BehandlingTilBeslutter {
-        fun iverksettAvBeslutter(): BehandlingIverksatt.Avslag {
+        override fun iverksett(): BehandlingIverksatt.Avslag {
             checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
             return BehandlingIverksatt.Avslag(
                 id = id,

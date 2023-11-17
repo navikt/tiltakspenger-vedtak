@@ -64,11 +64,11 @@ internal class BehandlingServiceTest {
         val avslag = behandlingTilBeslutterAvslag()
 
         shouldThrow<IllegalStateException> {
-            innvilget.iverksettAvBeslutter()
+            innvilget.iverksett()
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
 
         shouldThrow<IllegalStateException> {
-            avslag.iverksettAvBeslutter()
+            avslag.iverksett()
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
     }
 
