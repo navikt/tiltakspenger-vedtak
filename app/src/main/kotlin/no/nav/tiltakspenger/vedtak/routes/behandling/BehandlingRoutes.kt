@@ -33,6 +33,7 @@ data class BehandlingDTO(
     val ident: String,
     val status: String,
     val saksbehandler: String?,
+    val beslutter: String?,
 )
 
 private fun finnTilstand(behandling: Søknadsbehandling) =
@@ -87,6 +88,11 @@ fun Route.behandlingRoutes(
                 id = it.id.toString(),
                 ident = it.søknad().personopplysninger.ident,
                 saksbehandler = it.saksbehandler,
+                beslutter = when (it) {
+                    is BehandlingIverksatt -> it.beslutter
+                    is BehandlingTilBeslutter -> it.beslutter
+                    else -> null
+                },
                 status = when (it) {
                     is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
                     is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
