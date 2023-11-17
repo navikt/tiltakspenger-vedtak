@@ -39,8 +39,12 @@ interface Behandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
     }
 
-    fun taBahandling(saksbehandler: String): Søknadsbehandling {
-        throw IllegalStateException("Kan ikke ta en behandling med denne statusen")
+    fun startBehandling(saksbehandler: String): Søknadsbehandling {
+        throw IllegalStateException("Kan ikke starte en behandling med denne statusen")
+    }
+
+    fun avbrytBehandling(): Søknadsbehandling {
+        throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 }
 

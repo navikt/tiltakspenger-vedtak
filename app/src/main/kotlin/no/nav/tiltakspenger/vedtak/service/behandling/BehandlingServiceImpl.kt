@@ -57,11 +57,19 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun taBehandling(behandlingId: BehandlingId, saksbehandler: String) {
+    override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
         check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
-        behandlingRepo.lagre(behandling.taBahandling(saksbehandler))
+        behandlingRepo.lagre(behandling.startBehandling(saksbehandler))
+    }
+
+    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String) {
+        val behandling = hentBehandling(behandlingId)
+            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+
+        check(behandling.saksbehandler == saksbehandler) { "Kan ikke avbryte en behandling som ikke er din" }
+        behandlingRepo.lagre(behandling.avbrytBehandling())
     }
 }

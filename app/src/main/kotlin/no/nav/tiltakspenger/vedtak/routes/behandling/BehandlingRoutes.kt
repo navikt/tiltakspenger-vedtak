@@ -163,8 +163,8 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    post("$behandlingPath/ta_behandling/{behandlingId}") {
-        LOG.debug { "Mottatt request om å sette behandler på behandlingen" }
+    post("$behandlingPath/startbehandling/{behandlingId}") {
+        LOG.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
@@ -172,7 +172,21 @@ fun Route.behandlingRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.taBehandling(behandlingId, saksbehandler.navIdent)
+        behandlingService.startBehandling(behandlingId, saksbehandler.navIdent)
+
+        call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
+
+    post("$behandlingPath/avbrytbehandling/{behandlingId}") {
+        LOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
+
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        behandlingService.avbrytBehandling(behandlingId, saksbehandler.navIdent)
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
