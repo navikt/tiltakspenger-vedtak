@@ -107,6 +107,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             )
         }
 
+        override fun erTilBeslutter() = true
+
         override fun sendTilbake(): BehandlingVilkårsvurdert.Innvilget {
             return BehandlingVilkårsvurdert.Innvilget(
                 id = id,
@@ -146,6 +148,11 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 )
             }
         }
+
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                beslutter = saksbehandler,
+            )
     }
 
     data class Avslag(
@@ -173,6 +180,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 beslutter = beslutter,
             )
         }
+
+        override fun erTilBeslutter() = true
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Søknadsbehandling.Opprettet(
@@ -213,5 +222,10 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 )
             }
         }
+
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                beslutter = saksbehandler,
+            )
     }
 }

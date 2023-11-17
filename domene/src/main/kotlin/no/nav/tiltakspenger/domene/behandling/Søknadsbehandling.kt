@@ -76,6 +76,8 @@ sealed interface Søknadsbehandling : Behandling {
             }
         }
 
+        override fun erÅpen() = true
+
         fun vilkårsvurder(): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår

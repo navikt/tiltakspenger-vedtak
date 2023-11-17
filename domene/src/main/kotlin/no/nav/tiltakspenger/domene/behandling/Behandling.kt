@@ -27,6 +27,10 @@ interface Behandling {
         }
     }
 
+    fun erÅpen(): Boolean = false
+    fun erIverksatt(): Boolean = false
+    fun erTilBeslutter(): Boolean = false
+
     fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }

@@ -126,6 +126,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
+        override fun erÅpen() = true
+
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Søknadsbehandling.Opprettet(
                 id = id,
@@ -207,6 +209,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             )
         }
 
+        override fun erÅpen() = true
+
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Søknadsbehandling.Opprettet(
                 id = id,
@@ -260,6 +264,8 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String?,
     ) : BehandlingVilkårsvurdert {
+
+        override fun erÅpen() = true
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Søknadsbehandling.Opprettet(

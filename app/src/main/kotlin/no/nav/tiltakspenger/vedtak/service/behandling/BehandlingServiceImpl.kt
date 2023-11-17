@@ -61,7 +61,15 @@ class BehandlingServiceImpl(
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
-        check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        if (behandling.erÅpen()) {
+            check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        }
+
+        if (behandling is BehandlingTilBeslutter) {
+            check(behandling.saksbehandler != null) { "Kan ikke starte å beslutte en behandling uten saksbehandler" }
+            check(behandling.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
+        }
+
         behandlingRepo.lagre(behandling.startBehandling(saksbehandler))
     }
 

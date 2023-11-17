@@ -65,6 +65,8 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val beslutter: String,
     ) : BehandlingIverksatt {
         // trenger denne funksjoner?
+
+        override fun erTilBeslutter() = true
     }
 
     data class Avslag(
@@ -79,5 +81,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val beslutter: String,
     ) : BehandlingIverksatt {
         // trenger denne funksjoner?
+
+        override fun erTilBeslutter() = true
     }
 }
