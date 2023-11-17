@@ -147,6 +147,7 @@ internal class PostgresBehandlingRepo(
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                     "saksbehandler" to behandling.saksbehandler,
+                    "beslutter" to if (behandling is BehandlingTilBeslutter) behandling.beslutter else if (behandling is BehandlingIverksatt) behandling.beslutter else null,
                 ),
             ).asUpdate,
         )
@@ -306,7 +307,8 @@ internal class PostgresBehandlingRepo(
             tilstand = :tilstand,
             status = :status,
             sist_endret = :sistEndret,
-            saksbehandler = :saksbehandler
+            saksbehandler = :saksbehandler,
+            attestant = :beslutter
         where id = :id
           and sist_endret = :sistEndretOld
     """.trimIndent()
