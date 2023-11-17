@@ -13,4 +13,5 @@ interface BehandlingService {
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
     fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId)
+    fun taBehandling(behandlingId: BehandlingId, saksbehandler: String)
 }

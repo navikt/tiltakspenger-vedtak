@@ -177,6 +177,11 @@ sealed interface Søknadsbehandling : Behandling {
             this.copy(
                 tiltak = tiltak,
             )
+
+        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                saksbehandler = saksbehandler,
+            )
     }
 }
 

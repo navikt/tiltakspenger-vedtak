@@ -157,6 +157,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             this.copy(
                 tiltak = tiltak,
             )
+
+        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                saksbehandler = saksbehandler,
+            )
     }
 
     data class Avslag(
@@ -228,6 +233,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             this.copy(
                 tiltak = tiltak,
             )
+
+        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                saksbehandler = saksbehandler,
+            )
     }
 
     data class Manuell(
@@ -271,6 +281,11 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
             this.copy(
                 tiltak = tiltak,
+            )
+
+        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+            this.copy(
+                saksbehandler = saksbehandler,
             )
     }
 }

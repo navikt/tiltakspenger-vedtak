@@ -38,6 +38,10 @@ interface Behandling {
     fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
     }
+
+    fun taBahandling(saksbehandler: String): Søknadsbehandling {
+        throw IllegalStateException("Kan ikke ta en behandling med denne statusen")
+    }
 }
 
 fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =

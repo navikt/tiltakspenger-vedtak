@@ -56,4 +56,12 @@ class BehandlingServiceImpl(
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
         }
     }
+
+    override fun taBehandling(behandlingId: BehandlingId, saksbehandler: String) {
+        val behandling = hentBehandling(behandlingId)
+            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+
+        check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        behandlingRepo.lagre(behandling.taBahandling(saksbehandler))
+    }
 }

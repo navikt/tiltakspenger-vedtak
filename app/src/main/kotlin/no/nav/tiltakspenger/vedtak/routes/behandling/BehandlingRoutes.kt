@@ -31,6 +31,8 @@ internal const val behandlingerPath = "/behandlinger"
 data class BehandlingDTO(
     val id: String,
     val ident: String,
+    val status: String,
+    val saksbehandler: String?,
 )
 
 private fun finnTilstand(behandling: Søknadsbehandling) =
@@ -81,7 +83,18 @@ fun Route.behandlingRoutes(
     get(behandlingerPath) {
         LOG.debug("Mottatt request på $behandlingerPath")
         val behandlinger = behandlingService.hentAlleBehandlinger().map {
-            BehandlingDTO(id = it.id.toString(), ident = it.søknad().personopplysninger.ident)
+            BehandlingDTO(
+                id = it.id.toString(),
+                ident = it.søknad().personopplysninger.ident,
+                saksbehandler = it.saksbehandler,
+                status = when (it) {
+                    is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
+                    is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
+                    is BehandlingTilBeslutter -> if (it.beslutter == null) "Klar til beslutning" else "Under beslutning"
+                    is BehandlingVilkårsvurdert -> if (it.saksbehandler == null) "Klar til behandling" else "Under behandling"
+                    is Søknadsbehandling.Opprettet -> "Klar til behandling"
+                },
+            )
         }
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
@@ -146,6 +159,20 @@ fun Route.behandlingRoutes(
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
+        call.respond(message = "OK", status = HttpStatusCode.OK)
+    }
+
+    post("$behandlingPath/ta_behandling/{behandlingId}") {
+        LOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
+
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        behandlingService.taBehandling(behandlingId, saksbehandler.navIdent)
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
