@@ -95,7 +95,7 @@ fun Route.behandlingRoutes(
                     is Søknadsbehandling.Opprettet -> "Klar til behandling"
                 },
             )
-        }
+        }.sortedBy { it.id }
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }
@@ -160,11 +160,11 @@ fun Route.behandlingRoutes(
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
-        call.respond(message = "OK", status = HttpStatusCode.OK)
+        call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
     post("$behandlingPath/ta_behandling/{behandlingId}") {
-        LOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
+        LOG.debug { "Mottatt request om å sette behandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
@@ -174,7 +174,7 @@ fun Route.behandlingRoutes(
 
         behandlingService.taBehandling(behandlingId, saksbehandler.navIdent)
 
-        call.respond(message = "OK", status = HttpStatusCode.OK)
+        call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
     post("$behandlingPath/godkjenn/{behandlingId}") {

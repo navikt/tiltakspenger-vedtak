@@ -146,7 +146,7 @@ internal class PostgresBehandlingRepo(
                     "status" to finnStatus(behandling),
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
-                    "saksbehandler" to if (behandling is BehandlingTilBeslutter) behandling.saksbehandler else null,
+                    "saksbehandler" to behandling.saksbehandler,
                 ),
             ).asUpdate,
         )
