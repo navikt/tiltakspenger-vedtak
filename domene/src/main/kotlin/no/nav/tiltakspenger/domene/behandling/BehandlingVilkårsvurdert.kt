@@ -158,9 +158,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 tiltak = tiltak,
             )
 
-        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
             this.copy(
                 saksbehandler = saksbehandler,
+            )
+
+        override fun avbrytBehandling(): Søknadsbehandling =
+            this.copy(
+                saksbehandler = null,
             )
     }
 
@@ -234,9 +239,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 tiltak = tiltak,
             )
 
-        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
             this.copy(
                 saksbehandler = saksbehandler,
+            )
+
+        override fun avbrytBehandling(): Søknadsbehandling =
+            this.copy(
+                saksbehandler = null,
             )
     }
 
@@ -283,9 +293,14 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 tiltak = tiltak,
             )
 
-        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
             this.copy(
                 saksbehandler = saksbehandler,
+            )
+
+        override fun avbrytBehandling(): Søknadsbehandling =
+            this.copy(
+                saksbehandler = null,
             )
     }
 }

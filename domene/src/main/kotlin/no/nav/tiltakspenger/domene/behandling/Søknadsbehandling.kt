@@ -178,9 +178,14 @@ sealed interface Søknadsbehandling : Behandling {
                 tiltak = tiltak,
             )
 
-        override fun taBahandling(saksbehandler: String): Søknadsbehandling =
+        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
             this.copy(
                 saksbehandler = saksbehandler,
+            )
+
+        override fun avbrytBehandling(): Søknadsbehandling =
+            this.copy(
+                saksbehandler = null,
             )
     }
 }
