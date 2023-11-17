@@ -56,8 +56,7 @@ data class SaksopplysningUtDTO(
     val detaljer: String,
     val typeSaksopplysning: String,
     val vilkårTittel: String,
-    val vilkårParagraf: String,
-    val vilkårLedd: String,
+    val vilkårFlateTittel: String,
     val fakta: FaktaDTO,
     val utfall: String,
 )
@@ -112,9 +111,8 @@ fun mapSammenstillingDTO(
                         kilde = it.kilde.navn,
                         detaljer = it.detaljer,
                         typeSaksopplysning = it.typeSaksopplysning.name,
-                        vilkårTittel = it.vilkår.flateTittel,
-                        vilkårParagraf = it.vilkår.lovreferanse.paragraf,
-                        vilkårLedd = it.vilkår.lovreferanse.ledd,
+                        vilkårTittel = it.vilkår.tittel,
+                        vilkårFlateTittel = it.vilkår.flateTittel,
                         fakta = fakta,
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
