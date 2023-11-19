@@ -360,7 +360,7 @@ CREATE TABLE ytelsesak
     tidsstempel_hos_oss   TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE ytelsevedtak
+create table ytelsevedtak
 (
     id                     VARCHAR PRIMARY KEY,
     ytelsesak_id           VARCHAR NOT NULL REFERENCES ytelsesak (id),
