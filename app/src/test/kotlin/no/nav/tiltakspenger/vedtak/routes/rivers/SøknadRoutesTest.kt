@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -40,6 +41,7 @@ class SøknadRoutesTest {
     private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
+    private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
@@ -51,7 +53,7 @@ class SøknadRoutesTest {
         rapidsConnection = testRapid,
     )
 
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach

@@ -25,6 +25,7 @@ import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,13 +35,15 @@ internal class SakServiceTest {
     private lateinit var sakRepo: SakRepo
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var behandlingService: BehandlingService
+    private lateinit var vedtakService: VedtakService
     private lateinit var sakService: SakService
 
     @BeforeEach
     fun setup() {
         sakRepo = mockk()
         behandlingRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo)
+        vedtakService = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 

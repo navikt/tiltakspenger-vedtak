@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdert
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,11 +33,13 @@ internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var behandlingService: BehandlingService
+    private lateinit var vedtakService: VedtakService
 
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo)
+        vedtakService = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
     }
 
     @AfterEach

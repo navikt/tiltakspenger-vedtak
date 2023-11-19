@@ -10,10 +10,22 @@ CREATE INDEX saksopplysning_behandling
          behandlingId
             );
 
+CREATE INDEX saksopplysning_vedtak
+    ON saksopplysning
+        (
+         vedtakId
+            );
+
 CREATE INDEX vurdering_behandling
     ON vurdering
         (
          behandlingId
+            );
+
+CREATE INDEX vurdering_vedtak
+    ON vurdering
+        (
+         vedtakId
             );
 
 CREATE INDEX saks_ident

@@ -43,10 +43,24 @@ CREATE TABLE behandling
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE vedtak
+(
+    id                      VARCHAR                  PRIMARY KEY,
+    behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
+    vedtakstype             VARCHAR                  NOT NULL,
+    vedtaksdato             DATE                     NOT NULL,
+    fom                     DATE                     NOT NULL,
+    tom                     DATE                     NOT NULL,
+    saksbehandler           VARCHAR                  NOT NULL,
+    beslutter               VARCHAR                  NOT NULL,
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 CREATE TABLE saksopplysning
 (
     id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
+    behandlingId            VARCHAR                  REFERENCES behandling (id),
+    vedtakId                VARCHAR                  REFERENCES vedtak (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
     kilde                   VARCHAR                  NOT NULL,
@@ -60,7 +74,8 @@ CREATE TABLE saksopplysning
 CREATE TABLE vurdering
 (
     id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  NOT NULL REFERENCES behandling (id),
+    behandlingId            VARCHAR                  NULL REFERENCES behandling (id),
+    vedtakId                VARCHAR                  NULL REFERENCES vedtak (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
     kilde                   VARCHAR                  NOT NULL,

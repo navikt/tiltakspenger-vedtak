@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
 import org.intellij.lang.annotations.Language
@@ -15,7 +16,7 @@ internal class VurderingRepo {
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Vurdering> {
         return txSession.run(
             queryOf(
-                sqlHentVurderinger,
+                sqlHentForBehandling,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                 ),
@@ -25,20 +26,51 @@ internal class VurderingRepo {
         )
     }
 
-    fun lagre(behandlingId: BehandlingId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
-        slett(behandlingId, txSession)
+    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<Vurdering> {
+        return txSession.run(
+            queryOf(
+                sqlHentForVedtak,
+                mapOf(
+                    "vedtakId" to vedtakId.toString(),
+                ),
+            ).map { row ->
+                row.toVurdering()
+            }.asList,
+        )
+    }
+
+    fun lagre(vedtakId: VedtakId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
+        slett(vedtakId, txSession)
         vurderinger.forEach { vurdering ->
-            lagre(behandlingId, vurdering, txSession)
+            lagre(
+                behandlingId = null,
+                vedtakId = vedtakId,
+                vurdering = vurdering,
+                txSession = txSession,
+            )
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId, vurdering: Vurdering, txSession: TransactionalSession) {
+    fun lagre(behandlingId: BehandlingId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
+        slett(behandlingId, txSession)
+        vurderinger.forEach { vurdering ->
+            lagre(
+                behandlingId = behandlingId,
+                vedtakId = null,
+                vurdering = vurdering,
+                txSession = txSession,
+            )
+        }
+    }
+
+    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, vurdering: Vurdering, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 sqlLagreVurdering,
                 mapOf(
                     "id" to VurderingId.random().toString(),
-                    "behandlingId" to behandlingId.toString(),
+                    "behandlingId" to behandlingId?.toString(),
+                    "vedtakId" to vedtakId?.toString(),
                     "fom" to vurdering.fom,
                     "tom" to vurdering.tom,
                     "kilde" to vurdering.kilde.name,
@@ -54,8 +86,17 @@ internal class VurderingRepo {
     private fun slett(behandlingId: BehandlingId, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                sqlSlettVurderinger,
+                sqlSlettForBehandling,
                 mapOf("behandlingId" to behandlingId.toString()),
+            ).asUpdate,
+        )
+    }
+
+    private fun slett(vedtakId: VedtakId, txSession: TransactionalSession) {
+        txSession.run(
+            queryOf(
+                sqlSlettForVedtak,
+                mapOf("vedtakId" to vedtakId.toString()),
             ).asUpdate,
         )
     }
@@ -100,6 +141,7 @@ internal class VurderingRepo {
         insert into vurdering (
             id,
             behandlingId,
+            vedtakId,
             fom,
             tom,
             kilde,
@@ -110,6 +152,7 @@ internal class VurderingRepo {
         ) values (
             :id,
             :behandlingId,
+            :vedtakId,
             :fom,
             :tom,
             :kilde,
@@ -121,13 +164,23 @@ internal class VurderingRepo {
     """.trimIndent()
 
     @Language("SQL")
-    private val sqlSlettVurderinger = """
+    private val sqlSlettForBehandling = """
         delete from vurdering where behandlingId = :behandlingId
     """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentVurderinger = """
+    private val sqlSlettForVedtak = """
+        delete from vurdering where vedtakid = :vedtakId
+    """.trimIndent()
+
+    @Language("SQL")
+    private val sqlHentForBehandling = """
         select * from vurdering where behandlingId = :behandlingId
+    """.trimIndent()
+
+    @Language("SQL")
+    private val sqlHentForVedtak = """
+        select * from vurdering where vedtakId = :vedtakId
     """.trimIndent()
 }
 

@@ -8,9 +8,11 @@ import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
+    private val vedtakService: VedtakService,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
@@ -66,10 +68,12 @@ class BehandlingServiceImpl(
             check(behandling.beslutter == saksbehandler) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
         }
 
-        when (behandling) {
-            is BehandlingTilBeslutter -> behandlingRepo.lagre(behandling.iverksett())
+        val iverksattBehandling = when (behandling) {
+            is BehandlingTilBeslutter -> behandling.iverksett()
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
+        behandlingRepo.lagre(iverksattBehandling)
+        vedtakService.lagVedtakForBehandling(iverksattBehandling)
     }
 
     override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {

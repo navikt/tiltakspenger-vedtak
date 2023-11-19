@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakspplysningId
+import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.nå
 import org.intellij.lang.annotations.Language
 
@@ -15,7 +16,7 @@ internal class SaksopplysningRepo {
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Saksopplysning> {
         return txSession.run(
             queryOf(
-                sqlHentSaksopplysninger,
+                sqlHentForBehandling,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                 ),
@@ -25,20 +26,51 @@ internal class SaksopplysningRepo {
         )
     }
 
-    fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
-        slett(behandlingId, txSession)
+    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<Saksopplysning> {
+        return txSession.run(
+            queryOf(
+                sqlHentForVedtak,
+                mapOf(
+                    "behandlingId" to vedtakId.toString(),
+                ),
+            ).map { row ->
+                row.toSaksopplysning()
+            }.asList,
+        )
+    }
+
+    fun lagre(vedtakId: VedtakId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
+        slett(vedtakId, txSession)
         saksopplysninger.forEach { saksopplysning ->
-            lagre(behandlingId, saksopplysning, txSession)
+            lagre(
+                behandlingId = null,
+                vedtakId = vedtakId,
+                saksopplysning = saksopplysning,
+                txSession = txSession,
+            )
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
+    fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
+        slett(behandlingId, txSession)
+        saksopplysninger.forEach { saksopplysning ->
+            lagre(
+                behandlingId = behandlingId,
+                vedtakId = null,
+                saksopplysning = saksopplysning,
+                txSession = txSession,
+            )
+        }
+    }
+
+    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 sqlLagreSaksopplysning,
                 mapOf(
                     "id" to SakspplysningId.random().toString(),
-                    "behandlingId" to behandlingId.toString(),
+                    "behandlingId" to behandlingId?.toString(),
+                    "vedtakId" to vedtakId?.toString(),
                     "fom" to saksopplysning.fom,
                     "tom" to saksopplysning.tom,
                     "kilde" to saksopplysning.kilde.name,
@@ -55,8 +87,17 @@ internal class SaksopplysningRepo {
     private fun slett(behandlingId: BehandlingId, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
-                sqlSlettSaksopplysninger,
+                sqlSlettForBehandling,
                 mapOf("behandlingId" to behandlingId.toString()),
+            ).asUpdate,
+        )
+    }
+
+    private fun slett(vedtakId: VedtakId, txSession: TransactionalSession) {
+        txSession.run(
+            queryOf(
+                sqlSlettForVedtak,
+                mapOf("behandlingId" to vedtakId.toString()),
             ).asUpdate,
         )
     }
@@ -74,12 +115,20 @@ internal class SaksopplysningRepo {
         )
     }
 
-    private val sqlHentSaksopplysninger = """
+    private val sqlHentForBehandling = """
         select * from saksopplysning where behandlingId = :behandlingId
     """.trimIndent()
 
-    private val sqlSlettSaksopplysninger = """
+    private val sqlHentForVedtak = """
+        select * from saksopplysning where vedtakId = :vedtakId
+    """.trimIndent()
+
+    private val sqlSlettForBehandling = """
         delete from saksopplysning where behandlingId = :behandlingId
+    """.trimIndent()
+
+    private val sqlSlettForVedtak = """
+        delete from saksopplysning where vedtakId = :vedtakId
     """.trimIndent()
 
     @Language("SQL")
@@ -87,6 +136,7 @@ internal class SaksopplysningRepo {
         insert into saksopplysning (
                 id,
                 behandlingId,
+                vedtakId,
                 fom,
                 tom,
                 kilde,
@@ -98,6 +148,7 @@ internal class SaksopplysningRepo {
             ) values (
                 :id,
                 :behandlingId,
+                :vedtakId,
                 :fom,
                 :tom,
                 :kilde,

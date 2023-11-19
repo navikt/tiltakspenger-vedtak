@@ -8,14 +8,18 @@ import no.nav.tiltakspenger.vedtak.clients.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
@@ -47,8 +51,12 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val søkerRepository = SøkerRepository()
     private val behandlingRepo = PostgresBehandlingRepo()
     private val sakRepo = PostgresSakRepo()
+    private val saksopplysningRepo = SaksopplysningRepo()
+    private val vurderingRepo = VurderingRepo()
+    private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
+    private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository, innsendingRepository)
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
