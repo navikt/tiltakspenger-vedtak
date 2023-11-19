@@ -14,6 +14,6 @@ data class Attestering(
 )
 
 enum class AttesteringStatus {
-    BESLUTTET,
+    GODKJENT,
     SENDT_TILBAKE,
 }

@@ -372,7 +372,7 @@ create table ytelsevedtak
     status                 VARCHAR NULL
 );
 
-CREATE TABLE aktivitet
+create table aktivitet
 (
     id               VARCHAR PRIMARY KEY,
     innsending_id    VARCHAR                  NOT NULL REFERENCES innsending (id),

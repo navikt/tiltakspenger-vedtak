@@ -91,7 +91,7 @@ class BehandlingServiceImpl(
         }
         val attestering = Attestering(
             behandlingId = behandlingId,
-            svar = AttesteringStatus.BESLUTTET,
+            svar = AttesteringStatus.GODKJENT,
             begrunnelse = null,
             beslutter = saksbehandler,
 
