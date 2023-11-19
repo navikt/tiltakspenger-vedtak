@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -37,13 +38,15 @@ internal class SakServiceTest {
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var sakService: SakService
+    private lateinit var attesteringRepo: AttesteringRepo
 
     @BeforeEach
     fun setup() {
         sakRepo = mockk()
         behandlingRepo = mockk()
         vedtakService = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
+        attesteringRepo = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 

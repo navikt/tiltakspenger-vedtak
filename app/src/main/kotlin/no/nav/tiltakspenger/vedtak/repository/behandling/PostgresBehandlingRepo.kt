@@ -34,7 +34,7 @@ internal class PostgresBehandlingRepo(
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(
-                        SqlHentBehandling,
+                        sqlHentBehandling,
                         mapOf(
                             "id" to behandlingId.toString(),
                         ),
@@ -51,7 +51,7 @@ internal class PostgresBehandlingRepo(
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(
-                        SqlHentAlleBehandlinger,
+                        sqlHentAlleBehandlinger,
                     ).map { row ->
                         row.toBehandling(txSession)
                     }.asList,
@@ -65,7 +65,7 @@ internal class PostgresBehandlingRepo(
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(
-                        SqlHentBehandlingForSak,
+                        sqlHentBehandlingForSak,
                         mapOf(
                             "sakId" to sakId.toString(),
                         ),
@@ -82,7 +82,7 @@ internal class PostgresBehandlingRepo(
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(
-                        SqlHentBehandlingForJournalpostId,
+                        sqlHentBehandlingForJournalpostId,
                         mapOf(
                             "journalpostId" to journalpostId,
                         ),
@@ -136,7 +136,7 @@ internal class PostgresBehandlingRepo(
 
         val antRaderOppdatert = txSession.run(
             queryOf(
-                SqlOppdaterBehandling,
+                sqlOppdaterBehandling,
                 mapOf(
                     "id" to behandling.id.toString(),
                     "sakId" to behandling.sakId.toString(),
@@ -197,7 +197,7 @@ internal class PostgresBehandlingRepo(
         val tom = localDate("tom")
         val status = string("status")
         val saksbehandler = stringOrNull("saksbehandler")
-        val beslutter = stringOrNull("attestant")
+        val beslutter = stringOrNull("beslutter")
         return when (val type = string("tilstand")) {
             "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
                 id = id,
@@ -299,7 +299,7 @@ internal class PostgresBehandlingRepo(
     """.trimIndent()
 
     @Language("SQL")
-    private val SqlOppdaterBehandling = """
+    private val sqlOppdaterBehandling = """
         update behandling set 
             fom = :fom,
             tom = :tom,
@@ -308,23 +308,23 @@ internal class PostgresBehandlingRepo(
             status = :status,
             sist_endret = :sistEndret,
             saksbehandler = :saksbehandler,
-            attestant = :beslutter
+            beslutter = :beslutter
         where id = :id
           and sist_endret = :sistEndretOld
     """.trimIndent()
 
     @Language("SQL")
-    private val SqlHentBehandling = """
+    private val sqlHentBehandling = """
         select * from behandling where id = :id
     """.trimIndent()
 
     @Language("SQL")
-    private val SqlHentBehandlingForSak = """
+    private val sqlHentBehandlingForSak = """
         select * from behandling where sakId = :sakId
     """.trimIndent()
 
     @Language("SQL")
-    private val SqlHentBehandlingForJournalpostId = """
+    private val sqlHentBehandlingForJournalpostId = """
         select * from behandling 
          where id = 
             (select behandling_id 
@@ -333,7 +333,7 @@ internal class PostgresBehandlingRepo(
     """.trimIndent()
 
     @Language("SQL")
-    private val SqlHentAlleBehandlinger = """
+    private val sqlHentAlleBehandlinger = """
         select * from behandling
     """.trimIndent()
 }

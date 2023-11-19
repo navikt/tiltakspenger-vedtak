@@ -37,7 +37,7 @@ CREATE TABLE behandling
     tilstand                VARCHAR                  NOT NULL,
     status                  VARCHAR                  NOT NULL,
     saksbehandler           VARCHAR                  NULL,
-    attestant               VARCHAR                  NULL,
+    beslutter               VARCHAR                  NULL,
     iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
@@ -83,6 +83,16 @@ CREATE TABLE vurdering
     detaljer                VARCHAR                  NOT NULL,
     utfall                  VARCHAR                  NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+create table attestering
+(
+    id                      VARCHAR PRIMARY KEY,
+    behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
+    svar                    VARCHAR                  NOT NULL,
+    begrunnelse             VARCHAR                  NULL,
+    beslutter               VARCHAR                  NOT NULL,
+    tidspunkt               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_søker

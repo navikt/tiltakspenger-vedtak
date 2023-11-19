@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
@@ -34,12 +35,14 @@ internal class BehandlingServiceTest {
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
+    private lateinit var attesteringRepo: AttesteringRepo
 
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
         vedtakService = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
+        attesteringRepo = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
     }
 
     @AfterEach

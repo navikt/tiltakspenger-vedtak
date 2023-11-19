@@ -1,18 +1,22 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
 import io.ktor.server.plugins.NotFoundException
+import no.nav.tiltakspenger.domene.attestering.Attestering
+import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val vedtakService: VedtakService,
+    private val attesteringRepo: AttesteringRepo,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
@@ -50,11 +54,24 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId) {
+    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+
+        checkNotNull(begrunnelse) { "Begrunnelse må oppgis når behandling sendes tilbake til saksbehandler" }
+        val attestering = Attestering(
+            behandlingId = behandlingId,
+            svar = AttesteringStatus.SENDT_TILBAKE,
+            begrunnelse = begrunnelse,
+            beslutter = beslutter,
+        )
+
         when (behandling) {
-            is BehandlingTilBeslutter -> behandlingRepo.lagre(behandling.sendTilbake())
+            is BehandlingTilBeslutter -> {
+                check(behandling.beslutter == beslutter) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
+                behandlingRepo.lagre(behandling.sendTilbake())
+                attesteringRepo.lagre(attestering)
+            }
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
         }
     }
@@ -72,7 +89,15 @@ class BehandlingServiceImpl(
             is BehandlingTilBeslutter -> behandling.iverksett()
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
+        val attestering = Attestering(
+            behandlingId = behandlingId,
+            svar = AttesteringStatus.BESLUTTET,
+            begrunnelse = null,
+            beslutter = saksbehandler,
+
+        )
         behandlingRepo.lagre(iverksattBehandling)
+        attesteringRepo.lagre(attestering)
         vedtakService.lagVedtakForBehandling(iverksattBehandling)
     }
 

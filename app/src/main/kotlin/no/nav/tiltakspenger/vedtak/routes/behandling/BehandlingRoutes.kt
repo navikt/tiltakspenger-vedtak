@@ -117,11 +117,14 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/sendtilbake/{behandlingId}") {
         LOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
 
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
-        // TODO her må vi få inn saksbehandlerId og begrunnelse
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId)
+        // TODO her må vi få inn begrunnelse
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, "Ikke godkjent")
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

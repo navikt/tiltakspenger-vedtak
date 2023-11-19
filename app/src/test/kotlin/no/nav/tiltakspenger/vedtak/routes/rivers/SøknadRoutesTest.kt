@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
@@ -42,6 +43,7 @@ class SøknadRoutesTest {
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
+    private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
@@ -53,7 +55,7 @@ class SøknadRoutesTest {
         rapidsConnection = testRapid,
     )
 
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach

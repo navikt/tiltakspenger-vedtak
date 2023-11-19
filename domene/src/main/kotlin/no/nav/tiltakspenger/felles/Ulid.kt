@@ -140,3 +140,12 @@ data class VedtakId private constructor(private val ulid: UlidBase) : Ulid by ul
         fun fromDb(stringValue: String) = VedtakId(ulid = UlidBase(stringValue))
     }
 }
+
+data class AttesteringId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "att"
+        fun random() = AttesteringId(ulid = UlidBase("${PREFIX}_${ULID.random()}"))
+
+        fun fromDb(stringValue: String) = AttesteringId(ulid = UlidBase(stringValue))
+    }
+}
