@@ -66,6 +66,31 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
     ) : BehandlingIverksatt {
         // trenger denne funksjoner?
 
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                // todo() her må vi lage en revurdering
+                val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
+                    id = BehandlingId.random(),
+                    sakId = this.sakId,
+                    søknader = listOf(this.søknad()),
+                    vurderingsperiode = this.vurderingsperiode,
+                    saksopplysninger = oppdatertSaksopplysningListe,
+                    tiltak = this.tiltak,
+                    saksbehandler = null,
+                ).vilkårsvurder()
+                LeggTilSaksopplysningRespons(
+                    behandling = nyBehandling,
+                    erEndret = true,
+                )
+            }
+        }
+
         override fun erTilBeslutter() = true
     }
 
@@ -81,6 +106,31 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val beslutter: String,
     ) : BehandlingIverksatt {
         // trenger denne funksjoner?
+
+        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+                LeggTilSaksopplysningRespons(
+                    behandling = this,
+                    erEndret = false,
+                )
+            } else {
+                // todo() her må vi lage en revurdering
+                val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
+                    id = BehandlingId.random(),
+                    sakId = this.sakId,
+                    søknader = listOf(this.søknad()),
+                    vurderingsperiode = this.vurderingsperiode,
+                    saksopplysninger = oppdatertSaksopplysningListe,
+                    tiltak = this.tiltak,
+                    saksbehandler = null,
+                ).vilkårsvurder()
+                LeggTilSaksopplysningRespons(
+                    behandling = nyBehandling,
+                    erEndret = true,
+                )
+            }
+        }
 
         override fun erTilBeslutter() = true
     }
