@@ -2,6 +2,10 @@ package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsmål
+import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
+import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraPeriodespørsmål
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -62,3 +66,47 @@ fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning
     } else {
         this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
     }.plus(saksopplysning)
+
+fun lagFaktaAvSøknad(søknad: Søknad): List<Saksopplysning> {
+    return listOf(
+        lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.INSTITUSJONSOPPHOLD,
+            søknad.institusjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.GJENLEVENDEPENSJON,
+            søknad.gjenlevendepensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(Vilkår.SYKEPENGER, søknad.sykepenger, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.SUPPLERENDESTØNADALDER,
+            søknad.supplerendeStønadAlder,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.SUPPLERENDESTØNADFLYKTNING,
+            søknad.supplerendeStønadFlyktning,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraPeriodespørsmål(Vilkår.JOBBSJANSEN, søknad.jobbsjansen, søknad.vurderingsperiode()),
+        lagFaktaFraPeriodespørsmål(
+            Vilkår.PENSJONSINNTEKT,
+            søknad.trygdOgPensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraFraOgMedDatospørsmål(
+            Vilkår.ALDERSPENSJON,
+            søknad.alderspensjon,
+            søknad.vurderingsperiode(),
+        ),
+        lagFaktaFraJaNeiSpørsmål(
+            Vilkår.ETTERLØNN,
+            søknad.etterlønn,
+            søknad.vurderingsperiode(),
+        ),
+    )
+}

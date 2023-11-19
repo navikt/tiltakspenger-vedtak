@@ -1,9 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraFraOgMedDatospørsmål
-import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraJaNeiSpørsmål
-import no.nav.tiltakspenger.domene.saksopplysning.lagFaktaFraPeriodespørsmål
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
@@ -154,7 +152,7 @@ sealed interface Søknadsbehandling : Behandling {
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
+                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
                 tiltak = tiltak,
                 saksbehandler = saksbehandler,
             ).vilkårsvurder()
@@ -190,48 +188,4 @@ sealed interface Søknadsbehandling : Behandling {
                 saksbehandler = null,
             )
     }
-}
-
-private fun lagFaktaAvSøknad(søknad: Søknad): List<Saksopplysning> {
-    return listOf(
-        lagFaktaFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
-        lagFaktaFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
-        lagFaktaFraPeriodespørsmål(
-            Vilkår.INSTITUSJONSOPPHOLD,
-            søknad.institusjon,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraPeriodespørsmål(
-            Vilkår.GJENLEVENDEPENSJON,
-            søknad.gjenlevendepensjon,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraPeriodespørsmål(Vilkår.SYKEPENGER, søknad.sykepenger, søknad.vurderingsperiode()),
-        lagFaktaFraPeriodespørsmål(
-            Vilkår.SUPPLERENDESTØNADALDER,
-            søknad.supplerendeStønadAlder,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraPeriodespørsmål(
-            Vilkår.SUPPLERENDESTØNADFLYKTNING,
-            søknad.supplerendeStønadFlyktning,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraPeriodespørsmål(Vilkår.JOBBSJANSEN, søknad.jobbsjansen, søknad.vurderingsperiode()),
-        lagFaktaFraPeriodespørsmål(
-            Vilkår.PENSJONSINNTEKT,
-            søknad.trygdOgPensjon,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraFraOgMedDatospørsmål(
-            Vilkår.ALDERSPENSJON,
-            søknad.alderspensjon,
-            søknad.vurderingsperiode(),
-        ),
-        lagFaktaFraJaNeiSpørsmål(
-            Vilkår.ETTERLØNN,
-            søknad.etterlønn,
-            søknad.vurderingsperiode(),
-        ),
-    )
 }
