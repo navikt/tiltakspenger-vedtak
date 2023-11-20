@@ -27,6 +27,14 @@ fun Route.søknadRoutes(
         LOG.info { "Vi har mottatt søknad fra river" }
         val søknadDTO = call.receive<SøknadDTO>()
 
+        // Oppretter sak med søknad og lagrer den
+        sakService.motta(
+            søknad = SøknadDTOMapper.mapSøknad(
+                dto = søknadDTO,
+                innhentet = søknadDTO.opprettet,
+            ),
+        )
+
         // Lager hendelse og trigger Innending innhenting
         val søknadMottattHendelse = SøknadMottattHendelse(
             aktivitetslogg = Aktivitetslogg(),
@@ -46,14 +54,6 @@ fun Route.søknadRoutes(
             ident = søknadDTO.personopplysninger.ident,
         )
         søkerMediator.håndter(identMottattHendelse)
-
-        // Oppretter sak med søknad og lagrer den
-        sakService.motta(
-            søknad = SøknadDTOMapper.mapSøknad(
-                dto = søknadDTO,
-                innhentet = søknadDTO.opprettet,
-            ),
-        )
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
