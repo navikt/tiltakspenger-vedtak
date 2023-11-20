@@ -1,11 +1,16 @@
 package no.nav.tiltakspenger.domene.sak
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 data class Sak(
     val id: SakId,
@@ -17,6 +22,10 @@ data class Sak(
 //    val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
+        val nyeBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>().map {
+            Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder()
+        }
+
         val behandlinger = behandlinger.map {
             try {
                 it.leggTilSøknad(søknad)
@@ -32,7 +41,7 @@ data class Sak(
         }
 
         return this.copy(
-            behandlinger = behandlinger,
+            behandlinger = behandlinger + nyeBehandlinger,
         )
     }
 
