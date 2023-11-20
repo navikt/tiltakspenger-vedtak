@@ -7,11 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
@@ -147,6 +150,8 @@ fun Route.behandlingRoutes(
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
+        // Skriv denne om til en sjekk på om det faktisk er oppdatert
+        delay(3000)
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
