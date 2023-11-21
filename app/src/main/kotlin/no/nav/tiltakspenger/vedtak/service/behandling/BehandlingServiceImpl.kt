@@ -38,7 +38,6 @@ class BehandlingServiceImpl(
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         val behandlingRespons = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
             ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
-        SECURELOG.info { "Vi fikk response $behandlingRespons" }
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 

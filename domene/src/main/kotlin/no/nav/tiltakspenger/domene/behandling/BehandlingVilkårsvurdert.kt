@@ -226,7 +226,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            SECURELOG.info { "Legger til saksopplysning $saksopplysning" }
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
                 LeggTilSaksopplysningRespons(
@@ -283,7 +282,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            SECURELOG.info { "Legger til saksopplysning $saksopplysning" }
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
                 LeggTilSaksopplysningRespons(

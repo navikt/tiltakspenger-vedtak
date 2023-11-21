@@ -41,8 +41,6 @@ class SakServiceImpl(
         val sak = sakRepo.hentForJournalpostId(journalpostId)
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
-        SECURELOG.info { "Vi fant sak ${sak.id}" }
-        SECURELOG.info { "Vi fant personopplysninger ${personopplysninger.filterIsInstance<Personopplysninger.Søker>()}" }
         val personopplysningerMedSkjerming = personopplysninger.map {
             when (it) {
                 is Personopplysninger.BarnMedIdent -> it.copy(
@@ -58,7 +56,6 @@ class SakServiceImpl(
             }
         }
 
-        SECURELOG.info { "personopplysninger med skjerming ${personopplysningerMedSkjerming.filterIsInstance<Personopplysninger.Søker>()}" }
         val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
         sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {
@@ -69,9 +66,10 @@ class SakServiceImpl(
         // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
         if (personopplysningerMedSkjerming.erLik(sak.personopplysninger)) return sak
 
-        val oppdatertSak = sak.copy(
+        val oppdatertSak = sakRepo.hentForJournalpostId(journalpostId)?.copy(
             personopplysninger = personopplysningerMedSkjerming,
         )
+            ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
         sakRepo.lagre(oppdatertSak)
         return sakRepo.hent(oppdatertSak.id)
