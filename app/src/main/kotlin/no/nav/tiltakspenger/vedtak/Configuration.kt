@@ -32,6 +32,7 @@ object Configuration {
         "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
         "KAFKA_RESET_POLICY" to "latest",
         "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-vedtak-v1",
+        "HTTP_PORT" to "8080",
     )
 
     private val otherDefaultProperties = mapOf(
