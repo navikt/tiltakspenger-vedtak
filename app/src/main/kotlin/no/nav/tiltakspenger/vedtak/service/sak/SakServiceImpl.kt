@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -12,6 +13,9 @@ import no.nav.tiltakspenger.vedtak.innsending.tolkere.AlderTolker
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class SakServiceImpl(
     val sakRepo: SakRepo,
@@ -37,6 +41,8 @@ class SakServiceImpl(
         val sak = sakRepo.hentForJournalpostId(journalpostId)
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
+        SECURELOG.info { "Vi fant sak ${sak.id}" }
+        SECURELOG.info { "Vi fant personopplysninger ${personopplysninger.filterIsInstance<Personopplysninger.Søker>()}" }
         val personopplysningerMedSkjerming = personopplysninger.map {
             when (it) {
                 is Personopplysninger.BarnMedIdent -> it.copy(
@@ -52,6 +58,7 @@ class SakServiceImpl(
             }
         }
 
+        SECURELOG.info { "personopplysninger med skjerming ${personopplysningerMedSkjerming.filterIsInstance<Personopplysninger.Søker>()}" }
         val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
         sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {

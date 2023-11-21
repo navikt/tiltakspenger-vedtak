@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
 import io.ktor.server.plugins.NotFoundException
+import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -12,6 +13,9 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
+
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
@@ -34,6 +38,7 @@ class BehandlingServiceImpl(
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         val behandlingRespons = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
             ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
+        SECURELOG.info { "Vi fikk response $behandlingRespons" }
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 

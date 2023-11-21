@@ -10,7 +10,8 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 
-val log = KotlinLogging.logger {}
+private val LOG = KotlinLogging.logger {}
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
@@ -225,6 +226,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            SECURELOG.info { "Legger til saksopplysning $saksopplysning" }
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
                 LeggTilSaksopplysningRespons(
@@ -281,6 +283,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         }
 
         override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+            SECURELOG.info { "Legger til saksopplysning $saksopplysning" }
             val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
             return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
                 LeggTilSaksopplysningRespons(
