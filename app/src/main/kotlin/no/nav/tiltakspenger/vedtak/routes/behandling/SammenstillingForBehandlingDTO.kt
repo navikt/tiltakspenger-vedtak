@@ -15,6 +15,7 @@ import java.time.LocalDate
 data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
     val saksbehandler: String?,
+    val beslutter: String?,
     val fom: LocalDate,
     val tom: LocalDate,
     val søknad: SøknadDTO,
@@ -80,6 +81,11 @@ fun mapSammenstillingDTO(
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
         saksbehandler = behandling.saksbehandler,
+        beslutter = when (behandling) {
+            is BehandlingIverksatt -> behandling.beslutter
+            is BehandlingTilBeslutter -> behandling.beslutter
+            else -> null
+        },
         fom = behandling.vurderingsperiode.fra,
         tom = behandling.vurderingsperiode.til,
         søknad = SøknadDTO(
