@@ -76,6 +76,7 @@ class BehandlingServiceImpl(
                 behandlingRepo.lagre(behandling.sendTilbake())
                 attesteringRepo.lagre(attestering)
             }
+
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
         }
     }
@@ -90,7 +91,8 @@ class BehandlingServiceImpl(
         }
 
         val iverksattBehandling = when (behandling) {
-            is BehandlingTilBeslutter -> behandling.iverksett()
+            is BehandlingTilBeslutter.Innvilget -> behandling.iverksett()
+            is BehandlingTilBeslutter.Avslag -> throw IllegalStateException("Iverksett av Avslag fungerer, men skal ikke tillates i mvp 1 $behandling")
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
         val attestering = Attestering(
