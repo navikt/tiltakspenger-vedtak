@@ -33,10 +33,12 @@ spec:
       claims:
         groups:
           - id: {{ ROLE_SAKSBEHANDLER }}
+          - id: {{ ROLE_BESLUTTER }}
+          - id: {{ ROLE_ADMINISTRATOR }}
           - id: {{ ROLE_FORTROLIG }}
           - id: {{ ROLE_STRENGT_FORTROLIG }}
           - id: {{ ROLE_SKJERMING }}
-          - id: {{ ROLE_ADMIN }}
+          - id: {{ ROLE_DRIFT }}
         extra:
           - NAVident
           - azp_name
