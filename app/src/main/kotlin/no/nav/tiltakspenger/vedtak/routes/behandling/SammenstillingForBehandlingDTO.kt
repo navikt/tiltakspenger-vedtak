@@ -23,6 +23,7 @@ data class SammenstillingForBehandlingDTO(
     val saksopplysninger: List<KategoriserteSaksopplysningerDTO>,
     val personopplysninger: PersonopplysningerDTO,
     val tilstand: String,
+    val status: String,
 )
 
 data class PersonopplysningerDTO(
@@ -144,6 +145,7 @@ fun mapSammenstillingDTO(
             is BehandlingVilkårsvurdert -> "vilkårsvurdert"
             is Søknadsbehandling.Opprettet -> "opprettet"
         },
+        status = finnStatus(behandling),
     )
 }
 
@@ -307,3 +309,12 @@ enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
     ),
     INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
 }
+
+fun finnStatus(behandling: Søknadsbehandling) =
+    when (behandling) {
+        is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
+        is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
+        is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
+        is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
+        is Søknadsbehandling.Opprettet -> "Klar til behandling"
+    }

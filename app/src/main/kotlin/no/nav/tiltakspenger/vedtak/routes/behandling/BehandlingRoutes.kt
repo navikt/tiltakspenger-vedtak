@@ -11,7 +11,6 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
@@ -225,12 +224,3 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 }
-
-private fun finnStatus(behandling: Søknadsbehandling) =
-    when (behandling) {
-        is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
-        is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
-        is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
-        is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
-        is Søknadsbehandling.Opprettet -> "Klar til behandling"
-    }
