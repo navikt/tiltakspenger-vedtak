@@ -124,13 +124,15 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        check(saksbehandler.roller.contains(Rolle.BESLUTTER) || saksbehandler.roller.contains(Rolle.ADMINISTRATOR)) { "Saksbehandler må være beslutter eller administrator" }
+        val isAdmin = saksbehandler.roller.contains(Rolle.ADMINISTRATOR)
+
+        check(saksbehandler.roller.contains(Rolle.BESLUTTER) || isAdmin) { "Saksbehandler må være beslutter eller administrator" }
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
         // TODO her må vi få inn begrunnelse
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, "Ikke godkjent")
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, "Ikke godkjent", isAdmin)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }

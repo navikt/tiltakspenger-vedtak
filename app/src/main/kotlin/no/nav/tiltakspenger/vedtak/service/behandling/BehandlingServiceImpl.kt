@@ -58,7 +58,7 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?) {
+    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?, isAdmin: Boolean) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
@@ -72,7 +72,7 @@ class BehandlingServiceImpl(
 
         when (behandling) {
             is BehandlingTilBeslutter -> {
-                check(behandling.beslutter == beslutter) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
+                check(behandling.beslutter == beslutter || isAdmin) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
                 behandlingRepo.lagre(behandling.sendTilbake())
                 attesteringRepo.lagre(attestering)
             }
