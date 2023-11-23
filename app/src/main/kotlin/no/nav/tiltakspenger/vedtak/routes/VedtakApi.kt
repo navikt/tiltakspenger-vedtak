@@ -240,8 +240,8 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
      */
 
     install(Authentication) {
-        jwt(config, "saksbehandling", "saksbehandling", listOf(Rolle.SAKSBEHANDLER))
-        jwt(config, "admin", "saksbehandling", listOf(Rolle.ADMIN))
+        jwt(config, "saksbehandling", "saksbehandling", listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER, Rolle.ADMINISTRATOR))
+        jwt(config, "admin", "saksbehandling", listOf(Rolle.DRIFT))
         jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))
     }
 }
