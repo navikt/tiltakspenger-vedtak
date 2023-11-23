@@ -4,8 +4,9 @@ enum class Rolle {
     SAKSBEHANDLER,
     FORTROLIG_ADRESSE,
     STRENGT_FORTROLIG_ADRESSE,
-    SKJERMING, LAGE_HENDELSER,
+    SKJERMING,
+    LAGE_HENDELSER,
     DRIFT, // Systemadministrator (oss)
     BESLUTTER,
-    ADMINISTRATOR, // Saksbehandlers administrator (superbruker
+    ADMINISTRATOR, // Saksbehandlers administrator (superbruker)
 }
