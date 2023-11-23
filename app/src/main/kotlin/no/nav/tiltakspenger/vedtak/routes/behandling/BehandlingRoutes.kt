@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
@@ -107,6 +108,8 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
+        check(saksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
@@ -121,6 +124,8 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
+        check(saksbehandler.roller.contains(Rolle.BESLUTTER) || saksbehandler.roller.contains(Rolle.ADMINISTRATOR)) { "Saksbehandler må være beslutter eller administrator" }
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
@@ -134,6 +139,8 @@ fun Route.behandlingRoutes(
         LOG.debug { "Vi har mottatt melding om oppfriskning av fakta" }
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        // TODO: Rollesjekk ikke helt landet
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
@@ -159,10 +166,12 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
+        check(saksbehandler.roller.contains(Rolle.SAKSBEHANDLER) || saksbehandler.roller.contains(Rolle.BESLUTTER)) { "Saksbehandler må være saksbehandler eller beslutter" }
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.startBehandling(behandlingId, saksbehandler.navIdent)
+        behandlingService.startBehandling(behandlingId, saksbehandler.navIdent) // Bør kanskje sjekke rolle dypere
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
@@ -172,6 +181,8 @@ fun Route.behandlingRoutes(
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        check(saksbehandler.roller.contains(Rolle.SAKSBEHANDLER) || saksbehandler.roller.contains(Rolle.ADMINISTRATOR)) { "Saksbehandler må være saksbehandler eller administrator" }
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
@@ -186,6 +197,8 @@ fun Route.behandlingRoutes(
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        check(saksbehandler.roller.contains(Rolle.BESLUTTER)) { "Saksbehandler må være beslutter" }
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
