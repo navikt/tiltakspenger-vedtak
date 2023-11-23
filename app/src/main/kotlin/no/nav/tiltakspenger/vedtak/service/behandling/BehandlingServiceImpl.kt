@@ -123,11 +123,11 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(behandling.startBehandling(saksbehandler))
     }
 
-    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String) {
+    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String, isAdmin: Boolean) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
-        check(behandling.saksbehandler == saksbehandler) { "Kan ikke avbryte en behandling som ikke er din" }
+        check(behandling.saksbehandler == saksbehandler || isAdmin) { "Kan ikke avbryte en behandling som ikke er din" }
         behandlingRepo.lagre(behandling.avbrytBehandling())
     }
 }
