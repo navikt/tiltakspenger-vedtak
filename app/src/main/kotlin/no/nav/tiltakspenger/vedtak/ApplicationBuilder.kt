@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
-import no.nav.tiltakspenger.vedtak.clients.UtbetalingClient
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl

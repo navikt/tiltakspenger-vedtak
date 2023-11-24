@@ -28,7 +28,10 @@ import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
+import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.overgangsstønadRoutes
@@ -41,6 +44,7 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
+import no.nav.tiltakspenger.vedtak.routes.utbetaling.utbetalingRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
@@ -87,8 +91,21 @@ internal fun Application.vedtakApi(
                 behandlingService = behandlingService,
                 sakService = sakService,
                 innsendingMediator = innsendingMediator,
+            )
+            behandlingBenkRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                behandlingService = behandlingService,
+                sakService = sakService,
+            )
+            behandlingBeslutterRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                behandlingService = behandlingService,
+            )
+            utbetalingRoutes(
+                behandlingService = behandlingService,
                 utbetalingService = utbetalingService,
             )
+            meldekortRoutes()
         }
         authenticate("admin") {
             resettInnsendingerRoute(innsendingAdminService)
@@ -240,7 +257,12 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
      */
 
     install(Authentication) {
-        jwt(config, "saksbehandling", "saksbehandling", listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER, Rolle.ADMINISTRATOR))
+        jwt(
+            config,
+            "saksbehandling",
+            "saksbehandling",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER, Rolle.ADMINISTRATOR),
+        )
         jwt(config, "admin", "saksbehandling", listOf(Rolle.DRIFT))
         jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))
     }

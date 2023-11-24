@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.clients
+package no.nav.tiltakspenger.vedtak.clients.utbetaling
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
@@ -15,6 +15,8 @@ import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
+import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
