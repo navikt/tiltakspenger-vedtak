@@ -1,8 +1,8 @@
-package no.nav.tiltakspenger.vedtak.repository.sak
+package no.nav.tiltakspenger.vedtak.service.personopplysning
 
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.felles.SakId
 
-interface PersonopplysningerRepo {
+interface PersonopplysningService {
     fun hent(sakId: SakId): List<Personopplysninger>
 }

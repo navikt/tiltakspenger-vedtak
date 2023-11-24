@@ -10,6 +10,7 @@ import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -34,8 +35,12 @@ fun Route.behandlingRoutes(
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+
         val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(
             message = "Sak ikke funnet",
             status = HttpStatusCode.NotFound,
@@ -45,6 +50,13 @@ fun Route.behandlingRoutes(
             return@get call.respond(
                 message = "Sak mangler personopplysninger",
                 status = HttpStatusCode.NotFound,
+            )
+        }
+
+        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+            call.respond(
+                status = HttpStatusCode.Unauthorized,
+                message = "{}",
             )
         }
 

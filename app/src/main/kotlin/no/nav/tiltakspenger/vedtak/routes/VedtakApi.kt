@@ -47,6 +47,7 @@ import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.routes.utbetaling.utbetalingRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
@@ -69,6 +70,7 @@ internal fun Application.vedtakApi(
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
     utbetalingService: UtbetalingService,
+    personopplysningService: PersonopplysningService,
 ) {
     install(CallId)
     install(CallLogging) {

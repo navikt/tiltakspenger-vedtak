@@ -11,12 +11,14 @@ import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
@@ -44,6 +46,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
                 utbetalingService = utbetalingServiceImpl,
+                personopplysningService = personopplysningServiceImpl,
             )
         }
         .build()
@@ -54,6 +57,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sakRepo = PostgresSakRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
+    private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val attesteringRepo = AttesteringRepoImpl()
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
@@ -62,6 +66,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
+    private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val tokenProviderUtbetaling: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
 

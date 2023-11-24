@@ -9,10 +9,11 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.domene.behandling.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -20,23 +21,29 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
-    sakService: SakService,
+    personopplysningService: PersonopplysningService,
 ) {
     get(behandlingerPath) {
         SECURELOG.debug("Mottatt request på $behandlingerPath")
-        val behandlinger = behandlingService.hentAlleBehandlinger().map {
-            BehandlingDTO(
-                id = it.id.toString(),
-                ident = it.søknad().personopplysninger.ident,
-                saksbehandler = it.saksbehandler,
-                beslutter = when (it) {
-                    is BehandlingIverksatt -> it.beslutter
-                    is BehandlingTilBeslutter -> it.beslutter
-                    else -> null
-                },
-                status = finnStatus(it),
-            )
-        }.sortedBy { it.id }
+
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val behandlinger = behandlingService.hentAlleBehandlinger()
+            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
+            .map {
+                BehandlingDTO(
+                    id = it.id.toString(),
+                    ident = it.søknad().personopplysninger.ident,
+                    saksbehandler = it.saksbehandler,
+                    beslutter = when (it) {
+                        is BehandlingIverksatt -> it.beslutter
+                        is BehandlingTilBeslutter -> it.beslutter
+                        else -> null
+                    },
+                    status = finnStatus(it),
+                )
+            }.sortedBy { it.id }
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }

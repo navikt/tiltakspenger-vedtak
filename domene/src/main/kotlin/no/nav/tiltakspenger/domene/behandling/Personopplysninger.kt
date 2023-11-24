@@ -1,10 +1,19 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.Saksbehandler
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-sealed class Personopplysninger {
-    abstract fun avklartSkjerming(): Boolean
+private val SECURELOG = KotlinLogging.logger("tjenestekall")
+
+sealed interface Personopplysninger {
+    fun avklartSkjerming(): Boolean
+    fun strengtFortrolig(): Boolean
+    fun fortrolig(): Boolean
+    fun skjermet(): Boolean
+
     data class Søker(
         val ident: String,
         val fødselsdato: LocalDate,
@@ -18,8 +27,11 @@ sealed class Personopplysninger {
         val kommune: String?,
         val bydel: String?,
         val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
-    ) : Personopplysninger() {
+    ) : Personopplysninger {
         override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
+        override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
+        override fun fortrolig(): Boolean = fortrolig
+        override fun skjermet(): Boolean = skjermet ?: true
 
         override fun equals(other: Any?): Boolean {
             if (other !is Søker) return false
@@ -43,8 +55,11 @@ sealed class Personopplysninger {
         val mellomnavn: String?,
         val etternavn: String?,
         val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
-    ) : Personopplysninger() {
+    ) : Personopplysninger {
         override fun avklartSkjerming(): Boolean = false
+        override fun strengtFortrolig(): Boolean = false
+        override fun fortrolig(): Boolean = false
+        override fun skjermet(): Boolean = false
 
         override fun equals(other: Any?): Boolean {
             if (other !is BarnUtenIdent) return false
@@ -67,8 +82,11 @@ sealed class Personopplysninger {
         val skjermet: Boolean?,
         val oppholdsland: String?,
         val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
-    ) : Personopplysninger() {
+    ) : Personopplysninger {
         override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
+        override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
+        override fun fortrolig(): Boolean = fortrolig
+        override fun skjermet(): Boolean = skjermet ?: true
 
         override fun equals(other: Any?): Boolean {
             if (other !is BarnMedIdent) return false
@@ -91,4 +109,11 @@ fun List<Personopplysninger>.erLik(personopplysninger: List<Personopplysninger>)
     return this.all { person ->
         personopplysninger.any { it == person }
     }
+}
+
+fun List<Personopplysninger>.harTilgang(saksbehandler: Saksbehandler): Boolean {
+    if (this.any { it.strengtFortrolig() }) return Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller
+    if (this.any { it.fortrolig() }) return Rolle.FORTROLIG_ADRESSE in saksbehandler.roller
+    if (this.any { it.skjermet() }) return Rolle.SKJERMING in saksbehandler.roller
+    return true
 }

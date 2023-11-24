@@ -22,7 +22,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresSakRepo(
     private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
-    private val personopplysningerRepo: PersonopplysningerRepo = PersonopplysningerRepo(),
+    private val personopplysningerRepo: PostgresPersonopplysningerRepo = PostgresPersonopplysningerRepo(),
 ) : SakRepo {
     override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
         return sessionOf(DataSource.hikariDataSource).use {
