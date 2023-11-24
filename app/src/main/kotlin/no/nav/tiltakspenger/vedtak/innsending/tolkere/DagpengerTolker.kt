@@ -25,14 +25,17 @@ class DagpengerTolker {
             }
 
             val ytelseListe = ytelser
-                .filterNot { it.fomGyldighetsperiode.isAfter(it.tomGyldighetsperiode) } // Arena sender noen ganger ugyldig periode
+                .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.DAGP }
+                .filterNot {
+                    it.fomGyldighetsperiode.toLocalDate()
+                        .isAfter(it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)
+                } // Arena sender noen ganger ugyldig periode
                 .filter {
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
                         (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX),
                     ).overlapperMed(periode)
                 }
-                .filter { it.ytelsestype == YtelseSak.YtelseSakYtelsetype.DAGP }
 
             if (ytelseListe.isEmpty()) {
                 return listOf(
