@@ -8,7 +8,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
@@ -16,7 +16,7 @@ internal const val utbetalingPath = "/utbetaling"
 
 fun Route.utbetalingRoutes(
     behandlingService: BehandlingService,
-    utbetalingService: UtbetalingServiceImpl,
+    utbetalingService: UtbetalingService,
 ) {
     post("$utbetalingPath/sendtilutbetaling/{behandlingId}") {
         SECURELOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
