@@ -159,4 +159,61 @@ internal class PeriodeTest {
             periodeEn.trekkFra(listOf(periodeTo, periodeTre))
         }
     }
+
+    @Test
+    fun `hvis man legger sammen to perioder som overlapper får man en periode`() {
+        val periodeEn = Periode(fra = 3.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 10.mai(2022), til = 20.mai(2022))
+        val periodeTre = Periode(fra = 3.mai(2022), til = 20.mai(2022))
+        assertEquals(periodeTre, listOf(periodeEn, periodeTo).leggSammen().first())
+    }
+
+    @Test
+    fun `hvis man legger sammen to tilstøtende perioder får man en periode`() {
+        val periodeEn = Periode(fra = 6.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 1.mai(2022), til = 5.mai(2022))
+        val periodeTre = Periode(fra = 1.mai(2022), til = 15.mai(2022))
+        assertEquals(periodeTre, listOf(periodeEn, periodeTo).leggSammen().first())
+    }
+
+    @Test
+    fun `hvis man legger sammen to tilstøtende perioder og en tredje separat periode får man to perioder`() {
+        val periodeEn = Periode(fra = 6.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 1.mai(2022), til = 5.mai(2022))
+        val periodeFasitEn = Periode(fra = 1.mai(2022), til = 15.mai(2022))
+        val periodeTre = Periode(fra = 18.mai(2022), til = 20.mai(2022))
+        val periodeFasitTo = Periode(fra = 18.mai(2022), til = 20.mai(2022))
+        assertEquals(periodeFasitEn, listOf(periodeEn, periodeTo, periodeTre).leggSammen().first())
+        assertEquals(periodeFasitTo, listOf(periodeEn, periodeTo, periodeTre).leggSammen().last())
+    }
+
+    @Test
+    fun `to overlappende perioder gir overlapp`() {
+        val periodeEn = Periode(fra = 6.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 1.mai(2022), til = 7.mai(2022))
+        assertEquals(true, listOf(periodeEn, periodeTo).inneholderOverlapp())
+    }
+
+    @Test
+    fun `to ikke-overlappende perioder gir ikke overlapp`() {
+        val periodeEn = Periode(fra = 8.mai(2022), til = 15.mai(2022))
+        val periodeTo = Periode(fra = 1.mai(2022), til = 7.mai(2022))
+        assertEquals(false, listOf(periodeEn, periodeTo).inneholderOverlapp())
+    }
+
+    @Test
+    fun `tre ikke-overlappende perioder der den tredje er mellom de to første gir ikke overlapp`() {
+        val periodeEn = Periode(fra = 1.mai(2022), til = 10.mai(2022))
+        val periodeTo = Periode(fra = 20.mai(2022), til = 25.mai(2022))
+        val periodeTre = Periode(fra = 11.mai(2022), til = 19.mai(2022))
+        assertEquals(false, listOf(periodeEn, periodeTo, periodeTre).inneholderOverlapp())
+    }
+
+    @Test
+    fun `tre ikke-overlappende perioder der den tredje med den andre gir overlapp`() {
+        val periodeEn = Periode(fra = 1.mai(2022), til = 10.mai(2022))
+        val periodeTo = Periode(fra = 20.mai(2022), til = 25.mai(2022))
+        val periodeTre = Periode(fra = 11.mai(2022), til = 20.mai(2022))
+        assertEquals(true, listOf(periodeEn, periodeTo, periodeTre).inneholderOverlapp())
+    }
 }

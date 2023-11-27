@@ -117,7 +117,22 @@ class Periode(fra: LocalDate, til: LocalDate) {
     }
 }
 
-fun List<Periode>.leggSammen(): List<Periode> {
+fun List<Periode>.inneholderOverlapp(): Boolean {
+    val rangeSet = TreeRangeSet.create<LocalDate>()
+    this.forEach {
+        if (rangeSet.intersects(it.range)) {
+            return true
+        } else {
+            rangeSet.add(it.range)
+        }
+    }
+    return false
+}
+
+fun List<Periode>.leggSammen(godtaOverlapp: Boolean = true): List<Periode> {
+    if (!godtaOverlapp && this.inneholderOverlapp()) {
+        throw IllegalArgumentException("Listen inneholder overlappende perioder")
+    }
     val rangeSet = TreeRangeSet.create<LocalDate>()
     rangeSet.addAll(this.map { it.range })
     return rangeSet.asRanges().toPerioder()
