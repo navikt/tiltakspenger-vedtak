@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.domene.behandling
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.domene.vilkår.Utfall
@@ -152,7 +151,9 @@ sealed interface Søknadsbehandling : Behandling {
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
+                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                    acc.oppdaterSaksopplysninger(saksopplysning)
+                },
                 tiltak = tiltak,
                 saksbehandler = saksbehandler,
             ).vilkårsvurder()
