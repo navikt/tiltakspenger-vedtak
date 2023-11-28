@@ -227,13 +227,23 @@ fun Saksopplysning.lagVurdering(periode: Periode): List<Vurdering> {
         )
 
         HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) {
-            Vurdering.KreverManuellVurdering(
-                vilkår = this.vilkår,
-                kilde = this.kilde,
-                fom = this.fom,
-                tom = this.tom,
-                detaljer = this.detaljer,
-            )
+            if (this.kilde == Kilde.SAKSB) {
+                Vurdering.IkkeOppfylt(
+                    vilkår = this.vilkår,
+                    kilde = this.kilde,
+                    fom = this.fom,
+                    tom = this.tom,
+                    detaljer = this.detaljer,
+                )
+            } else {
+                Vurdering.KreverManuellVurdering(
+                    vilkår = this.vilkår,
+                    kilde = this.kilde,
+                    fom = this.fom,
+                    tom = this.tom,
+                    detaljer = this.detaljer,
+                )
+            }
         } else {
             Vurdering.IkkeOppfylt(
                 vilkår = this.vilkår,
