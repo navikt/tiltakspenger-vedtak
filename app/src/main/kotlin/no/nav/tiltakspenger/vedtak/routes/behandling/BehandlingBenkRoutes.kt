@@ -9,6 +9,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
@@ -42,6 +43,9 @@ fun Route.behandlingBenkRoutes(
                         else -> null
                     },
                     status = finnStatus(it),
+                    typeBehandling = if (it is Søknadsbehandling) "Førstegangsbehandling" else "Ukjent",
+                    fom = it.vurderingsperiode.fra,
+                    tom = it.vurderingsperiode.til,
                 )
             }.sortedBy { it.id }
 
