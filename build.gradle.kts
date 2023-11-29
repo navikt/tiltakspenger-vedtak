@@ -10,7 +10,11 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven("https://packages.confluent.io/maven/")
-        maven("https://jitpack.io")
+        maven {
+            url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+        }
+        // Trengs for kulid:
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
