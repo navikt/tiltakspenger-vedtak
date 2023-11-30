@@ -173,6 +173,7 @@ internal class PeriodeTest {
         val periodeEn = Periode(fra = 6.mai(2022), til = 15.mai(2022))
         val periodeTo = Periode(fra = 1.mai(2022), til = 5.mai(2022))
         val periodeTre = Periode(fra = 1.mai(2022), til = 15.mai(2022))
+        assertEquals(1, listOf(periodeEn, periodeTo).leggSammen().size)
         assertEquals(periodeTre, listOf(periodeEn, periodeTo).leggSammen().first())
     }
 

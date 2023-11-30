@@ -2,7 +2,7 @@ val javaVersion = JavaVersion.VERSION_21
 
 plugins {
     kotlin("jvm") version "1.9.21"
-    id("com.diffplug.spotless") version "6.23.0"
+    id("com.diffplug.spotless") version "6.23.1"
 }
 
 allprojects {
@@ -10,7 +10,11 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven("https://packages.confluent.io/maven/")
-        maven("https://jitpack.io")
+        maven {
+            url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
+        }
+        // Trengs for kulid:
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
