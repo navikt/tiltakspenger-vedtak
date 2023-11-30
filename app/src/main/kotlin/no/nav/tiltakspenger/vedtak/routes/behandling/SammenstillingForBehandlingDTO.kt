@@ -31,7 +31,7 @@ data class SammenstillingForBehandlingDTO(
 )
 
 data class EndringDTO(
-    val type: EndringsType,
+    val type: String,
     val begrunnelse: String,
     val endretAv: String,
     val endretTidspunkt: LocalDateTime,
@@ -166,8 +166,8 @@ fun mapSammenstillingDTO(
         endringslogg = attesteringer.map { att ->
             EndringDTO(
                 type = when (att.svar) {
-                    AttesteringStatus.GODKJENT -> EndringsType.GODKJENT
-                    AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE
+                    AttesteringStatus.GODKJENT -> EndringsType.GODKJENT.beskrivelse
+                    AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE.beskrivelse
                 },
                 begrunnelse = att.begrunnelse ?: "Godkjent av beslutter",
                 endretAv = att.beslutter,
