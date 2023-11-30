@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.domene.attestering.Attestering
+import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -12,6 +13,7 @@ import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
@@ -27,12 +29,14 @@ data class SammenstillingForBehandlingDTO(
     val status: String,
     val endringslogg: List<EndringDTO>,
 )
+
 data class EndringDTO(
     val type: EndringsType,
     val begrunnelse: String,
     val endretAv: String,
-    val endretTidspunkt: LocalDate,
+    val endretTidspunkt: LocalDateTime,
 )
+
 enum class EndringsType(val beskrivelse: String) {
     SENDT_TILBAKE("Sendt i retur"),
     GODKJENT("Godkjent"),
@@ -161,10 +165,13 @@ fun mapSammenstillingDTO(
         status = finnStatus(behandling),
         endringslogg = attesteringer.map { att ->
             EndringDTO(
-                type =
-                begrunnelse = att.begrunnelse,
-                endretAv = att.attestant,
-                endretTidspunkt = att.opprettet.toLocalDate(),
+                type = when (att.svar) {
+                    AttesteringStatus.GODKJENT -> EndringsType.GODKJENT
+                    AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE
+                },
+                begrunnelse = att.begrunnelse ?: "Godkjent av beslutter",
+                endretAv = att.beslutter,
+                endretTidspunkt = att.tidspunkt,
             )
         },
     )

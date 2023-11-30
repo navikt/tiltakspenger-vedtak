@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
@@ -32,6 +33,7 @@ fun Route.behandlingRoutes(
     behandlingService: BehandlingService,
     sakService: SakService,
     innsendingMediator: InnsendingMediator,
+    attesteringRepo: AttesteringRepo,
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
@@ -67,9 +69,12 @@ fun Route.behandlingRoutes(
         // her burde vi nok ikke bare hente den første, men finne den riktige og evnt feilmelding hvis vi ikke finner den
         // val behandling = behandlingService.hentBehandling(behandlingId) Skal vi hente behandling direkte eller via sak?
 
+        val attesteringer = attesteringRepo.hentForBehandling(behandling.id)
+
         val dto = mapSammenstillingDTO(
             behandling = behandling,
             personopplysninger = sak.personopplysninger,
+            attesteringer = attesteringer,
         )
         call.respond(status = HttpStatusCode.OK, dto)
     }
