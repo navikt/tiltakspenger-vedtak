@@ -80,6 +80,6 @@ internal class AttesteringRepoImpl : AttesteringRepo {
         svar = AttesteringStatus.valueOf(string("svar")),
         begrunnelse = stringOrNull("begrunnelse"),
         beslutter = string("beslutter"),
-        tidspunkt = LocalDateTime.parse(string("tidspunkt")),
+        tidspunkt = localDateTime("tidspunkt"),
     )
 }
