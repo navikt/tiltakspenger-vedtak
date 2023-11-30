@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -12,6 +13,10 @@ import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
+
+data class BegrunnelseDTO(
+    val begrunnelse: String,
+)
 
 fun Route.behandlingBeslutterRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -30,8 +35,9 @@ fun Route.behandlingBeslutterRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
-        // TODO her må vi få inn begrunnelse
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, "Ikke godkjent", isAdmin)
+        val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
+
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, begrunnelse, isAdmin)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
