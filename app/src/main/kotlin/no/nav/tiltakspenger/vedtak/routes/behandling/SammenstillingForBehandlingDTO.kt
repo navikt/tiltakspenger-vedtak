@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -24,7 +25,18 @@ data class SammenstillingForBehandlingDTO(
     val personopplysninger: PersonopplysningerDTO,
     val tilstand: String,
     val status: String,
+    val endringslogg: List<EndringDTO>,
 )
+data class EndringDTO(
+    val type: EndringsType,
+    val begrunnelse: String,
+    val endretAv: String,
+    val endretTidspunkt: LocalDate,
+)
+enum class EndringsType(val beskrivelse: String) {
+    SENDT_TILBAKE("Sendt i retur"),
+    GODKJENT("Godkjent"),
+}
 
 data class PersonopplysningerDTO(
     val ident: String,
@@ -78,6 +90,7 @@ data class FaktaDTO(
 fun mapSammenstillingDTO(
     behandling: Søknadsbehandling,
     personopplysninger: List<Personopplysninger>,
+    attesteringer: List<Attestering>,
 ): SammenstillingForBehandlingDTO {
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
@@ -146,6 +159,14 @@ fun mapSammenstillingDTO(
             is Søknadsbehandling.Opprettet -> "opprettet"
         },
         status = finnStatus(behandling),
+        endringslogg = attesteringer.map { att ->
+            EndringDTO(
+                type =
+                begrunnelse = att.begrunnelse,
+                endretAv = att.attestant,
+                endretTidspunkt = att.opprettet.toLocalDate(),
+            )
+        },
     )
 }
 
