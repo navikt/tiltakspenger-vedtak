@@ -8,6 +8,7 @@ interface BehandlingRepo {
     fun lagre(behandling: Søknadsbehandling): Søknadsbehandling
     fun hent(behandlingId: BehandlingId): Søknadsbehandling?
     fun hentAlle(): List<Søknadsbehandling>
+    fun hentAlleForIdent(ident: String): List<Søknadsbehandling>
     fun hentForSak(sakId: SakId): List<Søknadsbehandling>
     fun hentForJournalpostId(journalpostId: String): Søknadsbehandling?
 }

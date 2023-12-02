@@ -16,4 +16,5 @@ interface BehandlingService {
     fun iverksett(behandlingId: BehandlingId, saksbehandler: String)
     fun startBehandling(behandlingId: BehandlingId, saksbehandler: String)
     fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String, isAdmin: Boolean)
+    fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling>
 }
