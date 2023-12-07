@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import kotlin.test.Test
 
 internal class SaksopplysningTest {
@@ -52,6 +53,61 @@ internal class SaksopplysningTest {
         val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning).behandling
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+    }
+
+    @Test
+    fun `ny søknad med samme saksopplysning fjerner ikke saksbehandler`() {
+        val sakbehandlerOpplysning =
+            Saksopplysning(
+                fom = 1.januar(2023),
+                tom = 31.mars(2023),
+                kilde = Kilde.SAKSB,
+                vilkår = Vilkår.INTROPROGRAMMET,
+                detaljer = "",
+                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                saksbehandler = null,
+            )
+
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+
+        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
+        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+
+        val behandlingMedUendretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad())
+        behandlingMedUendretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
+        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+    }
+
+    @Test
+    fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
+        val sakbehandlerOpplysning =
+            Saksopplysning(
+                fom = 1.januar(2023),
+                tom = 31.mars(2023),
+                kilde = Kilde.SAKSB,
+                vilkår = Vilkår.INTROPROGRAMMET,
+                detaljer = "",
+                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                saksbehandler = null,
+            )
+
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+
+        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
+        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+
+        val behandlingMedEndretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad(intro = periodeJa()))
+        behandlingMedEndretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
+        behandlingMedEndretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
     @Test

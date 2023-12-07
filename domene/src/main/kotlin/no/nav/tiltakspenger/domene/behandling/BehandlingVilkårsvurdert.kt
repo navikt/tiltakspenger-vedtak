@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
@@ -136,7 +135,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
+                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                    acc.oppdaterSaksopplysninger(saksopplysning)
+                },
                 tiltak = tiltak,
                 saksbehandler = saksbehandler,
             ).vilkårsvurder()
@@ -219,7 +220,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
+                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                    acc.oppdaterSaksopplysninger(saksopplysning)
+                },
                 tiltak = tiltak,
                 saksbehandler = saksbehandler,
             ).vilkårsvurder()
@@ -275,7 +278,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
+                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                    acc.oppdaterSaksopplysninger(saksopplysning)
+                },
                 tiltak = tiltak,
                 saksbehandler = saksbehandler,
             ).vilkårsvurder()
