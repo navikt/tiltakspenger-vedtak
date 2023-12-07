@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -14,8 +13,10 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -24,6 +25,7 @@ fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     personopplysningService: PersonopplysningService,
+    søkerService: SøkerService,
 ) {
     get(behandlingerPath) {
         SECURELOG.debug("Mottatt request på $behandlingerPath")
@@ -54,13 +56,18 @@ fun Route.behandlingBenkRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    post("$behandlingerPath/hentForIdent") {
+    get("$behandlingerPath/hentForIdent/{søkerId}") {
         SECURELOG.debug { "Mottatt request om å hente alle behandlinger for en ident" }
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        val ident = call.receive<IdentDTO>().ident
-        checkNotNull(ident) { "Kan ikke hente behandlinger uten en ident" }
+        val søkerId = call.parameters["søkerId"]?.let { SøkerId.fromDb(it) }
+            ?: return@get call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        checkNotNull(søkerId) { "Kan ikke hente behandlinger uten en søker-ID" }
+
+        val ident = søkerService.hentIdent(søkerId, saksbehandler)
+            ?: return@get call.respond(message = "Fant ikke ident for søker", status = HttpStatusCode.NotFound)
 
         val behandlinger = behandlingService.hentBehandlingForIdent(ident)
             .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
