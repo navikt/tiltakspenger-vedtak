@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningServiceImpl
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -35,6 +36,7 @@ class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
     private val behandlingService = mockk<BehandlingServiceImpl>()
     private val personopplysningService = mockk<PersonopplysningServiceImpl>()
+    private val søkerService = mockk<SøkerServiceImpl>()
 
     @Test
     fun `sjekk at man ikke kan se behandlinger for en person som er fortrolig uten tilgang`() {
@@ -45,6 +47,7 @@ class BehandlingBeslutterRoutesTest {
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
         every { personopplysningService.hent(any()) } returns person
+        every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
         testApplication {
             application {
@@ -54,14 +57,15 @@ class BehandlingBeslutterRoutesTest {
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
                         personopplysningService,
+                        søkerService,
                     )
                 }
             }
             val respons = defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath/hentForIdent")
+                    path("$behandlingerPath/hentForIdent/soker_01HCM4KW1K608E1EQT8JJX11J5")
                 },
             ) {
                 setBody(identJson)
@@ -86,6 +90,7 @@ class BehandlingBeslutterRoutesTest {
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedKode6()
         every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
         every { personopplysningService.hent(any()) } returns person
+        every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
         testApplication {
             application {
@@ -95,14 +100,15 @@ class BehandlingBeslutterRoutesTest {
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
                         personopplysningService,
+                        søkerService,
                     )
                 }
             }
             val respons = defaultRequest(
-                HttpMethod.Post,
+                HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath/hentForIdent")
+                    path("$behandlingerPath/hentForIdent/soker_01HCM4KW1K608E1EQT8JJX11J5")
                 },
             ) {
                 setBody(identJson)
