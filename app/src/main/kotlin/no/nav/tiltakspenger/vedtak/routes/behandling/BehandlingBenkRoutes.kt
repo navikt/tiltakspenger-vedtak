@@ -62,9 +62,7 @@ fun Route.behandlingBenkRoutes(
             ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
         val søkerId = call.parameters["søkerId"]?.let { SøkerId.fromDb(it) }
-            ?: return@get call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
-
-        checkNotNull(søkerId) { "Kan ikke hente behandlinger uten en søker-ID" }
+            ?: return@get call.respond(message = "SøkerId ikke funnet", status = HttpStatusCode.NotFound)
 
         val ident = søkerService.hentIdent(søkerId, saksbehandler)
             ?: return@get call.respond(message = "Fant ikke ident for søker", status = HttpStatusCode.NotFound)

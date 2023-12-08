@@ -118,7 +118,7 @@ internal class BehandlingRepoTest {
     }
 
     @Test
-    fun `lagre og hente en behandlinger for en ident`() {
+    fun `hentAlleForIdent skal kun hente behandlinger for en ident og ikke de andre`() {
         val ident = Random().nextInt().toString()
         val vårSakId = SakId.random()
         val enAnnenSakId = SakId.random()
