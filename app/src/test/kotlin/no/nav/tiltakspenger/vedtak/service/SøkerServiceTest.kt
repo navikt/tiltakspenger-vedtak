@@ -23,7 +23,7 @@ internal class SøkerServiceTest {
 
     private val innsendingRepo = mockk<InnsendingRepository>()
     private val søkerRepo = mockk<SøkerRepository>()
-    private val service = SøkerServiceImpl(søkerRepo, innsendingRepo)
+    private val service = SøkerServiceImpl(søkerRepo)
 
     @Test
     fun `skal kunne hente behandlingDTO`() {

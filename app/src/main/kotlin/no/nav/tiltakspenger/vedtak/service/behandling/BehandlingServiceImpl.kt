@@ -130,4 +130,8 @@ class BehandlingServiceImpl(
         check(behandling.saksbehandler == saksbehandler || isAdmin) { "Kan ikke avbryte en behandling som ikke er din" }
         behandlingRepo.lagre(behandling.avbrytBehandling())
     }
+
+    override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
+        return behandlingRepo.hentAlleForIdent(ident)
+    }
 }

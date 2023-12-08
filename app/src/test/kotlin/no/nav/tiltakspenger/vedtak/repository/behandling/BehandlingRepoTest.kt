@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
@@ -9,6 +10,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
@@ -113,5 +115,21 @@ internal class BehandlingRepoTest {
         }
 
         hentBehandling shouldNotBe null
+    }
+
+    @Test
+    fun `hentAlleForIdent skal kun hente behandlinger for en ident og ikke de andre`() {
+        val ident = Random().nextInt().toString()
+        val vårSakId = SakId.random()
+        val enAnnenSakId = SakId.random()
+        val sakForVårIdent = sakMedOpprettetBehandling(id = vårSakId, ident = ident)
+        val enAnnenSak = sakMedOpprettetBehandling(id = enAnnenSakId, ident = "random")
+
+        sakRepo.lagre(sakForVårIdent)
+        sakRepo.lagre(enAnnenSak)
+
+        val hentBehandling = behandlingRepo.hentAlleForIdent(ident)
+
+        hentBehandling.size shouldBe 1
     }
 }

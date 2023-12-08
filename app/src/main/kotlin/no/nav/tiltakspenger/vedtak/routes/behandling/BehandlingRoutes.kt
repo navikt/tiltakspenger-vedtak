@@ -27,6 +27,10 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal const val behandlingPath = "/behandling"
 internal const val behandlingerPath = "/behandlinger"
 
+data class IdentDTO(
+    val ident: String?,
+)
+
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,

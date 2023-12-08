@@ -60,6 +60,23 @@ internal class PostgresBehandlingRepo(
         }
     }
 
+    override fun hentAlleForIdent(ident: String): List<Søknadsbehandling> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentBehandlingForIdent,
+                        mapOf(
+                            "ident" to ident,
+                        ),
+                    ).map { row ->
+                        row.toBehandling(txSession)
+                    }.asList,
+                )
+            }
+        }
+    }
+
     override fun hentForSak(sakId: SakId): List<Søknadsbehandling> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -321,6 +338,15 @@ internal class PostgresBehandlingRepo(
     @Language("SQL")
     private val sqlHentBehandlingForSak = """
         select * from behandling where sakId = :sakId
+    """.trimIndent()
+
+    @Language("SQL")
+    private val sqlHentBehandlingForIdent = """
+        select * from behandling 
+           where sakid = (
+            select id 
+             from sak 
+             where ident = :ident)
     """.trimIndent()
 
     @Language("SQL")
