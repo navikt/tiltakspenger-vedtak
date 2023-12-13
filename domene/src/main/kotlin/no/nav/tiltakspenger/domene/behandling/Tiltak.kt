@@ -6,8 +6,8 @@ import java.time.LocalDateTime
 data class Tiltak(
     val id: String,
     val gjennomføring: Gjennomføring,
-    val deltakelseFom: LocalDate?,
-    val deltakelseTom: LocalDate?,
+    val deltakelseFom: LocalDate,
+    val deltakelseTom: LocalDate,
     val deltakelseStatus: DeltakerStatus,
     val deltakelseDagerUke: Float?,
     val deltakelseProsent: Float?,

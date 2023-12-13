@@ -70,29 +70,32 @@ private fun mapTiltak(
     tiltakDTO: List<TiltakResponsDTO.TiltakDTO>,
     innhentet: LocalDateTime,
 ): List<Tiltak> {
-    return tiltakDTO.map {
-        Tiltak(
-            id = it.id,
-            gjennomføring = Tiltak.Gjennomføring(
-                id = it.gjennomforing.id,
-                arrangørnavn = it.gjennomforing.arrangørnavn,
-                typeNavn = it.gjennomforing.typeNavn,
-                typeKode = it.gjennomforing.arenaKode.name,
-                rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
-                fom = it.gjennomforing.fom,
-                tom = it.gjennomforing.tom,
-            ),
-            deltakelseFom = it.deltakelseFom,
-            deltakelseTom = it.deltakelseTom,
-            deltakelseStatus = Tiltak.DeltakerStatus(
-                status = it.deltakelseStatus.name,
-                rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
-            ),
-            deltakelseDagerUke = it.deltakelseDagerUke,
-            deltakelseProsent = it.deltakelseProsent,
-            kilde = it.kilde,
-            registrertDato = it.registrertDato,
-            innhentet = innhentet,
-        )
-    }
+    return tiltakDTO
+        .filterNot { it.deltakelseFom == null }
+        .filterNot { it.deltakelseTom == null }
+        .map {
+            Tiltak(
+                id = it.id,
+                gjennomføring = Tiltak.Gjennomføring(
+                    id = it.gjennomforing.id,
+                    arrangørnavn = it.gjennomforing.arrangørnavn,
+                    typeNavn = it.gjennomforing.typeNavn,
+                    typeKode = it.gjennomforing.arenaKode.name,
+                    rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
+                    fom = it.gjennomforing.fom,
+                    tom = it.gjennomforing.tom,
+                ),
+                deltakelseFom = it.deltakelseFom!!,
+                deltakelseTom = it.deltakelseTom!!,
+                deltakelseStatus = Tiltak.DeltakerStatus(
+                    status = it.deltakelseStatus.name,
+                    rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
+                ),
+                deltakelseDagerUke = it.deltakelseDagerUke,
+                deltakelseProsent = it.deltakelseProsent,
+                kilde = it.kilde,
+                registrertDato = it.registrertDato,
+                innhentet = innhentet,
+            )
+        }
 }
