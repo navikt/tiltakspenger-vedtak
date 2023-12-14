@@ -13,14 +13,18 @@ import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.april
+import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.juli
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -229,5 +233,28 @@ internal class BehandlingServiceTest {
             it.tom shouldBe 31.mars(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
         }
+    }
+
+    @Test
+    fun `tiltak utenfor vurderingsperioden skal filtreres bort`() {
+        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
+            periode = Periode(1.januar(2023), 31.mars(2023)),
+        )
+
+        val lagretBehandling = slot<Søknadsbehandling>()
+        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
+
+        val tiltak = listOf(
+            tiltak(id = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
+            tiltak(id = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
+            tiltak(id = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
+            tiltak(id = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
+        )
+        behandlingService.oppdaterTiltak(behandling.id, tiltak)
+
+        lagretBehandling.captured.tiltak.size shouldBe 2
+        lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"
+        lagretBehandling.captured.tiltak.first { it.id == "starterInni" }.id shouldBe "starterInni"
     }
 }

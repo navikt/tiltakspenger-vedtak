@@ -102,8 +102,8 @@ fun mapSammenstillingDTO(
                 dagerIUken = it.deltakelseDagerUke?.toInt() ?: 0,
                 navn = it.gjennomføring.typeNavn,
                 periode = PeriodeDTO(
-                    fra = it.deltakelseFom ?: LocalDate.MIN,
-                    til = it.deltakelseTom ?: LocalDate.MAX,
+                    fra = it.deltakelseFom,
+                    til = it.deltakelseTom,
                 ),
                 prosent = it.deltakelseProsent?.toInt() ?: 0,
                 status = it.deltakelseStatus.status,

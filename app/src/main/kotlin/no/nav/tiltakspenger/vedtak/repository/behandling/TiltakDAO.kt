@@ -76,8 +76,8 @@ class TiltakDAO {
                 fom = localDateOrNull("tiltak_fom"),
                 tom = localDateOrNull("tiltak_tom"),
             ),
-            deltakelseFom = localDateOrNull("deltakelse_fom"),
-            deltakelseTom = localDateOrNull("deltakelse_tom"),
+            deltakelseFom = localDate("deltakelse_fom"),
+            deltakelseTom = localDate("deltakelse_tom"),
             deltakelseStatus = Tiltak.DeltakerStatus(
                 status = string("deltakelse_status"),
                 rettTilÅASøke = boolean("rett_til_å_søke"),
