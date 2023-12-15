@@ -116,13 +116,13 @@ sealed class Vilkår {
 
     object INTROPROGRAMMET : Vilkår() {
         override val tittel: String = "INTROPROGRAMMET"
-        override val flateTittel: String = "Introprogrammet"
+        override val flateTittel: String = "Introduksjonsprogrammet"
         override val lovreferanse: Lovreferanse = Lovreferanse.INTROPROGRAMMET
     }
 
     object KVP : Vilkår() {
         override val tittel: String = "KVP"
-        override val flateTittel: String = "KVP"
+        override val flateTittel: String = "Kvalifiseringsprogrammet(KVP)"
         override val lovreferanse: Lovreferanse = Lovreferanse.KVP
     }
 

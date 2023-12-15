@@ -193,8 +193,8 @@ val fakta = hashMapOf(
         harIkkeYtelse = "Bruker har ikke institusjonsopphold",
     ),
     "INTROPROGRAMMET" to FaktaDTO(
-        harYtelse = "Bruker mottar introprogrammet",
-        harIkkeYtelse = "Bruker mottar ikke introprogrammet",
+        harYtelse = "Bruker deltar på introduksjonsprogrammet",
+        harIkkeYtelse = "Bruker deltar ikke i introduksjonsprogrammet",
     ),
     "JOBBSJANSEN" to FaktaDTO(
         harYtelse = "Bruker deltar på jobbsjansen",
@@ -273,7 +273,7 @@ val fakta = hashMapOf(
 enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
     ALDER("Alder", listOf(Vilkår.ALDER)),
     TILTAK("Tiltak", listOf(Vilkår.TILTAKSPENGER)),
-    INTROKVP("Introduksjonsprogrammet og Kvalifikasjonsprogrammet", listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP)),
+    INTROKVP("Introduksjonsprogrammet og Kvalifiseringsprogrammet", listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP)),
     UTBETALINGER(
         "Utbetalinger",
         listOf(
