@@ -45,10 +45,10 @@ class VedtakServiceImpl(
             vedtakId = lagretVedtak.id.toString(),
             behandlingId = lagretVedtak.behandling.id.toString(),
             status = when (lagretVedtak.vedtaksType) {
-                VedtaksType.AVSLAG -> StatusDTO.AVSLAG
-                VedtaksType.INNVILGELSE -> StatusDTO.INNVILGET
-                VedtaksType.STANS -> StatusDTO.STANS
-                VedtaksType.FORLENGELSE -> StatusDTO.FORLENGELSE
+                VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV
+                VedtaksType.INNVILGELSE -> StatusDTO.AKTIV
+                VedtaksType.STANS -> StatusDTO.IKKE_AKTIV
+                VedtaksType.FORLENGELSE -> StatusDTO.AKTIV
             },
             vurderingsperiode = PeriodeDTO(fra = lagretVedtak.periode.fra, til = lagretVedtak.periode.til),
             tiltak = lagretVedtak.behandling.tiltak
@@ -58,7 +58,12 @@ class VedtakServiceImpl(
                         periodeDTO = PeriodeDTO(fra = it.deltakelseFom, til = it.deltakelseTom),
                         typeBeskrivelse = it.gjennomføring.typeNavn,
                         typeKode = it.gjennomføring.typeKode,
-                        antDagerIUken = it.deltakelseDagerUke ?: 0F,
+                        antDagerIUken = it.deltakelseDagerUke
+                            ?: if (it.deltakelseProsent == 100F) {
+                                5F
+                            } else {
+                                throw IllegalStateException("Kan ikke beregne antall dager i uken for tiltak uten deltakelseDagerUke eller deltakelseProsent")
+                            },
                     )
                 },
         )
@@ -85,10 +90,8 @@ data class MeldekortGrunnlagDTO(
 )
 
 enum class StatusDTO {
-    INNVILGET,
-    AVSLAG,
-    STANS,
-    FORLENGELSE,
+    AKTIV,
+    IKKE_AKTIV,
 }
 
 data class TiltakDTO(
@@ -97,6 +100,7 @@ data class TiltakDTO(
     val typeKode: String,
     val antDagerIUken: Float,
 )
+
 data class PeriodeDTO(
     val fra: LocalDate,
     val til: LocalDate,
