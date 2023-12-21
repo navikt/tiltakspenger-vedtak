@@ -1,3 +1,0 @@
-INSERT INTO public.sak (id, ident, saksnummer, fom, tom, sist_endret, opprettet) VALUES ('sak_01HCM4KW2EYVWC1C2VK678039R', '26878898396', 'TODO', '2023-03-10', '2023-12-31', '2023-10-13 10:52:20.143024 +00:00', '2023-10-13 09:06:56.220696 +00:00');
-INSERT INTO public.sak (id, ident, saksnummer, fom, tom, sist_endret, opprettet) VALUES ('sak_01HCMFFVZ44BTN1D8KJXEZ0H2J', '15818896163', 'TODO', '2023-08-01', '2024-06-01', '2023-10-16 10:54:10.950671 +00:00', '2023-10-13 12:16:59.366997 +00:00');
-INSERT INTO public.sak (id, ident, saksnummer, fom, tom, sist_endret, opprettet) VALUES ('sak_01HCMBX9TVENZY19RGAVZJ11NM', '23878196503', 'TODO', '2023-11-27', '2024-03-22', '2023-10-18 10:59:35.023768 +00:00', '2023-10-13 11:14:25.247197 +00:00');
