@@ -10,6 +10,10 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
     val beslutter: String
 
+    override fun søknad(): Søknad {
+        return søknader.siste()
+    }
+
     companion object {
         fun fromDb(
             id: BehandlingId,

@@ -110,3 +110,20 @@ fun lagFaktaAvSøknad(søknad: Søknad): List<Saksopplysning> {
         ),
     )
 }
+
+fun lagFaktaInit(søknad: Søknad) =
+    listOf(
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.DAGPENGER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.AAP),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_NÆRSTÅENDE),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_SYKT_BARN),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.FORELDREPENGER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OPPLÆRINGSPENGER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OMSORGSPENGER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.ALDER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.TILTAKSPENGER),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.UFØRETRYGD),
+        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
+    )
+
+fun List<Søknad>.siste() = this.maxBy { it.opprettet }.copy(opprettet = this.minBy { it.opprettet }.opprettet)

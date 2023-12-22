@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import java.time.LocalDate
 
@@ -157,10 +158,18 @@ fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysni
 
 fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
     return when (behandling) {
-        is BehandlingVilkårsvurdert -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
-        is BehandlingTilBeslutter -> behandling.hentUtfallForVilkår(saksopplysning.vilkår).name
+        is BehandlingVilkårsvurdert -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
+        is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
+        is BehandlingIverksatt -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
         else -> Utfall.KREVER_MANUELL_VURDERING.name
     }
+}
+
+private fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
+    if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
+    if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
+    if (vurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
+    throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
 }
 
 val fakta = hashMapOf(

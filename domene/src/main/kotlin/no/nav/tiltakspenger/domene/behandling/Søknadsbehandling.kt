@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.domene.behandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -12,7 +11,7 @@ sealed interface Søknadsbehandling : Behandling {
     val søknader: List<Søknad>
 
     fun søknad(): Søknad {
-        return søknader.maxBy { it.opprettet }
+        return søknader.siste()
     }
 
     data class Opprettet(
@@ -25,8 +24,6 @@ sealed interface Søknadsbehandling : Behandling {
         override val saksbehandler: String?,
 
     ) : Søknadsbehandling {
-        // TODO Vurder om vi skal ha behandlingService som er ansvarlig for å opprette denne,
-        //      eller om vi skal beholde denne (eller begge :-) )
         companion object {
             fun fromDb(
                 id: BehandlingId,
@@ -48,25 +45,33 @@ sealed interface Søknadsbehandling : Behandling {
                 )
             }
 
+            fun leggTilSøknad(behandling: Søknadsbehandling, søknad: Søknad): Opprettet {
+                val fakta = if (søknad.vurderingsperiode() != behandling.vurderingsperiode) {
+                    lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad)
+                } else {
+                    lagFaktaAvSøknad(søknad).fold(behandling.saksopplysninger) { acc, saksopplysning ->
+                        acc.oppdaterSaksopplysninger(saksopplysning)
+                    }
+                }
+
+                return Opprettet(
+                    id = behandling.id,
+                    sakId = behandling.sakId,
+                    søknader = behandling.søknader + søknad,
+                    vurderingsperiode = søknad.vurderingsperiode(),
+                    saksopplysninger = fakta,
+                    tiltak = behandling.tiltak,
+                    saksbehandler = behandling.saksbehandler,
+                )
+            }
+
             fun opprettBehandling(sakId: SakId, søknad: Søknad): Opprettet {
                 return Opprettet(
                     id = BehandlingId.random(),
                     sakId = sakId,
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
-                    saksopplysninger = listOf(
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.DAGPENGER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.AAP),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_NÆRSTÅENDE),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.PLEIEPENGER_SYKT_BARN),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.FORELDREPENGER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OPPLÆRINGSPENGER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.OMSORGSPENGER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.ALDER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.TILTAKSPENGER),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.UFØRETRYGD),
-                        Saksopplysning.initFakta(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
-                    ) + lagFaktaAvSøknad(søknad),
+                    saksopplysninger = lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad),
                     tiltak = emptyList(),
                     saksbehandler = null,
                 )
