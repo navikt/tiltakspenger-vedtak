@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
@@ -42,9 +43,10 @@ class BehandlingServiceImpl(
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
-        val behandling = hentBehandling(behandlingId)?.oppdaterTiltak(tiltak)
-            ?: throw IllegalStateException("Kunnde ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
-        behandlingRepo.lagre(behandling)
+        val behandling = hentBehandling(behandlingId)
+            ?: throw IllegalStateException("Kunne ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
+        val oppdatertBehandling = behandling.oppdaterTiltak(tiltak.filter { Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode) })
+        behandlingRepo.lagre(oppdatertBehandling)
     }
 
     override fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String) {
@@ -129,5 +131,9 @@ class BehandlingServiceImpl(
 
         check(behandling.saksbehandler == saksbehandler || isAdmin) { "Kan ikke avbryte en behandling som ikke er din" }
         behandlingRepo.lagre(behandling.avbrytBehandling())
+    }
+
+    override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
+        return behandlingRepo.hentAlleForIdent(ident)
     }
 }

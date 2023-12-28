@@ -11,8 +11,10 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
@@ -90,6 +92,49 @@ class TiltakRoutesTest {
         }
     }
 
+    @Test
+    fun `sjekk at tiltak uten deltakerFom eller tom blir filtrert bort`() {
+        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+            sakId = SakId.random(),
+            søknad = ObjectMother.nySøknad(),
+        )
+        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedSkjerming(
+            ident = IDENT,
+            journalpostId = JOURNALPOSTID,
+        )
+        every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
+        every { behandlingService.hentBehandling(any()) } returns behandling
+        val tiltak = slot<List<Tiltak>>()
+        every { behandlingService.oppdaterTiltak(any(), capture(tiltak)) } returns Unit
+
+        testApplication {
+            application {
+                // vedtakTestApi()
+                jacksonSerialization()
+                routing {
+                    tiltakRoutes(
+                        innsendingMediator = innsendingMediator,
+                        behandlingService = behandlingService,
+                    )
+                }
+            }
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path(tiltakpath)
+                },
+            ) {
+                setBody(tiltakMedNullFomTomBody)
+            }
+                .apply {
+                    status shouldBe HttpStatusCode.OK
+                }
+        }
+
+        tiltak.captured.size shouldBe 1
+    }
+
     private val tiltakBody = """
         {
         "respons": {
@@ -106,6 +151,73 @@ class TiltakRoutesTest {
                   },
                   "deltakelseFom": "2023-08-20",
                   "deltakelseTom": "2024-06-30",
+                  "deltakelseStatus": "DELTAR",
+                  "deltakelseDagerUke": null,
+                  "deltakelseProsent": 100.0,
+                  "kilde": "Komet",
+                  "registrertDato": "2023-10-27T00:00:00"
+                }
+            ],
+            "feil" : null
+        },
+        "ident" : "$IDENT",
+        "journalpostId" : "$JOURNALPOSTID",
+        "innhentet" : "2022-08-22T14:59:46.491437009"
+       }
+    """.trimIndent()
+
+    private val tiltakMedNullFomTomBody = """
+        {
+        "respons": {
+            "tiltak" : [
+                {
+                  "id": "TA6418307",
+                  "gjennomforing": {
+                    "id": "",
+                    "arrangørnavn": "Kommunerevisjonen",
+                    "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
+                    "arenaKode": "ENKFAGYRKE",
+                    "fom": null,
+                    "tom": null
+                  },
+                  "deltakelseFom": "2023-08-20",
+                  "deltakelseTom": "2024-06-30",
+                  "deltakelseStatus": "DELTAR",
+                  "deltakelseDagerUke": null,
+                  "deltakelseProsent": 100.0,
+                  "kilde": "Komet",
+                  "registrertDato": "2023-10-27T00:00:00"
+                },
+                {
+                  "id": "TA6418307",
+                  "gjennomforing": {
+                    "id": "",
+                    "arrangørnavn": "Kommunerevisjonen",
+                    "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
+                    "arenaKode": "ENKFAGYRKE",
+                    "fom": null,
+                    "tom": null
+                  },
+                  "deltakelseFom": null,
+                  "deltakelseTom": "2024-06-30",
+                  "deltakelseStatus": "DELTAR",
+                  "deltakelseDagerUke": null,
+                  "deltakelseProsent": 100.0,
+                  "kilde": "Komet",
+                  "registrertDato": "2023-10-27T00:00:00"
+                },
+                {
+                  "id": "TA6418307",
+                  "gjennomforing": {
+                    "id": "",
+                    "arrangørnavn": "Kommunerevisjonen",
+                    "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
+                    "arenaKode": "ENKFAGYRKE",
+                    "fom": null,
+                    "tom": null
+                  },
+                  "deltakelseFom": "2023-08-20",
+                  "deltakelseTom": null,
                   "deltakelseStatus": "DELTAR",
                   "deltakelseDagerUke": null,
                   "deltakelseProsent": 100.0,

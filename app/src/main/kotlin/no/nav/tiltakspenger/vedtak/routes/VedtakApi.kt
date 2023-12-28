@@ -101,6 +101,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 personopplysningService = personopplysningService,
+                søkerService = søkerService,
             )
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,

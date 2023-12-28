@@ -1,8 +1,8 @@
 val javaVersion = JavaVersion.VERSION_21
 
 plugins {
-    kotlin("jvm") version "1.9.21"
-    id("com.diffplug.spotless") version "6.23.1"
+    kotlin("jvm") version "1.9.22"
+    id("com.diffplug.spotless") version "6.23.3"
 }
 
 allprojects {
@@ -48,4 +48,12 @@ subprojects {
         // exclude JUnit 4
         exclude(group = "junit", module = "junit")
     }
+}
+
+task("addPreCommitGitHookOnBuild") {
+    println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
+    exec {
+        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
+    }
+    println("✅ Added Pre Commit Git Hook Script.")
 }

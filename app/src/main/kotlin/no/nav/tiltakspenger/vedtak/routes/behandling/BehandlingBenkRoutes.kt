@@ -13,8 +13,10 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
+import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -23,6 +25,7 @@ fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     personopplysningService: PersonopplysningService,
+    søkerService: SøkerService,
 ) {
     get(behandlingerPath) {
         SECURELOG.debug("Mottatt request på $behandlingerPath")
@@ -32,22 +35,7 @@ fun Route.behandlingBenkRoutes(
 
         val behandlinger = behandlingService.hentAlleBehandlinger()
             .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
-            .map {
-                BehandlingDTO(
-                    id = it.id.toString(),
-                    ident = it.søknad().personopplysninger.ident,
-                    saksbehandler = it.saksbehandler,
-                    beslutter = when (it) {
-                        is BehandlingIverksatt -> it.beslutter
-                        is BehandlingTilBeslutter -> it.beslutter
-                        else -> null
-                    },
-                    status = finnStatus(it),
-                    typeBehandling = if (it is Søknadsbehandling) "Førstegangsbehandling" else "Ukjent",
-                    fom = it.vurderingsperiode.fra,
-                    tom = it.vurderingsperiode.til,
-                )
-            }.sortedBy { it.id }
+            .mapBehandlinger()
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }
@@ -67,4 +55,40 @@ fun Route.behandlingBenkRoutes(
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
+
+    get("$behandlingerPath/hentForIdent/{søkerId}") {
+        SECURELOG.debug { "Mottatt request om å hente alle behandlinger for en ident" }
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val søkerId = call.parameters["søkerId"]?.let { SøkerId.fromDb(it) }
+            ?: return@get call.respond(message = "SøkerId ikke funnet", status = HttpStatusCode.NotFound)
+
+        val ident = søkerService.hentIdent(søkerId, saksbehandler)
+            ?: return@get call.respond(message = "Fant ikke ident for søker", status = HttpStatusCode.NotFound)
+
+        val behandlinger = behandlingService.hentBehandlingForIdent(ident)
+            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
+            .mapBehandlinger()
+
+        call.respond(status = HttpStatusCode.OK, behandlinger)
+    }
 }
+
+fun List<Søknadsbehandling>.mapBehandlinger(): List<BehandlingDTO> =
+    this.map {
+        BehandlingDTO(
+            id = it.id.toString(),
+            ident = it.søknad().personopplysninger.ident,
+            saksbehandler = it.saksbehandler,
+            beslutter = when (it) {
+                is BehandlingIverksatt -> it.beslutter
+                is BehandlingTilBeslutter -> it.beslutter
+                else -> null
+            },
+            status = finnStatus(it),
+            typeBehandling = "Førstegangsbehandling",
+            fom = it.vurderingsperiode.fra,
+            tom = it.vurderingsperiode.til,
+        )
+    }.sortedBy { it.id }

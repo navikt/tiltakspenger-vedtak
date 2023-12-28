@@ -1,10 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -17,14 +14,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
 
     override fun søknad(): Søknad {
-        return søknader.maxBy { it.opprettet }
-    }
-
-    fun hentUtfallForVilkår(vilkår: Vilkår): Utfall {
-        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
-        if (vilkårsvurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
-        if (vilkårsvurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
-        throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
+        return søknader.siste()
     }
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
@@ -131,14 +121,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override fun erÅpen() = true
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknader + søknad,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
-                tiltak = tiltak,
-                saksbehandler = saksbehandler,
+            return Søknadsbehandling.Opprettet.leggTilSøknad(
+                behandling = this,
+                søknad = søknad,
             ).vilkårsvurder()
         }
 
@@ -214,14 +199,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override fun erÅpen() = true
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknader + søknad,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
-                tiltak = tiltak,
-                saksbehandler = saksbehandler,
+            return Søknadsbehandling.Opprettet.leggTilSøknad(
+                behandling = this,
+                søknad = søknad,
             ).vilkårsvurder()
         }
 
@@ -270,14 +250,9 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override fun erÅpen() = true
 
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknader + søknad,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger.filterNot { it.kilde == Kilde.SØKNAD } + lagFaktaAvSøknad(søknad),
-                tiltak = tiltak,
-                saksbehandler = saksbehandler,
+            return Søknadsbehandling.Opprettet.leggTilSøknad(
+                behandling = this,
+                søknad = søknad,
             ).vilkårsvurder()
         }
 

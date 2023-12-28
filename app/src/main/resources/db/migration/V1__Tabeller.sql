@@ -17,7 +17,7 @@ $$
     END
 $$;
 
-CREATE TABLE sak
+create TABLE sak
 (
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,

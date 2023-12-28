@@ -1,9 +1,9 @@
-val ktorVersion = "2.3.6"
+val ktorVersion = "2.3.7"
 val kotestVersion = "5.8.0"
 val mockkVersion = "1.13.8"
 val testContainersVersion = "1.19.3"
-val felleslibVersion = "0.0.51"
-val tokenSupportVersion = "3.1.9"
+val felleslibVersion = "0.0.66"
+val tokenSupportVersion = "3.2.0"
 
 plugins {
     application
@@ -28,7 +28,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("ch.qos.logback:logback-classic:1.4.13")
+    implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
@@ -68,9 +68,9 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.1.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
     implementation("com.zaxxer:HikariCP:5.1.0")
-    implementation("org.postgresql:postgresql:42.7.0")
+    implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
@@ -87,6 +87,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.6.0")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.6.4")
     testImplementation(project(":common"))
 }
