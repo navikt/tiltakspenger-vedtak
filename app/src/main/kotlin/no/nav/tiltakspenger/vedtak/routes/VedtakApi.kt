@@ -27,6 +27,7 @@ import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
@@ -71,6 +72,7 @@ internal fun Application.vedtakApi(
     innsendingAdminService: InnsendingAdminService,
     utbetalingService: UtbetalingService,
     personopplysningService: PersonopplysningService,
+    attesteringRepo: AttesteringRepo,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -93,6 +95,7 @@ internal fun Application.vedtakApi(
                 behandlingService = behandlingService,
                 sakService = sakService,
                 innsendingMediator = innsendingMediator,
+                attesteringRepo = attesteringRepo,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,

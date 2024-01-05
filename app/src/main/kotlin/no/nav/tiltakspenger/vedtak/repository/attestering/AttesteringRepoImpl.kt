@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
-import java.time.LocalDateTime
 
 internal class AttesteringRepoImpl : AttesteringRepo {
     override fun lagre(attestering: Attestering): Attestering {
@@ -80,6 +79,6 @@ internal class AttesteringRepoImpl : AttesteringRepo {
         svar = AttesteringStatus.valueOf(string("svar")),
         begrunnelse = stringOrNull("begrunnelse"),
         beslutter = string("beslutter"),
-        tidspunkt = LocalDateTime.parse(string("tidspunkt")),
+        tidspunkt = localDateTime("tidspunkt"),
     )
 }

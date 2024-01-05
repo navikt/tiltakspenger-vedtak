@@ -47,6 +47,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innsendingAdminService = innsendingAdminService,
                 utbetalingService = utbetalingServiceImpl,
                 personopplysningService = personopplysningServiceImpl,
+                attesteringRepo = attesteringRepo,
             )
         }
         .build()

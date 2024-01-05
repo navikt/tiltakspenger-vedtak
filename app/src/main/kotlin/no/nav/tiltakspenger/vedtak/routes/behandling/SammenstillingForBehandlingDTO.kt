@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.domene.attestering.Attestering
+import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -12,6 +14,7 @@ import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
@@ -25,7 +28,20 @@ data class SammenstillingForBehandlingDTO(
     val personopplysninger: PersonopplysningerDTO,
     val tilstand: String,
     val status: String,
+    val endringslogg: List<EndringDTO>,
 )
+
+data class EndringDTO(
+    val type: String,
+    val begrunnelse: String,
+    val endretAv: String,
+    val endretTidspunkt: LocalDateTime,
+)
+
+enum class EndringsType(val beskrivelse: String) {
+    SENDT_TILBAKE("Sendt i retur"),
+    GODKJENT("Godkjent"),
+}
 
 data class PersonopplysningerDTO(
     val ident: String,
@@ -79,6 +95,7 @@ data class FaktaDTO(
 fun mapSammenstillingDTO(
     behandling: Søknadsbehandling,
     personopplysninger: List<Personopplysninger>,
+    attesteringer: List<Attestering>,
 ): SammenstillingForBehandlingDTO {
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
@@ -147,6 +164,17 @@ fun mapSammenstillingDTO(
             is Søknadsbehandling.Opprettet -> "opprettet"
         },
         status = finnStatus(behandling),
+        endringslogg = attesteringer.map { att ->
+            EndringDTO(
+                type = when (att.svar) {
+                    AttesteringStatus.GODKJENT -> EndringsType.GODKJENT.beskrivelse
+                    AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE.beskrivelse
+                },
+                begrunnelse = att.begrunnelse ?: "Godkjent av beslutter",
+                endretAv = att.beslutter,
+                endretTidspunkt = att.tidspunkt,
+            )
+        },
     )
 }
 
