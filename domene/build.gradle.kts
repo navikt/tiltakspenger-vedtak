@@ -11,7 +11,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.github.guepardoapps:kulid:2.0.0.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("io.micrometer:micrometer-core:1.12.1")
+    implementation("io.micrometer:micrometer-core:1.12.2")
 
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
