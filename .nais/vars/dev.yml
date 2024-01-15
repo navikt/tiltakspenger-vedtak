@@ -7,10 +7,19 @@ ingress:
   url: https://tiltakspenger-vedtak.intern.dev.nav.no
 cluster: dev-gcp
 tenant: trygdeetaten.no
-ROLE_SAKSBEHANDLER: 1b3a2c4d-d620-4fcf-a29b-a6cdadf29680
-ROLE_BESLUTTER: 79985315-b2de-40b8-a740-9510796993c6
-ROLE_ADMINISTRATOR: cbe715d0-6f67-46bf-86b4-688c4419b747
-ROLE_FORTROLIG: ea930b6b-9397-44d9-b9e6-f4cf527a632a
-ROLE_STRENGT_FORTROLIG: 5ef775f2-61f8-4283-bf3d-8d03f428aa14
-ROLE_SKJERMING: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
-ROLE_DRIFT: c511113e-5b22-49e7-b9c4-eeb23b01f518
+azure:
+  groups:
+    - name: ROLE_SAKSBEHANDLER
+      id: 1b3a2c4d-d620-4fcf-a29b-a6cdadf29680
+    - name: ROLE_BESLUTTER
+      id: 79985315-b2de-40b8-a740-9510796993c6
+    - name: ROLE_ADMINISTRATOR
+      id: cbe715d0-6f67-46bf-86b4-688c4419b747
+    - name: ROLE_FORTROLIG
+      id: ea930b6b-9397-44d9-b9e6-f4cf527a632a
+    - name: ROLE_STRENGT_FORTROLIG
+      id: 5ef775f2-61f8-4283-bf3d-8d03f428aa14
+    - name: ROLE_SKJERMING
+      id: dbe4ad45-320b-4e9a-aaa1-73cca4ee124d
+    - name: ROLE_DRIFT
+      id: c511113e-5b22-49e7-b9c4-eeb23b01f518

@@ -13,7 +13,7 @@ internal class SaksbehandlerProviderTest {
 
     @Test
     fun `sjekk rolle-mapping`() {
-        System.setProperty("NAIS_CLUSTER_NAME", "dev-gcp")
+        System.setProperty("NAIS_CLUSTER_NAME", "lokal")
         val innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider()
 
         val principal = mockk<JWTPrincipal>()

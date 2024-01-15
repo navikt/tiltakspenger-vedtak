@@ -32,13 +32,9 @@ spec:
       tenant: {{ tenant }}
       claims:
         groups:
-          - id: {{ ROLE_SAKSBEHANDLER }}
-          - id: {{ ROLE_BESLUTTER }}
-          - id: {{ ROLE_ADMINISTRATOR }}
-          - id: {{ ROLE_FORTROLIG }}
-          - id: {{ ROLE_STRENGT_FORTROLIG }}
-          - id: {{ ROLE_SKJERMING }}
-          - id: {{ ROLE_DRIFT }}
+        {{#each azure.groups}}
+          - id: {{this.id}}
+        {{/each}}
         extra:
           - NAVident
           - azp_name
@@ -66,3 +62,8 @@ spec:
           permissions:
             roles:
               - "lage_hendelser"
+  env:
+  {{#each azure.groups}}
+    - name: {{this.name}}
+      value: {{this.id}}
+  {{/each}}
