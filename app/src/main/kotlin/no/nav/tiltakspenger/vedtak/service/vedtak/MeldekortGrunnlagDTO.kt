@@ -48,36 +48,19 @@ fun sendMeldekortGrunnlag(vedtak: Vedtak, rapidsConnection: RapidsConnection) {
         }
 }
 
-private fun mapMeldekortGrunnlagDTO(lagretVedtak: Vedtak) =
+private fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
     MeldekortGrunnlagDTO(
-        vedtakId = lagretVedtak.id.toString(),
-        behandlingId = lagretVedtak.behandling.id.toString(),
-        status = when (lagretVedtak.vedtaksType) {
+        vedtakId = vedtak.id.toString(),
+        behandlingId = vedtak.behandling.id.toString(),
+        status = when (vedtak.vedtaksType) {
             VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV
             VedtaksType.INNVILGELSE -> StatusDTO.AKTIV
             VedtaksType.STANS -> StatusDTO.IKKE_AKTIV
             VedtaksType.FORLENGELSE -> StatusDTO.AKTIV
         },
         vurderingsperiode = PeriodeDTO(
-            fra = lagretVedtak.periode.fra,
-            til = lagretVedtak.periode.til,
+            fra = vedtak.periode.fra,
+            til = vedtak.periode.til,
         ),
-        tiltak = lagretVedtak.behandling.tiltak
-            .filter { it.id == lagretVedtak.behandling.søknad().tiltak.id }
-            .map {
-                TiltakDTO(
-                    periodeDTO = PeriodeDTO(
-                        fra = it.deltakelseFom,
-                        til = it.deltakelseTom,
-                    ),
-                    typeBeskrivelse = it.gjennomføring.typeNavn,
-                    typeKode = it.gjennomføring.typeKode,
-                    antDagerIUken = it.deltakelseDagerUke
-                        ?: if (it.deltakelseProsent == 100F) {
-                            5F
-                        } else {
-                            throw IllegalStateException("Kan ikke beregne antall dager i uken for tiltak uten deltakelseDagerUke eller deltakelseProsent")
-                        },
-                )
-            },
+        tiltak = mapTiltakDTO(vedtak),
     )
