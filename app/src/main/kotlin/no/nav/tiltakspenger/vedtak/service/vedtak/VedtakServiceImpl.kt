@@ -40,6 +40,7 @@ class VedtakServiceImpl(
         val lagretVedtak = vedtakRepo.lagreVedtak(vedtak)
 
         sendMeldekortGrunnlag(lagretVedtak, rapidsConnection)
+        sendBrev(lagretVedtak, rapidsConnection)
 
         return lagretVedtak
     }
