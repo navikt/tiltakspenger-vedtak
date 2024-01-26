@@ -44,7 +44,6 @@ fun Int.marsDateTime(year: Int): LocalDateTime = LocalDateTime.of(
 ).truncatedTo(ChronoUnit.MILLIS)
 
 fun nå(): LocalDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MICROS)
-// fun LocalDateTime.Companion.nowTrunc() = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
 
 fun LocalDate.toDisplayDate(): String = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     .format(this)

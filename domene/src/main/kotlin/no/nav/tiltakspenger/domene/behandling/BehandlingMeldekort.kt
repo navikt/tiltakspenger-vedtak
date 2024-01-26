@@ -43,9 +43,6 @@ sealed interface BehandlingMeldekort : Behandling {
         }
 
         fun beregn(meldekortDTO: MeldekortDTO): Beregnet {
-            // todo gjør en vilkårsvurdering/beregning
-            // og bestem
-
             return Beregnet(
                 id = id,
                 sakId = sakId,

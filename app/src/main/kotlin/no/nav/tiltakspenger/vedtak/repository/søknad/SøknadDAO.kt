@@ -42,14 +42,6 @@ internal class SøknadDAO(
         )
     }
 
-//    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): Søknad? {
-//        return txSession.run(
-//            queryOf(hent, behandlingId.toString())
-//                .map { row -> row.toSøknad(txSession) }
-//                .asSingle,
-//        )
-//    }
-
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Søknad> {
         return txSession.run(
             queryOf(sqlHent, behandlingId.toString())
@@ -62,23 +54,7 @@ internal class SøknadDAO(
         søknader.forEach {
             lagreHeleSøknaden(behandlingId, it, txSession)
         }
-//        søknad?.let { lagreHeleSøknaden(behandlingId, it, txSession) } // TODO: Burde vel egentlig slette søknaden..
     }
-
-//    fun oppdaterBehandlingId(behandlingId: BehandlingId, søknader: List<Søknad>, txSession: TransactionalSession) {
-//        søknader.forEach {
-//            txSession.run(
-//                queryOf(
-//                    oppdaterBehandlingId,
-//                    mapOf(
-//                        "behandlingId" to behandlingId.toString(),
-//                        "journalpostId" to it.journalpostId,
-//                        "dokumentInfoId" to it.dokumentInfoId,
-//                    ),
-//                ).asUpdate,
-//            )
-//        }
-//    }
 
     private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
         queryOf(sqlFinnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
@@ -313,25 +289,12 @@ internal class SøknadDAO(
         )
     """.trimIndent()
 
-    // private val JA =
-
     @Language("SQL")
     private val sqlFinnes = "select exists(select 1 from søknad where id = ?)"
 
     @Language("SQL")
     private val sqlHent = "select * from søknad where behandling_id = ?"
 
-//    @Language("SQL")
-//    private val hentMedBehandlingId = "select * from søknad where behandling_id = ?"
-
     @Language("SQL")
     private val sqlHentIdent = "select * from søknad where søknad_id = ?"
-
-//    @Language("SQL")
-//    private val oppdaterBehandlingId = """
-//        update søknad set
-//          behandling_id = :behandlingId
-//        where journalpost_id = :journalpostId
-//          and dokumentinfo_id = :dokumentInfoId
-//    """.trimIndent()
 }
