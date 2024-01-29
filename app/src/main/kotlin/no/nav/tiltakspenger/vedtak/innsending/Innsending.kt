@@ -358,7 +358,6 @@ class Innsending private constructor(
         }
 
         fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
-//            innsending.mottaTiltak(tiltakMottattHendelse)
         }
 
         fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
@@ -454,7 +453,6 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
-//            innsending.mottaTiltak(tiltakMottattHendelse)
             innsending.trengerArenaYtelse(tiltakMottattHendelse)
             innsending.tilstand(tiltakMottattHendelse, AvventerYtelser)
         }
@@ -902,9 +900,6 @@ class Innsending private constructor(
             },
         )
     }
-
-    // Jeg har fjernet flere av
-    // private fun emit* funksjonene
 
     class DirtyChecker {
         val properties: MutableMap<String, AtomicBoolean> = mutableMapOf()

@@ -64,10 +64,3 @@ private fun HttpClient.config(timeout: Long) = this.config {
     }
     expectSuccess = true
 }
-
-// fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
-//    .addModule(KotlinModule.Builder().build())
-//    .addModule(JavaTimeModule())
-//    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-//    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-//    .build()

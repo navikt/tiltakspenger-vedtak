@@ -63,7 +63,6 @@ class SøkerMediator(
         } else {
             LOG.info("aktivitetslogg inneholder meldinger, se securelog for detaljer")
             SECURELOG.info("aktivitetslogg inneholder meldinger: ${hendelse.toLogString()}")
-            // behovMediator.håndter(hendelse)
         }
     }
 }
