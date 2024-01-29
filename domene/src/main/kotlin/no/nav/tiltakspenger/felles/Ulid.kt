@@ -31,14 +31,7 @@ data class UlidBase(private val stringValue: String) : Ulid {
     override fun ulidPart(): String = ULID.fromString(stringValue.split("_").last())
     override fun toString() = stringValue
     override fun compareTo(other: Ulid): Int {
-        // todo be noen voksne om å skrive denne litt finere
-        val o = other.toString()
-        val me = this.toString()
-        return when {
-            me == o -> 0
-            me > o -> 1
-            else -> -1
-        }
+        return this.toString().compareTo(other.toString())
     }
 }
 
