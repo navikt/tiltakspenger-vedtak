@@ -45,7 +45,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
-                utbetalingService = utbetalingServiceImpl,
                 personopplysningService = personopplysningServiceImpl,
                 attesteringRepo = attesteringRepo,
             )
@@ -53,26 +52,27 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         .build()
 
     val innsendingRepository = InnsendingRepositoryBuilder.build()
+    private val tokenProviderUtbetaling: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
+
+    private val sakRepo = PostgresSakRepo()
+    private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
+    private val utbetalingService = UtbetalingServiceImpl(utbetalingClient, sakRepo)
     private val søkerRepository = SøkerRepository()
     private val behandlingRepo = PostgresBehandlingRepo()
-    private val sakRepo = PostgresSakRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val attesteringRepo = AttesteringRepoImpl()
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
-    private val vedtakService = VedtakServiceImpl(vedtakRepo, rapidsConnection)
+    private val vedtakService = VedtakServiceImpl(utbetalingService, vedtakRepo, rapidsConnection)
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-    private val tokenProviderUtbetaling: AzureTokenProvider =
-        AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
 
-    private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
-    private val utbetalingServiceImpl = UtbetalingServiceImpl(utbetalingClient)
     val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,

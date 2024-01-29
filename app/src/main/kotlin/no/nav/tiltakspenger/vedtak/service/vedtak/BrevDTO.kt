@@ -43,7 +43,7 @@ fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection) {
 private fun mapVedtaksBrevDTO(vedtak: Vedtak) =
     BrevDTO(
         vedtakId = vedtak.id.toString(),
-        vedtaksdato = vedtak.vedtaksdato,
+        vedtaksdato = vedtak.vedtaksdato.toLocalDate(),
         vedtaksType = when (vedtak.vedtaksType) {
             VedtaksType.AVSLAG -> VedtaksTypeDTO.AVSLAG
             VedtaksType.INNVILGELSE -> VedtaksTypeDTO.INNVILGELSE

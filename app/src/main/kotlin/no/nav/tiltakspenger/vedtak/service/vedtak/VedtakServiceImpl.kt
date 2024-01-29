@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service.vedtak
 
+import kotliquery.TransactionalSession
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
@@ -8,12 +9,14 @@ import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
-import java.time.LocalDate
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class VedtakServiceImpl(
+    private val utbetalingService: UtbetalingService,
     private val vedtakRepo: VedtakRepo,
     private val rapidsConnection: RapidsConnection,
 ) : VedtakService {
@@ -25,11 +28,12 @@ class VedtakServiceImpl(
         return vedtakRepo.hentVedtakForBehandling(behandlingId)
     }
 
-    override fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
+    override suspend fun lagVedtakForBehandling(behandling: BehandlingIverksatt, tx: TransactionalSession): Vedtak {
         val vedtak = Vedtak(
             id = VedtakId.random(),
+            sakId = behandling.sakId,
             behandling = behandling,
-            vedtaksdato = LocalDate.now(),
+            vedtaksdato = LocalDateTime.now(),
             vedtaksType = if (behandling is BehandlingIverksatt.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             periode = behandling.vurderingsperiode,
             saksopplysninger = behandling.saksopplysninger(),
@@ -37,7 +41,11 @@ class VedtakServiceImpl(
             saksbehandler = behandling.saksbehandler!!,
             beslutter = behandling.beslutter,
         )
-        val lagretVedtak = vedtakRepo.lagreVedtak(vedtak)
+
+        val lagretVedtak = vedtakRepo.lagreVedtak(vedtak, tx)
+        utbetalingService.sendBehandlingTilUtbetaling(lagretVedtak)
+        // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
+        // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
 
         sendMeldekortGrunnlag(lagretVedtak, rapidsConnection)
         sendBrev(lagretVedtak, rapidsConnection)

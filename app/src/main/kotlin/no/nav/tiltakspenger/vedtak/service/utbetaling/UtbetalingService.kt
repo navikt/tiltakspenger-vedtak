@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.utbetaling
 
-import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
 
 interface UtbetalingService {
-    suspend fun sendBehandlingTilUtbetaling(behandling: Behandling): String
+    suspend fun sendBehandlingTilUtbetaling(vedtak: Vedtak): String
 }

@@ -50,6 +50,7 @@ internal class BehandlingRepoTest {
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = listOf(),
+            vedtak = listOf(),
         )
         sakRepo.lagre(sak)
 
@@ -88,6 +89,7 @@ internal class BehandlingRepoTest {
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = listOf(),
+            vedtak = listOf(),
         )
         sakRepo.lagre(sak)
 

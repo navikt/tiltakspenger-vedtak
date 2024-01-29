@@ -112,36 +112,39 @@ internal class PostgresBehandlingRepo(
     }
 
     override fun lagre(behandling: Søknadsbehandling): Søknadsbehandling {
-        sessionOf(DataSource.hikariDataSource).use {
+        return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                val sistEndret = hentSistEndret(behandling.id, txSession)
-                if (sistEndret == null) {
-                    opprettBehandling(behandling, txSession)
-                } else {
-                    oppdaterBehandling(sistEndret, behandling, txSession)
-                }.also {
-                    saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, txSession)
-                    søknadDAO.lagre(behandling.id, behandling.søknader, txSession)
-                    tiltakDAO.lagre(behandling.id, behandling.tiltak, txSession)
-                    when (behandling) {
-                        is BehandlingIverksatt -> {
-                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
-                        }
-
-                        is BehandlingVilkårsvurdert -> {
-                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
-                        }
-
-                        is BehandlingTilBeslutter -> {
-                            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, txSession)
-                        }
-
-                        is Søknadsbehandling.Opprettet -> {}
-                    }
-                }
+                lagre(behandling, txSession)
             }
         }
-        return behandling
+    }
+
+    override fun lagre(behandling: Søknadsbehandling, tx: TransactionalSession): Søknadsbehandling {
+        val sistEndret = hentSistEndret(behandling.id, tx)
+        return if (sistEndret == null) {
+            opprettBehandling(behandling, tx)
+        } else {
+            oppdaterBehandling(sistEndret, behandling, tx)
+        }.also {
+            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
+            søknadDAO.lagre(behandling.id, behandling.søknader, tx)
+            tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
+            when (behandling) {
+                is BehandlingIverksatt -> {
+                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                }
+
+                is BehandlingVilkårsvurdert -> {
+                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                }
+
+                is BehandlingTilBeslutter -> {
+                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                }
+
+                is Søknadsbehandling.Opprettet -> {}
+            }
+        }
     }
 
     private fun oppdaterBehandling(

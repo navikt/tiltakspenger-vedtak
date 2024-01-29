@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
 import io.ktor.server.plugins.NotFoundException
+import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
@@ -11,6 +12,7 @@ import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
@@ -75,15 +77,19 @@ class BehandlingServiceImpl(
         when (behandling) {
             is BehandlingTilBeslutter -> {
                 check(behandling.beslutter == beslutter || isAdmin) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
-                behandlingRepo.lagre(behandling.sendTilbake())
-                attesteringRepo.lagre(attestering)
+                sessionOf(DataSource.hikariDataSource).use {
+                    it.transaction { txSession ->
+                        behandlingRepo.lagre(behandling.sendTilbake(), txSession)
+                        attesteringRepo.lagre(attestering, txSession)
+                    }
+                }
             }
 
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
         }
     }
 
-    override fun iverksett(behandlingId: BehandlingId, saksbehandler: String) {
+    override suspend fun iverksett(behandlingId: BehandlingId, saksbehandler: String) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
@@ -104,9 +110,14 @@ class BehandlingServiceImpl(
             beslutter = saksbehandler,
 
         )
-        behandlingRepo.lagre(iverksattBehandling)
-        attesteringRepo.lagre(attestering)
-        vedtakService.lagVedtakForBehandling(iverksattBehandling)
+
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                behandlingRepo.lagre(iverksattBehandling, txSession)
+                attesteringRepo.lagre(attestering, txSession)
+                vedtakService.lagVedtakForBehandling(iverksattBehandling, txSession)
+            }
+        }
     }
 
     override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {

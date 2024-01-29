@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.attestering
 
 import kotliquery.Row
+import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.attestering.Attestering
@@ -12,23 +13,27 @@ import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl : AttesteringRepo {
     override fun lagre(attestering: Attestering): Attestering {
-        sessionOf(DataSource.hikariDataSource).use {
+        return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlLagre,
-                        mapOf(
-                            "id" to attestering.id.toString(),
-                            "behandlingId" to attestering.behandlingId.toString(),
-                            "svar" to attestering.svar.toString(),
-                            "begrunnelse" to attestering.begrunnelse,
-                            "beslutter" to attestering.beslutter,
-                            "tidspunkt" to attestering.tidspunkt,
-                        ),
-                    ).asUpdate,
-                )
+                lagre(attestering, txSession)
             }
         }
+    }
+
+    override fun lagre(attestering: Attestering, tx: TransactionalSession): Attestering {
+        tx.run(
+            queryOf(
+                sqlLagre,
+                mapOf(
+                    "id" to attestering.id.toString(),
+                    "behandlingId" to attestering.behandlingId.toString(),
+                    "svar" to attestering.svar.toString(),
+                    "begrunnelse" to attestering.begrunnelse,
+                    "beslutter" to attestering.beslutter,
+                    "tidspunkt" to attestering.tidspunkt,
+                ),
+            ).asUpdate,
+        )
         return attestering
     }
 
