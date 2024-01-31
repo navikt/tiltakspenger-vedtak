@@ -30,9 +30,7 @@ data class UlidBase(private val stringValue: String) : Ulid {
     override fun prefixPart(): String = stringValue.split("_").first()
     override fun ulidPart(): String = ULID.fromString(stringValue.split("_").last())
     override fun toString() = stringValue
-    override fun compareTo(other: Ulid): Int {
-        return this.toString().compareTo(other.toString())
-    }
+    override fun compareTo(other: Ulid) = this.toString().compareTo(other.toString())
 }
 
 data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
