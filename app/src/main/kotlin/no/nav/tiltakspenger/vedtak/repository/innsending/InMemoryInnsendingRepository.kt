@@ -15,10 +15,6 @@ class InMemoryInnsendingRepository : InnsendingRepository {
         return innsending
     }
 
-//    override fun findBySøknadId(søknadId: String): Innsending? {
-//        return null
-//    }
-
     override fun findByIdent(ident: String): List<Innsending> = emptyList()
 
     override fun antall(): Long = innsendinger.size.toLong()

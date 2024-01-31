@@ -1,7 +1,7 @@
 val ktorVersion = "2.3.7"
 val kotestVersion = "5.8.0"
 val mockkVersion = "1.13.9"
-val testContainersVersion = "1.19.3"
+val testContainersVersion = "1.19.4"
 val felleslibVersion = "0.0.66"
 val tokenSupportVersion = "3.2.0"
 
@@ -68,7 +68,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.6.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.7.1")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -87,6 +87,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.6.7")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.7.0")
     testImplementation(project(":common"))
 }

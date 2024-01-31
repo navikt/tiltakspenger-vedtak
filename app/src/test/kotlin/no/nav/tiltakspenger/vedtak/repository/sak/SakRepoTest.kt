@@ -31,22 +31,9 @@ internal class SakRepoTest {
 
     @Test
     fun `lagre og hente en sak med en søknad`() {
-//        val journalpostId = Random().nextInt().toString()
         val ident = Random().nextInt().toString()
         val startDato = 1.januar(2023)
         val sluttdato = 31.mars(2023)
-
-//        val søknad = ObjectMother.nySøknadMedBrukerTiltak(
-//            journalpostId = journalpostId,
-//            personopplysninger = ObjectMother.personSøknad(
-//                ident = ident,
-//            ),
-//            tiltak = ObjectMother.brukerTiltak(
-//                startdato = startDato,
-//                sluttdato = sluttdato,
-//            ),
-//            barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
-//        )
 
         val sak = Sak(
             id = SakId.random(),
