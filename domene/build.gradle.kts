@@ -9,7 +9,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("com.github.guepardoapps:kulid:2.0.0.0")
+    implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("io.micrometer:micrometer-core:1.12.2")
 
