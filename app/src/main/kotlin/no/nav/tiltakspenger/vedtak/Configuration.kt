@@ -68,7 +68,7 @@ object Configuration {
             "ROLE_SKJERMING" to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d",
             "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
             "SCOPE_UTBETALING" to "localhost",
-            "UTBETALING_URL" to "http://localhost:8087",
+            "UTBETALING_URL" to "http://host.docker.internal:8083",
         ),
     )
     private val devProperties = ConfigurationMap(
