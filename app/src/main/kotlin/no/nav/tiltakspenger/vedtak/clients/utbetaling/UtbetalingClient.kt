@@ -67,7 +67,7 @@ class UtbetalingClient(
             }
 
         return when (httpResponse.status) {
-            HttpStatusCode.OK -> httpResponse.call.response.body()
+            HttpStatusCode.Accepted -> httpResponse.call.response.body()
             else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Utbetaling")
         }
     }
