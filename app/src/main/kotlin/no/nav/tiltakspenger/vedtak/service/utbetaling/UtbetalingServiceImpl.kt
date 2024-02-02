@@ -18,7 +18,6 @@ class UtbetalingServiceImpl(
         val sak = sakRepo.hentKunSak(vedtak.sakId) ?: throw IllegalStateException("Fant ikke sak for vedtak")
         return UtbetalingDTO(
             sakId = sak.id.toString(),
-            saksnummer = sak.saknummer.verdi,
             behandlingId = vedtak.behandling.id.toString(),
             personIdent = sak.ident,
             fom = vedtak.periode.fra,

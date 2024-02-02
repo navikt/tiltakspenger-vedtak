@@ -23,7 +23,6 @@ val securelog = KotlinLogging.logger("tjenestekall")
 
 data class UtbetalingDTO(
     val sakId: String,
-    val saksnummer: String,
     val behandlingId: String,
     val personIdent: String,
     val fom: LocalDate,
