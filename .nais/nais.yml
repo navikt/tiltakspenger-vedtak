@@ -41,7 +41,7 @@ spec:
   gcp:
     sqlInstances:
       - name: tiltakspenger-vedtak
-        type: POSTGRES_14
+        type: POSTGRES_15
         diskAutoresize: {{ sqlInstances.diskAutoresize }}
         pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
         databases:

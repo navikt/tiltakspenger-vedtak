@@ -42,6 +42,7 @@ interface SakMother {
             periode = periode,
             behandlinger = behandlinger,
             personopplysninger = personopplysninger,
+            vedtak = emptyList(),
         )
 
     fun nySakFraSøknad(
@@ -69,5 +70,6 @@ interface SakMother {
             periode = periode,
             behandlinger = behandlinger,
             personopplysninger = personopplysninger,
+            vedtak = emptyList(),
         )
 }

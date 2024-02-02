@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.vedtak.db.DataSource.DB_PORT_KEY
 import no.nav.tiltakspenger.vedtak.db.DataSource.DB_USERNAME_KEY
 import org.testcontainers.containers.PostgreSQLContainer
 
-object PostgresTestcontainer : PostgreSQLContainer<PostgresTestcontainer>("postgres:14.10") {
+object PostgresTestcontainer : PostgreSQLContainer<PostgresTestcontainer>("postgres:15") {
 
     override fun start() {
         super.start()

@@ -10,9 +10,11 @@ import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import org.intellij.lang.annotations.Language
@@ -22,9 +24,9 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
-    private val behandlingRepo: BehandlingRepo,
-    private val saksopplysningRepo: SaksopplysningRepo,
-    private val vurderingRepo: VurderingRepo,
+    private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
+    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
+    private val vurderingRepo: VurderingRepo = VurderingRepo(),
 ) : VedtakRepo {
     override fun hent(vedtakId: VedtakId): Vedtak? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -60,29 +62,51 @@ internal class VedtakRepoImpl(
         }
     }
 
-    override fun lagreVedtak(vedtak: Vedtak): Vedtak {
-        sessionOf(DataSource.hikariDataSource).use {
+    override fun hentVedtakForSak(sakId: SakId): List<Vedtak> {
+        return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
                     queryOf(
-                        sqlLagre,
+                        sqlHentForSak,
                         mapOf(
-                            "id" to vedtak.id.toString(),
-                            "behandlingId" to vedtak.behandling.id.toString(),
-                            "vedtakstype" to vedtak.vedtaksType.toString(),
-                            "vedtaksdato" to vedtak.vedtaksdato,
-                            "fom" to vedtak.periode.fra,
-                            "tom" to vedtak.periode.til,
-                            "saksbehandler" to vedtak.saksbehandler,
-                            "beslutter" to vedtak.beslutter,
-                            "opprettet" to LocalDateTime.now(),
+                            "sakId" to sakId.toString(),
                         ),
-                    ).asUpdate,
+                    ).map { row ->
+                        row.toVedtak(txSession)
+                    }.asList,
                 )
-                saksopplysningRepo.lagre(vedtak.id, vedtak.saksopplysninger, txSession)
-                vurderingRepo.lagre(vedtak.id, vedtak.vurderinger, txSession)
             }
         }
+    }
+
+    override fun lagreVedtak(vedtak: Vedtak): Vedtak {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                lagreVedtak(vedtak, txSession)
+            }
+        }
+    }
+
+    override fun lagreVedtak(vedtak: Vedtak, tx: TransactionalSession): Vedtak {
+        tx.run(
+            queryOf(
+                sqlLagre,
+                mapOf(
+                    "id" to vedtak.id.toString(),
+                    "sakId" to vedtak.sakId.toString(),
+                    "behandlingId" to vedtak.behandling.id.toString(),
+                    "vedtakstype" to vedtak.vedtaksType.toString(),
+                    "vedtaksdato" to vedtak.vedtaksdato,
+                    "fom" to vedtak.periode.fra,
+                    "tom" to vedtak.periode.til,
+                    "saksbehandler" to vedtak.saksbehandler,
+                    "beslutter" to vedtak.beslutter,
+                    "opprettet" to LocalDateTime.now(),
+                ),
+            ).asUpdate,
+        )
+        saksopplysningRepo.lagre(vedtak.id, vedtak.saksopplysninger, tx)
+        vurderingRepo.lagre(vedtak.id, vedtak.vurderinger, tx)
         return vedtak
     }
 
@@ -90,8 +114,9 @@ internal class VedtakRepoImpl(
         val id = VedtakId.fromDb(string("id"))
         return Vedtak(
             id = id,
+            sakId = SakId.fromDb(string("sak_id")),
             behandling = behandlingRepo.hent(BehandlingId.fromDb(string("behandling_id"))) as BehandlingIverksatt,
-            vedtaksdato = localDate("vedtaksdato"),
+            vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
             saksopplysninger = saksopplysningRepo.hent(id, txSession),
@@ -112,9 +137,15 @@ internal class VedtakRepoImpl(
     """.trimIndent()
 
     @Language("SQL")
+    private val sqlHentForSak = """
+        select * from vedtak where sak_id = :sakId
+    """.trimIndent()
+
+    @Language("SQL")
     private val sqlLagre = """
         insert into vedtak (
             id, 
+            sak_id, 
             behandling_id, 
             vedtakstype, 
             vedtaksdato, 
@@ -125,6 +156,7 @@ internal class VedtakRepoImpl(
             opprettet
         ) values (
             :id, 
+            :sakId, 
             :behandlingId, 
             :vedtakstype, 
             :vedtaksdato, 

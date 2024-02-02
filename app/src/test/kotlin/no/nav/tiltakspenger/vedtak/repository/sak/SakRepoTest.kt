@@ -42,6 +42,7 @@ internal class SakRepoTest {
             periode = Periode(fra = startDato, til = sluttdato),
             behandlinger = listOf(),
             personopplysninger = listOf(),
+            vedtak = listOf(),
         )
 
         sakRepo.lagre(sak)

@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 
@@ -19,7 +20,7 @@ data class Sak(
     val periode: Periode,
     val behandlinger: List<Behandling>,
     val personopplysninger: List<Personopplysninger>,
-//    val vedtak: List<Vedtak>,
+    val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
         val nyeBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>().map {
@@ -54,6 +55,7 @@ data class Sak(
                 behandlinger = emptyList(),
                 periode = søknad.vurderingsperiode(),
                 personopplysninger = emptyList(),
+                vedtak = emptyList(),
             )
         }
     }

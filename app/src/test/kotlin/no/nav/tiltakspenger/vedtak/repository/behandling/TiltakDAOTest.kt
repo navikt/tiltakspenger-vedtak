@@ -135,6 +135,7 @@ internal class TiltakDAOTest {
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = listOf(),
+            vedtak = listOf(),
         )
         sakRepo.lagre(sak)
 

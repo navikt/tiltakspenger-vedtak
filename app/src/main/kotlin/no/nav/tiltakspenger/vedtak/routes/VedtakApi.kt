@@ -45,13 +45,11 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
-import no.nav.tiltakspenger.vedtak.routes.utbetaling.utbetalingRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
-import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
@@ -70,7 +68,6 @@ internal fun Application.vedtakApi(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
-    utbetalingService: UtbetalingService,
     personopplysningService: PersonopplysningService,
     attesteringRepo: AttesteringRepo,
 ) {
@@ -106,10 +103,6 @@ internal fun Application.vedtakApi(
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
-            )
-            utbetalingRoutes(
-                behandlingService = behandlingService,
-                utbetalingService = utbetalingService,
             )
             meldekortRoutes()
         }

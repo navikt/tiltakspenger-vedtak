@@ -46,9 +46,10 @@ CREATE TABLE behandling
 CREATE TABLE vedtak
 (
     id                      VARCHAR                  PRIMARY KEY,
+    sak_id                  VARCHAR                  NULL REFERENCES sak (id),
     behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
     vedtakstype             VARCHAR                  NOT NULL,
-    vedtaksdato             DATE                     NOT NULL,
+    vedtaksdato             TIMESTAMP WITH TIME ZONE NOT NULL,
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
     saksbehandler           VARCHAR                  NOT NULL,

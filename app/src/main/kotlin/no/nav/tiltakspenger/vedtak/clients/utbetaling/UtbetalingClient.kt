@@ -13,16 +13,31 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
-data class UtbetalingReqBody(
-    val testFelt: String,
+data class UtbetalingDTO(
+    val sakId: String,
+    val behandlingId: String,
+    val personIdent: String,
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val vedtakUtfall: VedtakUtfall,
+    val vedtaktidspunkt: LocalDateTime,
+    val saksbehandler: String,
+    val beslutter: String,
 )
+
+enum class VedtakUtfall {
+    INNVILGET,
+    AVSLÅTT,
+    OPPHØR,
+}
 
 class UtbetalingClient(
     private val config: Configuration.ClientConfig = Configuration.utbetalingClientConfig(),
@@ -38,23 +53,21 @@ class UtbetalingClient(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    override suspend fun iverksett(behandling: Behandling): String {
+    override suspend fun iverksett(utbetalingDTO: UtbetalingDTO): String {
         val httpResponse =
-            httpClient.post("${config.baseUrl}/utbetaling") {
+            httpClient.post("${config.baseUrl}/utbetaling/rammevedtak") {
                 header(navCallIdHeader, "tiltakspenger-vedtak")
                 bearerAuth(getToken())
                 accept(ContentType.Application.Json)
                 contentType(ContentType.Application.Json)
                 setBody(
-                    UtbetalingReqBody(
-                        testFelt = "test",
-                    ),
+                    utbetalingDTO,
                 )
             }
 
         return when (httpResponse.status) {
-            HttpStatusCode.OK -> httpResponse.call.response.body()
-            else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Komet")
+            HttpStatusCode.Accepted -> httpResponse.call.response.body()
+            else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) fra Utbetaling")
         }
     }
 }

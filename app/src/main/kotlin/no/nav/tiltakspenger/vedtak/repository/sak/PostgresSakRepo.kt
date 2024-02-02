@@ -14,6 +14,8 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -23,6 +25,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresSakRepo(
     private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
     private val personopplysningerRepo: PostgresPersonopplysningerRepo = PostgresPersonopplysningerRepo(),
+    private val vedtakRepo: VedtakRepo = VedtakRepoImpl(),
 ) : SakRepo {
     override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -67,6 +70,21 @@ internal class PostgresSakRepo(
                         mapOf("id" to sakId.toString()),
                     ).map { row ->
                         row.toSak(txSession)
+                    }.asSingle,
+                )
+            }
+        }
+    }
+
+    override fun hentKunSak(sakId: SakId): Sak? {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHent,
+                        mapOf("id" to sakId.toString()),
+                    ).map { row ->
+                        row.toKunSak()
                     }.asSingle,
                 )
             }
@@ -160,6 +178,20 @@ internal class PostgresSakRepo(
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
             behandlinger = behandlingRepo.hentForSak(id),
             personopplysninger = personopplysningerRepo.hent(id, txSession),
+            vedtak = vedtakRepo.hentVedtakForSak(id),
+        )
+    }
+
+    private fun Row.toKunSak(): Sak {
+        val id = SakId.fromDb(string("id"))
+        return Sak(
+            id = id,
+            ident = string("ident"),
+            saknummer = Saksnummer(verdi = string("saksnummer")),
+            periode = Periode(fra = localDate("fom"), til = localDate("tom")),
+            behandlinger = emptyList(),
+            personopplysninger = emptyList(),
+            vedtak = emptyList(),
         )
     }
 
