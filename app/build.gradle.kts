@@ -47,7 +47,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2023101613431697456627.0cdd93eb696f")
+    implementation("com.github.navikt:rapids-and-rivers:2024020507581707116327.1c34df474331")
     implementation("com.natpryce:konfig:1.6.10.0")
 
     // Http
@@ -73,7 +73,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
-    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.mockk:mockk:$mockkVersion")
