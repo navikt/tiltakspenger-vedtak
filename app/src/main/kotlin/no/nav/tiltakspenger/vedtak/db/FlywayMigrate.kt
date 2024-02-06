@@ -6,7 +6,6 @@ import org.flywaydb.core.Flyway
 
 private fun flyway(): Flyway =
     when (Configuration.applicationProfile()) {
-        Profile.DEV -> gcpDevFlyway()
         Profile.LOCAL -> localFlyway()
         else -> gcpFlyway()
     }
@@ -16,16 +15,6 @@ private fun localFlyway() = Flyway
     .loggers("slf4j")
     .encoding("UTF-8")
     .locations("db/migration", "db/local-migration")
-    .dataSource(DataSource.hikariDataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
-
-private fun gcpDevFlyway() = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .locations("db/dev-migration")
     .dataSource(DataSource.hikariDataSource)
     .cleanDisabled(false)
     .cleanOnValidationError(true)
