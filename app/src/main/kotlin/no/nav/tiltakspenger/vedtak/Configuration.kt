@@ -69,7 +69,6 @@ object Configuration {
             "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
             "SCOPE_UTBETALING" to "localhost",
             "UTBETALING_URL" to "http://host.docker.internal:8083",
-            "KAFKA_BOOTSTRAP_LOCAL" to "http://host.docker.internal:9092",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -151,5 +150,5 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
-    fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BOOTSTRAP_LOCAL", stringType)]
+    fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
 }
