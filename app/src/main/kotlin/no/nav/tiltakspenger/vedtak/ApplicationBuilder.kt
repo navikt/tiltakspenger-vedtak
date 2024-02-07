@@ -31,9 +31,12 @@ val securelog = KotlinLogging.logger("tjenestekall")
 
 internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<String, String>) :
     RapidsConnection.StatusListener {
-    val rapidsConnection: RapidsConnection = RapidApplication.Builder(
-        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers),
-    )
+    private val rapidConfig = if (Configuration.applicationProfile() == Profile.LOCAL) {
+        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers, LokalKafkaConfig())
+    } else {
+        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
+    }
+    val rapidsConnection: RapidsConnection = RapidApplication.Builder(rapidConfig)
         .withKtorModule {
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
