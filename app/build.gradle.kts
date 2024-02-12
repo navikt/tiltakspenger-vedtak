@@ -2,7 +2,7 @@ val ktorVersion = "2.3.8"
 val kotestVersion = "5.8.0"
 val mockkVersion = "1.13.9"
 val testContainersVersion = "1.19.5"
-val felleslibVersion = "0.0.79"
+val felleslibVersion = "0.0.85"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
