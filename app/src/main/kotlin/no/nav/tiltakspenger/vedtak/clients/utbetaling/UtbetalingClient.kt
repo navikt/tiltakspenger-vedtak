@@ -23,21 +23,16 @@ val securelog = KotlinLogging.logger("tjenestekall")
 
 data class UtbetalingDTO(
     val sakId: String,
-    val behandlingId: String,
-    val personIdent: String,
+    val gjeldendeVedtakId: String,
+    val ident: String,
     val fom: LocalDate,
     val tom: LocalDate,
-    val vedtakUtfall: VedtakUtfall,
+    val antallBarn: Int,
+    val brukerNavkontor: String,
     val vedtaktidspunkt: LocalDateTime,
     val saksbehandler: String,
     val beslutter: String,
 )
-
-enum class VedtakUtfall {
-    INNVILGET,
-    AVSLÅTT,
-    OPPHØR,
-}
 
 class UtbetalingClient(
     private val config: Configuration.ClientConfig = Configuration.utbetalingClientConfig(),
