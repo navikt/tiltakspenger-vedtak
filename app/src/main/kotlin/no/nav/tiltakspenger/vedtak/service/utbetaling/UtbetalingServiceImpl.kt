@@ -21,7 +21,7 @@ class UtbetalingServiceImpl(
             utløsendeId = vedtak.behandling.id.toString(),
             ident = sak.ident,
             antallBarn = vedtak.behandling.søknad().barnetillegg.count { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja },
-            brukerNavkontor = "0219", // Denne må hentes fra NORG
+            brukerNavkontor = "0220", // Denne må hentes fra NORG
             vedtaktidspunkt = vedtak.vedtaksdato,
             saksbehandler = vedtak.saksbehandler,
             beslutter = vedtak.beslutter,
