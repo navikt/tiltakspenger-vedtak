@@ -13,10 +13,18 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 data class MeldekortGrunnlagDTO(
     val vedtakId: String,
+    val sakId: String,
     val behandlingId: String,
     val status: StatusDTO,
     val vurderingsperiode: PeriodeDTO,
     val tiltak: List<TiltakDTO>,
+    val personopplysninger: PersonopplysningerDTO,
+)
+
+data class PersonopplysningerDTO(
+    val fornavn: String,
+    val etternavn: String,
+    val ident: String,
 )
 
 enum class StatusDTO {
@@ -51,6 +59,7 @@ fun sendMeldekortGrunnlag(vedtak: Vedtak, rapidsConnection: RapidsConnection) {
 private fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
     MeldekortGrunnlagDTO(
         vedtakId = vedtak.id.toString(),
+        sakId = vedtak.sakId.toString(),
         behandlingId = vedtak.behandling.id.toString(),
         status = when (vedtak.vedtaksType) {
             VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV
@@ -63,6 +72,11 @@ private fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
             til = vedtak.periode.til,
         ),
         tiltak = mapTiltakDTO(vedtak),
+        personopplysninger = PersonopplysningerDTO(
+            fornavn = vedtak.behandling.søknad().personopplysninger.fornavn,
+            etternavn = vedtak.behandling.søknad().personopplysninger.etternavn,
+            ident = vedtak.behandling.søknad().personopplysninger.ident,
+        ),
     )
 
 fun mapTiltakDTO(vedtak: Vedtak) =

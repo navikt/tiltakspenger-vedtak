@@ -16,17 +16,14 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
 
 data class UtbetalingDTO(
     val sakId: String,
-    val gjeldendeVedtakId: String,
+    val utløsendeId: String,
     val ident: String,
-    val fom: LocalDate,
-    val tom: LocalDate,
     val antallBarn: Int,
     val brukerNavkontor: String,
     val vedtaktidspunkt: LocalDateTime,
