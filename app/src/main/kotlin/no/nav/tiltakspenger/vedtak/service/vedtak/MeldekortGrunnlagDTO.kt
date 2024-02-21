@@ -78,3 +78,23 @@ private fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
             ident = vedtak.behandling.søknad().personopplysninger.ident,
         ),
     )
+
+fun mapTiltakDTO(vedtak: Vedtak) =
+    vedtak.behandling.tiltak
+        .filter { it.id == vedtak.behandling.søknad().tiltak.id }
+        .map {
+            TiltakDTO(
+                periodeDTO = PeriodeDTO(
+                    fra = it.deltakelseFom,
+                    til = it.deltakelseTom,
+                ),
+                typeBeskrivelse = it.gjennomføring.typeNavn,
+                typeKode = it.gjennomføring.typeKode,
+                antDagerIUken = it.deltakelseDagerUke
+                    ?: if (it.deltakelseProsent == 100F) {
+                        5F
+                    } else {
+                        throw IllegalStateException("Kan ikke beregne antall dager i uken for tiltak uten deltakelseDagerUke eller deltakelseProsent")
+                    },
+            )
+        }

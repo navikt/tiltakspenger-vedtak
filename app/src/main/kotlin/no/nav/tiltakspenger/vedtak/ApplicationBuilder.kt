@@ -68,7 +68,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val attesteringRepo = AttesteringRepoImpl()
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
-    private val vedtakService = VedtakServiceImpl(utbetalingService, vedtakRepo, rapidsConnection)
+    private val vedtakService = VedtakServiceImpl(utbetalingService, vedtakRepo, personopplysningRepo, rapidsConnection)
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
     private val sakService =
