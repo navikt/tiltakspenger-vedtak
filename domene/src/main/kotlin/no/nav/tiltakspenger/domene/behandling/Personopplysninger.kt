@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.brev.Personalia
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import java.time.LocalDate
@@ -14,8 +13,6 @@ sealed interface Personopplysninger {
     fun strengtFortrolig(): Boolean
     fun fortrolig(): Boolean
     fun skjermet(): Boolean
-
-    fun getPersonalia(): Personalia
 
     data class Søker(
         val ident: String,
@@ -35,20 +32,6 @@ sealed interface Personopplysninger {
         override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
         override fun fortrolig(): Boolean = fortrolig
         override fun skjermet(): Boolean = skjermet ?: true
-
-        override fun getPersonalia() =
-            Personalia(
-                dato = "MÅKK",
-                ident = ident,
-                fornavn = fornavn,
-                etternavn = etternavn,
-                adresse = "MÅKK",
-                husnummer = "MÅKK",
-                bruksenhet = "MÅKK",
-                postnummer = "MÅKK",
-                poststed = "MÅKK",
-                antallBarn = -1,
-            )
 
         override fun equals(other: Any?): Boolean {
             if (other !is Søker) return false
@@ -78,20 +61,6 @@ sealed interface Personopplysninger {
         override fun fortrolig(): Boolean = false
         override fun skjermet(): Boolean = false
 
-        override fun getPersonalia() =
-            Personalia(
-                dato = "MÅKK",
-                ident = "MÅKK",
-                fornavn = "MÅKK",
-                etternavn = "MÅKK",
-                adresse = "MÅKK",
-                husnummer = "MÅKK",
-                bruksenhet = "MÅKK",
-                postnummer = "MÅKK",
-                poststed = "MÅKK",
-                antallBarn = -1,
-            )
-
         override fun equals(other: Any?): Boolean {
             if (other !is BarnUtenIdent) return false
             return this.fødselsdato == other.fødselsdato &&
@@ -118,20 +87,6 @@ sealed interface Personopplysninger {
         override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
         override fun fortrolig(): Boolean = fortrolig
         override fun skjermet(): Boolean = skjermet ?: true
-
-        override fun getPersonalia() =
-            Personalia(
-                dato = "MÅKK",
-                ident = ident,
-                fornavn = fornavn,
-                etternavn = etternavn,
-                adresse = "MÅKK",
-                husnummer = "MÅKK",
-                bruksenhet = "MÅKK",
-                postnummer = "MÅKK",
-                poststed = "MÅKK",
-                antallBarn = -1,
-            )
 
         override fun equals(other: Any?): Boolean {
             if (other !is BarnMedIdent) return false

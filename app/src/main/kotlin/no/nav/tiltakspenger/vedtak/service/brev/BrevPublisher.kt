@@ -1,18 +1,17 @@
-package no.nav.tiltakspenger.vedtak.service.vedtak
+package no.nav.tiltakspenger.vedtak.service.brev
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
-import no.nav.tiltakspenger.domene.brev.BrevDTO
-import no.nav.tiltakspenger.domene.brev.Tiltaksinfo
+import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysninger: Personopplysninger) {
+fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysninger: Personopplysninger.Søker) {
     mutableMapOf(
         "@event_name" to "vedtaksbrev",
         "@opprettet" to LocalDateTime.now(),
@@ -24,10 +23,10 @@ fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysnin
         }
 }
 
-private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysninger) =
+private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysninger.Søker) =
     BrevDTO(
-        personalia = personopplysninger.getPersonalia(),
-        tiltaksinfo = mapTiltaksinfo(vedtak),
+        personaliaDTO = mapPeronaliaDTO(vedtak, personopplysninger),
+        tiltaksinfoDTO = mapTiltaksinfo(vedtak),
         fraDato = vedtak.periode.fra.toString(),
         tilDato = vedtak.periode.til.toString(),
         saksnummer = vedtak.sakId.toString(),
@@ -37,11 +36,25 @@ private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysni
         innsendingTidspunkt = LocalDateTime.now(),
     )
 
+private fun mapPeronaliaDTO(vedtak: Vedtak, personopplysninger: Personopplysninger.Søker) =
+    PersonaliaDTO(
+        dato = "MÅKK",
+        ident = personopplysninger.ident,
+        fornavn = personopplysninger.fornavn,
+        etternavn = personopplysninger.etternavn,
+        adresse = "MÅKK",
+        husnummer = "MÅKK",
+        bruksenhet = "MÅKK",
+        postnummer = "MÅKK",
+        poststed = "MÅKK",
+        antallBarn = vedtak.behandling.søknad().barnetillegg.count { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja },
+    )
+
 fun mapTiltaksinfo(vedtak: Vedtak) =
     vedtak.behandling.tiltak
         .filter { it.id == vedtak.behandling.søknad().tiltak.id }
         .map {
-            Tiltaksinfo(
+            TiltaksinfoDTO(
                 tiltak = it.gjennomføring.typeNavn,
                 tiltaksnavn = it.gjennomføring.typeNavn,
                 tiltaksnummer = it.gjennomføring.typeKode,
