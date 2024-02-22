@@ -23,26 +23,25 @@ data class Sak(
     val vedtak: List<Vedtak>,
 ) {
     fun håndter(søknad: Søknad): Sak {
-        val nyeBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>().map {
-            Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder()
-        }
-
-        val behandlinger = behandlinger.map {
-            try {
-                it.leggTilSøknad(søknad)
-            } catch (e: IllegalStateException) {
-                if (e.message?.contains("Kan ikke legge til søknad på denne behandlingen") == true) {
-                    it
-                } else {
-                    throw e
+        val iverksatteBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>()
+        val behandlinger = behandlinger
+            .filterNot { it is BehandlingIverksatt }
+            .map {
+                try {
+                    it.leggTilSøknad(søknad)
+                } catch (e: IllegalStateException) {
+                    if (e.message?.contains("Kan ikke legge til søknad på denne behandlingen") == true) {
+                        it
+                    } else {
+                        throw e
+                    }
                 }
+            }.ifEmpty {
+                listOf(Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
             }
-        }.ifEmpty {
-            listOf(Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
-        }
 
         return this.copy(
-            behandlinger = behandlinger + nyeBehandlinger,
+            behandlinger = behandlinger + iverksatteBehandlinger,
         )
     }
 

@@ -6,6 +6,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
@@ -15,10 +16,13 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingInnvilgetIverksatt
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
@@ -106,7 +110,77 @@ internal class SakServiceTest {
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id
-        sak2.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first().søknad() shouldBe søknad2.copy(opprettet = søknad.opprettet)
+        sak2.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
+            .søknad() shouldBe søknad2.copy(opprettet = søknad.opprettet)
+    }
+
+    @Test
+    fun `legger til ny søknad med flere iverksatte, lager 1 ny behandling`() {
+        val eksisterendeSak = tomSak(
+            periode = Periode(
+                1.januar(2023),
+                31.mars(2023),
+            ),
+            behandlinger = listOf(
+                behandlingInnvilgetIverksatt(),
+                behandlingInnvilgetIverksatt(),
+            ),
+        )
+
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns listOf(eksisterendeSak)
+        every { sakRepo.lagre(any()) } returnsArgument 0
+
+        val søknad = nySøknad(
+            journalpostId = "søknad1",
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.januar(2023),
+            ),
+            opprettet = 1.januarDateTime(2023),
+        )
+
+        val sak = sakService.motta(søknad)
+
+        sak.behandlinger.size shouldBe 3
+    }
+
+    @Test
+    fun `legger til ny søknad med flere iverksatte og 1 tilbeslutter, legger søknad til den åpne behandlingen`() {
+        val eksisterendeSak = tomSak(
+            periode = Periode(
+                1.januar(2023),
+                31.mars(2023),
+            ),
+            behandlinger = listOf(
+                behandlingInnvilgetIverksatt(),
+                behandlingInnvilgetIverksatt(),
+                behandlingTilBeslutterInnvilget(),
+            ),
+        )
+
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns listOf(eksisterendeSak)
+        every { sakRepo.lagre(any()) } returnsArgument 0
+
+        val nyJournalpostId = "ny og fin journalpostid"
+        val søknad = nySøknad(
+            journalpostId = nyJournalpostId,
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.januar(2023),
+            ),
+            opprettet = 1.januarDateTime(2023),
+        )
+
+        val sak = sakService.motta(søknad)
+
+        sak.behandlinger.size shouldBe 3
+
+        val åpenBehandlinger = sak.behandlinger.filterNot { it is BehandlingIverksatt }
+
+        åpenBehandlinger.size shouldBe 1
+        val b = åpenBehandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
+        b.søknader.size shouldBe 2
+        b.søknad().journalpostId shouldBe nyJournalpostId
     }
 
     @Test

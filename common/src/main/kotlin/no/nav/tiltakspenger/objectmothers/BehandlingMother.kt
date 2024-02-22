@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknad
@@ -85,6 +86,10 @@ interface BehandlingMother {
         return behandlingVilkårsvurdertAvslag().copy(
             saksbehandler = "123",
         ).tilBeslutting()
+    }
+
+    fun behandlingInnvilgetIverksatt(): BehandlingIverksatt.Innvilget {
+        return behandlingTilBeslutterInnvilget().copy(beslutter = "beslutter").iverksett()
     }
 
     fun vilkårViHenter() = listOf(
