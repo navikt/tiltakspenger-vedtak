@@ -6,19 +6,7 @@ import no.nav.tiltakspenger.felles.leggSammenMed
 import no.nav.tiltakspenger.felles.overlappendePerioder
 import no.nav.tiltakspenger.felles.trekkFra
 
-data class DagsatsOgAntallBarn(
-    val dagsats: Long,
-    val antallBarn: Int,
-) {
-    companion object {
-        fun kombinerDagsatsOgAntallBarn(dagsats: Long, antallBarn: Int): DagsatsOgAntallBarn =
-            DagsatsOgAntallBarn(dagsats, antallBarn)
-
-        fun trekkUtDagsats(dagsatsOgAntallBarn: DagsatsOgAntallBarn): Long = dagsatsOgAntallBarn.dagsats
-        fun trekkUtAntallBarn(dagsatsOgAntallBarn: DagsatsOgAntallBarn): Int = dagsatsOgAntallBarn.antallBarn
-    }
-}
-
+// Er det litt dumt at den wrapper List? Burde den delegere til List? Eller extende List?
 class IkkeOverlappendePerioder(perioder: List<Periode>) {
 
     // Er det bedre med en check her for å verifisere at periodene faktisk er ikke-overlappende?
