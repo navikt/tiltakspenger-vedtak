@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.felles.temp
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.oktober
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class PerioderGreierKtTest {
     data class DagsatsOgAntallBarn(
@@ -22,150 +22,51 @@ class PerioderGreierKtTest {
     @Test
     fun test1() {
         val perioderMedDagsats =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
-                255L,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
-            )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 10, 2)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 3)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 4), LocalDate.of(2023, 10, 4)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 5)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 6), LocalDate.of(2023, 10, 6)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 7), LocalDate.of(2023, 10, 7)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 8), LocalDate.of(2023, 10, 8)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 9), LocalDate.of(2023, 10, 9)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
-                )
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(255L, Periode(1.oktober(2023), 10.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(1.oktober(2023), 1.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(2.oktober(2023), 2.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(3.oktober(2023), 3.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(4.oktober(2023), 4.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(5.oktober(2023), 5.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(6.oktober(2023), 6.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(7.oktober(2023), 7.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(8.oktober(2023), 8.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(9.oktober(2023), 9.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(10.oktober(2023), 10.oktober(2023)))
         perioderMedDagsats.perioder().size shouldBe 1
     }
 
     @Test
     fun test2() {
         val perioderMedDagsats =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
-                255L,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
-            )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 10, 2)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 3)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 4), LocalDate.of(2023, 10, 4)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 5)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 6), LocalDate.of(2023, 10, 6)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 7), LocalDate.of(2023, 10, 7)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 8), LocalDate.of(2023, 10, 8)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 9), LocalDate.of(2023, 10, 9)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
-                )
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(255L, Periode(1.oktober(2023), 10.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(1.oktober(2023), 1.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(2.oktober(2023), 2.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(3.oktober(2023), 3.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(4.oktober(2023), 4.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(5.oktober(2023), 5.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(6.oktober(2023), 6.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(7.oktober(2023), 7.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(8.oktober(2023), 8.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(9.oktober(2023), 9.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(10.oktober(2023), 10.oktober(2023)))
         perioderMedDagsats.perioder().size shouldBe 10
     }
 
     @Test
     fun test3() {
         val perioderMedDagsats =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
-                255L,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
-            )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 10, 2)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 3)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 4), LocalDate.of(2023, 10, 4)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 5)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 6), LocalDate.of(2023, 10, 6)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 7), LocalDate.of(2023, 10, 7)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 8), LocalDate.of(2023, 10, 8)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 9), LocalDate.of(2023, 10, 9)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
-                )
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(255L, Periode(1.oktober(2023), 10.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(1.oktober(2023), 1.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(2.oktober(2023), 2.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(3.oktober(2023), 3.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(4.oktober(2023), 4.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(5.oktober(2023), 5.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(6.oktober(2023), 6.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(7.oktober(2023), 7.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(8.oktober(2023), 8.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(9.oktober(2023), 9.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(10.oktober(2023), 10.oktober(2023)))
         perioderMedDagsats.perioder().size shouldBe 5
         perioderMedDagsats.perioder().count { it.verdi == 300L } shouldBe 3
         perioderMedDagsats.perioder().count { it.verdi == 301L } shouldBe 2
@@ -189,49 +90,19 @@ class PerioderGreierKtTest {
         }
 
         val perioderMedDagsats =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
-                255L,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)),
-            )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    300L,
-                    Periode(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 10, 2)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 3)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    301L,
-                    Periode(LocalDate.of(2023, 10, 4), LocalDate.of(2023, 10, 4)),
-                )
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(255L, Periode(1.oktober(2023), 4.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(1.oktober(2023), 1.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(300L, Periode(2.oktober(2023), 2.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(3.oktober(2023), 3.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(301L, Periode(4.oktober(2023), 4.oktober(2023)))
         kontrollerDagsats(perioderMedDagsats)
 
         val perioderMedAntallBarn =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
-                0,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)),
-            )
-                .erstattSubPeriodeMedVerdi(
-                    1,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    2,
-                    Periode(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 10, 2)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    2,
-                    Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 3)),
-                )
-                .erstattSubPeriodeMedVerdi(
-                    1,
-                    Periode(LocalDate.of(2023, 10, 4), LocalDate.of(2023, 10, 4)),
-                )
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(0, Periode(1.oktober(2023), 4.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(1, Periode(1.oktober(2023), 1.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(2, Periode(2.oktober(2023), 2.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(2, Periode(3.oktober(2023), 3.oktober(2023)))
+                .erstattSubPeriodeMedVerdi(1, Periode(4.oktober(2023), 4.oktober(2023)))
         kontrollerAntallBarn(perioderMedAntallBarn)
 
         val perioderMedDagsatsOgAntallBarn =

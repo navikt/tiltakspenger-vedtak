@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.felles.temp
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.oktober
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 enum class Utfall {
     OPPFYLT,
@@ -18,17 +18,14 @@ class VilkårsvurderingPeriodiseringTest {
         val aap =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.IKKE_OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(
-                    Utfall.OPPFYLT,
-                    Periode(LocalDate.of(2023, 10, 6), LocalDate.of(2023, 10, 10)),
-                )
+                .erstattSubPeriodeMedVerdi(Utfall.OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
 
         val dagpenger =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
 
         val vedtak = aap.kombiner(dagpenger, ::kombinerToUfall)
@@ -36,17 +33,11 @@ class VilkårsvurderingPeriodiseringTest {
 
         vedtak.perioder().count { it.verdi == Utfall.OPPFYLT } shouldBe 1
         vedtak.perioder()
-            .find { it.verdi == Utfall.OPPFYLT }!!.periode shouldBe Periode(
-            LocalDate.of(2023, 10, 6),
-            LocalDate.of(2023, 10, 10),
-        )
+            .find { it.verdi == Utfall.OPPFYLT }!!.periode shouldBe Periode(6.oktober(2023), 10.oktober(2023))
 
         vedtak.perioder().count { it.verdi == Utfall.IKKE_OPPFYLT } shouldBe 1
         vedtak.perioder()
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.periode shouldBe Periode(
-            LocalDate.of(2023, 10, 1),
-            LocalDate.of(2023, 10, 5),
-        )
+            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.periode shouldBe Periode(1.oktober(2023), 5.oktober(2023))
     }
 
     @Test
@@ -54,37 +45,28 @@ class VilkårsvurderingPeriodiseringTest {
         val aap =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(
-                    Utfall.IKKE_OPPFYLT,
-                    Periode(LocalDate.of(2023, 10, 6), LocalDate.of(2023, 10, 10)),
-                )
+                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
 
         val fengsel =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(
-                    Utfall.IKKE_OPPFYLT,
-                    Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 2)),
-                )
+                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(1.oktober(2023), 2.oktober(2023)))
 
         val jobbsjansen =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(
-                    Utfall.IKKE_OPPFYLT,
-                    Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 7)),
-                )
+                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(5.oktober(2023), 7.oktober(2023)))
 
         val dagpenger =
             PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
-                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
+                Periode(1.oktober(2023), 10.oktober(2023)),
             )
 
         val alleVilkår = listOf(aap, dagpenger, fengsel, jobbsjansen)
@@ -96,16 +78,15 @@ class VilkårsvurderingPeriodiseringTest {
         vedtak.perioder()
             .count { it.verdi == Utfall.OPPFYLT } shouldBe 1
         vedtak.perioder()
-            .filter { it.verdi == Utfall.OPPFYLT }.map { it.periode } shouldContainExactly listOf(
-            Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 4)),
-        )
+            .filter { it.verdi == Utfall.OPPFYLT }
+            .map { it.periode } shouldContainExactly listOf(Periode(3.oktober(2023), 4.oktober(2023)))
 
         vedtak.perioder()
             .count { it.verdi == Utfall.IKKE_OPPFYLT } shouldBe 2
         vedtak.perioder()
             .filter { it.verdi == Utfall.IKKE_OPPFYLT }.map { it.periode } shouldContainExactly listOf(
-            Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 2)),
-            Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 10)),
+            Periode(1.oktober(2023), 2.oktober(2023)),
+            Periode(5.oktober(2023), 10.oktober(2023)),
         )
     }
 
