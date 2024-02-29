@@ -12,13 +12,11 @@ enum class Utfall {
     KREVER_MANUELL_VURDERING,
 }
 
-data class Vilkår(val utfall: Utfall)
-
 class VilkårsvurderingPeriodiseringTest {
     @Test
     fun test1() {
         val aap =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.IKKE_OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -28,41 +26,33 @@ class VilkårsvurderingPeriodiseringTest {
                 )
 
         val dagpenger =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
 
         val vedtak = aap.kombiner(dagpenger, ::kombinerToUfall)
-        vedtak.perioderMedUlikVerdi.size shouldBe 2
+        vedtak.perioder().size shouldBe 2
 
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.OPPFYLT }!!.perioder.perioder().size shouldBe 1
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.OPPFYLT }!!.perioder.perioder().first().fra shouldBe LocalDate.of(2023, 10, 6)
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.OPPFYLT }!!.perioder.perioder().first().til shouldBe LocalDate.of(2023, 10, 10)
-
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.perioder.perioder().size shouldBe 1
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.perioder.perioder().first().fra shouldBe LocalDate.of(
-            2023,
-            10,
-            1,
+        vedtak.perioder().count { it.verdi == Utfall.OPPFYLT } shouldBe 1
+        vedtak.perioder()
+            .find { it.verdi == Utfall.OPPFYLT }!!.periode shouldBe Periode(
+            LocalDate.of(2023, 10, 6),
+            LocalDate.of(2023, 10, 10),
         )
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.perioder.perioder().first().til shouldBe LocalDate.of(
-            2023,
-            10,
-            5,
+
+        vedtak.perioder().count { it.verdi == Utfall.IKKE_OPPFYLT } shouldBe 1
+        vedtak.perioder()
+            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.periode shouldBe Periode(
+            LocalDate.of(2023, 10, 1),
+            LocalDate.of(2023, 10, 5),
         )
     }
 
     @Test
     fun testFireVilkår() {
         val aap =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -72,7 +62,7 @@ class VilkårsvurderingPeriodiseringTest {
                 )
 
         val fengsel =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -82,7 +72,7 @@ class VilkårsvurderingPeriodiseringTest {
                 )
 
         val jobbsjansen =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -92,28 +82,28 @@ class VilkårsvurderingPeriodiseringTest {
                 )
 
         val dagpenger =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 Utfall.OPPFYLT,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
 
         val alleVilkår = listOf(aap, dagpenger, fengsel, jobbsjansen)
 
-        val vedtak = IkkeOverlappendePerioderMedUlikeVerdier.kombinerLike(alleVilkår, ::kombinerToUfall)
+        val vedtak = PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier.kombinerLike(alleVilkår, ::kombinerToUfall)
         println(vedtak)
-        vedtak.perioderMedUlikVerdi.size shouldBe 2
+        vedtak.perioder().size shouldBe 3
 
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.OPPFYLT }!!.perioder.perioder().size shouldBe 1
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.OPPFYLT }!!.perioder.perioder() shouldContainExactly listOf(
+        vedtak.perioder()
+            .count { it.verdi == Utfall.OPPFYLT } shouldBe 1
+        vedtak.perioder()
+            .filter { it.verdi == Utfall.OPPFYLT }.map { it.periode } shouldContainExactly listOf(
             Periode(LocalDate.of(2023, 10, 3), LocalDate.of(2023, 10, 4)),
         )
 
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.perioder.perioder().size shouldBe 2
-        vedtak.perioderMedUlikVerdi
-            .find { it.verdi == Utfall.IKKE_OPPFYLT }!!.perioder.perioder() shouldContainExactly listOf(
+        vedtak.perioder()
+            .count { it.verdi == Utfall.IKKE_OPPFYLT } shouldBe 2
+        vedtak.perioder()
+            .filter { it.verdi == Utfall.IKKE_OPPFYLT }.map { it.periode } shouldContainExactly listOf(
             Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 2)),
             Periode(LocalDate.of(2023, 10, 5), LocalDate.of(2023, 10, 10)),
         )

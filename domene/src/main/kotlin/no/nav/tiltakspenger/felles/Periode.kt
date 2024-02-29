@@ -112,6 +112,9 @@ class Periode(fra: LocalDate, til: LocalDate) {
         return ranges.filter { !it.canonical(domain).isEmpty }.map { it.toPeriode() }
     }
 
+    fun leggTil(annenPeriode: Periode): List<Periode> =
+        listOf(this).leggSammenMed(annenPeriode, true)
+
     fun tilDager(): List<LocalDate> {
         return fra.datesUntil(til.plusDays(1)).toList()
     }

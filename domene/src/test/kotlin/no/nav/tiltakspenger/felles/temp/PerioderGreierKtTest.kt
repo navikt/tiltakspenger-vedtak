@@ -22,7 +22,7 @@ class PerioderGreierKtTest {
     @Test
     fun test1() {
         val perioderMedDagsats =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 255L,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -66,14 +66,13 @@ class PerioderGreierKtTest {
                     300L,
                     Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
                 )
-        println(perioderMedDagsats.perioderMedUlikVerdi)
-        perioderMedDagsats.perioderMedUlikVerdi.size shouldBe 1
+        perioderMedDagsats.perioder().size shouldBe 1
     }
 
     @Test
     fun test2() {
         val perioderMedDagsats =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 255L,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -117,18 +116,13 @@ class PerioderGreierKtTest {
                     301L,
                     Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
                 )
-        println(perioderMedDagsats)
-        perioderMedDagsats.perioderMedUlikVerdi.size shouldBe 2
-        perioderMedDagsats.perioderMedUlikVerdi.forEach {
-            println(it.perioder.perioder())
-            it.perioder.perioder().size shouldBe 5
-        }
+        perioderMedDagsats.perioder().size shouldBe 10
     }
 
     @Test
     fun test3() {
         val perioderMedDagsats =
-            IkkeOverlappendePerioderMedUlikeVerdier(
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
                 255L,
                 Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 10)),
             )
@@ -172,57 +166,33 @@ class PerioderGreierKtTest {
                     300L,
                     Periode(LocalDate.of(2023, 10, 10), LocalDate.of(2023, 10, 10)),
                 )
-        perioderMedDagsats.perioderMedUlikVerdi.size shouldBe 2
-        perioderMedDagsats.perioderMedUlikVerdi.forEach {
-            println(it.perioder.perioder())
-            if (it.verdi == 300L) {
-                it.perioder.perioder().size shouldBe 3
-            }
-            if (it.verdi == 301L) {
-                it.perioder.perioder().size shouldBe 2
-            }
-            if (it.verdi == 255L) {
-                org.junit.jupiter.api.fail("Denne verdien skal ikke ha noen perioder")
-            }
-        }
+        perioderMedDagsats.perioder().size shouldBe 5
+        perioderMedDagsats.perioder().count { it.verdi == 300L } shouldBe 3
+        perioderMedDagsats.perioder().count { it.verdi == 301L } shouldBe 2
+        perioderMedDagsats.perioder().count { it.verdi == 255L } shouldBe 0
     }
 
     @Test
     fun test4() {
-        fun kontrollerDagsats(perioderMedDagsats: IkkeOverlappendePerioderMedUlikeVerdier<Long>) {
-            perioderMedDagsats.perioderMedUlikVerdi.size shouldBe 2
-            perioderMedDagsats.perioderMedUlikVerdi.forEach {
-                println(it.perioder.perioder())
-                if (it.verdi == 300L) {
-                    it.perioder.perioder().size shouldBe 1
-                }
-                if (it.verdi == 301L) {
-                    it.perioder.perioder().size shouldBe 1
-                }
-                if (it.verdi == 255L) {
-                    org.junit.jupiter.api.fail("Denne verdien skal ikke ha noen perioder")
-                }
-            }
+        fun kontrollerDagsats(perioderMedDagsats: PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier<Long>) {
+            perioderMedDagsats.perioder().size shouldBe 2
+            perioderMedDagsats.perioder().count { it.verdi == 300L } shouldBe 1
+            perioderMedDagsats.perioder().count { it.verdi == 301L } shouldBe 1
+            perioderMedDagsats.perioder().count { it.verdi == 255L } shouldBe 0
         }
 
-        fun kontrollerAntallBarn(perioderMedAntallBarn: IkkeOverlappendePerioderMedUlikeVerdier<Int>) {
-            perioderMedAntallBarn.perioderMedUlikVerdi.size shouldBe 2
-            perioderMedAntallBarn.perioderMedUlikVerdi.forEach {
-                println(it.perioder.perioder())
-                if (it.verdi == 1) {
-                    it.perioder.perioder().size shouldBe 2
-                }
-                if (it.verdi == 2) {
-                    it.perioder.perioder().size shouldBe 1
-                }
-                if (it.verdi == 0) {
-                    org.junit.jupiter.api.fail("Denne verdien skal ikke ha noen perioder")
-                }
-            }
+        fun kontrollerAntallBarn(perioderMedAntallBarn: PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier<Int>) {
+            perioderMedAntallBarn.perioder().size shouldBe 3
+            perioderMedAntallBarn.perioder().count { it.verdi == 1 } shouldBe 2
+            perioderMedAntallBarn.perioder().count { it.verdi == 2 } shouldBe 1
+            perioderMedAntallBarn.perioder().count { it.verdi == 0 } shouldBe 0
         }
 
         val perioderMedDagsats =
-            IkkeOverlappendePerioderMedUlikeVerdier(255L, Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)))
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+                255L,
+                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)),
+            )
                 .erstattSubPeriodeMedVerdi(
                     300L,
                     Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
@@ -242,7 +212,10 @@ class PerioderGreierKtTest {
         kontrollerDagsats(perioderMedDagsats)
 
         val perioderMedAntallBarn =
-            IkkeOverlappendePerioderMedUlikeVerdier(0, Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)))
+            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+                0,
+                Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 4)),
+            )
                 .erstattSubPeriodeMedVerdi(
                     1,
                     Periode(LocalDate.of(2023, 10, 1), LocalDate.of(2023, 10, 1)),
@@ -263,7 +236,7 @@ class PerioderGreierKtTest {
 
         val perioderMedDagsatsOgAntallBarn =
             perioderMedDagsats.kombiner(perioderMedAntallBarn, DagsatsOgAntallBarn::kombinerDagsatsOgAntallBarn)
-        perioderMedDagsatsOgAntallBarn.perioderMedUlikVerdi.size shouldBe 4
+        perioderMedDagsatsOgAntallBarn.perioder().size shouldBe 4
 
         kontrollerDagsats(perioderMedDagsatsOgAntallBarn.splitt(DagsatsOgAntallBarn::trekkUtDagsats))
         kontrollerAntallBarn(perioderMedDagsatsOgAntallBarn.splitt(DagsatsOgAntallBarn::trekkUtAntallBarn))
