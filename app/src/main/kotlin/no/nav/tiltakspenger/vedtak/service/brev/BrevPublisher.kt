@@ -6,6 +6,10 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.libs.dokument.BrevDTO
+import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
+import no.nav.tiltakspenger.libs.dokument.TiltaksinfoDTO
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
@@ -33,20 +37,14 @@ private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysni
         barnetillegg = false,
         saksbehandler = vedtak.saksbehandler,
         kontor = "måkk",
-        innsendingTidspunkt = LocalDateTime.now(),
+        datoForUtsending = LocalDate.now(),
     )
 
 private fun mapPeronaliaDTO(vedtak: Vedtak, personopplysninger: Personopplysninger.Søker) =
     PersonaliaDTO(
-        dato = "MÅKK",
         ident = personopplysninger.ident,
         fornavn = personopplysninger.fornavn,
         etternavn = personopplysninger.etternavn,
-        adresse = "MÅKK",
-        husnummer = "MÅKK",
-        bruksenhet = "MÅKK",
-        postnummer = "MÅKK",
-        poststed = "MÅKK",
         antallBarn = vedtak.behandling.søknad().barnetillegg.count { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja },
     )
 
