@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert.Utfallsperiode
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 import no.nav.tiltakspenger.domene.vilkår.Utfall
@@ -23,7 +24,7 @@ sealed interface Søknadsbehandling : Behandling {
         override val tiltak: List<Tiltak>,
         override val saksbehandler: String?,
 
-        ) : Søknadsbehandling {
+    ) : Søknadsbehandling {
         companion object {
             fun fromDb(
                 id: BehandlingId,
@@ -80,15 +81,43 @@ sealed interface Søknadsbehandling : Behandling {
 
         override fun erÅpen() = true
 
+        private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
+            if (this.isEmpty()) return listOf(neste)
+            val forrige = this.last()
+            return if (forrige == neste) {
+                this.dropLast(1) + forrige.copy(
+                    tom = neste.tom,
+                )
+            } else {
+                this + neste
+            }
+        }
 
         fun vilkårsvurder(): BehandlingVilkårsvurdert {
-            // Først lager vi Vurderinger
-            // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
-
             val vurderinger = saksopplysninger().flatMap {
                 it.lagVurdering(vurderingsperiode)
             }
 
+            val utfallsperioder =
+                vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
+                    val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
+                    val utfall = when {
+                        idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> BehandlingVilkårsvurdert.UtfallForPeriode.KREVER_MANUELL_VURDERING
+                        idag.all { it.utfall == Utfall.OPPFYLT } -> BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER
+                        else -> BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                    }
+
+                    Utfallsperiode(
+                        fom = dag,
+                        tom = dag,
+                        antallBarn = 0,
+                        tiltak = listOf(),
+                        antDagerMedTiltak = 0,
+                        utfall = utfall,
+                    )
+                }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
+                    periodisertliste.slåSammen(nesteDag)
+                }
 
             if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
                 return BehandlingVilkårsvurdert.Manuell(
@@ -100,10 +129,10 @@ sealed interface Søknadsbehandling : Behandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                     saksbehandler = saksbehandler,
-                    utfallsperioder = emptyList(),
+                    utfallsperioder = utfallsperioder,
                 )
             }
-            if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
+            if (utfallsperioder.any { it.utfall == BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
                 return BehandlingVilkårsvurdert.Innvilget(
                     id = id,
                     sakId = sakId,
@@ -113,23 +142,10 @@ sealed interface Søknadsbehandling : Behandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                     saksbehandler = saksbehandler,
-                    utfallsperioder = emptyList(),
+                    utfallsperioder = utfallsperioder,
                 )
             }
-            if (vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT }) {
-                return BehandlingVilkårsvurdert.Avslag(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
-                    utfallsperioder = emptyList(),
-                )
-            }
-            return BehandlingVilkårsvurdert.Innvilget(
+            return BehandlingVilkårsvurdert.Avslag(
                 id = id,
                 sakId = sakId,
                 søknader = søknader,
@@ -138,7 +154,7 @@ sealed interface Søknadsbehandling : Behandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vurderinger,
                 saksbehandler = saksbehandler,
-                utfallsperioder = emptyList(),
+                utfallsperioder = utfallsperioder,
             )
         }
 

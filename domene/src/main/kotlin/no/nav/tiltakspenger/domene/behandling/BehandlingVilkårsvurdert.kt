@@ -93,12 +93,21 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         val tiltak: List<Tiltak>,
         val antDagerMedTiltak: Int,
         val utfall: UtfallForPeriode,
-    )
+    ) {
+        override fun equals(other: Any?): Boolean {
+            return other != null &&
+                other is Utfallsperiode &&
+                this.antallBarn == other.antallBarn &&
+                this.utfall == other.utfall &&
+                this.antDagerMedTiltak == other.antDagerMedTiltak
+            // husk tiltak
+        }
+    }
 
     enum class UtfallForPeriode {
         GIR_RETT_TILTAKSPENGER,
         GIR_IKKE_RETT_TILTAKSPENGER,
-        UKJENT,
+        KREVER_MANUELL_VURDERING,
     }
 
     data class Innvilget(

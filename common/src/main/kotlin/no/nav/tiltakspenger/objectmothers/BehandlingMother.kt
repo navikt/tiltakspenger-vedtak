@@ -72,7 +72,12 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert.Avslag {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
-            saksopplysning(vilkår = Vilkår.KVP, type = TypeSaksopplysning.HAR_YTELSE),
+            saksopplysning(
+                fom = 1.januar(2023),
+                tom = 31.mars(2023),
+                vilkår = Vilkår.KVP,
+                type = TypeSaksopplysning.HAR_YTELSE,
+            ),
         ).behandling as BehandlingVilkårsvurdert
 
         return behandling.vurderPåNytt() as BehandlingVilkårsvurdert.Avslag
