@@ -111,6 +111,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
+                utfallsperioder = emptyList(),
             )
         }
 
@@ -187,6 +188,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
+                utfallsperioder = emptyList(),
             )
         }
 

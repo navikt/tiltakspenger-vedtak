@@ -239,6 +239,7 @@ internal class PostgresBehandlingRepo(
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 status = status,
+                utfallsperioder = emptyList(),
             )
 
             "TilBeslutting" -> BehandlingTilBeslutter.fromDb(

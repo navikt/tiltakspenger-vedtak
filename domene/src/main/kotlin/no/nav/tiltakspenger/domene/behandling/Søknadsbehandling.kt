@@ -23,7 +23,7 @@ sealed interface Søknadsbehandling : Behandling {
         override val tiltak: List<Tiltak>,
         override val saksbehandler: String?,
 
-    ) : Søknadsbehandling {
+        ) : Søknadsbehandling {
         companion object {
             fun fromDb(
                 id: BehandlingId,
@@ -80,6 +80,7 @@ sealed interface Søknadsbehandling : Behandling {
 
         override fun erÅpen() = true
 
+
         fun vilkårsvurder(): BehandlingVilkårsvurdert {
             // Først lager vi Vurderinger
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
@@ -88,7 +89,6 @@ sealed interface Søknadsbehandling : Behandling {
                 it.lagVurdering(vurderingsperiode)
             }
 
-            // Etter at vi har laget vurderinger, sjekker vi utfallet
 
             if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
                 return BehandlingVilkårsvurdert.Manuell(
@@ -100,18 +100,7 @@ sealed interface Søknadsbehandling : Behandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                     saksbehandler = saksbehandler,
-                )
-            }
-            if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
-                return BehandlingVilkårsvurdert.Manuell(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
+                    utfallsperioder = emptyList(),
                 )
             }
             if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
@@ -124,6 +113,7 @@ sealed interface Søknadsbehandling : Behandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                     saksbehandler = saksbehandler,
+                    utfallsperioder = emptyList(),
                 )
             }
             if (vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT }) {
@@ -136,9 +126,10 @@ sealed interface Søknadsbehandling : Behandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vurderinger,
                     saksbehandler = saksbehandler,
+                    utfallsperioder = emptyList(),
                 )
             }
-            return BehandlingVilkårsvurdert.Avslag(
+            return BehandlingVilkårsvurdert.Innvilget(
                 id = id,
                 sakId = sakId,
                 søknader = søknader,
@@ -147,6 +138,7 @@ sealed interface Søknadsbehandling : Behandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vurderinger,
                 saksbehandler = saksbehandler,
+                utfallsperioder = emptyList(),
             )
         }
 

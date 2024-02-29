@@ -6,12 +6,14 @@ import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
+    val utfallsperioder: List<Utfallsperiode>
 
     override fun søknad(): Søknad {
         return søknader.siste()
@@ -40,6 +42,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String?,
+            utfallsperioder: List<Utfallsperiode>,
         ): BehandlingVilkårsvurdert {
             when (status) {
                 "Innvilget" -> return Innvilget(
@@ -51,6 +54,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
+                    utfallsperioder = utfallsperioder,
                 )
 
                 "Avslag" -> return Avslag(
@@ -62,6 +66,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
+                    utfallsperioder = utfallsperioder,
                 )
 
                 "Manuell" -> return Manuell(
@@ -73,11 +78,27 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
+                    utfallsperioder = utfallsperioder,
                 )
 
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
             }
         }
+    }
+
+    data class Utfallsperiode(
+        val fom: LocalDate,
+        val tom: LocalDate,
+        val antallBarn: Int,
+        val tiltak: List<Tiltak>,
+        val antDagerMedTiltak: Int,
+        val utfall: UtfallForPeriode,
+    )
+
+    enum class UtfallForPeriode {
+        GIR_RETT_TILTAKSPENGER,
+        GIR_IKKE_RETT_TILTAKSPENGER,
+        UKJENT,
     }
 
     data class Innvilget(
@@ -89,6 +110,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String?,
+        override val utfallsperioder: List<Utfallsperiode>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(): BehandlingIverksatt.Innvilget {
             return BehandlingIverksatt.Innvilget(
@@ -167,6 +189,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String?,
+        override val utfallsperioder: List<Utfallsperiode>,
     ) : BehandlingVilkårsvurdert {
         fun iverksett(): BehandlingIverksatt.Avslag {
             return BehandlingIverksatt.Avslag(
@@ -245,6 +268,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String?,
+        override val utfallsperioder: List<Utfallsperiode>,
     ) : BehandlingVilkårsvurdert {
 
         override fun erÅpen() = true

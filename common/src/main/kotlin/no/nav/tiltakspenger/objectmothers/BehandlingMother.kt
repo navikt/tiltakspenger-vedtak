@@ -55,6 +55,8 @@ interface BehandlingMother {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Søknadsbehandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
+                    fom = periode.fra,
+                    tom = periode.til,
                     vilkår = vilkår,
                     type = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 ),
