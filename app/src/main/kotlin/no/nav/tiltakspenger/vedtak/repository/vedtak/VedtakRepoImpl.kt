@@ -120,6 +120,7 @@ internal class VedtakRepoImpl(
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
             saksopplysninger = saksopplysningRepo.hent(id, txSession),
+            vedtaksperioder = emptyList(),
             vurderinger = vurderingRepo.hent(id, txSession),
             saksbehandler = string("saksbehandler"),
             beslutter = string("beslutter"),
