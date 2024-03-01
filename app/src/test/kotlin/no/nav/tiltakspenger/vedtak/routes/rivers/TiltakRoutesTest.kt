@@ -145,9 +145,7 @@ class TiltakRoutesTest {
                     "id": "",
                     "arrangørnavn": "Kommunerevisjonen",
                     "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
-                    "arenaKode": "ENKFAGYRKE",
-                    "fom": null,
-                    "tom": null
+                    "arenaKode": "ENKFAGYRKE"
                   },
                   "deltakelseFom": "2023-08-20",
                   "deltakelseTom": "2024-06-30",
@@ -176,9 +174,7 @@ class TiltakRoutesTest {
                     "id": "",
                     "arrangørnavn": "Kommunerevisjonen",
                     "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
-                    "arenaKode": "ENKFAGYRKE",
-                    "fom": null,
-                    "tom": null
+                    "arenaKode": "ENKFAGYRKE"
                   },
                   "deltakelseFom": "2023-08-20",
                   "deltakelseTom": "2024-06-30",
@@ -194,9 +190,7 @@ class TiltakRoutesTest {
                     "id": "",
                     "arrangørnavn": "Kommunerevisjonen",
                     "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
-                    "arenaKode": "ENKFAGYRKE",
-                    "fom": null,
-                    "tom": null
+                    "arenaKode": "ENKFAGYRKE"
                   },
                   "deltakelseFom": null,
                   "deltakelseTom": "2024-06-30",
@@ -212,9 +206,7 @@ class TiltakRoutesTest {
                     "id": "",
                     "arrangørnavn": "Kommunerevisjonen",
                     "typeNavn": "Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning",
-                    "arenaKode": "ENKFAGYRKE",
-                    "fom": null,
-                    "tom": null
+                    "arenaKode": "ENKFAGYRKE"
                   },
                   "deltakelseFom": "2023-08-20",
                   "deltakelseTom": null,
