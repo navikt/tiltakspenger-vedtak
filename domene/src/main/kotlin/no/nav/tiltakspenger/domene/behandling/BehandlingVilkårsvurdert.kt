@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -85,40 +84,6 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
             }
         }
-    }
-
-    data class Utfallsperiode(
-        val fom: LocalDate,
-        val tom: LocalDate,
-        val antallBarn: Int,
-        val tiltak: List<Tiltak>,
-        val antDagerMedTiltak: Int,
-        val utfall: UtfallForPeriode,
-    ) {
-        override fun equals(other: Any?): Boolean {
-            return other != null &&
-                other is Utfallsperiode &&
-                this.antallBarn == other.antallBarn &&
-                this.utfall == other.utfall &&
-                this.antDagerMedTiltak == other.antDagerMedTiltak
-            // husk tiltak
-        }
-
-        override fun hashCode(): Int {
-            var result = fom.hashCode()
-            result = 31 * result + tom.hashCode()
-            result = 31 * result + antallBarn
-            result = 31 * result + tiltak.hashCode()
-            result = 31 * result + antDagerMedTiltak
-            result = 31 * result + utfall.hashCode()
-            return result
-        }
-    }
-
-    enum class UtfallForPeriode {
-        GIR_RETT_TILTAKSPENGER,
-        GIR_IKKE_RETT_TILTAKSPENGER,
-        KREVER_MANUELL_VURDERING,
     }
 
     data class Innvilget(

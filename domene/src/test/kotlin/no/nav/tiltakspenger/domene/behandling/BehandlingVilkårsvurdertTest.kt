@@ -38,21 +38,21 @@ internal class BehandlingVilkårsvurdertTest {
         behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert.Innvilget>()
 
         behandling.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.januar(2024),
                 tom = 31.januar(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.februar(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
             ),
         )
 
@@ -70,29 +70,29 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert.Innvilget>()
 
         behandlingMedYtelseStartOgSlutt.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.januar(2024),
                 tom = 31.januar(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.februar(2024),
                 tom = 29.februar(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
             ),
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.mars(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
         )
 
@@ -110,13 +110,13 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert.Avslag>()
 
         behandlingAvslag.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            BehandlingVilkårsvurdert.Utfallsperiode(
+            Utfallsperiode(
                 fom = 1.januar(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
-                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
         )
     }
