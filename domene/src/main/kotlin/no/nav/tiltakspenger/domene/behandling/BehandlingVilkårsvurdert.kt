@@ -103,6 +103,16 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 this.antDagerMedTiltak == other.antDagerMedTiltak
             // husk tiltak
         }
+
+        override fun hashCode(): Int {
+            var result = fom.hashCode()
+            result = 31 * result + tom.hashCode()
+            result = 31 * result + antallBarn
+            result = 31 * result + tiltak.hashCode()
+            result = 31 * result + antDagerMedTiltak
+            result = 31 * result + utfall.hashCode()
+            return result
+        }
     }
 
     enum class UtfallForPeriode {
