@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.SakId
 
 sealed interface BehandlingIverksatt : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
+    val utfallsperioder: List<Utfallsperiode>
     val beslutter: String
 
     override fun søknad(): Søknad {
@@ -24,6 +25,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
             vilkårsvurderinger: List<Vurdering>,
+            utfallsperioder: List<Utfallsperiode>,
             status: String,
             saksbehandler: String,
             beslutter: String,
@@ -37,6 +39,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    utfallsperioder = utfallsperioder,
                     saksbehandler = saksbehandler,
                     beslutter = beslutter,
                 )
@@ -49,6 +52,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    utfallsperioder = utfallsperioder,
                     saksbehandler = saksbehandler,
                     beslutter = beslutter,
                 )
@@ -66,6 +70,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
+        override val utfallsperioder: List<Utfallsperiode>,
         override val saksbehandler: String,
         override val beslutter: String,
     ) : BehandlingIverksatt {
@@ -107,6 +112,7 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
         override val saksopplysninger: List<Saksopplysning>,
         override val tiltak: List<Tiltak>,
         override val vilkårsvurderinger: List<Vurdering>,
+        override val utfallsperioder: List<Utfallsperiode>,
         override val saksbehandler: String,
         override val beslutter: String,
     ) : BehandlingIverksatt {

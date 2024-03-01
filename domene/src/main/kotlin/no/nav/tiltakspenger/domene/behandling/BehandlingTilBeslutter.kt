@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.SakId
 
 sealed interface BehandlingTilBeslutter : Søknadsbehandling {
     val vilkårsvurderinger: List<Vurdering>
+    val utfallsperioder: List<Utfallsperiode>
     val beslutter: String?
 
     override fun søknad(): Søknad {
@@ -43,6 +44,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
             status: String,
             saksbehandler: String,
             beslutter: String?,
+            utfallsperioder: List<Utfallsperiode>,
         ): BehandlingTilBeslutter {
             when (status) {
                 "Innvilget" -> return Innvilget(
@@ -55,6 +57,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
                     beslutter = beslutter,
+                    utfallsperioder = utfallsperioder,
                 )
 
                 "Avslag" -> return Avslag(
@@ -67,6 +70,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                     vilkårsvurderinger = vilkårsvurderinger,
                     saksbehandler = saksbehandler,
                     beslutter = beslutter,
+                    utfallsperioder = utfallsperioder,
                 )
 
                 else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
@@ -84,6 +88,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
         override val beslutter: String?,
+        override val utfallsperioder: List<Utfallsperiode>,
     ) : BehandlingTilBeslutter {
         override fun iverksett(): BehandlingIverksatt.Innvilget {
             checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
@@ -95,6 +100,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
             )
@@ -111,8 +117,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
-                utfallsperioder = emptyList(),
             )
         }
 
@@ -154,6 +160,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
         override val vilkårsvurderinger: List<Vurdering>,
         override val saksbehandler: String,
         override val beslutter: String?,
+        override val utfallsperioder: List<Utfallsperiode>,
     ) : BehandlingTilBeslutter {
         override fun iverksett(): BehandlingIverksatt.Avslag {
             checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
@@ -165,6 +172,7 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
             )
@@ -188,8 +196,8 @@ sealed interface BehandlingTilBeslutter : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
-                utfallsperioder = emptyList(),
             )
         }
 

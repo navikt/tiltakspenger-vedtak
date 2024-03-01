@@ -237,9 +237,9 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = emptyList(),
                 saksbehandler = saksbehandler,
                 status = status,
-                utfallsperioder = emptyList(),
             )
 
             "TilBeslutting" -> BehandlingTilBeslutter.fromDb(
@@ -250,6 +250,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = emptyList(),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
                 beslutter = beslutter,
@@ -263,6 +264,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = emptyList(),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
                 beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },

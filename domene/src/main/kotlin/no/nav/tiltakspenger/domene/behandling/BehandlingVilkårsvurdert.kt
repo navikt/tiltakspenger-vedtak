@@ -106,6 +106,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = "Automatisk",
                 beslutter = "Automatisk",
             )
@@ -121,6 +122,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                utfallsperioder = utfallsperioder,
                 beslutter = null,
             )
         }
@@ -185,6 +187,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = "Automatisk",
                 beslutter = "Automatisk",
             )
@@ -200,6 +203,7 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                utfallsperioder = utfallsperioder,
                 beslutter = null,
             )
         }
