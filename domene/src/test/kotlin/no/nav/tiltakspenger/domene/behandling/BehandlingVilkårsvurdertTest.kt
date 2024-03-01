@@ -30,8 +30,10 @@ internal class BehandlingVilkårsvurdertTest {
             periode = Periode(1.januar(2024), 31.mars(2024)),
         )
 
+        // Alt ok
         behandlingInnvilget.shouldBeInstanceOf<BehandlingVilkårsvurdert.Innvilget>()
 
+        // Legg til Foreldrepenger i januar. Skal fortsatt være innvilget med januar git ikke rett
         val behandling = behandlingInnvilget.leggTilSaksopplysning(foreldrepenger).behandling
         behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert.Innvilget>()
 
@@ -51,6 +53,70 @@ internal class BehandlingVilkårsvurdertTest {
                 tiltak = listOf(),
                 antDagerMedTiltak = 0,
                 utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+            ),
+        )
+
+        // Legg til pensjon i mars. Skal fortsatt være innvilget, men ingen rett i januar og mars
+        val pensjon = saksopplysning(
+            fom = 1.mars(2024),
+            tom = 31.mars(2024),
+            kilde = Kilde.PESYS,
+            vilkår = Vilkår.GJENLEVENDEPENSJON,
+            type = TypeSaksopplysning.HAR_YTELSE,
+            saksbehandler = null,
+        )
+
+        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(pensjon).behandling
+        behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert.Innvilget>()
+
+        behandlingMedYtelseStartOgSlutt.utfallsperioder shouldContainExactlyInAnyOrder listOf(
+            BehandlingVilkårsvurdert.Utfallsperiode(
+                fom = 1.januar(2024),
+                tom = 31.januar(2024),
+                antallBarn = 0,
+                tiltak = listOf(),
+                antDagerMedTiltak = 0,
+                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+            ),
+            BehandlingVilkårsvurdert.Utfallsperiode(
+                fom = 1.februar(2024),
+                tom = 29.februar(2024),
+                antallBarn = 0,
+                tiltak = listOf(),
+                antDagerMedTiltak = 0,
+                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+            ),
+            BehandlingVilkårsvurdert.Utfallsperiode(
+                fom = 1.mars(2024),
+                tom = 31.mars(2024),
+                antallBarn = 0,
+                tiltak = listOf(),
+                antDagerMedTiltak = 0,
+                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+            ),
+        )
+
+        // Legg til kvp i februar. Ingen perioder med rett er igjen så da blir hele avslag
+        val kvp = saksopplysning(
+            fom = 1.februar(2024),
+            tom = 29.februar(2024),
+            kilde = Kilde.SAKSB,
+            vilkår = Vilkår.KVP,
+            type = TypeSaksopplysning.HAR_YTELSE,
+            saksbehandler = "Z12345",
+        )
+
+        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(kvp).behandling
+        behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert.Avslag>()
+
+        behandlingAvslag.utfallsperioder shouldContainExactlyInAnyOrder listOf(
+            BehandlingVilkårsvurdert.Utfallsperiode(
+                fom = 1.januar(2024),
+                tom = 31.mars(2024),
+                antallBarn = 0,
+                tiltak = listOf(),
+                antDagerMedTiltak = 0,
+                utfall = BehandlingVilkårsvurdert.UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
         )
     }
