@@ -16,14 +16,14 @@ class VilkårsvurderingPeriodiseringTest {
     @Test
     fun test1() {
         val aap =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.IKKE_OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(Utfall.OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
+                .setDelPeriodeMedVerdi(Utfall.OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
 
         val dagpenger =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
@@ -43,35 +43,35 @@ class VilkårsvurderingPeriodiseringTest {
     @Test
     fun testFireVilkår() {
         val aap =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
+                .setDelPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(6.oktober(2023), 10.oktober(2023)))
 
         val fengsel =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(1.oktober(2023), 2.oktober(2023)))
+                .setDelPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(1.oktober(2023), 2.oktober(2023)))
 
         val jobbsjansen =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
-                .erstattSubPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(5.oktober(2023), 7.oktober(2023)))
+                .setDelPeriodeMedVerdi(Utfall.IKKE_OPPFYLT, Periode(5.oktober(2023), 7.oktober(2023)))
 
         val dagpenger =
-            PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier(
+            PeriodeMedVerdier(
                 Utfall.OPPFYLT,
                 Periode(1.oktober(2023), 10.oktober(2023)),
             )
 
         val alleVilkår = listOf(aap, dagpenger, fengsel, jobbsjansen)
 
-        val vedtak = PeriodeMedIkkeOverlappendeSubPerioderMedUlikeVerdier.kombinerLike(alleVilkår, ::kombinerToUfall)
+        val vedtak = PeriodeMedVerdier.kombinerLike(alleVilkår, ::kombinerToUfall)
         println(vedtak)
         vedtak.perioder().size shouldBe 3
 
