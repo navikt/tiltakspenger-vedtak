@@ -22,8 +22,6 @@ data class Tiltak(
         val typeNavn: String,
         val typeKode: String,
         val rettPåTiltakspenger: Boolean,
-        val fom: LocalDate?,
-        val tom: LocalDate?,
     )
 
     data class DeltakerStatus(
