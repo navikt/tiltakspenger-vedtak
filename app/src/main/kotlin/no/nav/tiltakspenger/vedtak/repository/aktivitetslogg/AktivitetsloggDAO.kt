@@ -99,7 +99,6 @@ class AktivitetsloggDAO {
     private val hentAktivitetslogger = "select * from aktivitet where innsending_id = ?"
 
     fun lagre(innsendingId: InnsendingId, aktivitetslogg: IAktivitetslogg, txSession: TransactionalSession) {
-        // slettAktiviteter(innsendingId, txSession)
         aktivitetslogg.aktiviteter()
             .filter { !it.persistert }
             .forEach { aktivitet ->
@@ -126,10 +125,6 @@ class AktivitetsloggDAO {
                     ).asUpdate,
                 )
             }
-    }
-
-    private fun slettAktiviteter(innsendingId: InnsendingId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettAktiviteter, innsendingId.toString()).asUpdate)
     }
 
     fun hent(innsendingId: InnsendingId, txSession: TransactionalSession) =

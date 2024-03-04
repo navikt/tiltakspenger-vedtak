@@ -26,22 +26,6 @@ internal class SøknadDAO(
     private val vedleggDAO: VedleggDAO = VedleggDAO(),
 ) {
 
-    fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {
-        return txSession.run(
-            queryOf(sqlHentIdent, søknadId)
-                .map { row -> row.toIdent() }
-                .asSingle,
-        )
-    }
-
-    fun finnJournalpostId(søknadId: String, txSession: TransactionalSession): String? {
-        return txSession.run(
-            queryOf(sqlHentIdent, søknadId)
-                .map { row -> row.toJournalpostId() }
-                .asSingle,
-        )
-    }
-
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Søknad> {
         return txSession.run(
             queryOf(sqlHent, behandlingId.toString())
@@ -116,10 +100,6 @@ internal class SøknadDAO(
             ).asUpdate,
         )
     }
-
-    private fun Row.toIdent() = string("ident")
-
-    private fun Row.toJournalpostId() = string("journalpost_id")
 
     private fun Row.toSøknad(txSession: TransactionalSession): Søknad {
         val id = SøknadId.fromDb(string("id"))

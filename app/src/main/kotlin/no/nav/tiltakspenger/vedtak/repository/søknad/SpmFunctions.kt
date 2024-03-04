@@ -122,9 +122,3 @@ fun lagreJaNeiSpmType(jaNeiSpm: Søknad.JaNeiSpm): String =
         is Søknad.JaNeiSpm.Ja -> JA
         is Søknad.JaNeiSpm.Nei -> NEI
     }
-
-fun lagreJaNeiSpmJa(jaNeiSpm: Søknad.JaNeiSpm) =
-    when (jaNeiSpm) {
-        is Søknad.JaNeiSpm.Ja -> true
-        is Søknad.JaNeiSpm.Nei -> false
-    }

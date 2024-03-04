@@ -20,7 +20,6 @@ class YtelsevedtakDAO {
     }
 
     fun lagre(ytelsesakId: UlidBase, ytelseVedtak: List<YtelseSak.YtelseVedtak>, txSession: TransactionalSession) {
-        // slettVedtak(ytelsesakId, txSession)
         ytelseVedtak.forEach { vedtak -> lagreVedtak(ytelsesakId, vedtak, txSession) }
     }
 
