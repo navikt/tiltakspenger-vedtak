@@ -61,7 +61,6 @@ class ForeldrepengerVedtakRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     foreldrepengerRoutes(
@@ -99,7 +98,6 @@ class ForeldrepengerVedtakRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     foreldrepengerRoutes(
@@ -144,7 +142,6 @@ class ForeldrepengerVedtakRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     foreldrepengerRoutes(

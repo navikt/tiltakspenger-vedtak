@@ -70,9 +70,6 @@ fun Route.behandlingRoutes(
             it.id == behandlingId
         } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
-        // her burde vi nok ikke bare hente den første, men finne den riktige og evnt feilmelding hvis vi ikke finner den
-        // val behandling = behandlingService.hentBehandling(behandlingId) Skal vi hente behandling direkte eller via sak?
-
         val attesteringer = attesteringRepo.hentForBehandling(behandling.id)
 
         val dto = mapSammenstillingDTO(

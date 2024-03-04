@@ -49,7 +49,6 @@ class OvergangsstønadRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     overgangsstønadRoutes(
@@ -86,7 +85,6 @@ class OvergangsstønadRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     overgangsstønadRoutes(
@@ -123,7 +121,6 @@ class OvergangsstønadRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     overgangsstønadRoutes(

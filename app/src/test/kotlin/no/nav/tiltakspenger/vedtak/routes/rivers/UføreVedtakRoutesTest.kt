@@ -51,7 +51,6 @@ class UføreVedtakRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     uføreRoutes(

@@ -26,10 +26,6 @@ fun Route.passageOfTimeRoutes(
 
         LOG.info { "Vi ble kallt med systembruker : $systembruker" }
 
-        // Vi skal slutte å trigge oppdatering av alle innsendinger hver natt
-        // val dayHasBegun = call.receive<DayHasBegunEvent>()
-        // eventMediator.håndter(dayHasBegun)
-
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }

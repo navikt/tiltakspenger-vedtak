@@ -16,9 +16,6 @@ class BehovMediator(
 ) {
 
     internal fun håndter(hendelse: InnsendingHendelse) {
-        // Hvorfor ikke bare
-        // hendelse.aktivitetslogg.let { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
-        // ?? Hva er det hendelse.kontekster() gjør som er så lurt?
         hendelse.kontekster().forEach { if (!it.hasErrors()) håndter(hendelse, it.behov()) }
     }
 

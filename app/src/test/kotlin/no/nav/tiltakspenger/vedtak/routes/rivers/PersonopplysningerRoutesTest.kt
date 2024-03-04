@@ -74,7 +74,6 @@ class PersonopplysningerRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     personopplysningerRoutes(

@@ -25,7 +25,6 @@ class ResettInnsendingerRouteTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     resettInnsendingerRoute(innsendingAdminService)

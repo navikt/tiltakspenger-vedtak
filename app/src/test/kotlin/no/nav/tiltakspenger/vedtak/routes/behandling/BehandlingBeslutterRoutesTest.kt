@@ -132,7 +132,6 @@ class BehandlingBeslutterRoutesTest {
         val behandlingId = BehandlingId.random()
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     behandlingBeslutterRoutes(
@@ -175,7 +174,6 @@ class BehandlingBeslutterRoutesTest {
         val behandlingId = BehandlingId.random()
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     behandlingBeslutterRoutes(
@@ -223,7 +221,6 @@ class BehandlingBeslutterRoutesTest {
         val behandlingId = BehandlingId.random()
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     behandlingBeslutterRoutes(

@@ -14,8 +14,8 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class Søker private constructor(
     val søkerId: SøkerId,
-    val ident: String, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
-    var personopplysninger: Personopplysninger.Søker?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
+    val ident: String,
+    var personopplysninger: Personopplysninger.Søker?,
 ) {
     constructor(
         ident: String,
