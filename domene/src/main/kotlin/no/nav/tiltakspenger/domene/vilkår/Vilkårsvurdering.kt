@@ -24,8 +24,6 @@ fun Søknadsbehandling.Opprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
                 fom = dag,
                 tom = dag,
                 antallBarn = 0,
-                tiltak = listOf(),
-                antDagerMedTiltak = 0,
                 utfall = utfall,
             )
         }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->

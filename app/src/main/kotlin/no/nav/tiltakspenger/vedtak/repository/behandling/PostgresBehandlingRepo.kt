@@ -28,6 +28,7 @@ internal class PostgresBehandlingRepo(
     private val vurderingRepo: VurderingRepo = VurderingRepo(),
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
+    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -132,14 +133,17 @@ internal class PostgresBehandlingRepo(
             when (behandling) {
                 is BehandlingIverksatt -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingVilkårsvurdert -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingTilBeslutter -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is Søknadsbehandling.Opprettet -> {}
@@ -237,7 +241,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = emptyList(),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 status = status,
             )
@@ -250,7 +254,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = emptyList(),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
                 beslutter = beslutter,
@@ -264,7 +268,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = emptyList(),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
                 beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
