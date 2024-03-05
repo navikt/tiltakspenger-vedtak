@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.domene.personopplysninger
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class BarnUtenIdentPersonopplysninger(
+data class PersonopplysningerBarnUtenIdent(
     val fødselsdato: LocalDate?,
     val fornavn: String?,
     val mellomnavn: String?,
@@ -16,7 +16,7 @@ data class BarnUtenIdentPersonopplysninger(
     override fun skjermet(): Boolean = false
 
     override fun equals(other: Any?): Boolean {
-        if (other !is BarnUtenIdentPersonopplysninger) return false
+        if (other !is PersonopplysningerBarnUtenIdent) return false
         return this.fødselsdato == other.fødselsdato &&
             this.fornavn == other.fornavn &&
             this.etternavn == other.etternavn &&

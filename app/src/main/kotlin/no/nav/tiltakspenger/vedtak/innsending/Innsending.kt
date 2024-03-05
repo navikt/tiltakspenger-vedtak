@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.innsending
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.domene.personopplysninger.barnMedIdent
 import no.nav.tiltakspenger.domene.personopplysninger.barnUtenIdent
 import no.nav.tiltakspenger.domene.personopplysninger.søkerOrNull
@@ -713,7 +713,7 @@ class Innsending private constructor(
             }
         }
 
-        fun sjekkSøkerForTilgang(personopplysninger: SøkerPersonopplysninger) {
+        fun sjekkSøkerForTilgang(personopplysninger: PersonopplysningerSøker) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
                 personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
@@ -728,7 +728,7 @@ class Innsending private constructor(
             )
         }
 
-        fun sjekkBarnMedIdentForTilgang(personopplysninger: BarnMedIdentPersonopplysninger) {
+        fun sjekkBarnMedIdentForTilgang(personopplysninger: PersonopplysningerBarnMedIdent) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
                 personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
@@ -893,13 +893,13 @@ class Innsending private constructor(
             tidsstempelSkjermingInnhentet = skjermingMottattHendelse.tidsstempelSkjermingInnhentet(),
             personopplysningerliste = this.personopplysninger!!.personopplysningerliste.map {
                 when (it) {
-                    is BarnMedIdentPersonopplysninger -> it.copy(
+                    is PersonopplysningerBarnMedIdent -> it.copy(
                         skjermet = skjermingMottattHendelse.skjerming()
                             .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming,
                     )
 
-                    is BarnUtenIdentPersonopplysninger -> it
-                    is SøkerPersonopplysninger -> it.copy(
+                    is PersonopplysningerBarnUtenIdent -> it
+                    is PersonopplysningerSøker -> it.copy(
                         skjermet = skjermingMottattHendelse.skjerming().søker.skjerming,
                     )
                 }

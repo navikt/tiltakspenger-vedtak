@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.service.personopplysning
 
-import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.domene.personopplysninger.barnMedIdent
 import no.nav.tiltakspenger.domene.personopplysninger.erLik
 import no.nav.tiltakspenger.domene.personopplysninger.søker
@@ -29,9 +29,9 @@ class PersonopplysningServiceImpl(
         // Metoden heter mottaPersonopplysninger, men her endrer vi bare på skjerming?!
         val personopplysningerMedSkjerming = personopplysningerFraDb.map {
             when (it) {
-                is BarnMedIdentPersonopplysninger -> it.copy(skjermet = personopplysninger.barnMedIdent(it.ident)?.skjermet)
-                is BarnUtenIdentPersonopplysninger -> it
-                is SøkerPersonopplysninger -> it.copy(skjermet = personopplysninger.søker(it.ident)?.skjermet)
+                is PersonopplysningerBarnMedIdent -> it.copy(skjermet = personopplysninger.barnMedIdent(it.ident)?.skjermet)
+                is PersonopplysningerBarnUtenIdent -> it
+                is PersonopplysningerSøker -> it.copy(skjermet = personopplysninger.søker(it.ident)?.skjermet)
             }
         }
         // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
@@ -49,13 +49,13 @@ class PersonopplysningServiceImpl(
 
         val oppdatertePersonopplysninger = personopplysninger.map {
             when (it) {
-                is BarnMedIdentPersonopplysninger -> it.copy(
+                is PersonopplysningerBarnMedIdent -> it.copy(
                     skjermet = skjerming
                         .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming,
                 )
 
-                is BarnUtenIdentPersonopplysninger -> it
-                is SøkerPersonopplysninger -> it.copy(
+                is PersonopplysningerBarnUtenIdent -> it
+                is PersonopplysningerSøker -> it.copy(
                     skjermet = skjerming.søker.skjerming,
                 )
             }

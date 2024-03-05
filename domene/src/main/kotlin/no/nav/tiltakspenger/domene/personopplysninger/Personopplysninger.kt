@@ -33,28 +33,28 @@ fun List<Personopplysninger>.harTilgang(saksbehandler: Saksbehandler): Boolean {
 // om det kan være en eller flere søkere, om det alltid må være en søker, om noe som helst..
 
 // TODO: Hvorfor søke på ident hvis det bare kan være én søker?
-fun List<Personopplysninger>.søker(ident: String): SøkerPersonopplysninger? =
-    this.filterIsInstance<SøkerPersonopplysninger>()
+fun List<Personopplysninger>.søker(ident: String): PersonopplysningerSøker? =
+    this.filterIsInstance<PersonopplysningerSøker>()
         .firstOrNull { søker -> søker.ident == ident }
 
-fun List<Personopplysninger>.søker(): SøkerPersonopplysninger =
-    this.filterIsInstance<SøkerPersonopplysninger>()
+fun List<Personopplysninger>.søker(): PersonopplysningerSøker =
+    this.filterIsInstance<PersonopplysningerSøker>()
         .first()
 
 // TODO: Ett steder hentes søkere (flertall) fra lista, skal det være en mulig tilstand?
-fun List<Personopplysninger>.søkere(): List<SøkerPersonopplysninger> =
-    this.filterIsInstance<SøkerPersonopplysninger>()
+fun List<Personopplysninger>.søkere(): List<PersonopplysningerSøker> =
+    this.filterIsInstance<PersonopplysningerSøker>()
 
-fun List<Personopplysninger>?.søkerOrNull(): SøkerPersonopplysninger? =
-    this?.filterIsInstance<SøkerPersonopplysninger>()
+fun List<Personopplysninger>?.søkerOrNull(): PersonopplysningerSøker? =
+    this?.filterIsInstance<PersonopplysningerSøker>()
         ?.firstOrNull()
 
-fun List<Personopplysninger>.barnMedIdent(ident: String): BarnMedIdentPersonopplysninger? =
+fun List<Personopplysninger>.barnMedIdent(ident: String): PersonopplysningerBarnMedIdent? =
     this.barnMedIdent()
         .firstOrNull { barn -> barn.ident == ident }
 
-fun List<Personopplysninger>.barnMedIdent(): List<BarnMedIdentPersonopplysninger> =
-    this.filterIsInstance<BarnMedIdentPersonopplysninger>()
+fun List<Personopplysninger>.barnMedIdent(): List<PersonopplysningerBarnMedIdent> =
+    this.filterIsInstance<PersonopplysningerBarnMedIdent>()
 
-fun List<Personopplysninger>.barnUtenIdent(): List<BarnUtenIdentPersonopplysninger> =
-    this.filterIsInstance<BarnUtenIdentPersonopplysninger>()
+fun List<Personopplysninger>.barnUtenIdent(): List<PersonopplysningerBarnUtenIdent> =
+    this.filterIsInstance<PersonopplysningerBarnUtenIdent>()

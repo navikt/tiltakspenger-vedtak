@@ -5,10 +5,10 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -67,9 +67,9 @@ internal class PostgresPersonopplysningerRepo(
         log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
-                is SøkerPersonopplysninger -> lagre(sakId, it, txSession)
-                is BarnMedIdentPersonopplysninger -> barnMedIdentDAO.lagre(sakId, it, txSession)
-                is BarnUtenIdentPersonopplysninger -> barnUtenIdentDAO.lagre(
+                is PersonopplysningerSøker -> lagre(sakId, it, txSession)
+                is PersonopplysningerBarnMedIdent -> barnMedIdentDAO.lagre(sakId, it, txSession)
+                is PersonopplysningerBarnUtenIdent -> barnUtenIdentDAO.lagre(
                     sakId,
                     it,
                     txSession,
@@ -83,7 +83,7 @@ internal class PostgresPersonopplysningerRepo(
 
     private fun lagre(
         sakId: SakId,
-        personopplysninger: SøkerPersonopplysninger,
+        personopplysninger: PersonopplysningerSøker,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
@@ -113,8 +113,8 @@ internal class PostgresPersonopplysningerRepo(
     private fun slett(sakId: SakId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> SøkerPersonopplysninger = { row ->
-        SøkerPersonopplysninger(
+    private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
+        PersonopplysningerSøker(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

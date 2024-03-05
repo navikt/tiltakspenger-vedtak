@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.domene.personopplysninger
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class BarnMedIdentPersonopplysninger(
+data class PersonopplysningerSøker(
     val ident: String,
     val fødselsdato: LocalDate,
     val fornavn: String,
@@ -13,7 +13,8 @@ data class BarnMedIdentPersonopplysninger(
     val strengtFortrolig: Boolean,
     val strengtFortroligUtland: Boolean,
     val skjermet: Boolean?,
-    val oppholdsland: String?,
+    val kommune: String?,
+    val bydel: String?,
     val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
 ) : Personopplysninger {
     override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
@@ -22,16 +23,17 @@ data class BarnMedIdentPersonopplysninger(
     override fun skjermet(): Boolean = skjermet ?: true
 
     override fun equals(other: Any?): Boolean {
-        if (other !is BarnMedIdentPersonopplysninger) return false
+        if (other !is PersonopplysningerSøker) return false
         return this.ident == other.ident &&
             this.fødselsdato == other.fødselsdato &&
             this.fornavn == other.fornavn &&
-            this.etternavn == other.etternavn &&
             this.mellomnavn == other.mellomnavn &&
+            this.etternavn == other.etternavn &&
             this.fortrolig == other.fortrolig &&
             this.strengtFortrolig == other.strengtFortrolig &&
             this.strengtFortroligUtland == other.strengtFortroligUtland &&
             this.skjermet == other.skjermet &&
-            this.oppholdsland == other.oppholdsland
+            this.kommune == other.kommune &&
+            this.bydel == other.bydel
     }
 }

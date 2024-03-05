@@ -7,10 +7,10 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
@@ -120,7 +120,7 @@ private fun mapPersonopplysninger(
     ident: String,
 ): List<Personopplysninger> {
     return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
-        BarnMedIdentPersonopplysninger(
+        PersonopplysningerBarnMedIdent(
             ident = it.ident,
             fødselsdato = it.fødselsdato,
             fornavn = it.fornavn,
@@ -134,14 +134,14 @@ private fun mapPersonopplysninger(
             tidsstempelHosOss = innhentet,
         )
     } + dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
-        BarnUtenIdentPersonopplysninger(
+        PersonopplysningerBarnUtenIdent(
             fødselsdato = barn.fødselsdato,
             fornavn = barn.fornavn,
             mellomnavn = barn.mellomnavn,
             etternavn = barn.etternavn,
             tidsstempelHosOss = innhentet,
         )
-    } + SøkerPersonopplysninger(
+    } + PersonopplysningerSøker(
         ident = ident,
         fødselsdato = dto.fødselsdato,
         fornavn = dto.fornavn,

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.innsending
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.domene.personopplysninger.søker
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.Rolle
@@ -16,7 +16,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class Søker private constructor(
     val søkerId: SøkerId,
     val ident: String, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
-    var personopplysninger: SøkerPersonopplysninger?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
+    var personopplysninger: PersonopplysningerSøker?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
 ) {
     constructor(
         ident: String,
@@ -84,7 +84,7 @@ class Søker private constructor(
             }
         }
 
-        fun sjekkSøkerForTilgang(personopplysninger: SøkerPersonopplysninger) {
+        fun sjekkSøkerForTilgang(personopplysninger: PersonopplysningerSøker) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
                 personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
@@ -109,7 +109,7 @@ class Søker private constructor(
         fun fromDb(
             søkerId: SøkerId,
             ident: String,
-            personopplysninger: SøkerPersonopplysninger?,
+            personopplysninger: PersonopplysningerSøker?,
         ) = Søker(
             søkerId = søkerId,
             ident = ident,

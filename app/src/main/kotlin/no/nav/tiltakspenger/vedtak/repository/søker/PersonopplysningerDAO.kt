@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -17,7 +17,7 @@ class PersonopplysningerDAO() {
     fun hent(
         søkerId: SøkerId,
         txSession: TransactionalSession,
-    ): SøkerPersonopplysninger? {
+    ): PersonopplysningerSøker? {
         return txSession.run(
             queryOf(hentSql, søkerId.toString())
                 .map { row -> row.toPersonopplysninger() }
@@ -27,7 +27,7 @@ class PersonopplysningerDAO() {
 
     fun lagre(
         søkerId: SøkerId,
-        personopplysninger: SøkerPersonopplysninger?,
+        personopplysninger: PersonopplysningerSøker?,
         txSession: TransactionalSession,
     ) {
         log.debug { "Sletter personopplysninger før lagring" }
@@ -42,7 +42,7 @@ class PersonopplysningerDAO() {
 
     private fun lagrePersonopplysninger(
         søkerId: SøkerId,
-        personopplysninger: SøkerPersonopplysninger,
+        personopplysninger: PersonopplysningerSøker,
         txSession: TransactionalSession,
     ) {
         securelog.debug { "Lagre personopplysninger for søker $personopplysninger" }
@@ -72,8 +72,8 @@ class PersonopplysningerDAO() {
     private fun slett(søkerId: SøkerId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, søkerId.toString()).asUpdate)
 
-    private fun Row.toPersonopplysninger(): SøkerPersonopplysninger {
-        return SøkerPersonopplysninger(
+    private fun Row.toPersonopplysninger(): PersonopplysningerSøker {
+        return PersonopplysningerSøker(
             ident = string("ident"),
             fødselsdato = localDate("fødselsdato"),
             fornavn = string("fornavn"),
