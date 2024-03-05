@@ -5,7 +5,10 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -37,7 +40,18 @@ internal class PostgresPersonopplysningerRepo(
         val barnMedIdent = barnMedIdentDAO.hent(sakId, txSession)
         val barnUtenIdent = barnUtenIdentDAO.hent(sakId, txSession)
 
-        return listOf(søker) + barnMedIdent + barnUtenIdent
+        return listOf<Personopplysninger>(søker) + barnMedIdent + barnUtenIdent
+    }
+
+    override fun lagre(
+        sakId: SakId,
+        personopplysninger: List<Personopplysninger>,
+    ) {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                lagre(sakId, personopplysninger, txSession)
+            }
+        }
     }
 
     fun lagre(
@@ -53,9 +67,9 @@ internal class PostgresPersonopplysningerRepo(
         log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
-                is Personopplysninger.Søker -> lagre(sakId, it, txSession)
-                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(sakId, it, txSession)
-                is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
+                is SøkerPersonopplysninger -> lagre(sakId, it, txSession)
+                is BarnMedIdentPersonopplysninger -> barnMedIdentDAO.lagre(sakId, it, txSession)
+                is BarnUtenIdentPersonopplysninger -> barnUtenIdentDAO.lagre(
                     sakId,
                     it,
                     txSession,
@@ -69,7 +83,7 @@ internal class PostgresPersonopplysningerRepo(
 
     private fun lagre(
         sakId: SakId,
-        personopplysninger: Personopplysninger.Søker,
+        personopplysninger: SøkerPersonopplysninger,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
@@ -99,8 +113,8 @@ internal class PostgresPersonopplysningerRepo(
     private fun slett(sakId: SakId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
-        Personopplysninger.Søker(
+    private val toPersonopplysninger: (Row) -> SøkerPersonopplysninger = { row ->
+        SøkerPersonopplysninger(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

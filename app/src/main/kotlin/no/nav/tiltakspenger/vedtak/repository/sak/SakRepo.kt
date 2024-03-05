@@ -11,4 +11,5 @@ interface SakRepo {
     fun hent(sakId: SakId): Sak?
     fun hentKunSak(sakId: SakId): Sak?
     fun hentForJournalpostId(journalpostId: String): Sak?
+    fun hentSakDetaljerForJournalpostId(journalpostId: String): Sak?
 }

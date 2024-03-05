@@ -55,7 +55,7 @@ class SøknadRoutesTest {
         rapidsConnection = testRapid,
     )
 
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, sakRepo)
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach

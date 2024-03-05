@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ class SkjermingRoutesTest {
         rapidsConnection = testRapid,
         observatører = listOf(),
     )
-    private val sakService = mockk<SakServiceImpl>(relaxed = true)
+    private val personopplysningService = mockk<PersonopplysningService>(relaxed = true)
 
     @AfterEach
     fun reset() {
@@ -56,7 +56,7 @@ class SkjermingRoutesTest {
                 routing {
                     skjermingRoutes(
                         innsendingMediator = innsendingMediator,
-                        sakService = sakService,
+                        personopplysningService = personopplysningService,
                     )
                 }
             }

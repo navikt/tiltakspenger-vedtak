@@ -7,7 +7,10 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
@@ -23,7 +26,8 @@ import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.innsending.Feil
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -43,7 +47,8 @@ fun Route.personopplysningerRoutes(
     innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
-    sakService: SakService,
+    behandlingService: BehandlingService,
+    personopplysningerService: PersonopplysningService,
 ) {
     post("$personopplysningerPath") {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
@@ -75,7 +80,14 @@ fun Route.personopplysningerRoutes(
                     personopplysningerMottattDTO.ident,
                 )
 
-                sakService.mottaPersonopplysninger(personopplysningerMottattDTO.journalpostId, personopplysninger)
+                personopplysningerService.mottaPersonopplysninger(
+                    personopplysningerMottattDTO.journalpostId,
+                    personopplysninger,
+                )
+                behandlingService.mottaPersonopplysninger(
+                    personopplysningerMottattDTO.journalpostId,
+                    personopplysninger,
+                )
 
                 val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
                     aktivitetslogg = Aktivitetslogg(),
@@ -108,7 +120,7 @@ private fun mapPersonopplysninger(
     ident: String,
 ): List<Personopplysninger> {
     return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
-        Personopplysninger.BarnMedIdent(
+        BarnMedIdentPersonopplysninger(
             ident = it.ident,
             fødselsdato = it.fødselsdato,
             fornavn = it.fornavn,
@@ -122,14 +134,14 @@ private fun mapPersonopplysninger(
             tidsstempelHosOss = innhentet,
         )
     } + dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
-        Personopplysninger.BarnUtenIdent(
+        BarnUtenIdentPersonopplysninger(
             fødselsdato = barn.fødselsdato,
             fornavn = barn.fornavn,
             mellomnavn = barn.mellomnavn,
             etternavn = barn.etternavn,
             tidsstempelHosOss = innhentet,
         )
-    } + Personopplysninger.Søker(
+    } + SøkerPersonopplysninger(
         ident = ident,
         fødselsdato = dto.fødselsdato,
         fornavn = dto.fornavn,

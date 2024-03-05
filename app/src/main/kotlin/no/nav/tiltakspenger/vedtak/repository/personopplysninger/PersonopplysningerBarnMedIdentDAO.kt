@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -13,12 +13,15 @@ import org.intellij.lang.annotations.Language
 internal class PersonopplysningerBarnMedIdentDAO {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    internal fun hent(innsendingId: InnsendingId, txSession: TransactionalSession) =
+    internal fun hent(
+        innsendingId: InnsendingId,
+        txSession: TransactionalSession,
+    ): List<BarnMedIdentPersonopplysninger> =
         txSession.run(queryOf(hentSql, innsendingId.toString()).map(toPersonopplysninger).asList)
 
     internal fun lagre(
         innsendingId: InnsendingId,
-        personopplysninger: Personopplysninger.BarnMedIdent,
+        personopplysninger: BarnMedIdentPersonopplysninger,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for barn med ident $personopplysninger" }
@@ -47,8 +50,8 @@ internal class PersonopplysningerBarnMedIdentDAO {
     internal fun slett(innsendingId: InnsendingId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, innsendingId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> Personopplysninger.BarnMedIdent = { row ->
-        Personopplysninger.BarnMedIdent(
+    private val toPersonopplysninger: (Row) -> BarnMedIdentPersonopplysninger = { row ->
+        BarnMedIdentPersonopplysninger(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

@@ -4,7 +4,10 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnMedIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.BarnUtenIdentPersonopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.SøkerPersonopplysninger
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -41,9 +44,9 @@ internal class PersonopplysningerDAO(
         log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
-                is Personopplysninger.Søker -> lagre(innsendingId, it, txSession)
-                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(innsendingId, it, txSession)
-                is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
+                is SøkerPersonopplysninger -> lagre(innsendingId, it, txSession)
+                is BarnMedIdentPersonopplysninger -> barnMedIdentDAO.lagre(innsendingId, it, txSession)
+                is BarnUtenIdentPersonopplysninger -> barnUtenIdentDAO.lagre(
                     innsendingId,
                     it,
                     txSession,
@@ -52,12 +55,15 @@ internal class PersonopplysningerDAO(
         }
     }
 
-    private fun hentPersonopplysningerForInnsending(innsendingId: InnsendingId, txSession: TransactionalSession) =
+    private fun hentPersonopplysningerForInnsending(
+        innsendingId: InnsendingId,
+        txSession: TransactionalSession,
+    ): SøkerPersonopplysninger? =
         txSession.run(queryOf(hentSql, innsendingId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
         innsendingId: InnsendingId,
-        personopplysninger: Personopplysninger.Søker,
+        personopplysninger: SøkerPersonopplysninger,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
@@ -87,8 +93,8 @@ internal class PersonopplysningerDAO(
     private fun slett(innsendingId: InnsendingId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, innsendingId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
-        Personopplysninger.Søker(
+    private val toPersonopplysninger: (Row) -> SøkerPersonopplysninger = { row ->
+        SøkerPersonopplysninger(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

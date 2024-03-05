@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.vedtak.innsending.Skjerming
 import no.nav.tiltakspenger.vedtak.innsending.SkjermingPerson
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import java.time.LocalDateTime
 
 data class SkjermingDTO(
@@ -32,7 +32,7 @@ val skjermingpath = "/rivers/skjerming"
 
 fun Route.skjermingRoutes(
     innsendingMediator: InnsendingMediator,
-    sakService: SakService,
+    personopplysningService: PersonopplysningService,
 ) {
     post("$skjermingpath") {
         LOG.info { "Vi har mottatt skjerming fra river" }
@@ -56,7 +56,7 @@ fun Route.skjermingRoutes(
                 skjermingDTO.skjerming.skjermingForPersoner?.let { dto ->
                     val skjerming = mapSkjerming(dto, skjermingDTO.innhentet)
 
-                    sakService.mottaSkjerming(skjermingDTO.journalpostId, skjerming)
+                    personopplysningService.mottaSkjerming(skjermingDTO.journalpostId, skjerming)
 
                     val skjermingHendelse = SkjermingMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),

@@ -111,7 +111,7 @@ internal fun Application.vedtakApi(
         }
         authenticate("systemtoken") {
             søknadRoutes(innsendingMediator, søkerMediator, sakService)
-            skjermingRoutes(innsendingMediator, sakService)
+            skjermingRoutes(innsendingMediator, personopplysningService)
             tiltakRoutes(innsendingMediator, behandlingService)
             ytelseRoutes(innsendingMediator, behandlingService)
             foreldrepengerRoutes(innsendingMediator, behandlingService)
@@ -121,7 +121,8 @@ internal fun Application.vedtakApi(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
-                sakService = sakService,
+                behandlingService = behandlingService,
+                personopplysningerService = personopplysningService,
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
