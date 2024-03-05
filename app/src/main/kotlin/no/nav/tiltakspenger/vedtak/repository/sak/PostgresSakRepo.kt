@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
+import no.nav.tiltakspenger.domene.sak.TynnSak
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
@@ -76,7 +77,7 @@ internal class PostgresSakRepo(
         }
     }
 
-    override fun hentKunSak(sakId: SakId): Sak? {
+    override fun hentSakDetaljer(sakId: SakId): TynnSak? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -84,7 +85,7 @@ internal class PostgresSakRepo(
                         sqlHent,
                         mapOf("id" to sakId.toString()),
                     ).map { row ->
-                        row.toKunSak()
+                        row.toSakDetaljer()
                     }.asSingle,
                 )
             }
@@ -172,26 +173,20 @@ internal class PostgresSakRepo(
     private fun Row.toSak(txSession: TransactionalSession): Sak {
         val id = SakId.fromDb(string("id"))
         return Sak(
-            id = id,
-            ident = string("ident"),
-            saknummer = Saksnummer(verdi = string("saksnummer")),
-            periode = Periode(fra = localDate("fom"), til = localDate("tom")),
+            sakDetaljer = toSakDetaljer(),
             behandlinger = behandlingRepo.hentForSak(id),
             personopplysninger = personopplysningerRepo.hent(id, txSession),
             vedtak = vedtakRepo.hentVedtakForSak(id),
         )
     }
 
-    private fun Row.toKunSak(): Sak {
+    private fun Row.toSakDetaljer(): TynnSak {
         val id = SakId.fromDb(string("id"))
-        return Sak(
+        return TynnSak(
             id = id,
             ident = string("ident"),
             saknummer = Saksnummer(verdi = string("saksnummer")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
-            behandlinger = emptyList(),
-            personopplysninger = emptyList(),
-            vedtak = emptyList(),
         )
     }
 

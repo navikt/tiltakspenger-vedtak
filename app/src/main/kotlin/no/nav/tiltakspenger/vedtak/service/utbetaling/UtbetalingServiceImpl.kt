@@ -15,7 +15,7 @@ class UtbetalingServiceImpl(
     }
 
     private fun mapUtbetalingReq(vedtak: Vedtak): UtbetalingDTO {
-        val sak = sakRepo.hentKunSak(vedtak.sakId) ?: throw IllegalStateException("Fant ikke sak for vedtak")
+        val sak = sakRepo.hentSakDetaljer(vedtak.sakId) ?: throw IllegalStateException("Fant ikke sak for vedtak")
         return UtbetalingDTO(
             sakId = sak.id.toString(),
             utløsendeId = vedtak.behandling.id.toString(),
