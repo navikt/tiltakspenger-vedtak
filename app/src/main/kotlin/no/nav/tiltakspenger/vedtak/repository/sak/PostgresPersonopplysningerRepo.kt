@@ -5,7 +5,10 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -53,9 +56,9 @@ internal class PostgresPersonopplysningerRepo(
         log.info { "Lagre personopplysninger" }
         personopplysninger.forEach {
             when (it) {
-                is Personopplysninger.Søker -> lagre(sakId, it, txSession)
-                is Personopplysninger.BarnMedIdent -> barnMedIdentDAO.lagre(sakId, it, txSession)
-                is Personopplysninger.BarnUtenIdent -> barnUtenIdentDAO.lagre(
+                is PersonopplysningerSøker -> lagre(sakId, it, txSession)
+                is PersonopplysningerBarnMedIdent -> barnMedIdentDAO.lagre(sakId, it, txSession)
+                is PersonopplysningerBarnUtenIdent -> barnUtenIdentDAO.lagre(
                     sakId,
                     it,
                     txSession,
@@ -69,7 +72,7 @@ internal class PostgresPersonopplysningerRepo(
 
     private fun lagre(
         sakId: SakId,
-        personopplysninger: Personopplysninger.Søker,
+        personopplysninger: PersonopplysningerSøker,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
@@ -99,8 +102,8 @@ internal class PostgresPersonopplysningerRepo(
     private fun slett(sakId: SakId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> Personopplysninger.Søker = { row ->
-        Personopplysninger.Søker(
+    private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
+        PersonopplysningerSøker(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

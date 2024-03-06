@@ -1,7 +1,13 @@
 package no.nav.tiltakspenger.vedtak.innsending
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.domene.personopplysninger.barnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.barnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.søkerOrNull
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.DomeneMetrikker
 import no.nav.tiltakspenger.felles.InnsendingId
@@ -101,13 +107,13 @@ class Innsending private constructor(
     private val observers = mutableSetOf<InnsendingObserver>()
 
     fun personopplysningerSøker() =
-        personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.Søker>()?.firstOrNull()
+        personopplysninger?.personopplysningerliste?.søkerOrNull()
 
     fun personopplysningerBarnUtenIdent() =
-        personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.BarnUtenIdent>() ?: emptyList()
+        personopplysninger?.personopplysningerliste?.barnUtenIdent() ?: emptyList()
 
     private fun personopplysningerBarnMedIdent() =
-        personopplysninger?.personopplysningerliste?.filterIsInstance<Personopplysninger.BarnMedIdent>() ?: emptyList()
+        personopplysninger?.personopplysningerliste?.barnMedIdent() ?: emptyList()
 
     fun oppdaterSistEndret(sistEndret: LocalDateTime) {
         this.sistEndret = sistEndret
@@ -707,7 +713,7 @@ class Innsending private constructor(
             }
         }
 
-        fun sjekkSøkerForTilgang(personopplysninger: Personopplysninger.Søker) {
+        fun sjekkSøkerForTilgang(personopplysninger: PersonopplysningerSøker) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
                 personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
@@ -722,7 +728,7 @@ class Innsending private constructor(
             )
         }
 
-        fun sjekkBarnMedIdentForTilgang(personopplysninger: Personopplysninger.BarnMedIdent) {
+        fun sjekkBarnMedIdentForTilgang(personopplysninger: PersonopplysningerBarnMedIdent) {
             val harBeskyttelsesbehovFortrolig = personopplysninger.fortrolig
             val harBeskyttelsesbehovStrengtFortrolig =
                 personopplysninger.strengtFortrolig || personopplysninger.strengtFortroligUtland
@@ -887,13 +893,13 @@ class Innsending private constructor(
             tidsstempelSkjermingInnhentet = skjermingMottattHendelse.tidsstempelSkjermingInnhentet(),
             personopplysningerliste = this.personopplysninger!!.personopplysningerliste.map {
                 when (it) {
-                    is Personopplysninger.BarnMedIdent -> it.copy(
+                    is PersonopplysningerBarnMedIdent -> it.copy(
                         skjermet = skjermingMottattHendelse.skjerming()
                             .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming,
                     )
 
-                    is Personopplysninger.BarnUtenIdent -> it
-                    is Personopplysninger.Søker -> it.copy(
+                    is PersonopplysningerBarnUtenIdent -> it
+                    is PersonopplysningerSøker -> it.copy(
                         skjermet = skjermingMottattHendelse.skjerming().søker.skjerming,
                     )
                 }
