@@ -1,8 +1,9 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.søkerOrNull
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
@@ -51,7 +52,7 @@ interface HendelserMother {
         journalpostId: String = Random().nextInt().toString(),
         personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
-        ident: String = personopplysninger.filterIsInstance<Personopplysninger.Søker>().firstOrNull()?.ident
+        ident: String = personopplysninger.søkerOrNull()?.ident
             ?: Random().nextInt().toString(),
         tidsstempelPersonopplysningerInnhentet: LocalDateTime = LocalDateTime.now(),
     ): PersonopplysningerMottattHendelse {

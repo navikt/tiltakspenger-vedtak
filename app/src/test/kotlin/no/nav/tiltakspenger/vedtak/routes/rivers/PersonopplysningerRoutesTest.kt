@@ -21,7 +21,8 @@ import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -49,7 +50,8 @@ class PersonopplysningerRoutesTest {
         rapidsConnection = testRapid,
     )
 
-    private val sakService = mockk<SakServiceImpl>(relaxed = true)
+    private val personopplysningerService = mockk<PersonopplysningService>(relaxed = true)
+    private val behandlingService = mockk<BehandlingService>(relaxed = true)
     private val innloggetSystembrukerProvider = mockk<InnloggetSystembrukerProvider>()
 
     @AfterEach
@@ -81,7 +83,8 @@ class PersonopplysningerRoutesTest {
                         innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                         innsendingMediator = innsendingMediator,
                         søkerMediator = søkerMediator,
-                        sakService = sakService,
+                        behandlingService = behandlingService,
+                        personopplysningerService = personopplysningerService,
                     )
                 }
             }

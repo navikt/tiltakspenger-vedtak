@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.innsending.meldinger
 
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
 import no.nav.tiltakspenger.vedtak.innsending.ISøkerHendelse
 import no.nav.tiltakspenger.vedtak.innsending.InnsendingHendelse

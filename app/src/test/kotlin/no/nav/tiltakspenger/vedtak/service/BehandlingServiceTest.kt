@@ -6,10 +6,13 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
+import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -27,12 +30,14 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdert
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.Random
 
 internal class BehandlingServiceTest {
 
@@ -40,13 +45,15 @@ internal class BehandlingServiceTest {
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var attesteringRepo: AttesteringRepo
+    private lateinit var sakRepo: SakRepo
 
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
         vedtakService = mockk()
         attesteringRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+        sakRepo = mockk()
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, sakRepo)
     }
 
     @AfterEach
@@ -256,5 +263,87 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"
         lagretBehandling.captured.tiltak.first { it.id == "starterInni" }.id shouldBe "starterInni"
+    }
+
+    @Test
+    fun `motta personopplysninger oppdaterer saksopplysning for ALDER hvis det er en endring`() {
+        val periode = Periode(1.januar(2023), 31.mars(2023))
+        val ident = Random().nextInt().toString()
+        val sak = ObjectMother.sakMedOpprettetBehandling(
+            ident = ident,
+            periode = periode,
+        )
+
+        every { behandlingRepo.hentForJournalpostId(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>()
+            .first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.lagre(any()) } returnsArgument 0
+
+        behandlingService.mottaPersonopplysninger(
+            "123",
+            listOf(
+                ObjectMother.personopplysningKjedeligFyr(
+                    ident = ident,
+                    fornavn = "Et endret fornavn",
+                ),
+            ),
+        )
+
+        verify {
+            behandlingRepo.lagre(
+                match { behandling ->
+                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 31.mars(2023) &&
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_IKKE_YTELSE
+                },
+            )
+        }
+    }
+
+    @Test
+    fun `motta personopplysninger for en person som blir 18 midt i perioden`() {
+        val periode = Periode(1.januar(2023), 31.mars(2023))
+        val ident = Random().nextInt().toString()
+        val sak = ObjectMother.sakMedOpprettetBehandling(
+            ident = ident,
+            periode = periode,
+        )
+        every { behandlingRepo.hentForJournalpostId(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>()
+            .first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.lagre(any()) } returnsArgument 0
+
+        behandlingService.mottaPersonopplysninger(
+            journalpostId = "123",
+            personopplysninger = listOf(
+                ObjectMother.personopplysningKjedeligFyr(
+                    ident = ident,
+                    fødselsdato = 31.januar(2023).minusYears(18),
+                ),
+            ),
+        )
+
+        verify {
+            behandlingRepo.lagre(
+                match { behandling ->
+                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE &&
+                        (behandling as BehandlingVilkårsvurdert).vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.first().fom == 1.januar(2023) &&
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.first().tom == 30.januar(2023) &&
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.first().utfall == Utfall.IKKE_OPPFYLT &&
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.last().fom == 31.januar(2023) &&
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.last().tom == 31.mars(2023) &&
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                            .sortedBy { it.fom }.last().utfall == Utfall.OPPFYLT
+                },
+
+            )
+        }
     }
 }

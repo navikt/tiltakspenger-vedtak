@@ -5,13 +5,8 @@ import io.kotest.matchers.types.beInstanceOf
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -19,8 +14,6 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingInnvilgetIverksatt
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
@@ -34,7 +27,6 @@ import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.Random
 
 internal class SakServiceTest {
     private lateinit var sakRepo: SakRepo
@@ -50,7 +42,7 @@ internal class SakServiceTest {
         behandlingRepo = mockk()
         vedtakService = mockk()
         attesteringRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, sakRepo)
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 
@@ -181,114 +173,5 @@ internal class SakServiceTest {
         val b = åpenBehandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
         b.søknader.size shouldBe 2
         b.søknad().journalpostId shouldBe nyJournalpostId
-    }
-
-    @Test
-    fun `motta personopplysninger oppdaterer saksopplysning for ALDER hvis det er en endring`() {
-        val periode = Periode(1.januar(2023), 31.mars(2023))
-        val ident = Random().nextInt().toString()
-        val sak = sakMedOpprettetBehandling(
-            ident = ident,
-            periode = periode,
-        )
-        every { sakRepo.hent(any()) } returns sak
-        every { sakRepo.hentForJournalpostId(any()) } returns sak
-        every { sakRepo.lagre(any()) } returnsArgument 0
-
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
-        every { behandlingRepo.lagre(any()) } returnsArgument 0
-
-        sakService.mottaPersonopplysninger(
-            "123",
-            listOf(
-                personopplysningKjedeligFyr(
-                    ident = ident,
-                    fornavn = "Et endret fornavn",
-                ),
-            ),
-        )
-
-        verify {
-            behandlingRepo.lagre(
-                match { behandling ->
-                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 31.mars(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_IKKE_YTELSE
-                },
-            )
-        }
-    }
-
-    @Test
-    fun `motta personopplysninger oppdaterer ikke saksopplysning hvis personopplysninger ikke har endret seg`() {
-        val periode = Periode(1.januar(2023), 31.mars(2023))
-        val person = personopplysningKjedeligFyr()
-        val sak = sakMedOpprettetBehandling(
-            ident = person.ident,
-            personopplysninger = listOf(person),
-            periode = periode,
-        )
-        every { sakRepo.hent(any()) } returns sak
-        every { sakRepo.hentForJournalpostId(any()) } returns sak
-        every { sakRepo.lagre(any()) } returnsArgument 0
-
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
-        every { behandlingRepo.lagre(any()) } returnsArgument 0
-
-        sakService.mottaPersonopplysninger(
-            "123",
-            listOf(person),
-        )
-
-        verify(exactly = 0) { sakRepo.lagre(any()) }
-    }
-
-    @Test
-    fun `motta personopplysninger for en person som blir 18 midt i perioden`() {
-        val periode = Periode(1.januar(2023), 31.mars(2023))
-        val ident = Random().nextInt().toString()
-        val sak = sakMedOpprettetBehandling(
-            ident = ident,
-            periode = periode,
-        )
-        every { sakRepo.hent(any()) } returns sak
-        every { sakRepo.hentForJournalpostId(any()) } returns sak
-        every { sakRepo.lagre(any()) } returnsArgument 0
-
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
-        every { behandlingRepo.lagre(any()) } returnsArgument 0
-
-        sakService.mottaPersonopplysninger(
-            journalpostId = "123",
-            personopplysninger = listOf(
-                personopplysningKjedeligFyr(
-                    ident = ident,
-                    fødselsdato = 31.januar(2023).minusYears(18),
-                ),
-            ),
-        )
-
-        verify {
-            behandlingRepo.lagre(
-                match { behandling ->
-                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE &&
-                        (behandling as BehandlingVilkårsvurdert).vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.first().fom == 1.januar(2023) &&
-                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.first().tom == 30.januar(2023) &&
-                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.first().utfall == Utfall.IKKE_OPPFYLT &&
-                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.last().fom == 31.januar(2023) &&
-                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.last().tom == 31.mars(2023) &&
-                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
-                            .sortedBy { it.fom }.last().utfall == Utfall.OPPFYLT
-                },
-
-            )
-        }
     }
 }

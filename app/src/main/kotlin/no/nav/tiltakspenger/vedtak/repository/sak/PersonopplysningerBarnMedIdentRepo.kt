@@ -4,7 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
@@ -18,7 +18,7 @@ internal class PersonopplysningerBarnMedIdentRepo {
 
     internal fun lagre(
         sakId: SakId,
-        personopplysninger: Personopplysninger.BarnMedIdent,
+        personopplysninger: PersonopplysningerBarnMedIdent,
         txSession: TransactionalSession,
     ) {
         securelog.info { "Lagre personopplysninger for barn med ident $personopplysninger" }
@@ -47,8 +47,8 @@ internal class PersonopplysningerBarnMedIdentRepo {
     internal fun slett(sakId: SakId, txSession: TransactionalSession) =
         txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
-    private val toPersonopplysninger: (Row) -> Personopplysninger.BarnMedIdent = { row ->
-        Personopplysninger.BarnMedIdent(
+    private val toPersonopplysninger: (Row) -> PersonopplysningerBarnMedIdent = { row ->
+        PersonopplysningerBarnMedIdent(
             ident = row.string("ident"),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),

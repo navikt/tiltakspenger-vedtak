@@ -10,7 +10,7 @@ import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.harTilgang
+import no.nav.tiltakspenger.domene.personopplysninger.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -59,6 +59,7 @@ fun Route.behandlingRoutes(
             )
         }
 
+        // Kunne denne sjekken med fordel vært lenger inn i koden? I SakService f.eks?
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             call.respond(
                 status = HttpStatusCode.Unauthorized,

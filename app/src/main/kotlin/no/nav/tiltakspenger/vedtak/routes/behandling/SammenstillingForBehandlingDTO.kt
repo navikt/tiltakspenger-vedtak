@@ -6,8 +6,9 @@ import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
@@ -144,10 +145,13 @@ fun mapSammenstillingDTO(
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
                 },
-                samletUtfall = settSamletUtfall(behandling, behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }),
+                samletUtfall = settSamletUtfall(
+                    behandling,
+                    behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
+                ),
             )
         },
-        personopplysninger = personopplysninger.filterIsInstance<Personopplysninger.Søker>().map {
+        personopplysninger = personopplysninger.søkere().map {
             PersonopplysningerDTO(
                 ident = it.ident,
                 fornavn = it.fornavn,
@@ -179,8 +183,24 @@ fun mapSammenstillingDTO(
 }
 
 fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
-    if (saksopplysninger.any { s -> settUtfall(behandling, s) == Utfall.IKKE_OPPFYLT.name }) return Utfall.IKKE_OPPFYLT.name
-    if (saksopplysninger.any { s -> settUtfall(behandling, s) == Utfall.KREVER_MANUELL_VURDERING.name }) return Utfall.KREVER_MANUELL_VURDERING.name
+    if (saksopplysninger.any { s ->
+            settUtfall(
+                behandling,
+                s,
+            ) == Utfall.IKKE_OPPFYLT.name
+        }
+    ) {
+        return Utfall.IKKE_OPPFYLT.name
+    }
+    if (saksopplysninger.any { s ->
+            settUtfall(
+                behandling,
+                s,
+            ) == Utfall.KREVER_MANUELL_VURDERING.name
+        }
+    ) {
+        return Utfall.KREVER_MANUELL_VURDERING.name
+    }
     return Utfall.OPPFYLT.name
 }
 

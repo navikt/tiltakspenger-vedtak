@@ -2,9 +2,11 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.januar
@@ -53,7 +55,7 @@ interface InnsendingMother {
     fun nySøker(
         søkerId: SøkerId = SøkerId.random(),
         ident: String = Random().nextInt().toString(),
-        personopplysninger: Personopplysninger.Søker = personopplysningKjedeligFyr(ident = ident),
+        personopplysninger: PersonopplysningerSøker = personopplysningKjedeligFyr(ident = ident),
     ): Søker {
         return Søker.fromDb(
             søkerId = søkerId,
@@ -394,7 +396,7 @@ interface InnsendingMother {
         bydel: String? = null,
         skjermet: Boolean? = null,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-    ): Personopplysninger.Søker = Personopplysninger.Søker(
+    ): PersonopplysningerSøker = PersonopplysningerSøker(
         ident = ident,
         fødselsdato = fødselsdato,
         fornavn = fornavn,
@@ -422,7 +424,7 @@ interface InnsendingMother {
         bydel: String? = "3440",
         skjermet: Boolean? = true,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-    ): Personopplysninger.Søker = Personopplysninger.Søker(
+    ): PersonopplysningerSøker = PersonopplysningerSøker(
         ident = ident,
         fødselsdato = fødselsdato,
         fornavn = fornavn,
@@ -449,8 +451,8 @@ interface InnsendingMother {
         skjermet: Boolean = false,
         oppholdsland: String? = null,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-    ): Personopplysninger.BarnMedIdent {
-        return Personopplysninger.BarnMedIdent(
+    ): PersonopplysningerBarnMedIdent {
+        return PersonopplysningerBarnMedIdent(
             ident = ident,
             fødselsdato = fødselsdato,
             fornavn = fornavn,

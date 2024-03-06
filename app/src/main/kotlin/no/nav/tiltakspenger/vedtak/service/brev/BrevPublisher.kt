@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.service.brev
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.libs.dokument.BrevDTO
 import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysninger: Personopplysninger.Søker) {
+fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysninger: PersonopplysningerSøker) {
     mutableMapOf(
         "@event_name" to "vedtaksbrev",
         "@opprettet" to LocalDateTime.now(),
@@ -27,7 +27,7 @@ fun sendBrev(vedtak: Vedtak, rapidsConnection: RapidsConnection, personopplysnin
         }
 }
 
-private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysninger.Søker) =
+private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
     BrevDTO(
         personaliaDTO = mapPeronaliaDTO(vedtak, personopplysninger),
         tiltaksinfoDTO = mapTiltaksinfo(vedtak),
@@ -40,7 +40,7 @@ private fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: Personopplysni
         datoForUtsending = LocalDate.now(),
     )
 
-private fun mapPeronaliaDTO(vedtak: Vedtak, personopplysninger: Personopplysninger.Søker) =
+private fun mapPeronaliaDTO(vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
     PersonaliaDTO(
         ident = personopplysninger.ident,
         fornavn = personopplysninger.fornavn,

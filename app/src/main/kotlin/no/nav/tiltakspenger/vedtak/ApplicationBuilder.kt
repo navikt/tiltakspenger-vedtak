@@ -70,11 +70,11 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
     private val vedtakService = VedtakServiceImpl(utbetalingService, vedtakRepo, personopplysningRepo, rapidsConnection)
     private val søkerService = SøkerServiceImpl(søkerRepository)
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, sakRepo)
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
-    private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
+    private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo, sakRepo)
 
     val innsendingMediator = InnsendingMediator(
         innsendingRepository = innsendingRepository,

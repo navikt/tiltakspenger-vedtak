@@ -9,12 +9,16 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.søker
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.innsending.tolkere.AlderTolker
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 
 private val LOG = KotlinLogging.logger {}
@@ -24,6 +28,7 @@ class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val vedtakService: VedtakService,
     private val attesteringRepo: AttesteringRepo,
+    private val sakRepo: SakRepo,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
@@ -47,7 +52,11 @@ class BehandlingServiceImpl(
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
         val behandling = hentBehandling(behandlingId)
             ?: throw IllegalStateException("Kunne ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
-        val oppdatertBehandling = behandling.oppdaterTiltak(tiltak.filter { Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode) })
+        val oppdatertBehandling = behandling.oppdaterTiltak(
+            tiltak.filter {
+                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+            },
+        )
         behandlingRepo.lagre(oppdatertBehandling)
     }
 
@@ -62,7 +71,12 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?, isAdmin: Boolean) {
+    override fun sendTilbakeTilSaksbehandler(
+        behandlingId: BehandlingId,
+        beslutter: String,
+        begrunnelse: String?,
+        isAdmin: Boolean,
+    ) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
@@ -146,5 +160,25 @@ class BehandlingServiceImpl(
 
     override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
+    }
+
+    override fun mottaPersonopplysninger(journalpostId: String, personopplysninger: List<Personopplysninger>) {
+        val fdato = personopplysninger.søker().fødselsdato
+
+        // I tidligere versjon av denne i SakServiceImpl gjorde man noe ala
+        // sakRepo.hentForJournalpostId(journalpostId) + behandlingRepo.hentForSak(sakId)
+        // Så gjorde man behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
+        // Men
+        // BehandlingRepo::hentForJournalpostId(journalpostId: String): Søknadsbehandling?
+        // returnerer bare 1 behandling, så en foreach gir ikke mening. TODO Noen må forklare dette for meg
+        // I koden i SakService brukte man også Sak sin periode, ikke behandlingen sin vurderingsperiode.
+        // Det mener jeg er galt, så det har jeg endret
+        val behandling = behandlingRepo.hentForJournalpostId(journalpostId)
+            ?: throw IllegalStateException("Fant ikke behandling med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
+
+        AlderTolker.tolkeData(fdato, behandling.vurderingsperiode).forEach {
+            // TODO: Litt dumt at hver saksopplysning blir en egen transaksjon?
+            this.leggTilSaksopplysning(behandling.id, it)
+        }
     }
 }
