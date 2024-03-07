@@ -3,14 +3,7 @@ package no.nav.tiltakspenger.vedtak.service.sak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.domene.personopplysninger.barnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.erLik
-import no.nav.tiltakspenger.domene.personopplysninger.søker
-import no.nav.tiltakspenger.domene.personopplysninger.søkerMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -43,25 +36,17 @@ class SakServiceImpl(
         return sakRepo.lagre(håndtertSak)
     }
 
-    override fun mottaPersonopplysninger(journalpostId: String, personopplysninger: List<Personopplysninger>): Sak? {
+    override fun mottaPersonopplysninger(
+        journalpostId: String,
+        nyePersonopplysninger: SakPersonopplysninger,
+    ): Sak? {
         val sak = sakRepo.hentForJournalpostId(journalpostId)
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
-        val personopplysningerMedSkjerming = personopplysninger.map {
-            when (it) {
-                is PersonopplysningerBarnMedIdent -> it.copy(
-                    skjermet = sak.personopplysninger.barnMedIdent()
-                        .firstOrNull { barn -> barn.ident == it.ident }?.skjermet,
-                )
+        val nyePersonopplysningerMedGammelSkjerming =
+            nyePersonopplysninger.medSkjermingFra(sak.personopplysninger.identerOgSkjerming())
 
-                is PersonopplysningerBarnUtenIdent -> it
-                is PersonopplysningerSøker -> it.copy(
-                    skjermet = sak.personopplysninger.søkerMedIdent(it.ident)?.skjermet,
-                )
-            }
-        }
-
-        val fdato = personopplysninger.søker().fødselsdato
+        val fdato = nyePersonopplysninger.søker().fødselsdato
         sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {
                 behandlingService.leggTilSaksopplysning(behandling.id, it)
@@ -69,10 +54,11 @@ class SakServiceImpl(
         }
 
         // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
-        if (personopplysningerMedSkjerming.erLik(sak.personopplysninger)) return sak
+        if (nyePersonopplysningerMedGammelSkjerming == sak.personopplysninger) return sak
 
+        // TODO: Hvorfor henter vi den igjen her, vi hentet den jo på starten av funksjonen?
         val oppdatertSak = sakRepo.hentForJournalpostId(journalpostId)?.copy(
-            personopplysninger = personopplysningerMedSkjerming,
+            personopplysninger = nyePersonopplysningerMedGammelSkjerming,
         )
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
 
@@ -85,19 +71,7 @@ class SakServiceImpl(
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere skjerming")
 
         val oppdatertSak = sak.copy(
-            personopplysninger = sak.personopplysninger.map {
-                when (it) {
-                    is PersonopplysningerBarnMedIdent -> it.copy(
-                        skjermet = skjerming
-                            .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming,
-                    )
-
-                    is PersonopplysningerBarnUtenIdent -> it
-                    is PersonopplysningerSøker -> it.copy(
-                        skjermet = skjerming.søker.skjerming,
-                    )
-                }
-            },
+            personopplysninger = sak.personopplysninger.medSkjermingFra(lagMapAvSkjerming(skjerming)),
         )
         return sakRepo.lagre(oppdatertSak)
     }
@@ -106,4 +80,7 @@ class SakServiceImpl(
         val behandling = behandlingRepo.hent(behandlingId) ?: return null
         return sakRepo.hent(behandling.sakId)
     }
+
+    private fun lagMapAvSkjerming(skjerming: Skjerming) =
+        (skjerming.barn + skjerming.søker).associate { it.ident to it.skjerming }
 }

@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import io.kotest.matchers.shouldNotBe
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.felles.Periode
@@ -41,7 +42,7 @@ internal class SakRepoTest {
             saknummer = Saksnummer(verdi = "123"),
             periode = Periode(fra = startDato, til = sluttdato),
             behandlinger = listOf(),
-            personopplysninger = listOf(),
+            personopplysninger = SakPersonopplysninger(),
             vedtak = listOf(),
         )
 
