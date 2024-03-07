@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.innsending
 
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import java.time.LocalDateTime
 
 data class InnhentedePersonopplysninger(

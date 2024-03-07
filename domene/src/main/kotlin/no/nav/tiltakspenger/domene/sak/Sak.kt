@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.domene.sak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId

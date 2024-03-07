@@ -4,7 +4,7 @@ import kotliquery.TransactionalSession
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.søker
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -47,7 +47,8 @@ class VedtakServiceImpl(
         )
 
         val lagretVedtak = vedtakRepo.lagreVedtak(vedtak, tx)
-        val personopplysninger = personopplysningerRepo.hent(vedtak.sakId).filterIsInstance<Personopplysninger.Søker>().first()
+        val personopplysninger =
+            personopplysningerRepo.hent(vedtak.sakId).søker()
 
         utbetalingService.sendBehandlingTilUtbetaling(lagretVedtak)
         // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
