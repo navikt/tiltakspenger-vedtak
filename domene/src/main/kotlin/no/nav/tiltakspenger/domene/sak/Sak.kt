@@ -14,14 +14,11 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 data class Sak(
-    val id: SakId,
-    val ident: String,
-    val saknummer: Saksnummer,
-    val periode: Periode,
+    val sakDetaljer: SakDetaljer,
     val behandlinger: List<Behandling>,
     val personopplysninger: List<Personopplysninger>,
     val vedtak: List<Vedtak>,
-) {
+) : SakDetaljer by sakDetaljer {
     fun håndter(søknad: Søknad): Sak {
         val iverksatteBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>()
         val behandlinger = behandlinger
@@ -46,13 +43,36 @@ data class Sak(
     }
 
     companion object {
+        operator fun invoke(
+            id: SakId,
+            ident: String,
+            saknummer: Saksnummer,
+            periode: Periode,
+            behandlinger: List<Behandling>,
+            personopplysninger: List<Personopplysninger>,
+            vedtak: List<Vedtak>,
+        ): Sak =
+            Sak(
+                sakDetaljer = TynnSak(
+                    id = id,
+                    ident = ident,
+                    saknummer = saknummer,
+                    periode = periode,
+                ),
+                behandlinger = behandlinger,
+                personopplysninger = personopplysninger,
+                vedtak = vedtak,
+            )
+
         fun lagSak(søknad: Søknad, saksnummerGenerator: SaksnummerGenerator): Sak {
             return Sak(
-                id = SakId.random(),
-                ident = søknad.personopplysninger.ident,
-                saknummer = saksnummerGenerator.genererSaknummer(),
+                sakDetaljer = TynnSak(
+                    id = SakId.random(),
+                    ident = søknad.personopplysninger.ident,
+                    saknummer = saksnummerGenerator.genererSaknummer(),
+                    periode = søknad.vurderingsperiode(),
+                ),
                 behandlinger = emptyList(),
-                periode = søknad.vurderingsperiode(),
                 personopplysninger = emptyList(),
                 vedtak = emptyList(),
             )
