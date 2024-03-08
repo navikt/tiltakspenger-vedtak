@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.vedtak.repository.aktivitetslogg
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import kotliquery.sessionOf
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.Kontekst
+import no.nav.tiltakspenger.innsending.KontekstLogable
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Kontekst
-import no.nav.tiltakspenger.vedtak.innsending.KontekstLogable
 import no.nav.tiltakspenger.vedtak.repository.innsending.PostgresInnsendingRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,7 +34,7 @@ internal class AktivitetsloggDAOTest {
         val innsending = innsendingRegistrert()
         PostgresInnsendingRepository().lagre(innsending)
 
-        val aktivitetslogg = Aktivitetslogg()
+        val aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
 
         val dao = AktivitetsloggDAO()
@@ -59,7 +59,7 @@ internal class AktivitetsloggDAOTest {
         val innsending = innsendingRegistrert()
         PostgresInnsendingRepository().lagre(innsending)
 
-        val aktivitetslogg = Aktivitetslogg()
+        val aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
         aktivitetslogg.warn("en warn melding til")
         aktivitetslogg.info("en warn melding til1")
@@ -92,7 +92,7 @@ internal class AktivitetsloggDAOTest {
         val innsending = innsendingRegistrert()
         PostgresInnsendingRepository().lagre(innsending)
 
-        val aktivitetslogg = Aktivitetslogg()
+        val aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         aktivitetslogg.info("en liten melding")
         aktivitetslogg.warn("en warn melding til")
         aktivitetslogg.info("en warn melding til1")
@@ -138,9 +138,9 @@ internal class AktivitetsloggDAOTest {
         val innsending = innsendingRegistrert()
         PostgresInnsendingRepository().lagre(innsending)
 
-        val aktivitetslogg = Aktivitetslogg()
+        val aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         aktivitetslogg.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            type = no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
             melding = "melding",
             detaljer = mapOf(
                 "ident" to "1234",
@@ -170,11 +170,12 @@ internal class AktivitetsloggDAOTest {
         val innsending = innsendingRegistrert()
         PostgresInnsendingRepository().lagre(innsending)
 
-        val aktivitetslogg = Aktivitetslogg()
+        val aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         aktivitetslogg.addKontekst(innsending)
         aktivitetslogg.addKontekst(
-            object : KontekstLogable {
-                override fun opprettKontekst() = Kontekst("testType", mapOf("foo" to "bar"))
+            object : no.nav.tiltakspenger.innsending.KontekstLogable {
+                override fun opprettKontekst() =
+                    no.nav.tiltakspenger.innsending.Kontekst("testType", mapOf("foo" to "bar"))
             },
         )
         aktivitetslogg.info("en melding")

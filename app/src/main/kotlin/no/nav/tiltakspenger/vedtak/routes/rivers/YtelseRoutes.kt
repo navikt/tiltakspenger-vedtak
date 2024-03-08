@@ -7,14 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.YtelseSak
+import no.nav.tiltakspenger.innsending.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.innsending.tolkere.AapTolker
+import no.nav.tiltakspenger.innsending.tolkere.DagpengerTolker
+import no.nav.tiltakspenger.innsending.tolkere.TiltakspengerTolker
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.AapTolker
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.DagpengerTolker
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.TiltakspengerTolker
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
@@ -56,7 +56,7 @@ fun Route.ytelseRoutes(
         }
 
         val ytelserMottattHendelse = YtelserMottattHendelse(
-            aktivitetslogg = Aktivitetslogg(),
+            aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
             journalpostId = arenaYtelser.journalpostId,
             ytelseSak = ytelser,
             tidsstempelYtelserInnhentet = arenaYtelser.innhentet,

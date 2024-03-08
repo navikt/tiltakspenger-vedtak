@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.service.søker
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
 import java.time.LocalDate
 
 interface SøkerService {

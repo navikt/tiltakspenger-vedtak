@@ -1,18 +1,18 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.domene.behandling.Behandling
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.søkere
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.søkere
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -96,7 +96,7 @@ data class FaktaDTO(
 fun mapSammenstillingDTO(
     behandling: Søknadsbehandling,
     personopplysninger: List<Personopplysninger>,
-    attesteringer: List<Attestering>,
+    attesteringer: List<no.nav.tiltakspenger.saksbehandling.attestering.Attestering>,
 ): SammenstillingForBehandlingDTO {
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
@@ -171,8 +171,8 @@ fun mapSammenstillingDTO(
         endringslogg = attesteringer.map { att ->
             EndringDTO(
                 type = when (att.svar) {
-                    AttesteringStatus.GODKJENT -> EndringsType.GODKJENT.beskrivelse
-                    AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE.beskrivelse
+                    no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus.GODKJENT -> EndringsType.GODKJENT.beskrivelse
+                    no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus.SENDT_TILBAKE -> EndringsType.SENDT_TILBAKE.beskrivelse
                 },
                 begrunnelse = att.begrunnelse ?: "Godkjent av beslutter",
                 endretAv = att.beslutter,
@@ -182,7 +182,7 @@ fun mapSammenstillingDTO(
     )
 }
 
-fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
+fun settSamletUtfall(behandling: no.nav.tiltakspenger.saksbehandling.behandling.Behandling, saksopplysninger: List<Saksopplysning>): String {
     if (saksopplysninger.any { s ->
             settUtfall(
                 behandling,
@@ -204,7 +204,7 @@ fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysni
     return Utfall.OPPFYLT.name
 }
 
-fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
+fun settUtfall(behandling: no.nav.tiltakspenger.saksbehandling.behandling.Behandling, saksopplysning: Saksopplysning): String {
     return when (behandling) {
         is BehandlingVilkårsvurdert -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
         is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name

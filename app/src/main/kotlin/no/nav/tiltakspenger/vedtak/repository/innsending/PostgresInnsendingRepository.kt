@@ -7,9 +7,9 @@ import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.innsending.Innsending
+import no.nav.tiltakspenger.innsending.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
-import no.nav.tiltakspenger.vedtak.innsending.InnsendingTilstandType
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedtakDAO

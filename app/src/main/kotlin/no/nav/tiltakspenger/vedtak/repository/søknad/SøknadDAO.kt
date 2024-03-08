@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
 import org.intellij.lang.annotations.Language
 
 private const val KVP_FELT = "kvp"

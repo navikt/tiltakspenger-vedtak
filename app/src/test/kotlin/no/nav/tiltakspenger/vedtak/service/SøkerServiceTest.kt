@@ -4,13 +4,13 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.innsending.Søker
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.vedtak.innsending.Søker
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl

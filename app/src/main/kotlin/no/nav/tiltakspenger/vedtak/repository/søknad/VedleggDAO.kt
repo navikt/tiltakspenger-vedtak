@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak.repository.søknad
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.behandling.Vedlegg
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.saksbehandling.behandling.Vedlegg
 import org.intellij.lang.annotations.Language
 
 internal class VedleggDAO {

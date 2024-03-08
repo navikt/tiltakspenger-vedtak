@@ -3,15 +3,15 @@ package no.nav.tiltakspenger.vedtak.service.behandling
 import io.ktor.server.plugins.NotFoundException
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.saksbehandling.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
@@ -47,7 +47,11 @@ class BehandlingServiceImpl(
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
         val behandling = hentBehandling(behandlingId)
             ?: throw IllegalStateException("Kunne ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
-        val oppdatertBehandling = behandling.oppdaterTiltak(tiltak.filter { Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode) })
+        val oppdatertBehandling = behandling.oppdaterTiltak(
+            tiltak.filter {
+                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+            },
+        )
         behandlingRepo.lagre(oppdatertBehandling)
     }
 
@@ -62,14 +66,19 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?, isAdmin: Boolean) {
+    override fun sendTilbakeTilSaksbehandler(
+        behandlingId: BehandlingId,
+        beslutter: String,
+        begrunnelse: String?,
+        isAdmin: Boolean,
+    ) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
         checkNotNull(begrunnelse) { "Begrunnelse må oppgis når behandling sendes tilbake til saksbehandler" }
-        val attestering = Attestering(
+        val attestering = no.nav.tiltakspenger.saksbehandling.attestering.Attestering(
             behandlingId = behandlingId,
-            svar = AttesteringStatus.SENDT_TILBAKE,
+            svar = no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus.SENDT_TILBAKE,
             begrunnelse = begrunnelse,
             beslutter = beslutter,
         )
@@ -103,9 +112,9 @@ class BehandlingServiceImpl(
             is BehandlingTilBeslutter.Avslag -> throw IllegalStateException("Iverksett av Avslag fungerer, men skal ikke tillates i mvp 1 $behandling")
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
-        val attestering = Attestering(
+        val attestering = no.nav.tiltakspenger.saksbehandling.attestering.Attestering(
             behandlingId = behandlingId,
-            svar = AttesteringStatus.GODKJENT,
+            svar = no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus.GODKJENT,
             begrunnelse = null,
             beslutter = saksbehandler,
 

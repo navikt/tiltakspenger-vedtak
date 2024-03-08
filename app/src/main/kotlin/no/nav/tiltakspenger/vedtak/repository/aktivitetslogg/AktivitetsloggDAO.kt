@@ -4,58 +4,58 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.IAktivitetslogg
+import no.nav.tiltakspenger.innsending.Kontekst
 import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.objectMapper
 import no.nav.tiltakspenger.vedtak.db.readMap
 import no.nav.tiltakspenger.vedtak.db.serialize
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.IAktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Kontekst
 import org.intellij.lang.annotations.Language
 import java.util.*
 
 class AktivitetsloggDAO {
 
-    private val toAktivitet: (Row) -> Aktivitetslogg.Aktivitet = { row ->
+    private val toAktivitet: (Row) -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet = { row ->
         val label = row.string("label")
         val melding = row.string("melding")
         val tidsstempl = row.localDateTime("tidsstempel")
         val detaljer: Map<String, Any> = row.stringOrNull("detaljer")
             ?.let { objectMapper.readMap(it) } ?: emptyMap()
         val konteksterString = row.string("kontekster")
-        val kontekster: List<Kontekst> = deserializeList(konteksterString)
+        val kontekster: List<no.nav.tiltakspenger.innsending.Kontekst> = deserializeList(konteksterString)
 
         when (label) {
-            "I" -> Aktivitetslogg.Aktivitet.Info(
+            "I" -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Info(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
                 persistert = true,
             )
 
-            "W" -> Aktivitetslogg.Aktivitet.Warn(
+            "W" -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Warn(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
                 persistert = true,
             )
 
-            "E" -> Aktivitetslogg.Aktivitet.Error(
+            "E" -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Error(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
                 persistert = true,
             )
 
-            "S" -> Aktivitetslogg.Aktivitet.Severe(
+            "S" -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Severe(
                 kontekster = kontekster,
                 melding = melding,
                 tidsstempel = tidsstempl,
                 persistert = true,
             )
 
-            "N" -> Aktivitetslogg.Aktivitet.Behov(
-                type = row.string("type").let { Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
+            "N" -> no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov(
+                type = row.string("type").let { no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov.Behovtype.valueOf(it) },
                 kontekster = kontekster,
                 melding = melding,
                 detaljer = detaljer,
@@ -98,7 +98,7 @@ class AktivitetsloggDAO {
     @Language("SQL")
     private val hentAktivitetslogger = "select * from aktivitet where innsending_id = ?"
 
-    fun lagre(innsendingId: InnsendingId, aktivitetslogg: IAktivitetslogg, txSession: TransactionalSession) {
+    fun lagre(innsendingId: InnsendingId, aktivitetslogg: no.nav.tiltakspenger.innsending.IAktivitetslogg, txSession: TransactionalSession) {
         // slettAktiviteter(innsendingId, txSession)
         aktivitetslogg.aktiviteter()
             .filter { !it.persistert }
@@ -109,12 +109,12 @@ class AktivitetsloggDAO {
                         mapOf(
                             "id" to UUID.randomUUID(),
                             "innsendingId" to innsendingId.toString(),
-                            "type" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
+                            "type" to if (aktivitet is no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov) aktivitet.type.name else null,
                             "alvorlighetsgrad" to aktivitet.alvorlighetsgrad,
                             "label" to aktivitet.label,
                             "melding" to aktivitet.melding,
                             "tidsstempel" to aktivitet.tidsstempel,
-                            "detaljer" to if (aktivitet is Aktivitetslogg.Aktivitet.Behov) {
+                            "detaljer" to if (aktivitet is no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov) {
                                 objectMapper.writeValueAsString(
                                     aktivitet.detaljer,
                                 )
@@ -133,7 +133,7 @@ class AktivitetsloggDAO {
     }
 
     fun hent(innsendingId: InnsendingId, txSession: TransactionalSession) =
-        Aktivitetslogg(
+        no.nav.tiltakspenger.innsending.Aktivitetslogg(
             aktiviteter = txSession.run(queryOf(hentAktivitetslogger, innsendingId.toString()).map(toAktivitet).asList)
                 .sorted()
                 .toMutableList(),

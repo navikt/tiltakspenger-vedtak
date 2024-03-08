@@ -6,12 +6,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -23,6 +17,12 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vilkår
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo

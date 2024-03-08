@@ -2,16 +2,19 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.innsending.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.Innsending
+import no.nav.tiltakspenger.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.Skjerming
+import no.nav.tiltakspenger.innsending.SkjermingPerson
+import no.nav.tiltakspenger.innsending.Søker
+import no.nav.tiltakspenger.innsending.UføreVedtak
+import no.nav.tiltakspenger.innsending.YtelseSak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
@@ -25,14 +28,11 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.innsending.Skjerming
-import no.nav.tiltakspenger.vedtak.innsending.SkjermingPerson
-import no.nav.tiltakspenger.vedtak.innsending.Søker
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerSøker
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Random

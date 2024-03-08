@@ -7,17 +7,17 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.Feil
+import no.nav.tiltakspenger.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.libs.overgangsstonad.Feilmelding
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadPeriodeDTO
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadResponsDTO
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.OvergangsstønadMottattHendelse
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -40,7 +40,7 @@ fun Route.overgangsstønadRoutes(innsendingMediator: InnsendingMediator) {
         when {
             overgangsstønadDTO.overgangsstønadRespons.feil != null -> {
                 val feilMottattHendelse = FeilMottattHendelse(
-                    aktivitetslogg = Aktivitetslogg(),
+                    aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                     journalpostId = overgangsstønadDTO.journalpostId,
                     ident = overgangsstønadDTO.ident,
                     feil = when (overgangsstønadDTO.overgangsstønadRespons.feil!!) {
@@ -57,7 +57,7 @@ fun Route.overgangsstønadRoutes(innsendingMediator: InnsendingMediator) {
 
             overgangsstønadDTO.overgangsstønadRespons.overgangsstønader != null -> {
                 val overgangsstønadHendelse = OvergangsstønadMottattHendelse(
-                    aktivitetslogg = Aktivitetslogg(),
+                    aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                     journalpostId = overgangsstønadDTO.journalpostId,
                     ident = overgangsstønadDTO.ident,
                     innhentet = overgangsstønadDTO.innhentet,

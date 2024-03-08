@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.utbetaling
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.vedtak.Vedtak
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingDTO
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo

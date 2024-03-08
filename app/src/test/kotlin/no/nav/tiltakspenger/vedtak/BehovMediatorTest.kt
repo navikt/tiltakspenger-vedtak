@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg.Aktivitet.Behov.Behovtype
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
-import no.nav.tiltakspenger.vedtak.innsending.InnsendingHendelse
-import no.nav.tiltakspenger.vedtak.innsending.Kontekst
-import no.nav.tiltakspenger.vedtak.innsending.KontekstLogable
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov.Behovtype
+import no.nav.tiltakspenger.innsending.Innsending
+import no.nav.tiltakspenger.innsending.InnsendingHendelse
+import no.nav.tiltakspenger.innsending.Kontekst
+import no.nav.tiltakspenger.innsending.KontekstLogable
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -27,13 +27,13 @@ internal class BehovMediatorTest {
     }
 
     private val testRapid = TestRapid()
-    private lateinit var aktivitetslogg: Aktivitetslogg
+    private lateinit var aktivitetslogg: no.nav.tiltakspenger.innsending.Aktivitetslogg
     private lateinit var innsending: Innsending
 
     @BeforeEach
     fun setup() {
         innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = 1.januar(2022), tom = 31.mars(2022))
-        aktivitetslogg = Aktivitetslogg()
+        aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg()
         behovMediator = BehovMediator(
             rapidsConnection = testRapid,
         )
@@ -108,22 +108,22 @@ internal class BehovMediatorTest {
 
     private class Testkontekst(
         private val melding: String,
-    ) : KontekstLogable {
-        override fun opprettKontekst() = Kontekst(melding, mapOf(melding to melding))
+    ) : no.nav.tiltakspenger.innsending.KontekstLogable {
+        override fun opprettKontekst() = no.nav.tiltakspenger.innsending.Kontekst(melding, mapOf(melding to melding))
     }
 
     private class TestHendelse(
         private val melding: String,
-        internal val logg: Aktivitetslogg,
-    ) : InnsendingHendelse(logg), KontekstLogable {
+        internal val logg: no.nav.tiltakspenger.innsending.Aktivitetslogg,
+    ) : InnsendingHendelse(logg), no.nav.tiltakspenger.innsending.KontekstLogable {
         init {
             logg.addKontekst(this)
         }
 
         override fun journalpostId(): String = journalpostId
 
-        override fun opprettKontekst() = Kontekst("TestHendelse")
-        override fun addKontekst(kontekst: KontekstLogable) {
+        override fun opprettKontekst() = no.nav.tiltakspenger.innsending.Kontekst("TestHendelse")
+        override fun addKontekst(kontekst: no.nav.tiltakspenger.innsending.KontekstLogable) {
             logg.addKontekst(kontekst)
         }
     }

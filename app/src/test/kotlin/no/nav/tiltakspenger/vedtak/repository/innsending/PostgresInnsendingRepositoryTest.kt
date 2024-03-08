@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.innsending.Innsending
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
@@ -19,7 +20,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled

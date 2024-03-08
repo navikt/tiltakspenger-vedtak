@@ -4,15 +4,15 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.saksbehandling.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl : AttesteringRepo {
-    override fun lagre(attestering: Attestering): Attestering {
+    override fun lagre(attestering: no.nav.tiltakspenger.saksbehandling.attestering.Attestering): no.nav.tiltakspenger.saksbehandling.attestering.Attestering {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 lagre(attestering, txSession)
@@ -20,7 +20,7 @@ internal class AttesteringRepoImpl : AttesteringRepo {
         }
     }
 
-    override fun lagre(attestering: Attestering, tx: TransactionalSession): Attestering {
+    override fun lagre(attestering: no.nav.tiltakspenger.saksbehandling.attestering.Attestering, tx: TransactionalSession): no.nav.tiltakspenger.saksbehandling.attestering.Attestering {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -37,7 +37,7 @@ internal class AttesteringRepoImpl : AttesteringRepo {
         return attestering
     }
 
-    override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> {
+    override fun hentForBehandling(behandlingId: BehandlingId): List<no.nav.tiltakspenger.saksbehandling.attestering.Attestering> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -78,10 +78,10 @@ internal class AttesteringRepoImpl : AttesteringRepo {
         )
     """.trimIndent()
 
-    private fun Row.toAttestering() = Attestering(
+    private fun Row.toAttestering() = no.nav.tiltakspenger.saksbehandling.attestering.Attestering(
         id = AttesteringId.fromDb(string("id")),
         behandlingId = BehandlingId.fromDb(string("behandling_id")),
-        svar = AttesteringStatus.valueOf(string("svar")),
+        svar = no.nav.tiltakspenger.saksbehandling.attestering.AttesteringStatus.valueOf(string("svar")),
         begrunnelse = stringOrNull("begrunnelse"),
         beslutter = string("beslutter"),
         tidspunkt = localDateTime("tidspunkt"),

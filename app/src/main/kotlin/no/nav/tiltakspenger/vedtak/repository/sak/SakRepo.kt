@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.saksbehandling.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.sak.SakDetaljer
 
 interface SakRepo {
     fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak>

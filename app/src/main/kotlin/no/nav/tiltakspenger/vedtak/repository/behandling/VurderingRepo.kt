@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vurdering
 import org.intellij.lang.annotations.Language
 
 internal class VurderingRepo {

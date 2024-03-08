@@ -7,13 +7,13 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.harTilgang
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService

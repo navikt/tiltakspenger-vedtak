@@ -1,11 +1,5 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
-import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
@@ -13,6 +7,12 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.sak.SaksnummerGenerator
 import java.util.Random
 
 interface SakMother {

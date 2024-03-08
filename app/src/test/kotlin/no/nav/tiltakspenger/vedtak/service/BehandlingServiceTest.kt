@@ -6,11 +6,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april
@@ -25,6 +20,11 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vilkår
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService

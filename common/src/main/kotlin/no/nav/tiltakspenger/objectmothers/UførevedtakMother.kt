@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.felles.UføreVedtakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
+import no.nav.tiltakspenger.innsending.UføreVedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 

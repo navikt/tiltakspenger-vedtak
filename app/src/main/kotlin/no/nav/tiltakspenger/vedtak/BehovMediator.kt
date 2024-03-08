@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.InnsendingHendelse
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.InnsendingHendelse
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -24,7 +24,7 @@ class BehovMediator(
 
     private fun håndter(
         hendelse: InnsendingHendelse,
-        behov: List<Aktivitetslogg.Aktivitet.Behov>,
+        behov: List<no.nav.tiltakspenger.innsending.Aktivitetslogg.Aktivitet.Behov>,
     ) {
         // Denne linja sørger for at alle behov som har lik kontekst (Map<String, String>) behandles sammen
         // og blir sendt ut som en og samme melding på Rapiden.

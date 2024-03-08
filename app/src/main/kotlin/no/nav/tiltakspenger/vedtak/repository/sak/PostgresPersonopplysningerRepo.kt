@@ -5,12 +5,12 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language

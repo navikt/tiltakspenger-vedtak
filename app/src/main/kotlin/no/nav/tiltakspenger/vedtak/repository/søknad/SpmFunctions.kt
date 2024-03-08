@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
-import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
 
 private const val JA = "JA"
 private const val NEI = "NEI"

@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.service.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.saksbehandling.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.vedtak.VedtaksType
 import java.time.LocalDate
 import java.time.LocalDateTime
 

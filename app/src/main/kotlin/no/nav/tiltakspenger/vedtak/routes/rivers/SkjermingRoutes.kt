@@ -7,15 +7,15 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.Feil
+import no.nav.tiltakspenger.innsending.Skjerming
+import no.nav.tiltakspenger.innsending.SkjermingPerson
+import no.nav.tiltakspenger.innsending.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.libs.skjerming.Feilmelding.IdentIkkeFunnet
 import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.Skjerming
-import no.nav.tiltakspenger.vedtak.innsending.SkjermingPerson
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import java.time.LocalDateTime
 
@@ -41,7 +41,7 @@ fun Route.skjermingRoutes(
         when {
             skjermingDTO.skjerming.feil != null -> {
                 val feilMottattHendelse = FeilMottattHendelse(
-                    aktivitetslogg = Aktivitetslogg(),
+                    aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                     journalpostId = skjermingDTO.journalpostId,
                     ident = skjermingDTO.ident,
                     feil = when (skjermingDTO.skjerming.feil!!) {
@@ -59,7 +59,7 @@ fun Route.skjermingRoutes(
                     sakService.mottaSkjerming(skjermingDTO.journalpostId, skjerming)
 
                     val skjermingHendelse = SkjermingMottattHendelse(
-                        aktivitetslogg = Aktivitetslogg(),
+                        aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                         journalpostId = skjermingDTO.journalpostId,
                         ident = skjermingDTO.ident,
                         skjerming = skjerming,

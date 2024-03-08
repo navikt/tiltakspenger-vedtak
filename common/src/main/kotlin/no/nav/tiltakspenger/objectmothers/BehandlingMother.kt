@@ -1,20 +1,20 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.vilkår.Vilkår
 import java.time.LocalDate
 
 interface BehandlingMother {

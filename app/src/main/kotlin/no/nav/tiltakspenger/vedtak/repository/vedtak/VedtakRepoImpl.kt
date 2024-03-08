@@ -5,13 +5,13 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.saksbehandling.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.vedtak.VedtaksType
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo

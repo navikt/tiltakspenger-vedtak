@@ -4,9 +4,9 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 

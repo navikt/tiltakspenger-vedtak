@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.saksbehandling.saksopplysning.Kilde
 import java.time.LocalDate
 import java.time.LocalDateTime
 

@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import kotliquery.TransactionalSession
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
 
 interface BehandlingRepo {
     fun lagre(behandling: Søknadsbehandling): Søknadsbehandling

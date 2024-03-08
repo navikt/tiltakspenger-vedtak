@@ -3,12 +3,12 @@ package no.nav.tiltakspenger.vedtak.service.brev
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.libs.dokument.BrevDTO
 import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
 import no.nav.tiltakspenger.libs.dokument.TiltaksinfoDTO
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.saksbehandling.vedtak.Vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 

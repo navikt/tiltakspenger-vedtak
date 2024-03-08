@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.service.innsending
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 
 private val LOG = KotlinLogging.logger {}
@@ -22,7 +22,7 @@ class InnsendingAdminService(
         innsendinger.forEach {
             innsendingMediator.håndter(
                 ResetInnsendingHendelse(
-                    aktivitetslogg = Aktivitetslogg(),
+                    aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                     journalpostId = it,
                 ),
             )

@@ -6,7 +6,7 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.ForeldrepengerVedtak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

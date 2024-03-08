@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.ForeldrepengerVedtak
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

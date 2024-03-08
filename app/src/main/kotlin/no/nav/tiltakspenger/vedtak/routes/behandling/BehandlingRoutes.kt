@@ -9,14 +9,14 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.innsending.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.saksbehandling.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.saksbehandling.personopplysninger.harTilgang
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -129,7 +129,7 @@ fun Route.behandlingRoutes(
 
         behandlingService.hentBehandling(behandlingId)?.let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
-                aktivitetslogg = Aktivitetslogg(),
+                aktivitetslogg = no.nav.tiltakspenger.innsending.Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)

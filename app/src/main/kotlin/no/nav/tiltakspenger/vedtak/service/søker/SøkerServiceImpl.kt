@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.service.søker
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
-import no.nav.tiltakspenger.vedtak.innsending.Søker
+import no.nav.tiltakspenger.innsending.Søker
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
 
 private val LOG = KotlinLogging.logger {}
