@@ -93,55 +93,23 @@ sealed interface Søknadsbehandling : Behandling {
             }
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
-            return when {
-                vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } ->
-                    BehandlingVilkårsvurdert.Manuell(
-                        id = id,
-                        sakId = sakId,
-                        søknader = søknader,
-                        vurderingsperiode = vurderingsperiode,
-                        saksopplysninger = saksopplysninger,
-                        tiltak = tiltak,
-                        vilkårsvurderinger = vurderinger,
-                        saksbehandler = saksbehandler,
-                    )
-
-                vurderinger.all { it.utfall == Utfall.OPPFYLT } ->
-                    BehandlingVilkårsvurdert.Innvilget(
-                        id = id,
-                        sakId = sakId,
-                        søknader = søknader,
-                        vurderingsperiode = vurderingsperiode,
-                        saksopplysninger = saksopplysninger,
-                        tiltak = tiltak,
-                        vilkårsvurderinger = vurderinger,
-                        saksbehandler = saksbehandler,
-                    )
-
-                vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT } ->
-                    BehandlingVilkårsvurdert.Avslag(
-                        id = id,
-                        sakId = sakId,
-                        søknader = søknader,
-                        vurderingsperiode = vurderingsperiode,
-                        saksopplysninger = saksopplysninger,
-                        tiltak = tiltak,
-                        vilkårsvurderinger = vurderinger,
-                        saksbehandler = saksbehandler,
-                    )
-
-                else ->
-                    BehandlingVilkårsvurdert.Avslag(
-                        id = id,
-                        sakId = sakId,
-                        søknader = søknader,
-                        vurderingsperiode = vurderingsperiode,
-                        saksopplysninger = saksopplysninger,
-                        tiltak = tiltak,
-                        vilkårsvurderinger = vurderinger,
-                        saksbehandler = saksbehandler,
-                    )
+            val status = when {
+                vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> BehandlingStatus.Manuell
+                vurderinger.all { it.utfall == Utfall.OPPFYLT } -> BehandlingStatus.Innvilget
+                vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT } -> BehandlingStatus.Avslag
+                else -> BehandlingStatus.Avslag
             }
+            return BehandlingVilkårsvurdert(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+                vilkårsvurderinger = vurderinger,
+                saksbehandler = saksbehandler,
+                status = status,
+            )
         }
 
         // TODO: Hva er forskjellen på denne og på leggTilSøknad (og opprettBehandling) lenger opp?

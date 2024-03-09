@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -279,16 +280,17 @@ internal class PostgresBehandlingRepo(
             is BehandlingIverksatt -> "Iverksatt"
         }
 
-    private fun finnStatus(behandling: Søknadsbehandling) =
-        when (behandling) {
-            is Søknadsbehandling.Opprettet -> "Opprettet"
-            is BehandlingVilkårsvurdert.Avslag -> "Avslag"
-            is BehandlingVilkårsvurdert.Innvilget -> "Innvilget"
-            is BehandlingVilkårsvurdert.Manuell -> "Manuell"
-            is BehandlingIverksatt.Avslag -> "Avslag"
-            is BehandlingIverksatt.Innvilget -> "Innvilget"
-            is BehandlingTilBeslutter.Avslag -> "Avslag"
-            is BehandlingTilBeslutter.Innvilget -> "Innvilget"
+    private fun finnStatus(behandling: Søknadsbehandling): String =
+        when {
+            behandling is Søknadsbehandling.Opprettet -> "Opprettet"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Manuell -> "Manuell"
+            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            else -> throw IllegalStateException("Finner ikke status")
         }
 
     private val sqlHentSistEndret = """

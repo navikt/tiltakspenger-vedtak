@@ -7,13 +7,49 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 
-sealed interface BehandlingIverksatt : Søknadsbehandling {
-    val vilkårsvurderinger: List<Vurdering>
-    val beslutter: String
+data class BehandlingIverksatt(
+    override val id: BehandlingId,
+    override val sakId: SakId,
+    override val søknader: List<Søknad>,
+    override val vurderingsperiode: Periode,
+    override val saksopplysninger: List<Saksopplysning>,
+    override val tiltak: List<Tiltak>,
+    override val saksbehandler: String,
+    val vilkårsvurderinger: List<Vurdering>,
+    val beslutter: String,
+    val status: BehandlingStatus,
+) : Søknadsbehandling {
 
     override fun søknad(): Søknad {
         return søknader.siste()
     }
+
+    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+            LeggTilSaksopplysningRespons(
+                behandling = this,
+                erEndret = false,
+            )
+        } else {
+            // todo() her må vi lage en revurdering
+            val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
+                id = BehandlingId.random(),
+                sakId = this.sakId,
+                søknader = listOf(this.søknad()),
+                vurderingsperiode = this.vurderingsperiode,
+                saksopplysninger = oppdatertSaksopplysningListe,
+                tiltak = this.tiltak,
+                saksbehandler = null,
+            ).vilkårsvurder()
+            LeggTilSaksopplysningRespons(
+                behandling = nyBehandling,
+                erEndret = true,
+            )
+        }
+    }
+
+    override fun erTilBeslutter() = true
 
     companion object {
         fun fromDb(
@@ -28,115 +64,23 @@ sealed interface BehandlingIverksatt : Søknadsbehandling {
             saksbehandler: String,
             beslutter: String,
         ): BehandlingIverksatt {
-            return when (status) {
-                "Innvilget" -> Innvilget(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    saksbehandler = saksbehandler,
-                    beslutter = beslutter,
-                )
-
-                "Avslag" -> return Avslag(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    saksbehandler = saksbehandler,
-                    beslutter = beslutter,
-                )
-
+            val behandlingStatus = when (status) {
+                "Innvilget" -> BehandlingStatus.Innvilget
+                "Avslag" -> BehandlingStatus.Avslag
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
             }
+            return BehandlingIverksatt(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+                vilkårsvurderinger = vilkårsvurderinger,
+                saksbehandler = saksbehandler,
+                beslutter = beslutter,
+                status = behandlingStatus,
+            )
         }
-    }
-
-    data class Innvilget(
-        override val id: BehandlingId,
-        override val sakId: SakId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val tiltak: List<Tiltak>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: String,
-        override val beslutter: String,
-    ) : BehandlingIverksatt {
-        // trenger denne funksjoner?
-
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-                LeggTilSaksopplysningRespons(
-                    behandling = this,
-                    erEndret = false,
-                )
-            } else {
-                // todo() her må vi lage en revurdering
-                val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
-                    id = BehandlingId.random(),
-                    sakId = this.sakId,
-                    søknader = listOf(this.søknad()),
-                    vurderingsperiode = this.vurderingsperiode,
-                    saksopplysninger = oppdatertSaksopplysningListe,
-                    tiltak = this.tiltak,
-                    saksbehandler = null,
-                ).vilkårsvurder()
-                LeggTilSaksopplysningRespons(
-                    behandling = nyBehandling,
-                    erEndret = true,
-                )
-            }
-        }
-
-        override fun erTilBeslutter() = true
-    }
-
-    data class Avslag(
-        override val id: BehandlingId,
-        override val sakId: SakId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val tiltak: List<Tiltak>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: String,
-        override val beslutter: String,
-    ) : BehandlingIverksatt {
-        // trenger denne funksjoner?
-
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-                LeggTilSaksopplysningRespons(
-                    behandling = this,
-                    erEndret = false,
-                )
-            } else {
-                // todo() her må vi lage en revurdering
-                val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
-                    id = BehandlingId.random(),
-                    sakId = this.sakId,
-                    søknader = listOf(this.søknad()),
-                    vurderingsperiode = this.vurderingsperiode,
-                    saksopplysninger = oppdatertSaksopplysningListe,
-                    tiltak = this.tiltak,
-                    saksbehandler = null,
-                ).vilkårsvurder()
-                LeggTilSaksopplysningRespons(
-                    behandling = nyBehandling,
-                    erEndret = true,
-                )
-            }
-        }
-
-        override fun erTilBeslutter() = true
     }
 }

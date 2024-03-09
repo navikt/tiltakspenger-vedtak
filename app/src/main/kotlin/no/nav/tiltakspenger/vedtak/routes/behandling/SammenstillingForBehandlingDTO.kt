@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -360,10 +361,9 @@ enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
     INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
 }
 
-fun finnStatus(behandling: Søknadsbehandling) =
+fun finnStatus(behandling: Søknadsbehandling): String =
     when (behandling) {
-        is BehandlingIverksatt.Avslag -> "Iverksatt Avslag"
-        is BehandlingIverksatt.Innvilget -> "Iverksatt Innvilget"
+        is BehandlingIverksatt -> if (behandling.status == BehandlingStatus.Avslag) "Iverksatt Avslag" else "Iverksatt Innvilget"
         is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
         is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
         is Søknadsbehandling.Opprettet -> "Klar til behandling"
