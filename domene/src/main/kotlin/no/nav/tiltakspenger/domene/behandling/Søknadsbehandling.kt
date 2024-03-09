@@ -1,8 +1,11 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.initSaksopplysningerFraSøknad
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.lagSaksopplysningerAvSøknad
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -45,11 +48,12 @@ sealed interface Søknadsbehandling : Behandling {
                 )
             }
 
+            // TODO: Hva er forskjellen på leggTilSøknad og opprettBehandling?
             fun leggTilSøknad(behandling: Søknadsbehandling, søknad: Søknad): Opprettet {
                 val fakta = if (søknad.vurderingsperiode() != behandling.vurderingsperiode) {
-                    lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad)
+                    initSaksopplysningerFraSøknad(søknad) + lagSaksopplysningerAvSøknad(søknad)
                 } else {
-                    lagFaktaAvSøknad(søknad).fold(behandling.saksopplysninger) { acc, saksopplysning ->
+                    lagSaksopplysningerAvSøknad(søknad).fold(behandling.saksopplysninger) { acc, saksopplysning ->
                         acc.oppdaterSaksopplysninger(saksopplysning)
                     }
                 }
@@ -71,7 +75,7 @@ sealed interface Søknadsbehandling : Behandling {
                     sakId = sakId,
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
-                    saksopplysninger = lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad),
+                    saksopplysninger = initSaksopplysningerFraSøknad(søknad) + lagSaksopplysningerAvSøknad(søknad),
                     tiltak = emptyList(),
                     saksbehandler = null,
                 )
@@ -84,79 +88,71 @@ sealed interface Søknadsbehandling : Behandling {
             // Først lager vi Vurderinger
             // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
 
-            val vurderinger = saksopplysninger().flatMap {
+            val vurderinger: List<Vurdering> = saksopplysninger().flatMap {
                 it.lagVurdering(vurderingsperiode)
             }
 
             // Etter at vi har laget vurderinger, sjekker vi utfallet
+            return when {
+                vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } ->
+                    BehandlingVilkårsvurdert.Manuell(
+                        id = id,
+                        sakId = sakId,
+                        søknader = søknader,
+                        vurderingsperiode = vurderingsperiode,
+                        saksopplysninger = saksopplysninger,
+                        tiltak = tiltak,
+                        vilkårsvurderinger = vurderinger,
+                        saksbehandler = saksbehandler,
+                    )
 
-            if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
-                return BehandlingVilkårsvurdert.Manuell(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
-                )
+                vurderinger.all { it.utfall == Utfall.OPPFYLT } ->
+                    BehandlingVilkårsvurdert.Innvilget(
+                        id = id,
+                        sakId = sakId,
+                        søknader = søknader,
+                        vurderingsperiode = vurderingsperiode,
+                        saksopplysninger = saksopplysninger,
+                        tiltak = tiltak,
+                        vilkårsvurderinger = vurderinger,
+                        saksbehandler = saksbehandler,
+                    )
+
+                vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT } ->
+                    BehandlingVilkårsvurdert.Avslag(
+                        id = id,
+                        sakId = sakId,
+                        søknader = søknader,
+                        vurderingsperiode = vurderingsperiode,
+                        saksopplysninger = saksopplysninger,
+                        tiltak = tiltak,
+                        vilkårsvurderinger = vurderinger,
+                        saksbehandler = saksbehandler,
+                    )
+
+                else ->
+                    BehandlingVilkårsvurdert.Avslag(
+                        id = id,
+                        sakId = sakId,
+                        søknader = søknader,
+                        vurderingsperiode = vurderingsperiode,
+                        saksopplysninger = saksopplysninger,
+                        tiltak = tiltak,
+                        vilkårsvurderinger = vurderinger,
+                        saksbehandler = saksbehandler,
+                    )
             }
-            if (vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING }) {
-                return BehandlingVilkårsvurdert.Manuell(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
-                )
-            }
-            if (vurderinger.all { it.utfall == Utfall.OPPFYLT }) {
-                return BehandlingVilkårsvurdert.Innvilget(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
-                )
-            }
-            if (vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT }) {
-                return BehandlingVilkårsvurdert.Avslag(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vurderinger,
-                    saksbehandler = saksbehandler,
-                )
-            }
-            return BehandlingVilkårsvurdert.Avslag(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vurderinger,
-                saksbehandler = saksbehandler,
-            )
         }
 
+        // TODO: Hva er forskjellen på denne og på leggTilSøknad (og opprettBehandling) lenger opp?
+        // Det virker som om det er for mange innganger til klassen..?
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Opprettet(
                 id = id,
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                saksopplysninger = lagSaksopplysningerAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 },
                 tiltak = tiltak,
