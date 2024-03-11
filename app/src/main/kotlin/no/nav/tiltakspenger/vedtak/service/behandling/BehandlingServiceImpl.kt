@@ -47,7 +47,11 @@ class BehandlingServiceImpl(
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
         val behandling = hentBehandling(behandlingId)
             ?: throw IllegalStateException("Kunne ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
-        val oppdatertBehandling = behandling.oppdaterTiltak(tiltak.filter { Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode) })
+        val oppdatertBehandling = behandling.oppdaterTiltak(
+            tiltak.filter {
+                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+            },
+        )
         behandlingRepo.lagre(oppdatertBehandling)
     }
 
@@ -55,14 +59,17 @@ class BehandlingServiceImpl(
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
         check(saksbehandler == behandling.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
-        when (behandling) {
-            is BehandlingVilkårsvurdert.Avslag -> behandlingRepo.lagre(behandling.tilBeslutting())
-            is BehandlingVilkårsvurdert.Innvilget -> behandlingRepo.lagre(behandling.tilBeslutting())
-            else -> throw IllegalStateException("Behandlingen har feil status og kan ikke sendes til beslutting. BehandlingId: $behandlingId")
+        if (behandling is BehandlingVilkårsvurdert) {
+            behandlingRepo.lagre(behandling.tilBeslutting())
         }
     }
 
-    override fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?, isAdmin: Boolean) {
+    override fun sendTilbakeTilSaksbehandler(
+        behandlingId: BehandlingId,
+        beslutter: String,
+        begrunnelse: String?,
+        isAdmin: Boolean,
+    ) {
         val behandling = hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
@@ -94,13 +101,13 @@ class BehandlingServiceImpl(
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
         if (behandling is BehandlingTilBeslutter) {
-            check(behandling.saksbehandler != null) { "Kan ikke iverksette en behandling uten saksbehandler" }
+            // TODO: Har jeg gjort en glipp, eller var denne checken alltid overflødig?
+            // check(behandling.saksbehandler != null) { "Kan ikke iverksette en behandling uten saksbehandler" }
             check(behandling.beslutter == saksbehandler) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
         }
 
         val iverksattBehandling = when (behandling) {
-            is BehandlingTilBeslutter.Innvilget -> behandling.iverksett()
-            is BehandlingTilBeslutter.Avslag -> throw IllegalStateException("Iverksett av Avslag fungerer, men skal ikke tillates i mvp 1 $behandling")
+            is BehandlingTilBeslutter -> behandling.iverksett()
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
         val attestering = Attestering(
@@ -108,7 +115,6 @@ class BehandlingServiceImpl(
             svar = AttesteringStatus.GODKJENT,
             begrunnelse = null,
             beslutter = saksbehandler,
-
         )
 
         sessionOf(DataSource.hikariDataSource).use {
@@ -129,7 +135,8 @@ class BehandlingServiceImpl(
         }
 
         if (behandling is BehandlingTilBeslutter) {
-            check(behandling.saksbehandler != null) { "Kan ikke starte å beslutte en behandling uten saksbehandler" }
+            // TODO: Har jeg gjort en glipp, eller var denne checken alltid overflødig?
+            // check(behandling.saksbehandler != null) { "Kan ikke starte å beslutte en behandling uten saksbehandler" }
             check(behandling.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
         }
 
