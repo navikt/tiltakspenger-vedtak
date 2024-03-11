@@ -73,7 +73,7 @@ data class SakPersonopplysninger(
     }
 
     fun medSkjermingFra(identOgSkjerming: Map<String, Boolean?>): SakPersonopplysninger =
-        identOgSkjerming
+        identerOgSkjerming
             .toList()
             .fold(this) { personopplysninger: SakPersonopplysninger, personMedIdent: Pair<String, Boolean?> ->
                 personopplysninger.setSkjermingForPerson(personMedIdent.first, personMedIdent.second)
