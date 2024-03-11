@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
@@ -33,7 +33,7 @@ interface SakMother {
                 ),
             ),
         ),
-        personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(ident = ident)),
+        personopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident))),
     ): Sak =
         Sak(
             id = id,
@@ -61,7 +61,7 @@ interface SakMother {
         saksnummer: Saksnummer = Saksnummer("saksnr"),
         periode: Periode = Periode(fra = 1.januar(2022), til = 31.januar(2022)),
         behandlinger: List<Søknadsbehandling> = emptyList(),
-        personopplysninger: List<Personopplysninger> = emptyList(),
+        personopplysninger: SakPersonopplysninger = SakPersonopplysninger(),
     ): Sak =
         Sak(
             id = id,

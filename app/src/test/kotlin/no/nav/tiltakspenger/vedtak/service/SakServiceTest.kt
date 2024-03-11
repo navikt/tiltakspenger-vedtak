@@ -9,6 +9,7 @@ import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
@@ -200,11 +201,8 @@ internal class SakServiceTest {
 
         sakService.mottaPersonopplysninger(
             "123",
-            listOf(
-                personopplysningKjedeligFyr(
-                    ident = ident,
-                    fornavn = "Et endret fornavn",
-                ),
+            SakPersonopplysninger(
+                listOf(personopplysningKjedeligFyr(ident = ident, fornavn = "Et endret fornavn")),
             ),
         )
 
@@ -225,7 +223,7 @@ internal class SakServiceTest {
         val person = personopplysningKjedeligFyr()
         val sak = sakMedOpprettetBehandling(
             ident = person.ident,
-            personopplysninger = listOf(person),
+            personopplysninger = SakPersonopplysninger(listOf(person)),
             periode = periode,
         )
         every { sakRepo.hent(any()) } returns sak
@@ -237,7 +235,7 @@ internal class SakServiceTest {
 
         sakService.mottaPersonopplysninger(
             "123",
-            listOf(person),
+            SakPersonopplysninger(listOf(person)),
         )
 
         verify(exactly = 0) { sakRepo.lagre(any()) }
@@ -260,10 +258,12 @@ internal class SakServiceTest {
 
         sakService.mottaPersonopplysninger(
             journalpostId = "123",
-            personopplysninger = listOf(
-                personopplysningKjedeligFyr(
-                    ident = ident,
-                    fødselsdato = 31.januar(2023).minusYears(18),
+            nyePersonopplysninger = SakPersonopplysninger(
+                listOf(
+                    personopplysningKjedeligFyr(
+                        ident = ident,
+                        fødselsdato = 31.januar(2023).minusYears(18),
+                    ),
                 ),
             ),
         )

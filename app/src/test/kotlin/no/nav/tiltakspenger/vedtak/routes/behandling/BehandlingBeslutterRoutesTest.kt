@@ -15,6 +15,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
@@ -42,11 +43,11 @@ class BehandlingBeslutterRoutesTest {
     fun `sjekk at man ikke kan se behandlinger for en person som er fortrolig uten tilgang`() {
         val person = listOf(personopplysningKjedeligFyr(fortrolig = true))
         val behandlinger = ObjectMother.sakMedOpprettetBehandling(
-            personopplysninger = person,
+            personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
         every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
-        every { personopplysningService.hent(any()) } returns person
+        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
         every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
         testApplication {
@@ -85,11 +86,11 @@ class BehandlingBeslutterRoutesTest {
         val person = listOf(personopplysningKjedeligFyr(strengtFortrolig = true))
         val behandlinger = ObjectMother.sakMedOpprettetBehandling(
             ident = person.first().ident,
-            personopplysninger = person,
+            personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedKode6()
         every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
-        every { personopplysningService.hent(any()) } returns person
+        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
         every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
         testApplication {
