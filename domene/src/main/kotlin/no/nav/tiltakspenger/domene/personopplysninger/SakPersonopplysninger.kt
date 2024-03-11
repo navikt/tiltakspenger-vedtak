@@ -72,11 +72,11 @@ data class SakPersonopplysninger(
         )
     }
 
-    fun medSkjermingFra(identOgSkjerming: Map<String, Boolean?>): SakPersonopplysninger =
+    fun medSkjermingFra(identerOgSkjerming: Map<String, Boolean?>): SakPersonopplysninger =
         identerOgSkjerming
             .toList()
             .fold(this) { personopplysninger: SakPersonopplysninger, personMedIdent: Pair<String, Boolean?> ->
-                personopplysninger.setSkjermingForPerson(personMedIdent.first, personMedIdent.second)
+                personopplysninger.personopplysningerMedSkjermingForIdent(personMedIdent.first, personMedIdent.second)
             }
 
     fun erLik(other: SakPersonopplysninger): Boolean {
