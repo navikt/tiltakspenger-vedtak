@@ -81,7 +81,7 @@ fun Søknadsbehandling.Opprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
 private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
     if (this.isEmpty()) return listOf(neste)
     val forrige = this.last()
-    return if (forrige == neste) {
+    return if (forrige.kanSlåsSammen(neste)) {
         this.dropLast(1) + forrige.copy(
             tom = neste.tom,
         )
