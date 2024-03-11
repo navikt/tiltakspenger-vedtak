@@ -4,6 +4,7 @@ import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.felles.Periode
@@ -134,7 +135,7 @@ internal class TiltakDAOTest {
             saknummer = Saksnummer(verdi = "123"),
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
-            personopplysninger = listOf(),
+            personopplysninger = SakPersonopplysninger(),
             vedtak = listOf(),
         )
         sakRepo.lagre(sak)

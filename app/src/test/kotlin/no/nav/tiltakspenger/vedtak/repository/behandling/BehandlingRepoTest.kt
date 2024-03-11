@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.felles.Periode
@@ -49,7 +50,7 @@ internal class BehandlingRepoTest {
             saknummer = Saksnummer(verdi = "123"),
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
-            personopplysninger = listOf(),
+            personopplysninger = SakPersonopplysninger(),
             vedtak = listOf(),
         )
         sakRepo.lagre(sak)
@@ -88,7 +89,7 @@ internal class BehandlingRepoTest {
             saknummer = Saksnummer(verdi = "123"),
             periode = Periode(fra = deltakelseFom, til = deltakelseTom),
             behandlinger = listOf(),
-            personopplysninger = listOf(),
+            personopplysninger = SakPersonopplysninger(),
             vedtak = listOf(),
         )
         sakRepo.lagre(sak)

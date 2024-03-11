@@ -31,6 +31,7 @@ data class SammenstillingForBehandlingDTO(
     val tilstand: String,
     val status: String,
     val endringslogg: List<EndringDTO>,
+    val samletUtfall: String,
 )
 
 data class EndringDTO(
@@ -180,6 +181,10 @@ fun mapSammenstillingDTO(
                 endretTidspunkt = att.tidspunkt,
             )
         },
+        samletUtfall = settSamletUtfall(
+            behandling,
+            behandling.saksopplysninger(),
+        ),
     )
 }
 

@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
@@ -78,7 +79,10 @@ fun Route.personopplysningerRoutes(
                     personopplysningerMottattDTO.ident,
                 )
 
-                sakService.mottaPersonopplysninger(personopplysningerMottattDTO.journalpostId, personopplysninger)
+                sakService.mottaPersonopplysninger(
+                    personopplysningerMottattDTO.journalpostId,
+                    SakPersonopplysninger(personopplysninger),
+                )
 
                 val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(
                     aktivitetslogg = Aktivitetslogg(),

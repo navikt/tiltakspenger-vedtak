@@ -15,11 +15,12 @@ data class PersonopplysningerBarnMedIdent(
     val skjermet: Boolean?,
     val oppholdsland: String?,
     val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
-) : Personopplysninger {
+) : PersonopplysningerMedIdent {
     override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
     override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
     override fun fortrolig(): Boolean = fortrolig
     override fun skjermet(): Boolean = skjermet ?: true
+    override fun ident(): String = ident
 
     override fun equals(other: Any?): Boolean {
         if (other !is PersonopplysningerBarnMedIdent) return false
