@@ -1,10 +1,42 @@
 package no.nav.tiltakspenger.domene.vilkår
 
+import no.nav.tiltakspenger.domene.saksopplysning.Kilde
+
 sealed class Vilkår {
 
     abstract val tittel: String
     abstract val flateTittel: String
     abstract val lovreferanse: Lovreferanse
+
+    fun kilde(): Kilde =
+        when (this) {
+            AAP -> Kilde.ARENA
+            ALDER -> Kilde.PDL
+            ALDERSPENSJON -> Kilde.SØKNAD
+            DAGPENGER -> Kilde.ARENA
+            FORELDREPENGER -> Kilde.FPSAK
+            GJENLEVENDEPENSJON -> Kilde.SØKNAD
+            INSTITUSJONSOPPHOLD -> Kilde.SØKNAD
+            INTROPROGRAMMET -> Kilde.SØKNAD
+            JOBBSJANSEN -> Kilde.SØKNAD
+            KVP -> Kilde.SØKNAD
+            LØNNSINNTEKT -> Kilde.SØKNAD
+            OMSORGSPENGER -> Kilde.K9SAK
+            OPPLÆRINGSPENGER -> Kilde.K9SAK
+            OVERGANGSSTØNAD -> Kilde.EF
+            PENSJONSINNTEKT -> Kilde.SØKNAD
+            PLEIEPENGER_NÆRSTÅENDE -> Kilde.K9SAK
+            PLEIEPENGER_SYKT_BARN -> Kilde.K9SAK
+            SUPPLERENDESTØNADALDER -> Kilde.SØKNAD
+            SUPPLERENDESTØNADFLYKTNING -> Kilde.SØKNAD
+            SVANGERSKAPSPENGER -> Kilde.FPSAK
+            SYKEPENGER -> Kilde.SØKNAD
+            TILTAKSPENGER -> Kilde.ARENA
+            UFØRETRYGD -> Kilde.PESYS
+            ETTERLØNN -> Kilde.SØKNAD
+            KOMMUNALEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
+            STATLIGEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
+        }
 
     object ALDER : Vilkår() {
         override val tittel: String = "ALDER"

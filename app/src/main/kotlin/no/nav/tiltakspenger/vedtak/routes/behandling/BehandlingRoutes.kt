@@ -10,7 +10,6 @@ import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.harTilgang
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -52,7 +51,7 @@ fun Route.behandlingRoutes(
             status = HttpStatusCode.NotFound,
         )
 
-        if (sak.personopplysninger.isEmpty()) {
+        if (sak.personopplysninger.erTom()) {
             return@get call.respond(
                 message = "Sak mangler personopplysninger",
                 status = HttpStatusCode.NotFound,
@@ -77,7 +76,7 @@ fun Route.behandlingRoutes(
 
         val dto = mapSammenstillingDTO(
             behandling = behandling,
-            personopplysninger = sak.personopplysninger,
+            personopplysninger = sak.personopplysninger.søkere(),
             attesteringer = attesteringer,
         )
         call.respond(status = HttpStatusCode.OK, dto)

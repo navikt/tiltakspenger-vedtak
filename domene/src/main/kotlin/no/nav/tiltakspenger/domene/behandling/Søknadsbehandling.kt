@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.initSaksopplysningerFraSøknad
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.lagSaksopplysningerAvSøknad
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -44,11 +47,12 @@ sealed interface Søknadsbehandling : Behandling {
                 )
             }
 
+            // TODO: Hva er forskjellen på leggTilSøknad og opprettBehandling?
             fun leggTilSøknad(behandling: Søknadsbehandling, søknad: Søknad): Opprettet {
                 val fakta = if (søknad.vurderingsperiode() != behandling.vurderingsperiode) {
-                    lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad)
+                    initSaksopplysningerFraSøknad(søknad) + lagSaksopplysningerAvSøknad(søknad)
                 } else {
-                    lagFaktaAvSøknad(søknad).fold(behandling.saksopplysninger) { acc, saksopplysning ->
+                    lagSaksopplysningerAvSøknad(søknad).fold(behandling.saksopplysninger) { acc, saksopplysning ->
                         acc.oppdaterSaksopplysninger(saksopplysning)
                     }
                 }
@@ -70,7 +74,7 @@ sealed interface Søknadsbehandling : Behandling {
                     sakId = sakId,
                     søknader = listOf(søknad),
                     vurderingsperiode = søknad.vurderingsperiode(),
-                    saksopplysninger = lagFaktaInit(søknad) + lagFaktaAvSøknad(søknad),
+                    saksopplysninger = initSaksopplysningerFraSøknad(søknad) + lagSaksopplysningerAvSøknad(søknad),
                     tiltak = emptyList(),
                     saksbehandler = null,
                 )
@@ -79,13 +83,15 @@ sealed interface Søknadsbehandling : Behandling {
 
         override fun erÅpen() = true
 
+        // TODO: Hva er forskjellen på denne og på leggTilSøknad (og opprettBehandling) lenger opp?
+        // Det virker som om det er for mange innganger til klassen..?
         override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
             return Opprettet(
                 id = id,
                 sakId = sakId,
                 søknader = søknader + søknad,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = lagFaktaAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
+                saksopplysninger = lagSaksopplysningerAvSøknad(søknad).fold(saksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 },
                 tiltak = tiltak,

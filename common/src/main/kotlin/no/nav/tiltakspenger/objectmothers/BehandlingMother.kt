@@ -22,12 +22,11 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): Søknadsbehandling.Opprettet {
-        return Søknadsbehandling.Opprettet.opprettBehandling(
+    ): Søknadsbehandling.Opprettet =
+        Søknadsbehandling.Opprettet.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
         )
-    }
 
     fun saksopplysning(
         fom: LocalDate = 1.januar(2023),
@@ -36,7 +35,7 @@ interface BehandlingMother {
         vilkår: Vilkår = Vilkår.AAP,
         type: TypeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
         saksbehandler: String? = null,
-    ) =
+    ): Saksopplysning =
         Saksopplysning(
             fom = fom,
             tom = tom,
@@ -51,7 +50,7 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): BehandlingVilkårsvurdert.Innvilget {
+    ): BehandlingVilkårsvurdert {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Søknadsbehandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
@@ -63,14 +62,14 @@ interface BehandlingMother {
             ).behandling
         } as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt() as BehandlingVilkårsvurdert.Innvilget
+        return behandling.vurderPåNytt()
     }
 
     fun behandlingVilkårsvurdertAvslag(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): BehandlingVilkårsvurdert.Avslag {
+    ): BehandlingVilkårsvurdert {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
             saksopplysning(
                 fom = 1.januar(2023),
@@ -80,24 +79,17 @@ interface BehandlingMother {
             ),
         ).behandling as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt() as BehandlingVilkårsvurdert.Avslag
+        return behandling.vurderPåNytt()
     }
 
-    fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter.Innvilget {
-        return behandlingVilkårsvurdertInnvilget().copy(
-            saksbehandler = "123",
-        ).tilBeslutting()
-    }
+    fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter =
+        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = "123").tilBeslutting()
 
-    fun behandlingTilBeslutterAvslag(): BehandlingTilBeslutter.Avslag {
-        return behandlingVilkårsvurdertAvslag().copy(
-            saksbehandler = "123",
-        ).tilBeslutting()
-    }
+    fun behandlingTilBeslutterAvslag(): BehandlingTilBeslutter =
+        behandlingVilkårsvurdertAvslag().copy(saksbehandler = "123").tilBeslutting()
 
-    fun behandlingInnvilgetIverksatt(): BehandlingIverksatt.Innvilget {
-        return behandlingTilBeslutterInnvilget().copy(beslutter = "beslutter").iverksett()
-    }
+    fun behandlingInnvilgetIverksatt(): BehandlingIverksatt =
+        behandlingTilBeslutterInnvilget().copy(beslutter = "beslutter").iverksett()
 
     fun vilkårViHenter() = listOf(
         Vilkår.AAP,
@@ -148,7 +140,7 @@ interface BehandlingMother {
         typeNavn: String = "Gruppe AMO",
         typeKode: String = "GRUPPEAMO",
         rettPåTiltakspenger: Boolean = true,
-    ) =
+    ): Tiltak.Gjennomføring =
         Tiltak.Gjennomføring(
             id = id,
             arrangørnavn = arrangørnavn,

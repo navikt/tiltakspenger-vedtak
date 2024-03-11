@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.domene.vilkår
 
 import no.nav.tiltakspenger.domene.behandling.Barnetillegg
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.domene.saksopplysning.lagVurdering
 
 fun Søknadsbehandling.Opprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
     val vurderinger = saksopplysninger().flatMap {
@@ -39,33 +39,14 @@ fun Søknadsbehandling.Opprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
             periodisertliste.slåSammen(nesteDag)
         }
 
-    if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
-        return BehandlingVilkårsvurdert.Manuell(
-            id = id,
-            sakId = sakId,
-            søknader = søknader,
-            vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
-            tiltak = tiltak,
-            vilkårsvurderinger = vurderinger,
-            saksbehandler = saksbehandler,
-            utfallsperioder = utfallsperioder,
-        )
+    val status = if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+        BehandlingStatus.Manuell
+    } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+        BehandlingStatus.Innvilget
+    } else {
+        BehandlingStatus.Avslag
     }
-    if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-        return BehandlingVilkårsvurdert.Innvilget(
-            id = id,
-            sakId = sakId,
-            søknader = søknader,
-            vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
-            tiltak = tiltak,
-            vilkårsvurderinger = vurderinger,
-            saksbehandler = saksbehandler,
-            utfallsperioder = utfallsperioder,
-        )
-    }
-    return BehandlingVilkårsvurdert.Avslag(
+    return BehandlingVilkårsvurdert(
         id = id,
         sakId = sakId,
         søknader = søknader,
@@ -75,6 +56,7 @@ fun Søknadsbehandling.Opprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,
+        status = status,
     )
 }
 

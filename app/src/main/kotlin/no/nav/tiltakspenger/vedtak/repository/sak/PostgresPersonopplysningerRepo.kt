@@ -5,10 +5,8 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -24,7 +22,7 @@ internal class PostgresPersonopplysningerRepo(
 
     override fun hent(
         sakId: SakId,
-    ): List<Personopplysninger> {
+    ): SakPersonopplysninger {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 hent(sakId, txSession)
@@ -35,17 +33,17 @@ internal class PostgresPersonopplysningerRepo(
     fun hent(
         sakId: SakId,
         txSession: TransactionalSession,
-    ): List<Personopplysninger> {
-        val søker = hentPersonopplysningerForInnsending(sakId, txSession) ?: return emptyList()
+    ): SakPersonopplysninger {
+        val søker = hentPersonopplysningerForInnsending(sakId, txSession) ?: return SakPersonopplysninger()
         val barnMedIdent = barnMedIdentDAO.hent(sakId, txSession)
         val barnUtenIdent = barnUtenIdentDAO.hent(sakId, txSession)
 
-        return listOf(søker) + barnMedIdent + barnUtenIdent
+        return SakPersonopplysninger(listOf(søker) + barnMedIdent + barnUtenIdent)
     }
 
     fun lagre(
         sakId: SakId,
-        personopplysninger: List<Personopplysninger>,
+        personopplysninger: SakPersonopplysninger,
         txSession: TransactionalSession,
     ) {
         log.info { "Sletter personopplysninger før lagring" }
@@ -54,17 +52,9 @@ internal class PostgresPersonopplysningerRepo(
         barnUtenIdentDAO.slett(sakId, txSession)
 
         log.info { "Lagre personopplysninger" }
-        personopplysninger.forEach {
-            when (it) {
-                is PersonopplysningerSøker -> lagre(sakId, it, txSession)
-                is PersonopplysningerBarnMedIdent -> barnMedIdentDAO.lagre(sakId, it, txSession)
-                is PersonopplysningerBarnUtenIdent -> barnUtenIdentDAO.lagre(
-                    sakId,
-                    it,
-                    txSession,
-                )
-            }
-        }
+        personopplysninger.søkerOrNull()?.let { lagre(sakId, it, txSession) }
+        personopplysninger.barnMedIdent().forEach { barnMedIdentDAO.lagre(sakId, it, txSession) }
+        personopplysninger.barnUtenIdent().forEach { barnUtenIdentDAO.lagre(sakId, it, txSession) }
     }
 
     private fun hentPersonopplysningerForInnsending(sakId: SakId, txSession: TransactionalSession) =

@@ -82,6 +82,8 @@ data class SøknadsTiltak(
     val typeNavn: String,
 )
 
+fun List<Søknad>.siste() = this.maxBy { it.opprettet }.copy(opprettet = this.minBy { it.opprettet }.opprettet)
+
 sealed class Barnetillegg {
     abstract val oppholderSegIEØS: Søknad.JaNeiSpm
     abstract val fornavn: String?

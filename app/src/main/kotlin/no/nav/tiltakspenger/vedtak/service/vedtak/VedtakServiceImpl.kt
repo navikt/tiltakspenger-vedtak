@@ -4,7 +4,7 @@ import kotliquery.TransactionalSession
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.personopplysninger.søker
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -38,12 +38,12 @@ class VedtakServiceImpl(
             sakId = behandling.sakId,
             behandling = behandling,
             vedtaksdato = LocalDateTime.now(),
-            vedtaksType = if (behandling is BehandlingIverksatt.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
+            vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
             saksopplysninger = behandling.saksopplysninger(),
             vurderinger = behandling.vilkårsvurderinger,
-            saksbehandler = behandling.saksbehandler!!,
+            saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,
         )
 
