@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
