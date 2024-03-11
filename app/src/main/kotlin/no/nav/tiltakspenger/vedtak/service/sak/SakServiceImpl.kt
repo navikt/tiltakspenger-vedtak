@@ -1,10 +1,16 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Personopplysninger
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.erLik
+import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.domene.personopplysninger.barnMedIdent
+import no.nav.tiltakspenger.domene.personopplysninger.erLik
+import no.nav.tiltakspenger.domene.personopplysninger.søker
+import no.nav.tiltakspenger.domene.personopplysninger.søkerMedIdent
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -43,20 +49,19 @@ class SakServiceImpl(
 
         val personopplysningerMedSkjerming = personopplysninger.map {
             when (it) {
-                is Personopplysninger.BarnMedIdent -> it.copy(
-                    skjermet = sak.personopplysninger.filterIsInstance<Personopplysninger.BarnMedIdent>()
+                is PersonopplysningerBarnMedIdent -> it.copy(
+                    skjermet = sak.personopplysninger.barnMedIdent()
                         .firstOrNull { barn -> barn.ident == it.ident }?.skjermet,
                 )
 
-                is Personopplysninger.BarnUtenIdent -> it
-                is Personopplysninger.Søker -> it.copy(
-                    skjermet = sak.personopplysninger.filterIsInstance<Personopplysninger.Søker>()
-                        .firstOrNull { søker -> søker.ident == it.ident }?.skjermet,
+                is PersonopplysningerBarnUtenIdent -> it
+                is PersonopplysningerSøker -> it.copy(
+                    skjermet = sak.personopplysninger.søkerMedIdent(it.ident)?.skjermet,
                 )
             }
         }
 
-        val fdato = personopplysninger.filterIsInstance<Personopplysninger.Søker>().first().fødselsdato
+        val fdato = personopplysninger.søker().fødselsdato
         sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {
                 behandlingService.leggTilSaksopplysning(behandling.id, it)
@@ -82,13 +87,13 @@ class SakServiceImpl(
         val oppdatertSak = sak.copy(
             personopplysninger = sak.personopplysninger.map {
                 when (it) {
-                    is Personopplysninger.BarnMedIdent -> it.copy(
+                    is PersonopplysningerBarnMedIdent -> it.copy(
                         skjermet = skjerming
                             .barn.firstOrNull { barn -> barn.ident == it.ident }?.skjerming,
                     )
 
-                    is Personopplysninger.BarnUtenIdent -> it
-                    is Personopplysninger.Søker -> it.copy(
+                    is PersonopplysningerBarnUtenIdent -> it
+                    is PersonopplysningerSøker -> it.copy(
                         skjermet = skjerming.søker.skjerming,
                     )
                 }
