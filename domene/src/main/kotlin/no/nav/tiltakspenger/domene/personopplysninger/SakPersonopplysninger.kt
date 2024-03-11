@@ -49,7 +49,7 @@ data class SakPersonopplysninger(
             }
         }
 
-    fun setSkjermingForPerson(ident: String, erSkjermet: Boolean?): SakPersonopplysninger {
+    fun personopplysningerMedSkjermingForIdent(ident: String, erSkjermet: Boolean?): SakPersonopplysninger {
         return SakPersonopplysninger(
             liste.map { personopplysninger ->
                 when (personopplysninger) {
