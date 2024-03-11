@@ -33,7 +33,7 @@ class UtfallsperiodeDAO {
             queryOf(
                 oppdaterVedtakId,
                 mapOf(
-                    "id" to behandlingId.toString(),
+                    "behandlingId" to behandlingId.toString(),
                     "vedtakId" to vedtakId.toString(),
                 ),
             ).asUpdate,
@@ -84,7 +84,7 @@ class UtfallsperiodeDAO {
     private val oppdaterVedtakId = """
         update utfallsperiode set 
             vedtak_id = :vedtakId
-        where id = :id
+        where behandling_id = :behandlingId
     """.trimIndent()
 
     @Language("SQL")

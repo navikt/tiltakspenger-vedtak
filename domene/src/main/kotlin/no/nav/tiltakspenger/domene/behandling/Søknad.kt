@@ -89,13 +89,19 @@ sealed class Barnetillegg {
     abstract val etternavn: String?
     abstract val fødselsdato: LocalDate
 
+    abstract fun under16ForDato(dato: LocalDate): Boolean
+
     data class FraPdl(
         override val oppholderSegIEØS: Søknad.JaNeiSpm,
         override val fornavn: String?,
         override val mellomnavn: String?,
         override val etternavn: String?,
         override val fødselsdato: LocalDate,
-    ) : Barnetillegg()
+    ) : Barnetillegg() {
+        override fun under16ForDato(dato: LocalDate): Boolean {
+            return fødselsdato.plusYears(16) > dato
+        }
+    }
 
     data class Manuell(
         override val oppholderSegIEØS: Søknad.JaNeiSpm,
@@ -103,5 +109,9 @@ sealed class Barnetillegg {
         override val mellomnavn: String?,
         override val etternavn: String,
         override val fødselsdato: LocalDate,
-    ) : Barnetillegg()
+    ) : Barnetillegg() {
+        override fun under16ForDato(dato: LocalDate): Boolean {
+            return fødselsdato.plusYears(16) > dato
+        }
+    }
 }
