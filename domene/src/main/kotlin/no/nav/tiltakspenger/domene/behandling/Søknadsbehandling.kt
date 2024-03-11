@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 
 sealed interface Søknadsbehandling : Behandling {
     val søknader: List<Søknad>
@@ -153,9 +154,11 @@ sealed interface Søknadsbehandling : Behandling {
                 saksbehandler = saksbehandler,
             )
 
-        override fun avbrytBehandling(): Søknadsbehandling =
-            this.copy(
+        override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+            check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
+            return this.copy(
                 saksbehandler = null,
             )
+        }
     }
 }

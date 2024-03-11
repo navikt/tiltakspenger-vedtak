@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Søknadsbehandling,
@@ -47,7 +48,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke starte en behandling med denne statusen")
     }
 
-    fun avbrytBehandling(): Søknadsbehandling {
+    fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
         throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 }

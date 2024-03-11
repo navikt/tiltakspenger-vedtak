@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface BehandlingService {
     fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling?
@@ -12,9 +13,15 @@ interface BehandlingService {
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
     fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String)
-    fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, beslutter: String, begrunnelse: String?, isAdmin: Boolean)
+    fun sendTilbakeTilSaksbehandler(
+        behandlingId: BehandlingId,
+        beslutter: String,
+        begrunnelse: String?,
+        isAdmin: Boolean,
+    )
+
     suspend fun iverksett(behandlingId: BehandlingId, saksbehandler: String)
     fun startBehandling(behandlingId: BehandlingId, saksbehandler: String)
-    fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String, isAdmin: Boolean)
+    fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler)
     fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling>
 }

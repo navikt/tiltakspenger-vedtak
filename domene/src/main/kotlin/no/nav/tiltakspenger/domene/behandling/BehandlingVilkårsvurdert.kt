@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -106,8 +107,10 @@ data class BehandlingVilkårsvurdert(
     override fun startBehandling(saksbehandler: String): Søknadsbehandling =
         this.copy(saksbehandler = saksbehandler)
 
-    override fun avbrytBehandling(): Søknadsbehandling =
-        this.copy(saksbehandler = null)
+    override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+        check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
+        return this.copy(saksbehandler = null)
+    }
 
     companion object {
         fun fromDb(
