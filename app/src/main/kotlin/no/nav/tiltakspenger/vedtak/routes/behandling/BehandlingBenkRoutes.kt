@@ -9,7 +9,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SøkerId
@@ -74,7 +74,7 @@ fun Route.behandlingBenkRoutes(
     }
 }
 
-fun List<Søknadsbehandling>.mapBehandlinger(): List<BehandlingDTO> =
+fun List<Førstegangsbehandling>.mapBehandlinger(): List<BehandlingDTO> =
     this.map {
         BehandlingDTO(
             id = it.id.toString(),

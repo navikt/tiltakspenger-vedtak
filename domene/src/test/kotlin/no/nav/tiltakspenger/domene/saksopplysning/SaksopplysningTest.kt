@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.domene.saksopplysning
 
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
@@ -42,7 +42,7 @@ internal class SaksopplysningTest {
             )
 
         val behandling =
-            Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+            BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
@@ -69,7 +69,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
@@ -97,7 +97,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 

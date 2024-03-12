@@ -24,14 +24,10 @@ data class BehandlingVilkårsvurdert(
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
     val utfallsperioder: List<Utfallsperiode>,
-) : Søknadsbehandling {
-
-    override fun søknad(): Søknad {
-        return søknader.siste()
-    }
+) : Førstegangsbehandling {
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet(
+        return BehandlingOpprettet(
             id = id,
             sakId = sakId,
             søknader = søknader,
@@ -84,7 +80,7 @@ data class BehandlingVilkårsvurdert(
     override fun erÅpen() = true
 
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet.leggTilSøknad(
+        return BehandlingOpprettet.leggTilSøknad(
             behandling = this,
             søknad = søknad,
         ).vilkårsvurder()
@@ -105,13 +101,13 @@ data class BehandlingVilkårsvurdert(
         }
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
+    override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun startBehandling(saksbehandler: String): Søknadsbehandling =
+    override fun startBehandling(saksbehandler: String): Førstegangsbehandling =
         this.copy(saksbehandler = saksbehandler)
 
-    override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+    override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }

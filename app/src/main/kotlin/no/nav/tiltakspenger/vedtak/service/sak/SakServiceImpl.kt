@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.service.sak
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
@@ -47,7 +47,7 @@ class SakServiceImpl(
             nyePersonopplysninger.medSkjermingFra(sak.personopplysninger.identerOgSkjerming())
 
         val fdato = nyePersonopplysninger.søker().fødselsdato
-        sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach { behandling ->
+        sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {
                 behandlingService.leggTilSaksopplysning(behandling.id, it)
             }
