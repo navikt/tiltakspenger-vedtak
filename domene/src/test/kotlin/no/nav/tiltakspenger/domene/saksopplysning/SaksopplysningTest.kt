@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.februar

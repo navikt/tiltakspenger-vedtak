@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 

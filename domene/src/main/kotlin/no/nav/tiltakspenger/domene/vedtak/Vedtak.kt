@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.domene.vedtak
 
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.felles.Periode
@@ -14,9 +15,9 @@ data class Vedtak(
     val behandling: BehandlingIverksatt,
     val vedtaksdato: LocalDateTime,
     val vedtaksType: VedtaksType,
-    // de under kan hentes fra behandling men kanskje kjekt å ha her også?
     val periode: Periode,
     val saksopplysninger: List<Saksopplysning>,
+    val utfallsperioder: List<Utfallsperiode>,
     val vurderinger: List<Vurdering>,
     val saksbehandler: String,
     val beslutter: String,

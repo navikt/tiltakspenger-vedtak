@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -11,8 +12,18 @@ import no.nav.tiltakspenger.felles.SakId
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
-    val vilkårsvurderinger: List<Vurdering>
+data class BehandlingVilkårsvurdert(
+    override val id: BehandlingId,
+    override val sakId: SakId,
+    override val søknader: List<Søknad>,
+    override val vurderingsperiode: Periode,
+    override val saksopplysninger: List<Saksopplysning>,
+    override val tiltak: List<Tiltak>,
+    override val saksbehandler: String?,
+    val status: BehandlingStatus,
+    val vilkårsvurderinger: List<Vurdering>,
+    val utfallsperioder: List<Utfallsperiode>,
+) : Søknadsbehandling {
 
     override fun søknad(): Søknad {
         return søknader.siste()
@@ -30,6 +41,78 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
         ).vilkårsvurder()
     }
 
+    fun iverksett(): BehandlingIverksatt {
+        return when (status) {
+            BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")
+            else ->
+                BehandlingIverksatt(
+                    id = id,
+                    sakId = sakId,
+                    søknader = søknader,
+                    vurderingsperiode = vurderingsperiode,
+                    saksopplysninger = saksopplysninger,
+                    tiltak = tiltak,
+                    vilkårsvurderinger = vilkårsvurderinger,
+                    utfallsperioder = utfallsperioder,
+                    saksbehandler = "Automatisk",
+                    beslutter = "Automatisk",
+                    status = status,
+                )
+        }
+    }
+
+    fun tilBeslutting(): BehandlingTilBeslutter {
+        return when (status) {
+            BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
+            else -> BehandlingTilBeslutter(
+                id = id,
+                sakId = sakId,
+                søknader = søknader,
+                vurderingsperiode = vurderingsperiode,
+                saksopplysninger = saksopplysninger,
+                tiltak = tiltak,
+                vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
+                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                beslutter = null,
+                status = status,
+            )
+        }
+    }
+
+    override fun erÅpen() = true
+
+    override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+        return Søknadsbehandling.Opprettet.leggTilSøknad(
+            behandling = this,
+            søknad = søknad,
+        ).vilkårsvurder()
+    }
+
+    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+            LeggTilSaksopplysningRespons(
+                behandling = this,
+                erEndret = false,
+            )
+        } else {
+            LeggTilSaksopplysningRespons(
+                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
+                erEndret = true,
+            )
+        }
+    }
+
+    override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
+        this.copy(tiltak = tiltak)
+
+    override fun startBehandling(saksbehandler: String): Søknadsbehandling =
+        this.copy(saksbehandler = saksbehandler)
+
+    override fun avbrytBehandling(): Søknadsbehandling =
+        this.copy(saksbehandler = null)
+
     companion object {
         fun fromDb(
             id: BehandlingId,
@@ -41,58 +124,15 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String?,
+            utfallsperioder: List<Utfallsperiode>,
         ): BehandlingVilkårsvurdert {
-            when (status) {
-                "Innvilget" -> return Innvilget(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    saksbehandler = saksbehandler,
-                )
-
-                "Avslag" -> return Avslag(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    saksbehandler = saksbehandler,
-                )
-
-                "Manuell" -> return Manuell(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    saksbehandler = saksbehandler,
-                )
-
+            val behandlingVilkårsvurdertStatus = when (status) {
+                "Innvilget" -> BehandlingStatus.Innvilget
+                "Avslag" -> BehandlingStatus.Avslag
+                "Manuell" -> BehandlingStatus.Manuell
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
             }
-        }
-    }
-
-    data class Innvilget(
-        override val id: BehandlingId,
-        override val sakId: SakId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val tiltak: List<Tiltak>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: String?,
-    ) : BehandlingVilkårsvurdert {
-        fun iverksett(): BehandlingIverksatt.Innvilget {
-            return BehandlingIverksatt.Innvilget(
+            return BehandlingVilkårsvurdert(
                 id = id,
                 sakId = sakId,
                 søknader = søknader,
@@ -100,191 +140,10 @@ sealed interface BehandlingVilkårsvurdert : Søknadsbehandling {
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = "Automatisk",
-                beslutter = "Automatisk",
-            )
-        }
-
-        fun tilBeslutting(): BehandlingTilBeslutter.Innvilget {
-            return BehandlingTilBeslutter.Innvilget(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
-                beslutter = null,
-            )
-        }
-
-        override fun erÅpen() = true
-
-        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet.leggTilSøknad(
-                behandling = this,
-                søknad = søknad,
-            ).vilkårsvurder()
-        }
-
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-                LeggTilSaksopplysningRespons(
-                    behandling = this,
-                    erEndret = false,
-                )
-            } else {
-                LeggTilSaksopplysningRespons(
-                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                    erEndret = true,
-                )
-            }
-        }
-
-        override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
-            this.copy(
-                tiltak = tiltak,
-            )
-
-        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-            this.copy(
                 saksbehandler = saksbehandler,
-            )
-
-        override fun avbrytBehandling(): Søknadsbehandling =
-            this.copy(
-                saksbehandler = null,
-            )
-    }
-
-    data class Avslag(
-        override val id: BehandlingId,
-        override val sakId: SakId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val tiltak: List<Tiltak>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: String?,
-    ) : BehandlingVilkårsvurdert {
-        fun iverksett(): BehandlingIverksatt.Avslag {
-            return BehandlingIverksatt.Avslag(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = "Automatisk",
-                beslutter = "Automatisk",
+                utfallsperioder = utfallsperioder,
+                status = behandlingVilkårsvurdertStatus,
             )
         }
-
-        fun tilBeslutting(): BehandlingTilBeslutter.Avslag {
-            return BehandlingTilBeslutter.Avslag(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
-                beslutter = null,
-            )
-        }
-
-        override fun erÅpen() = true
-
-        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet.leggTilSøknad(
-                behandling = this,
-                søknad = søknad,
-            ).vilkårsvurder()
-        }
-
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-                LeggTilSaksopplysningRespons(
-                    behandling = this,
-                    erEndret = false,
-                )
-            } else {
-                LeggTilSaksopplysningRespons(
-                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                    erEndret = true,
-                )
-            }
-        }
-
-        override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
-            this.copy(
-                tiltak = tiltak,
-            )
-
-        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-            this.copy(
-                saksbehandler = saksbehandler,
-            )
-
-        override fun avbrytBehandling(): Søknadsbehandling =
-            this.copy(
-                saksbehandler = null,
-            )
-    }
-
-    data class Manuell(
-        override val id: BehandlingId,
-        override val sakId: SakId,
-        override val søknader: List<Søknad>,
-        override val vurderingsperiode: Periode,
-        override val saksopplysninger: List<Saksopplysning>,
-        override val tiltak: List<Tiltak>,
-        override val vilkårsvurderinger: List<Vurdering>,
-        override val saksbehandler: String?,
-    ) : BehandlingVilkårsvurdert {
-
-        override fun erÅpen() = true
-
-        override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-            return Søknadsbehandling.Opprettet.leggTilSøknad(
-                behandling = this,
-                søknad = søknad,
-            ).vilkårsvurder()
-        }
-
-        override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-            val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-            return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-                LeggTilSaksopplysningRespons(
-                    behandling = this,
-                    erEndret = false,
-                )
-            } else {
-                LeggTilSaksopplysningRespons(
-                    behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                    erEndret = true,
-                )
-            }
-        }
-
-        override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
-            this.copy(
-                tiltak = tiltak,
-            )
-
-        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-            this.copy(
-                saksbehandler = saksbehandler,
-            )
-
-        override fun avbrytBehandling(): Søknadsbehandling =
-            this.copy(
-                saksbehandler = null,
-            )
     }
 }

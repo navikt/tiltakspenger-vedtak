@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -28,6 +29,7 @@ internal class PostgresBehandlingRepo(
     private val vurderingRepo: VurderingRepo = VurderingRepo(),
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
+    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : BehandlingRepo {
     override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -132,14 +134,17 @@ internal class PostgresBehandlingRepo(
             when (behandling) {
                 is BehandlingIverksatt -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingVilkårsvurdert -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingTilBeslutter -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is Søknadsbehandling.Opprettet -> {}
@@ -237,6 +242,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 status = status,
             )
@@ -249,6 +255,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
                 beslutter = beslutter,
@@ -262,6 +269,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                 status = status,
                 saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
                 beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
@@ -279,16 +287,17 @@ internal class PostgresBehandlingRepo(
             is BehandlingIverksatt -> "Iverksatt"
         }
 
-    private fun finnStatus(behandling: Søknadsbehandling) =
-        when (behandling) {
-            is Søknadsbehandling.Opprettet -> "Opprettet"
-            is BehandlingVilkårsvurdert.Avslag -> "Avslag"
-            is BehandlingVilkårsvurdert.Innvilget -> "Innvilget"
-            is BehandlingVilkårsvurdert.Manuell -> "Manuell"
-            is BehandlingIverksatt.Avslag -> "Avslag"
-            is BehandlingIverksatt.Innvilget -> "Innvilget"
-            is BehandlingTilBeslutter.Avslag -> "Avslag"
-            is BehandlingTilBeslutter.Innvilget -> "Innvilget"
+    private fun finnStatus(behandling: Søknadsbehandling): String =
+        when {
+            behandling is Søknadsbehandling.Opprettet -> "Opprettet"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Manuell -> "Manuell"
+            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"
+            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            else -> throw IllegalStateException("Finner ikke status")
         }
 
     private val sqlHentSistEndret = """

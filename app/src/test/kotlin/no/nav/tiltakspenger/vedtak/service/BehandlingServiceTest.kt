@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april

@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.service.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import java.time.LocalDate
@@ -19,7 +20,21 @@ data class MeldekortGrunnlagDTO(
     val vurderingsperiode: PeriodeDTO,
     val tiltak: List<TiltakDTO>,
     val personopplysninger: PersonopplysningerDTO,
+    val utfallsperioder: List<UtfallsperiodeDTO>,
 )
+
+data class UtfallsperiodeDTO(
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val antallBarn: Int,
+    val utfall: UtfallForPeriodeDTO,
+)
+
+enum class UtfallForPeriodeDTO {
+    GIR_RETT_TILTAKSPENGER,
+    GIR_IKKE_RETT_TILTAKSPENGER,
+    KREVER_MANUELL_VURDERING,
+}
 
 data class PersonopplysningerDTO(
     val fornavn: String,
@@ -77,6 +92,19 @@ private fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
             etternavn = vedtak.behandling.søknad().personopplysninger.etternavn,
             ident = vedtak.behandling.søknad().personopplysninger.ident,
         ),
+        utfallsperioder = vedtak.utfallsperioder.map {
+            UtfallsperiodeDTO(
+                fom = it.fom,
+                tom = it.tom,
+                antallBarn = it.antallBarn,
+                utfall = when (it.utfall) {
+                    UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
+                    UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
+                    UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING
+                },
+
+            )
+        },
     )
 
 fun mapTiltakDTO(vedtak: Vedtak) =
