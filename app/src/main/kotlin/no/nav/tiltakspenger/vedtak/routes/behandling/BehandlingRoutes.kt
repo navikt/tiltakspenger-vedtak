@@ -152,4 +152,8 @@ fun Route.behandlingRoutes(
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
+
+    post("$behandlingPath/opprettrevurdering{behandlingId}") {
+        call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
 }
