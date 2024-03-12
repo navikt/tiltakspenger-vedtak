@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.domene.vilkår
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 
-
 interface BehandletVilkår {
     val vurderingsperiode: Periode
     val vilkår: Vilkår
@@ -40,7 +39,7 @@ class InnhentetSaksopplysningerForVilkår(
             vurderingsperiode = vurderingsperiode,
             vilkår = vilkår,
             saksopplysninger = saksopplysninger,
-            avklartFakta = saksopplysninger.first(), //TODO Vi har noen algoritmer for å prioritere SBH over annet
+            avklartFakta = saksopplysninger.first(), // TODO Vi har noen algoritmer for å prioritere SBH over annet
         )
     }
 }
