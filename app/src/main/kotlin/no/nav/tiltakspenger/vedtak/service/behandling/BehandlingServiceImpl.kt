@@ -5,6 +5,7 @@ import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -40,14 +41,13 @@ class BehandlingServiceImpl(
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandling(behandlingId)?.leggTilSaksopplysning(saksopplysning)
-            ?: throw IllegalStateException("Kunne ikke legge til saksopplysning da vi ikke fant behandling $behandlingId")
+        val behandlingRespons = hentBehandlingEllerKastException(behandlingId)
+            .leggTilSaksopplysning(saksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw IllegalStateException("Kunne ikke oppdatere tiltak da vi ikke fant behandling $behandlingId")
+        val behandling = hentBehandlingEllerKastException(behandlingId)
         val oppdatertBehandling = behandling.oppdaterTiltak(
             tiltak.filter {
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
@@ -57,8 +57,7 @@ class BehandlingServiceImpl(
     }
 
     override fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        val behandling = hentBehandlingEllerKastException(behandlingId)
         check(saksbehandler == behandling.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         if (behandling is BehandlingVilkårsvurdert) {
             behandlingRepo.lagre(behandling.tilBeslutting())
@@ -71,8 +70,7 @@ class BehandlingServiceImpl(
         begrunnelse: String?,
         isAdmin: Boolean,
     ) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        val behandling = hentBehandlingEllerKastException(behandlingId)
 
         checkNotNull(begrunnelse) { "Begrunnelse må oppgis når behandling sendes tilbake til saksbehandler" }
         val attestering = Attestering(
@@ -98,8 +96,7 @@ class BehandlingServiceImpl(
     }
 
     override suspend fun iverksett(behandlingId: BehandlingId, saksbehandler: String) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        val behandling = hentBehandlingEllerKastException(behandlingId)
 
         if (behandling is BehandlingTilBeslutter) {
             // TODO: Har jeg gjort en glipp, eller var denne checken alltid overflødig?
@@ -127,8 +124,7 @@ class BehandlingServiceImpl(
     }
 
     override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+        val behandling = hentBehandlingEllerKastException(behandlingId)
 
         if (behandling.erÅpen()) {
             check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
@@ -144,13 +140,15 @@ class BehandlingServiceImpl(
     }
 
     override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler) {
-        val behandling = hentBehandling(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
-
+        val behandling = hentBehandlingEllerKastException(behandlingId)
         behandlingRepo.lagre(behandling.avbrytBehandling(saksbehandler))
     }
 
     override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
     }
+
+    private fun hentBehandlingEllerKastException(behandlingId: BehandlingId): Behandling =
+        hentBehandling(behandlingId)
+            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 }
