@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
@@ -113,7 +114,6 @@ class BehandlingServiceImpl(
             begrunnelse = null,
             beslutter = saksbehandler,
         )
-
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 behandlingRepo.lagre(iverksattBehandling, txSession)
@@ -139,11 +139,9 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(behandling.startBehandling(saksbehandler))
     }
 
-    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: String, isAdmin: Boolean) {
+    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler) {
         val behandling = hentBehandlingEllerKastException(behandlingId)
-
-        check(behandling.saksbehandler == saksbehandler || isAdmin) { "Kan ikke avbryte en behandling som ikke er din" }
-        behandlingRepo.lagre(behandling.avbrytBehandling())
+        behandlingRepo.lagre(behandling.avbrytBehandling(saksbehandler))
     }
 
     override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
