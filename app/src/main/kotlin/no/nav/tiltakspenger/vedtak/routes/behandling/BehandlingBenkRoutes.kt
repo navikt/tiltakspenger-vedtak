@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -22,7 +21,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
-    personopplysningService: PersonopplysningService,
     søkerService: SøkerService,
 ) {
     get(behandlingerPath) {
@@ -31,8 +29,7 @@ fun Route.behandlingBenkRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        val behandlinger = behandlingService.hentAlleBehandlinger()
-            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
+        val behandlinger = behandlingService.hentAlleBehandlinger(saksbehandler)
             .mapBehandlinger()
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
@@ -47,7 +44,7 @@ fun Route.behandlingBenkRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.startBehandling(behandlingId, saksbehandler) // Bør kanskje sjekke rolle dypere
+        behandlingService.taBehandling(behandlingId, saksbehandler) // Bør kanskje sjekke rolle dypere
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }

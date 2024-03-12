@@ -123,7 +123,7 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        behandlingService.hentBehandling(behandlingId)?.let {
+        behandlingService.hentBehandlingOrNull(behandlingId)?.let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
@@ -145,7 +145,7 @@ fun Route.behandlingRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.avbrytBehandling(behandlingId, saksbehandler)
+        behandlingService.frataBehandling(behandlingId, saksbehandler)
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }

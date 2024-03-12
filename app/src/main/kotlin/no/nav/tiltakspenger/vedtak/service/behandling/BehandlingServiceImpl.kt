@@ -31,7 +31,7 @@ class BehandlingServiceImpl(
     private val personopplysningService: PersonopplysningService,
 ) : BehandlingService {
 
-    override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
+    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Søknadsbehandling? {
         return behandlingRepo.hent(behandlingId)
     }
 
@@ -39,18 +39,19 @@ class BehandlingServiceImpl(
         return behandlingRepo.hentForJournalpostId(journalpostId)
     }
 
-    override fun hentAlleBehandlinger(): List<Søknadsbehandling> {
+    override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Søknadsbehandling> {
         return behandlingRepo.hentAlle()
+            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandlingEllerKastException(behandlingId)
+        val behandlingRespons = hentBehandling(behandlingId)
             .leggTilSaksopplysning(saksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+        val behandling = hentBehandling(behandlingId)
         val oppdatertBehandling = behandling.oppdaterTiltak(
             tiltak.filter {
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
@@ -59,9 +60,12 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(oppdatertBehandling)
     }
 
-    override fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
+    override fun sendTilBeslutter(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    ) {
         check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+        val behandling = hentBehandling(behandlingId)
         if (behandling is BehandlingVilkårsvurdert) {
             behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))
         }
@@ -72,7 +76,7 @@ class BehandlingServiceImpl(
         utøvendeBeslutter: Saksbehandler,
         begrunnelse: String?,
     ) {
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+        val behandling = hentBehandling(behandlingId)
 
         checkNotNull(begrunnelse) { "Begrunnelse må oppgis når behandling sendes tilbake til saksbehandler" }
         val attestering = Attestering(
@@ -97,7 +101,7 @@ class BehandlingServiceImpl(
     }
 
     override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+        val behandling = hentBehandling(behandlingId)
 
         val iverksattBehandling = when (behandling) {
             is BehandlingTilBeslutter -> behandling.iverksett(utøvendeBeslutter)
@@ -118,15 +122,14 @@ class BehandlingServiceImpl(
         }
     }
 
-    // TODO: Burde denne hatt et annet navn? AssignBehandling eller noe sånt?
     // TODO: Burde det vært to ulike funksjoner avhengig av om det er saksbehandler eller beslutter det gjelder?
-    override fun startBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+    override fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
+        val behandling = hentBehandling(behandlingId)
         behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
     }
 
-    override fun avbrytBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
-        val behandling = hentBehandlingEllerKastException(behandlingId)
+    override fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
+        val behandling = hentBehandling(behandlingId)
         behandlingRepo.lagre(behandling.avbrytBehandling(utøvendeSaksbehandler))
     }
 
@@ -135,7 +138,7 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
 
-    private fun hentBehandlingEllerKastException(behandlingId: BehandlingId): Behandling =
-        hentBehandling(behandlingId)
+    private fun hentBehandling(behandlingId: BehandlingId): Behandling =
+        hentBehandlingOrNull(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 }

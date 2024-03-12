@@ -20,7 +20,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedAdmin
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -63,7 +62,6 @@ class BehandlingBeslutterRoutesTest {
                     behandlingBenkRoutes(
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
-                        personopplysningService,
                         søkerService,
                     )
                 }
