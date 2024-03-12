@@ -54,6 +54,8 @@ interface BehandlingMother {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Søknadsbehandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
+                    fom = periode.fra,
+                    tom = periode.til,
                     vilkår = vilkår,
                     type = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 ),
@@ -69,7 +71,12 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
-            saksopplysning(vilkår = Vilkår.KVP, type = TypeSaksopplysning.HAR_YTELSE),
+            saksopplysning(
+                fom = 1.januar(2023),
+                tom = 31.mars(2023),
+                vilkår = Vilkår.KVP,
+                type = TypeSaksopplysning.HAR_YTELSE,
+            ),
         ).behandling as BehandlingVilkårsvurdert
 
         return behandling.vurderPåNytt()

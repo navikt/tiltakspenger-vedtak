@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.domene.behandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -16,6 +17,7 @@ data class BehandlingIverksatt(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     val vilkårsvurderinger: List<Vurdering>,
+    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String,
     val status: BehandlingStatus,
 ) : Søknadsbehandling {
@@ -60,6 +62,7 @@ data class BehandlingIverksatt(
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
             vilkårsvurderinger: List<Vurdering>,
+            utfallsperioder: List<Utfallsperiode>,
             status: String,
             saksbehandler: String,
             beslutter: String,
@@ -77,6 +80,7 @@ data class BehandlingIverksatt(
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
                 status = behandlingStatus,

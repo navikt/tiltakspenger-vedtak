@@ -16,6 +16,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -24,12 +25,25 @@ data class UtbetalingDTO(
     val sakId: String,
     val utløsendeId: String,
     val ident: String,
-    val antallBarn: Int,
     val brukerNavkontor: String,
+    val utfallsperioder: List<UtfallsperiodeDTO>,
     val vedtaktidspunkt: LocalDateTime,
     val saksbehandler: String,
     val beslutter: String,
 )
+
+data class UtfallsperiodeDTO(
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val antallBarn: Int,
+    val utfall: UtfallForPeriodeDTO,
+)
+
+enum class UtfallForPeriodeDTO {
+    GIR_RETT_TILTAKSPENGER,
+    GIR_IKKE_RETT_TILTAKSPENGER,
+    KREVER_MANUELL_VURDERING,
+}
 
 class UtbetalingClient(
     private val config: Configuration.ClientConfig = Configuration.utbetalingClientConfig(),

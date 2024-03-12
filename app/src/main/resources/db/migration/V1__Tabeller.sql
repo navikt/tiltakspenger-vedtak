@@ -57,6 +57,17 @@ CREATE TABLE vedtak
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE utfallsperiode
+(
+    id                  VARCHAR PRIMARY KEY,
+    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
+    vedtak_id           VARCHAR                  REFERENCES vedtak (id),
+    fom                 DATE                     NOT NULL,
+    tom                 DATE                     NOT NULL,
+    antall_barn         INT                      NOT NULL,
+    utfall              VARCHAR                  NOT NULL
+);
+
 CREATE TABLE saksopplysning
 (
     id                      VARCHAR                  PRIMARY KEY,

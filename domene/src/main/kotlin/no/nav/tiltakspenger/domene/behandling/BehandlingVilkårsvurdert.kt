@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -21,6 +22,7 @@ data class BehandlingVilkårsvurdert(
     override val saksbehandler: String?,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
+    val utfallsperioder: List<Utfallsperiode>,
 ) : Søknadsbehandling {
 
     override fun søknad(): Søknad {
@@ -51,6 +53,7 @@ data class BehandlingVilkårsvurdert(
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
+                    utfallsperioder = utfallsperioder,
                     saksbehandler = "Automatisk",
                     beslutter = "Automatisk",
                     status = status,
@@ -69,6 +72,7 @@ data class BehandlingVilkårsvurdert(
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
                 beslutter = null,
                 status = status,
@@ -120,6 +124,7 @@ data class BehandlingVilkårsvurdert(
             vilkårsvurderinger: List<Vurdering>,
             status: String,
             saksbehandler: String?,
+            utfallsperioder: List<Utfallsperiode>,
         ): BehandlingVilkårsvurdert {
             val behandlingVilkårsvurdertStatus = when (status) {
                 "Innvilget" -> BehandlingStatus.Innvilget
@@ -136,6 +141,7 @@ data class BehandlingVilkårsvurdert(
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 saksbehandler = saksbehandler,
+                utfallsperioder = utfallsperioder,
                 status = behandlingVilkårsvurdertStatus,
             )
         }

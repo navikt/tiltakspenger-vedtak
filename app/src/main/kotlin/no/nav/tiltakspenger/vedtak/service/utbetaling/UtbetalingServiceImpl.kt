@@ -1,9 +1,11 @@
 package no.nav.tiltakspenger.vedtak.service.utbetaling
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
+import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingDTO
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 
 class UtbetalingServiceImpl(
@@ -20,7 +22,18 @@ class UtbetalingServiceImpl(
             sakId = sak.id.toString(),
             utløsendeId = vedtak.behandling.id.toString(),
             ident = sak.ident,
-            antallBarn = vedtak.behandling.søknad().barnetillegg.count { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja },
+            utfallsperioder = vedtak.utfallsperioder.map {
+                UtfallsperiodeDTO(
+                    fom = it.fom,
+                    tom = it.tom,
+                    antallBarn = it.antallBarn,
+                    utfall = when (it.utfall) {
+                        UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
+                        UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
+                        UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING
+                    },
+                )
+            },
             brukerNavkontor = "0220", // Denne må hentes fra NORG
             vedtaktidspunkt = vedtak.vedtaksdato,
             saksbehandler = vedtak.saksbehandler,

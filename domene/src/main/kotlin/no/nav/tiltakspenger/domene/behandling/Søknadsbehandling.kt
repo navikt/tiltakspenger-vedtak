@@ -4,8 +4,7 @@ import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.initSaksopplysningerFraSøknad
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.lagSaksopplysningerAvSøknad
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -83,34 +82,6 @@ sealed interface Søknadsbehandling : Behandling {
         }
 
         override fun erÅpen() = true
-
-        fun vilkårsvurder(): BehandlingVilkårsvurdert {
-            // Først lager vi Vurderinger
-            // todo Her kan vi vurdere å lage bare en map og ta som en forutsetning at det er en saksopplysning for hvert vilkår
-
-            val vurderinger: List<Vurdering> = saksopplysninger().flatMap {
-                it.lagVurdering(vurderingsperiode)
-            }
-
-            // Etter at vi har laget vurderinger, sjekker vi utfallet
-            val status = when {
-                vurderinger.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> BehandlingStatus.Manuell
-                vurderinger.all { it.utfall == Utfall.OPPFYLT } -> BehandlingStatus.Innvilget
-                vurderinger.all { it.utfall == Utfall.IKKE_OPPFYLT } -> BehandlingStatus.Avslag
-                else -> BehandlingStatus.Avslag
-            }
-            return BehandlingVilkårsvurdert(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vurderinger,
-                saksbehandler = saksbehandler,
-                status = status,
-            )
-        }
 
         // TODO: Hva er forskjellen på denne og på leggTilSøknad (og opprettBehandling) lenger opp?
         // Det virker som om det er for mange innganger til klassen..?

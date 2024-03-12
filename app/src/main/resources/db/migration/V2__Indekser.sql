@@ -28,6 +28,12 @@ CREATE INDEX vurdering_vedtak
          vedtakId
             );
 
+CREATE INDEX utfallsperiode_vedtak
+    ON utfallsperiode
+        (
+         vedtak_id
+            );
+
 CREATE INDEX saks_ident
     ON sak
         (

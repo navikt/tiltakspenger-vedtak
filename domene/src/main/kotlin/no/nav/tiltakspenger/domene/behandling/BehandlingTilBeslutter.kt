@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.domene.behandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -16,6 +17,7 @@ data class BehandlingTilBeslutter(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     val vilkårsvurderinger: List<Vurdering>,
+    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Søknadsbehandling {
@@ -39,6 +41,7 @@ data class BehandlingTilBeslutter(
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
                 status = status,
@@ -55,6 +58,7 @@ data class BehandlingTilBeslutter(
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
             vilkårsvurderinger = vilkårsvurderinger,
+            utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
             status = BehandlingStatus.Innvilget,
         )
@@ -111,6 +115,7 @@ data class BehandlingTilBeslutter(
             status: String,
             saksbehandler: String,
             beslutter: String?,
+            utfallsperioder: List<Utfallsperiode>,
         ): BehandlingTilBeslutter {
             val behandlingStatus = when (status) {
                 "Innvilget" -> BehandlingStatus.Innvilget
@@ -125,6 +130,7 @@ data class BehandlingTilBeslutter(
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
+                utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
                 status = behandlingStatus,
