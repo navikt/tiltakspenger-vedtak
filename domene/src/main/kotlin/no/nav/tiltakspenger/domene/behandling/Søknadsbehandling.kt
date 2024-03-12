@@ -120,10 +120,13 @@ sealed interface Søknadsbehandling : Behandling {
                 tiltak = tiltak,
             )
 
-        override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-            this.copy(
-                saksbehandler = saksbehandler,
+        override fun startBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+            check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+            check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
+            return this.copy(
+                saksbehandler = saksbehandler.navIdent,
             )
+        }
 
         override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
             check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }

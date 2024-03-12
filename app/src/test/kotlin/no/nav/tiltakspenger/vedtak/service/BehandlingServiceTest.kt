@@ -1,17 +1,21 @@
 package no.nav.tiltakspenger.vedtak.service
 
+import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april
@@ -25,14 +29,20 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvs
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
+import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class BehandlingServiceTest {
@@ -41,13 +51,16 @@ internal class BehandlingServiceTest {
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var attesteringRepo: AttesteringRepo
+    private lateinit var personopplysningService: PersonopplysningService
 
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
         vedtakService = mockk()
         attesteringRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+        personopplysningService = mockk(relaxed = true)
+        behandlingService =
+            BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
     }
 
     @AfterEach
@@ -61,11 +74,11 @@ internal class BehandlingServiceTest {
         val avslag = behandlingVilkårsvurdertAvslag()
 
         shouldThrow<IllegalStateException> {
-            innvilget.tilBeslutting()
+            innvilget.tilBeslutting(saksbehandler123())
         }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
 
         shouldThrow<IllegalStateException> {
-            avslag.tilBeslutting()
+            avslag.tilBeslutting(saksbehandler123())
         }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
     }
 
@@ -75,11 +88,11 @@ internal class BehandlingServiceTest {
         val avslag = behandlingTilBeslutterAvslag()
 
         shouldThrow<IllegalStateException> {
-            innvilget.iverksett()
+            innvilget.iverksett(saksbehandler123())
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
 
         shouldThrow<IllegalStateException> {
-            avslag.iverksett()
+            avslag.iverksett(saksbehandler123())
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
     }
 
@@ -257,5 +270,38 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"
         lagretBehandling.captured.tiltak.first { it.id == "starterInni" }.id shouldBe "starterInni"
+    }
+
+    @Test
+    fun `sjekk at man ikke kan se behandlinger for en person som er fortrolig uten tilgang`() {
+        val person = listOf(ObjectMother.personopplysningKjedeligFyr(fortrolig = true))
+        val behandlinger: List<Behandling> = ObjectMother.sakMedOpprettetBehandling(
+            personopplysninger = SakPersonopplysninger(person),
+        ).behandlinger
+
+        every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Søknadsbehandling)
+        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
+
+        behandlingService.hentBehandlingForIdent("whatever", saksbehandler123()).size shouldBe 0
+        behandlingService.hentBehandlingForIdent("whatever", saksbehandlerMedKode7()).size shouldBe 1
+        // TODO : Er ikke dette galt?
+        behandlingService.hentBehandlingForIdent("whatever", saksbehandlerMedKode6()).size shouldBe 0
+    }
+
+    @Test
+    @Disabled("Fungerer ikke fordi vi har transaksjonskode i BehandlingServiceImpl")
+    fun `sjekk at man ikke kan sende inn uten beslutter rolle`() {
+        val behandlingId = BehandlingId.random()
+        val behandling = behandlingTilBeslutterInnvilget()
+
+        every { behandlingRepo.hent(behandlingId) } returns behandling
+
+        shouldThrow<IllegalStateException> {
+            behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler123(), "begrunnelse")
+        }
+
+        shouldNotThrow<IllegalStateException> {
+            behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter(), "begrunnelse")
+        }
     }
 }

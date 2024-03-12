@@ -13,10 +13,12 @@ import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 
 private val LOG = KotlinLogging.logger {}
@@ -26,6 +28,7 @@ class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val vedtakService: VedtakService,
     private val attesteringRepo: AttesteringRepo,
+    private val personopplysningService: PersonopplysningService,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
@@ -56,19 +59,18 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(oppdatertBehandling)
     }
 
-    override fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String) {
+    override fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
+        check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
         val behandling = hentBehandlingEllerKastException(behandlingId)
-        check(saksbehandler == behandling.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         if (behandling is BehandlingVilkårsvurdert) {
-            behandlingRepo.lagre(behandling.tilBeslutting())
+            behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))
         }
     }
 
     override fun sendTilbakeTilSaksbehandler(
         behandlingId: BehandlingId,
-        beslutter: String,
+        utøvendeBeslutter: Saksbehandler,
         begrunnelse: String?,
-        isAdmin: Boolean,
     ) {
         val behandling = hentBehandlingEllerKastException(behandlingId)
 
@@ -77,15 +79,14 @@ class BehandlingServiceImpl(
             behandlingId = behandlingId,
             svar = AttesteringStatus.SENDT_TILBAKE,
             begrunnelse = begrunnelse,
-            beslutter = beslutter,
+            beslutter = utøvendeBeslutter.navIdent,
         )
 
         when (behandling) {
             is BehandlingTilBeslutter -> {
-                check(behandling.beslutter == beslutter || isAdmin) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
                 sessionOf(DataSource.hikariDataSource).use {
                     it.transaction { txSession ->
-                        behandlingRepo.lagre(behandling.sendTilbake(), txSession)
+                        behandlingRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), txSession)
                         attesteringRepo.lagre(attestering, txSession)
                     }
                 }
@@ -95,24 +96,18 @@ class BehandlingServiceImpl(
         }
     }
 
-    override suspend fun iverksett(behandlingId: BehandlingId, saksbehandler: String) {
+    override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
         val behandling = hentBehandlingEllerKastException(behandlingId)
 
-        if (behandling is BehandlingTilBeslutter) {
-            // TODO: Har jeg gjort en glipp, eller var denne checken alltid overflødig?
-            // check(behandling.saksbehandler != null) { "Kan ikke iverksette en behandling uten saksbehandler" }
-            check(behandling.beslutter == saksbehandler) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
-        }
-
         val iverksattBehandling = when (behandling) {
-            is BehandlingTilBeslutter -> behandling.iverksett()
+            is BehandlingTilBeslutter -> behandling.iverksett(utøvendeBeslutter)
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
         val attestering = Attestering(
             behandlingId = behandlingId,
             svar = AttesteringStatus.GODKJENT,
             begrunnelse = null,
-            beslutter = saksbehandler,
+            beslutter = utøvendeBeslutter.navIdent,
         )
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -123,29 +118,21 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun startBehandling(behandlingId: BehandlingId, saksbehandler: String) {
+    // TODO: Burde denne hatt et annet navn? AssignBehandling eller noe sånt?
+    // TODO: Burde det vært to ulike funksjoner avhengig av om det er saksbehandler eller beslutter det gjelder?
+    override fun startBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
         val behandling = hentBehandlingEllerKastException(behandlingId)
-
-        if (behandling.erÅpen()) {
-            check(behandling.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
-        }
-
-        if (behandling is BehandlingTilBeslutter) {
-            // TODO: Har jeg gjort en glipp, eller var denne checken alltid overflødig?
-            // check(behandling.saksbehandler != null) { "Kan ikke starte å beslutte en behandling uten saksbehandler" }
-            check(behandling.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
-        }
-
-        behandlingRepo.lagre(behandling.startBehandling(saksbehandler))
+        behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
     }
 
-    override fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler) {
+    override fun avbrytBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
         val behandling = hentBehandlingEllerKastException(behandlingId)
-        behandlingRepo.lagre(behandling.avbrytBehandling(saksbehandler))
+        behandlingRepo.lagre(behandling.avbrytBehandling(utøvendeSaksbehandler))
     }
 
-    override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
+    override fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Søknadsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
+            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
 
     private fun hentBehandlingEllerKastException(behandlingId: BehandlingId): Behandling =

@@ -62,7 +62,10 @@ data class BehandlingVilkårsvurdert(
         }
     }
 
-    fun tilBeslutting(): BehandlingTilBeslutter {
+    fun tilBeslutting(saksbehandler: Saksbehandler): BehandlingTilBeslutter {
+        checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
+        check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
+
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
             else -> BehandlingTilBeslutter(
@@ -74,7 +77,7 @@ data class BehandlingVilkårsvurdert(
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
-                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                saksbehandler = this.saksbehandler,
                 beslutter = null,
                 status = status,
             )
@@ -108,8 +111,12 @@ data class BehandlingVilkårsvurdert(
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-        this.copy(saksbehandler = saksbehandler)
+    override fun startBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+        // TODO: Denne må kvalitetssikres av Richard
+        check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
+        return this.copy(saksbehandler = saksbehandler.navIdent)
+    }
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }

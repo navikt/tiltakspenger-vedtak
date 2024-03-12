@@ -12,16 +12,15 @@ interface BehandlingService {
     fun hentAlleBehandlinger(): List<Søknadsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
-    fun sendTilBeslutter(behandlingId: BehandlingId, saksbehandler: String)
+    fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(
         behandlingId: BehandlingId,
-        beslutter: String,
+        utøvendeBeslutter: Saksbehandler,
         begrunnelse: String?,
-        isAdmin: Boolean,
     )
 
-    suspend fun iverksett(behandlingId: BehandlingId, saksbehandler: String)
-    fun startBehandling(behandlingId: BehandlingId, saksbehandler: String)
-    fun avbrytBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler)
-    fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling>
+    suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler)
+    fun startBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
+    fun avbrytBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
+    fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Søknadsbehandling>
 }

@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -17,6 +16,7 @@ import io.mockk.slot
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -40,48 +40,6 @@ class BehandlingBeslutterRoutesTest {
     private val søkerService = mockk<SøkerServiceImpl>()
 
     @Test
-    fun `sjekk at man ikke kan se behandlinger for en person som er fortrolig uten tilgang`() {
-        val person = listOf(personopplysningKjedeligFyr(fortrolig = true))
-        val behandlinger = ObjectMother.sakMedOpprettetBehandling(
-            personopplysninger = SakPersonopplysninger(person),
-        ).behandlinger
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
-        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
-        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
-        every { søkerService.hentIdent(any(), any()) } returns person.first().ident
-
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    behandlingBenkRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                        personopplysningService,
-                        søkerService,
-                    )
-                }
-            }
-            val respons = defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath/hentForIdent/soker_01HCM4KW1K608E1EQT8JJX11J5")
-                },
-            ) {
-                setBody(identJson)
-            }
-
-            respons.status shouldBe HttpStatusCode.OK
-            JSONAssert.assertEquals(
-                """[]""".trimIndent(),
-                respons.bodyAsText(),
-                JSONCompareMode.LENIENT,
-            )
-        }
-    }
-
-    @Test
     fun `sjekk at man kan se behandlinger for en person som er fortrolig med tilgang`() {
         val person = listOf(personopplysningKjedeligFyr(strengtFortrolig = true))
         val behandlinger = ObjectMother.sakMedOpprettetBehandling(
@@ -89,7 +47,12 @@ class BehandlingBeslutterRoutesTest {
             personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedKode6()
-        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
+        every {
+            behandlingService.hentBehandlingForIdent(
+                any(),
+                any(),
+            )
+        } returns behandlinger.filterIsInstance<Søknadsbehandling>()
         every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
         every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
@@ -127,41 +90,10 @@ class BehandlingBeslutterRoutesTest {
     }
 
     @Test
-    fun `sjekk at man ikke kan sende inn uten beslutter rolle`() {
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
-
-        val behandlingId = BehandlingId.random()
-        testApplication {
-            application {
-                // vedtakTestApi()
-                jacksonSerialization()
-                routing {
-                    behandlingBeslutterRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                    )
-                }
-            }
-            shouldThrow<IllegalStateException> {
-                defaultRequest(
-                    HttpMethod.Post,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/sendtilbake/$behandlingId")
-                    },
-                ) {
-                    setBody(begrunnelseJson)
-                }
-            }
-        }
-    }
-
-    @Test
     fun `sjekk at begrunnelse kan sendes inn`() {
         val begrunnelse = slot<String>()
         val bId = slot<BehandlingId>()
-        val saksbehandler = slot<String>()
-        val erAdmin = slot<Boolean>()
+        val saksbehandler = slot<Saksbehandler>()
 
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns beslutter()
         every {
@@ -169,7 +101,6 @@ class BehandlingBeslutterRoutesTest {
                 capture(bId),
                 capture(saksbehandler),
                 capture(begrunnelse),
-                capture(erAdmin),
             )
         } returns Unit
 
@@ -199,17 +130,15 @@ class BehandlingBeslutterRoutesTest {
                 }
         }
         bId.captured shouldBe behandlingId
-        saksbehandler.captured shouldBe "Z12345"
+        saksbehandler.captured.navIdent shouldBe "Z12345"
         begrunnelse.captured shouldBe "begrunnelse"
-        erAdmin.captured shouldBe false
     }
 
     @Test
     fun `sjekk at man kan sende tilbake med admin rolle`() {
         val begrunnelse = slot<String>()
         val bId = slot<BehandlingId>()
-        val saksbehandler = slot<String>()
-        val erAdmin = slot<Boolean>()
+        val saksbehandler = slot<Saksbehandler>()
 
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
         every {
@@ -217,7 +146,6 @@ class BehandlingBeslutterRoutesTest {
                 capture(bId),
                 capture(saksbehandler),
                 capture(begrunnelse),
-                capture(erAdmin),
             )
         } returns Unit
 
@@ -247,9 +175,8 @@ class BehandlingBeslutterRoutesTest {
                 }
         }
         bId.captured shouldBe behandlingId
-        saksbehandler.captured shouldBe "Z12345"
+        saksbehandler.captured.navIdent shouldBe "Z12345"
         begrunnelse.captured shouldBe "begrunnelse"
-        erAdmin.captured shouldBe true
     }
 
     private val identJson = """

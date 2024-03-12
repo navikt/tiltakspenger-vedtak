@@ -11,7 +11,6 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
@@ -93,7 +92,7 @@ fun Route.behandlingRoutes(
 
         behandlingService.leggTilSaksopplysning(
             behandlingId,
-            lagSaksopplysningMedVilkår(saksbehandler.navIdent, nySaksopplysning),
+            lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
@@ -104,12 +103,10 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        check(saksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
-
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
-        behandlingService.sendTilBeslutter(behandlingId, saksbehandler.navIdent)
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
