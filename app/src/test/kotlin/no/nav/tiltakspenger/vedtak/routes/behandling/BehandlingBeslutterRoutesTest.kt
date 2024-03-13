@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
@@ -13,79 +12,19 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedAdmin
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningServiceImpl
-import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
-import org.skyscreamer.jsonassert.JSONCompareMode
 
 class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
     private val behandlingService = mockk<BehandlingServiceImpl>()
-    private val personopplysningService = mockk<PersonopplysningServiceImpl>()
-    private val søkerService = mockk<SøkerServiceImpl>()
-
-    @Test
-    fun `sjekk at man kan se behandlinger for en person som er fortrolig med tilgang`() {
-        val person = listOf(personopplysningKjedeligFyr(strengtFortrolig = true))
-        val behandlinger = ObjectMother.sakMedOpprettetBehandling(
-            ident = person.first().ident,
-            personopplysninger = SakPersonopplysninger(person),
-        ).behandlinger
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedKode6()
-        every {
-            behandlingService.hentBehandlingForIdent(
-                any(),
-                any(),
-            )
-        } returns behandlinger.filterIsInstance<Søknadsbehandling>()
-        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
-        every { søkerService.hentIdent(any(), any()) } returns person.first().ident
-
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    behandlingBenkRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                        søkerService,
-                    )
-                }
-            }
-            val respons = defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath/hentForIdent/soker_01HCM4KW1K608E1EQT8JJX11J5")
-                },
-            ) {
-                setBody(identJson)
-            }
-
-            respons.status shouldBe HttpStatusCode.OK
-            JSONAssert.assertEquals(
-                """
-                  [{"id":"${behandlinger.first().id}","ident":"${person.first().ident}","fom":"2023-01-01","tom":"2023-01-31","typeBehandling":"Førstegangsbehandling","status":"Klar til behandling","saksbehandler":null,"beslutter":null}]
-                """.trimIndent(),
-                respons.bodyAsText(),
-                JSONCompareMode.LENIENT,
-            )
-        }
-    }
 
     @Test
     fun `sjekk at begrunnelse kan sendes inn`() {

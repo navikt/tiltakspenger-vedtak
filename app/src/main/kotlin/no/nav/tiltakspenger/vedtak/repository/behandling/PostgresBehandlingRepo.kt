@@ -6,10 +6,11 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -31,7 +32,7 @@ internal class PostgresBehandlingRepo(
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : BehandlingRepo {
-    override fun hent(behandlingId: BehandlingId): Søknadsbehandling? {
+    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -48,7 +49,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentAlle(): List<Søknadsbehandling> {
+    override fun hentAlle(): List<Førstegangsbehandling> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -62,7 +63,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentAlleForIdent(ident: String): List<Søknadsbehandling> {
+    override fun hentAlleForIdent(ident: String): List<Førstegangsbehandling> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -79,7 +80,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentForSak(sakId: SakId): List<Søknadsbehandling> {
+    override fun hentForSak(sakId: SakId): List<Førstegangsbehandling> {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -96,7 +97,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentForJournalpostId(journalpostId: String): Søknadsbehandling? {
+    override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -113,7 +114,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Søknadsbehandling): Søknadsbehandling {
+    override fun lagre(behandling: Førstegangsbehandling): Førstegangsbehandling {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 lagre(behandling, txSession)
@@ -121,7 +122,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Søknadsbehandling, tx: TransactionalSession): Søknadsbehandling {
+    override fun lagre(behandling: Førstegangsbehandling, tx: TransactionalSession): Førstegangsbehandling {
         val sistEndret = hentSistEndret(behandling.id, tx)
         return if (sistEndret == null) {
             opprettBehandling(behandling, tx)
@@ -147,16 +148,16 @@ internal class PostgresBehandlingRepo(
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
-                is Søknadsbehandling.Opprettet -> {}
+                is BehandlingOpprettet -> {}
             }
         }
     }
 
     private fun oppdaterBehandling(
         sistEndret: LocalDateTime,
-        behandling: Søknadsbehandling,
+        behandling: Førstegangsbehandling,
         txSession: TransactionalSession,
-    ): Søknadsbehandling {
+    ): Førstegangsbehandling {
         SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
 
         val antRaderOppdatert = txSession.run(
@@ -182,7 +183,10 @@ internal class PostgresBehandlingRepo(
         return behandling
     }
 
-    private fun opprettBehandling(behandling: Søknadsbehandling, txSession: TransactionalSession): Søknadsbehandling {
+    private fun opprettBehandling(
+        behandling: Førstegangsbehandling,
+        txSession: TransactionalSession,
+    ): Førstegangsbehandling {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
         val nå = nå()
@@ -215,7 +219,7 @@ internal class PostgresBehandlingRepo(
             ).map { row -> row.localDateTime("sist_endret") }.asSingle,
         )
 
-    private fun Row.toBehandling(txSession: TransactionalSession): Søknadsbehandling {
+    private fun Row.toBehandling(txSession: TransactionalSession): Førstegangsbehandling {
         val id = BehandlingId.fromDb(string("id"))
         val sakId = SakId.fromDb(string("sakId"))
         val fom = localDate("fom")
@@ -224,7 +228,7 @@ internal class PostgresBehandlingRepo(
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
         return when (val type = string("tilstand")) {
-            "søknadsbehandling" -> Søknadsbehandling.Opprettet.fromDb(
+            "søknadsbehandling" -> BehandlingOpprettet.fromDb(
                 id = id,
                 sakId = sakId,
                 søknader = søknadDAO.hent(id, txSession),
@@ -279,17 +283,17 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    private fun finnTilstand(behandling: Søknadsbehandling) =
+    private fun finnTilstand(behandling: Førstegangsbehandling) =
         when (behandling) {
-            is Søknadsbehandling.Opprettet -> "søknadsbehandling"
+            is BehandlingOpprettet -> "søknadsbehandling"
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
             is BehandlingTilBeslutter -> "TilBeslutting"
             is BehandlingIverksatt -> "Iverksatt"
         }
 
-    private fun finnStatus(behandling: Søknadsbehandling): String =
+    private fun finnStatus(behandling: Førstegangsbehandling): String =
         when {
-            behandling is Søknadsbehandling.Opprettet -> "Opprettet"
+            behandling is BehandlingOpprettet -> "Opprettet"
             behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
             behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
             behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Manuell -> "Manuell"

@@ -8,7 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.domene.behandling.Behandling
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
@@ -105,8 +106,8 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
-        val lagretBehandling = slot<Søknadsbehandling>()
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -142,8 +143,8 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
-        val lagretBehandling = slot<Søknadsbehandling>()
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -182,7 +183,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Søknadsbehandling>()
+        val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -221,7 +222,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Søknadsbehandling>()
+        val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -255,7 +256,7 @@ internal class BehandlingServiceTest {
             periode = Periode(1.januar(2023), 31.mars(2023)),
         )
 
-        val lagretBehandling = slot<Søknadsbehandling>()
+        val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -279,7 +280,7 @@ internal class BehandlingServiceTest {
             personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
 
-        every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Søknadsbehandling)
+        every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Førstegangsbehandling)
         every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
 
         behandlingService.hentBehandlingForIdent("whatever", saksbehandler123()).size shouldBe 0

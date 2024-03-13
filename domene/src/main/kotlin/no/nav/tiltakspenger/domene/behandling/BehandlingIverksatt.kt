@@ -20,11 +20,7 @@ data class BehandlingIverksatt(
     val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String,
     val status: BehandlingStatus,
-) : Søknadsbehandling {
-
-    override fun søknad(): Søknad {
-        return søknader.siste()
-    }
+) : Førstegangsbehandling {
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
         val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
@@ -35,7 +31,7 @@ data class BehandlingIverksatt(
             )
         } else {
             // todo() her må vi lage en revurdering
-            val nyBehandling = Søknadsbehandling.Opprettet.fromDb(
+            val nyBehandling = BehandlingOpprettet.fromDb(
                 id = BehandlingId.random(),
                 sakId = this.sakId,
                 søknader = listOf(this.søknad()),

@@ -4,10 +4,11 @@ import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
@@ -95,19 +96,22 @@ data class FaktaDTO(
     val harIkkeYtelse: String,
 )
 
+fun settBeslutter(behandling: Førstegangsbehandling): String? =
+    when (behandling) {
+        is BehandlingIverksatt -> behandling.beslutter
+        is BehandlingTilBeslutter -> behandling.beslutter
+        else -> null
+    }
+
 fun mapSammenstillingDTO(
-    behandling: Søknadsbehandling,
+    behandling: Førstegangsbehandling,
     personopplysninger: List<Personopplysninger>,
     attesteringer: List<Attestering>,
 ): SammenstillingForBehandlingDTO {
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
         saksbehandler = behandling.saksbehandler,
-        beslutter = when (behandling) {
-            is BehandlingIverksatt -> behandling.beslutter
-            is BehandlingTilBeslutter -> behandling.beslutter
-            else -> null
-        },
+        beslutter = settBeslutter(behandling),
         fom = behandling.vurderingsperiode.fra,
         tom = behandling.vurderingsperiode.til,
         søknad = SøknadDTO(
@@ -164,10 +168,11 @@ fun mapSammenstillingDTO(
             )
         }.first(),
         tilstand = when (behandling) {
+            // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
             is BehandlingIverksatt -> "iverksatt"
             is BehandlingTilBeslutter -> "tilBeslutter"
             is BehandlingVilkårsvurdert -> "vilkårsvurdert"
-            is Søknadsbehandling.Opprettet -> "opprettet"
+            is BehandlingOpprettet -> "opprettet"
         },
         status = finnStatus(behandling),
         endringslogg = attesteringer.map { att ->
@@ -219,7 +224,7 @@ fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
     }
 }
 
-private fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
+fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
     if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
     if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
     if (vurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
@@ -366,10 +371,10 @@ enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
     INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
 }
 
-fun finnStatus(behandling: Søknadsbehandling): String =
+fun finnStatus(behandling: Førstegangsbehandling): String =
     when (behandling) {
         is BehandlingIverksatt -> if (behandling.status == BehandlingStatus.Avslag) "Iverksatt Avslag" else "Iverksatt Innvilget"
         is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
         is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
-        is Søknadsbehandling.Opprettet -> "Klar til behandling"
+        is BehandlingOpprettet -> "Klar til behandling"
     }

@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
@@ -47,7 +47,7 @@ class ForeldrepengerVedtakRoutesTest {
 
     @Test
     fun `sjekk at kall til river foreldrepenger route sender ut et behov`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = nySøknad(),
         )
@@ -130,7 +130,7 @@ class ForeldrepengerVedtakRoutesTest {
 
     @Test
     fun `sjekk at kall til river foreldrepenger route med null i saksnummer går ok`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = nySøknad(),
         )

@@ -13,7 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -49,7 +49,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at kall til river tiltak route sender ut et behov`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -94,7 +94,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at tiltak uten deltakerFom eller tom blir filtrert bort`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )

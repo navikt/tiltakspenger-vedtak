@@ -9,7 +9,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
@@ -64,7 +64,7 @@ fun Route.behandlingRoutes(
             )
         }
 
-        val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
+        val behandling = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
             it.id == behandlingId
         } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 

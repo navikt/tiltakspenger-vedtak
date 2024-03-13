@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
@@ -200,7 +200,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -234,7 +234,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -257,7 +257,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(

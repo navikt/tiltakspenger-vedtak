@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -31,15 +31,15 @@ class BehandlingServiceImpl(
     private val personopplysningService: PersonopplysningService,
 ) : BehandlingService {
 
-    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Søknadsbehandling? {
+    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return behandlingRepo.hent(behandlingId)
     }
 
-    override fun hentBehandlingForJournalpostId(journalpostId: String): Søknadsbehandling? {
+    override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
         return behandlingRepo.hentForJournalpostId(journalpostId)
     }
 
-    override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Søknadsbehandling> {
+    override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlle()
             .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
@@ -133,7 +133,10 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(behandling.avbrytBehandling(utøvendeSaksbehandler))
     }
 
-    override fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Søknadsbehandling> {
+    override fun hentBehandlingForIdent(
+        ident: String,
+        utøvendeSaksbehandler: Saksbehandler,
+    ): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
             .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }

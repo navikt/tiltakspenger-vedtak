@@ -2,7 +2,8 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
@@ -120,7 +121,7 @@ internal class TiltakDAOTest {
         hentet.first() shouldBe tiltak
     }
 
-    private fun lagreSakOgBehandling(): Søknadsbehandling {
+    private fun lagreSakOgBehandling(): Førstegangsbehandling {
         val behandlingRepo = PostgresBehandlingRepo()
         val sakRepo = PostgresSakRepo()
 
@@ -152,7 +153,7 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         return behandlingRepo.lagre(behandling)
     }
