@@ -4,10 +4,11 @@ import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
@@ -96,7 +97,7 @@ data class FaktaDTO(
 )
 
 fun mapSammenstillingDTO(
-    behandling: Søknadsbehandling,
+    behandling: Førstegangsbehandling,
     personopplysninger: List<Personopplysninger>,
     attesteringer: List<Attestering>,
 ): SammenstillingForBehandlingDTO {
@@ -167,7 +168,7 @@ fun mapSammenstillingDTO(
             is BehandlingIverksatt -> "iverksatt"
             is BehandlingTilBeslutter -> "tilBeslutter"
             is BehandlingVilkårsvurdert -> "vilkårsvurdert"
-            is Søknadsbehandling.Opprettet -> "opprettet"
+            is BehandlingOpprettet -> "opprettet"
         },
         status = finnStatus(behandling),
         endringslogg = attesteringer.map { att ->
@@ -366,10 +367,10 @@ enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
     INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
 }
 
-fun finnStatus(behandling: Søknadsbehandling): String =
+fun finnStatus(behandling: Førstegangsbehandling): String =
     when (behandling) {
         is BehandlingIverksatt -> if (behandling.status == BehandlingStatus.Avslag) "Iverksatt Avslag" else "Iverksatt Innvilget"
         is BehandlingTilBeslutter -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
         is BehandlingVilkårsvurdert -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
-        is Søknadsbehandling.Opprettet -> "Klar til behandling"
+        is BehandlingOpprettet -> "Klar til behandling"
     }

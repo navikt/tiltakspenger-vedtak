@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.domene.sak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
@@ -35,7 +35,7 @@ data class Sak(
                     }
                 }
             }.ifEmpty {
-                listOf(Søknadsbehandling.Opprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
+                listOf(BehandlingOpprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
             }
 
         return this.copy(

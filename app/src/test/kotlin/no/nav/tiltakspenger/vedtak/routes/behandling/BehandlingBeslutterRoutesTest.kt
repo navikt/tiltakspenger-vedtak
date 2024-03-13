@@ -14,7 +14,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -46,7 +46,7 @@ class BehandlingBeslutterRoutesTest {
             personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
-        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
+        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Førstegangsbehandling>()
         every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
         every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 
@@ -89,7 +89,7 @@ class BehandlingBeslutterRoutesTest {
             personopplysninger = SakPersonopplysninger(person),
         ).behandlinger
         every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedKode6()
-        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Søknadsbehandling>()
+        every { behandlingService.hentBehandlingForIdent(any()) } returns behandlinger.filterIsInstance<Førstegangsbehandling>()
         every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
         every { søkerService.hentIdent(any(), any()) } returns person.first().ident
 

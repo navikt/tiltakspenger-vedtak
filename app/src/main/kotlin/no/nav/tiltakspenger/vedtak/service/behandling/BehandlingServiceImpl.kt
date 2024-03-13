@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -28,15 +28,15 @@ class BehandlingServiceImpl(
     private val attesteringRepo: AttesteringRepo,
 ) : BehandlingService {
 
-    override fun hentBehandling(behandlingId: BehandlingId): Søknadsbehandling? {
+    override fun hentBehandling(behandlingId: BehandlingId): Førstegangsbehandling? {
         return behandlingRepo.hent(behandlingId)
     }
 
-    override fun hentBehandlingForJournalpostId(journalpostId: String): Søknadsbehandling? {
+    override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
         return behandlingRepo.hentForJournalpostId(journalpostId)
     }
 
-    override fun hentAlleBehandlinger(): List<Søknadsbehandling> {
+    override fun hentAlleBehandlinger(): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlle()
     }
 
@@ -144,7 +144,7 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(behandling.avbrytBehandling(saksbehandler))
     }
 
-    override fun hentBehandlingForIdent(ident: String): List<Søknadsbehandling> {
+    override fun hentBehandlingForIdent(ident: String): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
     }
 

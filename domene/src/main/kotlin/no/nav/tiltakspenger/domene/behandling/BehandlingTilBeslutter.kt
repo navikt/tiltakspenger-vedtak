@@ -20,11 +20,7 @@ data class BehandlingTilBeslutter(
     val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String?,
     val status: BehandlingStatus,
-) : Søknadsbehandling {
-
-    override fun søknad(): Søknad {
-        return søknader.siste()
-    }
+) : Førstegangsbehandling {
 
     override fun erTilBeslutter() = true
 
@@ -65,7 +61,7 @@ data class BehandlingTilBeslutter(
     }
 
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet.leggTilSøknad(
+        return BehandlingOpprettet.leggTilSøknad(
             behandling = this,
             søknad = søknad,
         ).vilkårsvurder()
@@ -86,13 +82,13 @@ data class BehandlingTilBeslutter(
         }
     }
 
-    override fun startBehandling(saksbehandler: String): Søknadsbehandling =
+    override fun startBehandling(saksbehandler: String): Førstegangsbehandling =
         this.copy(
             beslutter = saksbehandler,
         )
 
     private fun vurderPåNytt(): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet(
+        return BehandlingOpprettet(
             id = id,
             sakId = sakId,
             søknader = søknader,
