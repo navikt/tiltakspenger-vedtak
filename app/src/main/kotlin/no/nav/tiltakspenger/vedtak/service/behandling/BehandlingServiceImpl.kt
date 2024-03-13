@@ -6,6 +6,8 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingRevurdering
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
@@ -151,4 +153,12 @@ class BehandlingServiceImpl(
     private fun hentBehandlingEllerKastException(behandlingId: BehandlingId): Behandling =
         hentBehandling(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
+
+    override fun opprettRevurdering(behandlingId: BehandlingId): BehandlingRevurdering {
+        val iverksattBehandling = behandlingRepo.hent(behandlingId) as BehandlingIverksatt
+        val revurderingBehandling = BehandlingRevurdering.Opprettet.opprettRevurderingsbehandling(
+            behandlingIverksatt = iverksattBehandling,
+        )
+        return revurderingBehandling
+    }
 }
