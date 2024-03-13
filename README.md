@@ -26,6 +26,38 @@ For å gjøre spørringer mot GCP-databasene (DEV eller PROD) fra lokal maskin, 
 cloud_sql_proxy -instances=tpts-dev-6211:europe-north1:tiltakspenger-vedtak=tcp:5432 -enable_iam_login
 ```
 
+### Kjøre opp appen lokalt
+
+For å kjøre opp tiltakspenger-vedtak lokalt fra et IDE som for eksempel IntelliJ, kan man kjøre opp `main`-funksjonen 
+som ligger i `App.kt` ([link](https://github.com/navikt/tiltakspenger-vedtak/blob/main/app/src/main/kotlin/no/nav/tiltakspenger/vedtak/App.kt)).
+
+For at det skal funke å kjøre opp appen fra IntelliJ eller tilsvarende IDE må man sette opp noen miljøvariabler. I IntelliJ kan
+de konfigureres opp i relevant Run Configuration som blir lagd når man kjører opp App.kt for første gang.
+
+Miljøvariabler som må settes (be om hjelp av en annen utvikler på teamet til å få satt riktige miljøvariabler på din maskin):
+```
+AZURE_APP_CLIENT_ID=
+AZURE_APP_CLIENT_SECRET=
+AZURE_APP_WELL_KNOWN_URL=
+AZURE_OPENID_CONFIG_ISSUER=
+AZURE_OPENID_CONFIG_JWKS_URI=
+DB_DATABASE=
+DB_HOST=
+DB_PASSWORD=
+DB_PORT=
+DB_USERNAME=
+KAFKA_BROKERS=
+KAFKA_CREDSTORE_PASSWORD=
+KAFKA_KEYSTORE_PATH=
+KAFKA_TRUSTSTORE_PATH=
+NAIS_CLUSTER_NAME=
+TPTS_TOPIC=
+```
+
+**OBS!** `tiltakspenger-vedtak` er avhengig av at man har en større verdikjede kjørende i miljø for å kunne kjøres opp 
+lokalt, f.eks. ting som Kafka og postgres. Man anbefales å se i [meta-repoet for tiltakspenger](https://github.com/navikt/tiltakspenger) 
+for hvordan man kan få kjørt opp de greiene lokalt. Meta-repoet er også behjelpelig med å få kjørt opp `tiltakspenger-vedtak` i en docker-container.
+
 ## Arkitekturbeslutninger
 Se [docs/adr/index.md](docs/adr/index.md)
 
@@ -37,4 +69,4 @@ Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på Git
 
 ## For NAV-ansatte
 
-Interne, tekniske henvendelser kan sendes via Slack i kanalen #tpts-tech.
+Interne, tekniske henvendelser kan sendes via Slack i kanalen #tiltakspenger-værsågod.
