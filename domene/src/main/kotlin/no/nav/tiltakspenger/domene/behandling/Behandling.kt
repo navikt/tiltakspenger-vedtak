@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 data class LeggTilSaksopplysningRespons(
-    val behandling: Søknadsbehandling,
+    val behandling: Førstegangsbehandling,
     val erEndret: Boolean,
 )
 
@@ -40,15 +40,15 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 
-    fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling {
+    fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
     }
 
-    fun startBehandling(saksbehandler: String): Søknadsbehandling {
+    fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         throw IllegalStateException("Kan ikke starte en behandling med denne statusen")
     }
 
-    fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+    fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 }

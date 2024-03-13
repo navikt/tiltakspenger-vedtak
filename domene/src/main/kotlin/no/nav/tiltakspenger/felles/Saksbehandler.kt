@@ -8,6 +8,6 @@ data class Saksbehandler(
 ) : Bruker {
 
     fun isAdmin() = roller.contains(Rolle.ADMINISTRATOR)
-    fun isSaksbehandler() = roller.contains(Rolle.BESLUTTER)
+    fun isSaksbehandler() = roller.contains(Rolle.SAKSBEHANDLER)
     fun isBeslutter() = roller.contains(Rolle.BESLUTTER)
 }

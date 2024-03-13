@@ -8,7 +8,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
@@ -44,6 +45,7 @@ internal class SakServiceTest {
     private lateinit var vedtakService: VedtakService
     private lateinit var sakService: SakService
     private lateinit var attesteringRepo: AttesteringRepo
+    private lateinit var personopplysningService: PersonopplysningService
 
     @BeforeEach
     fun setup() {
@@ -51,7 +53,9 @@ internal class SakServiceTest {
         behandlingRepo = mockk()
         vedtakService = mockk()
         attesteringRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+        personopplysningService = mockk(relaxed = true)
+        behandlingService =
+            BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 
@@ -196,7 +200,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -230,7 +234,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -253,7 +257,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Søknadsbehandling>().first()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(

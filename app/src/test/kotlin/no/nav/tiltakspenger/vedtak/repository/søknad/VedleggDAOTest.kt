@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Vedlegg
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -46,7 +46,7 @@ internal class VedleggDAOTest {
         )
 
         val vedleggDAO = VedleggDAO()
-        val søknadId = sak.behandlinger.filterIsInstance<Søknadsbehandling>().first().søknad().id
+        val søknadId = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first().søknad().id
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 vedleggDAO.lagre(

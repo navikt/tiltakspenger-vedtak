@@ -12,7 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
@@ -47,7 +47,7 @@ class YtelseRoutesTest {
 
     @Test
     fun `sjekk at kall til river ytelse route ikke sender ut et behov`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -91,7 +91,7 @@ class YtelseRoutesTest {
 
     @Test
     fun `sjekk at kall til river ytelse route ikke tryner med tom tidligere enn fom`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )

@@ -5,7 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.domene.sak.TynnSak
@@ -108,7 +108,7 @@ internal class PostgresSakRepo(
                 )
                 opprettetSak
             }.also { sak ->
-                sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach {
+                sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {
                     behandlingRepo.lagre(it)
                 }
             }

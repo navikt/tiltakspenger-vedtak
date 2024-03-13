@@ -9,9 +9,8 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
@@ -65,7 +64,7 @@ fun Route.behandlingRoutes(
             )
         }
 
-        val behandling = sak.behandlinger.filterIsInstance<Søknadsbehandling>().firstOrNull {
+        val behandling = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
             it.id == behandlingId
         } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
@@ -93,7 +92,7 @@ fun Route.behandlingRoutes(
 
         behandlingService.leggTilSaksopplysning(
             behandlingId,
-            lagSaksopplysningMedVilkår(saksbehandler.navIdent, nySaksopplysning),
+            lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
@@ -104,12 +103,10 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        check(saksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
-
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
 
-        behandlingService.sendTilBeslutter(behandlingId, saksbehandler.navIdent)
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
@@ -126,7 +123,7 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        behandlingService.hentBehandling(behandlingId)?.let {
+        behandlingService.hentBehandlingOrNull(behandlingId)?.let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
@@ -148,7 +145,7 @@ fun Route.behandlingRoutes(
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
-        behandlingService.avbrytBehandling(behandlingId, saksbehandler)
+        behandlingService.frataBehandling(behandlingId, saksbehandler)
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }

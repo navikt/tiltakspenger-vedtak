@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.Saksnummer
@@ -68,7 +68,7 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
@@ -107,12 +107,12 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
         val hentBehandling = behandlingRepo.hent(behandling.id)
-        if (hentBehandling is Søknadsbehandling.Opprettet) {
+        if (hentBehandling is BehandlingOpprettet) {
             val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
             behandlingRepo.lagre(behandlingVilkårsvurdert)
             behandlingVilkårsvurdert shouldNotBe null

@@ -31,4 +31,19 @@ interface SaksbehandlerMother {
         epost = "Sak.Behandler@nav.no",
         roller = listOf(Rolle.SAKSBEHANDLER, Rolle.STRENGT_FORTROLIG_ADRESSE),
     )
+
+    fun saksbehandlerMedKode7() = Saksbehandler(
+        navIdent = "Z12345",
+        brukernavn = "Sak Behandler",
+        epost = "Sak.Behandler@nav.no",
+        roller = listOf(Rolle.SAKSBEHANDLER, Rolle.FORTROLIG_ADRESSE),
+    )
+
+    fun saksbehandler123(): Saksbehandler =
+        Saksbehandler(
+            navIdent = "123",
+            brukernavn = "Test Testesen",
+            epost = "Test.Testesen@nav.no",
+            roller = listOf(Rolle.SAKSBEHANDLER),
+        )
 }

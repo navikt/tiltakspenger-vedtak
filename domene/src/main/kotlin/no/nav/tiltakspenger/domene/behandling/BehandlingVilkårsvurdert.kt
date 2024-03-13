@@ -24,14 +24,10 @@ data class BehandlingVilkårsvurdert(
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
     val utfallsperioder: List<Utfallsperiode>,
-) : Søknadsbehandling {
-
-    override fun søknad(): Søknad {
-        return søknader.siste()
-    }
+) : Førstegangsbehandling {
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet(
+        return BehandlingOpprettet(
             id = id,
             sakId = sakId,
             søknader = søknader,
@@ -62,7 +58,10 @@ data class BehandlingVilkårsvurdert(
         }
     }
 
-    fun tilBeslutting(): BehandlingTilBeslutter {
+    fun tilBeslutting(saksbehandler: Saksbehandler): BehandlingTilBeslutter {
+        checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
+        check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
+
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
             else -> BehandlingTilBeslutter(
@@ -74,7 +73,7 @@ data class BehandlingVilkårsvurdert(
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
-                saksbehandler = checkNotNull(saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" },
+                saksbehandler = this.saksbehandler,
                 beslutter = null,
                 status = status,
             )
@@ -84,7 +83,7 @@ data class BehandlingVilkårsvurdert(
     override fun erÅpen() = true
 
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        return Søknadsbehandling.Opprettet.leggTilSøknad(
+        return BehandlingOpprettet.leggTilSøknad(
             behandling = this,
             søknad = søknad,
         ).vilkårsvurder()
@@ -105,13 +104,16 @@ data class BehandlingVilkårsvurdert(
         }
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): Søknadsbehandling =
+    override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun startBehandling(saksbehandler: String): Søknadsbehandling =
-        this.copy(saksbehandler = saksbehandler)
+    override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
+        return this.copy(saksbehandler = saksbehandler.navIdent)
+    }
 
-    override fun avbrytBehandling(saksbehandler: Saksbehandler): Søknadsbehandling {
+    override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }
