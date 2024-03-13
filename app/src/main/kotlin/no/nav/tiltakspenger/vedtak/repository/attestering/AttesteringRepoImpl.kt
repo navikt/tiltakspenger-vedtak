@@ -13,6 +13,9 @@ import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
 import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl : AttesteringRepo {
+
+    // TODO: Denne kalles aldri. Dette er mao ikke et repo, det er en DAO.
+    // Attestering lagres alltid sammen med Behandling.
     override fun lagre(attestering: Attestering): Attestering {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->

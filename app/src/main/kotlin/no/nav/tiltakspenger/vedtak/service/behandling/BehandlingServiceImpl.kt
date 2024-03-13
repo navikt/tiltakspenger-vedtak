@@ -131,7 +131,7 @@ class BehandlingServiceImpl(
         brevPublisherGateway.sendBrev(vedtak, personopplysninger)
     }
 
-    fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
+    private fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
         return Vedtak(
             id = VedtakId.random(),
             sakId = behandling.sakId,
