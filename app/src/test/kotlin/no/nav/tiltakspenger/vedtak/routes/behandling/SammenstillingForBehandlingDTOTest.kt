@@ -147,7 +147,7 @@ class SammenstillingForBehandlingDTOTest {
         val vilkårsvurderinger = listOf(ikkeOppfyltVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
 
-        val samletUtfall = settSamletUtfall(behandling, saksopplysninger)
+        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfall == Utfall.IKKE_OPPFYLT.name)
     }
 
@@ -159,7 +159,7 @@ class SammenstillingForBehandlingDTOTest {
         val vilkårsvurderinger = listOf(manuellVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
 
-        val samletUtfall = settSamletUtfall(behandling, saksopplysninger)
+        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfall == Utfall.KREVER_MANUELL_VURDERING.name)
     }
 
@@ -171,17 +171,17 @@ class SammenstillingForBehandlingDTOTest {
         val vilkårsvurderinger = listOf(oppfyltVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
 
-        val samletUtfallOppfylt = settSamletUtfall(behandling, saksopplysninger)
+        val samletUtfallOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfallOppfylt == Utfall.OPPFYLT.name)
 
         val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
         every { behandling.vilkårsvurderinger } returns listOf(oppfyltVurdering, ikkeOppfyltVurdering, oppfyltVurdering)
-        val samletUtfallIkkeOppfylt = settSamletUtfall(behandling, saksopplysninger)
+        val samletUtfallIkkeOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfallIkkeOppfylt == Utfall.IKKE_OPPFYLT.name)
 
         val manuellVurdering = mockKreverManuellVurdering()
         every { behandling.vilkårsvurderinger } returns listOf(oppfyltVurdering, manuellVurdering, oppfyltVurdering)
-        val samletUtfallManuellVurdering = settSamletUtfall(behandling, saksopplysninger)
+        val samletUtfallManuellVurdering = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfallManuellVurdering == Utfall.KREVER_MANUELL_VURDERING.name)
     }
 
