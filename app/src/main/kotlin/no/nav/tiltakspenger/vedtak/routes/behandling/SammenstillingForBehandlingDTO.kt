@@ -96,6 +96,13 @@ data class FaktaDTO(
     val harIkkeYtelse: String,
 )
 
+fun settBeslutter(behandling: Søknadsbehandling): String? =
+    when (behandling) {
+        is BehandlingIverksatt -> behandling.beslutter
+        is BehandlingTilBeslutter -> behandling.beslutter
+        else -> null
+    }
+
 fun mapSammenstillingDTO(
     behandling: Førstegangsbehandling,
     personopplysninger: List<Personopplysninger>,
@@ -104,11 +111,7 @@ fun mapSammenstillingDTO(
     return SammenstillingForBehandlingDTO(
         behandlingId = behandling.id.toString(),
         saksbehandler = behandling.saksbehandler,
-        beslutter = when (behandling) {
-            is BehandlingIverksatt -> behandling.beslutter
-            is BehandlingTilBeslutter -> behandling.beslutter
-            else -> null
-        },
+        beslutter = settBeslutter(behandling),
         fom = behandling.vurderingsperiode.fra,
         tom = behandling.vurderingsperiode.til,
         søknad = SøknadDTO(
@@ -165,6 +168,7 @@ fun mapSammenstillingDTO(
             )
         }.first(),
         tilstand = when (behandling) {
+            // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
             is BehandlingIverksatt -> "iverksatt"
             is BehandlingTilBeslutter -> "tilBeslutter"
             is BehandlingVilkårsvurdert -> "vilkårsvurdert"
@@ -220,7 +224,7 @@ fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
     }
 }
 
-private fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
+fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
     if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
     if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
     if (vurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
