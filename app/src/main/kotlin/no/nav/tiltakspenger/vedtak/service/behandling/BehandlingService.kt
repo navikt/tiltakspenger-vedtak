@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingRevurdering
+import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
