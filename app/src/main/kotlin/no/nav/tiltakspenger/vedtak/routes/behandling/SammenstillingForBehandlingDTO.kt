@@ -96,7 +96,7 @@ data class FaktaDTO(
     val harIkkeYtelse: String,
 )
 
-fun settBeslutter(behandling: Søknadsbehandling): String? =
+fun settBeslutter(behandling: Førstegangsbehandling): String? =
     when (behandling) {
         is BehandlingIverksatt -> behandling.beslutter
         is BehandlingTilBeslutter -> behandling.beslutter

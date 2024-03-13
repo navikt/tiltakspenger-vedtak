@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
 import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
@@ -19,22 +19,20 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst basert på behandlingen`() {
-        val avslåttBehandling = mockk<BehandlingIverksatt.Avslag>()
+        val avslåttBehandling = mockk<BehandlingIverksatt>()
+        every { avslåttBehandling.status } returns BehandlingStatus.Avslag
         val avslagStatus = finnStatus(avslåttBehandling)
         assert(avslagStatus === "Iverksatt Avslag")
 
-        val innvilgetBehandling = mockk<BehandlingIverksatt.Innvilget>()
+        val innvilgetBehandling = mockk<BehandlingIverksatt>()
+        every { innvilgetBehandling.status } returns BehandlingStatus.Innvilget
         val innvilgetStatus = finnStatus(innvilgetBehandling)
         assert(innvilgetStatus === "Iverksatt Innvilget")
-
-        val opprettetBehandling = mockk<Søknadsbehandling.Opprettet>()
-        val opprettetStatus = finnStatus(opprettetBehandling)
-        assert(opprettetStatus === "Klar til behandling")
     }
 
     @Test
     fun `finnStatus skal gi riktig statustekst når behandlingen er sendt til beslutter`() {
-        val behandlingTilBeslutter = mockk<BehandlingTilBeslutter.Innvilget>()
+        val behandlingTilBeslutter = mockk<BehandlingTilBeslutter>()
         every { behandlingTilBeslutter.beslutter } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingTilBeslutter)
         assert(klarTilBeslutningTekst === "Klar til beslutning")
@@ -46,7 +44,7 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst når behandlingen er ferdig vilkårsvurdert`() {
-        val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert.Innvilget>()
+        val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
         every { behandlingVilkårsvurdert.saksbehandler } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingVilkårsvurdert)
         assert(klarTilBeslutningTekst === "Klar til behandling")
