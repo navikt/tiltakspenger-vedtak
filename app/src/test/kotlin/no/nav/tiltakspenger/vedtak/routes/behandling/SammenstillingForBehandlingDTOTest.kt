@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
@@ -19,6 +20,10 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst basert på behandlingen`() {
+        val opprettetBehandling = mockk<BehandlingOpprettet>()
+        val opprettetStatus = finnStatus(opprettetBehandling)
+        assert(opprettetStatus === "Klar til behandling")
+
         val avslåttBehandling = mockk<BehandlingIverksatt>()
         every { avslåttBehandling.status } returns BehandlingStatus.Avslag
         val avslagStatus = finnStatus(avslåttBehandling)
