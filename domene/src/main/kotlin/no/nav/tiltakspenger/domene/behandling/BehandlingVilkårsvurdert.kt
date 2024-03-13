@@ -108,7 +108,6 @@ data class BehandlingVilkårsvurdert(
         this.copy(tiltak = tiltak)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        // TODO: Denne må kvalitetssikres av Richard
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent)
