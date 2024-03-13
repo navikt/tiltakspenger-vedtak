@@ -18,8 +18,8 @@ data class BehandlingTilBeslutter(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
+    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {

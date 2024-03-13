@@ -17,6 +17,7 @@ data class BehandlingOpprettet(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
+    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
 ) : Førstegangsbehandling {
 
     companion object {

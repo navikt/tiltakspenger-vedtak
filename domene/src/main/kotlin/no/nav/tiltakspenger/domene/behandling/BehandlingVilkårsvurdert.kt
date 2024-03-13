@@ -21,9 +21,9 @@ data class BehandlingVilkårsvurdert(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
+    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
 ) : Førstegangsbehandling {
 
     fun vurderPåNytt(): BehandlingVilkårsvurdert {
