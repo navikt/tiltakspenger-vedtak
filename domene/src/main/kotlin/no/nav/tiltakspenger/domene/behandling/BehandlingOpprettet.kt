@@ -118,10 +118,13 @@ data class BehandlingOpprettet(
             tiltak = tiltak,
         )
 
-    override fun startBehandling(saksbehandler: String): Førstegangsbehandling =
-        this.copy(
-            saksbehandler = saksbehandler,
+    override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
+        return this.copy(
+            saksbehandler = saksbehandler.navIdent,
         )
+    }
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }

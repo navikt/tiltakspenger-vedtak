@@ -6,7 +6,9 @@ import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 
 data class BehandlingTilBeslutter(
     override val id: BehandlingId,
@@ -24,8 +26,12 @@ data class BehandlingTilBeslutter(
 
     override fun erTilBeslutter() = true
 
-    fun iverksett(): BehandlingIverksatt {
+    fun iverksett(utøvendeBeslutter: Saksbehandler): BehandlingIverksatt {
+        // checkNotNull(saksbehandler) { "Kan ikke iverksette en behandling uten saksbehandler" }
         checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
+        check(utøvendeBeslutter.roller.contains(Rolle.BESLUTTER)) { "Saksbehandler må være beslutter" }
+        check(this.beslutter == utøvendeBeslutter.navIdent) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
+
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("En behandling til beslutter kan ikke være manuell")
             BehandlingStatus.Avslag -> throw IllegalStateException("Iverksett av Avslag fungerer, men skal ikke tillates i mvp 1 ${this.id}")
@@ -45,7 +51,9 @@ data class BehandlingTilBeslutter(
         }
     }
 
-    fun sendTilbake(): BehandlingVilkårsvurdert {
+    fun sendTilbake(utøvendeBeslutter: Saksbehandler): BehandlingVilkårsvurdert {
+        check(utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin()) { "Saksbehandler må være beslutter eller administrator" }
+        check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
         return BehandlingVilkårsvurdert(
             id = id,
             sakId = sakId,
@@ -82,10 +90,13 @@ data class BehandlingTilBeslutter(
         }
     }
 
-    override fun startBehandling(saksbehandler: String): Førstegangsbehandling =
-        this.copy(
-            beslutter = saksbehandler,
+    override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        check(this.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
+        check(saksbehandler.isBeslutter()) { "Saksbehandler må være beslutter" }
+        return this.copy(
+            beslutter = saksbehandler.navIdent,
         )
+    }
 
     private fun vurderPåNytt(): BehandlingVilkårsvurdert {
         return BehandlingOpprettet(

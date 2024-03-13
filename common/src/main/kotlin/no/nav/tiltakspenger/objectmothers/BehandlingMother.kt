@@ -16,6 +16,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -84,13 +86,15 @@ interface BehandlingMother {
     }
 
     fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter =
-        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = "123").tilBeslutting()
+        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
+            .tilBeslutting(saksbehandler123())
 
     fun behandlingTilBeslutterAvslag(): BehandlingTilBeslutter =
-        behandlingVilkårsvurdertAvslag().copy(saksbehandler = "123").tilBeslutting()
+        behandlingVilkårsvurdertAvslag().copy(saksbehandler = saksbehandler123().navIdent)
+            .tilBeslutting(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): BehandlingIverksatt =
-        behandlingTilBeslutterInnvilget().copy(beslutter = "beslutter").iverksett()
+        behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent).iverksett(beslutter())
 
     fun vilkårViHenter() = listOf(
         Vilkår.AAP,

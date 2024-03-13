@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
@@ -44,6 +45,7 @@ internal class SakServiceTest {
     private lateinit var vedtakService: VedtakService
     private lateinit var sakService: SakService
     private lateinit var attesteringRepo: AttesteringRepo
+    private lateinit var personopplysningService: PersonopplysningService
 
     @BeforeEach
     fun setup() {
@@ -51,7 +53,9 @@ internal class SakServiceTest {
         behandlingRepo = mockk()
         vedtakService = mockk()
         attesteringRepo = mockk()
-        behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+        personopplysningService = mockk(relaxed = true)
+        behandlingService =
+            BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 

@@ -58,7 +58,7 @@ class TiltakRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.hentBehandling(any()) } returns behandling
+        every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
         every { behandlingService.oppdaterTiltak(any(), any()) } returns Unit
 
         testApplication {
@@ -103,7 +103,7 @@ class TiltakRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.hentBehandling(any()) } returns behandling
+        every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
         val tiltak = slot<List<Tiltak>>()
         every { behandlingService.oppdaterTiltak(any(), capture(tiltak)) } returns Unit
 

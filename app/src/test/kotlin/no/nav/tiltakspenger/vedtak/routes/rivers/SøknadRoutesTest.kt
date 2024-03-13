@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import org.junit.jupiter.api.AfterEach
@@ -54,8 +55,10 @@ class SøknadRoutesTest {
         søkerRepository = søkerRepository,
         rapidsConnection = testRapid,
     )
+    private val personopplysningService = mockk<PersonopplysningService>(relaxed = true)
 
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+    private val behandlingService =
+        BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach

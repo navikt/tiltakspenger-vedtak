@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.felles.Saksbehandler
 import java.time.LocalDate
 
 data class SaksopplysningDTO(
@@ -13,7 +14,10 @@ data class SaksopplysningDTO(
     val harYtelse: Boolean,
 ) {
     companion object {
-        fun lagSaksopplysningMedVilkår(saksbehandler: String, saksopplysning: SaksopplysningDTO): Saksopplysning {
+        fun lagSaksopplysningMedVilkår(
+            saksbehandler: Saksbehandler,
+            saksopplysning: SaksopplysningDTO,
+        ): Saksopplysning {
             val vilkår = when (saksopplysning.vilkår) {
                 "AAP" -> Vilkår.AAP
                 "ALDER" -> Vilkår.ALDER
@@ -48,7 +52,7 @@ data class SaksopplysningDTO(
                 vilkår = vilkår,
                 detaljer = saksopplysning.begrunnelse,
                 typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
-                saksbehandler = saksbehandler,
+                saksbehandler = saksbehandler.navIdent,
             )
         }
     }
