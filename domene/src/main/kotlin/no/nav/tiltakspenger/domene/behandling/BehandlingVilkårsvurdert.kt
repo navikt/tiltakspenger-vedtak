@@ -117,38 +117,4 @@ data class BehandlingVilkårsvurdert(
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }
-
-    companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            søknader: List<Søknad>,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            vilkårsvurderinger: List<Vurdering>,
-            status: String,
-            saksbehandler: String?,
-            utfallsperioder: List<Utfallsperiode>,
-        ): BehandlingVilkårsvurdert {
-            val behandlingVilkårsvurdertStatus = when (status) {
-                "Innvilget" -> BehandlingStatus.Innvilget
-                "Avslag" -> BehandlingStatus.Avslag
-                "Manuell" -> BehandlingStatus.Manuell
-                else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-            }
-            return BehandlingVilkårsvurdert(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = saksbehandler,
-                utfallsperioder = utfallsperioder,
-                status = behandlingVilkårsvurdertStatus,
-            )
-        }
-    }
 }

@@ -21,26 +21,6 @@ data class BehandlingOpprettet(
 ) : Førstegangsbehandling {
 
     companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            søknader: List<Søknad>,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            saksbehandler: String?,
-        ): BehandlingOpprettet {
-            return BehandlingOpprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                saksbehandler = saksbehandler,
-            )
-        }
-
         // TODO: Hva er forskjellen på leggTilSøknad og opprettBehandling?
         fun leggTilSøknad(behandling: Førstegangsbehandling, søknad: Søknad): BehandlingOpprettet {
             val fakta = if (søknad.vurderingsperiode() != behandling.vurderingsperiode) {
