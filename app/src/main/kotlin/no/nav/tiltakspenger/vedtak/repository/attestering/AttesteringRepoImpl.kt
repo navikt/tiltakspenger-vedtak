@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
 import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl : AttesteringRepo {

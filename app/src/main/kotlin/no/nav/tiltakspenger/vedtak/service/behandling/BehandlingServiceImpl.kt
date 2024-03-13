@@ -1,34 +1,42 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
 import io.ktor.server.plugins.NotFoundException
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
+import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
-import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
+import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
+import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
-    private val vedtakService: VedtakService,
-    private val attesteringRepo: AttesteringRepo,
-    private val personopplysningService: PersonopplysningService,
+    private val personopplysningRepo: PersonopplysningerRepo,
+    private val utbetalingService: UtbetalingService,
+    private val brevPublisherGateway: BrevPublisherGateway,
+    private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
+    private val multiRepo: MultiRepo,
 ) : BehandlingService {
 
     override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
@@ -41,7 +49,7 @@ class BehandlingServiceImpl(
 
     override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlle()
-            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(saksbehandler) }
+            .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
@@ -88,12 +96,7 @@ class BehandlingServiceImpl(
 
         when (behandling) {
             is BehandlingTilBeslutter -> {
-                sessionOf(DataSource.hikariDataSource).use {
-                    it.transaction { txSession ->
-                        behandlingRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), txSession)
-                        attesteringRepo.lagre(attestering, txSession)
-                    }
-                }
+                multiRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), attestering)
             }
 
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
@@ -113,13 +116,35 @@ class BehandlingServiceImpl(
             begrunnelse = null,
             beslutter = utøvendeBeslutter.navIdent,
         )
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                behandlingRepo.lagre(iverksattBehandling, txSession)
-                attesteringRepo.lagre(attestering, txSession)
-                vedtakService.lagVedtakForBehandling(iverksattBehandling, txSession)
-            }
+
+        val vedtak = lagVedtakForBehandling(iverksattBehandling)
+        multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
+            // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
+            // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
+            utbetalingService.sendBehandlingTilUtbetaling(vedtak)
         }
+
+        meldekortGrunnlagGateway.sendMeldekortGrunnlag(vedtak)
+
+        val personopplysninger =
+            personopplysningRepo.hent(vedtak.sakId).søker()
+        brevPublisherGateway.sendBrev(vedtak, personopplysninger)
+    }
+
+    fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
+        return Vedtak(
+            id = VedtakId.random(),
+            sakId = behandling.sakId,
+            behandling = behandling,
+            vedtaksdato = LocalDateTime.now(),
+            vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
+            utfallsperioder = behandling.utfallsperioder,
+            periode = behandling.vurderingsperiode,
+            saksopplysninger = behandling.saksopplysninger(),
+            vurderinger = behandling.vilkårsvurderinger,
+            saksbehandler = behandling.saksbehandler,
+            beslutter = behandling.beslutter,
+        )
     }
 
     // TODO: Burde det vært to ulike funksjoner avhengig av om det er saksbehandler eller beslutter det gjelder?
@@ -138,7 +163,7 @@ class BehandlingServiceImpl(
         utøvendeSaksbehandler: Saksbehandler,
     ): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
-            .filter { behandling -> personopplysningService.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
+            .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
 
     private fun hentBehandling(behandlingId: BehandlingId): Behandling =

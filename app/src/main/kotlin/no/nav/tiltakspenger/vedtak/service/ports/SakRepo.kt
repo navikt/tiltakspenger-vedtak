@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.sak
+package no.nav.tiltakspenger.vedtak.service.ports
 
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SakDetaljer

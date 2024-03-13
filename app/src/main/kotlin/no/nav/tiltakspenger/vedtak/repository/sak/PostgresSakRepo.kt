@@ -13,10 +13,11 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
