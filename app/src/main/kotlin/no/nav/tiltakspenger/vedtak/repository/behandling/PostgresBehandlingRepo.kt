@@ -229,7 +229,7 @@ internal class PostgresBehandlingRepo(
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
         return when (val type = string("tilstand")) {
-            "søknadsbehandling" -> BehandlingOpprettet.fromDb(
+            "søknadsbehandling" -> BehandlingOpprettet(
                 id = id,
                 sakId = sakId,
                 søknader = søknadDAO.hent(id, txSession),
@@ -239,46 +239,68 @@ internal class PostgresBehandlingRepo(
                 saksbehandler = saksbehandler,
             )
 
-            "Vilkårsvurdert" -> BehandlingVilkårsvurdert.fromDb(
-                id = id,
-                sakId = sakId,
-                søknader = søknadDAO.hent(id, txSession),
-                vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                tiltak = tiltakDAO.hent(id, txSession),
-                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                saksbehandler = saksbehandler,
-                status = status,
-            )
+            "Vilkårsvurdert" -> {
+                val behandlingVilkårsvurdertStatus = when (status) {
+                    "Innvilget" -> BehandlingStatus.Innvilget
+                    "Avslag" -> BehandlingStatus.Avslag
+                    "Manuell" -> BehandlingStatus.Manuell
+                    else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
+                }
+                BehandlingVilkårsvurdert(
+                    id = id,
+                    sakId = sakId,
+                    søknader = søknadDAO.hent(id, txSession),
+                    vurderingsperiode = Periode(fom, tom),
+                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    tiltak = tiltakDAO.hent(id, txSession),
+                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                    saksbehandler = saksbehandler,
+                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
+                    status = behandlingVilkårsvurdertStatus,
+                )
+            }
 
-            "TilBeslutting" -> BehandlingTilBeslutter.fromDb(
-                id = id,
-                sakId = sakId,
-                søknader = søknadDAO.hent(id, txSession),
-                vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                tiltak = tiltakDAO.hent(id, txSession),
-                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                status = status,
-                saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
-                beslutter = beslutter,
-            )
+            "TilBeslutting" -> {
+                val behandlingStatus = when (status) {
+                    "Innvilget" -> BehandlingStatus.Innvilget
+                    "Avslag" -> BehandlingStatus.Avslag
+                    else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
+                }
+                BehandlingTilBeslutter(
+                    id = id,
+                    sakId = sakId,
+                    søknader = søknadDAO.hent(id, txSession),
+                    vurderingsperiode = Periode(fom, tom),
+                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    tiltak = tiltakDAO.hent(id, txSession),
+                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
+                    saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
+                    beslutter = beslutter,
+                    status = behandlingStatus,
+                )
+            }
 
-            "Iverksatt" -> BehandlingIverksatt.fromDb(
-                id = id,
-                sakId = sakId,
-                søknader = søknadDAO.hent(id, txSession),
-                vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                tiltak = tiltakDAO.hent(id, txSession),
-                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                status = status,
-                saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
-                beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
-            )
+            "Iverksatt" -> {
+                val behandlingStatus = when (status) {
+                    "Innvilget" -> BehandlingStatus.Innvilget
+                    "Avslag" -> BehandlingStatus.Avslag
+                    else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
+                }
+                BehandlingIverksatt(
+                    id = id,
+                    sakId = sakId,
+                    søknader = søknadDAO.hent(id, txSession),
+                    vurderingsperiode = Periode(fom, tom),
+                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    tiltak = tiltakDAO.hent(id, txSession),
+                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
+                    saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
+                    beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
+                    status = behandlingStatus,
+                )
+            }
 
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
