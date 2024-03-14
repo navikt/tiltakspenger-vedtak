@@ -9,40 +9,39 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 
-// VI KOM HIT!
-data class RevurdertBehandlingVilkårsvurdert(
+data class RevurderingVilkårsvurdert(
     override val id: BehandlingId,
     override val sakId: SakId,
-    override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
+    override val forrigeBehandling: Førstegangsbehandling,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
     val utfallsperioder: List<Utfallsperiode>,
-) : Førstegangsbehandling {
+) : Revurderingsbehandling {
 
-    fun vurderPåNytt(): RevurdertBehandlingVilkårsvurdert {
-        return BehandlingOpprettet(
+    fun vurderPåNytt(): RevurderingVilkårsvurdert {
+        return RevurderingOpprettet(
             id = id,
             sakId = sakId,
-            søknader = søknader,
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
+            forrigeBehandling = forrigeBehandling,
         ).vilkårsvurder()
     }
 
-    fun iverksett(): BehandlingIverksatt {
+    fun iverksett(): RevurderingIverksatt {
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")
             else ->
-                BehandlingIverksatt(
+                RevurderingIverksatt(
                     id = id,
                     sakId = sakId,
-                    søknader = søknader,
+                    forrigeBehandling = forrigeBehandling,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
@@ -55,16 +54,15 @@ data class RevurdertBehandlingVilkårsvurdert(
         }
     }
 
-    fun tilBeslutting(saksbehandler: Saksbehandler): BehandlingTilBeslutter {
+    fun tilBeslutting(saksbehandler: Saksbehandler): RevurderingTilBeslutter {
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
 
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
-            else -> BehandlingTilBeslutter(
+            else -> RevurderingTilBeslutter(
                 id = id,
                 sakId = sakId,
-                søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
@@ -73,18 +71,12 @@ data class RevurdertBehandlingVilkårsvurdert(
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
                 status = status,
+                forrigeBehandling = forrigeBehandling,
             )
         }
     }
 
     override fun erÅpen() = true
-
-    override fun leggTilSøknad(søknad: Søknad): RevurdertBehandlingVilkårsvurdert {
-        return BehandlingOpprettet.leggTilSøknad(
-            behandling = this,
-            søknad = søknad,
-        ).vilkårsvurder()
-    }
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
         val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
@@ -101,16 +93,16 @@ data class RevurdertBehandlingVilkårsvurdert(
         }
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
+    override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    override fun startBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent)
     }
 
-    override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    override fun avbrytBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }
@@ -119,7 +111,6 @@ data class RevurdertBehandlingVilkårsvurdert(
         fun fromDb(
             id: BehandlingId,
             sakId: SakId,
-            søknader: List<Søknad>,
             vurderingsperiode: Periode,
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
@@ -127,17 +118,18 @@ data class RevurdertBehandlingVilkårsvurdert(
             status: String,
             saksbehandler: String?,
             utfallsperioder: List<Utfallsperiode>,
-        ): RevurdertBehandlingVilkårsvurdert {
+            forrigeBehandling: Førstegangsbehandling,
+        ): RevurderingVilkårsvurdert {
             val behandlingVilkårsvurdertStatus = when (status) {
                 "Innvilget" -> BehandlingStatus.Innvilget
                 "Avslag" -> BehandlingStatus.Avslag
                 "Manuell" -> BehandlingStatus.Manuell
                 else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
             }
-            return RevurdertBehandlingVilkårsvurdert(
+            return RevurderingVilkårsvurdert(
                 id = id,
                 sakId = sakId,
-                søknader = søknader,
+                forrigeBehandling = forrigeBehandling,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,

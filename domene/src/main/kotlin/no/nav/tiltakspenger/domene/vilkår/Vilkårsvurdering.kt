@@ -4,15 +4,14 @@ import no.nav.tiltakspenger.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.RevurderingBehandlingOpprettet
-import no.nav.tiltakspenger.domene.behandling.RevurdertBehandlingVilkårsvurdert
+import no.nav.tiltakspenger.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.domene.behandling.RevurderingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
 
-
-fun RevurderingBehandlingOpprettet.vilkårsvurder(): RevurdertBehandlingVilkårsvurdert {
-    // fyll ut
+fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
+    TODO()
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {

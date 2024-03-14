@@ -2,12 +2,13 @@ package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 
-data class RevurderingBehandlingOpprettet(
+data class RevurderingOpprettet(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val forrigeBehandling: Førstegangsbehandling,
@@ -15,7 +16,7 @@ data class RevurderingBehandlingOpprettet(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
-    ) : Revurderingsbehandling {
+) : Revurderingsbehandling {
     companion object {
         fun fromDb(
             id: BehandlingId,
@@ -25,8 +26,8 @@ data class RevurderingBehandlingOpprettet(
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
             saksbehandler: String?,
-        ): RevurderingBehandlingOpprettet {
-            return RevurderingBehandlingOpprettet(
+        ): RevurderingOpprettet {
+            return RevurderingOpprettet(
                 id = id,
                 sakId = sakId,
                 forrigeBehandling = forrigeBehandling,
@@ -37,8 +38,8 @@ data class RevurderingBehandlingOpprettet(
             )
         }
 
-        fun opprettRevurderingsbehandling(behandlingIverksatt: BehandlingIverksatt): RevurderingBehandlingOpprettet {
-            return RevurderingBehandlingOpprettet(
+        fun opprettRevurderingsbehandling(behandlingIverksatt: BehandlingIverksatt): RevurderingOpprettet {
+            return RevurderingOpprettet(
                 id = BehandlingId.random(),
                 sakId = behandlingIverksatt.sakId,
                 forrigeBehandling = behandlingIverksatt,
@@ -67,12 +68,12 @@ data class RevurderingBehandlingOpprettet(
         }
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingBehandlingOpprettet =
+    override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =
         this.copy(
             tiltak = tiltak,
         )
 
-    override fun startBehandling(saksbehandler: Saksbehandler): RevurderingBehandlingOpprettet {
+    override fun startBehandling(saksbehandler: Saksbehandler): RevurderingOpprettet {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(
@@ -80,7 +81,7 @@ data class RevurderingBehandlingOpprettet(
         )
     }
 
-    override fun avbrytBehandling(saksbehandler: Saksbehandler): RevurderingBehandlingOpprettet {
+    override fun avbrytBehandling(saksbehandler: Saksbehandler): RevurderingOpprettet {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(
             saksbehandler = null,
