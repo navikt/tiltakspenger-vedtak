@@ -12,26 +12,24 @@ object ExceptionHandler {
     ) {
         when (cause) {
             is IllegalStateException -> {
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    ExceptionResponse(cause.message ?: cause.toString()),
-                )
+                call.respondWith(HttpStatusCode.InternalServerError, cause)
             }
 
             is ManglendeJWTTokenException -> {
-                call.respond(
-                    HttpStatusCode.Unauthorized,
-                    ExceptionResponse(cause.message),
-                )
+                call.respondWith(HttpStatusCode.Unauthorized, cause)
             }
 
             // Catch all
             else -> {
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    ExceptionResponse(cause.message ?: cause.toString()),
-                )
+                call.respondWith(HttpStatusCode.InternalServerError, cause)
             }
         }
+    }
+
+    private suspend fun ApplicationCall.respondWith(statusCode: HttpStatusCode, ex: Throwable) {
+        this.respond(
+            statusCode,
+            ExceptionResponse(ex, statusCode),
+        )
     }
 }

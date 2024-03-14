@@ -38,7 +38,9 @@ class ExceptionHandlingTest {
         val exceptedStatusCode = HttpStatusCode.Unauthorized
         val expectedBody = """
         {
-          "message":"JWTToken ikke funnet"
+          "status": 401,
+          "title": "ManglendeJWTTokenException",
+          "detail": "JWTToken ikke funnet"
         }
         """.trimIndent()
 
@@ -81,7 +83,9 @@ class ExceptionHandlingTest {
         val exceptedStatusCode = HttpStatusCode.InternalServerError
         val expectedBody = """
         {
-          "message":"Wuzza"
+          "status": 500,
+          "title": "IllegalStateException",
+          "detail": "Wuzza"
         }
         """.trimIndent()
 
