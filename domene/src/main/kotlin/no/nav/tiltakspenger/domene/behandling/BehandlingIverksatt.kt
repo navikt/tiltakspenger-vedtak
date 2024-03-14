@@ -34,7 +34,7 @@ data class BehandlingIverksatt(
             val nyBehandling = BehandlingOpprettet(
                 id = BehandlingId.random(),
                 sakId = this.sakId,
-                søknader = this.søknader,
+                søknader = listOf(this.søknad()),
                 vurderingsperiode = this.vurderingsperiode,
                 saksopplysninger = oppdatertSaksopplysningListe,
                 tiltak = this.tiltak,
