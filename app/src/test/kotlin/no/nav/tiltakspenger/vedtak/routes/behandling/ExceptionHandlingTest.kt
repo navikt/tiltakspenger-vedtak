@@ -16,6 +16,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
@@ -31,7 +32,7 @@ class ExceptionHandlingTest {
 
     @Test
     fun `Manglende token skal bli til 401`() {
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns null
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } throws ManglendeJWTTokenException()
         every { behandlingService.hentAlleBehandlinger(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.Unauthorized
@@ -62,20 +63,19 @@ class ExceptionHandlingTest {
                 },
             ).apply {
                 status shouldBe exceptedStatusCode
-                // TODO: Det følgende feiler, det returneres ren tekst..
-                // contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                // JSONAssert.assertEquals(
-                //     expectedBody,
-                //     bodyAsText(),
-                //     JSONCompareMode.LENIENT,
-                // )
+                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                JSONAssert.assertEquals(
+                    expectedBody,
+                    bodyAsText(),
+                    JSONCompareMode.LENIENT,
+                )
             }
         }
     }
 
     @Test
     fun `IllegalStateException skal bli til 500`() {
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns ObjectMother.beslutter()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns ObjectMother.beslutter()
         every { behandlingService.hentAlleBehandlinger(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.InternalServerError

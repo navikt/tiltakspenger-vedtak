@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.UgyldigRequestException
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -26,8 +27,7 @@ fun Route.behandlingBenkRoutes(
     get(behandlingerPath) {
         SECURELOG.debug("Mottatt request på $behandlingerPath")
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
         val behandlinger = behandlingService.hentAlleBehandlinger(saksbehandler)
             .mapBehandlinger()
@@ -38,11 +38,10 @@ fun Route.behandlingBenkRoutes(
     post("$behandlingPath/startbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
         val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+            ?: throw UgyldigRequestException("BehandlingId ikke funnet")
 
         behandlingService.taBehandling(behandlingId, saksbehandler) // Bør kanskje sjekke rolle dypere
 

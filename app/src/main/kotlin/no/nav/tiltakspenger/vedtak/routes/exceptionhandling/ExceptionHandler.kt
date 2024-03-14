@@ -17,6 +17,21 @@ object ExceptionHandler {
                     ExceptionResponse(cause.message ?: cause.toString()),
                 )
             }
+
+            is ManglendeJWTTokenException -> {
+                call.respond(
+                    HttpStatusCode.Unauthorized,
+                    ExceptionResponse(cause.message),
+                )
+            }
+
+            // Catch all
+            else -> {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    ExceptionResponse(cause.message ?: cause.toString()),
+                )
+            }
         }
     }
 }
