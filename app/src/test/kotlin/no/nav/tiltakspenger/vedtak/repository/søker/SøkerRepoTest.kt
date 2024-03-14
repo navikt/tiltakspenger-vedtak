@@ -23,7 +23,7 @@ internal class SøkerRepoTest {
         flywayMigrate()
     }
 
-    private val repo = SøkerRepository()
+    private val repo = SøkerRepositoryImpl()
 
     @Test
     fun `lagre og hent`() {

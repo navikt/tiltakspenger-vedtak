@@ -18,16 +18,20 @@ import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
+import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -40,7 +44,7 @@ class SøknadRoutesTest {
     }
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val søkerRepository = mockk<SøkerRepositoryImpl>(relaxed = true)
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
@@ -55,10 +59,21 @@ class SøknadRoutesTest {
         søkerRepository = søkerRepository,
         rapidsConnection = testRapid,
     )
-    private val personopplysningService = mockk<PersonopplysningService>(relaxed = true)
+    private val personopplysningRepo = mockk<PersonopplysningerRepo>(relaxed = true)
+    private val utbetalingService = mockk<UtbetalingService>(relaxed = true)
+    private val brevPublisherGateway = mockk<BrevPublisherGateway>(relaxed = true)
+    private val meldekortGrunnlagGateway = mockk<MeldekortGrunnlagGateway>(relaxed = true)
+    private val multiRepo = mockk<MultiRepo>(relaxed = true)
 
     private val behandlingService =
-        BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
+        BehandlingServiceImpl(
+            behandlingRepo,
+            personopplysningRepo,
+            utbetalingService,
+            brevPublisherGateway,
+            meldekortGrunnlagGateway,
+            multiRepo,
+        )
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
     @AfterEach

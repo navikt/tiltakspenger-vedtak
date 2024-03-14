@@ -24,14 +24,17 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
+import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -39,23 +42,36 @@ import org.junit.jupiter.api.Test
 import java.util.Random
 
 internal class SakServiceTest {
-    private lateinit var sakRepo: SakRepo
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
+    private lateinit var utbetalingService: UtbetalingService
+    private lateinit var brevPublisherGateway: BrevPublisherGateway
+    private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var multiRepo: MultiRepo
+    private lateinit var personopplysningRepo: PersonopplysningerRepo
+    private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
-    private lateinit var attesteringRepo: AttesteringRepo
-    private lateinit var personopplysningService: PersonopplysningService
 
     @BeforeEach
     fun setup() {
-        sakRepo = mockk()
         behandlingRepo = mockk()
         vedtakService = mockk()
-        attesteringRepo = mockk()
-        personopplysningService = mockk(relaxed = true)
+        utbetalingService = mockk()
+        brevPublisherGateway = mockk()
+        meldekortGrunnlagGateway = mockk()
+        multiRepo = mockk()
+        sakRepo = mockk()
+        personopplysningRepo = mockk(relaxed = true)
         behandlingService =
-            BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
+            BehandlingServiceImpl(
+                behandlingRepo,
+                personopplysningRepo,
+                utbetalingService,
+                brevPublisherGateway,
+                meldekortGrunnlagGateway,
+                multiRepo,
+            )
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
 

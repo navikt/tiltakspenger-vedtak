@@ -27,7 +27,6 @@ import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
@@ -47,7 +46,7 @@ import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
+import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
@@ -68,7 +67,6 @@ internal fun Application.vedtakApi(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,
-    personopplysningService: PersonopplysningService,
     attesteringRepo: AttesteringRepo,
 ) {
     install(CallId)
