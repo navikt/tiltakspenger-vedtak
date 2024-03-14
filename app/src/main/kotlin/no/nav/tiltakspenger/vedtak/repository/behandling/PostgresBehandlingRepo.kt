@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
