@@ -18,8 +18,8 @@ data class RevurderingTilBeslutter(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     override val forrigeBehandling: Førstegangsbehandling,
+    override val utfallsperioder: List<Utfallsperiode>,
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Revurderingsbehandling {

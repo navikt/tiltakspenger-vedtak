@@ -51,6 +51,9 @@ data class RevurderingOpprettet(
         }
     }
 
+    override val utfallsperioder: List<Utfallsperiode>
+        get() = TODO("Not yet implemented")
+
     override fun erÅpen() = true
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {

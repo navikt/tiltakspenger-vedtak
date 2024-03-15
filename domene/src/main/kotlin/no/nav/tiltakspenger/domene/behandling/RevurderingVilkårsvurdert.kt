@@ -17,9 +17,9 @@ data class RevurderingVilkårsvurdert(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val forrigeBehandling: Førstegangsbehandling,
+    override val utfallsperioder: List<Utfallsperiode>,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
 ) : Revurderingsbehandling {
 
     fun vurderPåNytt(): RevurderingVilkårsvurdert {
