@@ -7,10 +7,11 @@ import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingRevurdering
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -147,9 +148,9 @@ class BehandlingServiceImpl(
         hentBehandlingOrNull(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
-    override fun opprettRevurdering(behandlingId: BehandlingId): BehandlingRevurdering {
+    override fun opprettRevurdering(behandlingId: BehandlingId): Revurderingsbehandling {
         val iverksattBehandling = behandlingRepo.hent(behandlingId) as BehandlingIverksatt
-        val revurderingBehandling = BehandlingRevurdering.Opprettet.opprettRevurderingsbehandling(
+        val revurderingBehandling = RevurderingOpprettet.opprettRevurderingsbehandling(
             behandlingIverksatt = iverksattBehandling,
         )
         return revurderingBehandling

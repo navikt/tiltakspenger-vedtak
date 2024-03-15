@@ -1,13 +1,14 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import kotliquery.TransactionalSession
+import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 
 interface BehandlingRepo {
-    fun lagre(behandling: Førstegangsbehandling): Førstegangsbehandling
-    fun lagre(behandling: Førstegangsbehandling, tx: TransactionalSession): Førstegangsbehandling
+    fun lagre(behandling: Behandling): Behandling
+    fun lagre(behandling: Behandling, tx: TransactionalSession): Behandling
     fun hent(behandlingId: BehandlingId): Førstegangsbehandling?
     fun hentAlle(): List<Førstegangsbehandling>
     fun hentAlleForIdent(ident: String): List<Førstegangsbehandling>

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
-import no.nav.tiltakspenger.domene.behandling.BehandlingRevurdering
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -19,5 +19,5 @@ interface BehandlingService {
     fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun opprettRevurdering(behandlingId: BehandlingId): BehandlingRevurdering
+    fun opprettRevurdering(behandlingId: BehandlingId): Revurderingsbehandling
 }
