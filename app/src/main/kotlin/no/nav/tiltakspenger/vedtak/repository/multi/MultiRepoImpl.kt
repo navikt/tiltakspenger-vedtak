@@ -26,7 +26,7 @@ class MultiRepoImpl(
             it.transaction { txSession ->
                 behandlingRepo.lagre(iverksattBehandling, txSession)
                 attesteringRepo.lagre(attestering, txSession)
-                vedtakRepo.lagreVedtak(vedtak)
+                vedtakRepo.lagreVedtak(vedtak, txSession)
                 return operasjon()
             }
         }
