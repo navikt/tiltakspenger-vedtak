@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.vedtak.innsending.Søker
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ import java.util.Random
 internal class SøkerServiceTest {
 
     private val innsendingRepo = mockk<InnsendingRepository>()
-    private val søkerRepo = mockk<SøkerRepository>()
+    private val søkerRepo = mockk<SøkerRepositoryImpl>()
     private val service = SøkerServiceImpl(søkerRepo)
 
     @Test

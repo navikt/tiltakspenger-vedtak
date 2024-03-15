@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.attestering
+package no.nav.tiltakspenger.vedtak.service.ports
 
 import kotliquery.TransactionalSession
 import no.nav.tiltakspenger.domene.attestering.Attestering

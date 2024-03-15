@@ -9,6 +9,8 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
@@ -151,7 +153,7 @@ fun mapSammenstillingDTO(
                         utfall = settUtfall(behandling = behandling, saksopplysning = it),
                     )
                 },
-                samletUtfall = settSamletUtfall(
+                samletUtfall = settSamletUtfallForSaksopplysninger(
                     behandling,
                     behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
                 ),
@@ -186,14 +188,13 @@ fun mapSammenstillingDTO(
                 endretTidspunkt = att.tidspunkt,
             )
         },
-        samletUtfall = settSamletUtfall(
-            behandling,
-            behandling.saksopplysninger(),
+        samletUtfall = settSamletUtfallForUtfallsperioder(
+            utfallsperioder = behandling.utfallsperioder,
         ),
     )
 }
 
-fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
+fun settSamletUtfallForSaksopplysninger(behandling: Behandling, saksopplysninger: List<Saksopplysning>): String {
     if (saksopplysninger.any { s ->
             settUtfall(
                 behandling,
@@ -213,6 +214,22 @@ fun settSamletUtfall(behandling: Behandling, saksopplysninger: List<Saksopplysni
         return Utfall.KREVER_MANUELL_VURDERING.name
     }
     return Utfall.OPPFYLT.name
+}
+
+fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
+    if (utfallsperioder.any { utfallsperiode ->
+            utfallsperiode.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING
+        }
+    ) {
+        return Utfall.KREVER_MANUELL_VURDERING.name
+    }
+    if (utfallsperioder.any { utfallsperiode ->
+            utfallsperiode.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER
+        }
+    ) {
+        return Utfall.OPPFYLT.name
+    }
+    return Utfall.IKKE_OPPFYLT.name
 }
 
 fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {

@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
@@ -43,7 +43,7 @@ class PersonopplysningerRoutesTest {
         observatører = listOf(),
     )
 
-    private val søkerRepository = mockk<SøkerRepository>(relaxed = true)
+    private val søkerRepository = mockk<SøkerRepositoryImpl>(relaxed = true)
     private val søkerMediator = SøkerMediator(
         søkerRepository = søkerRepository,
         rapidsConnection = testRapid,

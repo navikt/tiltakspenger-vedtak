@@ -35,33 +35,46 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningService
-import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakService
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
+import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var behandlingService: BehandlingService
-    private lateinit var vedtakService: VedtakService
-    private lateinit var attesteringRepo: AttesteringRepo
-    private lateinit var personopplysningService: PersonopplysningService
+    private lateinit var utbetalingService: UtbetalingService
+    private lateinit var brevPublisherGateway: BrevPublisherGateway
+    private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var multiRepo: MultiRepo
+    private lateinit var personopplysningRepo: PersonopplysningerRepo
 
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
-        vedtakService = mockk()
-        attesteringRepo = mockk()
-        personopplysningService = mockk(relaxed = true)
+        personopplysningRepo = mockk(relaxed = true)
+        utbetalingService = mockk()
+        brevPublisherGateway = mockk()
+        meldekortGrunnlagGateway = mockk()
+        multiRepo = mockk(relaxed = true)
+
         behandlingService =
-            BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo, personopplysningService)
+            BehandlingServiceImpl(
+                behandlingRepo,
+                personopplysningRepo,
+                utbetalingService,
+                brevPublisherGateway,
+                meldekortGrunnlagGateway,
+                multiRepo,
+            )
     }
 
     @AfterEach
@@ -281,7 +294,7 @@ internal class BehandlingServiceTest {
         ).behandlinger
 
         every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Førstegangsbehandling)
-        every { personopplysningService.hent(any()) } returns SakPersonopplysninger(person)
+        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(person)
 
         behandlingService.hentBehandlingForIdent("whatever", saksbehandler123()).size shouldBe 0
         behandlingService.hentBehandlingForIdent("whatever", saksbehandlerMedKode7()).size shouldBe 1
@@ -290,10 +303,9 @@ internal class BehandlingServiceTest {
     }
 
     @Test
-    @Disabled("Fungerer ikke fordi vi har transaksjonskode i BehandlingServiceImpl")
-    fun `sjekk at man ikke kan sende inn uten beslutter rolle`() {
+    fun `sjekk at man ikke kan sende tilbake uten beslutter rolle`() {
         val behandlingId = BehandlingId.random()
-        val behandling = behandlingTilBeslutterInnvilget()
+        val behandling = behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent)
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
 

@@ -18,8 +18,8 @@ data class BehandlingTilBeslutter(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
+    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
@@ -108,40 +108,5 @@ data class BehandlingTilBeslutter(
             tiltak = tiltak,
             saksbehandler = saksbehandler,
         ).vilkårsvurder()
-    }
-
-    companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            søknader: List<Søknad>,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            vilkårsvurderinger: List<Vurdering>,
-            status: String,
-            saksbehandler: String,
-            beslutter: String?,
-            utfallsperioder: List<Utfallsperiode>,
-        ): BehandlingTilBeslutter {
-            val behandlingStatus = when (status) {
-                "Innvilget" -> BehandlingStatus.Innvilget
-                "Avslag" -> BehandlingStatus.Avslag
-                else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
-            }
-            return BehandlingTilBeslutter(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                utfallsperioder = utfallsperioder,
-                saksbehandler = saksbehandler,
-                beslutter = beslutter,
-                status = behandlingStatus,
-            )
-        }
     }
 }

@@ -16,7 +16,8 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container

@@ -9,9 +9,9 @@ import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.vedtak.innsending.Skjerming
 import no.nav.tiltakspenger.vedtak.innsending.tolkere.AlderTolker
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")

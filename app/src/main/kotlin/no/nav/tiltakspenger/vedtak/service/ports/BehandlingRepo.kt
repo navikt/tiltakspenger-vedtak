@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling
+package no.nav.tiltakspenger.vedtak.service.ports
 
 import kotliquery.TransactionalSession
 import no.nav.tiltakspenger.domene.behandling.Behandling

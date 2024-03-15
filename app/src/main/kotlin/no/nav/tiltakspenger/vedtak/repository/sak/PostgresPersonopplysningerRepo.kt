@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
+import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
 import org.intellij.lang.annotations.Language
 
 internal class PostgresPersonopplysningerRepo(

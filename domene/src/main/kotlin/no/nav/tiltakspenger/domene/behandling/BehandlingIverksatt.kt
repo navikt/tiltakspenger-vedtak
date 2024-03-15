@@ -16,8 +16,8 @@ data class BehandlingIverksatt(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
+    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
     val beslutter: String,
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
@@ -31,7 +31,7 @@ data class BehandlingIverksatt(
             )
         } else {
             // todo() her må vi lage en revurdering
-            val nyBehandling = BehandlingOpprettet.fromDb(
+            val nyBehandling = BehandlingOpprettet(
                 id = BehandlingId.random(),
                 sakId = this.sakId,
                 søknader = listOf(this.søknad()),
@@ -48,39 +48,4 @@ data class BehandlingIverksatt(
     }
 
     override fun erTilBeslutter() = true
-
-    companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            søknader: List<Søknad>,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            vilkårsvurderinger: List<Vurdering>,
-            utfallsperioder: List<Utfallsperiode>,
-            status: String,
-            saksbehandler: String,
-            beslutter: String,
-        ): BehandlingIverksatt {
-            val behandlingStatus = when (status) {
-                "Innvilget" -> BehandlingStatus.Innvilget
-                "Avslag" -> BehandlingStatus.Avslag
-                else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-            }
-            return BehandlingIverksatt(
-                id = id,
-                sakId = sakId,
-                søknader = søknader,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                utfallsperioder = utfallsperioder,
-                saksbehandler = saksbehandler,
-                beslutter = beslutter,
-                status = behandlingStatus,
-            )
-        }
-    }
 }
