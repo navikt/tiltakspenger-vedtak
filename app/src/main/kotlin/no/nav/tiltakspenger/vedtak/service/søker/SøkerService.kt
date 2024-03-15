@@ -6,8 +6,10 @@ import no.nav.tiltakspenger.felles.SøkerId
 import java.time.LocalDate
 
 interface SøkerService {
-    fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
-    fun hentIdent(søkerId: SøkerId, saksbehandler: Saksbehandler): String?
+    fun hentSøkerIdOrNull(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO?
+    fun hentIdentOrNull(søkerId: SøkerId, saksbehandler: Saksbehandler): String?
+    fun hentSøkerId(ident: String, saksbehandler: Saksbehandler): SøkerIdDTO
+    fun hentIdent(søkerId: SøkerId, saksbehandler: Saksbehandler): String
 }
 
 data class SøkerIdDTO(

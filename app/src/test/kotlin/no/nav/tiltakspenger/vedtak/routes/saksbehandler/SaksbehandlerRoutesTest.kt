@@ -36,7 +36,7 @@ class SaksbehandlerRoutesTest {
 
     @Test
     fun `test`() {
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandler()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns saksbehandler()
 
         testApplication {
             application {

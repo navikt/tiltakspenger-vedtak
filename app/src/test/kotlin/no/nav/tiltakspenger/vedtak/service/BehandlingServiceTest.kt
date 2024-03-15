@@ -121,7 +121,7 @@ internal class BehandlingServiceTest {
         )
         val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val saksopplysning = Saksopplysning(
@@ -158,7 +158,7 @@ internal class BehandlingServiceTest {
         )
         val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val saksopplysning = Saksopplysning(
@@ -197,7 +197,7 @@ internal class BehandlingServiceTest {
         ).behandling
 
         val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val saksopplysning = Saksopplysning(
@@ -236,7 +236,7 @@ internal class BehandlingServiceTest {
         ).behandling
 
         val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val saksopplysning = Saksopplysning(
@@ -270,7 +270,7 @@ internal class BehandlingServiceTest {
         )
 
         val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
+        every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val tiltak = listOf(
@@ -307,7 +307,7 @@ internal class BehandlingServiceTest {
         val behandlingId = BehandlingId.random()
         val behandling = behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent)
 
-        every { behandlingRepo.hent(behandlingId) } returns behandling
+        every { behandlingRepo.hentOrNull(behandlingId) } returns behandling
 
         shouldThrow<IllegalStateException> {
             behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler123(), "begrunnelse")

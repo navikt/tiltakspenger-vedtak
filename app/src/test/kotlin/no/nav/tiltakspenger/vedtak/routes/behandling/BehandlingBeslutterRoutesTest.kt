@@ -32,7 +32,7 @@ class BehandlingBeslutterRoutesTest {
         val bId = slot<BehandlingId>()
         val saksbehandler = slot<Saksbehandler>()
 
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns beslutter()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns beslutter()
         every {
             behandlingService.sendTilbakeTilSaksbehandler(
                 capture(bId),
@@ -77,7 +77,7 @@ class BehandlingBeslutterRoutesTest {
         val bId = slot<BehandlingId>()
         val saksbehandler = slot<Saksbehandler>()
 
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
         every {
             behandlingService.sendTilbakeTilSaksbehandler(
                 capture(bId),

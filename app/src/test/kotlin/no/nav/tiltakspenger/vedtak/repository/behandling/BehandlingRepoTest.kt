@@ -73,7 +73,7 @@ internal class BehandlingRepoTest {
 
         behandlingRepo.lagre(behandling)
 
-        val hentBehandling = behandlingRepo.hent(behandling.id)
+        val hentBehandling = behandlingRepo.hentOrNull(behandling.id)
 
         hentBehandling shouldNotBe null
     }
@@ -112,7 +112,7 @@ internal class BehandlingRepoTest {
 
         behandlingRepo.lagre(behandling)
 
-        val hentBehandling = behandlingRepo.hent(behandling.id)
+        val hentBehandling = behandlingRepo.hentOrNull(behandling.id)
         if (hentBehandling is BehandlingOpprettet) {
             val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
             behandlingRepo.lagre(behandlingVilkårsvurdert)

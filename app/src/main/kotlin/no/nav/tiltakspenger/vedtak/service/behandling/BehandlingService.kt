@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface BehandlingService {
     fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling?
+    fun hentBehandling(behandlingId: BehandlingId): Førstegangsbehandling
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)

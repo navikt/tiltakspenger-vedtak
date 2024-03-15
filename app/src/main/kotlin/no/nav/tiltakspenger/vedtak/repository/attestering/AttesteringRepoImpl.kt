@@ -84,7 +84,7 @@ internal class AttesteringRepoImpl : AttesteringRepo {
 
     private fun Row.toAttestering() = Attestering(
         id = AttesteringId.fromDb(string("id")),
-        behandlingId = BehandlingId.fromDb(string("behandling_id")),
+        behandlingId = BehandlingId.fromString(string("behandling_id")),
         svar = AttesteringStatus.valueOf(string("svar")),
         begrunnelse = stringOrNull("begrunnelse"),
         beslutter = string("beslutter"),

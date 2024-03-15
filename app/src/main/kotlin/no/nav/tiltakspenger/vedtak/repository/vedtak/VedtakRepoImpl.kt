@@ -118,7 +118,7 @@ internal class VedtakRepoImpl(
         return Vedtak(
             id = id,
             sakId = SakId.fromDb(string("sak_id")),
-            behandling = behandlingRepo.hent(BehandlingId.fromDb(string("behandling_id"))) as BehandlingIverksatt,
+            behandling = behandlingRepo.hentOrNull(BehandlingId.fromString(string("behandling_id"))) as BehandlingIverksatt,
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),

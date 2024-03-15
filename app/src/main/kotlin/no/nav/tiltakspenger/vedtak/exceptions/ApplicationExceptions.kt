@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.exceptionhandling
+package no.nav.tiltakspenger.vedtak.exceptions
 
 class ManglendeJWTTokenException(override val message: String = "JWTToken ikke funnet") : RuntimeException(message)
 
