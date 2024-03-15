@@ -38,7 +38,7 @@ data class RevurderingOpprettet(
             )
         }
 
-        fun opprettRevurderingsbehandling(behandlingIverksatt: BehandlingIverksatt): RevurderingOpprettet {
+        fun opprettRevurderingsbehandling(behandlingIverksatt: BehandlingIverksatt, navIdent: String): RevurderingOpprettet {
             return RevurderingOpprettet(
                 id = BehandlingId.random(),
                 sakId = behandlingIverksatt.sakId,
@@ -46,7 +46,7 @@ data class RevurderingOpprettet(
                 vurderingsperiode = behandlingIverksatt.vurderingsperiode,
                 saksopplysninger = behandlingIverksatt.saksopplysninger,
                 tiltak = behandlingIverksatt.tiltak,
-                saksbehandler = null,
+                saksbehandler = navIdent,
             )
         }
     }

@@ -20,5 +20,5 @@ interface BehandlingService {
     fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun opprettRevurdering(behandlingId: BehandlingId): Revurderingsbehandling
+    fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling
 }

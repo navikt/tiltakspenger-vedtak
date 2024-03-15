@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -292,6 +293,7 @@ internal class PostgresBehandlingRepo(
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
             is BehandlingTilBeslutter -> "TilBeslutting"
             is BehandlingIverksatt -> "Iverksatt"
+            is RevurderingOpprettet -> "revurderingsbehandling"
             else -> throw IllegalStateException("Finner ikke tilstand")
         }
 
@@ -305,6 +307,7 @@ internal class PostgresBehandlingRepo(
             behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
             behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"
             behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is RevurderingOpprettet -> "Opprettet"
             else -> throw IllegalStateException("Finner ikke status")
         }
 

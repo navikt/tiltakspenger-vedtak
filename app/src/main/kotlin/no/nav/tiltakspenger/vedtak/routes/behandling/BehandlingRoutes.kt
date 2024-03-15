@@ -22,6 +22,7 @@ import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
+private val LOG = KotlinLogging.logger {}
 
 internal const val behandlingPath = "/behandling"
 internal const val behandlingerPath = "/behandlinger"
@@ -153,6 +154,18 @@ fun Route.behandlingRoutes(
     }
 
     post("$behandlingPath/opprettrevurdering/{behandlingId}") {
-        call.respond(message = "{}", status = HttpStatusCode.OK)
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        LOG.info { "Mottatt request om å opprette en revurdering på behandlingen: $behandlingId" }
+
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val revurdering = behandlingService.opprettRevurdering(behandlingId, saksbehandler)
+
+        LOG.info { "Revurderingen: $revurdering" }
+
+        call.respond(message = "{ \"id\":\"${revurdering.id}\"}", status = HttpStatusCode.OK)
     }
 }

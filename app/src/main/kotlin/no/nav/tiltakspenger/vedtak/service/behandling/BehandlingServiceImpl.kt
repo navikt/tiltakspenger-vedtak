@@ -148,11 +148,17 @@ class BehandlingServiceImpl(
         hentBehandlingOrNull(behandlingId)
             ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 
-    override fun opprettRevurdering(behandlingId: BehandlingId): Revurderingsbehandling {
+    override fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling {
+        check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
+
         val iverksattBehandling = behandlingRepo.hent(behandlingId) as BehandlingIverksatt
         val revurderingBehandling = RevurderingOpprettet.opprettRevurderingsbehandling(
             behandlingIverksatt = iverksattBehandling,
+            navIdent = utøvendeSaksbehandler.navIdent,
         )
+
+        behandlingRepo.lagre(revurderingBehandling)
+
         return revurderingBehandling
     }
 }
