@@ -4,5 +4,5 @@ import no.nav.tiltakspenger.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 
 interface UtbetalingGateway {
-    suspend fun iverksett(vedtak: Vedtak, sak: SakDetaljer): String
+    fun iverksett(vedtak: Vedtak, sak: SakDetaljer): String
 }

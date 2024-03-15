@@ -16,18 +16,18 @@ class MultiRepoImpl(
     private val attesteringRepo: AttesteringRepo,
     private val vedtakRepo: VedtakRepo,
 ) : MultiRepo {
-    override suspend fun <T> lagreOgKjør(
+    override fun <T> lagreOgKjør(
         iverksattBehandling: BehandlingIverksatt,
         attestering: Attestering,
         vedtak: Vedtak,
-        operasjon: suspend () -> T,
+        operasjon: () -> T,
     ): T {
         sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
+            return it.transaction { txSession ->
                 behandlingRepo.lagre(iverksattBehandling, txSession)
                 attesteringRepo.lagre(attestering, txSession)
                 vedtakRepo.lagreVedtak(vedtak, txSession)
-                return operasjon()
+                operasjon()
             }
         }
     }
