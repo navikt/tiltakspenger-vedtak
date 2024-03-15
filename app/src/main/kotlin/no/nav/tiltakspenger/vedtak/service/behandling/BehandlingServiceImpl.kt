@@ -107,7 +107,7 @@ class BehandlingServiceImpl(
         }
     }
 
-    override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
+    override fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
 
         val iverksattBehandling = when (behandling) {
