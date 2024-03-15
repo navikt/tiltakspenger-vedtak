@@ -8,7 +8,7 @@ class UtbetalingServiceImpl(
     private val utbetalingGateway: UtbetalingGateway,
     private val sakRepo: SakRepo,
 ) : UtbetalingService {
-    override suspend fun sendBehandlingTilUtbetaling(vedtak: Vedtak): String {
+    override fun sendBehandlingTilUtbetaling(vedtak: Vedtak): String {
         val sak = sakRepo.hentSakDetaljer(vedtak.sakId) ?: throw IllegalStateException("Fant ikke sak for vedtak")
         return utbetalingGateway.iverksett(vedtak, sak)
     }
