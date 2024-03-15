@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.felles.SakId
 interface BehandlingRepo {
     fun lagre(behandling: Behandling): Behandling
     fun lagre(behandling: Behandling, tx: TransactionalSession): Behandling
-    fun hent(behandlingId: BehandlingId): Førstegangsbehandling?
+    fun hent(behandlingId: BehandlingId): Behandling?
     fun hentAlle(): List<Førstegangsbehandling>
     fun hentAlleForIdent(ident: String): List<Førstegangsbehandling>
     fun hentForSak(sakId: SakId): List<Førstegangsbehandling>

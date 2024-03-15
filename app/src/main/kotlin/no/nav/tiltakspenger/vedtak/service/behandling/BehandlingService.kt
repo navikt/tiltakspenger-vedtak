@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
+import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.domene.behandling.Tiltak
@@ -8,7 +9,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface BehandlingService {
-    fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling?
+    fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling?
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)

@@ -183,7 +183,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Førstegangsbehandling>()
+        val lagretBehandling = slot<Behandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -222,7 +222,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Førstegangsbehandling>()
+        val lagretBehandling = slot<Behandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 

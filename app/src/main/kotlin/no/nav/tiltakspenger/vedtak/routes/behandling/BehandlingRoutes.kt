@@ -123,10 +123,12 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
+        val behandling = behandlingService.hentBehandlingOrNull(behandlingId)
+        val journalpostId = if (behandling is Førstegangsbehandling) behandling.søknad().journalpostId else null
         behandlingService.hentBehandlingOrNull(behandlingId)?.let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = it.søknad().journalpostId,
+                journalpostId = journalpostId ?: "",
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)

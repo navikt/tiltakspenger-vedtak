@@ -34,7 +34,7 @@ class BehandlingServiceImpl(
     private val personopplysningService: PersonopplysningService,
 ) : BehandlingService {
 
-    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
+    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
         return behandlingRepo.hent(behandlingId)
     }
 
