@@ -6,7 +6,7 @@ import mu.KotlinLogging
 private val LOG = KotlinLogging.logger {}
 
 object DataSource {
-    private const val MAX_POOLS = 3
+    private const val MAX_POOLS = 5
     const val DB_USERNAME_KEY = "DB_USERNAME"
     const val DB_PASSWORD_KEY = "DB_PASSWORD"
     const val DB_DATABASE_KEY = "DB_DATABASE"
