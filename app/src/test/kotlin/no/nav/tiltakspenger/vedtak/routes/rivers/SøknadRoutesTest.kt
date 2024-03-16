@@ -12,27 +12,26 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.saksbehandling.service.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.saksbehandling.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.service.ports.MultiRepo
+import no.nav.tiltakspenger.saksbehandling.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.service.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
+import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
+import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
-import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
-import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingService
-import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -50,7 +49,7 @@ class SøknadRoutesTest {
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
     private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
     private val testRapid = TestRapid()
-    private val innsendingMediator = InnsendingMediator(
+    private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
         observatører = listOf(),
@@ -66,7 +65,7 @@ class SøknadRoutesTest {
     private val multiRepo = mockk<MultiRepo>(relaxed = true)
 
     private val behandlingService =
-        BehandlingServiceImpl(
+        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
             behandlingRepo,
             personopplysningRepo,
             utbetalingService,

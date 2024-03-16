@@ -9,18 +9,17 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.service.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -34,7 +33,7 @@ data class IdentDTO(
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-    behandlingService: BehandlingService,
+    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
     sakService: SakService,
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,

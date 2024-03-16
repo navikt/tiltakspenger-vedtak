@@ -7,12 +7,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import java.time.LocalDateTime
 
 data class TiltakMottattDTO(
@@ -28,7 +27,7 @@ const val tiltakpath = "/rivers/tiltak"
 
 fun Route.tiltakRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: BehandlingService,
+    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
 ) {
     post(tiltakpath) {
         LOG.info { "Vi har mottatt tiltak fra river" }

@@ -24,9 +24,13 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.saksbehandling.service.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
@@ -46,11 +50,6 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
-import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
@@ -65,7 +64,7 @@ internal fun Application.vedtakApi(
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søkerService: SøkerService,
     sakService: SakService,
-    behandlingService: BehandlingService,
+    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,

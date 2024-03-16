@@ -1,20 +1,20 @@
 package no.nav.tiltakspenger.vedtak.repository.multi
 
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.service.ports.MultiRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
-import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.service.ports.MultiRepo
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringDAO
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakDAO
 
 class MultiRepoImpl(
-    private val behandlingRepo: BehandlingRepo,
-    private val attesteringRepo: AttesteringRepo,
-    private val vedtakRepo: VedtakRepo,
+    private val behandlingRepo: BehandlingDAO,
+    private val attesteringRepo: AttesteringDAO,
+    private val vedtakRepo: VedtakDAO,
 ) : MultiRepo {
     override fun <T> lagreOgKjør(
         iverksattBehandling: BehandlingIverksatt,

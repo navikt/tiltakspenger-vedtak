@@ -2,12 +2,12 @@ package no.nav.tiltakspenger.vedtak
 
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.vedtak.innsending.ISøkerHendelse
-import no.nav.tiltakspenger.vedtak.innsending.Søker
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.IdentMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.innsending.domene.ISøkerHendelse
+import no.nav.tiltakspenger.innsending.domene.Søker
+import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.saksbehandling.service.ports.SøkerRepository
 import org.slf4j.MDC
 
 private val LOG = KotlinLogging.logger {}

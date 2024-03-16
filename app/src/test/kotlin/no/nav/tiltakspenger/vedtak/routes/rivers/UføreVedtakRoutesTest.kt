@@ -12,12 +12,11 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -30,8 +29,9 @@ class UføreVedtakRoutesTest {
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
     private val testRapid = TestRapid()
-    private val behandlingService = mockk<BehandlingService>(relaxed = true)
-    private val innsendingMediator = InnsendingMediator(
+    private val behandlingService =
+        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService>(relaxed = true)
+    private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
         observatører = listOf(),

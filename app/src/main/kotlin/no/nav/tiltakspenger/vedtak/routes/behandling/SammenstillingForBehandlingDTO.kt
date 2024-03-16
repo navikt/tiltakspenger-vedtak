@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
+import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 

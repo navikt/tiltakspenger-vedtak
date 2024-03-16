@@ -7,15 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.YtelseSak
+import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.tolkere.AapTolker
+import no.nav.tiltakspenger.innsending.domene.tolkere.DagpengerTolker
+import no.nav.tiltakspenger.innsending.domene.tolkere.TiltakspengerTolker
+import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.AapTolker
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.DagpengerTolker
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.TiltakspengerTolker
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ArenaYtelserMottattDTO(
@@ -31,7 +30,7 @@ val ytelsepath = "/rivers/ytelser"
 
 fun Route.ytelseRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: BehandlingService,
+    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
 ) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }

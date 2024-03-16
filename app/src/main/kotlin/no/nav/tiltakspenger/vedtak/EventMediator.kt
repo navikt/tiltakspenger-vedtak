@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.routes.rivers.DayHasBegunEvent
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID

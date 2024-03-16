@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 
 object BehandlingDTOMapper {

@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.clients.utbetaling
 
-import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.domene.sak.SakDetaljer
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 
 object UtbetalingReqMapper {
 

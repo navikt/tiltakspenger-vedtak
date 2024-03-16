@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
-import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 
 object MeldekortGrunnlagDTOMapper {
     fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
