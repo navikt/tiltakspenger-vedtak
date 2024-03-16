@@ -5,7 +5,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.service.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}

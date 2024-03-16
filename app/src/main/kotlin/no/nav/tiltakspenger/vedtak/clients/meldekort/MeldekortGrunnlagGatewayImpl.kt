@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.service.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}

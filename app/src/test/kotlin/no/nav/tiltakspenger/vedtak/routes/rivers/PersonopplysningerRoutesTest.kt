@@ -14,7 +14,7 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl

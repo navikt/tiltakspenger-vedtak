@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.service.søker
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.innsending.domene.Søker
-import no.nav.tiltakspenger.saksbehandling.service.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 
 private val LOG = KotlinLogging.logger {}
 val SECURELOG = KotlinLogging.logger("tjenestekall")

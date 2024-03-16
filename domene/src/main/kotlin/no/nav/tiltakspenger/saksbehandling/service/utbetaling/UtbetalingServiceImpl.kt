@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.service.utbetaling
 
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.service.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.UtbetalingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 
 class UtbetalingServiceImpl(
     private val utbetalingGateway: UtbetalingGateway,

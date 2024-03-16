@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND

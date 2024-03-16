@@ -10,7 +10,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.SøkerMediator
 

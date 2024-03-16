@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.innsending.domene
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.DomeneMetrikker
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.innsending.domene.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse

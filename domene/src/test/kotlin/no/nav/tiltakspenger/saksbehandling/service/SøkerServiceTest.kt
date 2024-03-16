@@ -2,17 +2,17 @@ package no.nav.tiltakspenger.saksbehandling.service
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.innsending.domene.Søker
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggMedIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.saksbehandling.service.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test

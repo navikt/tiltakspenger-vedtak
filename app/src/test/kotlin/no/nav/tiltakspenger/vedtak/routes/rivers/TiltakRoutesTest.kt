@@ -14,7 +14,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet

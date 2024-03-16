@@ -35,11 +35,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
-import no.nav.tiltakspenger.saksbehandling.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.service.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.service.ports.MultiRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

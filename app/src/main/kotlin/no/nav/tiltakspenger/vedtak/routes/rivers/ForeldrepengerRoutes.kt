@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.tolkere.ForeldrepengerTolker
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
 import java.time.LocalDateTime

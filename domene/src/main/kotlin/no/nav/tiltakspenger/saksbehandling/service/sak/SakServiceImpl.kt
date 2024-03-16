@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.service.sak
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.exceptions.IkkeFunnetException
-import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.innsending.domene.tolkere.AlderTolker
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -12,8 +12,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
-import no.nav.tiltakspenger.saksbehandling.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")

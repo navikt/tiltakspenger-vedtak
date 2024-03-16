@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.innsending.service
 import mu.KotlinLogging
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.ResetInnsendingHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 
 private val LOG = KotlinLogging.logger {}
 

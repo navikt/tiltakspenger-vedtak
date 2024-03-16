@@ -24,9 +24,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
-import no.nav.tiltakspenger.saksbehandling.service.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle

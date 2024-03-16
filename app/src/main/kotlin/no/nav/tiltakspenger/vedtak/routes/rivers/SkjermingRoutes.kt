@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.skjerming.Feilmelding.IdentIkkeFunnet
 import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming

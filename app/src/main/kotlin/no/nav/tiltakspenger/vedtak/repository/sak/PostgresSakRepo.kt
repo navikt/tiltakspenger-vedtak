@@ -12,9 +12,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
-import no.nav.tiltakspenger.saksbehandling.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl

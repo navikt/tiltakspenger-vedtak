@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
@@ -18,11 +18,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
-import no.nav.tiltakspenger.saksbehandling.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.service.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.service.ports.MultiRepo
-import no.nav.tiltakspenger.saksbehandling.service.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
 

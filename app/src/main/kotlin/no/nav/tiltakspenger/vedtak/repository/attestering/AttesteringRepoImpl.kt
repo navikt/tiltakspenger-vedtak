@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.saksbehandling.service.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 

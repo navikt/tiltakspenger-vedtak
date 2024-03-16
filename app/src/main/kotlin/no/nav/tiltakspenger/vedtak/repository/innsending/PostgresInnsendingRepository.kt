@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.innsending.domene.Innsending
 import no.nav.tiltakspenger.innsending.domene.InnsendingTilstandType
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.aktivitetslogg.AktivitetsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.foreldrepenger.ForeldrepengerVedtakDAO

@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.innsending.domene.UføreVedtak
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.tolkere.UføreTolker
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.ufore.Feilmelding
 import no.nav.tiltakspenger.libs.ufore.UforeResponsDTO
 import no.nav.tiltakspenger.libs.ufore.UføregradDTO

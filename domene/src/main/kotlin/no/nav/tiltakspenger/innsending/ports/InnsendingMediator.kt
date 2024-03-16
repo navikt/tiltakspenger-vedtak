@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.innsending.service.ports
+package no.nav.tiltakspenger.innsending.ports
 
 import no.nav.tiltakspenger.innsending.domene.InnsendingHendelse
 

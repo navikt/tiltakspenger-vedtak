@@ -10,7 +10,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 
 const val innsendingUtdatertRoute = "/rivers/innsendingutdatert"

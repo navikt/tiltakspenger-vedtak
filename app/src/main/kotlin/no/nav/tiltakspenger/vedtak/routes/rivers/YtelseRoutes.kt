@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.tolkere.AapTolker
 import no.nav.tiltakspenger.innsending.domene.tolkere.DagpengerTolker
 import no.nav.tiltakspenger.innsending.domene.tolkere.TiltakspengerTolker
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import java.time.LocalDateTime
 

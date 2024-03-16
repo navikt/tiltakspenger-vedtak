@@ -7,7 +7,7 @@ import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.innsending.domene.Søker
-import no.nav.tiltakspenger.saksbehandling.service.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 

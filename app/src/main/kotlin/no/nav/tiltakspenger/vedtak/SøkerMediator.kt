@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.innsending.domene.Søker
 import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.saksbehandling.service.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import org.slf4j.MDC
 
 private val LOG = KotlinLogging.logger {}

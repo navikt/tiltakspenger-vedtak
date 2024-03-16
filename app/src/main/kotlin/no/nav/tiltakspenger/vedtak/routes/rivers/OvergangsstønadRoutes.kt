@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.innsending.domene.Feil
 import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.overgangsstonad.Feilmelding
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadPeriodeDTO
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadResponsDTO

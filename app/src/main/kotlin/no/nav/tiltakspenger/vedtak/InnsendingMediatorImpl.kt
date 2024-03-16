@@ -16,8 +16,8 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingMediator
-import no.nav.tiltakspenger.innsending.service.ports.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import org.slf4j.MDC
 import kotlin.system.measureTimeMillis
 
