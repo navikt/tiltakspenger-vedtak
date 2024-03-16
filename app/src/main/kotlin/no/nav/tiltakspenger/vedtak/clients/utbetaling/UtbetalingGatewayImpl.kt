@@ -9,6 +9,8 @@ import no.nav.tiltakspenger.vedtak.service.ports.UtbetalingGateway
 class UtbetalingGatewayImpl(private val utbetalingClient: UtbetalingClient) : UtbetalingGateway {
 
     override fun iverksett(vedtak: Vedtak, sak: SakDetaljer): String {
-        return runBlocking { utbetalingClient.iverksett(mapUtbetalingReq(vedtak, sak)) }
+        return runBlocking {
+            utbetalingClient.iverksett(mapUtbetalingReq(vedtak, sak))
+        }
     }
 }

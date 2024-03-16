@@ -216,7 +216,8 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
+        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+            .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -250,7 +251,8 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
+        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+            .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(
@@ -273,7 +275,8 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>().first()
+        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+            .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         sakService.mottaPersonopplysninger(

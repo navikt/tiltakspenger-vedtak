@@ -13,6 +13,11 @@ import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.domene.vilkår.Utfall
 import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
+import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -59,13 +64,14 @@ class SammenstillingForBehandlingDTOTest {
         assert(underBeslutningTekst === "Under behandling")
     }
 
-    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.KreverManuellVurdering = Vurdering.KreverManuellVurdering(
-        vilkår = vilkår,
-        fom = LocalDate.now(),
-        tom = LocalDate.now(),
-        kilde = mockk<Kilde>(),
-        detaljer = "test",
-    )
+    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.KreverManuellVurdering =
+        Vurdering.KreverManuellVurdering(
+            vilkår = vilkår,
+            fom = LocalDate.now(),
+            tom = LocalDate.now(),
+            kilde = mockk<Kilde>(),
+            detaljer = "test",
+        )
 
     private fun mockOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.Oppfylt = Vurdering.Oppfylt(
         vilkår = vilkår,

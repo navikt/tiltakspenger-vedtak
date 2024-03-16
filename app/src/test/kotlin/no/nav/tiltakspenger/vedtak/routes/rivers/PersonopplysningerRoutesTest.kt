@@ -64,7 +64,7 @@ class PersonopplysningerRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
 
-        every { innloggetSystembrukerProvider.hentInnloggetSystembruker(any()) } returns Systembruker(
+        every { innloggetSystembrukerProvider.krevInnloggetSystembruker(any()) } returns Systembruker(
             brukernavn = "Systembruker",
             roller = listOf(Rolle.LAGE_HENDELSER),
         )

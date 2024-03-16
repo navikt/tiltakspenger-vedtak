@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
@@ -33,7 +34,7 @@ internal class PostgresBehandlingRepo(
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : BehandlingRepo {
-    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling? {
+    override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -48,6 +49,10 @@ internal class PostgresBehandlingRepo(
                 )
             }
         }
+    }
+
+    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling {
+        return hentOrNull(behandlingId) ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
     }
 
     override fun hentAlle(): List<Førstegangsbehandling> {
@@ -221,7 +226,7 @@ internal class PostgresBehandlingRepo(
         )
 
     private fun Row.toBehandling(txSession: TransactionalSession): Førstegangsbehandling {
-        val id = BehandlingId.fromDb(string("id"))
+        val id = BehandlingId.fromString(string("id"))
         val sakId = SakId.fromDb(string("sakId"))
         val fom = localDate("fom")
         val tom = localDate("tom")

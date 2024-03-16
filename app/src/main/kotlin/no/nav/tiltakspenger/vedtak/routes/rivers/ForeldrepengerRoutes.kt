@@ -40,6 +40,8 @@ fun Route.foreldrepengerRoutes(
         LOG.info { "Vi har mottatt foreldrepenger fra river" }
         val foreldrepengerDTO = call.receive<ForeldrepengerDTO>()
 
+        // TODO: Ingen auth-sjekk?
+
         when {
             foreldrepengerDTO.foreldrepenger.feil != null -> {
                 val feilMottattHendelse = FeilMottattHendelse(
@@ -63,17 +65,18 @@ fun Route.foreldrepengerRoutes(
                         )
                     }
 
-                    behandlingService.hentBehandlingForJournalpostId(foreldrepengerDTO.journalpostId)?.let { behandling ->
-                        ForeldrepengerTolker.tolkeData(
-                            foreldrepengerVedtakListe,
-                            behandling.vurderingsperiode,
-                        ).forEach { saksopplysning ->
-                            behandlingService.leggTilSaksopplysning(
-                                behandlingId = behandling.id,
-                                saksopplysning = saksopplysning,
-                            )
+                    behandlingService.hentBehandlingForJournalpostId(foreldrepengerDTO.journalpostId)
+                        ?.let { behandling ->
+                            ForeldrepengerTolker.tolkeData(
+                                foreldrepengerVedtakListe,
+                                behandling.vurderingsperiode,
+                            ).forEach { saksopplysning ->
+                                behandlingService.leggTilSaksopplysning(
+                                    behandlingId = behandling.id,
+                                    saksopplysning = saksopplysning,
+                                )
+                            }
                         }
-                    }
 
                     val foreldrepengerHendelse = ForeldrepengerMottattHendelse(
                         aktivitetslogg = Aktivitetslogg(),

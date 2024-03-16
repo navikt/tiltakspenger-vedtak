@@ -48,7 +48,7 @@ internal class SøkerServiceTest {
         every { søkerRepo.hent(søker.søkerId) } returns søker
         every { søkerRepo.findByIdent(any()) } returns søker
 
-        val søkerDTO = service.hentSøkerId(ident, saksbehandler())
+        val søkerDTO = service.hentSøkerIdOrNull(ident, saksbehandler())
         assertNotNull(søkerDTO)
     }
 
@@ -77,7 +77,7 @@ internal class SøkerServiceTest {
         every { søkerRepo.findByIdent(any()) } returns søker
 
         assertThrows<TilgangException> {
-            service.hentSøkerId(ident, saksbehandler())
+            service.hentSøkerIdOrNull(ident, saksbehandler())
         }
     }
 }

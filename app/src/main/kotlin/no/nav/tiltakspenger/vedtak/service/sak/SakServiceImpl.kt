@@ -6,7 +6,10 @@ import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.domene.sak.Sak
 import no.nav.tiltakspenger.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.innsending.Skjerming
 import no.nav.tiltakspenger.vedtak.innsending.tolkere.AlderTolker
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
@@ -76,9 +79,18 @@ class SakServiceImpl(
         return sakRepo.lagre(oppdatertSak)
     }
 
-    override fun henteMedBehandlingsId(behandlingId: BehandlingId): Sak? {
-        val behandling = behandlingRepo.hent(behandlingId) ?: return null
+    override fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak? {
+        val behandling = behandlingRepo.hentOrNull(behandlingId) ?: return null
         return sakRepo.hent(behandling.sakId)
+    }
+
+    override fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak {
+        val behandling = behandlingRepo.hent(behandlingId)
+        val sak = sakRepo.hent(behandling.sakId) ?: throw IkkeFunnetException("Sak ikke funnet")
+        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
+        }
+        return sak
     }
 
     private fun lagMapAvSkjerming(skjerming: Skjerming) =

@@ -87,7 +87,7 @@ class SøkerRepositoryImpl(
     }
 
     private fun Row.toSøker(txSession: TransactionalSession): Søker {
-        val id = SøkerId.fromDb(string("id"))
+        val id = SøkerId.fromString(string("id"))
         val ident = string("ident")
         val personopplysninger = personopplysningerDAO.hent(id, txSession)
         return Søker.fromDb(

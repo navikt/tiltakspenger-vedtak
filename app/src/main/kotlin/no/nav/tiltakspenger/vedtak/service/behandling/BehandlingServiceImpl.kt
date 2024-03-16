@@ -1,10 +1,8 @@
 package no.nav.tiltakspenger.vedtak.service.behandling
 
-import io.ktor.server.plugins.NotFoundException
 import mu.KotlinLogging
 import no.nav.tiltakspenger.domene.attestering.Attestering
 import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.domene.behandling.Behandling
 import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
@@ -14,6 +12,7 @@ import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
@@ -40,7 +39,12 @@ class BehandlingServiceImpl(
 ) : BehandlingService {
 
     override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
-        return behandlingRepo.hent(behandlingId)
+        return behandlingRepo.hentOrNull(behandlingId)
+    }
+
+    override fun hentBehandling(behandlingId: BehandlingId): Førstegangsbehandling {
+        return behandlingRepo.hentOrNull(behandlingId)
+            ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
     }
 
     override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
@@ -165,8 +169,4 @@ class BehandlingServiceImpl(
         return behandlingRepo.hentAlleForIdent(ident)
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
-
-    private fun hentBehandling(behandlingId: BehandlingId): Behandling =
-        hentBehandlingOrNull(behandlingId)
-            ?: throw NotFoundException("Fant ikke behandlingen med behandlingId: $behandlingId")
 }
