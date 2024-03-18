@@ -503,8 +503,6 @@ interface InnsendingMother {
             typeNavn = "Arbeidsmarkedsopplæring (AMO)",
             typeKode = "AMO",
             rettPåTiltakspenger = true,
-            fom = 1.januar(2022),
-            tom = 31.januar(2022),
         ),
         deltakelseFom: LocalDate = 1.januar(2022),
         deltakelseTom: LocalDate = 31.januar(2022),

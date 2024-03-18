@@ -152,7 +152,5 @@ interface BehandlingMother {
             typeNavn = typeNavn,
             typeKode = typeNavn,
             rettPåTiltakspenger = rettPåTiltakspenger,
-            fom = null,
-            tom = null,
         )
 }

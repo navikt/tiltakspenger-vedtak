@@ -81,8 +81,6 @@ private fun mapTiltak(
                     typeNavn = it.gjennomforing.typeNavn,
                     typeKode = it.gjennomforing.arenaKode.name,
                     rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
-                    fom = null,
-                    tom = null,
                 ),
                 deltakelseFom = it.deltakelseFom!!,
                 deltakelseTom = it.deltakelseTom!!,
