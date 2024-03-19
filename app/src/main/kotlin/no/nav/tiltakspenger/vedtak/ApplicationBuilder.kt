@@ -3,6 +3,12 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
@@ -20,13 +26,6 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningServiceImpl
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
-import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
@@ -79,7 +78,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val behandlingService =
-        BehandlingServiceImpl(
+        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
             behandlingRepo,
             personopplysningRepo,
             utbetalingService,
@@ -90,7 +89,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
-    val innsendingMediator = InnsendingMediator(
+    val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,
         observatører = listOf(),

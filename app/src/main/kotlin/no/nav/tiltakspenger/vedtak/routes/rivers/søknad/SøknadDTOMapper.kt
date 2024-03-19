@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
-import no.nav.tiltakspenger.domene.behandling.Barnetillegg
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.SøknadsTiltak
-import no.nav.tiltakspenger.domene.behandling.Vedlegg
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

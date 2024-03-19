@@ -1,21 +1,22 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.domene.behandling.Behandling
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.søkere
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.FaktaDTO
@@ -25,7 +26,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SøknadDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
-import no.nav.tiltakspenger.vedtak.service.søker.PeriodeDTO
 
 object SammenstillingForBehandlingDTOMapper {
 

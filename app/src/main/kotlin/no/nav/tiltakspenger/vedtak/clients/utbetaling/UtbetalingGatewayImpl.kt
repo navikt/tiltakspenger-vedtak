@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.clients.utbetaling
 
-import no.nav.tiltakspenger.domene.sak.SakDetaljer
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingReqMapper.mapUtbetalingReq
-import no.nav.tiltakspenger.vedtak.service.ports.UtbetalingGateway
 
 class UtbetalingGatewayImpl(private val utbetalingClient: UtbetalingClient) : UtbetalingGateway {
 

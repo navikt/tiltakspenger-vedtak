@@ -5,19 +5,19 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
-import no.nav.tiltakspenger.domene.sak.TynnSak
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
-import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.service.ports.SakRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

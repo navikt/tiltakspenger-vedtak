@@ -4,15 +4,15 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.attestering.Attestering
-import no.nav.tiltakspenger.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
 import org.intellij.lang.annotations.Language
 
-internal class AttesteringRepoImpl : AttesteringRepo {
+internal class AttesteringRepoImpl : AttesteringRepo, AttesteringDAO {
 
     // TODO: Denne kalles aldri. Dette er mao ikke et repo, det er en DAO.
     // Attestering lagres alltid sammen med Behandling.

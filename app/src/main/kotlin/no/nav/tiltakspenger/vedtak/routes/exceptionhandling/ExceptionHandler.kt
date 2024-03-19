@@ -6,8 +6,8 @@ import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.request.uri
 import io.ktor.server.response.respond
 import mu.KotlinLogging
-import no.nav.tiltakspenger.exceptions.IkkeFunnetException
-import no.nav.tiltakspenger.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
 

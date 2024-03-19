@@ -5,13 +5,13 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
+import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
-import no.nav.tiltakspenger.vedtak.service.ports.PersonopplysningerRepo
 import org.intellij.lang.annotations.Language
 
 internal class PostgresPersonopplysningerRepo(

@@ -6,7 +6,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 
 internal const val resettFeiletOgStoppetInnsendinger = "/innsendinger/resett/feiletogstoppet"
 internal const val feiletOgStoppetInnsendinger = "/innsendinger/feiletogstoppet"

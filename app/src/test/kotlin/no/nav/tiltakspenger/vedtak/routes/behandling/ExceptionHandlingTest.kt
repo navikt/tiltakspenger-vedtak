@@ -14,12 +14,11 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -27,7 +26,8 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 
 class ExceptionHandlingTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
-    private val behandlingService = mockk<BehandlingServiceImpl>()
+    private val behandlingService =
+        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
     private val søkerService = mockk<SøkerService>()
 
     @Test

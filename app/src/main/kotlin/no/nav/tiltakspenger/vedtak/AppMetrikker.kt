@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak
 
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.Metrics
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 
 object AppMetrikker {
 

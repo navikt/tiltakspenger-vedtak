@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.clients.brevpublisher
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.libs.dokument.BrevDTO
 import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
 import no.nav.tiltakspenger.libs.dokument.TiltaksinfoDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import java.time.LocalDate
 
 object VedtaksbrevMapper {

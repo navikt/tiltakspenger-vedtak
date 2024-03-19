@@ -9,16 +9,16 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.Feil
+import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.tolkere.ForeldrepengerTolker
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.ForeldrepengerMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.ForeldrepengerTolker
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ForeldrepengerDTO(
