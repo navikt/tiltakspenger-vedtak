@@ -46,6 +46,4 @@ data class BehandlingIverksatt(
             )
         }
     }
-
-    override fun erTilBeslutter() = true
 }

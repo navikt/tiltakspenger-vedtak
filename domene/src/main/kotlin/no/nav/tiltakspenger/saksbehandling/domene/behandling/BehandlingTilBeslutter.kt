@@ -22,8 +22,6 @@ data class BehandlingTilBeslutter(
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
 
-    override fun erTilBeslutter() = true
-
     fun iverksett(utøvendeBeslutter: Saksbehandler): BehandlingIverksatt {
         // checkNotNull(saksbehandler) { "Kan ikke iverksette en behandling uten saksbehandler" }
         checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }

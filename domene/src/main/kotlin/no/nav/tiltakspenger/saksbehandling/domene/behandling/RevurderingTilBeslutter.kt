@@ -6,10 +6,8 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class RevurderingTilBeslutter(
     override val id: BehandlingId,
@@ -25,8 +23,6 @@ data class RevurderingTilBeslutter(
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Revurderingsbehandling {
-
-    override fun erTilBeslutter() = true
 
     fun iverksett(utøvendeBeslutter: Saksbehandler): RevurderingIverksatt {
         checkNotNull(beslutter) { "Ikke lov å iverksette uten beslutter" }
@@ -71,20 +67,8 @@ data class RevurderingTilBeslutter(
         )
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                erEndret = true,
-            )
-        }
-    }
+    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
+        spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         check(this.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
@@ -94,8 +78,8 @@ data class RevurderingTilBeslutter(
         )
     }
 
-    private fun vurderPåNytt(): RevurderingVilkårsvurdert {
-        return RevurderingOpprettet(
+    private fun spolTilbake(): RevurderingOpprettet =
+        RevurderingOpprettet(
             id = id,
             sakId = sakId,
             forrigeVedtak = forrigeVedtak,
@@ -104,6 +88,5 @@ data class RevurderingTilBeslutter(
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,
-        ).vilkårsvurder()
-    }
+        )
 }

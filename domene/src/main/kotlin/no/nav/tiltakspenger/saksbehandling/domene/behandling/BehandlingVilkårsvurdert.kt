@@ -66,8 +66,6 @@ data class BehandlingVilkårsvurdert(
         }
     }
 
-    override fun erÅpen() = true
-
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert =
         this.spolTilbake().leggTilSøknad(søknad = søknad)
 

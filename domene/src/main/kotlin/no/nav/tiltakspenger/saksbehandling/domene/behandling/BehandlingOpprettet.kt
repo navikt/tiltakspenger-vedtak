@@ -37,13 +37,10 @@ data class BehandlingOpprettet(
         }
     }
 
-    override fun erÅpen() = true
-
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
-            Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                søknad,
-            )
+            Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
+                Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
         } else {
             Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
                 .fold(this.saksopplysninger) { acc, saksopplysning ->
@@ -74,22 +71,16 @@ data class BehandlingOpprettet(
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
-        this.copy(
-            tiltak = tiltak,
-        )
+        this.copy(tiltak = tiltak)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
-        return this.copy(
-            saksbehandler = saksbehandler.navIdent,
-        )
+        return this.copy(saksbehandler = saksbehandler.navIdent)
     }
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
-        return this.copy(
-            saksbehandler = null,
-        )
+        return this.copy(saksbehandler = null)
     }
 }

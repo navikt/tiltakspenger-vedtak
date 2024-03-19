@@ -48,6 +48,4 @@ data class RevurderingIverksatt(
             )
         }
     }
-
-    override fun erTilBeslutter() = true
 }

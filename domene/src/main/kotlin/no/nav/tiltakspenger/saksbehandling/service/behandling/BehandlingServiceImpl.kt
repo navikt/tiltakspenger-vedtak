@@ -175,7 +175,10 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
 
-    override fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling {
+    override fun opprettRevurdering(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    ): Revurderingsbehandling {
         check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
 
         val vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)

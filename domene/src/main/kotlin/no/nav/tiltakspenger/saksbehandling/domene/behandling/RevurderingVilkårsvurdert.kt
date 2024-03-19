@@ -5,10 +5,8 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class RevurderingVilkårsvurdert(
     override val id: BehandlingId,
@@ -23,19 +21,6 @@ data class RevurderingVilkårsvurdert(
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
 ) : Revurderingsbehandling {
-
-    fun vurderPåNytt(): RevurderingVilkårsvurdert {
-        return RevurderingOpprettet(
-            id = id,
-            sakId = sakId,
-            vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
-            tiltak = tiltak,
-            saksbehandler = saksbehandler,
-            forrigeVedtak = forrigeVedtak,
-            søknader = søknader,
-        ).vilkårsvurder()
-    }
 
     fun iverksett(): RevurderingIverksatt {
         return when (status) {
@@ -81,22 +66,8 @@ data class RevurderingVilkårsvurdert(
         }
     }
 
-    override fun erÅpen() = true
-
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                erEndret = true,
-            )
-        }
-    }
+    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
+        spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling =
         this.copy(tiltak = tiltak)
@@ -111,4 +82,16 @@ data class RevurderingVilkårsvurdert(
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }
+
+    private fun spolTilbake(): RevurderingOpprettet =
+        RevurderingOpprettet(
+            id = id,
+            sakId = sakId,
+            forrigeVedtak = forrigeVedtak,
+            vurderingsperiode = vurderingsperiode,
+            saksopplysninger = saksopplysninger,
+            tiltak = tiltak,
+            saksbehandler = saksbehandler,
+            søknader = søknader,
+        )
 }

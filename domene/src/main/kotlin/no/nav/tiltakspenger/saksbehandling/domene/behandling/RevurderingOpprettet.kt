@@ -37,8 +37,6 @@ data class RevurderingOpprettet(
     override val utfallsperioder: List<Utfallsperiode>
         get() = TODO("Not yet implemented")
 
-    override fun erÅpen() = true
-
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
         val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
         return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
@@ -55,9 +53,7 @@ data class RevurderingOpprettet(
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =
-        this.copy(
-            tiltak = tiltak,
-        )
+        this.copy(tiltak = tiltak)
 
     override fun startBehandling(saksbehandler: Saksbehandler): RevurderingOpprettet {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
