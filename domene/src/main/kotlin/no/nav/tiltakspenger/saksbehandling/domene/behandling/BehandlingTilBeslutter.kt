@@ -6,9 +6,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class BehandlingTilBeslutter(
     override val id: BehandlingId,
@@ -68,27 +66,11 @@ data class BehandlingTilBeslutter(
         )
     }
 
-    override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        return BehandlingOpprettet.leggTilSøknad(
-            behandling = this,
-            søknad = søknad,
-        ).vilkårsvurder()
-    }
+    override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert =
+        this.spolTilbake().leggTilSøknad(søknad = søknad)
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vurderPåNytt(),
-                erEndret = true,
-            )
-        }
-    }
+    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
+        this.spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(this.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
@@ -98,15 +80,13 @@ data class BehandlingTilBeslutter(
         )
     }
 
-    private fun vurderPåNytt(): BehandlingVilkårsvurdert {
-        return BehandlingOpprettet(
-            id = id,
-            sakId = sakId,
-            søknader = søknader,
-            vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
-            tiltak = tiltak,
-            saksbehandler = saksbehandler,
-        ).vilkårsvurder()
-    }
+    private fun spolTilbake(): BehandlingOpprettet = BehandlingOpprettet(
+        id = this.id,
+        sakId = this.sakId,
+        søknader = this.søknader,
+        vurderingsperiode = this.vurderingsperiode,
+        saksopplysninger = this.saksopplysninger,
+        tiltak = this.tiltak,
+        saksbehandler = this.saksbehandler,
+    )
 }

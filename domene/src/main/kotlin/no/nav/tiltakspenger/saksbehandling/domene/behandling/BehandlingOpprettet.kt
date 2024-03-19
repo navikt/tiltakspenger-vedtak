@@ -21,29 +21,6 @@ data class BehandlingOpprettet(
 ) : Førstegangsbehandling {
 
     companion object {
-        // TODO: Hva er forskjellen på leggTilSøknad og opprettBehandling?
-        fun leggTilSøknad(behandling: Førstegangsbehandling, søknad: Søknad): BehandlingOpprettet {
-            val fakta = if (søknad.vurderingsperiode() != behandling.vurderingsperiode) {
-                Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                    søknad,
-                )
-            } else {
-                Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                    .fold(behandling.saksopplysninger) { acc, saksopplysning ->
-                        acc.oppdaterSaksopplysninger(saksopplysning)
-                    }
-            }
-
-            return BehandlingOpprettet(
-                id = behandling.id,
-                sakId = behandling.sakId,
-                søknader = behandling.søknader + søknad,
-                vurderingsperiode = søknad.vurderingsperiode(),
-                saksopplysninger = fakta,
-                tiltak = behandling.tiltak,
-                saksbehandler = behandling.saksbehandler,
-            )
-        }
 
         fun opprettBehandling(sakId: SakId, søknad: Søknad): BehandlingOpprettet {
             return BehandlingOpprettet(
@@ -62,20 +39,22 @@ data class BehandlingOpprettet(
 
     override fun erÅpen() = true
 
-    // TODO: Hva er forskjellen på denne og på leggTilSøknad (og opprettBehandling) lenger opp?
-    // Det virker som om det er for mange innganger til klassen..?
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        return BehandlingOpprettet(
-            id = id,
-            sakId = sakId,
-            søknader = søknader + søknad,
-            vurderingsperiode = vurderingsperiode,
-            saksopplysninger = Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(saksopplysninger) { acc, saksopplysning ->
+        val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
+            Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
+                søknad,
+            )
+        } else {
+            Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
+                .fold(this.saksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
-                },
-            tiltak = tiltak,
-            saksbehandler = saksbehandler,
+                }
+        }
+
+        return this.copy(
+            søknader = this.søknader + søknad,
+            vurderingsperiode = søknad.vurderingsperiode(),
+            saksopplysninger = fakta,
         ).vilkårsvurder()
     }
 

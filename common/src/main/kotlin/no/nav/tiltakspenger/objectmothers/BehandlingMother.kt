@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -65,7 +66,7 @@ interface BehandlingMother {
             ).behandling
         } as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt()
+        return behandling.spolTilbake().vilkårsvurder()
     }
 
     fun behandlingVilkårsvurdertAvslag(
@@ -82,7 +83,7 @@ interface BehandlingMother {
             ),
         ).behandling as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt()
+        return behandling.spolTilbake().vilkårsvurder()
     }
 
     fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter =
