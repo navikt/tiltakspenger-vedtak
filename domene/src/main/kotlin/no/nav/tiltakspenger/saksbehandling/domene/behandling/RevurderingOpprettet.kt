@@ -17,28 +17,9 @@ data class RevurderingOpprettet(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
+    override val søknader: List<Søknad>,
 ) : Revurderingsbehandling {
     companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            forrigeVedtak: Vedtak,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            saksbehandler: String?,
-        ): RevurderingOpprettet {
-            return RevurderingOpprettet(
-                id = id,
-                sakId = sakId,
-                forrigeVedtak = forrigeVedtak,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                saksbehandler = saksbehandler,
-            )
-        }
-
         fun opprettRevurderingsbehandling(vedtak: Vedtak, navIdent: String): RevurderingOpprettet {
             return RevurderingOpprettet(
                 id = BehandlingId.random(),
@@ -48,6 +29,7 @@ data class RevurderingOpprettet(
                 saksopplysninger = vedtak.saksopplysninger,
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
+                søknader = vedtak.behandling.søknader,
             )
         }
     }

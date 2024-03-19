@@ -20,6 +20,7 @@ data class RevurderingTilBeslutter(
     override val saksbehandler: String,
     override val forrigeVedtak: Vedtak,
     override val utfallsperioder: List<Utfallsperiode>,
+    override val søknader: List<Søknad>,
     val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String?,
     val status: BehandlingStatus,
@@ -47,6 +48,7 @@ data class RevurderingTilBeslutter(
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
                 status = status,
+                søknader = forrigeVedtak.behandling.søknader,
             )
         }
     }
@@ -65,6 +67,7 @@ data class RevurderingTilBeslutter(
             utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
             status = BehandlingStatus.Innvilget,
+            søknader = søknader,
         )
     }
 
@@ -100,41 +103,7 @@ data class RevurderingTilBeslutter(
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
+            søknader = søknader,
         ).vilkårsvurder()
-    }
-
-    companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            forrigeVedtak: Vedtak,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            vilkårsvurderinger: List<Vurdering>,
-            status: String,
-            saksbehandler: String,
-            beslutter: String?,
-            utfallsperioder: List<Utfallsperiode>,
-        ): RevurderingTilBeslutter {
-            val behandlingStatus = when (status) {
-                "Innvilget" -> BehandlingStatus.Innvilget
-                "Avslag" -> BehandlingStatus.Avslag
-                else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
-            }
-            return RevurderingTilBeslutter(
-                id = id,
-                sakId = sakId,
-                forrigeVedtak = forrigeVedtak,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                utfallsperioder = utfallsperioder,
-                saksbehandler = saksbehandler,
-                beslutter = beslutter,
-                status = behandlingStatus,
-            )
-        }
     }
 }

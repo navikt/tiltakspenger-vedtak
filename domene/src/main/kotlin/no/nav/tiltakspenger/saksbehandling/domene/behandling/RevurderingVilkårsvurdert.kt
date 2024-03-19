@@ -19,6 +19,7 @@ data class RevurderingVilkårsvurdert(
     override val saksbehandler: String?,
     override val forrigeVedtak: Vedtak,
     override val utfallsperioder: List<Utfallsperiode>,
+    override val søknader: List<Søknad>,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
 ) : Revurderingsbehandling {
@@ -32,6 +33,7 @@ data class RevurderingVilkårsvurdert(
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             forrigeVedtak = forrigeVedtak,
+            søknader = søknader,
         ).vilkårsvurder()
     }
 
@@ -51,6 +53,7 @@ data class RevurderingVilkårsvurdert(
                     saksbehandler = "Automatisk",
                     beslutter = "Automatisk",
                     status = status,
+                    søknader = søknader,
                 )
         }
     }
@@ -73,6 +76,7 @@ data class RevurderingVilkårsvurdert(
                 beslutter = null,
                 status = status,
                 forrigeVedtak = forrigeVedtak,
+                søknader = søknader,
             )
         }
     }
@@ -106,39 +110,5 @@ data class RevurderingVilkårsvurdert(
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
-    }
-
-    companion object {
-        fun fromDb(
-            id: BehandlingId,
-            sakId: SakId,
-            vurderingsperiode: Periode,
-            saksopplysninger: List<Saksopplysning>,
-            tiltak: List<Tiltak>,
-            vilkårsvurderinger: List<Vurdering>,
-            status: String,
-            saksbehandler: String?,
-            utfallsperioder: List<Utfallsperiode>,
-            forrigeVedtak: Vedtak,
-        ): RevurderingVilkårsvurdert {
-            val behandlingVilkårsvurdertStatus = when (status) {
-                "Innvilget" -> BehandlingStatus.Innvilget
-                "Avslag" -> BehandlingStatus.Avslag
-                "Manuell" -> BehandlingStatus.Manuell
-                else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-            }
-            return RevurderingVilkårsvurdert(
-                id = id,
-                sakId = sakId,
-                forrigeVedtak = forrigeVedtak,
-                vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
-                tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
-                saksbehandler = saksbehandler,
-                utfallsperioder = utfallsperioder,
-                status = behandlingVilkårsvurdertStatus,
-            )
-        }
     }
 }

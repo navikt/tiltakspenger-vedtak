@@ -20,6 +20,12 @@ interface Behandling {
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
+    val søknader: List<Søknad>
+
+    fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
+
+    private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
+        søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
     fun saksopplysninger(): List<Saksopplysning> {
         return saksopplysninger.groupBy { it.vilkår }.map { entry ->
