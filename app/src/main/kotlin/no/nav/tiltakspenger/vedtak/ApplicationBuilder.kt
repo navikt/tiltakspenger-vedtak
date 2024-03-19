@@ -80,6 +80,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val behandlingService =
         no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
             behandlingRepo,
+            vedtakRepo,
             personopplysningRepo,
             utbetalingService,
             brevPublisherGateway,

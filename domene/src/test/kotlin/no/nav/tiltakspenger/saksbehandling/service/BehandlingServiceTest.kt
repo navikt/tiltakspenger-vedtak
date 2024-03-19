@@ -40,7 +40,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -49,6 +51,7 @@ import org.junit.jupiter.api.Test
 internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
+    private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var utbetalingService: UtbetalingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
@@ -59,6 +62,7 @@ internal class BehandlingServiceTest {
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
+        vedtakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
@@ -66,8 +70,9 @@ internal class BehandlingServiceTest {
         multiRepo = mockk(relaxed = true)
 
         behandlingService =
-            no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
+            BehandlingServiceImpl(
                 behandlingRepo,
+                vedtakRepo,
                 personopplysningRepo,
                 utbetalingService,
                 brevPublisherGateway,
@@ -195,7 +200,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Førstegangsbehandling>()
+        val lagretBehandling = slot<Behandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
@@ -234,7 +239,7 @@ internal class BehandlingServiceTest {
             ),
         ).behandling
 
-        val lagretBehandling = slot<Førstegangsbehandling>()
+        val lagretBehandling = slot<Behandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 

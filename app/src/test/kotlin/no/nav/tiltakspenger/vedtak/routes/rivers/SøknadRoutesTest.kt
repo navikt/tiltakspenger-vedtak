@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
@@ -46,6 +47,7 @@ class SøknadRoutesTest {
     private val søkerRepository = mockk<SøkerRepositoryImpl>(relaxed = true)
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
+    private val vedtakRepo = mockk<VedtakRepo>(relaxed = true)
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
     private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
     private val testRapid = TestRapid()
@@ -67,6 +69,7 @@ class SøknadRoutesTest {
     private val behandlingService =
         no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
             behandlingRepo,
+            vedtakRepo,
             personopplysningRepo,
             utbetalingService,
             brevPublisherGateway,

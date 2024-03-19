@@ -9,11 +9,14 @@ import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -23,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
 
@@ -31,6 +35,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
+    private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val utbetalingService: UtbetalingService,
     private val brevPublisherGateway: BrevPublisherGateway,
@@ -38,11 +43,11 @@ class BehandlingServiceImpl(
     private val multiRepo: MultiRepo,
 ) : BehandlingService {
 
-    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
+    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
         return behandlingRepo.hentOrNull(behandlingId)
     }
 
-    override fun hentBehandling(behandlingId: BehandlingId): Førstegangsbehandling {
+    override fun hentBehandling(behandlingId: BehandlingId): Behandling {
         return behandlingRepo.hentOrNull(behandlingId)
             ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
     }
@@ -168,5 +173,19 @@ class BehandlingServiceImpl(
     ): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
+    }
+
+    override fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling {
+        check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
+
+        val vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)
+        val revurderingBehandling = RevurderingOpprettet.opprettRevurderingsbehandling(
+            vedtak = vedtak,
+            navIdent = utøvendeSaksbehandler.navIdent,
+        )
+
+        behandlingRepo.lagre(revurderingBehandling)
+
+        return revurderingBehandling
     }
 }

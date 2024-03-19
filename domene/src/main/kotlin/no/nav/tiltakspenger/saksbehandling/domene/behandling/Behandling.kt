@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 
 data class LeggTilSaksopplysningRespons(
-    val behandling: Førstegangsbehandling,
+    val behandling: Behandling,
     val erEndret: Boolean,
 )
 
@@ -20,6 +20,12 @@ interface Behandling {
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
+    val søknader: List<Søknad>
+
+    fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
+
+    private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
+        søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
     fun saksopplysninger(): List<Saksopplysning> {
         return saksopplysninger.groupBy { it.vilkår }.map { entry ->
@@ -41,15 +47,15 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 
-    fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
+    fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
     }
 
-    fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    fun startBehandling(saksbehandler: Saksbehandler): Behandling {
         throw IllegalStateException("Kan ikke starte en behandling med denne statusen")
     }
 
-    fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling {
         throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 }

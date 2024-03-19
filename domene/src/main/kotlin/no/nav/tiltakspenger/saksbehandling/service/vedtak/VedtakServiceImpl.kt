@@ -17,7 +17,7 @@ class VedtakServiceImpl(
         return vedtakRepo.hent(vedtakId)
     }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): List<Vedtak> {
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
         return vedtakRepo.hentVedtakForBehandling(behandlingId)
     }
 }

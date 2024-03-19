@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
+private val LOG = KotlinLogging.logger {}
 
 internal const val behandlingPath = "/behandling"
 internal const val behandlingerPath = "/behandlinger"
@@ -108,7 +109,7 @@ fun Route.behandlingRoutes(
         behandlingService.hentBehandling(behandlingId).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = it.søknad().journalpostId,
+                journalpostId = it.søknad().journalpostId ?: "",
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         }
@@ -127,5 +128,21 @@ fun Route.behandlingRoutes(
         behandlingService.frataBehandling(behandlingId, saksbehandler)
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
+
+    post("$behandlingPath/opprettrevurdering/{}") {
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromString(it) }
+            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+
+        LOG.info { "Mottatt request om å opprette en revurdering på behandlingen: $behandlingId" }
+
+        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
+            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+
+        val revurdering = behandlingService.opprettRevurdering(behandlingId, saksbehandler)
+
+        LOG.info { "Revurderingen: $revurdering" }
+
+        call.respond(message = "{ \"id\":\"${revurdering.id}\"}", status = HttpStatusCode.OK)
     }
 }

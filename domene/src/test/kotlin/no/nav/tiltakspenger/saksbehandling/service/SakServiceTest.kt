@@ -30,7 +30,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
@@ -42,6 +44,7 @@ import java.util.Random
 
 internal class SakServiceTest {
     private lateinit var behandlingRepo: BehandlingRepo
+    private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var utbetalingService: UtbetalingService
@@ -55,6 +58,7 @@ internal class SakServiceTest {
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
+        vedtakRepo = mockk()
         vedtakService = mockk()
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
@@ -63,8 +67,9 @@ internal class SakServiceTest {
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         behandlingService =
-            no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
+            BehandlingServiceImpl(
                 behandlingRepo,
+                vedtakRepo,
                 personopplysningRepo,
                 utbetalingService,
                 brevPublisherGateway,

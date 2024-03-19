@@ -10,12 +10,14 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -120,7 +122,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Førstegangsbehandling): Førstegangsbehandling {
+    override fun lagre(behandling: Behandling): Behandling {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 lagre(behandling, txSession)
@@ -128,7 +130,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Førstegangsbehandling, tx: TransactionalSession): Førstegangsbehandling {
+    override fun lagre(behandling: Behandling, tx: TransactionalSession): Behandling {
         val sistEndret = hentSistEndret(behandling.id, tx)
         return if (sistEndret == null) {
             opprettBehandling(behandling, tx)
@@ -136,7 +138,10 @@ internal class PostgresBehandlingRepo(
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
             saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
-            søknadDAO.lagre(behandling.id, behandling.søknader, tx)
+            // Todo: Vi må kanskje  ha med søknad på revurdering også
+            if (behandling is Førstegangsbehandling) {
+                søknadDAO.lagre(behandling.id, behandling.søknader, tx)
+            }
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
             when (behandling) {
                 is BehandlingIverksatt -> {
@@ -161,9 +166,9 @@ internal class PostgresBehandlingRepo(
 
     private fun oppdaterBehandling(
         sistEndret: LocalDateTime,
-        behandling: Førstegangsbehandling,
+        behandling: Behandling,
         txSession: TransactionalSession,
-    ): Førstegangsbehandling {
+    ): Behandling {
         SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
 
         val antRaderOppdatert = txSession.run(
@@ -190,9 +195,9 @@ internal class PostgresBehandlingRepo(
     }
 
     private fun opprettBehandling(
-        behandling: Førstegangsbehandling,
+        behandling: Behandling,
         txSession: TransactionalSession,
-    ): Førstegangsbehandling {
+    ): Behandling {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
         val nå = nå()
@@ -311,15 +316,17 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    private fun finnTilstand(behandling: Førstegangsbehandling) =
+    private fun finnTilstand(behandling: Behandling) =
         when (behandling) {
             is BehandlingOpprettet -> "søknadsbehandling"
             is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
             is BehandlingTilBeslutter -> "TilBeslutting"
             is BehandlingIverksatt -> "Iverksatt"
+            is RevurderingOpprettet -> "revurderingsbehandling"
+            else -> throw IllegalStateException("Finner ikke tilstand")
         }
 
-    private fun finnStatus(behandling: Førstegangsbehandling): String =
+    private fun finnStatus(behandling: Behandling): String =
         when {
             behandling is BehandlingOpprettet -> "Opprettet"
             behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
@@ -329,6 +336,7 @@ internal class PostgresBehandlingRepo(
             behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
             behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"
             behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
+            behandling is RevurderingOpprettet -> "Opprettet"
             else -> throw IllegalStateException("Finner ikke status")
         }
 

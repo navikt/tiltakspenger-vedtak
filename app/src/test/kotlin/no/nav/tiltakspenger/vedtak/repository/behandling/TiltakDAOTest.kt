@@ -8,8 +8,8 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -117,7 +117,7 @@ internal class TiltakDAOTest {
         hentet.first() shouldBe tiltak
     }
 
-    private fun lagreSakOgBehandling(): Førstegangsbehandling {
+    private fun lagreSakOgBehandling(): Behandling {
         val behandlingRepo = PostgresBehandlingRepo()
         val sakRepo = PostgresSakRepo()
 

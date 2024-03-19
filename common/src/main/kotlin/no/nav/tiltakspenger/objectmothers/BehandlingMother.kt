@@ -7,11 +7,11 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -55,7 +55,7 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
-        val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Førstegangsbehandling, vilkår ->
+        val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
                     fom = periode.fra,
