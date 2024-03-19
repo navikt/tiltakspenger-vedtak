@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.ufore.Feilmelding
 import no.nav.tiltakspenger.libs.ufore.UforeResponsDTO
 import no.nav.tiltakspenger.libs.ufore.UføregradDTO
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class UføreDTO(
@@ -33,7 +34,7 @@ const val uførepath = "/rivers/ufore"
 
 fun Route.uføreRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
 ) {
     post(uførepath) {
         LOG.info { "Vi har mottatt uførevedtak fra river" }

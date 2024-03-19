@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -21,7 +22,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class SakServiceImpl(
     val sakRepo: SakRepo,
     val behandlingRepo: BehandlingRepo,
-    val behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    val behandlingService: BehandlingService,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =

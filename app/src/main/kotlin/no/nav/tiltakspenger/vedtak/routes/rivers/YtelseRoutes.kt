@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.innsending.domene.tolkere.DagpengerTolker
 import no.nav.tiltakspenger.innsending.domene.tolkere.TiltakspengerTolker
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ArenaYtelserMottattDTO(
@@ -30,7 +31,7 @@ val ytelsepath = "/rivers/ytelser"
 
 fun Route.ytelseRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
 ) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }

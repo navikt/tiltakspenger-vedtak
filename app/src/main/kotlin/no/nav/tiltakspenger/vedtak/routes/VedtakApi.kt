@@ -27,6 +27,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -64,7 +65,7 @@ internal fun Application.vedtakApi(
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søkerService: SøkerService,
     sakService: SakService,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     innsendingAdminService: InnsendingAdminService,

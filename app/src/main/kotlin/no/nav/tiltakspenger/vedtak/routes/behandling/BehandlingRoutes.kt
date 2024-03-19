@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendel
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
@@ -33,7 +34,7 @@ data class IdentDTO(
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
     sakService: SakService,
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,

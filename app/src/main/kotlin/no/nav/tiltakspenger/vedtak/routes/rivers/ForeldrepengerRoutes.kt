@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.innsending.domene.tolkere.ForeldrepengerTolker
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class ForeldrepengerDTO(
@@ -33,7 +34,7 @@ val foreldrepengerpath = "/rivers/foreldrepenger"
 
 fun Route.foreldrepengerRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
 ) {
     post(foreldrepengerpath) {
         LOG.info { "Vi har mottatt foreldrepenger fra river" }

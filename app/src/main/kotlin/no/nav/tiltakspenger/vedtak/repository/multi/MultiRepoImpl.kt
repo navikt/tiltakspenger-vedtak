@@ -12,9 +12,9 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakDAO
 
 class MultiRepoImpl(
-    private val behandlingRepo: BehandlingDAO,
-    private val attesteringRepo: AttesteringDAO,
-    private val vedtakRepo: VedtakDAO,
+    private val behandlingDao: BehandlingDAO,
+    private val attesteringDao: AttesteringDAO,
+    private val vedtakDao: VedtakDAO,
 ) : MultiRepo {
     override suspend fun <T> lagreOgKjør(
         iverksattBehandling: BehandlingIverksatt,
@@ -24,9 +24,9 @@ class MultiRepoImpl(
     ): T {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                behandlingRepo.lagre(iverksattBehandling, txSession)
-                attesteringRepo.lagre(attestering, txSession)
-                vedtakRepo.lagreVedtak(vedtak, txSession)
+                behandlingDao.lagre(iverksattBehandling, txSession)
+                attesteringDao.lagre(attestering, txSession)
+                vedtakDao.lagreVedtak(vedtak, txSession)
                 return@transaction operasjon()
             }
         }
@@ -35,8 +35,8 @@ class MultiRepoImpl(
     override fun lagre(behandling: BehandlingVilkårsvurdert, attestering: Attestering) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
-                behandlingRepo.lagre(behandling, txSession)
-                attesteringRepo.lagre(attestering, txSession)
+                behandlingDao.lagre(behandling, txSession)
+                attesteringDao.lagre(attestering, txSession)
             }
         }
     }

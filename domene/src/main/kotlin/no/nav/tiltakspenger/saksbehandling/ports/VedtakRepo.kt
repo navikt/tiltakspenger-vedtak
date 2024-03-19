@@ -10,5 +10,4 @@ interface VedtakRepo {
     fun hentVedtakForBehandling(behandlingId: BehandlingId): List<Vedtak>
     fun hentVedtakForSak(sakId: SakId): List<Vedtak>
     fun lagreVedtak(vedtak: Vedtak): Vedtak
-    // fun lagreVedtak(vedtak: Vedtak, tx: TransactionalSession): Vedtak
 }

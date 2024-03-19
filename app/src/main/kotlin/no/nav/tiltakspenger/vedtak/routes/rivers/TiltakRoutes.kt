@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class TiltakMottattDTO(
@@ -27,7 +28,7 @@ const val tiltakpath = "/rivers/tiltak"
 
 fun Route.tiltakRoutes(
     innsendingMediator: InnsendingMediator,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
 ) {
     post(tiltakpath) {
         LOG.info { "Vi har mottatt tiltak fra river" }

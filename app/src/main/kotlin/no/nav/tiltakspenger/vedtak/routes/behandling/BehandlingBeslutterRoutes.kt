@@ -8,6 +8,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -19,7 +20,7 @@ data class BegrunnelseDTO(
 
 fun Route.behandlingBeslutterRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-    behandlingService: no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService,
+    behandlingService: BehandlingService,
 ) {
     post("$behandlingPath/sendtilbake/{behandlingId}") {
         SECURELOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")

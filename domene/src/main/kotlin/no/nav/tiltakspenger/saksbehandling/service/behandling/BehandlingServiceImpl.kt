@@ -36,7 +36,7 @@ class BehandlingServiceImpl(
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val multiRepo: MultiRepo,
-) : no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService {
+) : BehandlingService {
 
     override fun hentBehandlingOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return behandlingRepo.hentOrNull(behandlingId)
