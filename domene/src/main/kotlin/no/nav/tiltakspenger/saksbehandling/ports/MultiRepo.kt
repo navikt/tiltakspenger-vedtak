@@ -6,12 +6,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsv
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 
 interface MultiRepo {
-    suspend fun <T> lagreOgKjør(
+    suspend fun lagreOgKjør(
         iverksattBehandling: BehandlingIverksatt,
         attestering: Attestering,
         vedtak: Vedtak,
-        operasjon: suspend () -> T,
-    ): T
+        operasjon: suspend () -> String,
+    ): String
 
     fun lagre(behandling: BehandlingVilkårsvurdert, attestering: Attestering)
 }

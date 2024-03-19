@@ -16,12 +16,12 @@ class MultiRepoImpl(
     private val attesteringDao: AttesteringDAO,
     private val vedtakDao: VedtakDAO,
 ) : MultiRepo {
-    override suspend fun <T> lagreOgKjør(
+    override suspend fun lagreOgKjør(
         iverksattBehandling: BehandlingIverksatt,
         attestering: Attestering,
         vedtak: Vedtak,
-        operasjon: suspend () -> T,
-    ): T {
+        operasjon: suspend () -> String,
+    ): String {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 behandlingDao.lagre(iverksattBehandling, txSession)
