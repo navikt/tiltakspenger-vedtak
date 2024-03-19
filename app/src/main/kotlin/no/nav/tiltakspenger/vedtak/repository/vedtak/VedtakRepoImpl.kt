@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.vedtak
 
+import io.ktor.server.plugins.NotFoundException
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -47,7 +48,7 @@ internal class VedtakRepoImpl(
         }
     }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): List<Vedtak> {
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -58,10 +59,10 @@ internal class VedtakRepoImpl(
                         ),
                     ).map { row ->
                         row.toVedtak(txSession)
-                    }.asList,
+                    }.asSingle,
                 )
             }
-        }
+        } ?: throw NotFoundException("Ikke funnet")
     }
 
     override fun hentVedtakForSak(sakId: SakId): List<Vedtak> {

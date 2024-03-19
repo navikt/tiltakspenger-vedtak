@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
@@ -11,7 +12,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 data class RevurderingOpprettet(
     override val id: BehandlingId,
     override val sakId: SakId,
-    override val forrigeBehandling: Førstegangsbehandling,
+    override val forrigeVedtak: Vedtak,
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
@@ -21,7 +22,7 @@ data class RevurderingOpprettet(
         fun fromDb(
             id: BehandlingId,
             sakId: SakId,
-            forrigeBehandling: Førstegangsbehandling,
+            forrigeVedtak: Vedtak,
             vurderingsperiode: Periode,
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
@@ -30,7 +31,7 @@ data class RevurderingOpprettet(
             return RevurderingOpprettet(
                 id = id,
                 sakId = sakId,
-                forrigeBehandling = forrigeBehandling,
+                forrigeVedtak = forrigeVedtak,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
@@ -38,14 +39,14 @@ data class RevurderingOpprettet(
             )
         }
 
-        fun opprettRevurderingsbehandling(behandlingIverksatt: BehandlingIverksatt, navIdent: String): RevurderingOpprettet {
+        fun opprettRevurderingsbehandling(vedtak: Vedtak, navIdent: String): RevurderingOpprettet {
             return RevurderingOpprettet(
                 id = BehandlingId.random(),
-                sakId = behandlingIverksatt.sakId,
-                forrigeBehandling = behandlingIverksatt,
-                vurderingsperiode = behandlingIverksatt.vurderingsperiode,
-                saksopplysninger = behandlingIverksatt.saksopplysninger,
-                tiltak = behandlingIverksatt.tiltak,
+                sakId = vedtak.sakId,
+                forrigeVedtak = vedtak,
+                vurderingsperiode = vedtak.periode,
+                saksopplysninger = vedtak.saksopplysninger,
+                tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
             )
         }

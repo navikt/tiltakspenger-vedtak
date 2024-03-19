@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -16,7 +17,7 @@ data class RevurderingVilkårsvurdert(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
-    override val forrigeBehandling: Førstegangsbehandling,
+    override val forrigeVedtak: Vedtak,
     override val utfallsperioder: List<Utfallsperiode>,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
@@ -30,7 +31,7 @@ data class RevurderingVilkårsvurdert(
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
-            forrigeBehandling = forrigeBehandling,
+            forrigeVedtak = forrigeVedtak,
         ).vilkårsvurder()
     }
 
@@ -41,7 +42,7 @@ data class RevurderingVilkårsvurdert(
                 RevurderingIverksatt(
                     id = id,
                     sakId = sakId,
-                    forrigeBehandling = forrigeBehandling,
+                    forrigeVedtak = forrigeVedtak,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
@@ -71,7 +72,7 @@ data class RevurderingVilkårsvurdert(
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
                 status = status,
-                forrigeBehandling = forrigeBehandling,
+                forrigeVedtak = forrigeVedtak,
             )
         }
     }
@@ -118,7 +119,7 @@ data class RevurderingVilkårsvurdert(
             status: String,
             saksbehandler: String?,
             utfallsperioder: List<Utfallsperiode>,
-            forrigeBehandling: Førstegangsbehandling,
+            forrigeVedtak: Vedtak,
         ): RevurderingVilkårsvurdert {
             val behandlingVilkårsvurdertStatus = when (status) {
                 "Innvilget" -> BehandlingStatus.Innvilget
@@ -129,7 +130,7 @@ data class RevurderingVilkårsvurdert(
             return RevurderingVilkårsvurdert(
                 id = id,
                 sakId = sakId,
-                forrigeBehandling = forrigeBehandling,
+                forrigeVedtak = forrigeVedtak,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,

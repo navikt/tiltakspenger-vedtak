@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.service.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.vedtak.service.ports.MeldekortGrunnlagGateway
@@ -34,6 +35,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
+    private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val utbetalingService: UtbetalingService,
     private val brevPublisherGateway: BrevPublisherGateway,
@@ -175,9 +177,9 @@ class BehandlingServiceImpl(
     override fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling {
         check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
 
-        val iverksattBehandling = behandlingRepo.hent(behandlingId) as BehandlingIverksatt
+        val vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)
         val revurderingBehandling = RevurderingOpprettet.opprettRevurderingsbehandling(
-            behandlingIverksatt = iverksattBehandling,
+            vedtak = vedtak,
             navIdent = utøvendeSaksbehandler.navIdent,
         )
 

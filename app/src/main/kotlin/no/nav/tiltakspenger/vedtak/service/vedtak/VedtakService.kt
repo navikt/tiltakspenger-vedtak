@@ -6,5 +6,5 @@ import no.nav.tiltakspenger.felles.VedtakId
 
 interface VedtakService {
     fun hentVedtak(vedtakId: VedtakId): Vedtak?
-    fun hentVedtakForBehandling(behandlingId: BehandlingId): List<Vedtak>
+    fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak
 }

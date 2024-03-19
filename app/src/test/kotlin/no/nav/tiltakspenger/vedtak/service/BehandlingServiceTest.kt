@@ -35,6 +35,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
@@ -50,6 +51,7 @@ import org.junit.jupiter.api.Test
 internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
+    private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var utbetalingService: UtbetalingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
@@ -60,6 +62,7 @@ internal class BehandlingServiceTest {
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
+        vedtakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
@@ -69,6 +72,7 @@ internal class BehandlingServiceTest {
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo,
+                vedtakRepo,
                 personopplysningRepo,
                 utbetalingService,
                 brevPublisherGateway,

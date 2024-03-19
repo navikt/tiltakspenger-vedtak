@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
@@ -43,6 +44,7 @@ import java.util.Random
 
 internal class SakServiceTest {
     private lateinit var behandlingRepo: BehandlingRepo
+    private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var utbetalingService: UtbetalingService
@@ -56,6 +58,7 @@ internal class SakServiceTest {
     @BeforeEach
     fun setup() {
         behandlingRepo = mockk()
+        vedtakRepo = mockk()
         vedtakService = mockk()
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
@@ -66,6 +69,7 @@ internal class SakServiceTest {
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo,
+                vedtakRepo,
                 personopplysningRepo,
                 utbetalingService,
                 brevPublisherGateway,

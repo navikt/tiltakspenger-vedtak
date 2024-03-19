@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.domene.behandling
 
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -14,7 +15,7 @@ data class RevurderingIverksatt(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
-    override val forrigeBehandling: Førstegangsbehandling,
+    override val forrigeVedtak: Vedtak,
     override val saksbehandler: String,
     override val utfallsperioder: List<Utfallsperiode>,
     val vilkårsvurderinger: List<Vurdering>,
@@ -37,7 +38,7 @@ data class RevurderingIverksatt(
                 saksopplysninger = oppdatertSaksopplysningListe,
                 tiltak = this.tiltak,
                 saksbehandler = null,
-                forrigeBehandling = forrigeBehandling,
+                forrigeVedtak = this.forrigeVedtak,
             ).vilkårsvurder()
             LeggTilSaksopplysningRespons(
                 behandling = nyBehandling,
@@ -52,7 +53,7 @@ data class RevurderingIverksatt(
         fun fromDb(
             id: BehandlingId,
             sakId: SakId,
-            forrigeBehandling: Førstegangsbehandling,
+            forrigeVedtak: Vedtak,
             vurderingsperiode: Periode,
             saksopplysninger: List<Saksopplysning>,
             tiltak: List<Tiltak>,
@@ -70,7 +71,7 @@ data class RevurderingIverksatt(
             return RevurderingIverksatt(
                 id = id,
                 sakId = sakId,
-                forrigeBehandling = forrigeBehandling,
+                forrigeVedtak = forrigeVedtak,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,

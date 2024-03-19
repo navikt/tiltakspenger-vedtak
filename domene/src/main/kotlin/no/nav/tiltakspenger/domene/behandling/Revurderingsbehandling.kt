@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.domene.behandling
 
+import no.nav.tiltakspenger.domene.vedtak.Vedtak
+
 sealed interface Revurderingsbehandling : Behandling {
-    val forrigeBehandling: Førstegangsbehandling // todo HER MÅ VI STØTTE FLERE CASER todo //
+    val forrigeVedtak: Vedtak
 }

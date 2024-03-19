@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
@@ -47,6 +48,7 @@ class SøknadRoutesTest {
     private val søkerRepository = mockk<SøkerRepositoryImpl>(relaxed = true)
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
+    private val vedtakRepo = mockk<VedtakRepo>(relaxed = true)
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
     private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
     private val testRapid = TestRapid()
@@ -68,6 +70,7 @@ class SøknadRoutesTest {
     private val behandlingService =
         BehandlingServiceImpl(
             behandlingRepo,
+            vedtakRepo,
             personopplysningRepo,
             utbetalingService,
             brevPublisherGateway,
