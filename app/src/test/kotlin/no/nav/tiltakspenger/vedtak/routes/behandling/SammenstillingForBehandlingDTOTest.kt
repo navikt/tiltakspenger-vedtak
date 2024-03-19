@@ -2,17 +2,22 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
+import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -59,13 +64,14 @@ class SammenstillingForBehandlingDTOTest {
         assert(underBeslutningTekst === "Under behandling")
     }
 
-    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.KreverManuellVurdering = Vurdering.KreverManuellVurdering(
-        vilkår = vilkår,
-        fom = LocalDate.now(),
-        tom = LocalDate.now(),
-        kilde = mockk<Kilde>(),
-        detaljer = "test",
-    )
+    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.KreverManuellVurdering =
+        Vurdering.KreverManuellVurdering(
+            vilkår = vilkår,
+            fom = LocalDate.now(),
+            tom = LocalDate.now(),
+            kilde = mockk<Kilde>(),
+            detaljer = "test",
+        )
 
     private fun mockOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.Oppfylt = Vurdering.Oppfylt(
         vilkår = vilkår,

@@ -18,13 +18,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedAdmin
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
-    private val behandlingService = mockk<BehandlingServiceImpl>()
+    private val behandlingService =
+        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
 
     @Test
     fun `sjekk at begrunnelse kan sendes inn`() {
@@ -32,7 +32,7 @@ class BehandlingBeslutterRoutesTest {
         val bId = slot<BehandlingId>()
         val saksbehandler = slot<Saksbehandler>()
 
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns beslutter()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns beslutter()
         every {
             behandlingService.sendTilbakeTilSaksbehandler(
                 capture(bId),
@@ -77,7 +77,7 @@ class BehandlingBeslutterRoutesTest {
         val bId = slot<BehandlingId>()
         val saksbehandler = slot<Saksbehandler>()
 
-        every { innloggetSaksbehandlerProviderMock.hentInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
+        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
         every {
             behandlingService.sendTilbakeTilSaksbehandler(
                 capture(bId),

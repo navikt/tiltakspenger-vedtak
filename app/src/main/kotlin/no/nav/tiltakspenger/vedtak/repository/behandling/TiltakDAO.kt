@@ -3,9 +3,9 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import org.intellij.lang.annotations.Language
 
 class TiltakDAO {
@@ -40,8 +40,6 @@ class TiltakDAO {
                     "gjennomforingId" to tiltak.gjennomføring.id,
                     "tiltaktypeKode" to tiltak.gjennomføring.typeKode,
                     "tiltaktypeNavn" to tiltak.gjennomføring.typeNavn,
-                    "tiltakFom" to tiltak.gjennomføring.fom,
-                    "tiltakTom" to tiltak.gjennomføring.tom,
                     "arrangornavn" to tiltak.gjennomføring.arrangørnavn,
                     "rettPaTiltakspenger" to tiltak.gjennomføring.rettPåTiltakspenger,
                     "deltakelseFom" to tiltak.deltakelseFom,
@@ -67,14 +65,10 @@ class TiltakDAO {
             id = string("ekstern_id"),
             gjennomføring = Tiltak.Gjennomføring(
                 id = string("gjennomføring_id"),
-
                 typeKode = string("tiltaktype_kode"),
                 typeNavn = string("tiltaktype_navn"),
                 arrangørnavn = string("arrangørnavn"),
-
                 rettPåTiltakspenger = boolean("rett_på_tiltakspenger"),
-                fom = localDateOrNull("tiltak_fom"),
-                tom = localDateOrNull("tiltak_tom"),
             ),
             deltakelseFom = localDate("deltakelse_fom"),
             deltakelseTom = localDate("deltakelse_tom"),
@@ -101,8 +95,6 @@ class TiltakDAO {
             tiltaktype_navn,
             arrangørnavn,
             rett_på_tiltakspenger,
-            tiltak_fom,
-            tiltak_tom,
             deltakelse_fom,
             deltakelse_tom,
             deltakelse_prosent,
@@ -121,8 +113,6 @@ class TiltakDAO {
             :tiltaktypeNavn,
             :arrangornavn,
             :rettPaTiltakspenger,            
-            :tiltakFom,
-            :tiltakTom,
             :deltakelseFom,
             :deltakelseTom,
             :deltakelseProsent,

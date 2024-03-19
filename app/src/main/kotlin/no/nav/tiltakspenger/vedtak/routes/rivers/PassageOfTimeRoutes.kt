@@ -21,9 +21,7 @@ fun Route.passageOfTimeRoutes(
 ) {
     post(dayHasBegunRoute) {
         LOG.info { "Vi har mottatt DayHasBegun fra river" }
-        val systembruker: Systembruker = innloggetSystembrukerProvider.hentInnloggetSystembruker(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         LOG.info { "Vi ble kallt med systembruker : $systembruker" }
 
         // Vi skal slutte å trigge oppdatering av alle innsendinger hver natt

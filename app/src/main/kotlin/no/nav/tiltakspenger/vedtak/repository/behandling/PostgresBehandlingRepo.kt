@@ -5,21 +5,22 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Behandling
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
-import no.nav.tiltakspenger.vedtak.service.ports.BehandlingRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -34,8 +35,8 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
-) : BehandlingRepo {
-    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling? {
+) : BehandlingRepo, BehandlingDAO {
+    override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -50,6 +51,10 @@ internal class PostgresBehandlingRepo(
                 )
             }
         }
+    }
+
+    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling {
+        return hentOrNull(behandlingId) ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
     }
 
     override fun hentAlle(): List<Førstegangsbehandling> {
@@ -133,6 +138,7 @@ internal class PostgresBehandlingRepo(
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
             saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
+            // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
@@ -225,7 +231,7 @@ internal class PostgresBehandlingRepo(
         )
 
     private fun Row.toBehandling(txSession: TransactionalSession): Førstegangsbehandling {
-        val id = BehandlingId.fromDb(string("id"))
+        val id = BehandlingId.fromString(string("id"))
         val sakId = SakId.fromDb(string("sakId"))
         val fom = localDate("fom")
         val tom = localDate("tom")

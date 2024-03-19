@@ -1,5 +1,6 @@
 val jacksonVersion = "2.17.0"
 val kotestVersion = "5.8.1"
+val mockkVersion = "1.13.10"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -19,6 +20,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":common"))

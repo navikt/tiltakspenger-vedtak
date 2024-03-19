@@ -14,14 +14,14 @@ import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSøknad
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -37,7 +37,7 @@ class PersonopplysningerRoutesTest {
     private val testRapid = TestRapid()
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
-    private val innsendingMediator = InnsendingMediator(
+    private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
         observatører = listOf(),
@@ -64,7 +64,7 @@ class PersonopplysningerRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
 
-        every { innloggetSystembrukerProvider.hentInnloggetSystembruker(any()) } returns Systembruker(
+        every { innloggetSystembrukerProvider.krevInnloggetSystembruker(any()) } returns Systembruker(
             brukernavn = "Systembruker",
             roller = listOf(Rolle.LAGE_HENDELSER),
         )

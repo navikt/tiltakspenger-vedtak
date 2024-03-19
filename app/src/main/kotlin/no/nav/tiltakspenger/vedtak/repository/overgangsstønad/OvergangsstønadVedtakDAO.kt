@@ -4,10 +4,10 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

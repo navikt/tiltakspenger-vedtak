@@ -7,17 +7,17 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.Feil
+import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.overgangsstonad.Feilmelding
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadPeriodeDTO
 import no.nav.tiltakspenger.libs.overgangsstonad.OvergangsstønadResponsDTO
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.OvergangsstønadMottattHendelse
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import java.time.LocalDate
 import java.time.LocalDateTime
 

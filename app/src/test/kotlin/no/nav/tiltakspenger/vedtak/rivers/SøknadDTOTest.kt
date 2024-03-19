@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.BarnetilleggDTO
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.DokumentInfoDTO
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.FraOgMedDatoSpmDTO

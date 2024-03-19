@@ -9,16 +9,18 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTO.Companion.lagSaksopplysningMedVilkår
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
-import no.nav.tiltakspenger.vedtak.service.ports.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.service.sak.SakService
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -40,28 +42,15 @@ fun Route.behandlingRoutes(
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-
-        val sak = sakService.henteMedBehandlingsId(behandlingId) ?: return@get call.respond(
-            message = "Sak ikke funnet",
-            status = HttpStatusCode.NotFound,
-        )
+        val sak = sakService.hentMedBehandlingId(behandlingId, saksbehandler)
 
         if (sak.personopplysninger.erTom()) {
             return@get call.respond(
                 message = "Sak mangler personopplysninger",
                 status = HttpStatusCode.NotFound,
-            )
-        }
-
-        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
-            call.respond(
-                status = HttpStatusCode.Unauthorized,
-                message = "{}",
             )
         }
 
@@ -84,12 +73,10 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/")
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
         behandlingService.leggTilSaksopplysning(
             behandlingId,
@@ -101,11 +88,9 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/beslutter/{behandlingId}") {
         SECURELOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
 
@@ -114,27 +99,22 @@ fun Route.behandlingRoutes(
 
     post("$behandlingPath/oppdater/{behandlingId}") {
         SECURELOG.debug { "Vi har mottatt melding om oppfriskning av fakta" }
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        // TODO: Rollesjekk ikke helt landet
-
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        val behandling = behandlingService.hentBehandlingOrNull(behandlingId)
-        val journalpostId = if (behandling is Førstegangsbehandling) behandling.søknad().journalpostId else null
-        behandlingService.hentBehandlingOrNull(behandlingId)?.let {
+        // TODO: Rollesjekk ikke helt landet
+        behandlingService.hentBehandling(behandlingId).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = journalpostId ?: "",
+                journalpostId = it.søknad().journalpostId ?: "",
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
-        } ?: return@post call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+        }
 
-        // Skriv denne om til en sjekk på om det faktisk er oppdatert
+        // TODO: Skriv denne om til en sjekk på om det faktisk er oppdatert
         delay(3000)
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
@@ -142,11 +122,8 @@ fun Route.behandlingRoutes(
     post("$behandlingPath/avbrytbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         behandlingService.frataBehandling(behandlingId, saksbehandler)
 
@@ -154,7 +131,7 @@ fun Route.behandlingRoutes(
     }
 
     post("$behandlingPath/opprettrevurdering/{}") {
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
+        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromString(it) }
             ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
 
         LOG.info { "Mottatt request om å opprette en revurdering på behandlingen: $behandlingId" }

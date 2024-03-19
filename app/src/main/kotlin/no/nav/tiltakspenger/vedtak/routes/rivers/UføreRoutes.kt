@@ -8,17 +8,17 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.UføreVedtakId
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.Feil
+import no.nav.tiltakspenger.innsending.domene.UføreVedtak
+import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.tolkere.UføreTolker
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.ufore.Feilmelding
 import no.nav.tiltakspenger.libs.ufore.UforeResponsDTO
 import no.nav.tiltakspenger.libs.ufore.UføregradDTO
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.tolkere.UføreTolker
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class UføreDTO(

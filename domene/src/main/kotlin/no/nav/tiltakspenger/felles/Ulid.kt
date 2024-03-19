@@ -67,7 +67,7 @@ data class BehandlingId private constructor(private val ulid: UlidBase) : Ulid b
         private const val PREFIX = "beh"
         fun random() = BehandlingId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
-        fun fromDb(stringValue: String) = BehandlingId(ulid = UlidBase(stringValue))
+        fun fromString(stringValue: String) = BehandlingId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = BehandlingId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }
@@ -89,7 +89,7 @@ data class SøkerId private constructor(private val ulid: UlidBase) : Ulid by ul
         private const val PREFIX = "soker"
         fun random() = SøkerId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
-        fun fromDb(stringValue: String) = SøkerId(ulid = UlidBase(stringValue))
+        fun fromString(stringValue: String) = SøkerId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = SøkerId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }
@@ -203,6 +203,7 @@ private fun ulidStringToLongs(s: String): Pair<Long, Long> {
         22, 23, 24, 25, 26, -1, 27, 28,
         29, 30, 31,
     )
+
     fun base32CharToByte(ch: Char): Byte = charMapBase32[ch.code]
 
     var mostSig = 0L

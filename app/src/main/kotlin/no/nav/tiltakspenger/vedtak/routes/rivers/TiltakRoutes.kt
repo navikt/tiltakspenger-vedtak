@@ -7,12 +7,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Tiltak
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
 data class TiltakMottattDTO(
@@ -82,8 +82,6 @@ private fun mapTiltak(
                     typeNavn = it.gjennomforing.typeNavn,
                     typeKode = it.gjennomforing.arenaKode.name,
                     rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
-                    fom = null,
-                    tom = null,
                 ),
                 deltakelseFom = it.deltakelseFom!!,
                 deltakelseTom = it.deltakelseTom!!,

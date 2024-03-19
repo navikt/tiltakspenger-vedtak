@@ -14,8 +14,7 @@ fun Route.saksbehandlerRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
 ) {
     get(saksbehandlerPath) {
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@get call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         call.respond(message = saksbehandler, status = HttpStatusCode.OK)
     }
 }

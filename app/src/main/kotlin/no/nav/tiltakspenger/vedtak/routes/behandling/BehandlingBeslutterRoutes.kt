@@ -8,7 +8,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -24,12 +25,8 @@ fun Route.behandlingBeslutterRoutes(
     post("$behandlingPath/sendtilbake/{behandlingId}") {
         SECURELOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
-
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
 
         behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse)
@@ -40,13 +37,11 @@ fun Route.behandlingBeslutterRoutes(
     post("$behandlingPath/godkjenn/{behandlingId}") {
         SECURELOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         behandlingService.iverksett(behandlingId, saksbehandler)
+
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 }
