@@ -64,29 +64,32 @@ class SammenstillingForBehandlingDTOTest {
         assert(underBeslutningTekst === "Under behandling")
     }
 
-    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.KreverManuellVurdering =
-        Vurdering.KreverManuellVurdering(
+    private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering =
+        Vurdering(
             vilkår = vilkår,
             fom = LocalDate.now(),
             tom = LocalDate.now(),
             kilde = mockk<Kilde>(),
             detaljer = "test",
+            utfall = Utfall.KREVER_MANUELL_VURDERING,
         )
 
-    private fun mockOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.Oppfylt = Vurdering.Oppfylt(
+    private fun mockOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering = Vurdering(
         vilkår = vilkår,
         fom = LocalDate.now(),
         tom = LocalDate.now(),
         kilde = mockk<Kilde>(),
         detaljer = "test",
+        utfall = Utfall.OPPFYLT,
     )
 
-    private fun mockIkkeOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering.IkkeOppfylt = Vurdering.IkkeOppfylt(
+    private fun mockIkkeOppfyltVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering = Vurdering(
         vilkår = vilkår,
         fom = LocalDate.now(),
         tom = LocalDate.now(),
         kilde = mockk<Kilde>(),
         detaljer = "test",
+        utfall = Utfall.IKKE_OPPFYLT,
     )
 
     @Test
