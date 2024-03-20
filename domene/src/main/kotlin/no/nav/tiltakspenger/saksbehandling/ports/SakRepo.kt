@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 
 interface SakRepo {
     fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak>
+    fun hentForIdent(fnr: String): List<Sak>
     fun lagre(sak: Sak): Sak
 
     fun hent(sakId: SakId): Sak?

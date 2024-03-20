@@ -93,6 +93,17 @@ class SakServiceImpl(
         return sak
     }
 
+    override fun hentForIdent(ident: String, saksbehandler: Saksbehandler): List<Sak> {
+        val saker = sakRepo.hentForIdent(ident)
+        saker.forEach { sak ->
+            if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
+            }
+        }
+
+        return saker
+    }
+
     private fun lagMapAvSkjerming(skjerming: Skjerming) =
         (skjerming.barn + skjerming.søker).associate { it.ident to it.skjerming }
 }

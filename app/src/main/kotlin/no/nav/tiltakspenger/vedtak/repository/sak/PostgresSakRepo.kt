@@ -46,6 +46,21 @@ internal class PostgresSakRepo(
         }
     }
 
+    override fun hentForIdent(fnr: String): List<Sak> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentSakerForIdent,
+                        mapOf("ident" to fnr),
+                    ).map { row ->
+                        row.toSak(txSession)
+                    }.asList,
+                )
+            }
+        }
+    }
+
     override fun hentForJournalpostId(journalpostId: String): Sak? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
