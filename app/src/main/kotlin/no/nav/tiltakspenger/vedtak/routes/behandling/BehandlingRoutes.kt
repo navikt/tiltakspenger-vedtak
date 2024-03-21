@@ -109,7 +109,7 @@ fun Route.behandlingRoutes(
         behandlingService.hentBehandling(behandlingId).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = it.søknad().journalpostId ?: "",
+                journalpostId = it.søknad().journalpostId,
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         }

@@ -88,6 +88,7 @@ internal class SakServiceTest {
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteLøpenr() } returns "1"
 
         val søknad = nySøknad(
             tiltak = søknadTiltak(
@@ -110,6 +111,7 @@ internal class SakServiceTest {
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteLøpenr() } returns "1"
 
         val søknad = nySøknad(
             journalpostId = "søknad1",

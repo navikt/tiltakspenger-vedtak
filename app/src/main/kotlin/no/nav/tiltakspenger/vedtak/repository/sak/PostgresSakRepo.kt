@@ -171,6 +171,32 @@ internal class PostgresSakRepo(
         return sak
     }
 
+    override fun hentNesteLøpenr(): String {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentNesteLøpenummer,
+                    ).map { row ->
+                        row.int("løpenr").toString()
+                    }.asSingle,
+                )
+            }
+        } ?: throw IllegalStateException("Kunne ikke hente neste løpenummer")
+    }
+
+    override fun resetLøpenummer() {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlResetLøpenummer,
+                    ).asExecute,
+                )
+            }
+        }
+    }
+
     private fun Row.toSak(txSession: TransactionalSession): Sak {
         val id = SakId.fromDb(string("id"))
         return Sak(
@@ -247,4 +273,12 @@ internal class PostgresSakRepo(
     @Language("SQL")
     private val sqlHentSistEndret =
         """select sist_endret from sak where id = :id""".trimIndent()
+
+    @Language("SQL")
+    private val sqlHentNesteLøpenummer =
+        """select nextval('sak_løpenr') as løpenr""".trimIndent()
+
+    @Language("SQL")
+    private val sqlResetLøpenummer =
+        """alter sequence sak_løpenr restart""".trimIndent()
 }
