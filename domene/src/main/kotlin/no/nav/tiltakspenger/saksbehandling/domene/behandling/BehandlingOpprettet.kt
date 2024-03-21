@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårsvurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class BehandlingOpprettet(
@@ -14,7 +15,7 @@ data class BehandlingOpprettet(
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårsvurderinger: List<Vilkårsvurdering>,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),

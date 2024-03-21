@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårsvurdering
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -16,7 +17,7 @@ interface Behandling {
     val id: BehandlingId
     val sakId: SakId
     val vurderingsperiode: Periode
-    val saksopplysninger: List<Saksopplysning>
+    val vilkårsvurderinger: List<Vilkårsvurdering>
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
