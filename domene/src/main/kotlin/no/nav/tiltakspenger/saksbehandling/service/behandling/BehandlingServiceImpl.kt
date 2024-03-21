@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -41,6 +42,7 @@ class BehandlingServiceImpl(
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val multiRepo: MultiRepo,
+    private val sakRepo: SakRepo,
 ) : BehandlingService {
 
     override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
@@ -114,6 +116,8 @@ class BehandlingServiceImpl(
 
     override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
+        val sak = sakRepo.hentSakDetaljer(behandling.sakId)
+            ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
 
         val iverksattBehandling = when (behandling) {
             is BehandlingTilBeslutter -> behandling.iverksett(utøvendeBeslutter)
@@ -130,10 +134,10 @@ class BehandlingServiceImpl(
         multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
             // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
             // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
-            utbetalingService.sendBehandlingTilUtbetaling(vedtak)
+            utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak)
         }
 
-        meldekortGrunnlagGateway.sendMeldekortGrunnlag(vedtak)
+        meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)
 
         val personopplysninger =
             personopplysningRepo.hent(vedtak.sakId).søker()

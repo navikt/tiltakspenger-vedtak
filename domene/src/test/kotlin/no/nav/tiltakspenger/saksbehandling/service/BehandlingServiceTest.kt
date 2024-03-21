@@ -40,6 +40,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -57,6 +58,7 @@ internal class BehandlingServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var multiRepo: MultiRepo
+    private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
 
     @BeforeEach
@@ -68,6 +70,7 @@ internal class BehandlingServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         multiRepo = mockk(relaxed = true)
+        sakRepo = mockk(relaxed = true)
 
         behandlingService =
             BehandlingServiceImpl(
@@ -78,6 +81,7 @@ internal class BehandlingServiceTest {
                 brevPublisherGateway,
                 meldekortGrunnlagGateway,
                 multiRepo,
+                sakRepo,
             )
     }
 

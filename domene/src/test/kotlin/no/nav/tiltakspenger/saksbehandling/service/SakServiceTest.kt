@@ -75,6 +75,7 @@ internal class SakServiceTest {
                 brevPublisherGateway,
                 meldekortGrunnlagGateway,
                 multiRepo,
+                sakRepo,
             )
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }

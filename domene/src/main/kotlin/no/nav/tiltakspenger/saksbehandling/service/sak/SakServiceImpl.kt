@@ -93,6 +93,10 @@ class SakServiceImpl(
         return sak
     }
 
+    override fun resettLøpenr() {
+        sakRepo.resetLøpenummer()
+    }
+
     private fun lagMapAvSkjerming(skjerming: Skjerming) =
         (skjerming.barn + skjerming.søker).associate { it.ident to it.skjerming }
 }

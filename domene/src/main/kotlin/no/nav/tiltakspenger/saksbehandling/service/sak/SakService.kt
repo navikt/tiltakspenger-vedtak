@@ -13,4 +13,5 @@ interface SakService {
     fun mottaSkjerming(journalpostId: String, skjerming: Skjerming): Sak
     fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak?
     fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak
+    fun resettLøpenr()
 }

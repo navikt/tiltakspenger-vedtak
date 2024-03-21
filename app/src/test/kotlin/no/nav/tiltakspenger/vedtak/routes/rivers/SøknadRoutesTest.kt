@@ -75,6 +75,7 @@ class SøknadRoutesTest {
             brevPublisherGateway,
             meldekortGrunnlagGateway,
             multiRepo,
+            sakRepo,
         )
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
 
