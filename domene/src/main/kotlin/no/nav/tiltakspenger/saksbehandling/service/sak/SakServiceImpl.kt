@@ -31,7 +31,7 @@ class SakServiceImpl(
                 periode = søknad.vurderingsperiode(),
             ).singleOrNull() ?: Sak.lagSak(
                 søknad = søknad,
-                saksnummerGenerator = SaksnummerGenerator(),
+                saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
             )
 
         val håndtertSak = sak.håndter(søknad = søknad)
@@ -91,6 +91,10 @@ class SakServiceImpl(
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
         return sak
+    }
+
+    override fun resettLøpenr() {
+        sakRepo.resetLøpenummer()
     }
 
     private fun lagMapAvSkjerming(skjerming: Skjerming) =

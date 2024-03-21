@@ -52,7 +52,7 @@ interface SakMother {
     ): Sak {
         return Sak.lagSak(
             søknad = søknad,
-            saksnummerGenerator = saksnummerGenerator,
+            saksnummer = saksnummerGenerator.genererSaknummer("TODO"),
         )
     }
 

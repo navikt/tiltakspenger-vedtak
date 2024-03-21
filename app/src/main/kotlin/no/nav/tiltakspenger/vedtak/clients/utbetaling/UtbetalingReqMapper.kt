@@ -8,7 +8,7 @@ object UtbetalingReqMapper {
 
     fun mapUtbetalingReq(vedtak: Vedtak, sak: SakDetaljer): UtbetalingDTO {
         return UtbetalingDTO(
-            sakId = sak.id.toString(),
+            sakId = sak.saknummer.verdi,
             utløsendeId = vedtak.behandling.id.toString(),
             ident = sak.ident,
             utfallsperioder = vedtak.utfallsperioder.map {
