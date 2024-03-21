@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
@@ -50,59 +51,65 @@ data class Saksopplysning(
 
     fun lagVurdering(periode: Periode): List<Vurdering> {
         val vurdering = when (this.typeSaksopplysning) {
-            TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
+            TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering(
                 vilkår = this.vilkår,
                 kilde = this.kilde,
                 fom = this.fom,
                 tom = this.tom,
                 detaljer = this.detaljer,
+                utfall = Utfall.KREVER_MANUELL_VURDERING,
             )
 
             HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) {
                 if (this.kilde == Kilde.SAKSB) {
-                    Vurdering.IkkeOppfylt(
+                    Vurdering(
                         vilkår = this.vilkår,
                         kilde = this.kilde,
                         fom = this.fom,
                         tom = this.tom,
                         detaljer = this.detaljer,
+                        utfall = Utfall.OPPFYLT,
                     )
                 } else {
-                    Vurdering.KreverManuellVurdering(
+                    Vurdering(
                         vilkår = this.vilkår,
                         kilde = this.kilde,
                         fom = this.fom,
                         tom = this.tom,
                         detaljer = this.detaljer,
+                        utfall = Utfall.KREVER_MANUELL_VURDERING,
                     )
                 }
             } else {
-                Vurdering.IkkeOppfylt(
+                Vurdering(
                     vilkår = this.vilkår,
                     kilde = this.kilde,
                     fom = this.fom,
                     tom = this.tom,
                     detaljer = this.detaljer,
+                    utfall = Utfall.IKKE_OPPFYLT,
                 )
             }
 
-            HAR_IKKE_YTELSE -> Vurdering.Oppfylt(
+            HAR_IKKE_YTELSE -> Vurdering(
                 vilkår = this.vilkår,
                 kilde = this.kilde,
                 fom = this.fom,
                 tom = this.tom,
                 detaljer = this.detaljer,
+                utfall = Utfall.OPPFYLT,
             )
         }
 
-        if (vurdering is Vurdering.IkkeOppfylt) {
+        if (vurdering.utfall == Utfall.IKKE_OPPFYLT) {
             val oppfyltePerioder = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom)).map {
-                Vurdering.Oppfylt(
+                Vurdering(
                     vilkår = this.vilkår,
                     kilde = this.kilde,
                     fom = it.fra,
                     tom = it.til,
                     detaljer = this.detaljer,
+                    utfall = Utfall.OPPFYLT,
                 )
             }
 

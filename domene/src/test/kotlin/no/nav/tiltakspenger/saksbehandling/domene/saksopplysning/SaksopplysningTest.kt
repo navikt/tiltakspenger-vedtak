@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
@@ -127,19 +128,21 @@ internal class SaksopplysningTest {
             )
 
         saksopplysning.lagVurdering(periode) shouldContainAll listOf(
-            Vurdering.IkkeOppfylt(
+            Vurdering(
                 vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,
                 detaljer = "",
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
+                utfall = Utfall.IKKE_OPPFYLT,
             ),
-            Vurdering.Oppfylt(
+            Vurdering(
                 vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,
                 detaljer = "",
                 fom = 1.februar(2023),
                 tom = 31.mars(2023),
+                utfall = Utfall.OPPFYLT,
             ),
         )
     }
