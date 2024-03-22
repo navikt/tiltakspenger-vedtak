@@ -19,7 +19,7 @@ internal const val sakPath = "/sak"
 
 fun Sak.toDTO() = SakDTO(
     saksnummer = this.saknummer.verdi,
-    fødselsnummer = this.ident,
+    ident = this.ident,
 )
 
 fun Route.sakRoutes(
