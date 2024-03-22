@@ -61,6 +61,21 @@ internal class PostgresSakRepo(
         }
     }
 
+    override fun hentForSaksnummer(saksnummer: String): Sak? {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentSakForSaksnummer,
+                        mapOf("saksnummer" to saksnummer),
+                    ).map { row ->
+                        row.toSak(txSession)
+                    }.asSingle,
+                )
+            }
+        }
+    }
+
     override fun hentForJournalpostId(journalpostId: String): Sak? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -284,6 +299,10 @@ internal class PostgresSakRepo(
     @Language("SQL")
     private val sqlHentSakerForIdent =
         """select * from sak where ident = :ident""".trimIndent()
+
+    @Language("SQL")
+    private val sqlHentSakForSaksnummer =
+        """select * from sak where saksnummer = :saksnummer""".trimIndent()
 
     @Language("SQL")
     private val sqlHentSistEndret =

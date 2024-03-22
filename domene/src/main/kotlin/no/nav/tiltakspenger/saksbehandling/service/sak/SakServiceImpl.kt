@@ -104,6 +104,14 @@ class SakServiceImpl(
         return saker
     }
 
+    override fun hentForSaksnummer(saksnummer: String, saksbehandler: Saksbehandler): Sak {
+        val sak = sakRepo.hentForSaksnummer(saksnummer) ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
+        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
+        }
+        return sak
+    }
+
     override fun resettLøpenr() {
         sakRepo.resetLøpenummer()
     }
