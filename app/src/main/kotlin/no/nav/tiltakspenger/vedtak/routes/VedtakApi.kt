@@ -130,6 +130,7 @@ internal fun Application.vedtakApi(
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
+                sakService = sakService,
             )
             innsendingUtdatertRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,

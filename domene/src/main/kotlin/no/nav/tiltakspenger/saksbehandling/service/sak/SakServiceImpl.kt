@@ -31,7 +31,7 @@ class SakServiceImpl(
                 periode = søknad.vurderingsperiode(),
             ).singleOrNull() ?: Sak.lagSak(
                 søknad = søknad,
-                saksnummerGenerator = SaksnummerGenerator(),
+                saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
             )
 
         val håndtertSak = sak.håndter(søknad = søknad)
@@ -102,6 +102,10 @@ class SakServiceImpl(
         }
 
         return saker
+    }
+
+    override fun resettLøpenr() {
+        sakRepo.resetLøpenummer()
     }
 
     private fun lagMapAvSkjerming(skjerming: Skjerming) =

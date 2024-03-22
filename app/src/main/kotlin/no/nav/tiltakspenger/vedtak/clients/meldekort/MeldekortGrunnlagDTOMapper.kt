@@ -1,14 +1,15 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 
 object MeldekortGrunnlagDTOMapper {
-    fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
+    fun mapMeldekortGrunnlagDTO(sak: SakDetaljer, vedtak: Vedtak) =
         MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
-            sakId = vedtak.sakId.toString(),
+            sakId = sak.saknummer.verdi,
             behandlingId = vedtak.behandling.id.toString(),
             status = when (vedtak.vedtaksType) {
                 VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV

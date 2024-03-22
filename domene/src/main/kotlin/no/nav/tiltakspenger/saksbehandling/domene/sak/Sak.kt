@@ -65,12 +65,12 @@ data class Sak(
                 vedtak = vedtak,
             )
 
-        fun lagSak(søknad: Søknad, saksnummerGenerator: SaksnummerGenerator): Sak {
+        fun lagSak(søknad: Søknad, saksnummer: Saksnummer): Sak {
             return Sak(
                 sakDetaljer = TynnSak(
                     id = SakId.random(),
                     ident = søknad.personopplysninger.ident,
-                    saknummer = saksnummerGenerator.genererSaknummer(),
+                    saknummer = saksnummer,
                     periode = søknad.vurderingsperiode(),
                 ),
                 behandlinger = emptyList(),
