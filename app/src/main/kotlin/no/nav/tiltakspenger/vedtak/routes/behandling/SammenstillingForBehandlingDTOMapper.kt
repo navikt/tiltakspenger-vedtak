@@ -17,6 +17,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.FaktaDTO
@@ -257,6 +259,18 @@ object SammenstillingForBehandlingDTOMapper {
             samletUtfall = settSamletUtfallForUtfallsperioder(
                 utfallsperioder = behandling.utfallsperioder,
             ),
+            utfallsperioder = behandling.utfallsperioder.map {
+                UtfallsperiodeDTO(
+                    fom = it.fom,
+                    tom = it.tom,
+                    antallBarn = it.antallBarn,
+                    utfall = when (it.utfall) {
+                        UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
+                        UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
+                        UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING
+                    },
+                )
+            },
         )
     }
 
