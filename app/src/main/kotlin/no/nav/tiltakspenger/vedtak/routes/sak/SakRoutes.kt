@@ -7,6 +7,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.routes.parameter
@@ -15,6 +16,11 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 private val LOG = KotlinLogging.logger {}
 
 internal const val sakPath = "/sak"
+
+fun Sak.toDTO() = SakDTO(
+    saksnummer = this.saknummer.verdi,
+    fødselsnummer = this.ident,
+)
 
 fun Route.sakRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -29,7 +35,8 @@ fun Route.sakRoutes(
 
         val ident = søkerService.hentIdent(søkerId, saksbehandler)
         val saker = sakService.hentForIdent(ident, saksbehandler)
+        val sakerDTO = saker.map { it.toDTO() }
 
-        call.respond(message = saker, status = HttpStatusCode.OK)
+        call.respond(message = sakerDTO, status = HttpStatusCode.OK)
     }
 }
