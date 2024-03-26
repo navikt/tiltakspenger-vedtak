@@ -115,13 +115,13 @@ internal fun Application.vedtakApi(
             resettInnsendingerRoute(innsendingAdminService)
         }
         authenticate("systemtoken") {
-            søknadRoutes(innsendingMediator, søkerMediator, sakService)
-            skjermingRoutes(innsendingMediator, sakService)
-            tiltakRoutes(innsendingMediator, behandlingService)
-            ytelseRoutes(innsendingMediator, behandlingService)
-            foreldrepengerRoutes(innsendingMediator, behandlingService)
-            overgangsstønadRoutes(innsendingMediator)
-            uføreRoutes(innsendingMediator, behandlingService)
+            søknadRoutes(innsendingMediator, søkerMediator, sakService, innloggetSystembrukerProvider)
+            skjermingRoutes(innsendingMediator, sakService, innloggetSystembrukerProvider)
+            tiltakRoutes(innsendingMediator, behandlingService, innloggetSystembrukerProvider)
+            ytelseRoutes(innsendingMediator, behandlingService, innloggetSystembrukerProvider)
+            foreldrepengerRoutes(innsendingMediator, behandlingService, innloggetSystembrukerProvider)
+            overgangsstønadRoutes(innsendingMediator, innloggetSystembrukerProvider)
+            uføreRoutes(innsendingMediator, behandlingService, innloggetSystembrukerProvider)
             personopplysningerRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 innsendingMediator = innsendingMediator,

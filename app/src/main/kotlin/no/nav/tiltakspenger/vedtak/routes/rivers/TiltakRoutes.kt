@@ -7,12 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 data class TiltakMottattDTO(
@@ -29,9 +31,11 @@ const val tiltakpath = "/rivers/tiltak"
 fun Route.tiltakRoutes(
     innsendingMediator: InnsendingMediator,
     behandlingService: BehandlingService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post(tiltakpath) {
         LOG.info { "Vi har mottatt tiltak fra river" }
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         val tiltakDTO: TiltakMottattDTO = try {
             call.receive()
         } catch (t: Throwable) {
@@ -53,7 +57,7 @@ fun Route.tiltakRoutes(
             )
 
             behandlingService.hentBehandlingForJournalpostId(tiltakDTO.journalpostId)?.let { behandling ->
-                behandlingService.oppdaterTiltak(behandling.id, tiltak)
+                behandlingService.oppdaterTiltak(behandling.id, tiltak, systembruker = systembruker)
             }
 
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $tiltakMottattHendelse" }

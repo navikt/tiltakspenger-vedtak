@@ -41,9 +41,7 @@ fun Route.søkerRoutes(
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
-        val response: SøkerIdDTO =
-            søkerService.hentSøkerIdOrNull(personIdent.ident, saksbehandler)
-                ?: return@post call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
+        val response: SøkerIdDTO = søkerService.hentSøkerId(personIdent.ident, saksbehandler)
 
         call.respond(message = response, status = HttpStatusCode.OK)
     }

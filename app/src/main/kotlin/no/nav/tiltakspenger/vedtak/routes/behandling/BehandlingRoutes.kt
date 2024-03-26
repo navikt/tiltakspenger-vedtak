@@ -18,8 +18,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SaksopplysningDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -43,16 +44,9 @@ fun Route.behandlingRoutes(
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
+        val behandlingId = call.parameter("behandlingId").let { BehandlingId.fromString(it) }
 
         val sak = sakService.hentMedBehandlingId(behandlingId, saksbehandler)
-
-        if (sak.personopplysninger.erTom()) {
-            return@get call.respond(
-                message = "Sak mangler personopplysninger",
-                status = HttpStatusCode.NotFound,
-            )
-        }
 
         val behandling = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
             it.id == behandlingId
@@ -65,7 +59,7 @@ fun Route.behandlingRoutes(
 
         val dto = mapSammenstillingDTO(
             behandling = behandling,
-            personopplysninger = sak.personopplysninger.søkere(),
+            søker = sak.personopplysninger.søker(),
             attesteringer = attesteringer,
         )
         call.respond(status = HttpStatusCode.OK, dto)
@@ -81,6 +75,7 @@ fun Route.behandlingRoutes(
         behandlingService.leggTilSaksopplysning(
             behandlingId,
             lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
+            saksbehandler,
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")

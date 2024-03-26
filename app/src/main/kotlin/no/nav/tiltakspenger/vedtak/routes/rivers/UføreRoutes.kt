@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.UføreVedtakId
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
@@ -19,6 +20,7 @@ import no.nav.tiltakspenger.libs.ufore.Feilmelding
 import no.nav.tiltakspenger.libs.ufore.UforeResponsDTO
 import no.nav.tiltakspenger.libs.ufore.UføregradDTO
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 data class UføreDTO(
@@ -35,9 +37,11 @@ const val uførepath = "/rivers/ufore"
 fun Route.uføreRoutes(
     innsendingMediator: InnsendingMediator,
     behandlingService: BehandlingService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post(uførepath) {
         LOG.info { "Vi har mottatt uførevedtak fra river" }
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         val uføreDTO = call.receive<UføreDTO>()
 
         when {
@@ -61,7 +65,7 @@ fun Route.uføreRoutes(
 
                     behandlingService.hentBehandlingForJournalpostId(uføreDTO.journalpostId)?.let { behandling ->
                         UføreTolker.tolkeData(uføreVedtak, behandling.vurderingsperiode).forEach { saksopplysning ->
-                            behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+                            behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, systembruker)
                         }
                     }
 

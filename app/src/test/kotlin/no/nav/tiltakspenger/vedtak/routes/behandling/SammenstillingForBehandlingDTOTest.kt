@@ -13,11 +13,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysn
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SammenstillingForBehandlingDTOMapper.settBeslutter
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
+import no.nav.tiltakspenger.vedtak.routes.behandling.mapper.SammenstillingForBehandlingDTOMapper.settUtfall
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

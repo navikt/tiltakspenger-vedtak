@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Bruker
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
@@ -13,8 +15,13 @@ interface BehandlingService {
     fun hentBehandling(behandlingId: BehandlingId): Behandling
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
-    fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
+    fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        saksopplysning: Saksopplysning,
+        utøvendeBruker: Bruker,
+    )
+
+    fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>, systembruker: Systembruker)
     fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String?)
     suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler)

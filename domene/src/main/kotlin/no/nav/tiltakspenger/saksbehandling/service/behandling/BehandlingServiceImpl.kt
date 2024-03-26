@@ -2,9 +2,11 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.Bruker
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
@@ -45,12 +47,10 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
 ) : BehandlingService {
 
-    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
-        return behandlingRepo.hentOrNull(behandlingId)
-    }
+    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? = behandlingRepo.hentOrNull(behandlingId)
 
     override fun hentBehandling(behandlingId: BehandlingId): Behandling {
-        return behandlingRepo.hentOrNull(behandlingId)
+        return hentBehandlingOrNull(behandlingId)
             ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
     }
 
@@ -63,14 +63,21 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
-    override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandling(behandlingId)
+    override fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        saksopplysning: Saksopplysning,
+        utøvendeBruker: Bruker,
+    ) {
+        val behandling = hentBehandling(behandlingId)
+        personopplysningRepo.hent(behandling.sakId).sjekkBrukerTilgang(utøvendeBruker)
+        val behandlingRespons = behandling
             .leggTilSaksopplysning(saksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
-    override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
+    override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>, systembruker: Systembruker) {
         val behandling = hentBehandling(behandlingId)
+        personopplysningRepo.hent(behandling.sakId).sjekkBrukerTilgang(systembruker)
         val oppdatertBehandling = behandling.oppdaterTiltak(
             tiltak.filter {
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
@@ -105,6 +112,7 @@ class BehandlingServiceImpl(
             beslutter = utøvendeBeslutter.navIdent,
         )
 
+        // TODO: Kunne vært løst med en sendTilbake på Behandling-interfacet?
         when (behandling) {
             is BehandlingTilBeslutter -> {
                 multiRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), attestering)

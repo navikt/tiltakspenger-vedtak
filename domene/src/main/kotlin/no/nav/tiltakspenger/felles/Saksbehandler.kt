@@ -6,8 +6,6 @@ data class Saksbehandler(
     val epost: String,
     override val roller: List<Rolle>,
 ) : Bruker {
-
-    fun isAdmin() = roller.contains(Rolle.ADMINISTRATOR)
-    fun isSaksbehandler() = roller.contains(Rolle.SAKSBEHANDLER)
-    fun isBeslutter() = roller.contains(Rolle.BESLUTTER)
+    override val ident
+        get() = navIdent
 }

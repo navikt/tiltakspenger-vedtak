@@ -1,9 +1,10 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling
+package no.nav.tiltakspenger.vedtak.routes.behandling.mapper
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.BehandlingDTO
 
 object BehandlingDTOMapper {
     fun List<Førstegangsbehandling>.mapBehandlinger(): List<BehandlingDTO> =

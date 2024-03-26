@@ -25,6 +25,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
+import no.nav.tiltakspenger.objectmothers.ObjectMother.systembruker
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
@@ -141,7 +142,7 @@ internal class BehandlingServiceTest {
             typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, saksbehandler123())
 
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
@@ -178,7 +179,7 @@ internal class BehandlingServiceTest {
             typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, saksbehandler123())
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
@@ -217,7 +218,7 @@ internal class BehandlingServiceTest {
             typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, saksbehandler123())
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
@@ -256,7 +257,7 @@ internal class BehandlingServiceTest {
             typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
             saksbehandler = null,
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, saksbehandler123())
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
@@ -287,7 +288,7 @@ internal class BehandlingServiceTest {
             tiltak(id = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
             tiltak(id = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
         )
-        behandlingService.oppdaterTiltak(behandling.id, tiltak)
+        behandlingService.oppdaterTiltak(behandling.id, tiltak, systembruker())
 
         lagretBehandling.captured.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"

@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 
 interface SaksbehandlerMother {
     fun saksbehandler() = Saksbehandler(
@@ -45,5 +46,11 @@ interface SaksbehandlerMother {
             brukernavn = "Test Testesen",
             epost = "Test.Testesen@nav.no",
             roller = listOf(Rolle.SAKSBEHANDLER),
+        )
+
+    fun systembruker(): Systembruker =
+        Systembruker(
+            "tiltakspenger",
+            listOf(Rolle.LAGE_HENDELSER),
         )
 }

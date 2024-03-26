@@ -7,12 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -22,8 +24,10 @@ fun Route.søknadRoutes(
     innsendingMediator: InnsendingMediator,
     søkerMediator: SøkerMediator,
     sakService: SakService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post(søknadpath) {
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         LOG.info { "Vi har mottatt søknad fra river" }
         val søknadDTO = call.receive<SøknadDTO>()
 

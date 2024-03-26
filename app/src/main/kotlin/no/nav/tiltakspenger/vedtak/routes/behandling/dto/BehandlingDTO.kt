@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling
+package no.nav.tiltakspenger.vedtak.routes.behandling.dto
 
 import java.time.LocalDate
 
