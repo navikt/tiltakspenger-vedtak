@@ -69,12 +69,20 @@ data class SammenstillingForBehandlingDTO(
         val vilkårFlateTittel: String,
         val fakta: FaktaDTO,
         val utfall: String,
+        val vilkårLovReferense: List<LovreferanseDTO>,
+    )
+
+    data class LovreferanseDTO(
+        val lovverk: String,
+        val paragraf: String,
+        val beskrivelse: String,
     )
 
     data class KategoriserteSaksopplysningerDTO(
         val kategoriTittel: String,
         val saksopplysninger: List<SaksopplysningUtDTO>,
         val samletUtfall: String,
+        val kategoriLovreferanse: List<LovreferanseDTO>,
     )
 
     data class FaktaDTO(
