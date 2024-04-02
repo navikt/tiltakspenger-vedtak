@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.domene.vilkår.temp
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 sealed interface Saksopplysning : Sammenlignbar<Saksopplysning> {
     val vilkår: Vilkår

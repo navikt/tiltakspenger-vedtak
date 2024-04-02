@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.domene.vilkår.temp
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import org.junit.jupiter.api.Test
 
 class VilkårBehandlingTest {

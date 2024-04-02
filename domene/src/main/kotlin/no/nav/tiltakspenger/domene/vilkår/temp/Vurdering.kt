@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.domene.vilkår.temp
 
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.vilkår.Utfall
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 data class Vurdering(
     val vilkår: Vilkår,

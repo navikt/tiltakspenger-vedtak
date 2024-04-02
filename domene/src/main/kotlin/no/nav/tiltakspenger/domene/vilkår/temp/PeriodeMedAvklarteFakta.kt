@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.domene.vilkår.temp
 
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 
 data class PeriodeMedAvklarteFakta(
     val periodeMedVerdier: PeriodeMedVerdier<Saksopplysning>,

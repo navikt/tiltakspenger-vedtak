@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.domene.vilkår.temp
 
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 data class VilkårData private constructor(
     val vilkår: Vilkår,
