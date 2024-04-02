@@ -66,12 +66,22 @@ object Saksopplysninger {
 
     fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
         if (saksopplysning.kilde != Kilde.SAKSB) {
+            // Ny saksopplysning er ikke fra saksbehandler
             if (this.first { it.vilkår == saksopplysning.vilkår && it.kilde != Kilde.SAKSB } == saksopplysning) {
+                // Vi har den nye saksopplysningen fra før
+
+                // Ikke ta med saksopplysninger fra samme vilkår, utenom de fra saksbehandler.
                 this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde != Kilde.SAKSB }
             } else {
+                // Vi har ikke den nye saksopplysningen fra før
+
+                // Ikke ta med saksopplysninger fra samme vilkår. Mao blir evt saksopplysninger fra Saksbehandler borte
                 this.filterNot { it.vilkår == saksopplysning.vilkår }
             }
         } else {
+            // Ny saksopplysning er fra saksbehandler
+
+            // Ikke ta med saksopplysninger fra samme vilkår som er fra saksbehandler
             this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
         }.plus(saksopplysning)
 
