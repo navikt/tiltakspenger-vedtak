@@ -3,11 +3,11 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import org.intellij.lang.annotations.Language
 
 class UtfallsperiodeDAO {

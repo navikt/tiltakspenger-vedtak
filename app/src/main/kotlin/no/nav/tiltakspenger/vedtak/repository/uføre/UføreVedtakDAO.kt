@@ -5,7 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UføreVedtakId
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
+import no.nav.tiltakspenger.innsending.domene.UføreVedtak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.innsending
 
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
-import no.nav.tiltakspenger.vedtak.innsending.InnsendingTilstandType
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.innsending.domene.Innsending
+import no.nav.tiltakspenger.innsending.domene.InnsendingTilstandType
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 
 class InMemoryInnsendingRepository : InnsendingRepository {
 

@@ -8,8 +8,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Rolle
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -25,19 +25,11 @@ fun Route.behandlingBeslutterRoutes(
     post("$behandlingPath/sendtilbake/{behandlingId}") {
         SECURELOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val isAdmin = saksbehandler.roller.contains(Rolle.ADMINISTRATOR)
-
-        check(saksbehandler.roller.contains(Rolle.BESLUTTER) || isAdmin) { "Saksbehandler må være beslutter eller administrator" }
-
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "Fant ingen behandlingId i body", status = HttpStatusCode.NotFound)
-
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
 
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler.navIdent, begrunnelse, isAdmin)
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse)
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
@@ -45,15 +37,11 @@ fun Route.behandlingBeslutterRoutes(
     post("$behandlingPath/godkjenn/{behandlingId}") {
         SECURELOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        check(saksbehandler.roller.contains(Rolle.BESLUTTER)) { "Saksbehandler må være beslutter" }
+        behandlingService.iverksett(behandlingId, saksbehandler)
 
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromDb(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
-
-        behandlingService.iverksett(behandlingId, saksbehandler.navIdent)
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 }

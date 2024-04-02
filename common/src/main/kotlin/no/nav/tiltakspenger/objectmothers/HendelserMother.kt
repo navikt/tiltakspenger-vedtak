@@ -1,30 +1,30 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.søkerOrNull
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.Feil
+import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.domene.UføreVedtak
+import no.nav.tiltakspenger.innsending.domene.YtelseSak
+import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
+import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.vedtak.innsending.Aktivitetslogg
-import no.nav.tiltakspenger.vedtak.innsending.Feil
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.innsending.Skjerming
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.ForeldrepengerMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.OvergangsstønadMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.SkjermingMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.SøknadMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.vedtak.innsending.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkerOrNull
+import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import java.time.LocalDateTime
 import java.util.Random
 
@@ -39,7 +39,9 @@ interface HendelserMother {
                 etternavn = "Etternavn",
             ),
         ),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
     ): SøknadMottattHendelse {
         return SøknadMottattHendelse(
             aktivitetslogg = aktivitetslogg,
@@ -51,7 +53,9 @@ interface HendelserMother {
     fun nyPersonopplysningHendelse(
         journalpostId: String = Random().nextInt().toString(),
         personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         ident: String = personopplysninger.søkerOrNull()?.ident
             ?: Random().nextInt().toString(),
         tidsstempelPersonopplysningerInnhentet: LocalDateTime = LocalDateTime.now(),
@@ -69,7 +73,9 @@ interface HendelserMother {
         journalpostId: String = Random().nextInt().toString(),
         ident: String = Random().nextInt().toString(),
         skjerming: Skjerming = skjermingFalse(ident = journalpostId),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         tidsstemplerSkjermingInnhentet: LocalDateTime = LocalDateTime.now(),
     ): SkjermingMottattHendelse {
         return SkjermingMottattHendelse(
@@ -84,7 +90,9 @@ interface HendelserMother {
     fun nyTiltakHendelse(
         journalpostId: String = Random().nextInt().toString(),
         tiltak: List<Tiltak> = listOf(tiltak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         tidsstempelTiltakInnhentet: LocalDateTime = LocalDateTime.now(),
     ): TiltakMottattHendelse {
         return TiltakMottattHendelse(
@@ -98,7 +106,9 @@ interface HendelserMother {
     fun nyYtelseHendelse(
         journalpostId: String = Random().nextInt().toString(),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         tidsstempelYtelserInnhentet: LocalDateTime = LocalDateTime.now(),
     ): YtelserMottattHendelse {
         return YtelserMottattHendelse(
@@ -113,7 +123,9 @@ interface HendelserMother {
         ident: String = Random().nextInt().toString(),
         journalpostId: String = Random().nextInt().toString(),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(ObjectMother.foreldrepengerVedtak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         tidsstempelForeldrepengerInnhentet: LocalDateTime = LocalDateTime.now(),
     ): ForeldrepengerMottattHendelse {
         return ForeldrepengerMottattHendelse(
@@ -129,7 +141,9 @@ interface HendelserMother {
         ident: String = Random().nextInt().toString(),
         journalpostId: String = Random().nextInt().toString(),
         overgansstønader: List<OvergangsstønadVedtak> = listOf(ObjectMother.overgangsstønadVedtak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         innhentet: LocalDateTime = LocalDateTime.now(),
     ): OvergangsstønadMottattHendelse {
         return OvergangsstønadMottattHendelse(
@@ -145,7 +159,9 @@ interface HendelserMother {
         ident: String = Random().nextInt().toString(),
         journalpostId: String = Random().nextInt().toString(),
         uføreVedtak: UføreVedtak = ObjectMother.uføreVedtak(),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         tidsstempelUføreVedtakInnhentet: LocalDateTime = LocalDateTime.now(),
     ): UføreMottattHendelse {
         return UføreMottattHendelse(
@@ -159,7 +175,9 @@ interface HendelserMother {
 
     fun nyFeilHendelse(
         journalpostId: String = Random().nextInt().toString(),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(forelder = null),
+        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
+            forelder = null,
+        ),
         ident: String = Random().nextInt().toString(),
         feil: Feil = Feil.PersonIkkeFunnet,
     ) = FeilMottattHendelse(

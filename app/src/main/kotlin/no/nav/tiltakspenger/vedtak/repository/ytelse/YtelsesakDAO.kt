@@ -6,7 +6,7 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.InnsendingId
 import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
+import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import org.intellij.lang.annotations.Language
 
 class YtelsesakDAO(

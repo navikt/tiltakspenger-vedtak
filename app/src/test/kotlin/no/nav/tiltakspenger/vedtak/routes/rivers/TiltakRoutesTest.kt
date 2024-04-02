@@ -13,16 +13,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.Tiltak
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
-import no.nav.tiltakspenger.vedtak.InnsendingMediator
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepository
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -34,9 +33,9 @@ class TiltakRoutesTest {
     }
 
     private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
-    private val behandlingService = mockk<BehandlingService>()
+    private val behandlingService = mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService>()
     private val testRapid = TestRapid()
-    private val innsendingMediator = InnsendingMediator(
+    private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
         observatører = listOf(),
@@ -49,7 +48,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at kall til river tiltak route sender ut et behov`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -58,7 +57,7 @@ class TiltakRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.hentBehandling(any()) } returns behandling
+        every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
         every { behandlingService.oppdaterTiltak(any(), any()) } returns Unit
 
         testApplication {
@@ -94,7 +93,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at tiltak uten deltakerFom eller tom blir filtrert bort`() {
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(
+        val behandling = BehandlingOpprettet.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -103,7 +102,7 @@ class TiltakRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.hentBehandling(any()) } returns behandling
+        every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
         val tiltak = slot<List<Tiltak>>()
         every { behandlingService.oppdaterTiltak(any(), capture(tiltak)) } returns Unit
 

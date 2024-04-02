@@ -2,16 +2,17 @@
 
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerBarnMedIdent
-import no.nav.tiltakspenger.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
+import no.nav.tiltakspenger.innsending.domene.Innsending
+import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
+import no.nav.tiltakspenger.innsending.domene.Søker
+import no.nav.tiltakspenger.innsending.domene.UføreVedtak
+import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
@@ -25,14 +26,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.vedtak.innsending.ForeldrepengerVedtak
-import no.nav.tiltakspenger.vedtak.innsending.Innsending
-import no.nav.tiltakspenger.vedtak.innsending.OvergangsstønadVedtak
-import no.nav.tiltakspenger.vedtak.innsending.Skjerming
-import no.nav.tiltakspenger.vedtak.innsending.SkjermingPerson
-import no.nav.tiltakspenger.vedtak.innsending.Søker
-import no.nav.tiltakspenger.vedtak.innsending.UføreVedtak
-import no.nav.tiltakspenger.vedtak.innsending.YtelseSak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
+import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming.SkjermingPerson
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Random
@@ -503,8 +503,6 @@ interface InnsendingMother {
             typeNavn = "Arbeidsmarkedsopplæring (AMO)",
             typeKode = "AMO",
             rettPåTiltakspenger = true,
-            fom = 1.januar(2022),
-            tom = 31.januar(2022),
         ),
         deltakelseFom: LocalDate = 1.januar(2022),
         deltakelseTom: LocalDate = 31.januar(2022),

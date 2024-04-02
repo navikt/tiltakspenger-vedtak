@@ -1,19 +1,21 @@
 package no.nav.tiltakspenger.vedtak.repository.vedtak
 
+import io.ktor.server.plugins.NotFoundException
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
@@ -29,7 +31,7 @@ internal class VedtakRepoImpl(
     private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
     private val vurderingRepo: VurderingRepo = VurderingRepo(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
-) : VedtakRepo {
+) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -47,7 +49,7 @@ internal class VedtakRepoImpl(
         }
     }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): List<Vedtak> {
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
         return sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 txSession.run(
@@ -58,10 +60,10 @@ internal class VedtakRepoImpl(
                         ),
                     ).map { row ->
                         row.toVedtak(txSession)
-                    }.asList,
+                    }.asSingle,
                 )
             }
-        }
+        } ?: throw NotFoundException("Ikke funnet")
     }
 
     override fun hentVedtakForSak(sakId: SakId): List<Vedtak> {
@@ -118,7 +120,7 @@ internal class VedtakRepoImpl(
         return Vedtak(
             id = id,
             sakId = SakId.fromDb(string("sak_id")),
-            behandling = behandlingRepo.hent(BehandlingId.fromDb(string("behandling_id"))) as BehandlingIverksatt,
+            behandling = behandlingRepo.hentOrNull(BehandlingId.fromString(string("behandling_id"))) as BehandlingIverksatt,
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),

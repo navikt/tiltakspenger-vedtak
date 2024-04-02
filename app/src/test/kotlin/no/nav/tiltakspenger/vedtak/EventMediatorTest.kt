@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.vedtak.routes.rivers.DayHasBegunEvent
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 

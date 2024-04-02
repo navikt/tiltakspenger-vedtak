@@ -1,20 +1,24 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.domene.behandling.BehandlingVilkårsvurdert
-import no.nav.tiltakspenger.domene.behandling.Søknad
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -22,8 +26,8 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): Søknadsbehandling.Opprettet =
-        Søknadsbehandling.Opprettet.opprettBehandling(
+    ): BehandlingOpprettet =
+        BehandlingOpprettet.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
         )
@@ -51,7 +55,7 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
-        val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Søknadsbehandling, vilkår ->
+        val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
                     fom = periode.fra,
@@ -62,7 +66,7 @@ interface BehandlingMother {
             ).behandling
         } as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt()
+        return behandling.spolTilbake().vilkårsvurder()
     }
 
     fun behandlingVilkårsvurdertAvslag(
@@ -79,17 +83,19 @@ interface BehandlingMother {
             ),
         ).behandling as BehandlingVilkårsvurdert
 
-        return behandling.vurderPåNytt()
+        return behandling.spolTilbake().vilkårsvurder()
     }
 
     fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter =
-        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = "123").tilBeslutting()
+        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
+            .tilBeslutting(saksbehandler123())
 
     fun behandlingTilBeslutterAvslag(): BehandlingTilBeslutter =
-        behandlingVilkårsvurdertAvslag().copy(saksbehandler = "123").tilBeslutting()
+        behandlingVilkårsvurdertAvslag().copy(saksbehandler = saksbehandler123().navIdent)
+            .tilBeslutting(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): BehandlingIverksatt =
-        behandlingTilBeslutterInnvilget().copy(beslutter = "beslutter").iverksett()
+        behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent).iverksett(beslutter())
 
     fun vilkårViHenter() = listOf(
         Vilkår.AAP,
@@ -147,7 +153,5 @@ interface BehandlingMother {
             typeNavn = typeNavn,
             typeKode = typeNavn,
             rettPåTiltakspenger = rettPåTiltakspenger,
-            fom = null,
-            tom = null,
         )
 }

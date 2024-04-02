@@ -2,21 +2,22 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
-import no.nav.tiltakspenger.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.SakRepo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
@@ -68,11 +69,11 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
-        val hentBehandling = behandlingRepo.hent(behandling.id)
+        val hentBehandling = behandlingRepo.hentOrNull(behandling.id)
 
         hentBehandling shouldNotBe null
     }
@@ -107,12 +108,12 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
-        val hentBehandling = behandlingRepo.hent(behandling.id)
-        if (hentBehandling is Søknadsbehandling.Opprettet) {
+        val hentBehandling = behandlingRepo.hentOrNull(behandling.id)
+        if (hentBehandling is BehandlingOpprettet) {
             val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
             behandlingRepo.lagre(behandlingVilkårsvurdert)
             behandlingVilkårsvurdert shouldNotBe null

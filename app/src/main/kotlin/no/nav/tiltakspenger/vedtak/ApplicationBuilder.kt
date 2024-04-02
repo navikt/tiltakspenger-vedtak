@@ -3,26 +3,29 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
+import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepository
+import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
-import no.nav.tiltakspenger.vedtak.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.innsending.InnsendingAdminService
-import no.nav.tiltakspenger.vedtak.service.personopplysning.PersonopplysningServiceImpl
-import no.nav.tiltakspenger.vedtak.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.vedtak.service.søker.SøkerServiceImpl
-import no.nav.tiltakspenger.vedtak.service.utbetaling.UtbetalingServiceImpl
-import no.nav.tiltakspenger.vedtak.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
@@ -48,7 +51,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
-                personopplysningService = personopplysningServiceImpl,
                 attesteringRepo = attesteringRepo,
             )
         }
@@ -60,23 +62,36 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
-    private val utbetalingService = UtbetalingServiceImpl(utbetalingClient, sakRepo)
-    private val søkerRepository = SøkerRepository()
+    private val utbetalingGateway = UtbetalingGatewayImpl(utbetalingClient)
+    private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
+    private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
+    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
+    private val søkerRepository = SøkerRepositoryImpl()
     private val behandlingRepo = PostgresBehandlingRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
-    private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val attesteringRepo = AttesteringRepoImpl()
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
-    private val vedtakService = VedtakServiceImpl(utbetalingService, vedtakRepo, personopplysningRepo, rapidsConnection)
+    private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo)
+    private val personopplysningRepo = PostgresPersonopplysningerRepo()
+    private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
-    private val behandlingService = BehandlingServiceImpl(behandlingRepo, vedtakService, attesteringRepo)
+    private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
+    private val behandlingService =
+        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
+            behandlingRepo,
+            vedtakRepo,
+            personopplysningRepo,
+            utbetalingService,
+            brevPublisherGateway,
+            meldekortGrunnlagGateway,
+            multiRepo,
+            sakRepo,
+        )
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
 
-    private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-
-    val innsendingMediator = InnsendingMediator(
+    val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,
         observatører = listOf(),

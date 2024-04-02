@@ -2,17 +2,18 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.behandling.Tiltak
-import no.nav.tiltakspenger.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -48,8 +49,6 @@ internal class TiltakDAOTest {
                 typeNavn = "Jobbkurs",
                 typeKode = "JOBBK",
                 rettPåTiltakspenger = true,
-                fom = null,
-                tom = null,
             ),
             deltakelseFom = 1.januar(2023),
             deltakelseTom = 31.januar(2023),
@@ -89,8 +88,6 @@ internal class TiltakDAOTest {
                 typeNavn = "Jobbkurs",
                 typeKode = "JOBBK",
                 rettPåTiltakspenger = true,
-                fom = 1.januar(2023),
-                tom = 31.mars(2023),
             ),
             deltakelseFom = 1.januar(2023),
             deltakelseTom = 31.mars(2023),
@@ -120,7 +117,7 @@ internal class TiltakDAOTest {
         hentet.first() shouldBe tiltak
     }
 
-    private fun lagreSakOgBehandling(): Søknadsbehandling {
+    private fun lagreSakOgBehandling(): Behandling {
         val behandlingRepo = PostgresBehandlingRepo()
         val sakRepo = PostgresSakRepo()
 
@@ -152,7 +149,7 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Søknadsbehandling.Opprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
 
         return behandlingRepo.lagre(behandling)
     }

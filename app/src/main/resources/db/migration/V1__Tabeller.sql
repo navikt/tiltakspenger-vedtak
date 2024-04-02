@@ -341,8 +341,6 @@ CREATE TABLE tiltak
     gjennomføring_id       VARCHAR                  NOT NULL,
     tiltaktype_kode        VARCHAR                  NOT NULL,
     tiltaktype_navn        VARCHAR                  NOT NULL,
-    tiltak_fom             DATE                     NULL,
-    tiltak_tom             DATE                     NULL,
     arrangørnavn           VARCHAR                  NOT NULL,
     rett_på_tiltakspenger  BOOLEAN                  NOT NULL,
     deltakelse_fom         DATE                     NULL,
@@ -448,3 +446,5 @@ CREATE TABLE overgangsstønad_vedtak
     innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
+
+create sequence sak_løpenr start 1001;

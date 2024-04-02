@@ -5,17 +5,18 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.domene.behandling.Søknadsbehandling
-import no.nav.tiltakspenger.domene.sak.Sak
-import no.nav.tiltakspenger.domene.sak.Saksnummer
-import no.nav.tiltakspenger.domene.sak.TynnSak
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
+import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -42,6 +43,36 @@ internal class PostgresSakRepo(
             }
         }.filter {
             it.periode.overlapperMed(periode)
+        }
+    }
+
+    override fun hentForIdent(fnr: String): List<Sak> {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentSakerForIdent,
+                        mapOf("ident" to fnr),
+                    ).map { row ->
+                        row.toSak(txSession)
+                    }.asList,
+                )
+            }
+        }
+    }
+
+    override fun hentForSaksnummer(saksnummer: String): Sak? {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentSakForSaksnummer,
+                        mapOf("saksnummer" to saksnummer),
+                    ).map { row ->
+                        row.toSak(txSession)
+                    }.asSingle,
+                )
+            }
         }
     }
 
@@ -108,7 +139,7 @@ internal class PostgresSakRepo(
                 )
                 opprettetSak
             }.also { sak ->
-                sak.behandlinger.filterIsInstance<Søknadsbehandling>().forEach {
+                sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {
                     behandlingRepo.lagre(it)
                 }
             }
@@ -168,6 +199,32 @@ internal class PostgresSakRepo(
             ).asUpdate,
         )
         return sak
+    }
+
+    override fun hentNesteLøpenr(): String {
+        return sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentNesteLøpenummer,
+                    ).map { row ->
+                        row.int("løpenr").toString()
+                    }.asSingle,
+                )
+            }
+        } ?: throw IllegalStateException("Kunne ikke hente neste løpenummer")
+    }
+
+    override fun resetLøpenummer() {
+        sessionOf(DataSource.hikariDataSource).use {
+            it.transaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlResetLøpenummer,
+                    ).asExecute,
+                )
+            }
+        }
     }
 
     private fun Row.toSak(txSession: TransactionalSession): Sak {
@@ -244,6 +301,18 @@ internal class PostgresSakRepo(
         """select * from sak where ident = :ident""".trimIndent()
 
     @Language("SQL")
+    private val sqlHentSakForSaksnummer =
+        """select * from sak where saksnummer = :saksnummer""".trimIndent()
+
+    @Language("SQL")
     private val sqlHentSistEndret =
         """select sist_endret from sak where id = :id""".trimIndent()
+
+    @Language("SQL")
+    private val sqlHentNesteLøpenummer =
+        """select nextval('sak_løpenr') as løpenr""".trimIndent()
+
+    @Language("SQL")
+    private val sqlResetLøpenummer =
+        """alter sequence sak_løpenr restart""".trimIndent()
 }
