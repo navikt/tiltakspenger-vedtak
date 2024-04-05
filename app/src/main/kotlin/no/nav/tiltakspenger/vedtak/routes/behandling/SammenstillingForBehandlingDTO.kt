@@ -82,7 +82,6 @@ data class SammenstillingForBehandlingDTO(
         val kategoriTittel: String,
         val saksopplysninger: List<SaksopplysningUtDTO>,
         val samletUtfall: String,
-        val kategoriLovreferanse: List<LovreferanseDTO>,
     )
 
     data class FaktaDTO(

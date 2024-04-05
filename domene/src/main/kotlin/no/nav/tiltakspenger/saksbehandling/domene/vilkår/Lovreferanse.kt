@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 // i stor grad hentet fra https://lovdata.no/pro/#document/SF/forskrift/2013-11-04-1286
-enum class LovreferanseTilVilkår(val lovverk: String, val paragraf: String, val ledd: String, val beskrivelse: String) {
+enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: String, val beskrivelse: String) {
     ALDER("Tiltakspengeforskriften", "§3", "1", "Tiltakspenger og barnetillegg"),
     TILTAKSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     AAP("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
@@ -27,12 +27,4 @@ enum class LovreferanseTilVilkår(val lovverk: String, val paragraf: String, val
     LØNNSINNTEKT("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
     ETTERLØNNARBEIDSMARKEDSLOV("Arbeidsmarkedsloven", "§13", "1", "Ytelser til gjennomføring av arbeidsmarkedstiltak mv."),
     ETTERLØNNRUNDSKRIV("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
-}
-
-enum class LovreferanseTilKatogeri(val lovverk: String, val paragraf: String, val beskrivelse: String) {
-    FORSKRIFT_P7("Tiltakspengeforskriften", "§7", "Forholdet til andre ytelser"),
-    FORSKRIFT_P3("Tiltakspengeforskriften", "§3", "Tiltakspenger og barnetillegg"),
-    FORSKRIFT_P9("Tiltakspengeforskriften", "§9", "Opphold i institusjon, fengsel mv."),
-    RUNDSKRIV_P8("Rundskriv om tiltakspenger", "§8", "Forholdet til lønn"),
-    ARBEIDSMARKEDSLOVEN_P13("Arbeidsmarkedsloven", "§13", "Ytelser til gjennomføring av arbeidsmarkedstiltak mv."),
 }
