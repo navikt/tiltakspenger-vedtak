@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.FaktaDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.KategoriserteSaksopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
@@ -30,11 +31,13 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 
 object SammenstillingForBehandlingDTOMapper {
-
     enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
         ALDER("Alder", listOf(Vilkår.ALDER)),
         TILTAK("Tiltak", listOf(Vilkår.TILTAKSPENGER)),
-        INTROKVP("Introduksjonsprogrammet og Kvalifiseringsprogrammet", listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP)),
+        INTROKVP(
+            "Introduksjonsprogrammet og Kvalifiseringsprogrammet",
+            listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP),
+        ),
         UTBETALINGER(
             "Utbetalinger",
             listOf(
@@ -56,9 +59,6 @@ object SammenstillingForBehandlingDTOMapper {
                 Vilkår.SYKEPENGER,
                 Vilkår.SVANGERSKAPSPENGER,
                 Vilkår.SUPPLERENDESTØNADFLYKTNING,
-                Vilkår.STATLIGEYTELSER,
-                Vilkår.KOMMUNALEYTELSER,
-
             ),
         ),
         INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
@@ -206,7 +206,7 @@ object SammenstillingForBehandlingDTOMapper {
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
                     saksopplysninger = behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
-                        .map {
+                        .map { it ->
                             val fakta =
                                 fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
                             SaksopplysningUtDTO(
@@ -219,6 +219,13 @@ object SammenstillingForBehandlingDTOMapper {
                                 vilkårFlateTittel = it.vilkår.flateTittel,
                                 fakta = fakta,
                                 utfall = settUtfall(behandling = behandling, saksopplysning = it),
+                                vilkårLovReferense = it.vilkår.lovReference.map {
+                                    LovreferanseDTO(
+                                        lovverk = it.lovverk,
+                                        paragraf = it.paragraf,
+                                        beskrivelse = it.beskrivelse,
+                                    )
+                                },
                             )
                         },
                     samletUtfall = settSamletUtfallForSaksopplysninger(

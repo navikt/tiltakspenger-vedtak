@@ -19,13 +19,12 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     ALDERSPENSJON("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OPPLÆRINGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     OMSORGSPENGER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
-    JOBBSJANSEN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Forholdet til andre ytelser"), // Denne er ikke riktig, fiks!
+    JOBBSJANSEN("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     INTROPROGRAMMET("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
     KVP("Tiltakspengeforskriften", "§7", "3", "Forholdet til andre ytelser"),
-    KOMMUNALE_YTELSER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
-    STATLIGE_YTELSER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
-    INSTITUSJONSOPPHOLD("Tiltakspengeforskriften", "§9", "1", "Institusjonsopphold med kost og losji"),
-    PENSJONSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Institusjonsopphold med kost og losji"),
-    LØNNSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Institusjonsopphold med kost og losji"),
-    ETTERLØNN("Tiltakspengeforskriften", "§UKJENT", "UKJENT", "Institusjonsopphold med kost og losji"), // Denne er ikke riktig, fiks!
+    INSTITUSJONSOPPHOLD("Tiltakspengeforskriften", "§9", "1", "Opphold i institusjon, fengsel mv."),
+    PENSJONSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
+    LØNNSINNTEKT("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
+    ETTERLØNNARBEIDSMARKEDSLOV("Arbeidsmarkedsloven", "§13", "1", "Ytelser til gjennomføring av arbeidsmarkedstiltak mv."),
+    ETTERLØNNRUNDSKRIV("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
 }
