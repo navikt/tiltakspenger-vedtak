@@ -6,25 +6,25 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import java.time.LocalDateTime
 
-data class VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt(
+data class OppfyltVilkårData(
     val vilkår: Vilkår,
     val vurderingsperiode: Periode,
-    val saksopplysningerSaksbehandler: SaksopplysningerForEnKilde,
-    val saksopplysningerAnnet: SaksopplysningerForEnKilde,
-    val avklarteFakta: SaksopplysningerForEnKilde,
+    val saksopplysningerSaksbehandler: YtelseSaksopplysningerForEnKilde,
+    val saksopplysningerAnnet: YtelseSaksopplysningerForEnKilde,
+    val avklarteFakta: YtelseSaksopplysningerForEnKilde,
     val vurderinger: List<Vurdering>,
 ) {
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning) {
         // TODO Her må vi enten få inn hele sannheten eller legge denne ene til i listen og lage de implisitte
     }
 
-    fun avklarFakta(): VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt {
+    fun avklarFakta(): OppfyltVilkårData {
         return this.copy(
             avklarteFakta = if (saksopplysningerSaksbehandler.erSatt()) saksopplysningerSaksbehandler else saksopplysningerAnnet,
         )
     }
 
-    fun vilkårsvurder(): VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt {
+    fun vilkårsvurder(): OppfyltVilkårData {
         val vurderinger = avklarteFakta.saksopplysninger.map { it.lagVurdering() } +
             vurderingsperiode.ikkeOverlappendePerioder(vurderinger.map { it.periode() }).map {
                 // TODO lag enten en saksopplysning.lagVurder eller lag Vurdering her
@@ -42,7 +42,7 @@ data class VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt(
     }
 }
 
-data class SaksopplysningerForEnKilde(
+data class YtelseSaksopplysningerForEnKilde(
     val kilde: Kilde,
     val periode: Periode,
     val saksopplysninger: List<YtelseSaksopplysning>,

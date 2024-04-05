@@ -3,16 +3,16 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyltVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 
 data class Inngangsvilkår(
-    val vilårAAP: VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt,
-    val vilårDagpenger: VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt,
-    val vilårForeldrepenger: VilkårDataForVilkårSomKanVæreOppfyltEllerIkkeOppfylt,
+    val vilårAAP: OppfyltVilkårData,
+    val vilårDagpenger: OppfyltVilkårData,
+    val vilårForeldrepenger: OppfyltVilkårData,
 )
 
 sealed interface SaksopplysningX {
@@ -40,7 +40,16 @@ data class YtelseSaksopplysning(
         fom = fom,
         tom = tom,
         utfall = if (harYtelse) {
-            if (vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) Utfall.KREVER_MANUELL_VURDERING else Utfall.IKKE_OPPFYLT
+            if (vilkår in listOf(
+                    Vilkår.AAP,
+                    Vilkår.DAGPENGER,
+                    Vilkår.TILTAKSPENGER,
+                )
+            ) {
+                Utfall.KREVER_MANUELL_VURDERING
+            } else {
+                Utfall.IKKE_OPPFYLT
+            }
         } else {
             Utfall.OPPFYLT
         },
