@@ -34,8 +34,7 @@ sealed class Vilkår {
             TILTAKSPENGER -> Kilde.ARENA
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
-            KOMMUNALEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
-            STATLIGEYTELSER -> throw IllegalStateException("Denne skal kanskje fjernes?")
+            TILTAKDELTAKELSE -> Kilde.ARENA
         }
 
     object ALDER : Vilkår() {
@@ -60,6 +59,12 @@ sealed class Vilkår {
         override val tittel: String = "AAP"
         override val flateTittel: String = "AAP"
         override val lovreferanse: Lovreferanse = Lovreferanse.AAP
+    }
+
+    object TILTAKDELTAKELSE : Vilkår() {
+        override val tittel: String = "TILTAKDELTAKELSE"
+        override val flateTittel: String = "TiltakDeltakelse"
+        override val lovreferanse: Lovreferanse = Lovreferanse.TILTAKSPENGER
     }
 
     object DAGPENGER : Vilkår() {
@@ -156,18 +161,6 @@ sealed class Vilkår {
         override val tittel: String = "KVP"
         override val flateTittel: String = "Kvalifiseringsprogrammet(KVP)"
         override val lovreferanse: Lovreferanse = Lovreferanse.KVP
-    }
-
-    object KOMMUNALEYTELSER : Vilkår() {
-        override val tittel: String = "KOMMUNALE YTELSER"
-        override val flateTittel: String = "Kommunale ytelser"
-        override val lovreferanse: Lovreferanse = Lovreferanse.KOMMUNALE_YTELSER
-    }
-
-    object STATLIGEYTELSER : Vilkår() {
-        override val tittel: String = "STATLIGE YTELSER"
-        override val flateTittel: String = "Statlige ytelser"
-        override val lovreferanse: Lovreferanse = Lovreferanse.STATLIGE_YTELSER
     }
 
     object INSTITUSJONSOPPHOLD : Vilkår() {

@@ -56,8 +56,6 @@ object SammenstillingForBehandlingDTOMapper {
                 Vilkår.SYKEPENGER,
                 Vilkår.SVANGERSKAPSPENGER,
                 Vilkår.SUPPLERENDESTØNADFLYKTNING,
-                Vilkår.STATLIGEYTELSER,
-                Vilkår.KOMMUNALEYTELSER,
 
             ),
         ),

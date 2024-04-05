@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import org.intellij.lang.annotations.Language
@@ -106,28 +107,31 @@ internal class VurderingRepo {
         val kilde = Kilde.valueOf(string("kilde"))
         val detaljer = string("detaljer")
         return when (val utfall = string("utfall")) {
-            "OPPFYLT" -> Vurdering.Oppfylt(
+            "OPPFYLT" -> Vurdering(
                 vilkår = vilkår,
                 kilde = kilde,
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                utfall = Utfall.OPPFYLT,
             )
 
-            "IKKE_OPPFYLT" -> Vurdering.IkkeOppfylt(
+            "IKKE_OPPFYLT" -> Vurdering(
                 vilkår = vilkår,
                 kilde = kilde,
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                utfall = Utfall.IKKE_OPPFYLT,
             )
 
-            "KREVER_MANUELL_VURDERING" -> Vurdering.KreverManuellVurdering(
+            "KREVER_MANUELL_VURDERING" -> Vurdering(
                 vilkår = vilkår,
                 kilde = kilde,
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                utfall = Utfall.KREVER_MANUELL_VURDERING,
             )
 
             else -> {
