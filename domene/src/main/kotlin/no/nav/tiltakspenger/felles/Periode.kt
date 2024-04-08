@@ -128,6 +128,18 @@ fun List<Periode>.inneholderOverlapp(): Boolean {
     return false
 }
 
+fun List<Periode>.erSammenhengende(periode: Periode): Boolean {
+    return if (this.isEmpty()) {
+        true
+    } else {
+        periode.trekkFra(this).isEmpty()
+    }
+}
+
+fun List<Periode>.erInnenfor(periode: Periode): Boolean {
+    return this.map { periode.inneholderHele(it) }.all { it }
+}
+
 fun List<Periode>.leggSammen(godtaOverlapp: Boolean = true): List<Periode> {
     if (!godtaOverlapp && this.inneholderOverlapp()) {
         throw IllegalArgumentException("Listen inneholder overlappende perioder")

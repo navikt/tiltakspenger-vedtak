@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.felles.februar
@@ -21,7 +20,7 @@ class YtelseSaksopplysningerForEnKildeTest {
             kilde = Kilde.SAKSB,
             periode = Periode(fom, tom),
             saksopplysninger = emptyList(),
-            tidspunkt = LocalDateTime.now()
+            tidspunkt = LocalDateTime.now(),
         )
     }
 
@@ -42,10 +41,10 @@ class YtelseSaksopplysningerForEnKildeTest {
                         vilkår = Vilkår.AAP,
                         detaljer = "",
                         saksbehandler = "Z123456",
-                        harYtelse = false
-                    )
+                        harYtelse = false,
+                    ),
                 ),
-                tidspunkt = LocalDateTime.now()
+                tidspunkt = LocalDateTime.now(),
             )
         }
     }
@@ -67,26 +66,79 @@ class YtelseSaksopplysningerForEnKildeTest {
                         vilkår = Vilkår.AAP,
                         detaljer = "",
                         saksbehandler = "Z123456",
-                        harYtelse = false
-                    )
+                        harYtelse = false,
+                    ),
                 ),
-                tidspunkt = LocalDateTime.now()
+                tidspunkt = LocalDateTime.now(),
             )
         }
     }
 
     @Test
     fun `sjekk at saksopplysninger ikke overlapper`() {
+        val fom = 1.januar(2024)
+        val tom = 31.januar(2024)
 
-    }
-
-    @Test
-    fun `sjekk at saksopplysninger ikke går ut over perioden`() {
-
+        shouldThrow<IllegalArgumentException> {
+            YtelseSaksopplysningerForEnKilde(
+                kilde = Kilde.SAKSB,
+                periode = Periode(fom, tom),
+                saksopplysninger = listOf(
+                    YtelseSaksopplysning(
+                        fom = 1.januar(2024),
+                        tom = 16.januar(2024),
+                        kilde = Kilde.SAKSB,
+                        vilkår = Vilkår.AAP,
+                        detaljer = "",
+                        saksbehandler = "Z123456",
+                        harYtelse = false,
+                    ),
+                    YtelseSaksopplysning(
+                        fom = 15.januar(2024),
+                        tom = 31.januar(2024),
+                        kilde = Kilde.SAKSB,
+                        vilkår = Vilkår.AAP,
+                        detaljer = "",
+                        saksbehandler = "Z123456",
+                        harYtelse = false,
+                    ),
+                ),
+                tidspunkt = LocalDateTime.now(),
+            )
+        }
     }
 
     @Test
     fun `sjekk at det ikke er huller i listen`() {
+        val fom = 1.januar(2024)
+        val tom = 31.januar(2024)
 
+        shouldThrow<IllegalArgumentException> {
+            YtelseSaksopplysningerForEnKilde(
+                kilde = Kilde.SAKSB,
+                periode = Periode(fom, tom),
+                saksopplysninger = listOf(
+                    YtelseSaksopplysning(
+                        fom = 1.januar(2024),
+                        tom = 16.januar(2024),
+                        kilde = Kilde.SAKSB,
+                        vilkår = Vilkår.AAP,
+                        detaljer = "",
+                        saksbehandler = "Z123456",
+                        harYtelse = false,
+                    ),
+                    YtelseSaksopplysning(
+                        fom = 18.januar(2024),
+                        tom = 31.januar(2024),
+                        kilde = Kilde.SAKSB,
+                        vilkår = Vilkår.AAP,
+                        detaljer = "",
+                        saksbehandler = "Z123456",
+                        harYtelse = false,
+                    ),
+                ),
+                tidspunkt = LocalDateTime.now(),
+            )
+        }
     }
 }

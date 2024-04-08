@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.erInnenfor
+import no.nav.tiltakspenger.felles.erSammenhengende
+import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
@@ -50,18 +53,12 @@ data class YtelseSaksopplysningerForEnKilde(
 ) {
     init {
         if (kilde == Kilde.SAKSB) {
-            saksopplysninger.forEach { saksopplysning ->
-                require(periode.inneholderHele(saksopplysning.periode()))
-                { "Saksopplysning periode ${saksopplysning.periode()} har ikke lov å være utenfor perioden $periode" }
-            }
+            require(saksopplysninger.map { it.periode() }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
 
+            require(!saksopplysninger.map { it.periode() }.inneholderOverlapp()) { "Saksopplysninger kan ikke overlappe" }
+
+            require(saksopplysninger.map { it.periode() }.erSammenhengende(periode)) { "Saksopplysninger kan ikke ha hull" }
         }
-    }
-    init {
-        // check(periode) sjekk at saksopplysninger dekker hele perioden når man oppretter den hvis det er saksbehandler
-        // check at saksopplysninger ikke overlapper
-        // check at saksopplysninger ikke går ut over perioden
-        // check at det ikke er huller i listen
     }
 
     fun erSatt() = saksopplysninger.isNotEmpty()
