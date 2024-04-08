@@ -49,6 +49,15 @@ data class YtelseSaksopplysningerForEnKilde(
     val tidspunkt: LocalDateTime,
 ) {
     init {
+        if (kilde == Kilde.SAKSB) {
+            saksopplysninger.forEach { saksopplysning ->
+                require(periode.inneholderHele(saksopplysning.periode()))
+                { "Saksopplysning periode ${saksopplysning.periode()} har ikke lov å være utenfor perioden $periode" }
+            }
+
+        }
+    }
+    init {
         // check(periode) sjekk at saksopplysninger dekker hele perioden når man oppretter den hvis det er saksbehandler
         // check at saksopplysninger ikke overlapper
         // check at saksopplysninger ikke går ut over perioden

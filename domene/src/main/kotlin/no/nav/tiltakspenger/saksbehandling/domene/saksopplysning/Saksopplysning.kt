@@ -22,6 +22,7 @@ sealed interface SaksopplysningX {
     val vilkår: Vilkår
     val detaljer: String
     val saksbehandler: String?
+    fun periode() = Periode(fra = fom, til = tom)
 }
 
 data class YtelseSaksopplysning(
