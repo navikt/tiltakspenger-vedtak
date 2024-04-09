@@ -12,7 +12,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("io.micrometer:micrometer-core:1.12.4")
+    implementation("io.micrometer:micrometer-core:1.12.5")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
