@@ -7,7 +7,21 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyltVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+
+data class Ytelsessaksopplysninger(
+    val dagpenger: OppfyltVilkårData,
+    val aap: OppfyltVilkårData,
+)
+
+fun initYtelsesopplysninger(vurderingsperiode: Periode): Ytelsessaksopplysninger {
+    return Ytelsessaksopplysninger(
+        dagpenger = OppfyltVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
+        aap = OppfyltVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
+    )
+}
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
@@ -18,6 +32,7 @@ data class BehandlingOpprettet(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
+    val ytelsessaksopplysninger: Ytelsessaksopplysninger,
 ) : Førstegangsbehandling {
 
     companion object {
@@ -33,10 +48,10 @@ data class BehandlingOpprettet(
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
+                ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = søknad.vurderingsperiode()),
             )
         }
     }
-
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
             Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
