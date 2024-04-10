@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import java.time.LocalDateTime
 
-data class OppfyltVilkårData(
+data class OppfyllbarVilkårData(
     val vilkår: Vilkår,
     val vurderingsperiode: Periode,
     val saksopplysningerSaksbehandler: YtelseSaksopplysningerForEnKilde?,
@@ -21,7 +21,7 @@ data class OppfyltVilkårData(
 ) {
     companion object {
         fun initOppfyltVilkårData(vilkår: Vilkår, vurderingsperiode: Periode) =
-            OppfyltVilkårData(
+            OppfyllbarVilkårData(
                 vilkår = vilkår,
                 vurderingsperiode = vurderingsperiode,
                 saksopplysningerSaksbehandler = null,
@@ -31,7 +31,7 @@ data class OppfyltVilkårData(
             )
     }
 
-    fun leggTilSaksopplysning(saksopplysning: YtelseSaksopplysning): OppfyltVilkårData {
+    fun leggTilSaksopplysning(saksopplysning: YtelseSaksopplysning): OppfyllbarVilkårData {
         if (saksopplysning.kilde == Kilde.SAKSB) {
             val gamleSaksopplysninger = saksopplysningerSaksbehandler?.saksopplysninger ?: emptyList()
             return this.copy(
@@ -55,17 +55,19 @@ data class OppfyltVilkårData(
         }
     }
 
-    fun avklarFakta(): OppfyltVilkårData {
+    fun avklarFakta(): OppfyllbarVilkårData {
         if (saksopplysningerSaksbehandler == null && saksopplysningerAnnet == null) {
             throw IllegalStateException("Kan ikke avklare fakta uten noen saksopplysninger")
         }
 
         return this.copy(
-            avklarteFakta = if (saksopplysningerSaksbehandler.erSatt()) saksopplysningerSaksbehandler else saksopplysningerAnnet,
+            avklarteFakta = saksopplysningerSaksbehandler ?: saksopplysningerAnnet,
         )
     }
 
-    fun vilkårsvurder(): OppfyltVilkårData {
+    her skal vi fortsette i morgen!
+    fun vilkårsvurder(): OppfyllbarVilkårData {
+        require(avklarteFakta != null) {"Må ha avklarte fakta for å vilkårsvurdere"}
         val vurderinger = avklarteFakta.saksopplysninger.map { it.lagVurdering() } +
             vurderingsperiode.ikkeOverlappendePerioder(vurderinger.map { it.periode() }).map {
                 // TODO lag enten en saksopplysning.lagVurder eller lag Vurdering her
@@ -84,12 +86,14 @@ data class OppfyltVilkårData(
 }
 
 data class YtelseSaksopplysningerForEnKilde(
-    val kilde: Kilde,
-    val periode: Periode,
+    val kilde: Kilde, // Hvorfor har vi kilde her? Det ligger jo inne i 'saksopplysninger'-lista?
+    val periode: Periode, // Hvorfor har vi periode? Dette er vel vurderingsperioden, og den har man 'ett hakk ut'
     val saksopplysninger: List<YtelseSaksopplysning>,
-    val tidspunkt: LocalDateTime,
+    val tidspunkt: LocalDateTime, // Er dette tidspunktet saksopplysingen ble lagt til?
 ) {
     init {
+        // Hvorfor skal disse sjekkene bare kjøres om det er saksbehandler-fakta?
+        // Kan ikke andre kilder ha hull/overlapp osv?
         if (kilde == Kilde.SAKSB) {
             require(saksopplysninger.map { it.periode() }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
 

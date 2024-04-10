@@ -3,39 +3,38 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyltVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 
 data class Inngangsvilkår(
-    val vilårAAP: OppfyltVilkårData,
-    val vilårDagpenger: OppfyltVilkårData,
-    val vilårForeldrepenger: OppfyltVilkårData,
+    val vilårAAP: OppfyllbarVilkårData,
+    val vilårDagpenger: OppfyllbarVilkårData,
+    val vilårForeldrepenger: OppfyllbarVilkårData,
 )
 
 sealed interface SaksopplysningX {
-    val fom: LocalDate
-    val tom: LocalDate
     val kilde: Kilde
     val vilkår: Vilkår
     val detaljer: String
     val saksbehandler: String?
-    fun periode() = Periode(fra = fom, til = tom)
+
+    fun lagVurdering(): Vurdering
 }
 
 data class YtelseSaksopplysning(
-    override val fom: LocalDate,
-    override val tom: LocalDate,
     override val kilde: Kilde,
     override val vilkår: Vilkår,
     override val detaljer: String,
     override val saksbehandler: String? = null,
+    val fom: LocalDate,
+    val tom: LocalDate,
     val harYtelse: Boolean,
 ) : SaksopplysningX {
 
-    fun lagVurdering() = Vurdering(
+    override fun lagVurdering() = Vurdering(
         vilkår = vilkår,
         kilde = kilde,
         fom = fom,

@@ -7,19 +7,19 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyltVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class Ytelsessaksopplysninger(
-    val dagpenger: OppfyltVilkårData,
-    val aap: OppfyltVilkårData,
+    val dagpenger: OppfyllbarVilkårData,
+    val aap: OppfyllbarVilkårData,
 )
 
 fun initYtelsesopplysninger(vurderingsperiode: Periode): Ytelsessaksopplysninger {
     return Ytelsessaksopplysninger(
-        dagpenger = OppfyltVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
-        aap = OppfyltVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
+        dagpenger = OppfyllbarVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
+        aap = OppfyllbarVilkårData.initOppfyltVilkårData(vilkår = Vilkår.DAGPENGER, vurderingsperiode = vurderingsperiode),
     )
 }
 
