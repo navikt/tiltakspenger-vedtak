@@ -114,6 +114,14 @@ class Periode(fra: LocalDate, til: LocalDate) {
     fun tilDager(): List<LocalDate> {
         return fra.datesUntil(til.plusDays(1)).toList()
     }
+
+    fun splittFramTil(dato: LocalDate): List<Periode> {
+        return if (dato.isBefore(fra) || dato.isAfter(til)) {
+            listOf(this)
+        } else {
+            listOf(Periode(fra, dato.minusDays(1)), Periode(dato, til))
+        }
+    }
 }
 
 fun List<Periode>.inneholderOverlapp(): Boolean {
