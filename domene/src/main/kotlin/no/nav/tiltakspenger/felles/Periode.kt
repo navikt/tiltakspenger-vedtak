@@ -128,7 +128,7 @@ fun List<Periode>.inneholderOverlapp(): Boolean {
     return false
 }
 
-fun List<Periode>.erSammenhengende(periode: Periode): Boolean {
+fun List<Periode>.dekkerHele(periode: Periode): Boolean {
     return if (this.isEmpty()) {
         true
     } else {

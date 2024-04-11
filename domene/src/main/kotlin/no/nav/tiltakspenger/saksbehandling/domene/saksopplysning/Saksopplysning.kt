@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.dekkerHele
+import no.nav.tiltakspenger.felles.erInnenfor
+import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
@@ -15,13 +18,71 @@ data class Inngangsvilkår(
     val vilårForeldrepenger: OppfyllbarVilkårData,
 )
 
-sealed interface SaksopplysningX {
+sealed interface SaksopplysningInterface {
     val kilde: Kilde
     val vilkår: Vilkår
     val detaljer: String
     val saksbehandler: String?
 
     fun lagVurdering(): Vurdering
+}
+
+fun List<SaksopplysningInterface>.harEttUniktVilkår(): Boolean = this.all { it.vilkår == this.first().vilkår }
+
+fun List<YtelseSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<Vurdering> {
+    check(this.harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
+
+    check(
+        !this.map {
+            Periode(it.fom, it.tom)
+        }.inneholderOverlapp(),
+    ) {
+        "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
+    }
+
+    check(
+        this.map {
+            Periode(it.fom, it.tom)
+        }.dekkerHele(vurderingsperiode),
+    ) {
+        "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
+    }
+
+    check(
+        this.map {
+            Periode(it.fom, it.tom)
+        }.erInnenfor(vurderingsperiode),
+    ) {
+        "Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden"
+    }
+
+    return this.map {
+        Vurdering(
+            vilkår = it.vilkår,
+            kilde = it.kilde,
+            fom = it.fom,
+            tom = it.tom,
+            utfall = if (it.harYtelse) {
+                if (it.vilkår in listOf(
+                        Vilkår.AAP,
+                        Vilkår.DAGPENGER,
+                        Vilkår.TILTAKSPENGER,
+                    )
+                ) {
+                    Utfall.KREVER_MANUELL_VURDERING
+                } else {
+                    Utfall.IKKE_OPPFYLT
+                }
+            } else {
+                Utfall.OPPFYLT
+            },
+            detaljer = it.detaljer,
+        )
+    }
+}
+
+fun List<AlderSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<Vurdering> {
+    // TODO
 }
 
 data class YtelseSaksopplysning(
@@ -32,7 +93,7 @@ data class YtelseSaksopplysning(
     val fom: LocalDate,
     val tom: LocalDate,
     val harYtelse: Boolean,
-) : SaksopplysningX {
+) : SaksopplysningInterface {
 
     override fun lagVurdering() = Vurdering(
         vilkår = vilkår,
@@ -58,14 +119,12 @@ data class YtelseSaksopplysning(
 }
 
 data class AlderSaksopplysning(
-    override val fom: LocalDate,
-    override val tom: LocalDate,
     override val kilde: Kilde,
     override val vilkår: Vilkår,
     override val detaljer: String,
     override val saksbehandler: String? = null,
-    val forUng: Boolean,
-) : SaksopplysningX
+    val fødselsdato: LocalDate,
+) : SaksopplysningInterface
 
 data class TiltakSaksopplysning(
     override val fom: LocalDate,
@@ -75,7 +134,7 @@ data class TiltakSaksopplysning(
     override val detaljer: String,
     override val saksbehandler: String? = null,
     val tiltakId: String,
-) : SaksopplysningX
+) : SaksopplysningInterface
 
 data class Saksopplysning(
     val fom: LocalDate,

@@ -2,10 +2,10 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.erInnenfor
-import no.nav.tiltakspenger.felles.erSammenhengende
 import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.vilkårsvurder
 import java.time.LocalDateTime
 
 data class OppfyllbarVilkårData(
@@ -65,10 +65,9 @@ data class OppfyllbarVilkårData(
         )
     }
 
-    her skal vi fortsette i morgen!
     fun vilkårsvurder(): OppfyllbarVilkårData {
-        require(avklarteFakta != null) {"Må ha avklarte fakta for å vilkårsvurdere"}
-        val vurderinger = avklarteFakta.saksopplysninger.map { it.lagVurdering() } +
+        require(avklarteFakta != null) { "Må ha avklarte fakta for å vilkårsvurdere" }
+        val vurderinger = avklarteFakta.saksopplysninger.vilkårsvurder(vurderingsperiode) +
             vurderingsperiode.ikkeOverlappendePerioder(vurderinger.map { it.periode() }).map {
                 // TODO lag enten en saksopplysning.lagVurder eller lag Vurdering her
                 // TODO avklar foretningsreglene her
@@ -77,7 +76,9 @@ data class OppfyllbarVilkårData(
                 //      er det mulig å endre i starten?
             }
 
-        return this
+        return this.copy(
+            vurderinger = vurderinger,
+        )
         // TODO()
 //        return this.copy(
 //            vurderinger = vurderinger
