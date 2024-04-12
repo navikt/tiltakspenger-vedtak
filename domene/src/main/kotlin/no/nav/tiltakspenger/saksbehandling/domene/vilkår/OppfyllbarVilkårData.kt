@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.dekkerHele
 import no.nav.tiltakspenger.felles.erInnenfor
 import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -37,7 +38,7 @@ data class OppfyllbarVilkårData(
             return this.copy(
                 saksopplysningerSaksbehandler = YtelseSaksopplysningerForEnKilde(
                     kilde = Kilde.SAKSB,
-                    periode = Periode(fra = saksopplysning.fom, til = saksopplysning.tom),
+                    periode = Periode(fra = saksopplysning.periode.fra, til = saksopplysning.periode.til),
                     saksopplysninger = gamleSaksopplysninger + saksopplysning,
                     tidspunkt = LocalDateTime.now(),
                 ),
@@ -47,7 +48,7 @@ data class OppfyllbarVilkårData(
             return this.copy(
                 saksopplysningerAnnet = YtelseSaksopplysningerForEnKilde(
                     kilde = saksopplysning.kilde,
-                    periode = Periode(fra = saksopplysning.fom, til = saksopplysning.tom),
+                    periode = Periode(fra = saksopplysning.periode.fra, til = saksopplysning.periode.til),
                     saksopplysninger = gamleSaksopplysninger + saksopplysning,
                     tidspunkt = LocalDateTime.now(),
                 ),
@@ -67,22 +68,19 @@ data class OppfyllbarVilkårData(
 
     fun vilkårsvurder(): OppfyllbarVilkårData {
         require(avklarteFakta != null) { "Må ha avklarte fakta for å vilkårsvurdere" }
-        val vurderinger = avklarteFakta.saksopplysninger.vilkårsvurder(vurderingsperiode) +
-            vurderingsperiode.ikkeOverlappendePerioder(vurderinger.map { it.periode() }).map {
-                // TODO lag enten en saksopplysning.lagVurder eller lag Vurdering her
-                // TODO avklar foretningsreglene her
-                //      hvis utvidet i slutten av perioden og er oppfylt kan man sette oppfylt for perioden?
-                //      hvis utvidet i slutten av perioden og er ikke oppfylt setter man til manuell?
-                //      er det mulig å endre i starten?
-            }
+        val vurderinger = avklarteFakta.saksopplysninger.vilkårsvurder(vurderingsperiode)
+//        val vurderinger2 = avklarteFakta.saksopplysninger.vilkårsvurder(vurderingsperiode) +
+//            vurderingsperiode.ikkeOverlappendePerioder(vurderinger.map { it.periode() }).map {
+//                // TODO lag enten en saksopplysning.lagVurder eller lag Vurdering her
+//                // TODO avklar foretningsreglene her
+//                //      hvis utvidet i slutten av perioden og er oppfylt kan man sette oppfylt for perioden?
+//                //      hvis utvidet i slutten av perioden og er ikke oppfylt setter man til manuell?
+//                //      er det mulig å endre i starten?
+//            }
 
         return this.copy(
             vurderinger = vurderinger,
         )
-        // TODO()
-//        return this.copy(
-//            vurderinger = vurderinger
-//        )
     }
 }
 
@@ -96,11 +94,11 @@ data class YtelseSaksopplysningerForEnKilde(
         // Hvorfor skal disse sjekkene bare kjøres om det er saksbehandler-fakta?
         // Kan ikke andre kilder ha hull/overlapp osv?
         if (kilde == Kilde.SAKSB) {
-            require(saksopplysninger.map { it.periode() }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
+            require(saksopplysninger.map { it.periode }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
 
-            require(!saksopplysninger.map { it.periode() }.inneholderOverlapp()) { "Saksopplysninger kan ikke overlappe" }
+            require(!saksopplysninger.map { it.periode }.inneholderOverlapp()) { "Saksopplysninger kan ikke overlappe" }
 
-            require(saksopplysninger.map { it.periode() }.erSammenhengende(periode)) { "Saksopplysninger kan ikke ha hull" }
+            require(saksopplysninger.map { it.periode }.dekkerHele(periode)) { "Saksopplysninger kan ikke ha hull" }
         }
     }
 

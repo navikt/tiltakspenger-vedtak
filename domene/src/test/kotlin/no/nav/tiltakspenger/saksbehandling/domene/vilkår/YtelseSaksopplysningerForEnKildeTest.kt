@@ -35,8 +35,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                 periode = Periode(fom, tom),
                 saksopplysninger = listOf(
                     YtelseSaksopplysning(
-                        fom = 1.desember(2023),
-                        tom = 31.januar(2024),
+                        periode = Periode(fra = 1.desember(2023), til = 31.januar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",
@@ -60,8 +59,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                 periode = Periode(fom, tom),
                 saksopplysninger = listOf(
                     YtelseSaksopplysning(
-                        fom = 1.januar(2023),
-                        tom = 28.februar(2024),
+                        periode = Periode(fra = 1.januar(2023), til = 28.februar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",
@@ -85,8 +83,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                 periode = Periode(fom, tom),
                 saksopplysninger = listOf(
                     YtelseSaksopplysning(
-                        fom = 1.januar(2024),
-                        tom = 16.januar(2024),
+                        periode = Periode(fra = 1.januar(2024), til = 16.januar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",
@@ -94,8 +91,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                         harYtelse = false,
                     ),
                     YtelseSaksopplysning(
-                        fom = 15.januar(2024),
-                        tom = 31.januar(2024),
+                        periode = Periode(fra = 15.januar(2024), til = 31.januar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",
@@ -119,8 +115,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                 periode = Periode(fom, tom),
                 saksopplysninger = listOf(
                     YtelseSaksopplysning(
-                        fom = 1.januar(2024),
-                        tom = 16.januar(2024),
+                        periode = Periode(fra = 1.januar(2024), til = 16.januar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",
@@ -128,8 +123,7 @@ class YtelseSaksopplysningerForEnKildeTest {
                         harYtelse = false,
                     ),
                     YtelseSaksopplysning(
-                        fom = 18.januar(2024),
-                        tom = 31.januar(2024),
+                        periode = Periode(fra = 18.januar(2024), til = 31.januar(2024)),
                         kilde = Kilde.SAKSB,
                         vilkår = Vilkår.AAP,
                         detaljer = "",

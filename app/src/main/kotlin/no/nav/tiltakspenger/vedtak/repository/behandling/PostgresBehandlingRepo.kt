@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.initYtelsesopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -247,6 +248,8 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
+                // todo: Her skal vi egentlig hente saksopplysningene fra databasen
+                ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = Periode(fom, tom)),
             )
 
             "Vilkårsvurdert" -> {

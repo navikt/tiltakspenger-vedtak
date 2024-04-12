@@ -7,15 +7,13 @@ import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import java.time.LocalDate
 
 data class YtelseSaksopplysning(
     override val kilde: Kilde,
     override val vilkår: Vilkår,
     override val detaljer: String,
     override val saksbehandler: String? = null,
-    val fom: LocalDate,
-    val tom: LocalDate,
+    val periode: Periode,
     val harYtelse: Boolean,
 ) : SaksopplysningInterface
 
@@ -24,15 +22,15 @@ fun List<SaksopplysningInterface>.harEttUniktVilkår(): Boolean = this.all { it.
 fun List<YtelseSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<Vurdering> {
     check(this.harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
 
-    check(!this.map { Periode(it.fom, it.tom) }.inneholderOverlapp()) {
+    check(!this.map { it.periode }.inneholderOverlapp()) {
         "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
     }
 
-    check(this.map { Periode(it.fom, it.tom) }.dekkerHele(vurderingsperiode)) {
+    check(this.map { it.periode }.dekkerHele(vurderingsperiode)) {
         "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
     }
 
-    check(this.map { Periode(it.fom, it.tom) }.erInnenfor(vurderingsperiode)) {
+    check(this.map { it.periode }.erInnenfor(vurderingsperiode)) {
         "Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden"
     }
 
@@ -40,8 +38,8 @@ fun List<YtelseSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<
         Vurdering(
             vilkår = it.vilkår,
             kilde = it.kilde,
-            fom = it.fom,
-            tom = it.tom,
+            fom = it.periode.fra,
+            tom = it.periode.til,
             utfall = if (it.harYtelse) {
                 if (it.vilkår in listOf(
                         Vilkår.AAP,

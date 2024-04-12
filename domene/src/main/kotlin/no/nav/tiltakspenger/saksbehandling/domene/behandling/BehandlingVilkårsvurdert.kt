@@ -94,5 +94,6 @@ data class BehandlingVilkårsvurdert(
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
+        ytelsessaksopplysninger = initYtelsesopplysninger(this.vurderingsperiode),
     )
 }
