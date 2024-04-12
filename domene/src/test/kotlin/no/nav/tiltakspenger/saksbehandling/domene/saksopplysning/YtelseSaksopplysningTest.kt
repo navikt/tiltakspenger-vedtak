@@ -1,8 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowWithMessage
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 import kotlin.test.Test
@@ -90,6 +93,91 @@ class YtelseSaksopplysningTest {
         )
         shouldThrowWithMessage<IllegalStateException>("Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden") {
             saksopplysningerSomGårUtenforVurderingsperioden.vilkårsvurder(vurderingsperiode = vurderingsperiode)
+        }
+    }
+
+    @Test
+    fun `happycase for saksopplysninger som dekker alle krav`() {
+        val saksopplysningerOppfyllerAlleKrav = listOf(
+            mockYtelseSaksopplysning(
+                periode =
+                mockPeriode(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til.minusDays(6),
+                ),
+            ),
+            mockYtelseSaksopplysning(
+                periode =
+                mockPeriode(
+                    fra = vurderingsperiode.til.minusDays(5),
+                    til = vurderingsperiode.til,
+                ),
+            ),
+        )
+
+        shouldNotThrowAny {
+            saksopplysningerOppfyllerAlleKrav.vilkårsvurder(vurderingsperiode = vurderingsperiode)
+        }
+    }
+
+    @Test
+    fun `sjekk at utfallet av en vilkårsvurdering for en ytelse man ikke har gir utfall OPPFYLT for vilkåret`() {
+        val gyldigeSaksopplysninger = listOf(
+            mockYtelseSaksopplysning(
+                periode =
+                mockPeriode(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til,
+                ),
+                harYtelse = false,
+            ),
+        )
+
+        val vurdering = gyldigeSaksopplysninger.vilkårsvurder(vurderingsperiode = vurderingsperiode)
+
+        vurdering.size shouldBe 1
+        vurdering.first().utfall shouldBe Utfall.OPPFYLT
+    }
+
+    @Test
+    fun `sjekk at utfallet av en vilkårsvurdering for en ytelse man har gir utfall IKKE_OPPFYLT for vilkåret`() {
+        val gyldigeSaksopplysninger = listOf(
+            mockYtelseSaksopplysning(
+                vilkår = Vilkår.SYKEPENGER,
+                periode =
+                mockPeriode(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til,
+                ),
+                harYtelse = true,
+            ),
+        )
+
+        val vurdering = gyldigeSaksopplysninger.vilkårsvurder(vurderingsperiode = vurderingsperiode)
+
+        vurdering.size shouldBe 1
+        vurdering.first().utfall shouldBe Utfall.IKKE_OPPFYLT
+    }
+
+    @Test
+    fun `sjekk at utfallet av at man har AAP, DAGPENGER og TILTAKSPENGER gir utfall KREVER_MANUELL_VURDERING `() {
+        val vilkårListe = listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)
+
+        vilkårListe.forEach { vilkår ->
+            listOf(
+                mockYtelseSaksopplysning(
+                    vilkår = vilkår,
+                    periode =
+                    mockPeriode(
+                        fra = vurderingsperiode.fra,
+                        til = vurderingsperiode.til,
+                    ),
+                    harYtelse = true,
+                ),
+            ).vilkårsvurder(vurderingsperiode = vurderingsperiode).also { vurdering ->
+                vurdering.size shouldBe 1
+                vurdering.first().utfall shouldBe Utfall.KREVER_MANUELL_VURDERING
+            }
         }
     }
 }
