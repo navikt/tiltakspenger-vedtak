@@ -1,10 +1,32 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.dekkerHele
+import no.nav.tiltakspenger.felles.erInnenfor
+import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
+import java.time.LocalDateTime
+
+
+data class AlderSaksopplysningerForEnKilde(
+    val kilde: Kilde, // Hvorfor har vi kilde her? Det ligger jo inne i 'saksopplysninger'-lista?
+    val periode: Periode, // Hvorfor har vi periode? Dette er vel vurderingsperioden, og den har man 'ett hakk ut'
+    val saksopplysninger: List<AlderSaksopplysning>,
+    val tidspunkt: LocalDateTime, // Er dette tidspunktet saksopplysingen ble lagt til?
+) {
+    init {
+
+        if (kilde == Kilde.SAKSB) {
+
+        }
+    }
+
+    fun erSatt() = saksopplysninger.isNotEmpty()
+}
+
 
 data class AlderSaksopplysning(
     override val kilde: Kilde,

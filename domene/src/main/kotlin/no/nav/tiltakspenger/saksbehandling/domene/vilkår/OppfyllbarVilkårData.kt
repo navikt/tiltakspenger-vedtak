@@ -1,23 +1,17 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.felles.dekkerHele
-import no.nav.tiltakspenger.felles.erInnenfor
-import no.nav.tiltakspenger.felles.inneholderOverlapp
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.vilkårsvurder
-import java.time.LocalDateTime
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.*
 
 data class OppfyllbarVilkårData(
     val vilkår: Vilkår,
     val vurderingsperiode: Periode,
-    val saksopplysningerSaksbehandler: YtelseSaksopplysningerForEnKilde?,
-    val saksopplysningerAnnet: YtelseSaksopplysningerForEnKilde?,
+    val saksopplysningerSaksbehandler: List<SaksopplysningInterface>?,
+    val saksopplysningerAnnet: List<SaksopplysningInterface>?,
     // TODO Kommentar:
     // Når skal avklarteFakta oppdateres? Kunne avklarFakta() bare vært en funksjon som
     // alltid sa hvordan de resulterende faktaene så ut basert på saksopplysningene fra SBH og annet?
-    val avklarteFakta: YtelseSaksopplysningerForEnKilde?,
+    val avklarteFakta: List<SaksopplysningInterface>?,
     val vurderinger: List<Vurdering>,
 ) {
     companion object {
@@ -32,26 +26,17 @@ data class OppfyllbarVilkårData(
             )
     }
 
-    fun leggTilSaksopplysning(saksopplysning: YtelseSaksopplysning): OppfyllbarVilkårData {
+    fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): OppfyllbarVilkårData {
         if (saksopplysning.kilde == Kilde.SAKSB) {
-            val gamleSaksopplysninger = saksopplysningerSaksbehandler?.saksopplysninger ?: emptyList()
+            val gamleSaksopplysninger = saksopplysningerSaksbehandler ?: emptyList()
             return this.copy(
-                saksopplysningerSaksbehandler = YtelseSaksopplysningerForEnKilde(
-                    kilde = Kilde.SAKSB,
-                    periode = Periode(fra = saksopplysning.periode.fra, til = saksopplysning.periode.til),
-                    saksopplysninger = gamleSaksopplysninger + saksopplysning,
-                    tidspunkt = LocalDateTime.now(),
-                ),
+                saksopplysningerSaksbehandler = gamleSaksopplysninger + saksopplysning,
             )
+
         } else {
-            val gamleSaksopplysninger = saksopplysningerAnnet?.saksopplysninger ?: emptyList()
+            val gamleSaksopplysninger = saksopplysningerAnnet ?: emptyList()
             return this.copy(
-                saksopplysningerAnnet = YtelseSaksopplysningerForEnKilde(
-                    kilde = saksopplysning.kilde,
-                    periode = Periode(fra = saksopplysning.periode.fra, til = saksopplysning.periode.til),
-                    saksopplysninger = gamleSaksopplysninger + saksopplysning,
-                    tidspunkt = LocalDateTime.now(),
-                ),
+                saksopplysningerAnnet = gamleSaksopplysninger + saksopplysning,
             )
         }
     }
@@ -84,23 +69,3 @@ data class OppfyllbarVilkårData(
     }
 }
 
-data class YtelseSaksopplysningerForEnKilde(
-    val kilde: Kilde, // Hvorfor har vi kilde her? Det ligger jo inne i 'saksopplysninger'-lista?
-    val periode: Periode, // Hvorfor har vi periode? Dette er vel vurderingsperioden, og den har man 'ett hakk ut'
-    val saksopplysninger: List<YtelseSaksopplysning>,
-    val tidspunkt: LocalDateTime, // Er dette tidspunktet saksopplysingen ble lagt til?
-) {
-    init {
-        // Hvorfor skal disse sjekkene bare kjøres om det er saksbehandler-fakta?
-        // Kan ikke andre kilder ha hull/overlapp osv?
-        if (kilde == Kilde.SAKSB) {
-            require(saksopplysninger.map { it.periode }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
-
-            require(!saksopplysninger.map { it.periode }.inneholderOverlapp()) { "Saksopplysninger kan ikke overlappe" }
-
-            require(saksopplysninger.map { it.periode }.dekkerHele(periode)) { "Saksopplysninger kan ikke ha hull" }
-        }
-    }
-
-    fun erSatt() = saksopplysninger.isNotEmpty()
-}

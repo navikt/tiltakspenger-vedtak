@@ -7,6 +7,30 @@ import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import java.time.LocalDateTime
+
+data class YtelseSaksopplysningerForEnKilde(
+    val kilde: Kilde, // Hvorfor har vi kilde her? Det ligger jo inne i 'saksopplysninger'-lista?
+    val periode: Periode, // Hvorfor har vi periode? Dette er vel vurderingsperioden, og den har man 'ett hakk ut'
+    val saksopplysninger: List<YtelseSaksopplysning>,
+    val tidspunkt: LocalDateTime, // Er dette tidspunktet saksopplysingen ble lagt til?
+) {
+    init {
+        // Hvorfor skal disse sjekkene bare kjøres om det er saksbehandler-fakta?
+        // Kan ikke andre kilder ha hull/overlapp osv?
+        if (kilde == Kilde.SAKSB) {
+            require(saksopplysninger.map { it.periode }.erInnenfor(periode)) { "Saksopplysninger kan ikke ha periode som er utenfor vurderingsperioden" }
+
+            require(!saksopplysninger.map { it.periode }.inneholderOverlapp()) { "Saksopplysninger kan ikke overlappe" }
+
+            require(saksopplysninger.map { it.periode }.dekkerHele(periode)) { "Saksopplysninger kan ikke ha hull" }
+
+            // require(har bare samme kilde)
+        }
+    }
+
+    fun erSatt() = saksopplysninger.isNotEmpty()
+}
 
 data class YtelseSaksopplysning(
     override val kilde: Kilde,
