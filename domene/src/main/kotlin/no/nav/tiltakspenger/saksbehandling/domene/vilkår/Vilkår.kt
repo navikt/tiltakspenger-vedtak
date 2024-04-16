@@ -35,6 +35,8 @@ sealed class Vilkår {
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
             TILTAKDELTAKELSE -> Kilde.ARENA
+            BARNETILLEGG -> TODO()
+            SØKNADSFRIST -> TODO()
         }
 
     object ALDER : Vilkår() {
@@ -185,5 +187,17 @@ sealed class Vilkår {
         override val tittel: String = "ETTERLØNN"
         override val flateTittel: String = "Etterlønn"
         override val lovreferanse: Lovreferanse = Lovreferanse.ETTERLØNN
+    }
+
+    object SØKNADSFRIST : Vilkår() {
+        override val tittel: String = "SØKNADSFRIST"
+        override val flateTittel: String = "Søknadsfrist"
+        override val lovreferanse: Lovreferanse = TODO()
+    }
+
+    object BARNETILLEGG: Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovreferanse: Lovreferanse = TODO()
     }
 }

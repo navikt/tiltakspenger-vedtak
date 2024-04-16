@@ -17,6 +17,7 @@ interface Behandling {
     val sakId: SakId
     val vurderingsperiode: Periode
     val saksopplysninger: List<Saksopplysning>
+   // val vilkårData: List<OppfyllbarVilkårData>
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>

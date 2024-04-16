@@ -7,15 +7,17 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
     override val sakId: SakId,
-//    override val søknader: List<Søknad>,
+    override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-//    override val saksopplysninger: List<Saksopplysning>,
+    override val saksopplysninger: List<Saksopplysning>,
+    val vilkårData: List<OppfyllbarVilkårData> = emptyList(),
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
@@ -35,7 +37,7 @@ data class BehandlingOpprettet(
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
-                ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = søknad.vurderingsperiode()),
+                vilkårData = TODO()
             )
         }
     }

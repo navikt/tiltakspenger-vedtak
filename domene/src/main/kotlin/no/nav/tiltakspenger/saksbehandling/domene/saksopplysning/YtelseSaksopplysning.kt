@@ -39,7 +39,15 @@ data class YtelseSaksopplysning(
     override val saksbehandler: String? = null,
     val periode: Periode,
     val harYtelse: Boolean,
-) : SaksopplysningInterface
+) : SaksopplysningInterface {
+    companion object {
+        val YTELSESVILKÅR = listOf(
+            Vilkår.AAP,
+            Vilkår.DAGPENGER,
+            Vilkår.TILTAKSPENGER,
+        )
+    }
+}
 
 fun List<SaksopplysningInterface>.harEttUniktVilkår(): Boolean = this.all { it.vilkår == this.first().vilkår }
 
