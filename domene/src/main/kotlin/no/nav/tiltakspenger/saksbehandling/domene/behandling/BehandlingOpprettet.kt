@@ -8,8 +8,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
-
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
@@ -25,22 +25,50 @@ data class BehandlingOpprettet(
 ) : Førstegangsbehandling {
 
     companion object {
+        private fun initVilkårData(vurderingsperiode: Periode): List<OppfyllbarVilkårData> {
+            val vilkår = listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.ALDER, Vilkår.SØKNADSFRIST, Vilkår.BARNETILLEGG, Vilkår.KVP)
+            return vilkår.map {
+                OppfyllbarVilkårData(
+                    vilkår = it,
+                    vurderingsperiode = vurderingsperiode,
+                    saksopplysningerSaksbehandler = emptyList(),
+                    saksopplysningerAnnet = emptyList(),
+                    vurderinger = emptyList(),
+                )
+            }
+        }
 
         fun opprettBehandling(sakId: SakId, søknad: Søknad): BehandlingOpprettet {
-            return BehandlingOpprettet(
+            val vurderingsperiode = søknad.vurderingsperiode()
+            val opprettetBehandling = BehandlingOpprettet(
                 id = BehandlingId.random(),
                 sakId = sakId,
                 søknader = listOf(søknad),
-                vurderingsperiode = søknad.vurderingsperiode(),
-                saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                    søknad,
-                ),
+                vurderingsperiode = vurderingsperiode,
                 tiltak = emptyList(),
                 saksbehandler = null,
-                vilkårData = TODO()
+                vilkårData = initVilkårData(vurderingsperiode = vurderingsperiode),
             )
+
+            return opprettetBehandling
         }
     }
+
+    fun lagSaksopplysningerFraSøknad(søknad: Søknad): BehandlingOpprettet {
+        val saksopplysningerFraSøknaden = Saksopplysninger.lagSaksopplysningerAvSøknad(søknad = søknad)
+        val vilkårData = saksopplysningerFraSøknaden.map {
+
+            OppfyllbarVilkårData(
+                vilkår = it.vilkår,
+                vurderingsperiode = this.vurderingsperiode,
+                saksopplysningerSaksbehandler = emptyList(),
+                saksopplysningerAnnet = listOf(it.),
+                vurderinger = emptyList(),
+            )
+        }
+//        Saksopplysninger.lagSaksopplysningFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
+    }
+
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
             Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +

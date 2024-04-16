@@ -1,7 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.*
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.AlderSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.BarnSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SøknadTidspunktSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.vilkårsvurder
 
 data class OppfyllbarVilkårData(
     val vilkår: Vilkår,

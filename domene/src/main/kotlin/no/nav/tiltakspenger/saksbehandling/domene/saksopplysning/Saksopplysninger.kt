@@ -20,7 +20,7 @@ object Saksopplysninger {
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
         )
 
-    fun lagSaksopplysningerAvSøknad(søknad: Søknad): List<Saksopplysning> {
+    fun lagSaksopplysningerAvSøknad(søknad: Søknad): List<SaksopplysningInterface> {
         return listOf(
             lagSaksopplysningFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
             lagSaksopplysningFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
@@ -101,14 +101,19 @@ object Saksopplysninger {
         vilkår: Vilkår,
         periodeSpm: Søknad.PeriodeSpm,
         periode: Periode,
-    ): Saksopplysning {
-        return Saksopplysning(
-            fom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
-            tom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
+    ): YtelseSaksopplysning {
+        return YtelseSaksopplysning(
+            periode = Periode(
+                fra = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
+                til = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
+            ),
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",
-            typeSaksopplysning = if (periodeSpm is Søknad.PeriodeSpm.Ja) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+            harYtelse = when (periodeSpm) {
+                is Søknad.PeriodeSpm.Ja -> true
+                is Søknad.PeriodeSpm.Nei -> false
+            },
         )
     }
 
@@ -116,14 +121,16 @@ object Saksopplysninger {
         vilkår: Vilkår,
         jaNeiSpm: Søknad.JaNeiSpm,
         periode: Periode,
-    ): Saksopplysning {
-        return Saksopplysning(
-            fom = periode.fra,
-            tom = periode.til,
+    ): YtelseSaksopplysning {
+        return YtelseSaksopplysning(
+            periode = periode,
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",
-            typeSaksopplysning = if (jaNeiSpm is Søknad.JaNeiSpm.Ja) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+            harYtelse = when (jaNeiSpm) {
+                is Søknad.JaNeiSpm.Ja -> true
+                is Søknad.JaNeiSpm.Nei -> false
+            },
         )
     }
 
@@ -131,14 +138,16 @@ object Saksopplysninger {
         vilkår: Vilkår,
         fraOgMedDatoSpm: Søknad.FraOgMedDatoSpm,
         periode: Periode,
-    ): Saksopplysning {
-        return Saksopplysning(
-            fom = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) fraOgMedDatoSpm.fra else periode.fra,
-            tom = periode.til,
+    ): YtelseSaksopplysning {
+        return YtelseSaksopplysning(
+            periode = periode,
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",
-            typeSaksopplysning = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+            harYtelse = when (fraOgMedDatoSpm) {
+                is Søknad.FraOgMedDatoSpm.Ja -> true
+                is Søknad.FraOgMedDatoSpm.Nei -> false
+            },
         )
     }
 }
