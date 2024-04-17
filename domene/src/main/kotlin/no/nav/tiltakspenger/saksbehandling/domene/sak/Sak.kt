@@ -26,7 +26,7 @@ data class Sak(
             .filterNot { it is BehandlingIverksatt }
             .map {
                 try {
-                    it.leggTilSøknad(søknad)
+                    it.leggTilSaksopplysningerForSøknad(søknad)
                 } catch (e: IllegalStateException) {
                     if (e.message?.contains("Kan ikke legge til søknad på denne behandlingen") == true) {
                         it

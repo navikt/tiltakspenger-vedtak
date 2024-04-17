@@ -138,7 +138,7 @@ internal class PostgresBehandlingRepo(
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
+            saksopplysningRepo.lagre(behandling.id, behandling.avklarteSaksopplysninger, tx)
             // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)

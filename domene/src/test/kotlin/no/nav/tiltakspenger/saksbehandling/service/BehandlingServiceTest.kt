@@ -143,12 +143,12 @@ internal class BehandlingServiceTest {
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
 
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
         }
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
             it.fom shouldBe 1.februar(2023)
             it.tom shouldBe 28.februar(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
@@ -180,8 +180,8 @@ internal class BehandlingServiceTest {
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
 
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
@@ -219,8 +219,8 @@ internal class BehandlingServiceTest {
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
 
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.februar(2023)
             it.tom shouldBe 28.februar(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
@@ -258,13 +258,13 @@ internal class BehandlingServiceTest {
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
 
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
         }
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
+        lagretBehandling.captured.avklarteSaksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
             it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE

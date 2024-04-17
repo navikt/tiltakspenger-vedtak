@@ -153,7 +153,7 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.saksopplysninger(),
+            saksopplysninger = behandling.avklarteSaksopplysninger(),
             vurderinger = behandling.vilkårsvurderinger,
             saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,

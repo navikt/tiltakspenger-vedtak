@@ -48,13 +48,13 @@ internal class SaksopplysningTest {
         behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
-        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 2
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
         val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning).behandling
-        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
-        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+        behandlingOppdatertMedNyDataFraAAP.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
+        behandlingOppdatertMedNyDataFraAAP.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
     @Test
@@ -75,9 +75,9 @@ internal class SaksopplysningTest {
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
-        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
 
         val behandlingMedUendretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad())
         behandlingMedUendretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
@@ -103,9 +103,9 @@ internal class SaksopplysningTest {
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
-        behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.avklarteSaksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
 
         val behandlingMedEndretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad(intro = periodeJa()))
         behandlingMedEndretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1

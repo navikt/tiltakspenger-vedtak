@@ -203,7 +203,7 @@ object SammenstillingForBehandlingDTOMapper {
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
+                    saksopplysninger = behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
                         .map {
                             val fakta =
                                 fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
@@ -221,7 +221,7 @@ object SammenstillingForBehandlingDTOMapper {
                         },
                     samletUtfall = settSamletUtfallForSaksopplysninger(
                         behandling,
-                        behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
+                        behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
                     ),
                 )
             },

@@ -40,7 +40,7 @@ data class BehandlingIverksatt(
                 tiltak = this.tiltak,
                 saksbehandler = null,
                 utfallsperioder = emptyList(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
-                ytelsessaksopplysninger = initYtelsesopplysninger(this.vurderingsperiode), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
+                vilkårData = TODO(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
             ).vilkårsvurder()
             LeggTilSaksopplysningRespons(
                 behandling = nyBehandling,

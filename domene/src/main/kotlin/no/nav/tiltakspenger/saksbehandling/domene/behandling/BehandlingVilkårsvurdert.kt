@@ -93,7 +93,6 @@ data class BehandlingVilkårsvurdert(
         vurderingsperiode = this.vurderingsperiode,
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
-        saksbehandler = this.saksbehandler,
-        ytelsessaksopplysninger = initYtelsesopplysninger(this.vurderingsperiode),
+        saksbehandler = TODO(),
     )
 }

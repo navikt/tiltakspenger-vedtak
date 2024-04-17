@@ -23,13 +23,22 @@ fun List<BarnSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<Vu
         val perioder = vurderingsperiode.splittFramTil(datoBarnFyller16)
         return perioder.map { periode ->
             val barnGirIkkeRett = datoBarnFyller16.isBefore(periode.til) || !saksopplysning.oppholderSegIEØS
+
+            val utfall = if (saksopplysning.manueltRegistrert){
+                Utfall.KREVER_MANUELL_VURDERING
+            } else if (barnGirIkkeRett) {
+                Utfall.IKKE_OPPFYLT
+            } else {
+                Utfall.OPPFYLT
+            }
+
             Vurdering(
                 vilkår = saksopplysning.vilkår,
                 kilde = saksopplysning.kilde,
                 fom = periode.fra,
                 tom = periode.til,
-                utfall = if (barnGirIkkeRett) Utfall.IKKE_OPPFYLT else Utfall.OPPFYLT,
-                detaljer = if (barnGirIkkeRett) "Barn er over 16 år" else "Barn er under 16 år",
+                utfall = utfall,
+                detaljer = "TODO",
             )
         }
     }.flatten()

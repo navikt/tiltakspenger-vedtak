@@ -16,8 +16,7 @@ data class BehandlingOpprettet(
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
-    val vilkårData: List<OppfyllbarVilkårData> = emptyList(),
+    override val vilkårData: List<OppfyllbarVilkårData> = emptyList(),
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
@@ -48,6 +47,7 @@ data class BehandlingOpprettet(
                 tiltak = emptyList(),
                 saksbehandler = null,
                 vilkårData = initVilkårData(vurderingsperiode = vurderingsperiode),
+                saksopplysninger = emptyList(),
             )
 
             return opprettetBehandling
@@ -58,15 +58,31 @@ data class BehandlingOpprettet(
         val saksopplysningerFraSøknaden = Saksopplysninger.lagSaksopplysningerAvSøknad(søknad = søknad)
         val vilkårData = saksopplysningerFraSøknaden.map {
 
+            // TODO Vi må ta hensyn til at det kommer en ny søknad, og at da ikke søknadstildspunkt overskrives
             OppfyllbarVilkårData(
                 vilkår = it.vilkår,
                 vurderingsperiode = this.vurderingsperiode,
                 saksopplysningerSaksbehandler = emptyList(),
-                saksopplysningerAnnet = listOf(it.),
+                saksopplysningerAnnet = listOf(),
                 vurderinger = emptyList(),
             )
         }
-//        Saksopplysninger.lagSaksopplysningFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
+
+        return this.copy(
+            vilkårData = vilkårData
+        )
+    }
+
+    override fun leggTilSaksopplysningerForSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+        val behandlingOpprettet = //if (søknad.vurderingsperiode() != this.vurderingsperiode) {
+            lagSaksopplysningerFraSøknad(søknad)
+//        }
+        // else {
+            // Hvis saksopplysningene skal legges til på en eksisterende behandling
+        // }
+
+
+        return behandlingOpprettet.vilkårsvurder()
     }
 
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
@@ -75,7 +91,7 @@ data class BehandlingOpprettet(
                 Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
         } else {
             Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(this.saksopplysninger) { acc, saksopplysning ->
+                .fold(this.avklarteSaksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
@@ -88,8 +104,8 @@ data class BehandlingOpprettet(
     }
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+        val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,

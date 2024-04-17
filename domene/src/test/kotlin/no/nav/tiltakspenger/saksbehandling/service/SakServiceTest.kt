@@ -237,9 +237,9 @@ internal class SakServiceTest {
         verify {
             behandlingRepo.lagre(
                 match { behandling ->
-                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 31.mars(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_IKKE_YTELSE
+                    behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
+                        behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 31.mars(2023) &&
+                        behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_IKKE_YTELSE
                 },
             )
         }
@@ -301,9 +301,9 @@ internal class SakServiceTest {
         verify {
             behandlingRepo.lagre(
                 match { behandling ->
-                    behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE &&
+                    behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
+                        behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
+                        behandling.avklarteSaksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE &&
                         (behandling as BehandlingVilkårsvurdert).vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
                             .sortedBy { it.fom }.first().fom == 1.januar(2023) &&
                         behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }

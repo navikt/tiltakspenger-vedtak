@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -16,8 +18,7 @@ interface Behandling {
     val id: BehandlingId
     val sakId: SakId
     val vurderingsperiode: Periode
-    val saksopplysninger: List<Saksopplysning>
-   // val vilkårData: List<OppfyllbarVilkårData>
+    val vilkårData: List<OppfyllbarVilkårData>
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
@@ -28,16 +29,18 @@ interface Behandling {
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
-    fun saksopplysninger(): List<Saksopplysning> {
-        return saksopplysninger.groupBy { it.vilkår }.map { entry ->
-            entry.value.reduce { acc, saksopplysning ->
-                if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
-            }
-        }
+    fun avklarteSaksopplysninger(): List<SaksopplysningInterface> {
+        return vilkårData.map { vilkår ->
+            vilkår.avklarFakta()
+        }.flatten()
     }
 
     fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
+    }
+
+    fun leggTilSaksopplysningerForSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
+        throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {

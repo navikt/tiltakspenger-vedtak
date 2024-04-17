@@ -87,6 +87,6 @@ data class BehandlingTilBeslutter(
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
         utfallsperioder = emptyList(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
-        ytelsessaksopplysninger = initYtelsesopplysninger(this.vurderingsperiode), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
+        vilkårData = TODO(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
     )
 }

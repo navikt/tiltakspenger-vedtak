@@ -9,36 +9,39 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingVilkårs
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.BarnSaksopplysning
 
 fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
     TODO()
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
-    val vurderinger = saksopplysninger().flatMap {
-        it.lagVurdering(vurderingsperiode)
-    }
+    val (vurderingerBarn, vurderingerResten) = this.vilkårData.map {
+        it.vilkårsvurder().vurderinger
+    }.flatten().partition { it.vilkår == Vilkår.BARNETILLEGG }
 
     val utfallsperioder =
         vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
-            val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
-            val utfallYtelser = when {
+            val idag = vurderingerResten.filter { dag >= it.fom && dag <= it.tom }
+
+            val antallBarnIDag = vurderingerBarn
+                .filter { it.utfall == Utfall.OPPFYLT }
+                .filter { dag >= it.fom && dag <= it.tom }.size
+
+            val utfallRettTilTiltakspenger = when {
                 idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
                 idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
                 else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
             }
-
-            val harManuelleBarnUnder16 = this.søknad().barnetillegg.filterIsInstance<Barnetillegg.Manuell>()
-                .filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }.count { it.under16ForDato(dag) } > 0
-
-            val utfall =
-                if (utfallYtelser == UtfallForPeriode.GIR_RETT_TILTAKSPENGER && harManuelleBarnUnder16) UtfallForPeriode.KREVER_MANUELL_VURDERING else utfallYtelser
+            val utfall = if (utfallRettTilTiltakspenger == UtfallForPeriode.GIR_RETT_TILTAKSPENGER)
+                UtfallForPeriode.KREVER_MANUELL_VURDERING
+            else
+                utfallRettTilTiltakspenger
 
             Utfallsperiode(
                 fom = dag,
                 tom = dag,
-                antallBarn = this.søknad().barnetillegg.filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }
-                    .count { it.under16ForDato(dag) },
+                antallBarn = antallBarnIDag,
                 utfall = utfall,
             )
         }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
@@ -57,7 +60,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         sakId = sakId,
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
-        saksopplysninger = saksopplysninger,
+        saksopplysninger = avklarteSaksopplysninger,
         tiltak = tiltak,
         vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
