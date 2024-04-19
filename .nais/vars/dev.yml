@@ -1,7 +1,7 @@
 kafka:
   pool: nav-dev
 sqlInstances:
-  diskAutoresize: false
+  diskAutoresize: true
   pointInTimeRecovery: false
 ingress:
   url: https://tiltakspenger-vedtak.intern.dev.nav.no
