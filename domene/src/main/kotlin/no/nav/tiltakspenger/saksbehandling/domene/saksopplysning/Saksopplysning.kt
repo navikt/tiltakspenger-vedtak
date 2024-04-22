@@ -3,16 +3,16 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataYtelser
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 
 data class Inngangsvilkår(
-    val vilårAAP: OppfyllbarVilkårData,
-    val vilårDagpenger: OppfyllbarVilkårData,
-    val vilårForeldrepenger: OppfyllbarVilkårData,
+    val vilårAAP: VilkårDataYtelser,
+    val vilårDagpenger: VilkårDataYtelser,
+    val vilårForeldrepenger: VilkårDataYtelser,
 )
 
 sealed interface SaksopplysningInterface {

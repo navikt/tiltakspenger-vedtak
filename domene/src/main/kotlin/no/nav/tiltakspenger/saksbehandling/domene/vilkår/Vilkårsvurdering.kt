@@ -1,24 +1,20 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingVilkårsvurdert
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.BarnSaksopplysning
 
 fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
     TODO()
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
-    val (vurderingerBarn, vurderingerResten) = this.vilkårData.map {
-        it.vilkårsvurder().vurderinger
-    }.flatten().partition { it.vilkår == Vilkår.BARNETILLEGG }
+    val vurderingerBarn = vilkårData.vilkårsvurderBarn() // ikke implementert.
+    val vurderingerResten = vilkårData.vilkårsvurder()
 
     val utfallsperioder =
         vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
@@ -60,9 +56,8 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         sakId = sakId,
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
-        saksopplysninger = avklarteSaksopplysninger,
+        vilkårDatumYtelsers = vilkårDatumYtelsers,
         tiltak = tiltak,
-        vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,
         status = status,

@@ -9,4 +9,5 @@ enum class Kilde(val navn: String) {
     PESYS("pesys"),
     SØKNAD("Søknad"),
     SAKSB("Saksbehandler"),
+    TILTAKSPENGER_VEDTAK("Tiltakspenger-vedtak"),
 }

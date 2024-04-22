@@ -4,30 +4,62 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.*
+
+data class VilkårData(
+    val ytelse: VilkårYtelser,
+//    val barn: List<>,
+//    val alder: List<>,
+//    val tiltak: List<>,
+//    val søknadstidspunkt: List<>
+) {
+    companion object {
+        fun opprettFraSøknad(søknad: Søknad): VilkårData {
+            return VilkårData(
+                ytelse = VilkårYtelser.opprettFraSøknad(søknad)
+            )
+        }
+    }
+
+    fun leggTilSøknad(søknad: Søknad): VilkårData {
+        val ytelse = ytelse.leggTilSøknad(søknad)
+
+        return this.copy(
+            ytelse = ytelse
+        )
+    }
+
+    fun vilkårsvurder(): List<Vurdering> {
+        return ytelse.vilkårsvurder()
+    }
+
+    fun vilkårsvurderBarn(): List<Vurdering> {
+        return emptyList()
+    }
+
+}
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val vilkårData: List<OppfyllbarVilkårData> = emptyList(),
+    override val vilkårData: VilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
 
-) : Førstegangsbehandling {
+    ) : Førstegangsbehandling {
 
     companion object {
-        private fun initVilkårData(vurderingsperiode: Periode): List<OppfyllbarVilkårData> {
-            val vilkår = listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.ALDER, Vilkår.SØKNADSFRIST, Vilkår.BARNETILLEGG, Vilkår.KVP)
+        private fun initVilkårData(vurderingsperiode: Periode): List<VilkårDataYtelser> {
+            val vilkår =
+                listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.ALDER, Vilkår.SØKNADSFRIST, Vilkår.BARNETILLEGG, Vilkår.KVP)
             return vilkår.map {
-                OppfyllbarVilkårData(
+                VilkårDataYtelser(
                     vilkår = it,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysningerSaksbehandler = emptyList(),
@@ -46,64 +78,34 @@ data class BehandlingOpprettet(
                 vurderingsperiode = vurderingsperiode,
                 tiltak = emptyList(),
                 saksbehandler = null,
-                vilkårData = initVilkårData(vurderingsperiode = vurderingsperiode),
-                saksopplysninger = emptyList(),
+                vilkårData = VilkårData.opprettFraSøknad(søknad),
             )
 
             return opprettetBehandling
         }
     }
 
-    fun lagSaksopplysningerFraSøknad(søknad: Søknad): BehandlingOpprettet {
-        val saksopplysningerFraSøknaden = Saksopplysninger.lagSaksopplysningerAvSøknad(søknad = søknad)
-        val vilkårData = saksopplysningerFraSøknaden.map {
-
-            // TODO Vi må ta hensyn til at det kommer en ny søknad, og at da ikke søknadstildspunkt overskrives
-            OppfyllbarVilkårData(
-                vilkår = it.vilkår,
-                vurderingsperiode = this.vurderingsperiode,
-                saksopplysningerSaksbehandler = emptyList(),
-                saksopplysningerAnnet = listOf(),
-                vurderinger = emptyList(),
-            )
-        }
-
-        return this.copy(
-            vilkårData = vilkårData
-        )
-    }
-
-    override fun leggTilSaksopplysningerForSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        val behandlingOpprettet = //if (søknad.vurderingsperiode() != this.vurderingsperiode) {
-            lagSaksopplysningerFraSøknad(søknad)
-//        }
-        // else {
-            // Hvis saksopplysningene skal legges til på en eksisterende behandling
-        // }
-
-
-        return behandlingOpprettet.vilkårsvurder()
-    }
-
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
-            Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
-                Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
+
+        val vilkårData = if(søknad.vurderingsperiode() == this.vurderingsperiode) {
+            vilkårData.leggTilSøknad(søknad)
         } else {
-            Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(this.avklarteSaksopplysninger) { acc, saksopplysning ->
-                    acc.oppdaterSaksopplysninger(saksopplysning)
-                }
+            VilkårData.opprettFraSøknad(søknad)
         }
 
         return this.copy(
-            søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            saksopplysninger = fakta,
+            søknader = this.søknader + søknad,
+            vilkårData = vilkårData
         ).vilkårsvurder()
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): LeggTilSaksopplysningRespons {
+        val vilkår = vilkårDatumYtelsers.filter { it.vilkår == saksopplysning.vilkår }
+        check(vilkår.size == 1) { "En behandling kan bare ha et vilkårdata på samme vilkår" }
+
+        vilkår.first().leggTilSaksopplysning(saksopplysning)
+
         val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
         return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
             LeggTilSaksopplysningRespons(

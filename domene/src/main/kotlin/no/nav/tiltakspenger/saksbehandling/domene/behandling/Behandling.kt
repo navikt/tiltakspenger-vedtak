@@ -4,10 +4,8 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.OppfyllbarVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataYtelser
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -18,7 +16,7 @@ interface Behandling {
     val id: BehandlingId
     val sakId: SakId
     val vurderingsperiode: Periode
-    val vilkårData: List<OppfyllbarVilkårData>
+    val vilkårData: VilkårData
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
@@ -30,7 +28,7 @@ interface Behandling {
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
     fun avklarteSaksopplysninger(): List<SaksopplysningInterface> {
-        return vilkårData.map { vilkår ->
+        return vilkårDatumYtelsers.map { vilkår ->
             vilkår.avklarFakta()
         }.flatten()
     }
@@ -39,11 +37,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }
 
-    fun leggTilSaksopplysningerForSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-        throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
-    }
-
-    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+    fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): LeggTilSaksopplysningRespons {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 

@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopply
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
-class YtelseSaksopplysningerForEnKildeTest {
+class YtelseSaksopplysningerWrapperTest {
     @Test
     fun `sjekk at man kan opprette tomme saksopplysninger for en saksbehandler`() {
         val fom = 1.januar(2024)
