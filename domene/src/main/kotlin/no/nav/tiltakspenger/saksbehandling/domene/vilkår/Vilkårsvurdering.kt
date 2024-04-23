@@ -56,7 +56,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         sakId = sakId,
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
-        vilkårDatumYtelsers = vilkårDatumYtelsers,
+        vilkårData = vilkårData,
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,

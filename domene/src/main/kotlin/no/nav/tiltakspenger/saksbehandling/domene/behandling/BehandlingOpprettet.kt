@@ -5,42 +5,10 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.*
-
-data class VilkårData(
-    val ytelse: VilkårYtelser,
-//    val barn: List<>,
-//    val alder: List<>,
-//    val tiltak: List<>,
-//    val søknadstidspunkt: List<>
-) {
-    companion object {
-        fun opprettFraSøknad(søknad: Søknad): VilkårData {
-            return VilkårData(
-                ytelse = VilkårYtelser.opprettFraSøknad(søknad)
-            )
-        }
-    }
-
-    fun leggTilSøknad(søknad: Søknad): VilkårData {
-        val ytelse = ytelse.leggTilSøknad(søknad)
-
-        return this.copy(
-            ytelse = ytelse
-        )
-    }
-
-    fun vilkårsvurder(): List<Vurdering> {
-        return ytelse.vilkårsvurder()
-    }
-
-    fun vilkårsvurderBarn(): List<Vurdering> {
-        return emptyList()
-    }
-
-}
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataYtelser
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
@@ -100,24 +68,25 @@ data class BehandlingOpprettet(
         ).vilkårsvurder()
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): LeggTilSaksopplysningRespons {
-        val vilkår = vilkårDatumYtelsers.filter { it.vilkår == saksopplysning.vilkår }
-        check(vilkår.size == 1) { "En behandling kan bare ha et vilkårdata på samme vilkår" }
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
+//        val vilkår = vilkårDatumYtelsers.filter { it.vilkår == saksopplysning.vilkår }
+//        check(vilkår.size == 1) { "En behandling kan bare ha et vilkårdata på samme vilkår" }
 
-        vilkår.first().leggTilSaksopplysning(saksopplysning)
+        vilkårData.leggTilSaksopplysning(saksopplysning)
 
-        val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
-                erEndret = true,
-            )
-        }
+        // TODO trengs LeggTilSaksopplysningRespons? Hva brukes den til?
+        //val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+//        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
+//            LeggTilSaksopplysningRespons(
+//                behandling = this,
+//                erEndret = false,
+//            )
+//        } else {
+//            LeggTilSaksopplysningRespons(
+//                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
+//                erEndret = true,
+//            )
+//        }
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =

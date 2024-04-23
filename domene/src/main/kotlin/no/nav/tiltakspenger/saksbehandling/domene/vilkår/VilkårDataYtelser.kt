@@ -67,7 +67,18 @@ data class VilkårDataYtelser(
         val avklarteFakta = avklarFakta()
 
         if (avklarteFakta.isEmpty()) {
-            return this.copy(vurderinger = listOf(Vurdering(vilkår = vilkår,  kilde = TILTAKSPENGER_VEDTAK, )))
+            return this.copy(
+                vurderinger = listOf(
+                    Vurdering(
+                        vilkår = vilkår,
+                        kilde = TILTAKSPENGER_VEDTAK,
+                        vurderingsperiode.fra,
+                        vurderingsperiode.til,
+                        Utfall.KREVER_MANUELL_VURDERING,
+                        "",
+                    ),
+                ),
+            )
         }
 
         require(avklarteFakta.isNotEmpty()) { "Må ha avklarte fakta for å vilkårsvurdere" }

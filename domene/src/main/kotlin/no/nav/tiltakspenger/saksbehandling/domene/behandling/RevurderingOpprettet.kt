@@ -5,16 +5,16 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 
 data class RevurderingOpprettet(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val forrigeVedtak: Vedtak,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårData: VilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val søknader: List<Søknad>,
@@ -26,7 +26,7 @@ data class RevurderingOpprettet(
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
-                saksopplysninger = vedtak.saksopplysninger,
+                vilkårData = TODO(),
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
@@ -37,19 +37,21 @@ data class RevurderingOpprettet(
     override val utfallsperioder: List<Utfallsperiode>
         get() = TODO("Not yet implemented")
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
-                erEndret = true,
-            )
-        }
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
+        vilkårData.leggTilSaksopplysning(saksopplysning)
+
+//        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
+//        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+//            LeggTilSaksopplysningRespons(
+//                behandling = this,
+//                erEndret = false,
+//            )
+//        } else {
+//            LeggTilSaksopplysningRespons(
+//                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
+//                erEndret = true,
+//            )
+//        }
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =

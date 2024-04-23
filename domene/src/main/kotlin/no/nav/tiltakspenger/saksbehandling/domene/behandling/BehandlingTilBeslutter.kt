@@ -5,20 +5,18 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 
 data class BehandlingTilBeslutter(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårData: VilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
-    val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String?,
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
@@ -37,9 +35,8 @@ data class BehandlingTilBeslutter(
                 sakId = sakId,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
+                vilkårData = vilkårData,
                 tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
@@ -56,9 +53,8 @@ data class BehandlingTilBeslutter(
             sakId = sakId,
             søknader = søknader,
             vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
+            vilkårData = vilkårData,
             tiltak = tiltak,
-            vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
             status = BehandlingStatus.Innvilget,
@@ -68,7 +64,7 @@ data class BehandlingTilBeslutter(
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert =
         this.spolTilbake().leggTilSøknad(søknad = søknad)
 
-    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): LeggTilSaksopplysningRespons =
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons =
         this.spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -84,10 +80,9 @@ data class BehandlingTilBeslutter(
         sakId = this.sakId,
         søknader = this.søknader,
         vurderingsperiode = this.vurderingsperiode,
-        saksopplysninger = this.saksopplysninger,
+        vilkårData = vilkårData,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
         utfallsperioder = emptyList(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
-        vilkårDatumYtelsers = TODO(), // TODO: Denne må endres til riktig verdi!! Gjør ikke dette helt enda siden det er litt lengre oppi veien
     )
 }
