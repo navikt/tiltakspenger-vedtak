@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.KategoriserteSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SøknadDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 
@@ -203,25 +202,27 @@ object SammenstillingForBehandlingDTOMapper {
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
-                        .map {
-                            val fakta =
-                                fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
-                            SaksopplysningUtDTO(
-                                fom = it.fom,
-                                tom = it.tom,
-                                kilde = it.kilde.navn,
-                                detaljer = it.detaljer,
-                                typeSaksopplysning = it.typeSaksopplysning.name,
-                                vilkårTittel = it.vilkår.tittel,
-                                vilkårFlateTittel = it.vilkår.flateTittel,
-                                fakta = fakta,
-                                utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                            )
-                        },
+                    saksopplysninger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                    behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
+//                        .map {
+//                            val fakta =
+//                                fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
+//                            SaksopplysningUtDTO(
+//                                fom = it.,
+//                                tom = it.tom,
+//                                kilde = it.kilde.navn,
+//                                detaljer = it.detaljer,
+//                                typeSaksopplysning = it.typeSaksopplysning.name,
+//                                vilkårTittel = it.vilkår.tittel,
+//                                vilkårFlateTittel = it.vilkår.flateTittel,
+//                                fakta = fakta,
+//                                utfall = settUtfall(behandling = behandling, saksopplysning = it),
+//                            )
+//                        },
                     samletUtfall = settSamletUtfallForSaksopplysninger(
                         behandling,
-                        behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
+                        emptyList(),  // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                        behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
                     ),
                 )
             },
@@ -324,11 +325,11 @@ object SammenstillingForBehandlingDTOMapper {
         return when (behandling) {
             is BehandlingVilkårsvurdert -> hentUtfallForVilkår(
                 saksopplysning.vilkår,
-                behandling.vilkårsvurderinger,
+                behandling.vurderinger()
             ).name
 
-            is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
-            is BehandlingIverksatt -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
+            is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vurderinger()).name
+            is BehandlingIverksatt -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vurderinger()).name
             else -> Utfall.KREVER_MANUELL_VURDERING.name
         }
     }

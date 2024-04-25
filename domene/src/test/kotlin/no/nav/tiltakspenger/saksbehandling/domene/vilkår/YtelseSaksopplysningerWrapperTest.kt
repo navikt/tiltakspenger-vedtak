@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class YtelseSaksopplysningerWrapperTest {
     @Test
@@ -16,11 +15,12 @@ class YtelseSaksopplysningerWrapperTest {
         val fom = 1.januar(2024)
         val tom = 31.januar(2024)
 
-        YtelseSaksopplysningerForEnKilde(
-            kilde = Kilde.SAKSB,
-            periode = Periode(fom, tom),
-            saksopplysninger = emptyList(),
-            tidspunkt = LocalDateTime.now(),
+        VilkårDataYtelser(
+            vilkår = Vilkår.AAP,
+            vurderingsperiode = Periode(fra = fom, til = tom),
+            saksopplysningerSaksbehandler = emptyList(),
+            saksopplysningerAnnet = emptyList(),
+            vurderinger = emptyList(),
         )
     }
 
@@ -30,10 +30,10 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            YtelseSaksopplysningerForEnKilde(
-                kilde = Kilde.SAKSB,
-                periode = Periode(fom, tom),
-                saksopplysninger = listOf(
+            VilkårDataYtelser(
+                vilkår = Vilkår.AAP,
+                vurderingsperiode = Periode(fom, tom),
+                 saksopplysningerSaksbehandler = listOf(
                     YtelseSaksopplysning(
                         periode = Periode(fra = 1.desember(2023), til = 31.januar(2024)),
                         kilde = Kilde.SAKSB,
@@ -43,7 +43,8 @@ class YtelseSaksopplysningerWrapperTest {
                         harYtelse = false,
                     ),
                 ),
-                tidspunkt = LocalDateTime.now(),
+                saksopplysningerAnnet = emptyList(),
+                vurderinger = emptyList(),
             )
         }
     }
@@ -54,10 +55,10 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            YtelseSaksopplysningerForEnKilde(
-                kilde = Kilde.SAKSB,
-                periode = Periode(fom, tom),
-                saksopplysninger = listOf(
+            VilkårDataYtelser(
+                vilkår = Vilkår.AAP,
+                vurderingsperiode = Periode(fom, tom),
+                saksopplysningerSaksbehandler = listOf(
                     YtelseSaksopplysning(
                         periode = Periode(fra = 1.januar(2023), til = 28.februar(2024)),
                         kilde = Kilde.SAKSB,
@@ -67,7 +68,8 @@ class YtelseSaksopplysningerWrapperTest {
                         harYtelse = false,
                     ),
                 ),
-                tidspunkt = LocalDateTime.now(),
+                saksopplysningerAnnet = emptyList(),
+                vurderinger = emptyList(),
             )
         }
     }
@@ -78,10 +80,10 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            YtelseSaksopplysningerForEnKilde(
-                kilde = Kilde.SAKSB,
-                periode = Periode(fom, tom),
-                saksopplysninger = listOf(
+            VilkårDataYtelser(
+                vilkår = Vilkår.AAP,
+                vurderingsperiode = Periode(fom, tom),
+                saksopplysningerSaksbehandler = listOf(
                     YtelseSaksopplysning(
                         periode = Periode(fra = 1.januar(2024), til = 16.januar(2024)),
                         kilde = Kilde.SAKSB,
@@ -99,7 +101,8 @@ class YtelseSaksopplysningerWrapperTest {
                         harYtelse = false,
                     ),
                 ),
-                tidspunkt = LocalDateTime.now(),
+                saksopplysningerAnnet = emptyList(),
+                vurderinger = emptyList(),
             )
         }
     }
@@ -110,10 +113,10 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            YtelseSaksopplysningerForEnKilde(
-                kilde = Kilde.SAKSB,
-                periode = Periode(fom, tom),
-                saksopplysninger = listOf(
+            VilkårDataYtelser(
+                vilkår = Vilkår.AAP,
+                vurderingsperiode = Periode(fom, tom),
+                saksopplysningerSaksbehandler = listOf(
                     YtelseSaksopplysning(
                         periode = Periode(fra = 1.januar(2024), til = 16.januar(2024)),
                         kilde = Kilde.SAKSB,
@@ -131,7 +134,8 @@ class YtelseSaksopplysningerWrapperTest {
                         harYtelse = false,
                     ),
                 ),
-                tidspunkt = LocalDateTime.now(),
+                saksopplysningerAnnet = emptyList(),
+                vurderinger = emptyList(),
             )
         }
     }

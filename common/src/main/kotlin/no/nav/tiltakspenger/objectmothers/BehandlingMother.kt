@@ -57,12 +57,13 @@ interface BehandlingMother {
     ): BehandlingVilkårsvurdert {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
-                saksopplysning(
-                    fom = periode.fra,
-                    tom = periode.til,
-                    vilkår = vilkår,
-                    type = TypeSaksopplysning.HAR_IKKE_YTELSE,
-                ),
+                emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                saksopplysning(
+//                    fom = periode.fra,
+//                    tom = periode.til,
+//                    vilkår = vilkår,
+//                    type = TypeSaksopplysning.HAR_IKKE_YTELSE,
+//                ),
             ).behandling
         } as BehandlingVilkårsvurdert
 
@@ -75,12 +76,13 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
-            saksopplysning(
-                fom = 1.januar(2023),
-                tom = 31.mars(2023),
-                vilkår = Vilkår.KVP,
-                type = TypeSaksopplysning.HAR_YTELSE,
-            ),
+            emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//            saksopplysning(
+//                fom = 1.januar(2023),
+//                tom = 31.mars(2023),
+//                vilkår = Vilkår.KVP,
+//                type = TypeSaksopplysning.HAR_YTELSE,
+//            ),
         ).behandling as BehandlingVilkårsvurdert
 
         return behandling.spolTilbake().vilkårsvurder()

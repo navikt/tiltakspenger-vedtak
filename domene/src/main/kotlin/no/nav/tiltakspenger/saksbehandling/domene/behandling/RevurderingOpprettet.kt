@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
@@ -52,6 +51,11 @@ data class RevurderingOpprettet(
 //                erEndret = true,
 //            )
 //        }
+        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+        return LeggTilSaksopplysningRespons(
+            behandling = this.copy(),
+            erEndret = true,
+        )
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =

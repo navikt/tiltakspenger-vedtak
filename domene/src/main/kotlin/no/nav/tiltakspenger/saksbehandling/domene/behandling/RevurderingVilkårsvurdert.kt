@@ -4,15 +4,16 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class RevurderingVilkårsvurdert(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårData: VilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val forrigeVedtak: Vedtak,
@@ -31,7 +32,7 @@ data class RevurderingVilkårsvurdert(
                     sakId = sakId,
                     forrigeVedtak = forrigeVedtak,
                     vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
+                    vilkårData = vilkårData,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     utfallsperioder = utfallsperioder,
@@ -53,7 +54,7 @@ data class RevurderingVilkårsvurdert(
                 id = id,
                 sakId = sakId,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
+                vilkårData = vilkårData,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
@@ -66,7 +67,7 @@ data class RevurderingVilkårsvurdert(
         }
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons =
         spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling =
@@ -89,7 +90,7 @@ data class RevurderingVilkårsvurdert(
             sakId = sakId,
             forrigeVedtak = forrigeVedtak,
             vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
+            vilkårData = vilkårData,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,

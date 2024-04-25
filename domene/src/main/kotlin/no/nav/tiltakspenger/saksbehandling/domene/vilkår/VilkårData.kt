@@ -1,8 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import java.time.LocalDate
 
 data class VilkårData(
     val ytelse: VilkårYtelser,
@@ -15,6 +17,12 @@ data class VilkårData(
         fun opprettFraSøknad(søknad: Søknad): VilkårData {
             return VilkårData(
                 ytelse = VilkårYtelser.opprettFraSøknad(søknad)
+            )
+        }
+
+        fun tempKompileringsDemp(vurderingsperiode: Periode = Periode(LocalDate.MIN, LocalDate.MAX)): VilkårData {
+            return VilkårData(
+                ytelse = VilkårYtelser.tempKompileringsDemp(vurderingsperiode)
             )
         }
     }
@@ -43,13 +51,14 @@ data class VilkårData(
         return vilkårsvurder() + vilkårsvurderBarn()
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>) {
+    fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): VilkårData {
         val vilkår = saksopplysning.first().vilkår
-        if (vilkår in VilkårYtelser.ytelser()) {
-            ytelse.leggTilSaksopplysning(saksopplysning as List<YtelseSaksopplysning>)
+        return if (vilkår in VilkårYtelser.ytelser()) {
+            this.copy(ytelse = ytelse.leggTilSaksopplysning(saksopplysning as List<YtelseSaksopplysning>))
         } else {
             throw IllegalArgumentException("Kan ikke legge til saksopplysning for $vilkår")
         }
+        return this
     }
 
 }

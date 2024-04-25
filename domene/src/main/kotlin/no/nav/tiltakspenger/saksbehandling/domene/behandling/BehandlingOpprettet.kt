@@ -74,7 +74,6 @@ data class BehandlingOpprettet(
 
         vilkårData.leggTilSaksopplysning(saksopplysning)
 
-        // TODO trengs LeggTilSaksopplysningRespons? Hva brukes den til?
         //val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
 //        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
 //            LeggTilSaksopplysningRespons(
@@ -87,6 +86,10 @@ data class BehandlingOpprettet(
 //                erEndret = true,
 //            )
 //        }
+        return LeggTilSaksopplysningRespons(
+                behandling = this.copy().vilkårsvurder(),
+                erEndret = true,
+            )
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =

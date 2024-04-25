@@ -25,17 +25,17 @@ data class VilkårDataYtelser(
     }
 
     init {
-        check(harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
+        require(harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
 
-        check(!saksopplysningerSaksbehandler.map { it.periode }.inneholderOverlapp()) {
+        require(!saksopplysningerSaksbehandler.map { it.periode }.inneholderOverlapp()) {
             "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
         }
 
-        check(saksopplysningerSaksbehandler.map { it.periode }.dekkerHele(vurderingsperiode)) {
+        require(saksopplysningerSaksbehandler.map { it.periode }.dekkerHele(vurderingsperiode)) {
             "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
         }
 
-        check(saksopplysningerSaksbehandler.map { it.periode }.erInnenfor(vurderingsperiode)) {
+        require(saksopplysningerSaksbehandler.map { it.periode }.erInnenfor(vurderingsperiode)) {
             "Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden"
         }
     }

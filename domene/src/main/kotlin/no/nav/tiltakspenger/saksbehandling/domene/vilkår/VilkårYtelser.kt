@@ -60,7 +60,7 @@ data class VilkårYtelser(
         fun opprettFraSøknad(søknad: Søknad): VilkårYtelser {
             val vurderingsperiode = søknad.vurderingsperiode()
             return VilkårYtelser(
-                kvp = periodeSpørsmålVilkårFraSøknad(Vilkår.KVP, søknad.vurderingsperiode(), søknad.kvp),
+                kvp = periodeSpørsmålVilkårFraSøknad(Vilkår.KVP, vurderingsperiode, søknad.kvp),
                 alderspensjon = fraOgMedSpørsmålVilkårFraSøknad(
                     Vilkår.ALDERSPENSJON,
                     vurderingsperiode,
@@ -110,6 +110,67 @@ data class VilkårYtelser(
                     Vilkår.ETTERLØNN,
                     vurderingsperiode,
                     søknad.etterlønn,
+                ),
+
+                aap = ikkeFraSøknad(Vilkår.AAP, vurderingsperiode),
+                dagpenger = ikkeFraSøknad(Vilkår.DAGPENGER, vurderingsperiode),
+                foreldrepenger = ikkeFraSøknad(Vilkår.FORELDREPENGER, vurderingsperiode),
+                omsorgspenger = ikkeFraSøknad(Vilkår.OMSORGSPENGER, vurderingsperiode),
+                opplæringspenger = ikkeFraSøknad(Vilkår.OPPLÆRINGSPENGER, vurderingsperiode),
+                overgangsstønad = ikkeFraSøknad(Vilkår.OVERGANGSSTØNAD, vurderingsperiode),
+                pleiepengerNærstående = ikkeFraSøknad(Vilkår.PLEIEPENGER_NÆRSTÅENDE, vurderingsperiode),
+                pleiepengerSyktBarn = ikkeFraSøknad(Vilkår.PLEIEPENGER_SYKT_BARN, vurderingsperiode),
+                svangerskapspenger = ikkeFraSøknad(Vilkår.SVANGERSKAPSPENGER, vurderingsperiode),
+                tiltakspenger = ikkeFraSøknad(Vilkår.TILTAKSPENGER, vurderingsperiode),
+                uføretrygd = ikkeFraSøknad(Vilkår.UFØRETRYGD, vurderingsperiode),
+                tiltakdeltakelse = ikkeFraSøknad(Vilkår.TILTAKDELTAKELSE, vurderingsperiode),
+            )
+        }
+
+        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+        // Denne metoden må fjernes..
+        fun tempKompileringsDemp(vurderingsperiode: Periode): VilkårYtelser {
+            return VilkårYtelser(
+                kvp = ikkeFraSøknad(Vilkår.KVP, vurderingsperiode),
+                alderspensjon = ikkeFraSøknad(
+                    Vilkår.ALDERSPENSJON,
+                    vurderingsperiode,
+                ),
+                gjenlevendepensjon = ikkeFraSøknad(
+                    Vilkår.GJENLEVENDEPENSJON,
+                    vurderingsperiode,
+                ),
+                institusjonsopphold = ikkeFraSøknad(
+                    Vilkår.INSTITUSJONSOPPHOLD,
+                    vurderingsperiode,
+                ),
+                introprogrammet = ikkeFraSøknad(
+                    Vilkår.INTROPROGRAMMET,
+                    vurderingsperiode,
+                ),
+                jobbsjansen = ikkeFraSøknad(
+                    Vilkår.JOBBSJANSEN,
+                    vurderingsperiode,
+                ),
+                pensjonsinntekt = ikkeFraSøknad(
+                    Vilkår.PENSJONSINNTEKT,
+                    vurderingsperiode,
+                ),
+                supplerendestønadalder = ikkeFraSøknad(
+                    Vilkår.SUPPLERENDESTØNADALDER,
+                    vurderingsperiode,
+                ),
+                supplerendestønadflyktning = ikkeFraSøknad(
+                    Vilkår.SUPPLERENDESTØNADFLYKTNING,
+                    vurderingsperiode,
+                ),
+                sykepenger = ikkeFraSøknad(
+                    Vilkår.SYKEPENGER,
+                    vurderingsperiode,
+                ),
+                etterlønn = ikkeFraSøknad(
+                    Vilkår.ETTERLØNN,
+                    vurderingsperiode,
                 ),
 
                 aap = ikkeFraSøknad(Vilkår.AAP, vurderingsperiode),
@@ -196,32 +257,32 @@ data class VilkårYtelser(
             tiltakdeltakelse.vilkårsvurder().vurderinger
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<YtelseSaksopplysning>) {
+    fun leggTilSaksopplysning(saksopplysning: List<YtelseSaksopplysning>): VilkårYtelser {
         val vilkår = saksopplysning.first().vilkår
-        when (vilkår) {
-            Vilkår.AAP -> aap.leggTilSaksopplysning(saksopplysning)
-            Vilkår.ALDERSPENSJON -> alderspensjon.leggTilSaksopplysning(saksopplysning)
-            Vilkår.DAGPENGER -> dagpenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.FORELDREPENGER -> foreldrepenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.GJENLEVENDEPENSJON -> gjenlevendepensjon.leggTilSaksopplysning(saksopplysning)
-            Vilkår.INSTITUSJONSOPPHOLD -> institusjonsopphold.leggTilSaksopplysning(saksopplysning)
-            Vilkår.INTROPROGRAMMET -> introprogrammet.leggTilSaksopplysning(saksopplysning)
-            Vilkår.JOBBSJANSEN -> jobbsjansen.leggTilSaksopplysning(saksopplysning)
-            Vilkår.KVP -> kvp.leggTilSaksopplysning(saksopplysning)
-            Vilkår.OMSORGSPENGER -> omsorgspenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.OPPLÆRINGSPENGER -> opplæringspenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.OVERGANGSSTØNAD -> overgangsstønad.leggTilSaksopplysning(saksopplysning)
-            Vilkår.PENSJONSINNTEKT -> pensjonsinntekt.leggTilSaksopplysning(saksopplysning)
-            Vilkår.PLEIEPENGER_NÆRSTÅENDE -> pleiepengerNærstående.leggTilSaksopplysning(saksopplysning)
-            Vilkår.PLEIEPENGER_SYKT_BARN -> pleiepengerSyktBarn.leggTilSaksopplysning(saksopplysning)
-            Vilkår.SUPPLERENDESTØNADALDER -> supplerendestønadalder.leggTilSaksopplysning(saksopplysning)
-            Vilkår.SUPPLERENDESTØNADFLYKTNING -> supplerendestønadflyktning.leggTilSaksopplysning(saksopplysning)
-            Vilkår.SVANGERSKAPSPENGER -> svangerskapspenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.SYKEPENGER -> sykepenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.TILTAKSPENGER -> tiltakspenger.leggTilSaksopplysning(saksopplysning)
-            Vilkår.UFØRETRYGD -> uføretrygd.leggTilSaksopplysning(saksopplysning)
-            Vilkår.ETTERLØNN -> etterlønn.leggTilSaksopplysning(saksopplysning)
-            Vilkår.TILTAKDELTAKELSE -> tiltakdeltakelse.leggTilSaksopplysning(saksopplysning)
+        return when (vilkår) {
+            Vilkår.AAP -> this.copy(aap = aap.leggTilSaksopplysning(saksopplysning))
+            Vilkår.ALDERSPENSJON -> this.copy(alderspensjon = alderspensjon.leggTilSaksopplysning(saksopplysning))
+            Vilkår.DAGPENGER -> this.copy(dagpenger = dagpenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.FORELDREPENGER -> this.copy(foreldrepenger = foreldrepenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.GJENLEVENDEPENSJON -> this.copy(gjenlevendepensjon = gjenlevendepensjon.leggTilSaksopplysning(saksopplysning))
+            Vilkår.INSTITUSJONSOPPHOLD -> this.copy(institusjonsopphold = institusjonsopphold.leggTilSaksopplysning(saksopplysning))
+            Vilkår.INTROPROGRAMMET -> this.copy(introprogrammet = introprogrammet.leggTilSaksopplysning(saksopplysning))
+            Vilkår.JOBBSJANSEN -> this.copy(jobbsjansen = jobbsjansen.leggTilSaksopplysning(saksopplysning))
+            Vilkår.KVP -> this.copy(kvp = kvp.leggTilSaksopplysning(saksopplysning))
+            Vilkår.OMSORGSPENGER -> this.copy(omsorgspenger = omsorgspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.OPPLÆRINGSPENGER -> this.copy(opplæringspenger = opplæringspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.OVERGANGSSTØNAD -> this.copy(overgangsstønad = overgangsstønad.leggTilSaksopplysning(saksopplysning))
+            Vilkår.PENSJONSINNTEKT -> this.copy(pensjonsinntekt = pensjonsinntekt.leggTilSaksopplysning(saksopplysning))
+            Vilkår.PLEIEPENGER_NÆRSTÅENDE -> this.copy(pleiepengerNærstående = pleiepengerNærstående.leggTilSaksopplysning(saksopplysning))
+            Vilkår.PLEIEPENGER_SYKT_BARN -> this.copy(pleiepengerSyktBarn = pleiepengerSyktBarn.leggTilSaksopplysning(saksopplysning))
+            Vilkår.SUPPLERENDESTØNADALDER -> this.copy(supplerendestønadalder = supplerendestønadalder.leggTilSaksopplysning(saksopplysning))
+            Vilkår.SUPPLERENDESTØNADFLYKTNING -> this.copy(supplerendestønadflyktning = supplerendestønadflyktning.leggTilSaksopplysning(saksopplysning))
+            Vilkår.SVANGERSKAPSPENGER -> this.copy(svangerskapspenger = svangerskapspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.SYKEPENGER -> this.copy(sykepenger = sykepenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.TILTAKSPENGER -> this.copy(tiltakspenger = tiltakspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.UFØRETRYGD -> this.copy(uføretrygd = uføretrygd.leggTilSaksopplysning(saksopplysning))
+            Vilkår.ETTERLØNN -> this.copy(etterlønn = etterlønn.leggTilSaksopplysning(saksopplysning))
+            Vilkår.TILTAKDELTAKELSE -> this.copy(tiltakdeltakelse = tiltakdeltakelse.leggTilSaksopplysning(saksopplysning))
             else -> {
                 throw IllegalArgumentException("Vilkåret ($vilkår) tilhører ikke en ytelseSaksopplysning")
             }

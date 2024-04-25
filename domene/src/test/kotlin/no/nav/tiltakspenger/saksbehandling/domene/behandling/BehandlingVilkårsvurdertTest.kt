@@ -8,9 +8,8 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import org.junit.jupiter.api.Test
 
@@ -18,13 +17,16 @@ internal class BehandlingVilkårsvurdertTest {
 
     @Test
     fun `sjekk at delvis innvilget blir innvilget`() {
-        val foreldrepenger = saksopplysning(
-            fom = 1.januar(2024),
-            tom = 31.januar(2024),
+        val foreldrepenger = YtelseSaksopplysning(
             kilde = Kilde.K9SAK,
             vilkår = Vilkår.FORELDREPENGER,
-            type = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = null,
+            periode = Periode(
+                1.januar(2024),
+                31.januar(2024),
+            ),
+            detaljer = "",
+            harYtelse = true,
         )
 
         val behandlingInnvilget = behandlingVilkårsvurdertInnvilget(
@@ -36,7 +38,7 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingInnvilget.status shouldBe BehandlingStatus.Innvilget
 
         // Legg til Foreldrepenger i januar. Skal fortsatt være innvilget med januar git ikke rett
-        val behandling = behandlingInnvilget.leggTilSaksopplysning(foreldrepenger).behandling
+        val behandling = behandlingInnvilget.leggTilSaksopplysning(listOf(foreldrepenger)).behandling
         behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandling.status shouldBe BehandlingStatus.Innvilget
 
@@ -56,16 +58,16 @@ internal class BehandlingVilkårsvurdertTest {
         )
 
         // Legg til pensjon i mars. Skal fortsatt være innvilget, men ingen rett i januar og mars
-        val pensjon = saksopplysning(
-            fom = 1.mars(2024),
-            tom = 31.mars(2024),
+        val pensjon = YtelseSaksopplysning(
             kilde = Kilde.PESYS,
             vilkår = Vilkår.GJENLEVENDEPENSJON,
-            type = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = null,
+            detaljer = "",
+            periode = Periode(1.mars(2024), 31.mars(2024)),
+            harYtelse = true,
         )
 
-        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(pensjon).behandling
+        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(listOf(pensjon)).behandling
         behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
@@ -91,16 +93,19 @@ internal class BehandlingVilkårsvurdertTest {
         )
 
         // Legg til kvp i februar. Ingen perioder med rett er igjen så da blir hele avslag
-        val kvp = saksopplysning(
-            fom = 1.februar(2024),
-            tom = 29.februar(2024),
+        val kvp = YtelseSaksopplysning(
             kilde = Kilde.SAKSB,
             vilkår = Vilkår.KVP,
-            type = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z12345",
+            periode = Periode(
+                1.februar(2024),
+                29.februar(2024),
+            ),
+            harYtelse = true,
+            detaljer = "",
         )
 
-        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(kvp).behandling
+        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(listOf(kvp)).behandling
         behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 

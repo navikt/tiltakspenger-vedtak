@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.initYtelsesopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -138,7 +138,8 @@ internal class PostgresBehandlingRepo(
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            saksopplysningRepo.lagre(behandling.id, behandling.avklarteSaksopplysninger, tx)
+            // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//            saksopplysningRepo.lagre(behandling.id, behandling.avklarteSaksopplysninger, tx)
             // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
@@ -146,17 +147,20 @@ internal class PostgresBehandlingRepo(
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
             when (behandling) {
                 is BehandlingIverksatt -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingVilkårsvurdert -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingTilBeslutter -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+//                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
@@ -245,11 +249,13 @@ internal class PostgresBehandlingRepo(
                 sakId = sakId,
                 søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                vilkårData = VilkårData.tempKompileringsDemp(),
                 tiltak = tiltakDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 // todo: Her skal vi egentlig hente saksopplysningene fra databasen
-                ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = Periode(fom, tom)),
+                // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                // ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = Periode(fom, tom)),
             )
 
             "Vilkårsvurdert" -> {
@@ -264,9 +270,9 @@ internal class PostgresBehandlingRepo(
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
                     vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     saksbehandler = saksbehandler,
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     status = behandlingVilkårsvurdertStatus,
@@ -284,9 +290,8 @@ internal class PostgresBehandlingRepo(
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
                     vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
                     beslutter = beslutter,
@@ -305,9 +310,9 @@ internal class PostgresBehandlingRepo(
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
                     vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
                     beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },

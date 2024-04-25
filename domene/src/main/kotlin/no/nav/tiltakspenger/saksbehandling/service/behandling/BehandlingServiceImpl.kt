@@ -65,7 +65,7 @@ class BehandlingServiceImpl(
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
+            .leggTilSaksopplysning(emptyList()) // TODO: Her har det skjedde en quickfix for å gjøre kompilatoren glad 🙈
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
@@ -153,8 +153,8 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.avklarteSaksopplysninger(),
-            vurderinger = behandling.vilkårsvurderinger,
+            saksopplysninger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+            vurderinger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
             saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,
         )

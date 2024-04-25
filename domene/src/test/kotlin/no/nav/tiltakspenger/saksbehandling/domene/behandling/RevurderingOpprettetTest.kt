@@ -8,10 +8,10 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.Test
@@ -22,12 +22,11 @@ import kotlin.test.assertTrue
 
 internal class RevurderingOpprettetTest {
 
-    private val saksopplysning = Saksopplysning(
-        typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-        fom = LocalDate.MIN,
-        tom = LocalDate.MAX,
+    private val saksopplysning = YtelseSaksopplysning(
         vilkår = Vilkår.AAP,
         kilde = Kilde.PESYS,
+        periode = Periode(LocalDate.MIN, LocalDate.MAX),
+        harYtelse = true,
         detaljer = "test",
     )
 
@@ -42,7 +41,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        saksopplysninger = listOf(saksopplysning),
+        vilkårData = VilkårData.tempKompileringsDemp(),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
@@ -75,7 +74,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
-        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(saksopplysning)
+        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(listOf(saksopplysning))
         assertEquals(revurderingOpprettet, leggTilSaksopplysningRespons.behandling)
         assertFalse { leggTilSaksopplysningRespons.erEndret }
     }

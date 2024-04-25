@@ -3,12 +3,10 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class RevurderingIverksatt(
     override val id: BehandlingId,
@@ -50,5 +48,10 @@ data class RevurderingIverksatt(
 //                erEndret = true,
 //            )
 //        }
+        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+        return LeggTilSaksopplysningRespons(
+            behandling = this.copy(),
+            erEndret = true,
+        )
     }
 }
