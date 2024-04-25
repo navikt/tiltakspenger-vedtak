@@ -106,7 +106,6 @@ interface BehandlingMother {
         Vilkår.OPPLÆRINGSPENGER,
         Vilkår.OMSORGSPENGER,
         Vilkår.ALDER,
-        Vilkår.TILTAKSPENGER,
         Vilkår.UFØRETRYGD,
         Vilkår.SVANGERSKAPSPENGER,
     )
