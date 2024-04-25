@@ -31,7 +31,6 @@ sealed class Vilkår {
             SUPPLERENDESTØNADFLYKTNING -> Kilde.SØKNAD
             SVANGERSKAPSPENGER -> Kilde.FPSAK
             SYKEPENGER -> Kilde.SØKNAD
-            TILTAKSPENGER -> Kilde.ARENA
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
         }
@@ -40,12 +39,6 @@ sealed class Vilkår {
         override val tittel: String = "ALDER"
         override val flateTittel: String = "Alder"
         override val lovReference: List<Lovreferanse> = listOf(Lovreferanse.ALDER)
-    }
-
-    object TILTAKSPENGER : Vilkår() {
-        override val tittel: String = "TILTAKSPENGER"
-        override val flateTittel: String = "Tiltakspenger"
-        override val lovReference: List<Lovreferanse> = listOf(Lovreferanse.TILTAKSPENGER)
     }
 
     object JOBBSJANSEN : Vilkår() {

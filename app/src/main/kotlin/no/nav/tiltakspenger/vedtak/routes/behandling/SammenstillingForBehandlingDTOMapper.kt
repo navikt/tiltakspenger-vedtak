@@ -33,7 +33,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 object SammenstillingForBehandlingDTOMapper {
     enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
         ALDER("Alder", listOf(Vilkår.ALDER)),
-        TILTAK("Tiltak", listOf(Vilkår.TILTAKSPENGER)),
         INTROKVP(
             "Introduksjonsprogrammet og Kvalifiseringsprogrammet",
             listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP),
@@ -156,10 +155,6 @@ object SammenstillingForBehandlingDTOMapper {
         "SYKEPENGER" to FaktaDTO(
             harYtelse = "Bruker mottar sykepenger",
             harIkkeYtelse = "Bruker mottar ikke sykepenger",
-        ),
-        "TILTAKSPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar tiltakspenger",
-            harIkkeYtelse = "Bruker mottar ikke tiltakspenger",
         ),
         "UFØRETRYGD" to FaktaDTO(
             harYtelse = "Bruker mottar uføretrygd",

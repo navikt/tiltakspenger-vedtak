@@ -12,7 +12,6 @@ import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.tolkere.AapTolker
 import no.nav.tiltakspenger.innsending.domene.tolkere.DagpengerTolker
-import no.nav.tiltakspenger.innsending.domene.tolkere.TiltakspengerTolker
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -48,9 +47,6 @@ fun Route.ytelseRoutes(
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
             DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
-                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
-            }
-            TiltakspengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
         }

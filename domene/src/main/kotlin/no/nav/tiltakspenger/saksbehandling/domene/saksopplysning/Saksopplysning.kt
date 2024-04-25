@@ -58,7 +58,7 @@ data class Saksopplysning(
                 detaljer = this.detaljer,
             )
 
-            HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) {
+            HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER)) {
                 if (this.kilde == Kilde.SAKSB) {
                     Vurdering.IkkeOppfylt(
                         vilkår = this.vilkår,

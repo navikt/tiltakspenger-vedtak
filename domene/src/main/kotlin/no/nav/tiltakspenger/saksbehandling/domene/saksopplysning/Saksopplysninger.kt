@@ -15,7 +15,6 @@ object Saksopplysninger {
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.OPPLÆRINGSPENGER),
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.OMSORGSPENGER),
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.ALDER),
-            Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.TILTAKSPENGER),
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.UFØRETRYGD),
             Saksopplysning.saksopplysningIkkeInnhentet(søknad.vurderingsperiode(), Vilkår.SVANGERSKAPSPENGER),
         )
