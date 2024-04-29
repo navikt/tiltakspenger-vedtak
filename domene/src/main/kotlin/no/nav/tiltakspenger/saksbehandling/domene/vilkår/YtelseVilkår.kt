@@ -127,8 +127,7 @@ data class YtelseVilkår(
             )
         }
 
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
-        // Denne metoden må fjernes..
+        // TODO: Denne metoden eksisterer bare fordi vi ikke henter data fra databasen. Den kan fjernes når man har det på plass (finnes oppgave på dette i trello)
         fun tempKompileringsDemp(vurderingsperiode: Periode): YtelseVilkår {
             return YtelseVilkår(
                 kvp = ikkeFraSøknad(Vilkår.KVP, vurderingsperiode),

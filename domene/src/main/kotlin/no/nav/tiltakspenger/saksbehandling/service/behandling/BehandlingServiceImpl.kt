@@ -64,8 +64,9 @@ class BehandlingServiceImpl(
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
+        // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
         val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(emptyList()) // TODO: Her har det skjedde en quickfix for å gjøre kompilatoren glad 🙈
+            .leggTilSaksopplysning(emptyList())
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
@@ -153,8 +154,8 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
-            vurderinger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+            saksopplysninger = emptyList(), // TODO: Må vedtak også endres? Hva skal lages her? (Det finnes oppgave på dette i Trello)
+            vurderinger = emptyList(), // TODO: Må vedtak også endres? Hva skal lages her? (Det finnes oppgave på dette i Trello)
             saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,
         )

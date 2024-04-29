@@ -37,6 +37,7 @@ data class RevurderingOpprettet(
         get() = TODO("Not yet implemented")
 
     override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
+        // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
         vilkårData.leggTilSaksopplysning(saksopplysning)
 
 //        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
@@ -51,7 +52,6 @@ data class RevurderingOpprettet(
 //                erEndret = true,
 //            )
 //        }
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
         return LeggTilSaksopplysningRespons(
             behandling = this.copy(),
             erEndret = true,

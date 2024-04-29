@@ -202,7 +202,7 @@ object SammenstillingForBehandlingDTOMapper {
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    saksopplysninger = emptyList(), // TODO: Finn ut hvordan saksopplysninger skal sendes til frontend (Det finnes oppgave på dette i Trello)
 //                    behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
 //                        .map {
 //                            val fakta =
@@ -221,7 +221,7 @@ object SammenstillingForBehandlingDTOMapper {
 //                        },
                     samletUtfall = settSamletUtfallForSaksopplysninger(
                         behandling,
-                        emptyList(),  // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                        emptyList(),  // TODO: Finn ut hvordan saksopplysninger skal sendes til frontend (Det finnes oppgave på dette i Trello)
 //                        behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
                     ),
                 )

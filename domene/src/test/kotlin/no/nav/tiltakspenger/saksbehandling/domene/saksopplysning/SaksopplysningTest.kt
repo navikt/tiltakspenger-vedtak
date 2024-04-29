@@ -19,7 +19,7 @@ import kotlin.test.Test
 
 internal class SaksopplysningTest {
 
-    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
+    @Disabled // todo: Er disablet frem til vi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `sjekk at oppdatering av saksopplysninger fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
@@ -59,7 +59,7 @@ internal class SaksopplysningTest {
 //        behandlingOppdatertMedNyDataFraAAP.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
-    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
+    @Disabled // todo: Er disablet frem til vi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `ny søknad med samme saksopplysning fjerner ikke saksbehandler`() {
         val sakbehandlerOpplysning =
@@ -88,7 +88,7 @@ internal class SaksopplysningTest {
 //        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
-    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
+    @Disabled // todo: Er disablet frem til vi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
         val sakbehandlerOpplysning =

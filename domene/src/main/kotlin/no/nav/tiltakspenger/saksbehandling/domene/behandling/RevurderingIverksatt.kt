@@ -24,6 +24,7 @@ data class RevurderingIverksatt(
 ) : Revurderingsbehandling {
 
     override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
+        // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
 //        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
         vilkårData.leggTilSaksopplysning(saksopplysning)
 
@@ -48,7 +49,6 @@ data class RevurderingIverksatt(
 //                erEndret = true,
 //            )
 //        }
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
         return LeggTilSaksopplysningRespons(
             behandling = this.copy(),
             erEndret = true,

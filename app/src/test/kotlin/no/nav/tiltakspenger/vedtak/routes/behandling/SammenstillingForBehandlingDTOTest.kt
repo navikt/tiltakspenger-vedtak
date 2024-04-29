@@ -15,6 +15,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -125,72 +127,71 @@ class SammenstillingForBehandlingDTOTest {
         typeSaksopplysning = mockk<TypeSaksopplysning>(),
         saksbehandler = "test",
     )
-    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
-//    @Test
-//    fun `settUtfall svarer med utfall sålenge behandlingen er enten vilkårsvurdert, til beslutter, eller iverksatt`() {
-//        val saksopplysning = mockSaksopplysning()
-//
-//        val iverksatt = mockk<BehandlingIverksatt>()
-//        every { iverksatt.vilkårsvurderinger } returns emptyList()
-//        val iverksattUtfall = settUtfall(iverksatt, saksopplysning)
-//        assert(iverksattUtfall == Utfall.OPPFYLT.name)
-//
-//        val vilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
-//        every { vilkårsvurdert.vilkårsvurderinger } returns emptyList()
-//        val vilkårsvurdertUtfall = settUtfall(vilkårsvurdert, saksopplysning)
-//        assert(vilkårsvurdertUtfall == Utfall.OPPFYLT.name)
-//
-//        val tilBeslutter = mockk<BehandlingVilkårsvurdert>()
-//        every { tilBeslutter.vilkårsvurderinger } returns emptyList()
-//        val tilBeslutterUtfall = settUtfall(vilkårsvurdert, saksopplysning)
-//        assert(tilBeslutterUtfall == Utfall.OPPFYLT.name)
-//    }
-//
-//    @Test
-//    fun `settSamletUtfall svarer med IKKE_OPPFYLT hvis noen av utfallene ikke er oppfylt`() {
-//        val behandling = mockk<BehandlingIverksatt>()
-//        val saksopplysninger = listOf(mockSaksopplysning())
-//        val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
-//        val vilkårsvurderinger = listOf(ikkeOppfyltVurdering)
-//        every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
-//
-//        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
-//        assert(samletUtfall == Utfall.IKKE_OPPFYLT.name)
-//    }
-//
-//    @Test
-//    fun `settSamletUtfall svarer med KREVER_MANUELL_VURDERING hvis noen av utfallene er Krever Manuell Vurdering`() {
-//        val behandling = mockk<BehandlingIverksatt>()
-//        val saksopplysninger = listOf(mockSaksopplysning())
-//        val manuellVurdering = mockKreverManuellVurdering()
-//        val vilkårsvurderinger = listOf(manuellVurdering)
-//        every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
-//
-//        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
-//        assert(samletUtfall == Utfall.KREVER_MANUELL_VURDERING.name)
-//    }
-//
-//    @Test
-//    fun `settSamletUtfall svarer kun med OPPFYLT hvis alle vurderingene er oppfylt`() {
-//        val behandling = mockk<BehandlingIverksatt>()
-//        val saksopplysninger = listOf(mockSaksopplysning())
-//        val oppfyltVurdering = mockOppfyltVurdering()
-//        val vilkårsvurderinger = listOf(oppfyltVurdering)
-//        every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
-//
-//        val samletUtfallOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
-//        assert(samletUtfallOppfylt == Utfall.OPPFYLT.name)
-//
-//        val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
-//        every { behandling.vilkårsvurderinger } returns listOf(oppfyltVurdering, ikkeOppfyltVurdering, oppfyltVurdering)
-//        val samletUtfallIkkeOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
-//        assert(samletUtfallIkkeOppfylt == Utfall.IKKE_OPPFYLT.name)
-//
-//        val manuellVurdering = mockKreverManuellVurdering()
-//        every { behandling.vilkårsvurderinger } returns listOf(oppfyltVurdering, manuellVurdering, oppfyltVurdering)
-//        val samletUtfallManuellVurdering = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
-//        assert(samletUtfallManuellVurdering == Utfall.KREVER_MANUELL_VURDERING.name)
-//    }
+    @Test
+    fun `settUtfall svarer med utfall sålenge behandlingen er enten vilkårsvurdert, til beslutter, eller iverksatt`() {
+        val saksopplysning = mockSaksopplysning()
+
+        val iverksatt = mockk<BehandlingIverksatt>()
+        every { iverksatt.vurderinger() } returns emptyList()
+        val iverksattUtfall = settUtfall(iverksatt, saksopplysning)
+        assert(iverksattUtfall == Utfall.OPPFYLT.name)
+
+        val vilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
+        every { vilkårsvurdert.vurderinger() } returns emptyList()
+        val vilkårsvurdertUtfall = settUtfall(vilkårsvurdert, saksopplysning)
+        assert(vilkårsvurdertUtfall == Utfall.OPPFYLT.name)
+
+        val tilBeslutter = mockk<BehandlingVilkårsvurdert>()
+        every { tilBeslutter.vurderinger() } returns emptyList()
+        val tilBeslutterUtfall = settUtfall(vilkårsvurdert, saksopplysning)
+        assert(tilBeslutterUtfall == Utfall.OPPFYLT.name)
+    }
+
+    @Test
+    fun `settSamletUtfall svarer med IKKE_OPPFYLT hvis noen av utfallene ikke er oppfylt`() {
+        val behandling = mockk<BehandlingIverksatt>()
+        val saksopplysninger = listOf(mockSaksopplysning())
+        val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
+        val vilkårsvurderinger = listOf(ikkeOppfyltVurdering)
+        every { behandling.vurderinger() } returns vilkårsvurderinger
+
+        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
+        assert(samletUtfall == Utfall.IKKE_OPPFYLT.name)
+    }
+
+    @Test
+    fun `settSamletUtfall svarer med KREVER_MANUELL_VURDERING hvis noen av utfallene er Krever Manuell Vurdering`() {
+        val behandling = mockk<BehandlingIverksatt>()
+        val saksopplysninger = listOf(mockSaksopplysning())
+        val manuellVurdering = mockKreverManuellVurdering()
+        val vilkårsvurderinger = listOf(manuellVurdering)
+        every { behandling.vurderinger() } returns vilkårsvurderinger
+
+        val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
+        assert(samletUtfall == Utfall.KREVER_MANUELL_VURDERING.name)
+    }
+
+    @Test
+    fun `settSamletUtfall svarer kun med OPPFYLT hvis alle vurderingene er oppfylt`() {
+        val behandling = mockk<BehandlingIverksatt>()
+        val saksopplysninger = listOf(mockSaksopplysning())
+        val oppfyltVurdering = mockOppfyltVurdering()
+        val vilkårsvurderinger = listOf(oppfyltVurdering)
+        every { behandling.vurderinger() } returns vilkårsvurderinger
+
+        val samletUtfallOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
+        assert(samletUtfallOppfylt == Utfall.OPPFYLT.name)
+
+        val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
+        every { behandling.vurderinger() } returns listOf(oppfyltVurdering, ikkeOppfyltVurdering, oppfyltVurdering)
+        val samletUtfallIkkeOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
+        assert(samletUtfallIkkeOppfylt == Utfall.IKKE_OPPFYLT.name)
+
+        val manuellVurdering = mockKreverManuellVurdering()
+        every { behandling.vurderinger() } returns listOf(oppfyltVurdering, manuellVurdering, oppfyltVurdering)
+        val samletUtfallManuellVurdering = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
+        assert(samletUtfallManuellVurdering == Utfall.KREVER_MANUELL_VURDERING.name)
+    }
 
     @Test
     fun `settBeslutter skal kun svare med beslutter hvis behandlingen er iverksatt, eller til beslutter`() {

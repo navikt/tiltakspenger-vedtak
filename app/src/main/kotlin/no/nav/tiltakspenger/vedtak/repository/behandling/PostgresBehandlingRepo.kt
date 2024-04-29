@@ -138,7 +138,7 @@ internal class PostgresBehandlingRepo(
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+            // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
 //            saksopplysningRepo.lagre(behandling.id, behandling.avklarteSaksopplysninger, tx)
             // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
@@ -147,19 +147,19 @@ internal class PostgresBehandlingRepo(
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
             when (behandling) {
                 is BehandlingIverksatt -> {
-                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
 //                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingVilkårsvurdert -> {
-                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
 //                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
 
                 is BehandlingTilBeslutter -> {
-                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
 //                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
                     utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
                 }
@@ -249,12 +249,12 @@ internal class PostgresBehandlingRepo(
                 sakId = sakId,
                 søknader = søknadDAO.hent(id, txSession),
                 vurderingsperiode = Periode(fom, tom),
-                // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                 vilkårData = VilkårData.tempKompileringsDemp(),
                 tiltak = tiltakDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 // todo: Her skal vi egentlig hente saksopplysningene fra databasen
-                // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                 // ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = Periode(fom, tom)),
             )
 
@@ -270,7 +270,7 @@ internal class PostgresBehandlingRepo(
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
                     vurderingsperiode = Periode(fom, tom),
-                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                     vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
                     saksbehandler = saksbehandler,
@@ -310,7 +310,7 @@ internal class PostgresBehandlingRepo(
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
                     vurderingsperiode = Periode(fom, tom),
-                    // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+                    // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                     vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
