@@ -15,7 +15,7 @@ class YtelseSaksopplysningerWrapperTest {
         val fom = 1.januar(2024)
         val tom = 31.januar(2024)
 
-        VilkårDataYtelser(
+        YtelseVilkårData(
             vilkår = Vilkår.AAP,
             vurderingsperiode = Periode(fra = fom, til = tom),
             saksopplysningerSaksbehandler = emptyList(),
@@ -30,7 +30,7 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            VilkårDataYtelser(
+            YtelseVilkårData(
                 vilkår = Vilkår.AAP,
                 vurderingsperiode = Periode(fom, tom),
                  saksopplysningerSaksbehandler = listOf(
@@ -55,7 +55,7 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            VilkårDataYtelser(
+            YtelseVilkårData(
                 vilkår = Vilkår.AAP,
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysningerSaksbehandler = listOf(
@@ -80,7 +80,7 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            VilkårDataYtelser(
+            YtelseVilkårData(
                 vilkår = Vilkår.AAP,
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysningerSaksbehandler = listOf(
@@ -113,7 +113,7 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-            VilkårDataYtelser(
+            YtelseVilkårData(
                 vilkår = Vilkår.AAP,
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysningerSaksbehandler = listOf(

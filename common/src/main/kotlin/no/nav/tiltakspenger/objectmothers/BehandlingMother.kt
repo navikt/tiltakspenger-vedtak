@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
@@ -55,15 +56,17 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
-        val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
+        val behandling = ytelsesvilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
-                emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
-//                saksopplysning(
-//                    fom = periode.fra,
-//                    tom = periode.til,
-//                    vilkår = vilkår,
-//                    type = TypeSaksopplysning.HAR_IKKE_YTELSE,
-//                ),
+                listOf(
+                    YtelseSaksopplysning(
+                        periode = periode,
+                        vilkår = vilkår,
+                        kilde = vilkår.kilde(),
+                        detaljer = "",
+                        harYtelse = false,
+                    ),
+                ),
             ).behandling
         } as BehandlingVilkårsvurdert
 
@@ -76,13 +79,15 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
-            emptyList(), // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
-//            saksopplysning(
-//                fom = 1.januar(2023),
-//                tom = 31.mars(2023),
-//                vilkår = Vilkår.KVP,
-//                type = TypeSaksopplysning.HAR_YTELSE,
-//            ),
+            listOf(
+                YtelseSaksopplysning(
+                    periode = periode,
+                    vilkår = Vilkår.KVP,
+                    kilde = Vilkår.KVP.kilde(),
+                    detaljer = "",
+                    harYtelse = true,
+                ),
+            ),
         ).behandling as BehandlingVilkårsvurdert
 
         return behandling.spolTilbake().vilkårsvurder()
@@ -99,7 +104,7 @@ interface BehandlingMother {
     fun behandlingInnvilgetIverksatt(): BehandlingIverksatt =
         behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent).iverksett(beslutter())
 
-    fun vilkårViHenter() = listOf(
+    fun ytelsesvilkårViHenter() = listOf(
         Vilkår.AAP,
         Vilkår.DAGPENGER,
         Vilkår.PLEIEPENGER_NÆRSTÅENDE,
@@ -107,7 +112,6 @@ interface BehandlingMother {
         Vilkår.FORELDREPENGER,
         Vilkår.OPPLÆRINGSPENGER,
         Vilkår.OMSORGSPENGER,
-        Vilkår.ALDER,
         Vilkår.TILTAKSPENGER,
         Vilkår.UFØRETRYGD,
         Vilkår.SVANGERSKAPSPENGER,

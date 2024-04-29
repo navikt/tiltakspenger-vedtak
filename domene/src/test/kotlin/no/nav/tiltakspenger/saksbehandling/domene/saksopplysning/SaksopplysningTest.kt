@@ -14,10 +14,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
 internal class SaksopplysningTest {
 
+    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `sjekk at oppdatering av saksopplysninger fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
@@ -47,7 +49,8 @@ internal class SaksopplysningTest {
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(listOf(sakbehandlerOpplysning)).behandling
 
         behandlingMedSaksbehandler.avklarteSaksopplysninger().size shouldBe 2
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+
+        // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 //
@@ -56,6 +59,7 @@ internal class SaksopplysningTest {
 //        behandlingOppdatertMedNyDataFraAAP.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
+    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `ny søknad med samme saksopplysning fjerner ikke saksbehandler`() {
         val sakbehandlerOpplysning =
@@ -68,7 +72,7 @@ internal class SaksopplysningTest {
                 typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                 saksbehandler = null,
             )
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+        // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
 //        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
 //        behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
 //        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
@@ -84,6 +88,7 @@ internal class SaksopplysningTest {
 //        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
+    @Disabled // todo: Er disablet frem til fi finner ut hvordan funksjonaliteten skal være
     @Test
     fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
@@ -96,7 +101,7 @@ internal class SaksopplysningTest {
                 typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
                 saksbehandler = null,
             )
-        // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
+        // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
 //        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
 //        behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
 //        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE

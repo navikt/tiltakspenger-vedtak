@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataYtelser
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 import kotlin.test.Test
@@ -45,7 +45,7 @@ class YtelseSaksopplysningTest {
         saksopplysningerSaksbehandler: List<YtelseSaksopplysning> = emptyList(),
         saksopplysningerAnnet: List<YtelseSaksopplysning> = emptyList(),
         vurderinger: List<Vurdering> = emptyList(),
-    ): VilkårDataYtelser = VilkårDataYtelser(
+    ): YtelseVilkårData = YtelseVilkårData(
         vilkår = vilkår,
         vurderingsperiode = vurderingsperiode,
         saksopplysningerSaksbehandler = saksopplysningerSaksbehandler,

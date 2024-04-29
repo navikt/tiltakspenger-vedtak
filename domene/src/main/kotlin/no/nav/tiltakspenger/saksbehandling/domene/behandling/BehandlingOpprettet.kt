@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårDataYtelser
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class BehandlingOpprettet(
@@ -23,11 +23,11 @@ data class BehandlingOpprettet(
     ) : Førstegangsbehandling {
 
     companion object {
-        private fun initVilkårData(vurderingsperiode: Periode): List<VilkårDataYtelser> {
+        private fun initVilkårData(vurderingsperiode: Periode): List<YtelseVilkårData> {
             val vilkår =
                 listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.ALDER, Vilkår.SØKNADSFRIST, Vilkår.BARNETILLEGG, Vilkår.KVP)
             return vilkår.map {
-                VilkårDataYtelser(
+                YtelseVilkårData(
                     vilkår = it,
                     vurderingsperiode = vurderingsperiode,
                     saksopplysningerSaksbehandler = emptyList(),
@@ -72,8 +72,6 @@ data class BehandlingOpprettet(
 //        val vilkår = vilkårDatumYtelsers.filter { it.vilkår == saksopplysning.vilkår }
 //        check(vilkår.size == 1) { "En behandling kan bare ha et vilkårdata på samme vilkår" }
 
-        vilkårData.leggTilSaksopplysning(saksopplysning)
-
         //val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
 //        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
 //            LeggTilSaksopplysningRespons(
@@ -87,7 +85,7 @@ data class BehandlingOpprettet(
 //            )
 //        }
         return LeggTilSaksopplysningRespons(
-                behandling = this.copy().vilkårsvurder(),
+                behandling = this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder(),
                 erEndret = true,
             )
     }

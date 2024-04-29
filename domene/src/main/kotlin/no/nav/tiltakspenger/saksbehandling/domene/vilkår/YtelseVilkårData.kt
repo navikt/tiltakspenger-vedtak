@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.*
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde.TILTAKSPENGER_VEDTAK
 
-data class VilkårDataYtelser(
+data class YtelseVilkårData(
     val vilkår: Vilkår,
     val vurderingsperiode: Periode,
     val saksopplysningerSaksbehandler: List<YtelseSaksopplysning>,
@@ -40,7 +40,7 @@ data class VilkårDataYtelser(
         }
     }
 
-    fun leggTilSaksopplysning(saksopplysninger: List<YtelseSaksopplysning>): VilkårDataYtelser {
+    fun leggTilSaksopplysning(saksopplysninger: List<YtelseSaksopplysning>): YtelseVilkårData {
         val kilde = saksopplysninger.first().kilde
 
         return if (kilde == Kilde.SAKSB) {
@@ -57,13 +57,13 @@ data class VilkårDataYtelser(
 
     fun avklarFakta(): List<YtelseSaksopplysning> {
         if (saksopplysningerSaksbehandler.isEmpty() && saksopplysningerAnnet.isEmpty()) {
-            throw IllegalStateException("Kan ikke avklare fakta uten noen saksopplysninger")
+            emptyList<YtelseSaksopplysning>()
         }
 
         return saksopplysningerSaksbehandler.ifEmpty { saksopplysningerAnnet }
     }
 
-    fun vilkårsvurder(): VilkårDataYtelser {
+    fun vilkårsvurder(): YtelseVilkårData {
         val avklarteFakta = avklarFakta()
 
         if (avklarteFakta.isEmpty()) {

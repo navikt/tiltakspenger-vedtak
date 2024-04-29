@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopply
 import java.time.LocalDate
 
 data class VilkårData(
-    val ytelse: VilkårYtelser,
+    val ytelse: YtelseVilkår,
 //    val barn: List<>,
 //    val alder: List<>,
 //    val tiltak: List<>,
@@ -16,13 +16,13 @@ data class VilkårData(
     companion object {
         fun opprettFraSøknad(søknad: Søknad): VilkårData {
             return VilkårData(
-                ytelse = VilkårYtelser.opprettFraSøknad(søknad)
+                ytelse = YtelseVilkår.opprettFraSøknad(søknad)
             )
         }
 
         fun tempKompileringsDemp(vurderingsperiode: Periode = Periode(LocalDate.MIN, LocalDate.MAX)): VilkårData {
             return VilkårData(
-                ytelse = VilkårYtelser.tempKompileringsDemp(vurderingsperiode)
+                ytelse = YtelseVilkår.tempKompileringsDemp(vurderingsperiode)
             )
         }
     }
@@ -39,26 +39,25 @@ data class VilkårData(
         return ytelse.avklarFakta()
     }
 
-    fun vilkårsvurder(): List<Vurdering> {
-        return ytelse.vilkårsvurder()
+    fun vilkårsvurder(): VilkårData {
+        return this.copy(ytelse = ytelse.vilkårsvurder())
     }
 
-    fun vilkårsvurderBarn(): List<Vurdering> {
-        return emptyList()
+    fun vilkårsvurderBarn(): VilkårData {
+        return this // TODO!!!
     }
 
     fun vurderinger(): List<Vurdering> {
-        return vilkårsvurder() + vilkårsvurderBarn()
+        return ytelse.vurderinger() // + vilkårsvurderBarn()
     }
 
     fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): VilkårData {
         val vilkår = saksopplysning.first().vilkår
-        return if (vilkår in VilkårYtelser.ytelser()) {
+        return if (vilkår in YtelseVilkår.ytelser()) {
             this.copy(ytelse = ytelse.leggTilSaksopplysning(saksopplysning as List<YtelseSaksopplysning>))
         } else {
             throw IllegalArgumentException("Kan ikke legge til saksopplysning for $vilkår")
         }
-        return this
     }
 
 }

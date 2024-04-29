@@ -13,8 +13,8 @@ fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
-    val vurderingerBarn = vilkårData.vilkårsvurderBarn() // ikke implementert.
-    val vurderingerResten = vilkårData.vilkårsvurder()
+    val vurderingerBarn = emptyList<Vurdering>() // vilkårData.vilkårsvurderBarn() // todo: implementer.
+    val vurderingerResten = vilkårData.vurderinger()
 
     val utfallsperioder =
         vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->

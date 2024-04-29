@@ -5,30 +5,30 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 
-data class VilkårYtelser(
-    val aap: VilkårDataYtelser,
-    val alderspensjon: VilkårDataYtelser,
-    val dagpenger: VilkårDataYtelser,
-    val foreldrepenger: VilkårDataYtelser,
-    val gjenlevendepensjon: VilkårDataYtelser,
-    val institusjonsopphold: VilkårDataYtelser,
-    val introprogrammet: VilkårDataYtelser,
-    val jobbsjansen: VilkårDataYtelser,
-    val kvp: VilkårDataYtelser,
-    val omsorgspenger: VilkårDataYtelser,
-    val opplæringspenger: VilkårDataYtelser,
-    val overgangsstønad: VilkårDataYtelser,
-    val pensjonsinntekt: VilkårDataYtelser,
-    val pleiepengerNærstående: VilkårDataYtelser,
-    val pleiepengerSyktBarn: VilkårDataYtelser,
-    val supplerendestønadalder: VilkårDataYtelser,
-    val supplerendestønadflyktning: VilkårDataYtelser,
-    val svangerskapspenger: VilkårDataYtelser,
-    val sykepenger: VilkårDataYtelser,
-    val tiltakspenger: VilkårDataYtelser,
-    val uføretrygd: VilkårDataYtelser,
-    val etterlønn: VilkårDataYtelser,
-    val tiltakdeltakelse: VilkårDataYtelser,
+data class YtelseVilkår(
+    val aap: YtelseVilkårData,
+    val alderspensjon: YtelseVilkårData,
+    val dagpenger: YtelseVilkårData,
+    val foreldrepenger: YtelseVilkårData,
+    val gjenlevendepensjon: YtelseVilkårData,
+    val institusjonsopphold: YtelseVilkårData,
+    val introprogrammet: YtelseVilkårData,
+    val jobbsjansen: YtelseVilkårData,
+    val kvp: YtelseVilkårData,
+    val omsorgspenger: YtelseVilkårData,
+    val opplæringspenger: YtelseVilkårData,
+    val overgangsstønad: YtelseVilkårData,
+    val pensjonsinntekt: YtelseVilkårData,
+    val pleiepengerNærstående: YtelseVilkårData,
+    val pleiepengerSyktBarn: YtelseVilkårData,
+    val supplerendestønadalder: YtelseVilkårData,
+    val supplerendestønadflyktning: YtelseVilkårData,
+    val svangerskapspenger: YtelseVilkårData,
+    val sykepenger: YtelseVilkårData,
+    val tiltakspenger: YtelseVilkårData,
+    val uføretrygd: YtelseVilkårData,
+    val etterlønn: YtelseVilkårData,
+    val tiltakdeltakelse: YtelseVilkårData,
 ) {
     companion object {
         fun ytelser() = listOf(
@@ -57,9 +57,9 @@ data class VilkårYtelser(
             Vilkår.TILTAKDELTAKELSE,
         )
 
-        fun opprettFraSøknad(søknad: Søknad): VilkårYtelser {
+        fun opprettFraSøknad(søknad: Søknad): YtelseVilkår {
             val vurderingsperiode = søknad.vurderingsperiode()
-            return VilkårYtelser(
+            return YtelseVilkår(
                 kvp = periodeSpørsmålVilkårFraSøknad(Vilkår.KVP, vurderingsperiode, søknad.kvp),
                 alderspensjon = fraOgMedSpørsmålVilkårFraSøknad(
                     Vilkår.ALDERSPENSJON,
@@ -129,8 +129,8 @@ data class VilkårYtelser(
 
         // TODO: Her har det skjedd en quickfix for å gjøre kompilatoren glad 🙈
         // Denne metoden må fjernes..
-        fun tempKompileringsDemp(vurderingsperiode: Periode): VilkårYtelser {
-            return VilkårYtelser(
+        fun tempKompileringsDemp(vurderingsperiode: Periode): YtelseVilkår {
+            return YtelseVilkår(
                 kvp = ikkeFraSøknad(Vilkår.KVP, vurderingsperiode),
                 alderspensjon = ikkeFraSøknad(
                     Vilkår.ALDERSPENSJON,
@@ -189,7 +189,7 @@ data class VilkårYtelser(
         }
     }
 
-    fun leggTilSøknad(søknad: Søknad): VilkårYtelser {
+    fun leggTilSøknad(søknad: Søknad): YtelseVilkår {
         val søknadssaksopplysninger = opprettFraSøknad(søknad)
         alderspensjon.leggTilSaksopplysning(søknadssaksopplysninger.alderspensjon.saksopplysningerAnnet)
         gjenlevendepensjon.leggTilSaksopplysning(søknadssaksopplysninger.gjenlevendepensjon.saksopplysningerAnnet)
@@ -231,7 +231,35 @@ data class VilkårYtelser(
             tiltakdeltakelse.vilkårsvurder().avklarFakta()
     }
 
-    fun vilkårsvurder(): List<Vurdering> {
+    fun vilkårsvurder(): YtelseVilkår {
+        return this.copy(
+            aap = aap.vilkårsvurder(),
+            alderspensjon = alderspensjon.vilkårsvurder(),
+            dagpenger = dagpenger.vilkårsvurder(),
+            foreldrepenger = foreldrepenger.vilkårsvurder(),
+            gjenlevendepensjon = gjenlevendepensjon.vilkårsvurder(),
+            institusjonsopphold = institusjonsopphold.vilkårsvurder(),
+            introprogrammet = introprogrammet.vilkårsvurder(),
+            jobbsjansen = jobbsjansen.vilkårsvurder(),
+            kvp = kvp.vilkårsvurder(),
+            omsorgspenger = omsorgspenger.vilkårsvurder(),
+            opplæringspenger = opplæringspenger.vilkårsvurder(),
+            overgangsstønad = overgangsstønad.vilkårsvurder(),
+            pensjonsinntekt = pensjonsinntekt.vilkårsvurder(),
+            pleiepengerNærstående = pleiepengerNærstående.vilkårsvurder(),
+            pleiepengerSyktBarn = pleiepengerSyktBarn.vilkårsvurder(),
+            supplerendestønadalder = supplerendestønadalder.vilkårsvurder(),
+            supplerendestønadflyktning = supplerendestønadflyktning.vilkårsvurder(),
+            svangerskapspenger = svangerskapspenger.vilkårsvurder(),
+            sykepenger = sykepenger.vilkårsvurder(),
+            tiltakspenger = tiltakspenger.vilkårsvurder(),
+            uføretrygd = uføretrygd.vilkårsvurder(),
+            etterlønn = etterlønn.vilkårsvurder(),
+            tiltakdeltakelse = tiltakdeltakelse.vilkårsvurder()
+        )
+    }
+
+    fun vurderinger(): List<Vurdering> {
         return aap.vilkårsvurder().vurderinger +
             alderspensjon.vilkårsvurder().vurderinger +
             dagpenger.vilkårsvurder().vurderinger +
@@ -257,7 +285,7 @@ data class VilkårYtelser(
             tiltakdeltakelse.vilkårsvurder().vurderinger
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<YtelseSaksopplysning>): VilkårYtelser {
+    fun leggTilSaksopplysning(saksopplysning: List<YtelseSaksopplysning>): YtelseVilkår {
         val vilkår = saksopplysning.first().vilkår
         return when (vilkår) {
             Vilkår.AAP -> this.copy(aap = aap.leggTilSaksopplysning(saksopplysning))
@@ -290,8 +318,8 @@ data class VilkårYtelser(
     }
 }
 
-private fun ikkeFraSøknad(vilkår: Vilkår, vurderingsperiode: Periode): VilkårDataYtelser {
-    return VilkårDataYtelser(
+private fun ikkeFraSøknad(vilkår: Vilkår, vurderingsperiode: Periode): YtelseVilkårData {
+    return YtelseVilkårData(
         vilkår = vilkår,
         vurderingsperiode = vurderingsperiode,
         saksopplysningerSaksbehandler = emptyList(),
@@ -304,8 +332,8 @@ private fun periodeSpørsmålVilkårFraSøknad(
     vilkår: Vilkår,
     vurderingsperiode: Periode,
     periodeSpm: Søknad.PeriodeSpm,
-): VilkårDataYtelser {
-    return VilkårDataYtelser(
+): YtelseVilkårData {
+    return YtelseVilkårData(
         vilkår = vilkår, vurderingsperiode, emptyList(),
         listOf(
             lagSaksopplysningFraPeriodespørsmål(
@@ -322,8 +350,8 @@ private fun jaNeiSpørsmålVilkårFraSøknad(
     vilkår: Vilkår,
     vurderingsperiode: Periode,
     jaNeiSpm: Søknad.JaNeiSpm,
-): VilkårDataYtelser {
-    return VilkårDataYtelser(
+): YtelseVilkårData {
+    return YtelseVilkårData(
         vilkår = vilkår, vurderingsperiode, emptyList(),
         listOf(
             lagSaksopplysningFraJaNeiSpørsmål(
@@ -340,8 +368,8 @@ private fun fraOgMedSpørsmålVilkårFraSøknad(
     vilkår: Vilkår,
     vurderingsperiode: Periode,
     fraOgMedSpm: Søknad.FraOgMedDatoSpm,
-): VilkårDataYtelser {
-    return VilkårDataYtelser(
+): YtelseVilkårData {
+    return YtelseVilkårData(
         vilkår = vilkår, vurderingsperiode, emptyList(),
         listOf(
             lagSaksopplysningFraFraOgMedDatospørsmål(
