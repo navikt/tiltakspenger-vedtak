@@ -37,6 +37,7 @@ import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.saksopplysningRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
@@ -110,6 +111,7 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
             )
             meldekortRoutes()
+            saksopplysningRoutes()
         }
         authenticate("admin") {
             resettInnsendingerRoute(innsendingAdminService)
