@@ -67,7 +67,8 @@ class BehandlingServiceImpl(
         // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
         val behandlingRespons = hentBehandling(behandlingId)
             .leggTilSaksopplysning(emptyList())
-        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+
+        behandlingRepo.lagre(behandlingRespons)
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {

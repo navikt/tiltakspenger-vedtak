@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class RevurderingOpprettet(
     override val id: BehandlingId,
@@ -36,27 +37,8 @@ data class RevurderingOpprettet(
     override val utfallsperioder: List<Utfallsperiode>
         get() = TODO("Not yet implemented")
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
-        // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
-        vilkårData.leggTilSaksopplysning(saksopplysning)
-
-//        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-//        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
-//            LeggTilSaksopplysningRespons(
-//                behandling = this,
-//                erEndret = false,
-//            )
-//        } else {
-//            LeggTilSaksopplysningRespons(
-//                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
-//                erEndret = true,
-//            )
-//        }
-        return LeggTilSaksopplysningRespons(
-            behandling = this.copy(),
-            erEndret = true,
-        )
-    }
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): RevurderingVilkårsvurdert =
+        this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder()
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =
         this.copy(tiltak = tiltak)

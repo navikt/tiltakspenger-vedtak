@@ -46,7 +46,7 @@ internal class SaksopplysningTest {
         behandling.vilkårData.ytelse.foreldrepenger shouldNotBe null
         behandling.vilkårData.ytelse.foreldrepenger.ikkeInnhentet() shouldBe true
 
-        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(listOf(sakbehandlerOpplysning)).behandling
+        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(listOf(sakbehandlerOpplysning))
 
         // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger().size shouldBe 2

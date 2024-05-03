@@ -67,7 +67,7 @@ interface BehandlingMother {
                         harYtelse = false,
                     ),
                 ),
-            ).behandling
+            )
         } as BehandlingVilkårsvurdert
 
         return behandling.spolTilbake().vilkårsvurder()
@@ -88,7 +88,7 @@ interface BehandlingMother {
                     harYtelse = true,
                 ),
             ),
-        ).behandling as BehandlingVilkårsvurdert
+        )
 
         return behandling.spolTilbake().vilkårsvurder()
     }

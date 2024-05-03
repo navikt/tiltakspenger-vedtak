@@ -18,9 +18,4 @@ data class BehandlingIverksatt(
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val beslutter: String,
     val status: BehandlingStatus,
-) : Førstegangsbehandling {
-
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
-        throw StøtterIkkeException("Denne funksjonaliteten er ikke støttet enda. Se på i forlengelse av 'lytte på fakta'-oppgaven")
-    }
-}
+) : Førstegangsbehandling

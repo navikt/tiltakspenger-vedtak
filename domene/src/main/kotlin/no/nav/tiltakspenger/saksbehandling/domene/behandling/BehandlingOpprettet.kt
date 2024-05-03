@@ -69,27 +69,8 @@ data class BehandlingOpprettet(
         ).vilkårsvurder()
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): LeggTilSaksopplysningRespons {
-//        val vilkår = vilkårDatumYtelsers.filter { it.vilkår == saksopplysning.vilkår }
-//        check(vilkår.size == 1) { "En behandling kan bare ha et vilkårdata på samme vilkår" }
-
-        //val oppdatertSaksopplysningListe = avklarteSaksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-//        return if (oppdatertSaksopplysningListe == this.avklarteSaksopplysninger) {
-//            LeggTilSaksopplysningRespons(
-//                behandling = this,
-//                erEndret = false,
-//            )
-//        } else {
-//            LeggTilSaksopplysningRespons(
-//                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
-//                erEndret = true,
-//            )
-//        }
-        return LeggTilSaksopplysningRespons(
-                behandling = this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder(),
-                erEndret = true,
-            )
-    }
+    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): BehandlingVilkårsvurdert =
+        this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder()
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)

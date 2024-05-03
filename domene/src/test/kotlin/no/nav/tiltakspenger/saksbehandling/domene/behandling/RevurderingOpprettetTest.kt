@@ -12,11 +12,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopply
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -75,8 +75,7 @@ internal class RevurderingOpprettetTest {
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
         val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(listOf(saksopplysning))
-        assertEquals(revurderingOpprettet, leggTilSaksopplysningRespons.behandling)
-        assertFalse { leggTilSaksopplysningRespons.erEndret }
+        assertEquals(revurderingOpprettet.vilkårsvurder(), leggTilSaksopplysningRespons)
     }
 
     @Test

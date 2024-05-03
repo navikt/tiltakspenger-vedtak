@@ -38,7 +38,7 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingInnvilget.status shouldBe BehandlingStatus.Innvilget
 
         // Legg til Foreldrepenger i januar. Skal fortsatt være innvilget med januar git ikke rett
-        val behandling = behandlingInnvilget.leggTilSaksopplysning(listOf(foreldrepenger)).behandling
+        val behandling = behandlingInnvilget.leggTilSaksopplysning(listOf(foreldrepenger))
         behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandling.status shouldBe BehandlingStatus.Innvilget
 
@@ -67,7 +67,7 @@ internal class BehandlingVilkårsvurdertTest {
             harYtelse = true,
         )
 
-        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(listOf(pensjon)).behandling
+        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(listOf(pensjon))
         behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
@@ -105,7 +105,7 @@ internal class BehandlingVilkårsvurdertTest {
             detaljer = "",
         )
 
-        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(listOf(kvp)).behandling
+        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(listOf(kvp))
         behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 
