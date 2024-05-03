@@ -32,6 +32,7 @@ data class BehandlingOpprettet(
                     vurderingsperiode = vurderingsperiode,
                     saksopplysningerSaksbehandler = emptyList(),
                     saksopplysningerAnnet = emptyList(),
+                    avklarteSaksopplysninger = emptyList(),
                     vurderinger = emptyList(),
                 )
             }

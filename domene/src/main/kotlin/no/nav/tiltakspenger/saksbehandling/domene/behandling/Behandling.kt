@@ -28,10 +28,6 @@ interface Behandling {
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
-    fun avklarteSaksopplysninger(): List<SaksopplysningInterface> {
-        return vilkårData.avklarFakta()
-    }
-
     fun vurderinger(): List<Vurdering> {
         return vilkårData.vurderinger()
     }

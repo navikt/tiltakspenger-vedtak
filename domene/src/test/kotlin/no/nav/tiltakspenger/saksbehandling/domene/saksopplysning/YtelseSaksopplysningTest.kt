@@ -44,12 +44,14 @@ class YtelseSaksopplysningTest {
         vurderingsperiode: Periode = mockPeriode(),
         saksopplysningerSaksbehandler: List<YtelseSaksopplysning> = emptyList(),
         saksopplysningerAnnet: List<YtelseSaksopplysning> = emptyList(),
+        avklarteSaksopplysninger: List<YtelseSaksopplysning> = emptyList(),
         vurderinger: List<Vurdering> = emptyList(),
     ): YtelseVilkårData = YtelseVilkårData(
         vilkår = vilkår,
         vurderingsperiode = vurderingsperiode,
         saksopplysningerSaksbehandler = saksopplysningerSaksbehandler,
         saksopplysningerAnnet = saksopplysningerAnnet,
+        avklarteSaksopplysninger = avklarteSaksopplysninger,
         vurderinger = vurderinger,
     )
 

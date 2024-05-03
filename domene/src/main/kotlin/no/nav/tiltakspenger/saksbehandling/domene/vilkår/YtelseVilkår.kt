@@ -204,32 +204,6 @@ data class YtelseVilkår(
         return this
     }
 
-    fun avklarFakta(): List<YtelseSaksopplysning> {
-        return aap.vilkårsvurder().avklarFakta() +
-            alderspensjon.vilkårsvurder().avklarFakta() +
-            dagpenger.vilkårsvurder().avklarFakta() +
-            foreldrepenger.vilkårsvurder().avklarFakta() +
-            gjenlevendepensjon.vilkårsvurder().avklarFakta() +
-            institusjonsopphold.vilkårsvurder().avklarFakta() +
-            introprogrammet.vilkårsvurder().avklarFakta() +
-            jobbsjansen.vilkårsvurder().avklarFakta() +
-            kvp.vilkårsvurder().avklarFakta() +
-            omsorgspenger.vilkårsvurder().avklarFakta() +
-            opplæringspenger.vilkårsvurder().avklarFakta() +
-            overgangsstønad.vilkårsvurder().avklarFakta() +
-            pensjonsinntekt.vilkårsvurder().avklarFakta() +
-            pleiepengerNærstående.vilkårsvurder().avklarFakta() +
-            pleiepengerSyktBarn.vilkårsvurder().avklarFakta() +
-            supplerendestønadalder.vilkårsvurder().avklarFakta() +
-            supplerendestønadflyktning.vilkårsvurder().avklarFakta() +
-            svangerskapspenger.vilkårsvurder().avklarFakta() +
-            sykepenger.vilkårsvurder().avklarFakta() +
-            tiltakspenger.vilkårsvurder().avklarFakta() +
-            uføretrygd.vilkårsvurder().avklarFakta() +
-            etterlønn.vilkårsvurder().avklarFakta() +
-            tiltakdeltakelse.vilkårsvurder().avklarFakta()
-    }
-
     fun vilkårsvurder(): YtelseVilkår {
         return this.copy(
             aap = aap.vilkårsvurder(),
@@ -323,6 +297,7 @@ private fun ikkeFraSøknad(vilkår: Vilkår, vurderingsperiode: Periode): Ytelse
         vurderingsperiode = vurderingsperiode,
         saksopplysningerSaksbehandler = emptyList(),
         saksopplysningerAnnet = emptyList(),
+        avklarteSaksopplysninger = emptyList(),
         vurderinger = emptyList(),
     )
 }
@@ -341,7 +316,8 @@ private fun periodeSpørsmålVilkårFraSøknad(
                 periode = vurderingsperiode,
             ),
         ),
-        emptyList(),
+        avklarteSaksopplysninger = emptyList(),
+        vurderinger = emptyList(),
     )
 }
 
@@ -359,7 +335,8 @@ private fun jaNeiSpørsmålVilkårFraSøknad(
                 periode = vurderingsperiode,
             ),
         ),
-        emptyList(),
+        avklarteSaksopplysninger = emptyList(),
+        vurderinger = emptyList(),
     )
 }
 
@@ -377,7 +354,8 @@ private fun fraOgMedSpørsmålVilkårFraSøknad(
                 periode = vurderingsperiode,
             ),
         ),
-        emptyList(),
+        avklarteSaksopplysninger = emptyList(),
+        vurderinger = emptyList(),
     )
 }
 

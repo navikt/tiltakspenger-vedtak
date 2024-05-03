@@ -12,6 +12,7 @@ data class YtelseVilkårData(
     val vurderingsperiode: Periode,
     val saksopplysningerSaksbehandler: List<YtelseSaksopplysning>,
     val saksopplysningerAnnet: List<YtelseSaksopplysning>,
+    val avklarteSaksopplysninger: List<YtelseSaksopplysning>,
     val vurderinger: List<Vurdering>,
 ) {
 
@@ -31,7 +32,7 @@ data class YtelseVilkårData(
             "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
         }
 
-        require(saksopplysningerSaksbehandler.map { it.periode }.dekkerHele(vurderingsperiode)) {
+        require(saksopplysningerSaksbehandler.map { it.periode }.dekkerHele(vurderingsperiode)) { // Misvisende metodenavn
             "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
         }
 
@@ -52,21 +53,21 @@ data class YtelseVilkårData(
             this.copy(
                 saksopplysningerAnnet = saksopplysninger,
             )
-        }
+        }.avklarFakta()
     }
 
-    fun avklarFakta(): List<YtelseSaksopplysning> {
+    fun avklarFakta(): YtelseVilkårData {
         if (saksopplysningerSaksbehandler.isEmpty() && saksopplysningerAnnet.isEmpty()) {
             emptyList<YtelseSaksopplysning>()
         }
 
-        return saksopplysningerSaksbehandler.ifEmpty { saksopplysningerAnnet }
+        return this.copy(
+            avklarteSaksopplysninger = saksopplysningerSaksbehandler.ifEmpty { saksopplysningerAnnet }
+        )
     }
 
     fun vilkårsvurder(): YtelseVilkårData {
-        val avklarteFakta = avklarFakta()
-
-        if (avklarteFakta.isEmpty()) {
+        if (avklarteSaksopplysninger.isEmpty()) {
             return this.copy(
                 vurderinger = listOf(
                     Vurdering(
@@ -81,9 +82,9 @@ data class YtelseVilkårData(
             )
         }
 
-        require(avklarteFakta.isNotEmpty()) { "Må ha avklarte fakta for å vilkårsvurdere" }
+        require(avklarteSaksopplysninger.isNotEmpty()) { "Må ha avklarte fakta for å vilkårsvurdere" }
 
-        val vurderinger = avklarteFakta.map { saksopplysning -> saksopplysning.vilkårsvurder(vurderingsperiode) }
+        val vurderinger = avklarteSaksopplysninger.map { saksopplysning -> saksopplysning.vilkårsvurder(vurderingsperiode) }
 
         return this.copy(
             vurderinger = vurderinger,

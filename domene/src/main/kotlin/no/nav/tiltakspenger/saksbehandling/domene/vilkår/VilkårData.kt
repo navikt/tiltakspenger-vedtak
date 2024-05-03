@@ -35,10 +35,6 @@ data class VilkårData(
         )
     }
 
-    fun avklarFakta(): List<SaksopplysningInterface> {
-        return ytelse.avklarFakta()
-    }
-
     fun vilkårsvurder(): VilkårData {
         return this.copy(ytelse = ytelse.vilkårsvurder())
     }

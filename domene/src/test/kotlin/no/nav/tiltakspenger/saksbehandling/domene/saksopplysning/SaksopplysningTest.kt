@@ -48,9 +48,8 @@ internal class SaksopplysningTest {
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(listOf(sakbehandlerOpplysning)).behandling
 
-        behandlingMedSaksbehandler.avklarteSaksopplysninger().size shouldBe 2
-
         // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
+//        behandlingMedSaksbehandler.avklarteSaksopplysninger().size shouldBe 2
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 //

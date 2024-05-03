@@ -20,6 +20,7 @@ class YtelseSaksopplysningerWrapperTest {
             vurderingsperiode = Periode(fra = fom, til = tom),
             saksopplysningerSaksbehandler = emptyList(),
             saksopplysningerAnnet = emptyList(),
+            avklarteSaksopplysninger = emptyList(),
             vurderinger = emptyList(),
         )
     }
@@ -44,6 +45,7 @@ class YtelseSaksopplysningerWrapperTest {
                     ),
                 ),
                 saksopplysningerAnnet = emptyList(),
+                avklarteSaksopplysninger = emptyList(),
                 vurderinger = emptyList(),
             )
         }
@@ -69,6 +71,7 @@ class YtelseSaksopplysningerWrapperTest {
                     ),
                 ),
                 saksopplysningerAnnet = emptyList(),
+                avklarteSaksopplysninger = emptyList(),
                 vurderinger = emptyList(),
             )
         }
@@ -102,6 +105,7 @@ class YtelseSaksopplysningerWrapperTest {
                     ),
                 ),
                 saksopplysningerAnnet = emptyList(),
+                avklarteSaksopplysninger = emptyList(),
                 vurderinger = emptyList(),
             )
         }
@@ -135,6 +139,7 @@ class YtelseSaksopplysningerWrapperTest {
                     ),
                 ),
                 saksopplysningerAnnet = emptyList(),
+                avklarteSaksopplysninger = emptyList(),
                 vurderinger = emptyList(),
             )
         }
