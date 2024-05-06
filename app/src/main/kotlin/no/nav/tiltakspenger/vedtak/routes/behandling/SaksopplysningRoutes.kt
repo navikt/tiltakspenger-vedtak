@@ -10,23 +10,31 @@ import no.nav.tiltakspenger.felles.august
 import no.nav.tiltakspenger.felles.mai
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 
-fun mapInngangsvilkårDTO() {
-    InngangsvilkårDTO(
+fun mapInngangsvilkårDTO(): InngangsvilkårDTO {
+    return InngangsvilkårDTO(
         listOf(
-            TiltakDeltakelseDTO(
-                deltakelser = listOf(
-                    DeltakelseDTO(
+            TiltaksdeltagelseDTO(
+                deltagelsesperioder = listOf(
+                    DeltagelsesperiodeDTO(
                         periode = Periode(
                             fra = 1.mai(2024),
                             til = 15.august(2024),
                         ),
                         antallDager = 3,
-                        deltakelse = "Deltar",
+                        deltagelse = "Deltar",
+                    ),
+                    DeltagelsesperiodeDTO(
+                        periode = Periode(
+                            fra = 16.august(2024),
+                            til = 17.august(2024),
+                        ),
+                        antallDager = 3,
+                        deltagelse = "Deltar",
                     ),
                 ),
                 tiltaksvariant = "Gruppe AMO - Kjetils grill AS",
                 status = "Deltar",
-                tiltaksPeriode = Periode(fra = 1.mai(2024), til = 15.mai(2024)),
+                periode = Periode(fra = 1.mai(2024), til = 15.mai(2024)),
                 harSøkt = true,
                 girRett = true,
                 kilde = Kilde.KOMET,
@@ -36,7 +44,7 @@ fun mapInngangsvilkårDTO() {
 }
 
 fun Route.saksopplysningRoutes() {
-    get("$behandlingPath/{behandlingId}/inngangsvilkår") {
+    get("$behandlingPath/{behandlingId}/inngangsvilkar") {
         val dto = mapInngangsvilkårDTO()
         call.respond(status = HttpStatusCode.OK, dto)
     }
