@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 
@@ -21,6 +22,7 @@ interface Behandling {
     val saksbehandler: String?
     val utfallsperioder: List<Utfallsperiode>
     val søknader: List<Søknad>
+    val endringslogg: Endringslogg
 
     fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
 

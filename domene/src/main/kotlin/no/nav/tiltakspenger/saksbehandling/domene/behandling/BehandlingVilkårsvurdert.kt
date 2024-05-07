@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -22,6 +23,7 @@ data class BehandlingVilkårsvurdert(
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
+    override val endringslogg: Endringslogg,
 ) : Førstegangsbehandling {
 
     fun iverksett(): BehandlingIverksatt {
@@ -40,6 +42,7 @@ data class BehandlingVilkårsvurdert(
                     saksbehandler = "Automatisk",
                     beslutter = "Automatisk",
                     status = status,
+                    endringslogg = endringslogg,
                 )
         }
     }
@@ -62,6 +65,7 @@ data class BehandlingVilkårsvurdert(
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
                 status = status,
+                endringslogg = endringslogg,
             )
         }
     }
@@ -94,5 +98,6 @@ data class BehandlingVilkårsvurdert(
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
+        endringslogg = endringslogg,
     )
 }

@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
@@ -19,6 +20,7 @@ data class Sak(
     val behandlinger: List<Behandling>,
     val personopplysninger: SakPersonopplysninger,
     val vedtak: List<Vedtak>,
+    val endringslogg: Endringslogg = Endringslogg(sakDetaljer.id),
 ) : SakDetaljer by sakDetaljer {
     fun håndter(søknad: Søknad): Sak {
         val iverksatteBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>()

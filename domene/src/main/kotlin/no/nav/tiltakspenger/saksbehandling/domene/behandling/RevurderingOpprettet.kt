@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -18,11 +19,13 @@ data class RevurderingOpprettet(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val søknader: List<Søknad>,
+    override val endringslogg: Endringslogg,
 ) : Revurderingsbehandling {
     companion object {
         fun opprettRevurderingsbehandling(vedtak: Vedtak, navIdent: String): RevurderingOpprettet {
+            val behandlingId = BehandlingId.random()
             return RevurderingOpprettet(
-                id = BehandlingId.random(),
+                id = behandlingId,
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
@@ -30,6 +33,7 @@ data class RevurderingOpprettet(
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
+                endringslogg = Endringslogg(vedtak.sakId, behandlingId),
             )
         }
     }

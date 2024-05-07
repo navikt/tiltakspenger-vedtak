@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -34,19 +35,24 @@ internal class RevurderingOpprettetTest {
     private fun mockRevurderingOpprettet(
         tiltak: List<Tiltak> = emptyList(),
         saksbehandler: String? = null,
-    ): RevurderingOpprettet = RevurderingOpprettet(
-        id = BehandlingId.random(),
-        sakId = SakId.random(),
-        forrigeVedtak = mockk<Vedtak>(),
-        vurderingsperiode = Periode(
-            fra = LocalDate.MIN,
-            til = LocalDate.MAX,
-        ),
-        saksopplysninger = listOf(saksopplysning),
-        tiltak = tiltak,
-        saksbehandler = saksbehandler,
-        søknader = emptyList(),
-    )
+    ): RevurderingOpprettet {
+        val behandlingId = BehandlingId.random()
+        val sakId = SakId.random()
+        return RevurderingOpprettet(
+            id = behandlingId,
+            sakId = sakId,
+            forrigeVedtak = mockk<Vedtak>(),
+            vurderingsperiode = Periode(
+                fra = LocalDate.MIN,
+                til = LocalDate.MAX,
+            ),
+            saksopplysninger = listOf(saksopplysning),
+            tiltak = tiltak,
+            saksbehandler = saksbehandler,
+            søknader = emptyList(),
+            endringslogg = Endringslogg(sakId, behandlingId),
+        )
+    }
 
     private fun mockTiltak(id: String = "test"): Tiltak = Tiltak(
         id = id,

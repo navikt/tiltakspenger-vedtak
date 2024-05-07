@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -22,6 +23,7 @@ data class RevurderingTilBeslutter(
     val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String?,
     val status: BehandlingStatus,
+    override val endringslogg: Endringslogg,
 ) : Revurderingsbehandling {
 
     fun iverksett(utøvendeBeslutter: Saksbehandler): RevurderingIverksatt {
@@ -45,6 +47,7 @@ data class RevurderingTilBeslutter(
                 beslutter = beslutter,
                 status = status,
                 søknader = forrigeVedtak.behandling.søknader,
+                endringslogg = endringslogg,
             )
         }
     }
@@ -64,6 +67,7 @@ data class RevurderingTilBeslutter(
             saksbehandler = saksbehandler,
             status = BehandlingStatus.Innvilget,
             søknader = søknader,
+            endringslogg = endringslogg,
         )
     }
 
@@ -88,5 +92,6 @@ data class RevurderingTilBeslutter(
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,
+            endringslogg = endringslogg,
         )
 }

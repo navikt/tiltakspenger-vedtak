@@ -18,8 +18,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.repository.endringslogg.EndringsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -35,6 +37,7 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val endringsloggDAO: EndringsloggDAO = EndringsloggDAO(),
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -143,6 +146,7 @@ internal class PostgresBehandlingRepo(
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
+            endringsloggDAO.lagre(behandling.sakId, behandling.id, behandling.endringslogg, tx)
             when (behandling) {
                 is BehandlingIverksatt -> {
                     vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
@@ -247,6 +251,7 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
+                endringslogg = Endringslogg(sakId, id),
             )
 
             "Vilkårsvurdert" -> {
@@ -267,6 +272,7 @@ internal class PostgresBehandlingRepo(
                     saksbehandler = saksbehandler,
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     status = behandlingVilkårsvurdertStatus,
+                    endringslogg = Endringslogg(sakId, id),
                 )
             }
 
@@ -288,6 +294,7 @@ internal class PostgresBehandlingRepo(
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
                     beslutter = beslutter,
                     status = behandlingStatus,
+                    endringslogg = Endringslogg(sakId, id),
                 )
             }
 
@@ -309,6 +316,7 @@ internal class PostgresBehandlingRepo(
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
                     beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
                     status = behandlingStatus,
+                    endringslogg = Endringslogg(sakId, id),
                 )
             }
 

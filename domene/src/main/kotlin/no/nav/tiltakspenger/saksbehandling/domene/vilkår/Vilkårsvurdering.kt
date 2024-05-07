@@ -63,6 +63,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,
         status = status,
+        endringslogg = endringslogg,
     )
 }
 

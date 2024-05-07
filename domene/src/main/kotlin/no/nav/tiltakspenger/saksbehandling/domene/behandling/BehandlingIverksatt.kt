@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -20,6 +21,7 @@ data class BehandlingIverksatt(
     val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String,
     val status: BehandlingStatus,
+    override val endringslogg: Endringslogg,
 ) : Førstegangsbehandling {
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
@@ -39,6 +41,7 @@ data class BehandlingIverksatt(
                 saksopplysninger = oppdatertSaksopplysningListe,
                 tiltak = this.tiltak,
                 saksbehandler = null,
+                endringslogg = endringslogg.info("noe", null),
             ).vilkårsvurder()
             LeggTilSaksopplysningRespons(
                 behandling = nyBehandling,

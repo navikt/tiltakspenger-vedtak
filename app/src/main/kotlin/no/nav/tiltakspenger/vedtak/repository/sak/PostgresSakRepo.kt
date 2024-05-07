@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.endringslogg.EndringsloggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -28,6 +29,7 @@ internal class PostgresSakRepo(
     private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
     private val personopplysningerRepo: PostgresPersonopplysningerRepo = PostgresPersonopplysningerRepo(),
     private val vedtakRepo: VedtakRepo = VedtakRepoImpl(),
+    private val endringsloggDAO: EndringsloggDAO = EndringsloggDAO(),
 ) : SakRepo {
     override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -137,6 +139,7 @@ internal class PostgresSakRepo(
                     personopplysninger = sak.personopplysninger,
                     txSession = txSession,
                 )
+                endringsloggDAO.lagre(sak.id, null, sak.endringslogg, txSession)
                 opprettetSak
             }.also { sak ->
                 sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {

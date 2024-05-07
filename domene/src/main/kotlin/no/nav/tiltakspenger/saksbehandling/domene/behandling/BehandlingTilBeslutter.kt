@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -20,6 +21,7 @@ data class BehandlingTilBeslutter(
     val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String?,
     val status: BehandlingStatus,
+    override val endringslogg: Endringslogg,
 ) : Førstegangsbehandling {
 
     fun iverksett(utøvendeBeslutter: Saksbehandler): BehandlingIverksatt {
@@ -43,6 +45,7 @@ data class BehandlingTilBeslutter(
                 saksbehandler = saksbehandler,
                 beslutter = beslutter,
                 status = status,
+                endringslogg = endringslogg,
             )
         }
     }
@@ -61,6 +64,7 @@ data class BehandlingTilBeslutter(
             utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
             status = BehandlingStatus.Innvilget,
+            endringslogg = endringslogg,
         )
     }
 
@@ -86,5 +90,6 @@ data class BehandlingTilBeslutter(
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
+        endringslogg = endringslogg,
     )
 }

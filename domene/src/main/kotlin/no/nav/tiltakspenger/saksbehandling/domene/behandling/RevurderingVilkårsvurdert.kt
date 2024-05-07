@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -20,6 +21,7 @@ data class RevurderingVilkårsvurdert(
     override val søknader: List<Søknad>,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
+    override val endringslogg: Endringslogg,
 ) : Revurderingsbehandling {
 
     fun iverksett(): RevurderingIverksatt {
@@ -39,6 +41,7 @@ data class RevurderingVilkårsvurdert(
                     beslutter = "Automatisk",
                     status = status,
                     søknader = søknader,
+                    endringslogg = endringslogg,
                 )
         }
     }
@@ -62,6 +65,7 @@ data class RevurderingVilkårsvurdert(
                 status = status,
                 forrigeVedtak = forrigeVedtak,
                 søknader = søknader,
+                endringslogg = endringslogg,
             )
         }
     }
@@ -93,5 +97,6 @@ data class RevurderingVilkårsvurdert(
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,
+            endringslogg = endringslogg,
         )
 }

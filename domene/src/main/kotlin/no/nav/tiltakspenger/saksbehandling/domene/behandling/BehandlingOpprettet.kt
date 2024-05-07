@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -18,13 +19,15 @@ data class BehandlingOpprettet(
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
+    override val endringslogg: Endringslogg,
 ) : Førstegangsbehandling {
 
     companion object {
 
         fun opprettBehandling(sakId: SakId, søknad: Søknad): BehandlingOpprettet {
+            val behandlingId = BehandlingId.random()
             return BehandlingOpprettet(
-                id = BehandlingId.random(),
+                id = behandlingId,
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
@@ -33,6 +36,7 @@ data class BehandlingOpprettet(
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
+                endringslogg = Endringslogg(sakId, behandlingId),
             )
         }
     }

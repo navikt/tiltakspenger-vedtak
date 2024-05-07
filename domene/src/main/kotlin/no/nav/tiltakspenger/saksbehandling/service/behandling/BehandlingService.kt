@@ -8,10 +8,16 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 
-interface BehandlingService {
+interface BehandlingService : BehandlingLeseService, BehandlingSkriveService
+
+interface BehandlingLeseService {
     fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling?
     fun hentBehandling(behandlingId: BehandlingId): Behandling
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
+    fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
+}
+
+interface BehandlingSkriveService {
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
@@ -20,6 +26,5 @@ interface BehandlingService {
     suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler)
     fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
-    fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling
 }

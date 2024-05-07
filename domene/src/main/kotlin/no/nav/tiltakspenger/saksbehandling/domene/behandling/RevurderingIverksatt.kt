@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.saksbehandling.domene.endringslogg.Endringslogg
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -22,6 +23,7 @@ data class RevurderingIverksatt(
     val vilkårsvurderinger: List<Vurdering>,
     val beslutter: String,
     val status: BehandlingStatus,
+    override val endringslogg: Endringslogg,
 ) : Revurderingsbehandling {
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
@@ -32,8 +34,9 @@ data class RevurderingIverksatt(
                 erEndret = false,
             )
         } else {
+            val behandlingId = BehandlingId.random()
             val nyBehandling = RevurderingOpprettet(
-                id = BehandlingId.random(),
+                id = behandlingId,
                 sakId = this.sakId,
                 søknader = listOf(this.søknad()),
                 vurderingsperiode = this.vurderingsperiode,
@@ -41,6 +44,7 @@ data class RevurderingIverksatt(
                 tiltak = this.tiltak,
                 saksbehandler = null,
                 forrigeVedtak = this.forrigeVedtak,
+                endringslogg = endringslogg,
             ).vilkårsvurder()
             LeggTilSaksopplysningRespons(
                 behandling = nyBehandling,
