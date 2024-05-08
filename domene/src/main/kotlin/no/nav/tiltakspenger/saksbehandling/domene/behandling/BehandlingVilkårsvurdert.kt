@@ -66,7 +66,7 @@ data class BehandlingVilkårsvurdert(
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert =
         this.spolTilbake().leggTilSøknad(søknad = søknad)
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): BehandlingVilkårsvurdert =
+    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): BehandlingVilkårsvurdert =
         this.spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =

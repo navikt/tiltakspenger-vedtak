@@ -30,9 +30,9 @@ data class BehandlingOpprettet(
                 YtelseVilkårData(
                     vilkår = it,
                     vurderingsperiode = vurderingsperiode,
-                    saksopplysningerSaksbehandler = emptyList(),
-                    saksopplysningerAnnet = emptyList(),
-                    avklarteSaksopplysninger = emptyList(),
+                    saksopplysningerSaksbehandler = null,
+                    saksopplysningerAnnet = null,
+                    avklarteSaksopplysninger = null,
                     vurderinger = emptyList(),
                 )
             }
@@ -69,7 +69,7 @@ data class BehandlingOpprettet(
         ).vilkårsvurder()
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): BehandlingVilkårsvurdert =
+    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): BehandlingVilkårsvurdert =
         this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder()
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =

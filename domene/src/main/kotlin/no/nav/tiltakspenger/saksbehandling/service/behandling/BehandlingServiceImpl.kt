@@ -65,10 +65,9 @@ class BehandlingServiceImpl(
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
         // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
-        val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(emptyList())
-
-        behandlingRepo.lagre(behandlingRespons)
+//        val behandlingRespons = hentBehandling(behandlingId)
+//            .leggTilSaksopplysning(emptyList())
+//        behandlingRepo.lagre(behandlingRespons)
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {

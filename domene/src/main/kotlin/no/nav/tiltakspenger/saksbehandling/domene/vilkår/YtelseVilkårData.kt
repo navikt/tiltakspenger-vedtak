@@ -1,48 +1,59 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.felles.dekkerHele
-import no.nav.tiltakspenger.felles.erInnenfor
-import no.nav.tiltakspenger.felles.inneholderOverlapp
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.*
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde.TILTAKSPENGER_VEDTAK
 
 data class YtelseVilkårData(
     val vilkår: Vilkår,
     val vurderingsperiode: Periode,
-    val saksopplysningerSaksbehandler: List<YtelseSaksopplysning>,
-    val saksopplysningerAnnet: List<YtelseSaksopplysning>,
-    val avklarteSaksopplysninger: List<YtelseSaksopplysning>,
+    val saksopplysningerSaksbehandler: YtelseSaksopplysning?,
+    val saksopplysningerAnnet: YtelseSaksopplysning?,
+    val avklarteSaksopplysninger: YtelseSaksopplysning?,
     val vurderinger: List<Vurdering>,
 ) {
 
-    fun ikkeInnhentet(): Boolean {
-        return (saksopplysningerSaksbehandler.isEmpty() && saksopplysningerAnnet.isEmpty())
+    private fun måHaSaksopplysninger() {
+        require(saksopplysningerSaksbehandler != null || saksopplysningerAnnet != null)
+        { "Må ha saksopplysninger" }
+    }
+
+    fun harSaksopplysninger(): Boolean { // todo: finn ut hva man vil med denne og endre navngivning ++
+        return (saksopplysningerSaksbehandler != null || saksopplysningerAnnet != null)
     }
 
     fun harEttUniktVilkår(): Boolean {
-        return (saksopplysningerSaksbehandler.all { it.vilkår == vilkår }
-            && saksopplysningerAnnet.all { it.vilkår == vilkår })
+        return if (saksopplysningerSaksbehandler != null) {
+            saksopplysningerSaksbehandler.vilkår == vilkår
+        } else if (saksopplysningerAnnet != null) {
+            saksopplysningerAnnet.vilkår == vilkår
+        } else {
+            false
+        }
     }
 
     init {
-        require(harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
-
-        require(!saksopplysningerSaksbehandler.map { it.periode }.inneholderOverlapp()) {
-            "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
+        if (harSaksopplysninger()){
+            require(harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
         }
 
-        require(saksopplysningerSaksbehandler.map { it.periode }.dekkerHele(vurderingsperiode)) { // Misvisende metodenavn
-            "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
-        }
+        if (saksopplysningerSaksbehandler != null) {
+            require(!saksopplysningerSaksbehandler.inneholderOverlapp()) {
+                "Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder"
+            }
 
-        require(saksopplysningerSaksbehandler.map { it.periode }.erInnenfor(vurderingsperiode)) {
-            "Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden"
+            require(saksopplysningerSaksbehandler.dekkerHele(vurderingsperiode)) { // Misvisende metodenavn
+                "Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret"
+            }
+
+            require(saksopplysningerSaksbehandler.erInnenfor(vurderingsperiode)) {
+                "Vi kan ikke vilkårsvurdere saksopplysninger som går utenfor vurderingsperioden"
+            }
         }
     }
 
-    fun leggTilSaksopplysning(saksopplysninger: List<YtelseSaksopplysning>): YtelseVilkårData {
-        val kilde = saksopplysninger.first().kilde
+    fun leggTilSaksopplysning(saksopplysninger: YtelseSaksopplysning): YtelseVilkårData {
+        val kilde = saksopplysninger.kilde
 
         return if (kilde == Kilde.SAKSB) {
             this.copy(
@@ -57,17 +68,19 @@ data class YtelseVilkårData(
     }
 
     fun avklarFakta(): YtelseVilkårData {
-        if (saksopplysningerSaksbehandler.isEmpty() && saksopplysningerAnnet.isEmpty()) {
+        if (!harSaksopplysninger()) {
             emptyList<YtelseSaksopplysning>()
         }
 
+        måHaSaksopplysninger()
+
         return this.copy(
-            avklarteSaksopplysninger = saksopplysningerSaksbehandler.ifEmpty { saksopplysningerAnnet }
+            avklarteSaksopplysninger = saksopplysningerSaksbehandler ?: saksopplysningerAnnet,
         )
     }
 
     fun vilkårsvurder(): YtelseVilkårData {
-        if (avklarteSaksopplysninger.isEmpty()) {
+        if (avklarteSaksopplysninger == null) {
             return this.copy(
                 vurderinger = listOf(
                     Vurdering(
@@ -82,9 +95,9 @@ data class YtelseVilkårData(
             )
         }
 
-        require(avklarteSaksopplysninger.isNotEmpty()) { "Må ha avklarte fakta for å vilkårsvurdere" }
+        require(!avklarteSaksopplysninger.erTom()) { "Må ha avklarte fakta for å vilkårsvurdere" }
 
-        val vurderinger = avklarteSaksopplysninger.map { saksopplysning -> saksopplysning.vilkårsvurder(vurderingsperiode) }
+        val vurderinger = avklarteSaksopplysninger.vilkårsvurder()
 
         return this.copy(
             vurderinger = vurderinger,

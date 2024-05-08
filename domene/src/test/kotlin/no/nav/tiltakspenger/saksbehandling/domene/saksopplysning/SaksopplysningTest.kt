@@ -24,29 +24,37 @@ internal class SaksopplysningTest {
     fun `sjekk at oppdatering av saksopplysninger fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
             YtelseSaksopplysning(
-                periode = Periode(1.januar(2023), 31.mars(2023)),
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
-                harYtelse = false,
                 saksbehandler = null,
+                subperioder = listOf(
+                    HarYtelsePeriode(
+                        periode = Periode(1.januar(2023), 31.mars(2023)),
+                        harYtelse = false,
+                    ),
+                ),
             )
 
         val nySaksopplysning =
             YtelseSaksopplysning(
-                periode = Periode(1.januar(2023), 31.mars(2023)),
                 kilde = Kilde.ARENA,
                 vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
-                harYtelse = true,
                 saksbehandler = null,
+                subperioder = listOf(
+                    HarYtelsePeriode(
+                        periode = Periode(1.januar(2023), 31.mars(2023)),
+                        harYtelse = true,
+                    ),
+                ),
             )
 
         val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.vilkårData.ytelse.foreldrepenger shouldNotBe null
-        behandling.vilkårData.ytelse.foreldrepenger.ikkeInnhentet() shouldBe true
+        behandling.vilkårData.ytelse.foreldrepenger.harSaksopplysninger() shouldBe true
 
-        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(listOf(sakbehandlerOpplysning))
+        val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning)
 
         // TODO: Dette skal fikses når vi vet hva denne testen skal være (se disabled-todo over testen)
 //        behandlingMedSaksbehandler.avklarteSaksopplysninger().size shouldBe 2

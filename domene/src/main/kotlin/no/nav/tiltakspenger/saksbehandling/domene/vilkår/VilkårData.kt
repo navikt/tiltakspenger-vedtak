@@ -47,10 +47,10 @@ data class VilkårData(
         return ytelse.vurderinger() // + vilkårsvurderBarn()
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): VilkårData {
-        val vilkår = saksopplysning.first().vilkår
+    fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): VilkårData {
+        val vilkår = saksopplysning.vilkår
         return if (vilkår in YtelseVilkår.ytelser()) {
-            this.copy(ytelse = ytelse.leggTilSaksopplysning(saksopplysning as List<YtelseSaksopplysning>))
+            this.copy(ytelse = ytelse.leggTilSaksopplysning(saksopplysning as YtelseSaksopplysning))
         } else {
             throw IllegalArgumentException("Kan ikke legge til saksopplysning for $vilkår")
         }

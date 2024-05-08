@@ -36,7 +36,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): Behandling {
+    fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): Behandling {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 

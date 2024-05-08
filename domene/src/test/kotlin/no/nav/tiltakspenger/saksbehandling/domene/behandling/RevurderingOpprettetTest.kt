@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelsePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -25,9 +26,13 @@ internal class RevurderingOpprettetTest {
     private val saksopplysning = YtelseSaksopplysning(
         vilkår = Vilkår.AAP,
         kilde = Kilde.PESYS,
-        periode = Periode(LocalDate.MIN, LocalDate.MAX),
-        harYtelse = true,
         detaljer = "test",
+        subperioder = listOf(
+            HarYtelsePeriode(
+                periode = Periode(LocalDate.MIN, LocalDate.MAX),
+                harYtelse = true,
+            ),
+        ),
     )
 
     private fun mockRevurderingOpprettet(
@@ -74,7 +79,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
-        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(listOf(saksopplysning))
+        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(saksopplysning)
         assertEquals(revurderingOpprettet.vilkårsvurder(), leggTilSaksopplysningRespons)
     }
 

@@ -67,7 +67,7 @@ data class RevurderingVilkårsvurdert(
         }
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): RevurderingVilkårsvurdert =
+    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): RevurderingVilkårsvurdert =
         spolTilbake().leggTilSaksopplysning(saksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling =

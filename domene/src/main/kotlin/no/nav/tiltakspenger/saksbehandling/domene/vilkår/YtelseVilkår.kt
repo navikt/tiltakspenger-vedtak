@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelsePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 
@@ -28,7 +29,6 @@ data class YtelseVilkår(
     val tiltakspenger: YtelseVilkårData,
     val uføretrygd: YtelseVilkårData,
     val etterlønn: YtelseVilkårData,
-    val tiltakdeltakelse: YtelseVilkårData,
 ) {
     companion object {
         fun ytelser() = listOf(
@@ -54,63 +54,62 @@ data class YtelseVilkår(
             Vilkår.TILTAKSPENGER,
             Vilkår.UFØRETRYGD,
             Vilkår.ETTERLØNN,
-            Vilkår.TILTAKDELTAKELSE,
         )
 
         fun opprettFraSøknad(søknad: Søknad): YtelseVilkår {
             val vurderingsperiode = søknad.vurderingsperiode()
             return YtelseVilkår(
-                kvp = periodeSpørsmålVilkårFraSøknad(Vilkår.KVP, vurderingsperiode, søknad.kvp),
+                kvp = periodeSpørsmålVilkårFraSøknad(Vilkår.KVP, vurderingsperiode, søknad.kvp).avklarFakta(),
                 alderspensjon = fraOgMedSpørsmålVilkårFraSøknad(
                     Vilkår.ALDERSPENSJON,
                     vurderingsperiode,
                     søknad.alderspensjon,
-                ),
+                ).avklarFakta(),
                 gjenlevendepensjon = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.GJENLEVENDEPENSJON,
                     vurderingsperiode,
                     søknad.gjenlevendepensjon,
-                ),
+                ).avklarFakta(),
                 institusjonsopphold = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.INSTITUSJONSOPPHOLD,
                     vurderingsperiode,
                     søknad.institusjon,
-                ),
+                ).avklarFakta(),
                 introprogrammet = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.INTROPROGRAMMET,
                     vurderingsperiode,
                     søknad.intro,
-                ),
+                ).avklarFakta(),
                 jobbsjansen = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.JOBBSJANSEN,
                     vurderingsperiode,
                     søknad.jobbsjansen,
-                ),
+                ).avklarFakta(),
                 pensjonsinntekt = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.PENSJONSINNTEKT,
                     vurderingsperiode,
                     søknad.trygdOgPensjon,
-                ),
+                ).avklarFakta(),
                 supplerendestønadalder = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.SUPPLERENDESTØNADALDER,
                     vurderingsperiode,
                     søknad.supplerendeStønadAlder,
-                ),
+                ).avklarFakta(),
                 supplerendestønadflyktning = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.SUPPLERENDESTØNADFLYKTNING,
                     vurderingsperiode,
                     søknad.supplerendeStønadFlyktning,
-                ),
+                ).avklarFakta(),
                 sykepenger = periodeSpørsmålVilkårFraSøknad(
                     Vilkår.SYKEPENGER,
                     vurderingsperiode,
                     søknad.sykepenger,
-                ),
+                ).avklarFakta(),
                 etterlønn = jaNeiSpørsmålVilkårFraSøknad(
                     Vilkår.ETTERLØNN,
                     vurderingsperiode,
                     søknad.etterlønn,
-                ),
+                ).avklarFakta(),
 
                 aap = ikkeFraSøknad(Vilkår.AAP, vurderingsperiode),
                 dagpenger = ikkeFraSøknad(Vilkår.DAGPENGER, vurderingsperiode),
@@ -123,7 +122,6 @@ data class YtelseVilkår(
                 svangerskapspenger = ikkeFraSøknad(Vilkår.SVANGERSKAPSPENGER, vurderingsperiode),
                 tiltakspenger = ikkeFraSøknad(Vilkår.TILTAKSPENGER, vurderingsperiode),
                 uføretrygd = ikkeFraSøknad(Vilkår.UFØRETRYGD, vurderingsperiode),
-                tiltakdeltakelse = ikkeFraSøknad(Vilkår.TILTAKDELTAKELSE, vurderingsperiode),
             )
         }
 
@@ -183,24 +181,23 @@ data class YtelseVilkår(
                 svangerskapspenger = ikkeFraSøknad(Vilkår.SVANGERSKAPSPENGER, vurderingsperiode),
                 tiltakspenger = ikkeFraSøknad(Vilkår.TILTAKSPENGER, vurderingsperiode),
                 uføretrygd = ikkeFraSøknad(Vilkår.UFØRETRYGD, vurderingsperiode),
-                tiltakdeltakelse = ikkeFraSøknad(Vilkår.TILTAKDELTAKELSE, vurderingsperiode),
             )
         }
     }
 
     fun leggTilSøknad(søknad: Søknad): YtelseVilkår {
         val søknadssaksopplysninger = opprettFraSøknad(søknad)
-        alderspensjon.leggTilSaksopplysning(søknadssaksopplysninger.alderspensjon.saksopplysningerAnnet)
-        gjenlevendepensjon.leggTilSaksopplysning(søknadssaksopplysninger.gjenlevendepensjon.saksopplysningerAnnet)
-        institusjonsopphold.leggTilSaksopplysning(søknadssaksopplysninger.institusjonsopphold.saksopplysningerAnnet)
-        introprogrammet.leggTilSaksopplysning(søknadssaksopplysninger.introprogrammet.saksopplysningerAnnet)
-        jobbsjansen.leggTilSaksopplysning(søknadssaksopplysninger.jobbsjansen.saksopplysningerAnnet)
-        kvp.leggTilSaksopplysning(søknadssaksopplysninger.kvp.saksopplysningerAnnet)
-        pensjonsinntekt.leggTilSaksopplysning(søknadssaksopplysninger.pensjonsinntekt.saksopplysningerAnnet)
-        supplerendestønadalder.leggTilSaksopplysning(søknadssaksopplysninger.supplerendestønadalder.saksopplysningerAnnet)
-        supplerendestønadflyktning.leggTilSaksopplysning(søknadssaksopplysninger.supplerendestønadflyktning.saksopplysningerAnnet)
-        sykepenger.leggTilSaksopplysning(søknadssaksopplysninger.sykepenger.saksopplysningerAnnet)
-        etterlønn.leggTilSaksopplysning(søknadssaksopplysninger.etterlønn.saksopplysningerAnnet)
+        alderspensjon.leggTilSaksopplysning(søknadssaksopplysninger.alderspensjon.saksopplysningerAnnet!!)
+        gjenlevendepensjon.leggTilSaksopplysning(søknadssaksopplysninger.gjenlevendepensjon.saksopplysningerAnnet!!)
+        institusjonsopphold.leggTilSaksopplysning(søknadssaksopplysninger.institusjonsopphold.saksopplysningerAnnet!!)
+        introprogrammet.leggTilSaksopplysning(søknadssaksopplysninger.introprogrammet.saksopplysningerAnnet!!)
+        jobbsjansen.leggTilSaksopplysning(søknadssaksopplysninger.jobbsjansen.saksopplysningerAnnet!!)
+        kvp.leggTilSaksopplysning(søknadssaksopplysninger.kvp.saksopplysningerAnnet!!)
+        pensjonsinntekt.leggTilSaksopplysning(søknadssaksopplysninger.pensjonsinntekt.saksopplysningerAnnet!!)
+        supplerendestønadalder.leggTilSaksopplysning(søknadssaksopplysninger.supplerendestønadalder.saksopplysningerAnnet!!)
+        supplerendestønadflyktning.leggTilSaksopplysning(søknadssaksopplysninger.supplerendestønadflyktning.saksopplysningerAnnet!!)
+        sykepenger.leggTilSaksopplysning(søknadssaksopplysninger.sykepenger.saksopplysningerAnnet!!)
+        etterlønn.leggTilSaksopplysning(søknadssaksopplysninger.etterlønn.saksopplysningerAnnet!!)
         return this
     }
 
@@ -228,7 +225,6 @@ data class YtelseVilkår(
             tiltakspenger = tiltakspenger.vilkårsvurder(),
             uføretrygd = uføretrygd.vilkårsvurder(),
             etterlønn = etterlønn.vilkårsvurder(),
-            tiltakdeltakelse = tiltakdeltakelse.vilkårsvurder()
         )
     }
 
@@ -254,36 +250,74 @@ data class YtelseVilkår(
             sykepenger.vilkårsvurder().vurderinger +
             tiltakspenger.vilkårsvurder().vurderinger +
             uføretrygd.vilkårsvurder().vurderinger +
-            etterlønn.vilkårsvurder().vurderinger +
-            tiltakdeltakelse.vilkårsvurder().vurderinger
+            etterlønn.vilkårsvurder().vurderinger
     }
 
-    fun leggTilSaksopplysning(saksopplysning: List<YtelseSaksopplysning>): YtelseVilkår {
-        val vilkår = saksopplysning.first().vilkår
+    fun leggTilSaksopplysning(saksopplysning: YtelseSaksopplysning): YtelseVilkår {
+        val vilkår = saksopplysning.vilkår
         return when (vilkår) {
             Vilkår.AAP -> this.copy(aap = aap.leggTilSaksopplysning(saksopplysning))
             Vilkår.ALDERSPENSJON -> this.copy(alderspensjon = alderspensjon.leggTilSaksopplysning(saksopplysning))
             Vilkår.DAGPENGER -> this.copy(dagpenger = dagpenger.leggTilSaksopplysning(saksopplysning))
             Vilkår.FORELDREPENGER -> this.copy(foreldrepenger = foreldrepenger.leggTilSaksopplysning(saksopplysning))
-            Vilkår.GJENLEVENDEPENSJON -> this.copy(gjenlevendepensjon = gjenlevendepensjon.leggTilSaksopplysning(saksopplysning))
-            Vilkår.INSTITUSJONSOPPHOLD -> this.copy(institusjonsopphold = institusjonsopphold.leggTilSaksopplysning(saksopplysning))
+            Vilkår.GJENLEVENDEPENSJON -> this.copy(
+                gjenlevendepensjon = gjenlevendepensjon.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
+            Vilkår.INSTITUSJONSOPPHOLD -> this.copy(
+                institusjonsopphold = institusjonsopphold.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
             Vilkår.INTROPROGRAMMET -> this.copy(introprogrammet = introprogrammet.leggTilSaksopplysning(saksopplysning))
             Vilkår.JOBBSJANSEN -> this.copy(jobbsjansen = jobbsjansen.leggTilSaksopplysning(saksopplysning))
             Vilkår.KVP -> this.copy(kvp = kvp.leggTilSaksopplysning(saksopplysning))
             Vilkår.OMSORGSPENGER -> this.copy(omsorgspenger = omsorgspenger.leggTilSaksopplysning(saksopplysning))
-            Vilkår.OPPLÆRINGSPENGER -> this.copy(opplæringspenger = opplæringspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.OPPLÆRINGSPENGER -> this.copy(
+                opplæringspenger = opplæringspenger.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
             Vilkår.OVERGANGSSTØNAD -> this.copy(overgangsstønad = overgangsstønad.leggTilSaksopplysning(saksopplysning))
             Vilkår.PENSJONSINNTEKT -> this.copy(pensjonsinntekt = pensjonsinntekt.leggTilSaksopplysning(saksopplysning))
-            Vilkår.PLEIEPENGER_NÆRSTÅENDE -> this.copy(pleiepengerNærstående = pleiepengerNærstående.leggTilSaksopplysning(saksopplysning))
-            Vilkår.PLEIEPENGER_SYKT_BARN -> this.copy(pleiepengerSyktBarn = pleiepengerSyktBarn.leggTilSaksopplysning(saksopplysning))
-            Vilkår.SUPPLERENDESTØNADALDER -> this.copy(supplerendestønadalder = supplerendestønadalder.leggTilSaksopplysning(saksopplysning))
-            Vilkår.SUPPLERENDESTØNADFLYKTNING -> this.copy(supplerendestønadflyktning = supplerendestønadflyktning.leggTilSaksopplysning(saksopplysning))
-            Vilkår.SVANGERSKAPSPENGER -> this.copy(svangerskapspenger = svangerskapspenger.leggTilSaksopplysning(saksopplysning))
+            Vilkår.PLEIEPENGER_NÆRSTÅENDE -> this.copy(
+                pleiepengerNærstående = pleiepengerNærstående.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
+            Vilkår.PLEIEPENGER_SYKT_BARN -> this.copy(
+                pleiepengerSyktBarn = pleiepengerSyktBarn.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
+            Vilkår.SUPPLERENDESTØNADALDER -> this.copy(
+                supplerendestønadalder = supplerendestønadalder.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
+            Vilkår.SUPPLERENDESTØNADFLYKTNING -> this.copy(
+                supplerendestønadflyktning = supplerendestønadflyktning.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
+            Vilkår.SVANGERSKAPSPENGER -> this.copy(
+                svangerskapspenger = svangerskapspenger.leggTilSaksopplysning(
+                    saksopplysning,
+                ),
+            )
+
             Vilkår.SYKEPENGER -> this.copy(sykepenger = sykepenger.leggTilSaksopplysning(saksopplysning))
             Vilkår.TILTAKSPENGER -> this.copy(tiltakspenger = tiltakspenger.leggTilSaksopplysning(saksopplysning))
             Vilkår.UFØRETRYGD -> this.copy(uføretrygd = uføretrygd.leggTilSaksopplysning(saksopplysning))
             Vilkår.ETTERLØNN -> this.copy(etterlønn = etterlønn.leggTilSaksopplysning(saksopplysning))
-            Vilkår.TILTAKDELTAKELSE -> this.copy(tiltakdeltakelse = tiltakdeltakelse.leggTilSaksopplysning(saksopplysning))
             else -> {
                 throw IllegalArgumentException("Vilkåret ($vilkår) tilhører ikke en ytelseSaksopplysning")
             }
@@ -295,9 +329,9 @@ private fun ikkeFraSøknad(vilkår: Vilkår, vurderingsperiode: Periode): Ytelse
     return YtelseVilkårData(
         vilkår = vilkår,
         vurderingsperiode = vurderingsperiode,
-        saksopplysningerSaksbehandler = emptyList(),
-        saksopplysningerAnnet = emptyList(),
-        avklarteSaksopplysninger = emptyList(),
+        saksopplysningerSaksbehandler = null,
+        saksopplysningerAnnet = null,
+        avklarteSaksopplysninger = null,
         vurderinger = emptyList(),
     )
 }
@@ -308,15 +342,16 @@ private fun periodeSpørsmålVilkårFraSøknad(
     periodeSpm: Søknad.PeriodeSpm,
 ): YtelseVilkårData {
     return YtelseVilkårData(
-        vilkår = vilkår, vurderingsperiode, emptyList(),
-        listOf(
-            lagSaksopplysningFraPeriodespørsmål(
-                vilkår = vilkår,
-                periodeSpm = periodeSpm,
-                periode = vurderingsperiode,
-            ),
+        vilkår = vilkår,
+        vurderingsperiode = vurderingsperiode,
+        saksopplysningerSaksbehandler = null,
+        saksopplysningerAnnet =
+        lagSaksopplysningFraPeriodespørsmål(
+            vilkår = vilkår,
+            periodeSpm = periodeSpm,
+            periode = vurderingsperiode,
         ),
-        avklarteSaksopplysninger = emptyList(),
+        avklarteSaksopplysninger = null,
         vurderinger = emptyList(),
     )
 }
@@ -327,15 +362,15 @@ private fun jaNeiSpørsmålVilkårFraSøknad(
     jaNeiSpm: Søknad.JaNeiSpm,
 ): YtelseVilkårData {
     return YtelseVilkårData(
-        vilkår = vilkår, vurderingsperiode, emptyList(),
-        listOf(
-            lagSaksopplysningFraJaNeiSpørsmål(
-                vilkår = vilkår,
-                jaNeiSpm = jaNeiSpm,
-                periode = vurderingsperiode,
-            ),
+        vilkår = vilkår,
+        vurderingsperiode = vurderingsperiode,
+        saksopplysningerSaksbehandler = null,
+        saksopplysningerAnnet = lagSaksopplysningFraJaNeiSpørsmål(
+            vilkår = vilkår,
+            jaNeiSpm = jaNeiSpm,
+            periode = vurderingsperiode,
         ),
-        avklarteSaksopplysninger = emptyList(),
+        avklarteSaksopplysninger = null,
         vurderinger = emptyList(),
     )
 }
@@ -346,15 +381,17 @@ private fun fraOgMedSpørsmålVilkårFraSøknad(
     fraOgMedSpm: Søknad.FraOgMedDatoSpm,
 ): YtelseVilkårData {
     return YtelseVilkårData(
-        vilkår = vilkår, vurderingsperiode, emptyList(),
-        listOf(
-            lagSaksopplysningFraFraOgMedDatospørsmål(
-                vilkår = vilkår,
-                fraOgMedDatoSpm = fraOgMedSpm,
-                periode = vurderingsperiode,
-            ),
+        vilkår = vilkår,
+        vurderingsperiode = vurderingsperiode,
+        saksopplysningerSaksbehandler = null,
+        saksopplysningerAnnet =
+        lagSaksopplysningFraFraOgMedDatospørsmål(
+            vilkår = vilkår,
+            fraOgMedDatoSpm = fraOgMedSpm,
+            periode = vurderingsperiode,
         ),
-        avklarteSaksopplysninger = emptyList(),
+
+        avklarteSaksopplysninger = null,
         vurderinger = emptyList(),
     )
 }
@@ -365,17 +402,21 @@ private fun lagSaksopplysningFraPeriodespørsmål(
     periode: Periode,
 ): YtelseSaksopplysning {
     return YtelseSaksopplysning(
-        periode = Periode(
-            fra = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
-            til = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
-        ),
         vilkår = vilkår,
         kilde = Kilde.SØKNAD,
         detaljer = "",
-        harYtelse = when (periodeSpm) {
-            is Søknad.PeriodeSpm.Ja -> true
-            is Søknad.PeriodeSpm.Nei -> false
-        },
+        subperioder = listOf(
+            HarYtelsePeriode(
+                periode = Periode(
+                    fra = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
+                    til = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
+                ),
+                harYtelse = when (periodeSpm) {
+                    is Søknad.PeriodeSpm.Ja -> true
+                    is Søknad.PeriodeSpm.Nei -> false
+                },
+            ),
+        ),
     )
 }
 
@@ -385,14 +426,18 @@ private fun lagSaksopplysningFraJaNeiSpørsmål(
     periode: Periode,
 ): YtelseSaksopplysning {
     return YtelseSaksopplysning(
-        periode = periode,
         vilkår = vilkår,
         kilde = Kilde.SØKNAD,
         detaljer = "",
-        harYtelse = when (jaNeiSpm) {
-            is Søknad.JaNeiSpm.Ja -> true
-            is Søknad.JaNeiSpm.Nei -> false
-        },
+        subperioder = listOf(
+            HarYtelsePeriode(
+                periode = periode,
+                harYtelse = when (jaNeiSpm) {
+                    is Søknad.JaNeiSpm.Ja -> true
+                    is Søknad.JaNeiSpm.Nei -> false
+                },
+            ),
+        ),
     )
 }
 
@@ -402,13 +447,17 @@ private fun lagSaksopplysningFraFraOgMedDatospørsmål(
     periode: Periode,
 ): YtelseSaksopplysning {
     return YtelseSaksopplysning(
-        periode = periode,
         vilkår = vilkår,
         kilde = Kilde.SØKNAD,
         detaljer = "",
-        harYtelse = when (fraOgMedDatoSpm) {
-            is Søknad.FraOgMedDatoSpm.Ja -> true
-            is Søknad.FraOgMedDatoSpm.Nei -> false
-        },
+        subperioder = listOf(
+            HarYtelsePeriode(
+                periode = periode,
+                harYtelse = when (fraOgMedDatoSpm) {
+                    is Søknad.FraOgMedDatoSpm.Ja -> true
+                    is Søknad.FraOgMedDatoSpm.Nei -> false
+                },
+            ),
+        ),
     )
 }

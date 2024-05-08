@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelsePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -21,12 +22,16 @@ internal class BehandlingVilkårsvurdertTest {
             kilde = Kilde.K9SAK,
             vilkår = Vilkår.FORELDREPENGER,
             saksbehandler = null,
-            periode = Periode(
-                1.januar(2024),
-                31.januar(2024),
-            ),
             detaljer = "",
-            harYtelse = true,
+            subperioder = listOf(
+                HarYtelsePeriode(
+                    periode = Periode(
+                        1.januar(2024),
+                        31.januar(2024),
+                    ),
+                    harYtelse = true,
+                ),
+            ),
         )
 
         val behandlingInnvilget = behandlingVilkårsvurdertInnvilget(
@@ -38,7 +43,7 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingInnvilget.status shouldBe BehandlingStatus.Innvilget
 
         // Legg til Foreldrepenger i januar. Skal fortsatt være innvilget med januar git ikke rett
-        val behandling = behandlingInnvilget.leggTilSaksopplysning(listOf(foreldrepenger))
+        val behandling = behandlingInnvilget.leggTilSaksopplysning(foreldrepenger)
         behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandling.status shouldBe BehandlingStatus.Innvilget
 
@@ -63,11 +68,15 @@ internal class BehandlingVilkårsvurdertTest {
             vilkår = Vilkår.GJENLEVENDEPENSJON,
             saksbehandler = null,
             detaljer = "",
-            periode = Periode(1.mars(2024), 31.mars(2024)),
-            harYtelse = true,
+            subperioder = listOf(
+                HarYtelsePeriode(
+                    periode = Periode(1.mars(2024), 31.mars(2024)),
+                    harYtelse = true,
+                ),
+            ),
         )
 
-        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(listOf(pensjon))
+        val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(pensjon)
         behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
@@ -97,15 +106,19 @@ internal class BehandlingVilkårsvurdertTest {
             kilde = Kilde.SAKSB,
             vilkår = Vilkår.KVP,
             saksbehandler = "Z12345",
-            periode = Periode(
-                1.februar(2024),
-                29.februar(2024),
-            ),
-            harYtelse = true,
             detaljer = "",
+            subperioder = listOf(
+                HarYtelsePeriode(
+                    periode = Periode(
+                        1.februar(2024),
+                        29.februar(2024),
+                    ),
+                    harYtelse = true,
+                ),
+            ),
         )
 
-        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(listOf(kvp))
+        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(kvp)
         behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 

@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelsePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -58,13 +59,15 @@ interface BehandlingMother {
     ): BehandlingVilkårsvurdert {
         val behandling = ytelsesvilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
-                listOf(
-                    YtelseSaksopplysning(
-                        periode = periode,
-                        vilkår = vilkår,
-                        kilde = vilkår.kilde(),
-                        detaljer = "",
-                        harYtelse = false,
+                YtelseSaksopplysning(
+                    vilkår = vilkår,
+                    kilde = vilkår.kilde(),
+                    detaljer = "",
+                    subperioder = listOf(
+                        HarYtelsePeriode(
+                            periode = periode,
+                            harYtelse = false,
+                        ),
                     ),
                 ),
             )
@@ -79,13 +82,15 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
     ): BehandlingVilkårsvurdert {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
-            listOf(
-                YtelseSaksopplysning(
-                    periode = periode,
-                    vilkår = Vilkår.KVP,
-                    kilde = Vilkår.KVP.kilde(),
-                    detaljer = "",
-                    harYtelse = true,
+            YtelseSaksopplysning(
+                vilkår = Vilkår.KVP,
+                kilde = Vilkår.KVP.kilde(),
+                detaljer = "",
+                subperioder = listOf(
+                    HarYtelsePeriode(
+                        periode = periode,
+                        harYtelse = true,
+                    ),
                 ),
             ),
         )
@@ -112,6 +117,7 @@ interface BehandlingMother {
         Vilkår.FORELDREPENGER,
         Vilkår.OPPLÆRINGSPENGER,
         Vilkår.OMSORGSPENGER,
+        Vilkår.OVERGANGSSTØNAD,
         Vilkår.TILTAKSPENGER,
         Vilkår.UFØRETRYGD,
         Vilkår.SVANGERSKAPSPENGER,

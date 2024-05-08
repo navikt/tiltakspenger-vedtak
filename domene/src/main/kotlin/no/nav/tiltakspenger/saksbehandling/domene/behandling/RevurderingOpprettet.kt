@@ -37,7 +37,7 @@ data class RevurderingOpprettet(
     override val utfallsperioder: List<Utfallsperiode>
         get() = TODO("Not yet implemented")
 
-    override fun leggTilSaksopplysning(saksopplysning: List<SaksopplysningInterface>): RevurderingVilkårsvurdert =
+    override fun leggTilSaksopplysning(saksopplysning: SaksopplysningInterface): RevurderingVilkårsvurdert =
         this.copy(vilkårData = vilkårData.leggTilSaksopplysning(saksopplysning)).vilkårsvurder()
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): RevurderingOpprettet =

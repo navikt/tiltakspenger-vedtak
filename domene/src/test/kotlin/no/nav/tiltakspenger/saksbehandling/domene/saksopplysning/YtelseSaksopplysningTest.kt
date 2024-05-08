@@ -23,28 +23,36 @@ class YtelseSaksopplysningTest {
         til = 31.januar(2025),
     )
 
+    fun mockHarYtelsePeriode(
+        periode: Periode = mockPeriode(),
+        harYtelse: Boolean = false,
+    ): HarYtelsePeriode {
+        return HarYtelsePeriode(
+            periode = periode,
+            harYtelse = harYtelse,
+        )
+    }
+
     fun mockYtelseSaksopplysning(
         kilde: Kilde = Kilde.SAKSB,
         vilkår: Vilkår = Vilkår.AAP,
         detaljer: String = "test",
         saksbehandler: String? = null,
-        periode: Periode = mockPeriode(),
-        harYtelse: Boolean = false,
+        subPerioder: List<HarYtelsePeriode> = listOf(HarYtelsePeriode(periode = mockPeriode(), harYtelse = false)),
     ): YtelseSaksopplysning = YtelseSaksopplysning(
         kilde = kilde,
         vilkår = vilkår,
         detaljer = detaljer,
         saksbehandler = saksbehandler,
-        periode = periode,
-        harYtelse = harYtelse,
+        subperioder = subPerioder,
     )
 
     fun mockVilkårDataYtelser(
         vilkår: Vilkår = Vilkår.AAP,
         vurderingsperiode: Periode = mockPeriode(),
-        saksopplysningerSaksbehandler: List<YtelseSaksopplysning> = emptyList(),
-        saksopplysningerAnnet: List<YtelseSaksopplysning> = emptyList(),
-        avklarteSaksopplysninger: List<YtelseSaksopplysning> = emptyList(),
+        saksopplysningerSaksbehandler: YtelseSaksopplysning? = null,
+        saksopplysningerAnnet: YtelseSaksopplysning? = null,
+        avklarteSaksopplysninger: YtelseSaksopplysning? = null,
         vurderinger: List<Vurdering> = emptyList(),
     ): YtelseVilkårData = YtelseVilkårData(
         vilkår = vilkår,
@@ -57,9 +65,10 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `vilkårsvurderingen skal kaste en feil dersom noen saksopplysninger overlapper`() {
-        val saksopplysningerMedOverlappendePerioder = listOf(
-            mockYtelseSaksopplysning(periode = vurderingsperiode),
-            mockYtelseSaksopplysning(
+
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(periode = vurderingsperiode),
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
                     fra = vurderingsperiode.fra,
@@ -67,6 +76,10 @@ class YtelseSaksopplysningTest {
                 ),
             ),
         )
+
+        val saksopplysningerMedOverlappendePerioder =
+            mockYtelseSaksopplysning(subPerioder = harYtelsePeriode)
+
         shouldThrowWithMessage<IllegalArgumentException>("Ulike saksopplysninger for samme vilkår kan ikke ha overlappende perioder") {
             VilkårData.tempKompileringsDemp().leggTilSaksopplysning(saksopplysningerMedOverlappendePerioder)
                 .vilkårsvurder()
@@ -75,8 +88,8 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `vilkårsvurderingen skal kaste en feil dersom saksopplysningene ikke dekker hele vurderingsperioden`() {
-        val saksopplysningerSomIkkeDekkerVurderingsperioden = listOf(
-            mockYtelseSaksopplysning(
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
                     fra = vurderingsperiode.fra,
@@ -84,6 +97,12 @@ class YtelseSaksopplysningTest {
                 ),
             ),
         )
+
+        val saksopplysningerSomIkkeDekkerVurderingsperioden =
+            mockYtelseSaksopplysning(
+                subPerioder = harYtelsePeriode,
+            )
+
         shouldThrowWithMessage<IllegalArgumentException>("Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret") {
             VilkårData.tempKompileringsDemp().leggTilSaksopplysning(saksopplysningerSomIkkeDekkerVurderingsperioden)
                 .vilkårsvurder()
@@ -92,8 +111,8 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `vilkårsvurderingen skal kaste en feil dersom saksopplysningene går utenfor vurderingsperioden`() {
-        val saksopplysningerSomGårUtenforVurderingsperioden = listOf(
-            mockYtelseSaksopplysning(
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
                     fra = vurderingsperiode.fra,
@@ -101,6 +120,12 @@ class YtelseSaksopplysningTest {
                 ),
             ),
         )
+
+        val saksopplysningerSomGårUtenforVurderingsperioden =
+            mockYtelseSaksopplysning(
+                subPerioder = harYtelsePeriode,
+            )
+
         shouldThrowWithMessage<IllegalArgumentException>("Vi må ha saksopplysninger for hele vurderingsperioden for å kunne vurdere vilkåret") {
             VilkårData.tempKompileringsDemp().leggTilSaksopplysning(saksopplysningerSomGårUtenforVurderingsperioden)
                 .vilkårsvurder()
@@ -109,22 +134,27 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `happycase for saksopplysninger som dekker alle krav`() {
-        val saksopplysningerOppfyllerAlleKrav = listOf(
-            mockYtelseSaksopplysning(
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
                     fra = vurderingsperiode.fra,
                     til = vurderingsperiode.til.minusDays(6),
                 ),
             ),
-            mockYtelseSaksopplysning(
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
-                    fra = vurderingsperiode.til.minusDays(5),
-                    til = vurderingsperiode.til,
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til.minusDays(1),
                 ),
             ),
         )
+
+        val saksopplysningerOppfyllerAlleKrav =
+            mockYtelseSaksopplysning(
+                subPerioder = harYtelsePeriode,
+            )
 
         val vilkårDataYtelser = mockVilkårDataYtelser(
             saksopplysningerSaksbehandler = saksopplysningerOppfyllerAlleKrav,
@@ -138,17 +168,19 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `sjekk at utfallet av en vilkårsvurdering for en ytelse man ikke har gir utfall OPPFYLT for vilkåret`() {
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(periode = vurderingsperiode),
+        )
+
         val vurderingsperiode = mockPeriode(
             fra = vurderingsperiode.fra,
             til = vurderingsperiode.til,
         )
 
-        val gyldigeSaksopplysninger = listOf(
+        val gyldigeSaksopplysninger =
             mockYtelseSaksopplysning(
-                periode = vurderingsperiode,
-                harYtelse = false,
-            ),
-        )
+                subPerioder = harYtelsePeriode,
+            )
 
         mockVilkårDataYtelser(
             saksopplysningerSaksbehandler = gyldigeSaksopplysninger,
@@ -162,10 +194,8 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `sjekk at utfallet av en vilkårsvurdering for en ytelse man har gir utfall IKKE_OPPFYLT for vilkåret`() {
-        val vilkår = Vilkår.SYKEPENGER
-        val gyldigeSaksopplysninger = listOf(
-            mockYtelseSaksopplysning(
-                vilkår = vilkår,
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
                     fra = vurderingsperiode.fra,
@@ -174,6 +204,13 @@ class YtelseSaksopplysningTest {
                 harYtelse = true,
             ),
         )
+
+        val vilkår = Vilkår.SYKEPENGER
+        val gyldigeSaksopplysninger =
+            mockYtelseSaksopplysning(
+                vilkår = vilkår,
+                subPerioder = harYtelsePeriode,
+            )
 
         mockVilkårDataYtelser(
             vilkår = vilkår,
@@ -188,20 +225,26 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `sjekk at utfallet av at man har AAP, DAGPENGER og TILTAKSPENGER gir utfall KREVER_MANUELL_VURDERING `() {
+        val harYtelsePeriode = listOf(
+            mockHarYtelsePeriode(
+                periode =
+                mockPeriode(
+                    fra = vurderingsperiode.fra,
+                    til = vurderingsperiode.til,
+                ),
+                harYtelse = true,
+            ),
+        )
+
         val vilkårListe = listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)
 
         vilkårListe.forEach { vilkår ->
-            val saksopplysninger = listOf(
+            val saksopplysninger =
                 mockYtelseSaksopplysning(
                     vilkår = vilkår,
-                    periode =
-                    mockPeriode(
-                        fra = vurderingsperiode.fra,
-                        til = vurderingsperiode.til,
-                    ),
-                    harYtelse = true,
-                ),
-            )
+                    subPerioder = harYtelsePeriode,
+                )
+
             mockVilkårDataYtelser(
                 vilkår = vilkår,
                 saksopplysningerSaksbehandler = saksopplysninger,

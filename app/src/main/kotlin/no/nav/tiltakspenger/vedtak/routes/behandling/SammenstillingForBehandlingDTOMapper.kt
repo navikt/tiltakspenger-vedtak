@@ -221,7 +221,7 @@ object SammenstillingForBehandlingDTOMapper {
 //                        },
                     samletUtfall = settSamletUtfallForSaksopplysninger(
                         behandling,
-                        emptyList(),  // TODO: Finn ut hvordan saksopplysninger skal sendes til frontend (Det finnes oppgave på dette i Trello)
+                        emptyList(), // TODO: Finn ut hvordan saksopplysninger skal sendes til frontend (Det finnes oppgave på dette i Trello)
 //                        behandling.avklarteSaksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
                     ),
                 )
@@ -325,7 +325,7 @@ object SammenstillingForBehandlingDTOMapper {
         return when (behandling) {
             is BehandlingVilkårsvurdert -> hentUtfallForVilkår(
                 saksopplysning.vilkår,
-                behandling.vurderinger()
+                behandling.vurderinger(),
             ).name
 
             is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vurderinger()).name

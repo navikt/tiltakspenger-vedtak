@@ -127,6 +127,7 @@ class SammenstillingForBehandlingDTOTest {
         typeSaksopplysning = mockk<TypeSaksopplysning>(),
         saksbehandler = "test",
     )
+
     @Test
     fun `settUtfall svarer med utfall sålenge behandlingen er enten vilkårsvurdert, til beslutter, eller iverksatt`() {
         val saksopplysning = mockSaksopplysning()
