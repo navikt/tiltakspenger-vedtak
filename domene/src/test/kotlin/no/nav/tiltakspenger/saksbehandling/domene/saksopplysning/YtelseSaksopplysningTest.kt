@@ -145,8 +145,8 @@ class YtelseSaksopplysningTest {
             mockHarYtelsePeriode(
                 periode =
                 mockPeriode(
-                    fra = vurderingsperiode.fra,
-                    til = vurderingsperiode.til.minusDays(1),
+                    fra = vurderingsperiode.til.minusDays(5),
+                    til = vurderingsperiode.til,
                 ),
             ),
         )

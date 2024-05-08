@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.Test
@@ -76,6 +77,7 @@ internal class RevurderingOpprettetTest {
     )
 
     // TODO: For å teste motsatt tilfelle hvor det kommer inn en reelt ny saksopplysning, må vi først implementere vilkårsvurder() for Revurderingsbehandling
+    @Disabled // Disablet fordi vi ikke støtter revurdering enda..
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()

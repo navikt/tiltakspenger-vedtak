@@ -29,16 +29,20 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
                 idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
                 else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
             }
-            val utfall = if (utfallRettTilTiltakspenger == UtfallForPeriode.GIR_RETT_TILTAKSPENGER)
-                UtfallForPeriode.KREVER_MANUELL_VURDERING
-            else
-                utfallRettTilTiltakspenger
+
+            // TODO: Denne testen var originalt for barnetilleg. Om man har manuelle barn, skal hele greia være manuell
+            // TODO: Bør implemanteres igjen når vi jobber med barnetillegg.
+
+//            val utfall = if (utfallRettTilTiltakspenger == UtfallForPeriode.GIR_RETT_TILTAKSPENGER)
+//                UtfallForPeriode.KREVER_MANUELL_VURDERING
+//            else
+//                utfallRettTilTiltakspenger
 
             Utfallsperiode(
                 fom = dag,
                 tom = dag,
                 antallBarn = antallBarnIDag,
-                utfall = utfall,
+                utfall = utfallRettTilTiltakspenger,
             )
         }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
             periodisertliste.slåSammen(nesteDag)

@@ -110,8 +110,22 @@ internal class BehandlingVilkårsvurdertTest {
             subperioder = listOf(
                 HarYtelsePeriode(
                     periode = Periode(
+                        1.januar(2024),
+                        31.januar(2024),
+                    ),
+                    harYtelse = true,
+                ),
+                HarYtelsePeriode(
+                    periode = Periode(
                         1.februar(2024),
                         29.februar(2024),
+                    ),
+                    harYtelse = true,
+                ),
+                HarYtelsePeriode(
+                    periode = Periode(
+                        1.mars(2024),
+                        31.mars(2024),
                     ),
                     harYtelse = true,
                 ),
