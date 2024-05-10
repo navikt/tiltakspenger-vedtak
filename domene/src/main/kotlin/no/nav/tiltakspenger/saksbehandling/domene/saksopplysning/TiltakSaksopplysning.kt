@@ -10,22 +10,15 @@ data class TiltakSaksopplysning(
     override val vilkår: Vilkår,
     override val detaljer: String,
     override val saksbehandler: String?,
-    val tiltaksdeltagelser: List<Tiltak>,
+    val tiltak: Tiltak,
 ) : SaksopplysningInterface {
-    fun erTom(): Boolean {
-        return tiltaksdeltagelser.isEmpty()
-    }
-
-    fun vilkårsvurder(): List<Vurdering> =
-        tiltaksdeltagelser.map { tiltak ->
-            Vurdering(
-                vilkår = Vilkår.TILTAKDELTAKELSE,
-                kilde = Kilde.ARENA,
-                fom = tiltak.deltakelseFom,
-                tom = tiltak.deltakelseTom,
-                // todo: Vilkårsvurdering av tiltaksdeltagelsene
-                utfall = Utfall.OPPFYLT,
-                detaljer = detaljer,
-            )
-        }
+    fun vilkårsvurder(): Vurdering =
+        Vurdering(
+            vilkår = Vilkår.TILTAKDELTAKELSE,
+            kilde = Kilde.ARENA,
+            fom = tiltak.deltakelseFom,
+            tom = tiltak.deltakelseTom,
+            utfall = if (tiltak.gjennomføring.rettPåTiltakspenger) Utfall.OPPFYLT else Utfall.IKKE_OPPFYLT,
+            detaljer = detaljer,
+        )
 }

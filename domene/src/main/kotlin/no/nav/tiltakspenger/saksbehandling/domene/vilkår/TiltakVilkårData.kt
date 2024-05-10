@@ -62,12 +62,10 @@ data class TiltakVilkårData(
             )
         }
 
-        require(!avklarteSaksopplysninger.erTom()) { "Må ha avklarte fakta for å vilkårsvurdere" }
-
-        val vurderinger = avklarteSaksopplysninger.vilkårsvurder()
+        val vurdering = avklarteSaksopplysninger.vilkårsvurder()
 
         return this.copy(
-            vurderinger = vurderinger,
+            vurderinger = vurderinger + vurdering,
         )
     }
 }

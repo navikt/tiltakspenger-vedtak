@@ -69,15 +69,16 @@ fun Route.tiltakRoutes(
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
             }
 
-            val saksopplysning = TiltakSaksopplysning(
-                kilde = Kilde.ARENA,
-                vilkår = Vilkår.TILTAKDELTAKELSE,
-                saksbehandler = null,
-                detaljer = "",
-                tiltaksdeltagelser = tiltakTilBehandlingen,
-            )
-
-            behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+            tiltakTilBehandlingen.forEach {
+                val saksopplysning = TiltakSaksopplysning(
+                    kilde = Kilde.ARENA,
+                    vilkår = Vilkår.TILTAKDELTAKELSE,
+                    saksbehandler = null,
+                    detaljer = "",
+                    tiltak = it,
+                )
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+            }
 
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $tiltakMottattHendelse" }
             innsendingMediator.håndter(tiltakMottattHendelse)
