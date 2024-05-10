@@ -7,11 +7,15 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TiltakSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
 
@@ -45,6 +49,7 @@ fun Route.tiltakRoutes(
                 tiltakDTO = tiltakDTO.respons.tiltak!!,
                 innhentet = tiltakDTO.innhentet,
             )
+
             val tiltakMottattHendelse = TiltakMottattHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = tiltakDTO.journalpostId,
@@ -52,9 +57,27 @@ fun Route.tiltakRoutes(
                 tidsstempelTiltakInnhentet = tiltakDTO.innhentet,
             )
 
-            behandlingService.hentBehandlingForJournalpostId(tiltakDTO.journalpostId)?.let { behandling ->
-                behandlingService.oppdaterTiltak(behandling.id, tiltak)
+            val behandling = behandlingService.hentBehandlingForJournalpostId(tiltakDTO.journalpostId)
+            if (behandling == null) {
+                throw IllegalStateException("Fant ingen behandling for journalpostId ${tiltakDTO.journalpostId}")
             }
+
+            val tiltakTilBehandlingen = mapTiltak(
+                tiltakDTO = tiltakDTO.respons.tiltak!!,
+                innhentet = tiltakDTO.innhentet,
+            ).filter {
+                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+            }
+
+            val saksopplysning = TiltakSaksopplysning(
+                kilde = Kilde.ARENA,
+                vilkår = Vilkår.TILTAKDELTAKELSE,
+                saksbehandler = null,
+                detaljer = "",
+                tiltaksdeltagelser = tiltakTilBehandlingen,
+            )
+
+            behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
 
             SECURELOG.info { "Mottatt tiltak og laget hendelse : $tiltakMottattHendelse" }
             innsendingMediator.håndter(tiltakMottattHendelse)

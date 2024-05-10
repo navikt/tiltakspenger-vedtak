@@ -61,7 +61,7 @@ class YtelseSaksopplysningerWrapperTest {
                             periode = Periode(fra = 1.desember(2023), til = 31.januar(2024)),
                             harYtelse = false,
 
-                            ),
+                        ),
                     ),
                 ),
                 saksopplysningerAnnet = null,
@@ -106,7 +106,6 @@ class YtelseSaksopplysningerWrapperTest {
         val tom = 31.januar(2024)
 
         shouldThrow<IllegalArgumentException> {
-
             val harYtelsePeriode = listOf(
                 mockHarYtelsePeriode(
                     periode = Periode(fra = 1.januar(2024), til = 16.januar(2024)),

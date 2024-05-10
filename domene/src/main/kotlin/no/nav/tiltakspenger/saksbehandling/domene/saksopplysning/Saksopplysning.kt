@@ -3,10 +3,10 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import java.time.LocalDate
 
 data class Inngangsvilkår(
@@ -21,16 +21,6 @@ sealed interface SaksopplysningInterface {
     val detaljer: String
     val saksbehandler: String?
 }
-
-data class TiltakSaksopplysning(
-    override val kilde: Kilde,
-    override val vilkår: Vilkår,
-    override val detaljer: String,
-    override val saksbehandler: String? = null,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val tiltakId: String,
-) : SaksopplysningInterface
 
 data class Saksopplysning(
     val fom: LocalDate,

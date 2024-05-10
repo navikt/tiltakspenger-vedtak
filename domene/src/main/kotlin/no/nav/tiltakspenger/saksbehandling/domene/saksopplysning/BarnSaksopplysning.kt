@@ -24,7 +24,7 @@ fun List<BarnSaksopplysning>.vilkårsvurder(vurderingsperiode: Periode): List<Vu
         return perioder.map { periode ->
             val barnGirIkkeRett = datoBarnFyller16.isBefore(periode.til) || !saksopplysning.oppholderSegIEØS
 
-            val utfall = if (saksopplysning.manueltRegistrert){
+            val utfall = if (saksopplysning.manueltRegistrert) {
                 Utfall.KREVER_MANUELL_VURDERING
             } else if (barnGirIkkeRett) {
                 Utfall.IKKE_OPPFYLT

@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -42,6 +43,10 @@ interface Behandling {
 
     fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling {
         throw IllegalStateException("Kan ikke oppdatere tiltak på denne behandlingen")
+    }
+
+    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): Behandling {
+        throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 
     fun startBehandling(saksbehandler: Saksbehandler): Behandling {

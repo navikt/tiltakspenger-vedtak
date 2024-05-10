@@ -8,8 +8,8 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.VilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import java.time.LocalDate
 import kotlin.test.Test
 
@@ -65,7 +65,6 @@ class YtelseSaksopplysningTest {
 
     @Test
     fun `vilkårsvurderingen skal kaste en feil dersom noen saksopplysninger overlapper`() {
-
         val harYtelsePeriode = listOf(
             mockHarYtelsePeriode(periode = vurderingsperiode),
             mockHarYtelsePeriode(
@@ -190,7 +189,6 @@ class YtelseSaksopplysningTest {
             vilkårDataYtelser.vurderinger.all { it.utfall == Utfall.OPPFYLT }
         }
     }
-
 
     @Test
     fun `sjekk at utfallet av en vilkårsvurdering for en ytelse man har gir utfall IKKE_OPPFYLT for vilkåret`() {

@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 
 interface BehandlingService {
     fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling?
@@ -14,6 +15,7 @@ interface BehandlingService {
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
+    fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: SaksopplysningInterface)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
     fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String?)

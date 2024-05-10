@@ -20,7 +20,7 @@ data class BehandlingOpprettet(
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
 
-    ) : Førstegangsbehandling {
+) : Førstegangsbehandling {
 
     companion object {
         private fun initVilkårData(vurderingsperiode: Periode): List<YtelseVilkårData> {
@@ -55,8 +55,7 @@ data class BehandlingOpprettet(
     }
 
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert {
-
-        val vilkårData = if(søknad.vurderingsperiode() == this.vurderingsperiode) {
+        val vilkårData = if (søknad.vurderingsperiode() == this.vurderingsperiode) {
             vilkårData.leggTilSøknad(søknad)
         } else {
             VilkårData.opprettFraSøknad(søknad)
@@ -65,7 +64,7 @@ data class BehandlingOpprettet(
         return this.copy(
             vurderingsperiode = søknad.vurderingsperiode(),
             søknader = this.søknader + søknad,
-            vilkårData = vilkårData
+            vilkårData = vilkårData,
         ).vilkårsvurder()
     }
 

@@ -90,6 +90,6 @@ data class BehandlingVilkårsvurdert(
         tiltak = this.tiltak,
         vurderingsperiode = this.vurderingsperiode,
         saksbehandler = saksbehandler,
-        vilkårData = vilkårData
+        vilkårData = vilkårData,
     )
 }

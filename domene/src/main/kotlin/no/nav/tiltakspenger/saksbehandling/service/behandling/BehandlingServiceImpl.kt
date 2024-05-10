@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprette
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SaksopplysningInterface
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -67,6 +68,12 @@ class BehandlingServiceImpl(
         // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
 //        val behandlingRespons = hentBehandling(behandlingId)
 //            .leggTilSaksopplysning(emptyList())
+//        behandlingRepo.lagre(behandlingRespons)
+    }
+
+    override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: SaksopplysningInterface) {
+        // TODO: Implementer denne metoden så den blir riktig (finnes oppgave på det i trello)
+//        val behandlingRespons = hentBehandling(behandlingId).leggTilSaksopplysning(saksopplysning)
 //        behandlingRepo.lagre(behandlingRespons)
     }
 

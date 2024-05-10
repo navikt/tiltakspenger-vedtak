@@ -195,7 +195,7 @@ sealed class Vilkår {
         override val lovreferanse: Lovreferanse = TODO()
     }
 
-    object BARNETILLEGG: Vilkår() {
+    object BARNETILLEGG : Vilkår() {
         override val tittel: String = "BARNETILLEGG"
         override val flateTittel: String = "Barnetillegg"
         override val lovreferanse: Lovreferanse = TODO()
