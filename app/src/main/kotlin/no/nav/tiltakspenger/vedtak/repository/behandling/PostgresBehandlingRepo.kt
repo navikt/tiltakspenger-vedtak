@@ -36,6 +36,7 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val vilkårDataRepo: VilkårDataRepo = VilkårDataRepo(),
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -243,19 +244,20 @@ internal class PostgresBehandlingRepo(
         val status = string("status")
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
+        val vurderingsperiode = Periode(fom, tom)
         return when (val type = string("tilstand")) {
             "søknadsbehandling" -> BehandlingOpprettet(
                 id = id,
                 sakId = sakId,
                 søknader = søknadDAO.hent(id, txSession),
-                vurderingsperiode = Periode(fom, tom),
+                vurderingsperiode = vurderingsperiode,
                 // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
-                vilkårData = VilkårData.tempKompileringsDemp(),
+                vilkårData = vilkårDataRepo.hent(behandlingId = id, vurderingsperiode = vurderingsperiode, txSession = txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
                 // todo: Her skal vi egentlig hente saksopplysningene fra databasen
                 // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
-                // ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = Periode(fom, tom)),
+                // ytelsessaksopplysninger = initYtelsesopplysninger(vurderingsperiode = vurderingsperiode),
             )
 
             "Vilkårsvurdert" -> {
@@ -269,7 +271,7 @@ internal class PostgresBehandlingRepo(
                     id = id,
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
+                    vurderingsperiode = vurderingsperiode,
                     // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                     vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
@@ -289,7 +291,7 @@ internal class PostgresBehandlingRepo(
                     id = id,
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
+                    vurderingsperiode = vurderingsperiode,
                     vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
@@ -309,7 +311,7 @@ internal class PostgresBehandlingRepo(
                     id = id,
                     sakId = sakId,
                     søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
+                    vurderingsperiode = vurderingsperiode,
                     // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
                     vilkårData = VilkårData.tempKompileringsDemp(),
                     tiltak = tiltakDAO.hent(id, txSession),
