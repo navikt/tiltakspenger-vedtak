@@ -80,6 +80,7 @@ fun Route.personopplysningerRoutes(
                 sakService.mottaPersonopplysninger(
                     personopplysningerMottattDTO.journalpostId,
                     SakPersonopplysninger(personopplysninger),
+                    systembruker,
                 )
 
                 val personopplysningerMottattHendelse = PersonopplysningerMottattHendelse(

@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.service.sak
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.innsending.domene.tolkere.AlderTolker
@@ -42,6 +43,7 @@ class SakServiceImpl(
     override fun mottaPersonopplysninger(
         journalpostId: String,
         nyePersonopplysninger: SakPersonopplysninger,
+        systembruker: Systembruker,
     ): Sak? {
         val sak = sakRepo.hentForJournalpostId(journalpostId)
             ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
@@ -52,7 +54,7 @@ class SakServiceImpl(
         val fdato = nyePersonopplysninger.søker().fødselsdato
         sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach { behandling ->
             AlderTolker.tolkeData(fdato, sak.periode).forEach {
-                behandlingService.leggTilSaksopplysning(behandling.id, it)
+                behandlingService.leggTilSaksopplysning(behandling.id, it, systembruker)
             }
         }
 
@@ -87,6 +89,11 @@ class SakServiceImpl(
     override fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak {
         val behandling = behandlingRepo.hent(behandlingId)
         val sak = sakRepo.hent(behandling.sakId) ?: throw IkkeFunnetException("Sak ikke funnet")
+
+        if (sak.personopplysninger.erTom()) {
+            throw IkkeFunnetException("Sak mangler personopplysninger")
+        }
+
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
@@ -96,16 +103,15 @@ class SakServiceImpl(
     override fun hentForIdent(ident: String, saksbehandler: Saksbehandler): List<Sak> {
         val saker = sakRepo.hentForIdent(ident)
         saker.forEach { sak ->
-            if (!sak.personopplysninger.harTilgang(saksbehandler)) {
-                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
-            }
+            sak.personopplysninger.sjekkTilgang(saksbehandler)
         }
 
         return saker
     }
 
     override fun hentForSaksnummer(saksnummer: String, saksbehandler: Saksbehandler): Sak {
-        val sak = sakRepo.hentForSaksnummer(saksnummer) ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
+        val sak = sakRepo.hentForSaksnummer(saksnummer)
+            ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }

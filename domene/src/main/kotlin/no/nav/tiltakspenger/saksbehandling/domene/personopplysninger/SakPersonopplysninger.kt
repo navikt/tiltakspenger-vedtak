@@ -1,14 +1,14 @@
 package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
 
+import no.nav.tiltakspenger.felles.Bruker
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 
 data class SakPersonopplysninger(
     private val liste: List<Personopplysninger> = emptyList(),
 ) {
-
-    fun søkere(): List<PersonopplysningerSøker> =
-        liste.filterIsInstance<PersonopplysningerSøker>()
 
     fun søkerOrNull(): PersonopplysningerSøker? =
         liste.filterIsInstance<PersonopplysningerSøker>().firstOrNull()
@@ -33,11 +33,23 @@ data class SakPersonopplysninger(
 
     fun erTom(): Boolean = liste.isEmpty()
 
+    fun harBrukerTilgang(bruker: Bruker): Boolean {
+        return bruker is Systembruker || harTilgang(bruker as Saksbehandler)
+    }
+
+    fun sjekkBrukerTilgang(bruker: Bruker) {
+        if (!harBrukerTilgang(bruker)) throw TilgangException("Bruker ${bruker.ident} har ikke tilgang til sak")
+    }
+
     fun harTilgang(saksbehandler: Saksbehandler): Boolean {
         if (liste.any { it.strengtFortrolig() }) return Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller
         if (liste.any { it.fortrolig() }) return Rolle.FORTROLIG_ADRESSE in saksbehandler.roller
         if (liste.any { it.skjermet() }) return Rolle.SKJERMING in saksbehandler.roller
         return true
+    }
+
+    fun sjekkTilgang(saksbehandler: Saksbehandler) {
+        if (!harTilgang(saksbehandler)) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak")
     }
 
     fun identerOgSkjerming(): Map<String, Boolean?> =

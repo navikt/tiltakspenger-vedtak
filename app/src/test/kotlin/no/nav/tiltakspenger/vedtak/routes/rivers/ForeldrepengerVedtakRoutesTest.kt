@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -57,7 +58,7 @@ class ForeldrepengerVedtakRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any(), any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -67,6 +68,7 @@ class ForeldrepengerVedtakRoutesTest {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -105,6 +107,7 @@ class ForeldrepengerVedtakRoutesTest {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -135,7 +138,7 @@ class ForeldrepengerVedtakRoutesTest {
             søknad = nySøknad(),
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any(), any(), any()) } returns Unit
 
         every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingMedYtelse(
             ident = IDENT,
@@ -150,6 +153,7 @@ class ForeldrepengerVedtakRoutesTest {
                     foreldrepengerRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }

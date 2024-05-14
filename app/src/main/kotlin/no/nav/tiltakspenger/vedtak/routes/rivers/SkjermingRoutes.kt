@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
@@ -17,6 +18,7 @@ import no.nav.tiltakspenger.libs.skjerming.SkjermingResponsDTO
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming.SkjermingPerson
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 data class SkjermingDTO(
@@ -33,9 +35,11 @@ val skjermingpath = "/rivers/skjerming"
 fun Route.skjermingRoutes(
     innsendingMediator: InnsendingMediator,
     sakService: SakService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post("$skjermingpath") {
         LOG.info { "Vi har mottatt skjerming fra river" }
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         val skjermingDTO = call.receive<SkjermingDTO>()
 
         when {

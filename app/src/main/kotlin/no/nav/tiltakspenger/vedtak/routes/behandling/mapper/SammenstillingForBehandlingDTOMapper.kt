@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling
+package no.nav.tiltakspenger.vedtak.routes.behandling.mapper
 
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -10,8 +10,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsv
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -19,16 +18,17 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.FaktaDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.KategoriserteSaksopplysningerDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.LovreferanseDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SøknadDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.EndringDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.EndringsType
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.FaktaDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.KategoriserteSaksopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.LovreferanseDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.dto.SammenstillingForBehandlingDTO.SøknadDTO
 
 object SammenstillingForBehandlingDTOMapper {
     enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
@@ -168,7 +168,7 @@ object SammenstillingForBehandlingDTOMapper {
 
     fun mapSammenstillingDTO(
         behandling: Førstegangsbehandling,
-        personopplysninger: List<Personopplysninger>,
+        søker: PersonopplysningerSøker,
         attesteringer: List<Attestering>,
     ): SammenstillingForBehandlingDTO {
         return SammenstillingForBehandlingDTO(
@@ -229,7 +229,7 @@ object SammenstillingForBehandlingDTOMapper {
                     ),
                 )
             },
-            personopplysninger = personopplysninger.søkere().map {
+            personopplysninger = søker.let {
                 PersonopplysningerDTO(
                     ident = it.ident,
                     fornavn = it.fornavn,
@@ -238,7 +238,7 @@ object SammenstillingForBehandlingDTOMapper {
                     strengtFortrolig = it.strengtFortrolig,
                     fortrolig = it.fortrolig,
                 )
-            }.first(),
+            },
             tilstand = when (behandling) {
                 // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
                 is BehandlingIverksatt -> "iverksatt"

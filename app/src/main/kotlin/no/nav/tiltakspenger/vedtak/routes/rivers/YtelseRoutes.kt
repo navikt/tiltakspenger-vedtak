@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
@@ -15,6 +16,7 @@ import no.nav.tiltakspenger.innsending.domene.tolkere.DagpengerTolker
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.arena.ytelse.ArenaYtelseResponsDTO
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 data class ArenaYtelserMottattDTO(
@@ -31,10 +33,11 @@ val ytelsepath = "/rivers/ytelser"
 fun Route.ytelseRoutes(
     innsendingMediator: InnsendingMediator,
     behandlingService: BehandlingService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post("$ytelsepath") {
         LOG.info { "Vi har mottatt ytelser fra river" }
-
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         val arenaYtelser = call.receive<ArenaYtelserMottattDTO>()
 
         val ytelser = mapYtelser(
@@ -44,10 +47,10 @@ fun Route.ytelseRoutes(
 
         behandlingService.hentBehandlingForJournalpostId(arenaYtelser.journalpostId)?.let { behandling ->
             AapTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
-                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, systembruker)
             }
             DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
-                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
+                behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning, systembruker)
             }
         }
 

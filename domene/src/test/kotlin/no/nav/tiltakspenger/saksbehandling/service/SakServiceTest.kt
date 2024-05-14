@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
+import no.nav.tiltakspenger.objectmothers.ObjectMother.systembruker
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
@@ -232,6 +233,7 @@ internal class SakServiceTest {
             SakPersonopplysninger(
                 listOf(personopplysningKjedeligFyr(ident = ident, fornavn = "Et endret fornavn")),
             ),
+            systembruker(),
         )
 
         verify {
@@ -265,6 +267,7 @@ internal class SakServiceTest {
         sakService.mottaPersonopplysninger(
             "123",
             SakPersonopplysninger(listOf(person)),
+            systembruker(),
         )
 
         verify(exactly = 0) { sakRepo.lagre(any()) }
@@ -296,6 +299,7 @@ internal class SakServiceTest {
                     ),
                 ),
             ),
+            systembruker = systembruker(),
         )
 
         verify {

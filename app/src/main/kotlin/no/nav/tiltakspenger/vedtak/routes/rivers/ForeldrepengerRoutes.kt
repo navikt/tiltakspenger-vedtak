@@ -9,6 +9,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
 import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
@@ -19,6 +20,7 @@ import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO
 import no.nav.tiltakspenger.libs.fp.FPResponsDTO.YtelserOutput
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDateTime
 
 data class ForeldrepengerDTO(
@@ -35,9 +37,11 @@ val foreldrepengerpath = "/rivers/foreldrepenger"
 fun Route.foreldrepengerRoutes(
     innsendingMediator: InnsendingMediator,
     behandlingService: BehandlingService,
+    innloggetSystembrukerProvider: InnloggetSystembrukerProvider,
 ) {
     post(foreldrepengerpath) {
         LOG.info { "Vi har mottatt foreldrepenger fra river" }
+        val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         val foreldrepengerDTO = call.receive<ForeldrepengerDTO>()
 
         // TODO: Ingen auth-sjekk?
@@ -74,6 +78,7 @@ fun Route.foreldrepengerRoutes(
                                 behandlingService.leggTilSaksopplysning(
                                     behandlingId = behandling.id,
                                     saksopplysning = saksopplysning,
+                                    utøvendeBruker = systembruker,
                                 )
                             }
                         }
