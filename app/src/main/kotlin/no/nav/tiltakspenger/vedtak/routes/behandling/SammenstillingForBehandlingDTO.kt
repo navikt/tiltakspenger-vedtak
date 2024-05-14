@@ -49,6 +49,9 @@ data class SammenstillingForBehandlingDTO(
         val periode: PeriodeDTO,
         val prosent: Int,
         val status: String,
+        val kilde: String,
+        val girRett: Boolean,
+        val harSøkt: Boolean,
     )
 
     data class SøknadDTO(

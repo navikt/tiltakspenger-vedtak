@@ -195,6 +195,9 @@ object SammenstillingForBehandlingDTOMapper {
                     ),
                     prosent = it.deltakelseProsent?.toInt() ?: 0,
                     status = it.deltakelseStatus.status,
+                    kilde = it.kilde,
+                    girRett = it.gjennomføring.rettPåTiltakspenger,
+                    harSøkt = true,
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->
