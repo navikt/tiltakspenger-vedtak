@@ -3,10 +3,10 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import java.time.LocalDate
 
 data class Inngangsvilkår(

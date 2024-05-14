@@ -1,8 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.felles.Periode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.*
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde.TILTAKSPENGER_VEDTAK
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 
 data class YtelseVilkårData(
     val vilkår: Vilkår,
@@ -14,8 +15,7 @@ data class YtelseVilkårData(
 ) {
 
     private fun måHaSaksopplysninger() {
-        require(saksopplysningerSaksbehandler != null || saksopplysningerAnnet != null)
-        { "Må ha saksopplysninger" }
+        require(saksopplysningerSaksbehandler != null || saksopplysningerAnnet != null) { "Må ha saksopplysninger" }
     }
 
     fun harSaksopplysninger(): Boolean { // todo: finn ut hva man vil med denne og endre navngivning ++
@@ -33,7 +33,7 @@ data class YtelseVilkårData(
     }
 
     init {
-        if (harSaksopplysninger()){
+        if (harSaksopplysninger()) {
             require(harEttUniktVilkår()) { "Kan ikke vilkårsvurdere saksopplysninger med forskjellige vilkår" }
         }
 
@@ -59,7 +59,6 @@ data class YtelseVilkårData(
             this.copy(
                 saksopplysningerSaksbehandler = saksopplysninger,
             )
-
         } else {
             this.copy(
                 saksopplysningerAnnet = saksopplysninger,
@@ -104,4 +103,3 @@ data class YtelseVilkårData(
         )
     }
 }
-

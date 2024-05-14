@@ -16,13 +16,13 @@ data class VilkårData(
     companion object {
         fun opprettFraSøknad(søknad: Søknad): VilkårData {
             return VilkårData(
-                ytelse = YtelseVilkår.opprettFraSøknad(søknad)
+                ytelse = YtelseVilkår.opprettFraSøknad(søknad),
             )
         }
 
         fun tempKompileringsDemp(vurderingsperiode: Periode = Periode(LocalDate.MIN, LocalDate.MAX)): VilkårData {
             return VilkårData(
-                ytelse = YtelseVilkår.tempKompileringsDemp(vurderingsperiode)
+                ytelse = YtelseVilkår.tempKompileringsDemp(vurderingsperiode),
             )
         }
     }
@@ -31,7 +31,7 @@ data class VilkårData(
         val ytelse = ytelse.leggTilSøknad(søknad)
 
         return this.copy(
-            ytelse = ytelse
+            ytelse = ytelse,
         )
     }
 
@@ -55,5 +55,4 @@ data class VilkårData(
             throw IllegalArgumentException("Kan ikke legge til saksopplysning for $vilkår")
         }
     }
-
 }

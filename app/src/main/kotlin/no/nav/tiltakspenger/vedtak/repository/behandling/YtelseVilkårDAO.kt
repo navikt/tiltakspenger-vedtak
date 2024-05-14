@@ -12,8 +12,87 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.YtelseVilkårData
 import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
+import java.util.UUID
 
 class YtelseVilkårDAO {
+    fun lagre(behandlingId: BehandlingId, ytelseVilkår: YtelseVilkår, txSession: TransactionalSession) {
+        ytelseVilkår.aap.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.alderspensjon.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.dagpenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.foreldrepenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.gjenlevendepensjon.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.institusjonsopphold.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.introprogrammet.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.jobbsjansen.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.kvp.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.omsorgspenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.opplæringspenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.overgangsstønad.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.pensjonsinntekt.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.pleiepengerNærstående.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.pleiepengerSyktBarn.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.supplerendestønadalder.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.supplerendestønadflyktning.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.svangerskapspenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.sykepenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.tiltakspenger.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.uføretrygd.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+        ytelseVilkår.etterlønn.let { lagreYtelseVilkår(behandlingId = behandlingId, ytelseVilkårData = it, txSession = txSession) }
+    }
+
+    private fun lagreYtelseVilkår(behandlingId: BehandlingId, ytelseVilkårData: YtelseVilkårData, txSession: TransactionalSession) {
+        ytelseVilkårData.saksopplysningerSaksbehandler?.let { lagreYtelseVilkårData(behandlingId = behandlingId, ytelseSaksopplysning = it, txSession = txSession) }
+        ytelseVilkårData.saksopplysningerAnnet?.let { lagreYtelseVilkårData(behandlingId = behandlingId, ytelseSaksopplysning = it, txSession = txSession) }
+        ytelseVilkårData.avklarteSaksopplysninger?.let { lagreYtelseVilkårData(behandlingId = behandlingId, ytelseSaksopplysning = it, txSession = txSession) }
+
+    }
+
+    private fun lagreYtelseVilkårData(behandlingId: BehandlingId, ytelseSaksopplysning: YtelseSaksopplysning, txSession: TransactionalSession) {
+        val ytelseSaksopplysningId = UUID.randomUUID()
+
+        txSession.run(
+            queryOf(
+                lagreYtelseSaksopplysning,
+                mapOf(
+                    "id" to ytelseSaksopplysningId.toString(),
+                    "behandlingId" to behandlingId.toString(),
+                    "vilkar" to ytelseSaksopplysning.vilkår.tittel,
+                    "kilde" to ytelseSaksopplysning.kilde.name,
+                    "detaljer" to ytelseSaksopplysning.detaljer,
+                    "saksbehandler" to ytelseSaksopplysning.saksbehandler,
+                    "opprettet" to LocalDateTime.now(),
+                ),
+            ).asUpdate,
+        )
+        ytelseSaksopplysning.subperioder.forEach { periode ->
+            txSession.run(
+                queryOf(
+                    lagreHarYtelsePeriode,
+                    mapOf(
+                        "ytelseSaksopplysningId" to ytelseSaksopplysningId.toString(),
+                        "fom" to periode.periode.fra,
+                        "tom" to periode.periode.til,
+                        "harYtelse" to periode.harYtelse,
+                    ),
+                ).asUpdate,
+            )
+        }
+    }
+
+
+    @Language("SQL")
+    private val lagreYtelseSaksopplysning = """
+        insert into ytelse_saksopplysning (id, behandling_id, vilkår, kilde, detaljer, saksbehandler, opprettet) 
+        values (:id, :behandlingId, :vilkar, :kilde, :detaljer, :saksbehandler, :opprettet)
+    """.trimIndent()
+
+    @Language("SQL")
+    private val lagreHarYtelsePeriode = """
+        insert into ytelsessaksopplysning_har_ytelse_periode (ytelse_saksopplysning_id, fom, tom, har_ytelse)
+        values (:ytelseSaksopplysningId, :fom, :tom, :harYtelse)
+    """.trimIndent()
+
     fun hentYtelseVilkår(behandlingId: BehandlingId, vurderingsperiode: Periode, txSession: TransactionalSession): YtelseVilkår {
         return YtelseVilkår(
             aap = hentYtelseVilkårData(behandlingId = behandlingId, txSession = txSession, vilkår = Vilkår.AAP, vurderingsperiode = vurderingsperiode),
@@ -41,7 +120,7 @@ class YtelseVilkårDAO {
         )
     }
 
-    fun hentYtelseVilkårData(
+    private fun hentYtelseVilkårData(
         behandlingId: BehandlingId,
         vilkår: Vilkår,
         vurderingsperiode: Periode,
@@ -69,7 +148,7 @@ class YtelseVilkårDAO {
         )
     }
 
-    fun hentSaksbehandler(
+    private fun hentSaksbehandler(
         behandlingId: BehandlingId,
         vilkår: Vilkår,
         txSession: TransactionalSession,
@@ -80,14 +159,14 @@ class YtelseVilkårDAO {
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                     "vilkar" to vilkår.tittel,
-                    "kilde" to Kilde.SAKSB,
+                    "kilde" to Kilde.SAKSB.name,
                 ),
             ).map { row -> row.toYtelseSaksopplysning(txSession) }
                 .asSingle,
         )
     }
 
-    fun hentAnnet(
+    private fun hentAnnet(
         behandlingId: BehandlingId,
         vilkår: Vilkår,
         txSession: TransactionalSession,
@@ -98,14 +177,14 @@ class YtelseVilkårDAO {
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                     "vilkar" to vilkår.tittel,
-                    "kilde" to Kilde.SAKSB,
+                    "kilde" to Kilde.SAKSB.name,
                 ),
             ).map { row -> row.toYtelseSaksopplysning(txSession) }
                 .asSingle,
         )
     }
 
-    fun hentAvklart(
+    private fun hentAvklart(
         behandlingId: BehandlingId,
         vilkår: Vilkår,
         txSession: TransactionalSession,
@@ -128,22 +207,22 @@ class YtelseVilkårDAO {
             vilkår = hentVilkår(string("vilkår")),
             detaljer = string("detaljer"),
             saksbehandler = stringOrNull("saksbehandler"),
-            subperioder = hentHarYtelsePerioder(txSession = txSession, ytelseSaksopplysningId = string("id"))
+            subperioder = hentHarYtelsePerioder(txSession = txSession, ytelseSaksopplysningId = string("id")),
         )
     }
 
-    fun hentHarYtelsePerioder(txSession: TransactionalSession, ytelseSaksopplysningId: String): List<HarYtelsePeriode> {
+    private fun hentHarYtelsePerioder(txSession: TransactionalSession, ytelseSaksopplysningId: String): List<HarYtelsePeriode> {
         return txSession.run(
             queryOf(hentHarYtelsePeriode, ytelseSaksopplysningId)
                 .map { row -> row.toHarYtelsePeriode() }
-                .asList
+                .asList,
         )
     }
 
     private fun Row.toHarYtelsePeriode(): HarYtelsePeriode {
         return HarYtelsePeriode(
             periode = Periode(localDate("fom"), localDate("tom")),
-            harYtelse = boolean("har_ytelse")
+            harYtelse = boolean("har_ytelse"),
         )
     }
 
@@ -156,7 +235,7 @@ class YtelseVilkårDAO {
             where behandling_id = :behandlingId 
             and vilkår = :vilkar
             and kilde = :kilde
-        """.trimIndent()
+    """.trimIndent()
 
     @Language("SQL")
     private val hentYtelseVilkårDataAnnet = """
@@ -164,7 +243,7 @@ class YtelseVilkårDAO {
             where behandling_id = :behandlingId 
             and vilkår = :vilkar
             and kilde <> :kilde
-        """.trimIndent()
+    """.trimIndent()
 
     @Language("SQL")
     private val hentYtelseVilkårDataAvklart = """
@@ -172,6 +251,5 @@ class YtelseVilkårDAO {
             where behandling_id = :behandlingId 
             and vilkår = :vilkar
             and avklart_tidspunkt IS NOT NULL
-        """.trimIndent()
-
+    """.trimIndent()
 }

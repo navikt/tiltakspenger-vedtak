@@ -86,14 +86,14 @@ CREATE TABLE saksopplysning
 CREATE TABLE ytelse_saksopplysning
 (
     id            VARCHAR PRIMARY KEY,
-    behandlingId  VARCHAR REFERENCES behandling (id),
+    behandling_id VARCHAR REFERENCES behandling (id),
     vedtakId      VARCHAR REFERENCES vedtak (id),
     kilde         VARCHAR                  NOT NULL,
     vilkår        VARCHAR                  NOT NULL,
     detaljer      VARCHAR                  NOT NULL,
     saksbehandler VARCHAR NULL,
     opprettet     TIMESTAMP WITH TIME ZONE NOT NULL,
-    avklart_tidspunkt TIMESTAMP WITH TIME ZONE NOT NULL
+    avklart_tidspunkt TIMESTAMP WITH TIME ZONE NULL
 );
 
 CREATE TABLE ytelsessaksopplysning_har_ytelse_periode

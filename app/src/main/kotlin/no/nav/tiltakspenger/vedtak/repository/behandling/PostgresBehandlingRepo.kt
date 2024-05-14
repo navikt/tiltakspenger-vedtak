@@ -141,6 +141,7 @@ internal class PostgresBehandlingRepo(
         }.also {
             // TODO: Fiks koden så man kan hente saksopplysninger fra databasen (finnes oppgave på dette i trello)
 //            saksopplysningRepo.lagre(behandling.id, behandling.avklarteSaksopplysninger, tx)
+            vilkårDataRepo.lagre(behandling.id, behandling.vilkårData, tx)
             // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)

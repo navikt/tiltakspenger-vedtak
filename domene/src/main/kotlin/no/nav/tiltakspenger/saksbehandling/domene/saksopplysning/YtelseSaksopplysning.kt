@@ -64,4 +64,3 @@ data class HarYtelsePeriode(
     val periode: Periode,
     val harYtelse: Boolean,
 )
-
