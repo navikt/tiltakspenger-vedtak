@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -58,7 +59,7 @@ class TiltakRoutesTest {
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
         every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
-        every { behandlingService.oppdaterTiltak(any(), any()) } returns Unit
+        every { behandlingService.oppdaterTiltak(any(), any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -68,6 +69,7 @@ class TiltakRoutesTest {
                     tiltakRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -104,7 +106,7 @@ class TiltakRoutesTest {
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
         every { behandlingService.hentBehandlingOrNull(any()) } returns behandling
         val tiltak = slot<List<Tiltak>>()
-        every { behandlingService.oppdaterTiltak(any(), capture(tiltak)) } returns Unit
+        every { behandlingService.oppdaterTiltak(any(), capture(tiltak), any()) } returns Unit
 
         testApplication {
             application {
@@ -114,6 +116,7 @@ class TiltakRoutesTest {
                     tiltakRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }

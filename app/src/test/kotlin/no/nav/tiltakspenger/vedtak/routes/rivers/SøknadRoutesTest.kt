@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.vedtak.SøkerMediator
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
@@ -107,6 +108,7 @@ class SøknadRoutesTest {
                         innsendingMediator = innsendingMediator,
                         søkerMediator = søkerMediator,
                         sakService = sakService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }

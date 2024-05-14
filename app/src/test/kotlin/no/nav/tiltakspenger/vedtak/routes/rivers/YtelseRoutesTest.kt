@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -56,7 +57,7 @@ class YtelseRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any(), any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -66,6 +67,7 @@ class YtelseRoutesTest {
                     ytelseRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -100,7 +102,7 @@ class YtelseRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any(), any(), any()) } returns Unit
 
         testApplication {
             application {
@@ -110,6 +112,7 @@ class YtelseRoutesTest {
                     ytelseRoutes(
                         innsendingMediator = innsendingMediator,
                         behandlingService = behandlingService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }

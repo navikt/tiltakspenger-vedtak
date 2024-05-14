@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedForeldrepenger
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -54,6 +55,7 @@ class OvergangsstønadRoutesTest {
                 routing {
                     overgangsstønadRoutes(
                         innsendingMediator = innsendingMediator,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -91,6 +93,7 @@ class OvergangsstønadRoutesTest {
                 routing {
                     overgangsstønadRoutes(
                         innsendingMediator = innsendingMediator,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
@@ -128,6 +131,7 @@ class OvergangsstønadRoutesTest {
                 routing {
                     overgangsstønadRoutes(
                         innsendingMediator = innsendingMediator,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }

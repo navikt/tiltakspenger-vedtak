@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplys
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
+import no.nav.tiltakspenger.vedtak.routes.helper.InnloggetSystembrukerUtenRollerProvider
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
@@ -57,6 +58,7 @@ class SkjermingRoutesTest {
                     skjermingRoutes(
                         innsendingMediator = innsendingMediator,
                         sakService = sakService,
+                        InnloggetSystembrukerUtenRollerProvider,
                     )
                 }
             }
