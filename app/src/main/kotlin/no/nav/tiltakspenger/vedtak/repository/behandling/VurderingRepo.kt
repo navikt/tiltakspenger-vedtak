@@ -207,7 +207,6 @@ fun hentVilkår(vilkår: String) =
         "SUPPLERENDESTØNADFLYKTNING" -> Vilkår.SUPPLERENDESTØNADFLYKTNING
         "SVANGERSKAPSPENGER" -> Vilkår.SVANGERSKAPSPENGER
         "SYKEPENGER" -> Vilkår.SYKEPENGER
-        "TILTAKSPENGER" -> Vilkår.TILTAKSPENGER
         "UFØRETRYGD" -> Vilkår.UFØRETRYGD
         "ETTERLØNN" -> Vilkår.ETTERLØNN
         else -> {

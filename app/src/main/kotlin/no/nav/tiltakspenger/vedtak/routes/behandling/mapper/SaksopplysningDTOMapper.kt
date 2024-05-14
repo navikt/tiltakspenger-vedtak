@@ -35,7 +35,6 @@ object SaksopplysningDTOMapper {
             "SUPPLERENDESTØNADFLYKTNING" -> Vilkår.SUPPLERENDESTØNADFLYKTNING
             "SVANGERSKAPSPENGER" -> Vilkår.SVANGERSKAPSPENGER
             "SYKEPENGER" -> Vilkår.SYKEPENGER
-            "TILTAKSPENGER" -> Vilkår.TILTAKSPENGER
             "UFØRETRYGD" -> Vilkår.UFØRETRYGD
             "ETTERLØNN" -> Vilkår.ETTERLØNN
             else -> throw IllegalStateException("Kan ikke lage saksopplysning for vilkår ${saksopplysning.vilkår}")

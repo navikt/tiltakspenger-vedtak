@@ -125,18 +125,18 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    post("$behandlingPath/opprettrevurdering/{}") {
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromString(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+    post("$behandlingPath/opprettrevurdering/{saksnummer}") {
+        val saksnummer = call.parameters["saksnummer"]
+            ?: return@post call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
 
-        LOG.info { "Mottatt request om å opprette en revurdering på behandlingen: $behandlingId" }
+        LOG.info { "Mottatt request om å opprette en revurdering på sak med saksnummer: $saksnummer" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        val revurdering = behandlingService.opprettRevurdering(behandlingId, saksbehandler)
-
-        LOG.info { "Revurderingen: $revurdering" }
+        val sak = sakService.hentForSaksnummer(saksnummer = saksnummer, saksbehandler = saksbehandler)
+        val sisteBehandlingId = sak.vedtak.maxBy { it.vedtaksdato }.behandling.id
+        val revurdering = behandlingService.opprettRevurdering(sisteBehandlingId, saksbehandler)
 
         call.respond(message = "{ \"id\":\"${revurdering.id}\"}", status = HttpStatusCode.OK)
     }
