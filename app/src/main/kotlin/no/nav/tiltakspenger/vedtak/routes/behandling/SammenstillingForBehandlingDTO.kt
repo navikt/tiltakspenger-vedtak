@@ -52,6 +52,7 @@ data class SammenstillingForBehandlingDTO(
         val kilde: String,
         val girRett: Boolean,
         val harSøkt: Boolean,
+        val vilkårOppfylt: Boolean,
     )
 
     data class SøknadDTO(

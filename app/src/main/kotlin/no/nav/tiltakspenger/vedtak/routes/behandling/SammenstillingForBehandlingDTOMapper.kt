@@ -198,6 +198,7 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
+                    vilkårOppfylt = true,
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->
