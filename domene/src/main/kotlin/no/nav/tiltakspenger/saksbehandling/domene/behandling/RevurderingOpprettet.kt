@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -16,6 +17,7 @@ data class RevurderingOpprettet(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
+    override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String?,
     override val søknader: List<Søknad>,
 ) : Revurderingsbehandling {
@@ -28,6 +30,7 @@ data class RevurderingOpprettet(
                 vurderingsperiode = vedtak.periode,
                 saksopplysninger = vedtak.saksopplysninger,
                 tiltak = vedtak.behandling.tiltak,
+                barnetillegg = vedtak.behandling.barnetillegg,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
             )

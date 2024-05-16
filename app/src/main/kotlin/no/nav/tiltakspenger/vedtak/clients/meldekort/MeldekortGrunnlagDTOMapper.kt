@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 
 object MeldekortGrunnlagDTOMapper {
-    fun mapMeldekortGrunnlagDTO(sak: SakDetaljer, vedtak: Vedtak) =
+    fun mapMeldekortGrunnlagDTO(sak: Sak, vedtak: Vedtak) =
         MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
             sakId = sak.saknummer.verdi,
@@ -23,9 +23,9 @@ object MeldekortGrunnlagDTOMapper {
             ),
             tiltak = mapTiltakDTO(vedtak),
             personopplysninger = PersonopplysningerDTO(
-                fornavn = vedtak.behandling.søknad().personopplysninger.fornavn,
-                etternavn = vedtak.behandling.søknad().personopplysninger.etternavn,
-                ident = vedtak.behandling.søknad().personopplysninger.ident,
+                fornavn = sak.personopplysninger.søker().fornavn,
+                etternavn = sak.personopplysninger.søker().etternavn,
+                ident = sak.personopplysninger.søker().ident,
             ),
             utfallsperioder = vedtak.utfallsperioder.map {
                 UtfallsperiodeDTO(
@@ -44,7 +44,7 @@ object MeldekortGrunnlagDTOMapper {
 
     fun mapTiltakDTO(vedtak: Vedtak) =
         vedtak.behandling.tiltak
-            .filter { it.id == vedtak.behandling.søknad().tiltak.id }
+            // TODO:  .filter { it.id == vedtak.behandling.søknad().tiltak.id }
             .map {
                 TiltakDTO(
                     periodeDTO = PeriodeDTO(

@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.repository.barnetillegg.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -35,6 +36,7 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -246,6 +248,7 @@ internal class PostgresBehandlingRepo(
                 vurderingsperiode = Periode(fom, tom),
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 tiltak = tiltakDAO.hent(id, txSession),
+                barnetillegg = barnetilleggDAO.hent(id, txSession),
                 saksbehandler = saksbehandler,
             )
 
@@ -263,6 +266,7 @@ internal class PostgresBehandlingRepo(
                     vurderingsperiode = Periode(fom, tom),
                     saksopplysninger = saksopplysningRepo.hent(id, txSession),
                     tiltak = tiltakDAO.hent(id, txSession),
+                    barnetillegg = barnetilleggDAO.hent(id, txSession),
                     vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     saksbehandler = saksbehandler,
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
@@ -283,6 +287,7 @@ internal class PostgresBehandlingRepo(
                     vurderingsperiode = Periode(fom, tom),
                     saksopplysninger = saksopplysningRepo.hent(id, txSession),
                     tiltak = tiltakDAO.hent(id, txSession),
+                    barnetillegg = barnetilleggDAO.hent(id, txSession),
                     vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
@@ -304,6 +309,7 @@ internal class PostgresBehandlingRepo(
                     vurderingsperiode = Periode(fom, tom),
                     saksopplysninger = saksopplysningRepo.hent(id, txSession),
                     tiltak = tiltakDAO.hent(id, txSession),
+                    barnetillegg = barnetilleggDAO.hent(id, txSession),
                     vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
                     saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },

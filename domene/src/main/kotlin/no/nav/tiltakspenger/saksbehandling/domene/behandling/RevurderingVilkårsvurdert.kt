@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -14,6 +15,7 @@ data class RevurderingVilkårsvurdert(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
+    override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String?,
     override val forrigeVedtak: Vedtak,
     override val utfallsperioder: List<Utfallsperiode>,
@@ -33,6 +35,7 @@ data class RevurderingVilkårsvurdert(
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
+                    barnetillegg = barnetillegg,
                     vilkårsvurderinger = vilkårsvurderinger,
                     utfallsperioder = utfallsperioder,
                     saksbehandler = "Automatisk",
@@ -55,6 +58,7 @@ data class RevurderingVilkårsvurdert(
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                barnetillegg = barnetillegg,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = this.saksbehandler,
@@ -91,6 +95,7 @@ data class RevurderingVilkårsvurdert(
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
+            barnetillegg = barnetillegg,
             saksbehandler = saksbehandler,
             søknader = søknader,
         )

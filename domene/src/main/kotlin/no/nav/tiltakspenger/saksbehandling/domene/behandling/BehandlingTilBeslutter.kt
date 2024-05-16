@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -15,6 +16,7 @@ data class BehandlingTilBeslutter(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
+    override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
     val vilkårsvurderinger: List<Vurdering>,
@@ -38,6 +40,7 @@ data class BehandlingTilBeslutter(
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                barnetillegg = barnetillegg,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = saksbehandler,
@@ -57,6 +60,7 @@ data class BehandlingTilBeslutter(
             vurderingsperiode = vurderingsperiode,
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
+            barnetillegg = barnetillegg,
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
@@ -85,6 +89,7 @@ data class BehandlingTilBeslutter(
         vurderingsperiode = this.vurderingsperiode,
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
+        barnetillegg = barnetillegg,
         saksbehandler = this.saksbehandler,
     )
 }

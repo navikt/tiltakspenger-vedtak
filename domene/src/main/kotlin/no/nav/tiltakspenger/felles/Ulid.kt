@@ -172,6 +172,17 @@ data class AttesteringId private constructor(private val ulid: UlidBase) : Ulid 
     }
 }
 
+data class BarnetilleggBarnId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "barn"
+        fun random() = BarnetilleggBarnId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
+
+        fun fromDb(stringValue: String) = BarnetilleggBarnId(ulid = UlidBase(stringValue))
+
+        fun fromUUID(uuid: UUID) = BarnetilleggBarnId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
+    }
+}
+
 private fun ulidToUuid(ulid: String): UUID {
     val (most, least) = ulidStringToLongs(ulid)
     return UUID(most, least)

@@ -116,7 +116,7 @@ class BehandlingServiceImpl(
 
     override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
-        val sak = sakRepo.hentSakDetaljer(behandling.sakId)
+        val sak = sakRepo.hent(behandling.sakId)
             ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
 
         val iverksattBehandling = when (behandling) {

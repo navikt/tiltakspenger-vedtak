@@ -10,6 +10,7 @@ object BehandlingDTOMapper {
         this.map {
             BehandlingDTO(
                 id = it.id.toString(),
+                // TODO: Fy fy å hente personopplysninger fra søknaden her? Det bør håndteres som en saksopplysning?
                 ident = it.søknad().personopplysninger.ident,
                 saksbehandler = it.saksbehandler,
                 beslutter = when (it) {

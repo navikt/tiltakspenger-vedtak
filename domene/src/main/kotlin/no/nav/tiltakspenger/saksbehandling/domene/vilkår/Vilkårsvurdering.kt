@@ -21,13 +21,15 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
 
     val utfallsperioder =
         vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
-            val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
+            val idag: List<Vurdering> = vurderinger.filter { dag >= it.fom && dag <= it.tom }
             val utfallYtelser = when {
                 idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
                 idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
                 else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
             }
 
+            // TODO: Vi bør vel skille på inngangsvilkår og behandlingsvilkår her?
+            // Utfallet er gitt av
             val harManuelleBarnUnder16 = this.søknad().barnetillegg.filterIsInstance<Barnetillegg.Manuell>()
                 .filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }.count { it.under16ForDato(dag) } > 0
 
@@ -52,6 +54,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
     } else {
         BehandlingStatus.Avslag
     }
+
     return BehandlingVilkårsvurdert(
         id = id,
         sakId = sakId,
@@ -59,6 +62,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         vurderingsperiode = vurderingsperiode,
         saksopplysninger = saksopplysninger,
         tiltak = tiltak,
+        barnetillegg = barnetillegg,
         vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,

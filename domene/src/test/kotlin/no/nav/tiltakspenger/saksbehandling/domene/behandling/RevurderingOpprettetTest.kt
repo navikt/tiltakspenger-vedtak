@@ -44,6 +44,7 @@ internal class RevurderingOpprettetTest {
         ),
         saksopplysninger = listOf(saksopplysning),
         tiltak = tiltak,
+        barnetillegg = TODO(),
         saksbehandler = saksbehandler,
         søknader = emptyList(),
     )

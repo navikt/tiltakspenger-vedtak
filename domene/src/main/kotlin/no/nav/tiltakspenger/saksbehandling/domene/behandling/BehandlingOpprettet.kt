@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -16,6 +17,7 @@ data class BehandlingOpprettet(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
+    override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
 ) : Førstegangsbehandling {
@@ -32,6 +34,7 @@ data class BehandlingOpprettet(
                     søknad,
                 ),
                 tiltak = emptyList(),
+                barnetillegg = BarnetilleggVilkårData(søknad.vurderingsperiode()),
                 saksbehandler = null,
             )
         }
@@ -52,6 +55,7 @@ data class BehandlingOpprettet(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
             saksopplysninger = fakta,
+            barnetillegg = barnetillegg.oppdaterSøknad(søknad, TODO()),
         ).vilkårsvurder()
     }
 
