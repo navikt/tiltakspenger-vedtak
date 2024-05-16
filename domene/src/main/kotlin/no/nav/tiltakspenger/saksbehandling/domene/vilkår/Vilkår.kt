@@ -33,6 +33,7 @@ sealed class Vilkår {
             SYKEPENGER -> Kilde.SØKNAD
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
+            TILTAKSDELTAGELSE -> Kilde.ARENA
         }
 
     object ALDER : Vilkår() {
@@ -172,5 +173,12 @@ sealed class Vilkår {
         override val flateTittel: String = "Etterlønn"
         override val lovReference: List<Lovreferanse> =
             listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object TILTAKSDELTAGELSE : Vilkår() {
+        override val tittel: String = "TILTAKSDELTAGELSE"
+        override val flateTittel: String = "Tiltaksdeltagelse"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.TILTAKSDELTAGELSE)
     }
 }
