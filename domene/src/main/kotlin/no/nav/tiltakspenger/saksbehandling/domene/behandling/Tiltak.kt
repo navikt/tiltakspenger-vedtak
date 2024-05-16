@@ -19,7 +19,6 @@ data class Tiltak(
     val kilde: String,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
-    val vurdering: Vurdering,
 ) {
 
     data class Gjennomføring(
