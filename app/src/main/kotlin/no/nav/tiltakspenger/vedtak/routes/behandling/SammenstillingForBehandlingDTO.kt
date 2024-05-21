@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
 import java.time.LocalDate
@@ -52,7 +53,8 @@ data class SammenstillingForBehandlingDTO(
         val kilde: String,
         val girRett: Boolean,
         val harSøkt: Boolean,
-        val vilkårOppfylt: Boolean,
+        val deltagelseUtfall: Utfall,
+        val begrunnelse: String,
     )
 
     data class SøknadDTO(

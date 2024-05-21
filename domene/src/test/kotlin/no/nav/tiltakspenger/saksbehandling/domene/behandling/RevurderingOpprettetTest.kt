@@ -59,6 +59,7 @@ internal class RevurderingOpprettetTest {
         registrertDato = LocalDateTime.now(),
         deltakelseProsent = null,
         deltakelseDagerUke = null,
+        tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
     )
 
     private fun mockSaksbehandler(

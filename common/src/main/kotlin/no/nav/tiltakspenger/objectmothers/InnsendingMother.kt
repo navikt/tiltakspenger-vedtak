@@ -524,6 +524,7 @@ interface InnsendingMother {
             kilde = kilde,
             registrertDato = registrertDato,
             innhentet = innhentet,
+            tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
         )
     }
 }

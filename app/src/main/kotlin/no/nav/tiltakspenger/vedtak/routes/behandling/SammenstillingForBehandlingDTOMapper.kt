@@ -198,7 +198,8 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    vilkårOppfylt = true,
+                    deltagelseUtfall = it.tiltaksdeltagelseVurdering.utfall,
+                    begrunnelse = it.tiltaksdeltagelseVurdering.detaljer,
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->

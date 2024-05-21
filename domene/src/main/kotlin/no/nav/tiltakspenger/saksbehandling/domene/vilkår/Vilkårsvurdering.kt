@@ -15,9 +15,13 @@ fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
+    val vilkårsvurderteTiltak = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+
+    val deltagelsesvurderinger = vilkårsvurderteTiltak.map { it.tiltaksdeltagelseVurdering }
+
     val vurderinger = saksopplysninger().flatMap {
         it.lagVurdering(vurderingsperiode)
-    }
+    } + deltagelsesvurderinger
 
     val utfallsperioder =
         vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
@@ -58,7 +62,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
         saksopplysninger = saksopplysninger,
-        tiltak = tiltak,
+        tiltak = vilkårsvurderteTiltak,
         vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,

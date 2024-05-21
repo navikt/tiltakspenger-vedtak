@@ -81,6 +81,7 @@ class TiltakDAO {
             kilde = string("kilde"),
             registrertDato = localDateTime("tidsstempel_kilde"),
             innhentet = localDateTime("tidsstempel_hos_oss"),
+            tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
         )
     }
 

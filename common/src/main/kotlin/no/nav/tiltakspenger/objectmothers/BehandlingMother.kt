@@ -134,6 +134,7 @@ interface BehandlingMother {
             kilde = kilde,
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
+            tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)
