@@ -1,15 +1,18 @@
 package no.nav.tiltakspenger.saksbehandling.domene.barnetillegg
 
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 data class KorrigerbartJaNeiVilkår private constructor(
     val vilkår: Vilkår,
+    val vurderingsperiode: Periode,
     val opprinneligSaksopplysning: JaNeiSaksopplysning,
     val korrigertSaksopplysning: JaNeiSaksopplysning?,
     val avklartSaksopplysning: JaNeiSaksopplysning,
-    val vurdering: Utfall,
+    val vurdering: Periodisering<Utfall>,
 ) {
     fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiSaksopplysningCommand): KorrigerbartJaNeiVilkår {
         require(oppdatering.bruker is Saksbehandler) { "Støtter ikke oppdatering av systembruker" }
@@ -27,25 +30,30 @@ data class KorrigerbartJaNeiVilkår private constructor(
         this.copy(avklartSaksopplysning = korrigertSaksopplysning ?: opprinneligSaksopplysning)
 
     private fun vilkårsvurder(): KorrigerbartJaNeiVilkår =
-        this.copy(vurdering = vilkårsvurder(avklartSaksopplysning))
+        this.copy(vurdering = vilkårsvurder(vurderingsperiode, avklartSaksopplysning))
 
     companion object {
         operator fun invoke(
             vilkår: Vilkår,
+            vurderingsperiode: Periode,
             opprinneligSaksopplysning: JaNeiSaksopplysning,
         ) = KorrigerbartJaNeiVilkår(
             vilkår = vilkår,
+            vurderingsperiode = vurderingsperiode,
             opprinneligSaksopplysning = opprinneligSaksopplysning,
             korrigertSaksopplysning = null,
             avklartSaksopplysning = opprinneligSaksopplysning,
-            vurdering = vilkårsvurder(opprinneligSaksopplysning),
+            vurdering = vilkårsvurder(vurderingsperiode, opprinneligSaksopplysning),
         )
 
-        private fun vilkårsvurder(saksopplysning: JaNeiSaksopplysning): Utfall =
+        private fun vilkårsvurder(
+            vurderingsperiode: Periode,
+            saksopplysning: JaNeiSaksopplysning,
+        ): Periodisering<Utfall> =
             when (saksopplysning.verdi) {
                 // TODO: Kvalitetssikre hvilken vei det skal gå
-                JaNei.JA -> Utfall.OPPFYLT
-                JaNei.NEI -> Utfall.IKKE_OPPFYLT
+                JaNei.JA -> Periodisering(Utfall.OPPFYLT, vurderingsperiode)
+                JaNei.NEI -> Periodisering(Utfall.IKKE_OPPFYLT, vurderingsperiode)
             }
     }
 }

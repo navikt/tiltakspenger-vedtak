@@ -1,7 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.barnetillegg
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
@@ -59,6 +60,7 @@ data class KorrigerbartJaNeiPeriodeVilkår private constructor(
                     // TODO: Kvalitetssikre hvilken vei det skal gå? Avhenger det av vilkåret mon tro?
                     JaNei.JA -> Utfall.OPPFYLT
                     JaNei.NEI -> Utfall.IKKE_OPPFYLT
+                    null -> TODO()
                 }
             }
         }

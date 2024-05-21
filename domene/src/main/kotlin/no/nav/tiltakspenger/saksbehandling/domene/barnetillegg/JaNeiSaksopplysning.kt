@@ -7,4 +7,4 @@ data class JaNeiSaksopplysning(
     val detaljer: String,
     val saksbehandler: String,
     val verdi: JaNei,
-) : Saksopplysning
+) : SaksopplysningTrengerJegDenne

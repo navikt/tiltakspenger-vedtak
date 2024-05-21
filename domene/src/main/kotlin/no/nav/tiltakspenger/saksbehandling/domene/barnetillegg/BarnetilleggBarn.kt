@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.barnetillegg
 
 import no.nav.tiltakspenger.felles.BarnetilleggBarnId
-import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.libs.periodisering.Periodisering.Companion.reduser
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
@@ -25,38 +27,41 @@ data class BarnetilleggBarn(
         ).vilkårsvurder()
     }
 
-    fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiSaksopplysningCommand): BarnetilleggBarn {
-        require(oppdatering.barn == this.id) { "Feil barn" }
-        return this.copy(
-            harSøktBarnetilleggForDetteBarnet =
-            harSøktBarnetilleggForDetteBarnet.oppdaterSaksopplysning(oppdatering),
-        ).vilkårsvurder()
+    fun oppdaterSaksopplysning(command: OppdaterJaNeiSaksopplysningCommand): BarnetilleggBarn {
+        require(command.barn == this.id) { "Feil barn" }
+        if (command.vilkår == Vilkår.BARNETILLEGG_SØKT) {
+            return this.copy(
+                harSøktBarnetilleggForDetteBarnet =
+                harSøktBarnetilleggForDetteBarnet.oppdaterSaksopplysning(command),
+            ).vilkårsvurder()
+        } else {
+            throw IllegalArgumentException("Ukjent vilkår ${command.vilkår} for oppdatering av barnetillegg")
+        }
     }
 
-    fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiPeriodeSaksopplysningCommand): BarnetilleggBarn {
-        require(oppdatering.barn == this.id) { "Feil barn" }
-        // TODO: Lage korrekte vilkår
-        return when (oppdatering.vilkår) {
-            Vilkår.AAP -> {
+    fun oppdaterSaksopplysning(command: OppdaterJaNeiPeriodeSaksopplysningCommand): BarnetilleggBarn {
+        require(command.barn == this.id) { "Feil barn" }
+        return when (command.vilkår) {
+            Vilkår.BARNETILLEGG_FORSØRGES -> {
                 this.copy(
-                    forsørgesAvSøker = forsørgesAvSøker.oppdaterSaksopplysning(oppdatering),
+                    forsørgesAvSøker = forsørgesAvSøker.oppdaterSaksopplysning(command),
                 )
             }
 
-            Vilkår.DAGPENGER -> {
+            Vilkår.BARNETILLEGG_BOSATT -> {
                 this.copy(
-                    bosattIEØS = bosattIEØS.oppdaterSaksopplysning(oppdatering),
+                    bosattIEØS = bosattIEØS.oppdaterSaksopplysning(command),
                 )
             }
 
-            Vilkår.ALDER -> {
+            Vilkår.BARNETILLEGG_OPPHOLD -> {
                 this.copy(
-                    oppholderSegIEØS = oppholderSegIEØS.oppdaterSaksopplysning(oppdatering),
+                    oppholderSegIEØS = oppholderSegIEØS.oppdaterSaksopplysning(command),
                 )
             }
 
             else -> {
-                throw IllegalArgumentException("Ugyldig vilkår")
+                throw IllegalArgumentException("Ukjent vilkår ${command.vilkår} for oppdatering av barnetillegg")
             }
         }.vilkårsvurder()
     }
@@ -64,10 +69,10 @@ data class BarnetilleggBarn(
     private fun vilkårsvurder(): BarnetilleggBarn {
         return this.copy(
             samletVurdering = vilkårsvurder(
-                harSøktBarnetilleggForDetteBarnet,
-                forsørgesAvSøker,
-                bosattIEØS,
-                oppholderSegIEØS,
+                harSøktBarnetilleggForDetteBarnet = harSøktBarnetilleggForDetteBarnet,
+                forsørgesAvSøker = forsørgesAvSøker,
+                bosattIEØS = bosattIEØS,
+                oppholderSegIEØS = oppholderSegIEØS,
             ),
         )
     }
@@ -83,11 +88,17 @@ data class BarnetilleggBarn(
             oppholderSegIEØS: KorrigerbartJaNeiPeriodeVilkår,
         ): BarnetilleggBarn =
             BarnetilleggBarn(
-                detaljer,
-                harSøktBarnetilleggForDetteBarnet,
-                forsørgesAvSøker,
-                bosattIEØS,
-                oppholderSegIEØS,
+                detaljer = detaljer,
+                harSøktBarnetilleggForDetteBarnet = harSøktBarnetilleggForDetteBarnet,
+                forsørgesAvSøker = forsørgesAvSøker,
+                bosattIEØS = bosattIEØS,
+                oppholderSegIEØS = oppholderSegIEØS,
+                samletVurdering = vilkårsvurder(
+                    harSøktBarnetilleggForDetteBarnet = harSøktBarnetilleggForDetteBarnet,
+                    forsørgesAvSøker = forsørgesAvSøker,
+                    bosattIEØS = bosattIEØS,
+                    oppholderSegIEØS = oppholderSegIEØS,
+                ),
             )
 
         private fun vilkårsvurder(
@@ -95,6 +106,19 @@ data class BarnetilleggBarn(
             forsørgesAvSøker: KorrigerbartJaNeiPeriodeVilkår,
             bosattIEØS: KorrigerbartJaNeiPeriodeVilkår,
             oppholderSegIEØS: KorrigerbartJaNeiPeriodeVilkår,
-        ): Periodisering<Utfall> = TODO("Må finne skjæringspunkter og greier")
+        ): Periodisering<Utfall> {
+            return listOf(
+                harSøktBarnetilleggForDetteBarnet.vurdering,
+                forsørgesAvSøker.vurdering,
+                bosattIEØS.vurdering,
+                oppholderSegIEØS.vurdering,
+            ).reduser { utfall1, utfall2 ->
+                when {
+                    utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> Utfall.IKKE_OPPFYLT
+                    utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
+                    else -> Utfall.OPPFYLT
+                }
+            }
+        }
     }
 }

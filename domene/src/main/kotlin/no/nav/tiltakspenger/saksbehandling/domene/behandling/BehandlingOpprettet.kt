@@ -1,14 +1,19 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.libs.periodisering.Periodisering.Companion.reduser
 import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.UtfallForBarnetilleggPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import java.time.LocalDate
 
 data class BehandlingOpprettet(
     override val id: BehandlingId,
@@ -86,5 +91,86 @@ data class BehandlingOpprettet(
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
+    }
+
+    fun vilkårsvurder(): BehandlingVilkårsvurdert {
+        val vurderinger: List<Vurdering> = vurderinger(this.vurderingsperiode, this.saksopplysninger)
+
+        val utfallsperioder: List<Utfallsperiode> = utfallsperioder(
+            vurderingsperiode = this.vurderingsperiode,
+            barnetillegg = this.barnetillegg,
+            vurderinger = vurderinger,
+        )
+
+        val status = status(this.utfallsperioder)
+
+        return BehandlingVilkårsvurdert(
+            id = id,
+            sakId = sakId,
+            søknader = søknader,
+            vurderingsperiode = vurderingsperiode,
+            saksopplysninger = saksopplysninger,
+            tiltak = tiltak,
+            barnetillegg = barnetillegg,
+            vilkårsvurderinger = vurderinger,
+            saksbehandler = saksbehandler,
+            utfallsperioder = utfallsperioder,
+            status = status,
+        )
+    }
+
+    private fun status(utfallsperioder: List<Utfallsperiode>): BehandlingStatus =
+        if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+            BehandlingStatus.Manuell
+        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+            BehandlingStatus.Innvilget
+        } else {
+            BehandlingStatus.Avslag
+        }
+
+    private fun vurderinger(vurderingsperiode: Periode, saksopplysninger: List<Saksopplysning>): List<Vurdering> =
+        saksopplysninger.flatMap {
+            it.lagVurdering(vurderingsperiode)
+        }
+
+    private fun utfallsperioder(
+        vurderingsperiode: Periode,
+        barnetillegg: BarnetilleggVilkårData,
+        vurderinger: List<Vurdering>,
+    ): List<Utfallsperiode> {
+        data class UtfallOgAntallBarn(
+            val utfall: UtfallForPeriode,
+            val antallBarn: Int,
+        )
+
+        val utfallsperioderUtenAntallBarn: Periodisering<UtfallForPeriode> = vurderinger
+            .map { vurdering ->
+                Periodisering(Utfall.KREVER_MANUELL_VURDERING, vurderingsperiode).setVerdiForDelPeriode(
+                    vurdering.utfall,
+                    Periode(vurdering.fom ?: LocalDate.MIN, vurdering.tom ?: LocalDate.MAX),
+                )
+            }
+            .reduser { utfall1, utfall2 ->
+                when {
+                    utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> Utfall.IKKE_OPPFYLT
+                    utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
+                    else -> Utfall.OPPFYLT
+                }
+            }.kombiner(barnetillegg.samletVurdering) { utfallYtelser, utfallBarnetillegg ->
+                when {
+                    utfallBarnetillegg == UtfallForBarnetilleggPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                    utfallYtelser == Utfall.OPPFYLT -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
+                    utfallYtelser == Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                    else -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                }
+            }
+        val perioderAntallBarn = barnetillegg.antallBarnPeriodisering
+
+        return utfallsperioderUtenAntallBarn
+            .kombiner(perioderAntallBarn) { utfall, antallBarn ->
+                UtfallOgAntallBarn(utfall, antallBarn)
+            }
+            .perioder()
+            .map { Utfallsperiode(it.periode.fra, it.periode.til, it.verdi.antallBarn, it.verdi.utfall) }
     }
 }

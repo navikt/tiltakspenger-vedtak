@@ -2,7 +2,7 @@ val ktorVersion = "2.3.11"
 val kotestVersion = "5.9.0"
 val mockkVersion = "1.13.10"
 val testContainersVersion = "1.19.8"
-val felleslibVersion = "0.0.89"
+val felleslibVersion = "0.0.100"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -27,6 +27,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.6")

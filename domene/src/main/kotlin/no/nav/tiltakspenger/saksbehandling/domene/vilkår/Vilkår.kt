@@ -33,6 +33,11 @@ sealed class Vilkår {
             SYKEPENGER -> Kilde.SØKNAD
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
+            BARNETILLEGG_FORSØRGES -> TODO()
+            BARNETILLEGG_BOSATT -> TODO()
+            BARNETILLEGG_OPPHOLD -> TODO()
+            BARNETILLEGG_DETALJER -> TODO()
+            BARNETILLEGG_SØKT -> TODO()
         }
 
     object ALDER : Vilkår() {
@@ -170,6 +175,41 @@ sealed class Vilkår {
     object ETTERLØNN : Vilkår() {
         override val tittel: String = "ETTERLØNN"
         override val flateTittel: String = "Etterlønn"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object BARNETILLEGG_FORSØRGES : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object BARNETILLEGG_BOSATT : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object BARNETILLEGG_OPPHOLD : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object BARNETILLEGG_SØKT : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    object BARNETILLEGG_DETALJER : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
         override val lovReference: List<Lovreferanse> =
             listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
     }

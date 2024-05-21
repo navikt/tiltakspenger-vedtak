@@ -1,7 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.barnetillegg
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Systembruker
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -35,6 +36,7 @@ object SøknadBarnetilleggMapper {
                 ),
                 harSøktBarnetilleggForDetteBarnet = KorrigerbartJaNeiVilkår(
                     vilkår = Vilkår.AAP,
+                    vurderingsperiode = vurderingsperiode,
                     opprinneligSaksopplysning = JaNeiSaksopplysning(
                         kilde = Kilde.SØKNAD,
                         detaljer = "",
@@ -49,7 +51,10 @@ object SøknadBarnetilleggMapper {
                         kilde = Kilde.SØKNAD,
                         detaljer = "",
                         saksbehandler = systembruker.brukernavn,
-                        verdi = Periodisering(periodeMedVerdi = mapOf(vurderingsperiode to JaNei.JA)),
+                        verdi = Periodisering<JaNei?>(
+                            defaultVerdi = null,
+                            totalePeriode = vurderingsperiode,
+                        ).setVerdiForDelPeriode(verdi = JaNei.JA, delPeriode = vurderingsperiode),
                     ),
                 ),
                 bosattIEØS = KorrigerbartJaNeiPeriodeVilkår(
@@ -59,7 +64,10 @@ object SøknadBarnetilleggMapper {
                         kilde = Kilde.SØKNAD,
                         detaljer = "",
                         saksbehandler = systembruker.brukernavn,
-                        verdi = Periodisering(periodeMedVerdi = mapOf(vurderingsperiode to JaNei.JA)),
+                        verdi = Periodisering<JaNei?>(
+                            defaultVerdi = null,
+                            totalePeriode = vurderingsperiode,
+                        ).setVerdiForDelPeriode(verdi = JaNei.JA, delPeriode = vurderingsperiode),
                     ),
                 ),
                 oppholderSegIEØS = KorrigerbartJaNeiPeriodeVilkår(
@@ -69,7 +77,10 @@ object SøknadBarnetilleggMapper {
                         kilde = Kilde.SØKNAD,
                         detaljer = "",
                         saksbehandler = systembruker.brukernavn,
-                        verdi = Periodisering(periodeMedVerdi = mapOf(vurderingsperiode to JaNei.JA)),
+                        verdi = Periodisering<JaNei?>(
+                            defaultVerdi = null,
+                            totalePeriode = vurderingsperiode,
+                        ).setVerdiForDelPeriode(verdi = JaNei.JA, delPeriode = vurderingsperiode),
                     ),
                 ),
             )
