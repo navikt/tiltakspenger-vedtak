@@ -15,14 +15,10 @@ data class KorrigerbartJaNeiPeriodeVilkår private constructor(
 ) {
 
     fun oppdaterVurderingsperiode(nyVurderingsperiode: Periode): KorrigerbartJaNeiPeriodeVilkår {
-        val nyOpprinneligSaksopplysning = opprinneligSaksopplysning.oppdaterVurderingsperiode(nyVurderingsperiode)
-        val nyKorrigertSaksopplysning = korrigertSaksopplysning?.oppdaterVurderingsperiode(nyVurderingsperiode)
         return this.copy(
-            opprinneligSaksopplysning = nyOpprinneligSaksopplysning,
-            korrigertSaksopplysning = nyKorrigertSaksopplysning,
-        )
-            .avklarFakta()
-            .vilkårsvurder()
+            opprinneligSaksopplysning = opprinneligSaksopplysning.oppdaterVurderingsperiode(nyVurderingsperiode),
+            korrigertSaksopplysning = korrigertSaksopplysning?.oppdaterVurderingsperiode(nyVurderingsperiode),
+        ).avklarFakta().vilkårsvurder()
     }
 
     fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiPeriodeSaksopplysningCommand): KorrigerbartJaNeiPeriodeVilkår {
@@ -60,7 +56,7 @@ data class KorrigerbartJaNeiPeriodeVilkår private constructor(
         private fun vilkårsvurder(avklartSaksopplysning: JaNeiPeriodeSaksopplysning): Periodisering<Utfall> {
             return avklartSaksopplysning.verdi.map {
                 when (it) {
-                    // TODO: Kvalitetssikre hvilken vei det skal gå
+                    // TODO: Kvalitetssikre hvilken vei det skal gå? Avhenger det av vilkåret mon tro?
                     JaNei.JA -> Utfall.OPPFYLT
                     JaNei.NEI -> Utfall.IKKE_OPPFYLT
                 }
