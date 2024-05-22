@@ -58,7 +58,6 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
-            tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
         )
 
         val behandling = lagreSakOgBehandling()
@@ -98,7 +97,6 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
-            tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
         )
 
         val behandling = lagreSakOgBehandling()

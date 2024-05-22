@@ -78,6 +78,7 @@ internal class VurderingRepo {
                     "detaljer" to vurdering.detaljer,
                     "utfall" to vurdering.utfall.name,
                     "opprettet" to nå(),
+                    "grunnlagId" to vurdering.grunnlagId,
                 ),
             ).asUpdate,
         )
@@ -112,6 +113,7 @@ internal class VurderingRepo {
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                grunnlagId = stringOrNull("grunnlagId"),
             )
 
             "IKKE_OPPFYLT" -> Vurdering.IkkeOppfylt(
@@ -120,6 +122,7 @@ internal class VurderingRepo {
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                grunnlagId = stringOrNull("grunnlagId"),
             )
 
             "KREVER_MANUELL_VURDERING" -> Vurdering.KreverManuellVurdering(
@@ -128,6 +131,7 @@ internal class VurderingRepo {
                 detaljer = detaljer,
                 fom = localDate("fom"),
                 tom = localDate("tom"),
+                grunnlagId = stringOrNull("grunnlagId"),
             )
 
             else -> {
@@ -148,7 +152,8 @@ internal class VurderingRepo {
             vilkår,
             detaljer,
             utfall,
-            opprettet
+            opprettet,
+            grunnlagId
         ) values (
             :id,
             :behandlingId,
@@ -159,7 +164,8 @@ internal class VurderingRepo {
             :vilkar,
             :detaljer,
             :utfall,
-            :opprettet
+            :opprettet,
+            :grunnlagId
         )
     """.trimIndent()
 

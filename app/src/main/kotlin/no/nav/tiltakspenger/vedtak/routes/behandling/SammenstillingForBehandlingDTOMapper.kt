@@ -198,8 +198,14 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = it.tiltaksdeltagelseVurdering.utfall,
-                    begrunnelse = it.tiltaksdeltagelseVurdering.detaljer,
+                    deltagelseUtfall = (
+                        (behandling as BehandlingVilkårsvurdert)
+                            .vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == it.gjennomføring.id }?.utfall
+                        ) ?: Utfall.KREVER_MANUELL_VURDERING,
+                    begrunnelse = (
+                        (behandling)
+                            .vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == it.gjennomføring.id }?.detaljer
+                        ) ?: "begrunnelse",
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->

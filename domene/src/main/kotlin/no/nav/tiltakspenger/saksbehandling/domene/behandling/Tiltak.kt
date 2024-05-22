@@ -19,20 +19,7 @@ data class Tiltak(
     val kilde: String,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
-    val tiltaksdeltagelseVurdering: Vurdering,
 ) {
-    companion object {
-        fun tempVurdering(): Vurdering {
-            return Vurdering.KreverManuellVurdering(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = "temp-detaljer",
-                fom = LocalDate.MIN,
-                tom = LocalDate.MAX,
-            )
-        }
-    }
-
     data class Gjennomføring(
         val id: String,
         val arrangørnavn: String,
@@ -68,6 +55,7 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
+                grunnlagId = this.id,
             )
 
             Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
@@ -76,6 +64,7 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
+                grunnlagId = this.id,
             )
 
             Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
@@ -84,11 +73,12 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
+                grunnlagId = this.id,
             )
         }
     }
 
-    fun vilkårsvurderTiltaksdeltagelse(): Tiltak {
+    fun vilkårsvurderTiltaksdeltagelse(): Vurdering {
         val vurdering = if (gjennomføring.rettPåTiltakspenger) {
             if (brukerDeltarPåTiltak(deltakelseStatus.status)) {
                 lagVurderingAvTiltakdeltagelse(Utfall.OPPFYLT)
@@ -108,6 +98,6 @@ data class Tiltak(
             lagVurderingAvTiltakdeltagelse(Utfall.IKKE_OPPFYLT, "Tiltaket gir ikke rett på tiltakspenger")
         }
 
-        return this.copy(tiltaksdeltagelseVurdering = vurdering)
+        return vurdering
     }
 }

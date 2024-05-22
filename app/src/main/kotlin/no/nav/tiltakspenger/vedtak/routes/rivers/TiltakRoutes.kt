@@ -94,7 +94,6 @@ private fun mapTiltak(
                 kilde = it.kilde,
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
-                tiltaksdeltagelseVurdering = Tiltak.tempVurdering(),
             )
         }
 }
