@@ -215,6 +215,7 @@ fun hentVilkår(vilkår: String) =
         "SYKEPENGER" -> Vilkår.SYKEPENGER
         "UFØRETRYGD" -> Vilkår.UFØRETRYGD
         "ETTERLØNN" -> Vilkår.ETTERLØNN
+        "TILTAKSDELTAGELSE" -> Vilkår.TILTAKSDELTAGELSE
         else -> {
             throw IllegalStateException("Vurdering med ukjent vilkår $vilkår")
         }

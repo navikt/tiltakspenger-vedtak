@@ -198,14 +198,8 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = (
-                        (behandling as BehandlingVilkårsvurdert)
-                            .vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == it.gjennomføring.id }?.utfall
-                        ) ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = (
-                        (behandling)
-                            .vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == it.gjennomføring.id }?.detaljer
-                        ) ?: "begrunnelse",
+                    deltagelseUtfall = utledDeltagelseUtfall(behandling as BehandlingVilkårsvurdert, it.id).utfall,
+                    begrunnelse = utledDeltagelseUtfall(behandling as BehandlingVilkårsvurdert, it.id).detaljer,
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->
@@ -285,6 +279,10 @@ object SammenstillingForBehandlingDTOMapper {
                 )
             },
         )
+    }
+
+    fun utledDeltagelseUtfall(beh: BehandlingVilkårsvurdert, tiltakId: String): Vurdering {
+        return beh.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }!!
     }
 
     fun settBeslutter(behandling: Førstegangsbehandling): String? =
