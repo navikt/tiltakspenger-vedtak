@@ -10,6 +10,7 @@ sealed class Vurdering {
     abstract val tom: LocalDate?
     abstract val utfall: Utfall
     abstract val detaljer: String
+    abstract val grunnlagId: String?
 
     data class Oppfylt(
         override val vilkår: Vilkår,
@@ -17,6 +18,7 @@ sealed class Vurdering {
         override val detaljer: String,
         override val fom: LocalDate,
         override val tom: LocalDate,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.OPPFYLT
     }
@@ -27,6 +29,7 @@ sealed class Vurdering {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val detaljer: String,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.IKKE_OPPFYLT
     }
@@ -37,6 +40,7 @@ sealed class Vurdering {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val detaljer: String,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.KREVER_MANUELL_VURDERING
     }

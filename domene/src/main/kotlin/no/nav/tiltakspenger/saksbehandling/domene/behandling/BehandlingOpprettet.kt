@@ -71,7 +71,7 @@ data class BehandlingOpprettet(
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
-        this.copy(tiltak = tiltak)
+        this.copy(tiltak = tiltak).vilkårsvurder()
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }

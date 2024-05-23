@@ -94,7 +94,8 @@ CREATE TABLE vurdering
     vilkår                  VARCHAR                  NOT NULL,
     detaljer                VARCHAR                  NOT NULL,
     utfall                  VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
+    grunnlagId              VARCHAR                  NULL
 );
 
 create table attestering
