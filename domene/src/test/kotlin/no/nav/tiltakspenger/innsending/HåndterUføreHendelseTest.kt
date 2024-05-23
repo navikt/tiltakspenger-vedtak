@@ -53,6 +53,6 @@ internal class HåndterUføreHendelseTest {
             tidsstempelInnhentet = innhentet,
         )
         innsending.aktivitetslogg.aktiviteter()
-            .map { it.melding } shouldContain "Filtrer bort vedtak da virkDato ikke er i vurderingsperioden Periode(range=[2023-01-01..2023-02-01))"
+            .map { it.melding } shouldContain "Filtrer bort vedtak da virkDato ikke er i vurderingsperioden Periode(fra=2023-01-01 til=2023-02-01)"
     }
 }

@@ -49,7 +49,7 @@ data class Saksopplysning(
     }
 
     fun lagVurdering(periode: Periode): List<Vurdering> {
-        val vurdering = when (this.typeSaksopplysning) {
+        val vurdering: Vurdering = when (this.typeSaksopplysning) {
             TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
                 vilkår = this.vilkår,
                 kilde = this.kilde,

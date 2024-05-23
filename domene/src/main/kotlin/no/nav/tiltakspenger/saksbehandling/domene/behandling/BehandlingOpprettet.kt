@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.periodisering.Periodisering.Companion.reduser
@@ -60,7 +61,7 @@ data class BehandlingOpprettet(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
             saksopplysninger = fakta,
-            barnetillegg = barnetillegg.oppdaterSøknad(søknad, TODO()),
+            barnetillegg = barnetillegg.oppdaterSøknad(søknad, Systembruker("TODO", emptyList())), // TODO
         ).vilkårsvurder()
     }
 

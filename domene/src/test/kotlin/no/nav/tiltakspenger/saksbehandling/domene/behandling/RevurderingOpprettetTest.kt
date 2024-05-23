@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -44,7 +45,12 @@ internal class RevurderingOpprettetTest {
         ),
         saksopplysninger = listOf(saksopplysning),
         tiltak = tiltak,
-        barnetillegg = TODO(),
+        barnetillegg = BarnetilleggVilkårData(
+            Periode(
+                fra = LocalDate.MIN,
+                til = LocalDate.MAX,
+            ),
+        ),
         saksbehandler = saksbehandler,
         søknader = emptyList(),
     )
