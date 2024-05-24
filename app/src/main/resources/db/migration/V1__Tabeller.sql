@@ -448,4 +448,17 @@ CREATE TABLE overgangsstønad_vedtak
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE stønadsdager_tiltak
+(
+    id                  VARCHAR PRIMARY KEY,
+    antall_dager        NUMERIC                  NOT NULL,
+    fom                 DATE                     NOT NULL,
+    tom                 DATE                     NOT NULL,
+    datakilde           VARCHAR                  NOT NULL,
+    innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
+    tiltak_id           VARCHAR                  NOT NULL REFERENCES tiltak (id),
+    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id)
+);
+
 create sequence sak_løpenr start 1001;

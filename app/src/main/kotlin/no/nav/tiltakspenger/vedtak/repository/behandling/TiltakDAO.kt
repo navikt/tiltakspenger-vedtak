@@ -7,22 +7,25 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import org.intellij.lang.annotations.Language
 
 class TiltakDAO {
 
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Tiltak> {
         return txSession.run(
-            queryOf(hentTiltak, behandlingId.toString())
+            queryOf(hentTiltakSql, behandlingId.toString())
                 .map { row -> row.toTiltak() }
                 .asList,
         )
     }
 
     fun lagre(behandlingId: BehandlingId, tiltakListe: List<Tiltak>, txSession: TransactionalSession) {
+        slettStønadsdager(behandlingId, txSession)
         slettTiltak(behandlingId, txSession)
         tiltakListe.forEach { tiltak ->
             lagreTiltak(behandlingId, tiltak, txSession)
+            lagreStønadsdager(behandlingId, tiltak, txSession)
         }
     }
 
@@ -33,7 +36,7 @@ class TiltakDAO {
     ) {
         txSession.run(
             queryOf(
-                lagreTiltak,
+                lagreTiltakSql,
                 mapOf(
                     "id" to random(ULID_PREFIX_TILTAK).toString(),
                     "behandlingId" to behandlingId.toString(),
@@ -57,8 +60,34 @@ class TiltakDAO {
         )
     }
 
+    private fun lagreStønadsdager(
+        behandlingId: BehandlingId,
+        tiltak: Tiltak,
+        txSession: TransactionalSession,
+        kilde: Kilde = Kilde.ARENA,
+    ) {
+        txSession.run(
+            queryOf(
+                lagreStønadsdagerSql,
+                mapOf(
+                    "id" to random(ULID_PREFIX_STØNADSDAGER).toString(),
+                    "antallDager" to tiltak.deltakelseDagerUke,
+                    "fom" to tiltak.deltakelseFom,
+                    "tom" to tiltak.deltakelseTom,
+                    "datakilde" to kilde,
+                    "tidsstempel" to tiltak.innhentet,
+                    "tiltakId" to tiltak.id,
+                    "behandlingId" to behandlingId.toString(),
+                ),
+            ).asUpdate,
+        )
+    }
     private fun slettTiltak(behandlingId: BehandlingId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettTiltak, behandlingId.toString()).asUpdate)
+        txSession.run(queryOf(slettTiltakSql, behandlingId.toString()).asUpdate)
+    }
+
+    private fun slettStønadsdager(behandlingId: BehandlingId, txSession: TransactionalSession) {
+        txSession.run(queryOf(slettStønadsdagerSql, behandlingId.toString()).asUpdate)
     }
 
     private fun Row.toTiltak(): Tiltak {
@@ -85,12 +114,35 @@ class TiltakDAO {
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
                 // TODO: Vi må se på lagringen før vi finner ut av hvordan vi kan hente ut data om antall dager fra db
                 antallDagerSaksopplysningerFraRegister = emptyList(),
-            )
+            ),
         )
     }
 
     @Language("SQL")
-    private val lagreTiltak = """
+    private val lagreStønadsdagerSql = """
+        insert into stønadsdager_tiltak (
+            id,
+            antall_dager,
+            fom,
+            tom,
+            datakilde,
+            tidsstempel,
+            tiltak_id,
+            behandling_id
+        ) values (
+            :id,
+            :antallDager,
+            :fom,
+            :tom,
+            :datakilde,
+            :tidsstempel,
+            :tiltakId,
+            :behandlingId
+        )
+    """.trimIndent()
+
+    @Language("SQL")
+    private val lagreTiltakSql = """
         insert into tiltak (
             id,
             behandling_id,
@@ -131,12 +183,16 @@ class TiltakDAO {
     """.trimIndent()
 
     @Language("SQL")
-    private val slettTiltak = "delete from tiltak where behandling_id = ?"
+    private val slettTiltakSql = "delete from tiltak where behandling_id = ?"
 
     @Language("SQL")
-    private val hentTiltak = "select * from tiltak where behandling_id = ?"
+    private val slettStønadsdagerSql = "delete from stønadsdager_tiltak where behandling_id = ?"
+
+    @Language("SQL")
+    private val hentTiltakSql = "select * from tiltak where behandling_id = ?"
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "takt"
+        private const val ULID_PREFIX_STØNADSDAGER = "stond"
     }
 }
