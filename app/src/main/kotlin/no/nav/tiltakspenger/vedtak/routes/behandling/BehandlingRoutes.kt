@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -117,6 +118,14 @@ fun Route.behandlingRoutes(
         // TODO: Skriv denne om til en sjekk på om det faktisk er oppdatert
         delay(3000)
         call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
+
+    put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
+        val tiltakId = call.parameter("tiltakId")
+        val behandling = behandlingService.hentBehandling(behandlingId)
+        behandling.oppdaterAntallDager()
     }
 
     post("$behandlingPath/avbrytbehandling/{behandlingId}") {

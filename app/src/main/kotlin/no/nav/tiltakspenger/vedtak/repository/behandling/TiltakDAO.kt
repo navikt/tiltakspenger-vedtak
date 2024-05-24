@@ -5,6 +5,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import org.intellij.lang.annotations.Language
 
@@ -81,6 +82,10 @@ class TiltakDAO {
             kilde = string("kilde"),
             registrertDato = localDateTime("tidsstempel_kilde"),
             innhentet = localDateTime("tidsstempel_hos_oss"),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                // TODO: Vi må se på lagringen før vi finner ut av hvordan vi kan hente ut data om antall dager fra db
+                antallDagerSaksopplysningerFraRegister = emptyList(),
+            )
         )
     }
 

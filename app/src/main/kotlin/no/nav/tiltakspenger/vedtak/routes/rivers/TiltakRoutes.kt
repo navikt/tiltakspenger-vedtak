@@ -10,10 +10,14 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 data class TiltakMottattDTO(
     val respons: TiltakResponsDTO,
@@ -94,6 +98,19 @@ private fun mapTiltak(
                 kilde = it.kilde,
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
+                antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                    antallDagerSaksopplysningerFraRegister = listOf(
+                        PeriodeMedVerdi(
+                            // TODO: Dette bør kanskje leve inni saksopplysningen?
+                            // TODO: Vi må sørge for at dersom prosent == 100 og vi mangler antall dager, setter vi antall dager til 5
+                            verdi = if (it.deltakelseDagerUke != null) it.deltakelseDagerUke!!.roundToInt() else 0,
+                            periode = Periode(
+                                fra=it.deltakelseFom!!,
+                                til=it.deltakelseTom!!
+                            )
+                        )
+                    )
+                )
             )
         }
 }

@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -82,5 +83,24 @@ data class BehandlingOpprettet(
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
+    }
+
+    override fun oppdaterAntallDager(tiltakId: String, verdier: List<PeriodeMedVerdi<Int>>): Behandling {
+        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
+        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
+
+        val oppdatertTiltak = tiltakTilOppdatering.copy(
+            antallDagerSaksopplysninger = tiltakTilOppdatering.antallDagerSaksopplysninger.copy(
+                antallDagerSaksopplysningerFraSBH = verdier
+            ).avklar()
+        )
+
+        val nyeTiltak = tiltak.map {
+            if (it.id ==oppdatertTiltak.id) {
+                oppdatertTiltak
+            } else it
+        }
+
+        return this.oppdaterTiltak(tiltak = nyeTiltak)
     }
 }

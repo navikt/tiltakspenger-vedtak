@@ -1,11 +1,26 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+data class AntallDagerSaksopplysninger(
+    // todo: Vi trenger informasjon om hvilken saksbehandler som har endret antall dager.
+    val antallDagerSaksopplysningerFraSBH: List<PeriodeMedVerdi<Int>> = emptyList(),
+    val antallDagerSaksopplysningerFraRegister: List<PeriodeMedVerdi<Int>>,
+    val avklartAntallDager: List<PeriodeMedVerdi<Int>> = emptyList(),
+) {
+    fun avklar(): AntallDagerSaksopplysninger {
+        val avklart = antallDagerSaksopplysningerFraSBH.ifEmpty { antallDagerSaksopplysningerFraRegister }
+        return this.copy(
+            avklartAntallDager = avklart
+        )
+    }
+}
 
 data class Tiltak(
     val id: String,
@@ -18,6 +33,7 @@ data class Tiltak(
     val kilde: String,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
+    val antallDagerSaksopplysninger: AntallDagerSaksopplysninger,
 ) {
     data class Gjennomføring(
         val id: String,
