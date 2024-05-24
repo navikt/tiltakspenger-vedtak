@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -92,7 +91,10 @@ data class Tiltak(
                     )
                 }
             } else {
-                throw IkkeImplementertException("Støtter ikke saksbehandling av deltagelse som ikke er påbegynt")
+                lagVurderingAvTiltakdeltagelse(
+                    Utfall.KREVER_MANUELL_VURDERING,
+                    "Vi har mottatt en status vi ikke hånderer enda. Setter til manuell",
+                )
             }
         } else {
             lagVurderingAvTiltakdeltagelse(Utfall.IKKE_OPPFYLT, "Tiltaket gir ikke rett på tiltakspenger")
