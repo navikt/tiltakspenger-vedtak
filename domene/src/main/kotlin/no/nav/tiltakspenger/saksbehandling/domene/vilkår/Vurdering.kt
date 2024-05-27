@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
-import java.time.LocalDate
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import java.time.LocalDate
 
 data class NyVurdering(
     val kilde: Kilde,

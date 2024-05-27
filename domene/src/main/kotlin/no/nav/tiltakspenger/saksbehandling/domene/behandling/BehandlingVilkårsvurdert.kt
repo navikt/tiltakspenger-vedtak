@@ -34,7 +34,7 @@ data class BehandlingVilkårsvurdert(
             BehandlingStatus.Avslag
         }
 
-    //TODO: Denne kalles aldri, og er det egentlig lov å gå direkte fra Vilkårsvurdert til Ivkersatt?
+    // TODO: Denne kalles aldri, og er det egentlig lov å gå direkte fra Vilkårsvurdert til Ivkersatt?
     fun iverksett(): BehandlingIverksatt {
         return when (status()) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")

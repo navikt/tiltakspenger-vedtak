@@ -16,7 +16,7 @@ data class KorrigerbartJaNeiVilkår private constructor(
 ) : JaNeiPeriodeVurdering {
 
     override fun vurdering(): Periodisering<Utfall> = vurdering
-    
+
     fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiSaksopplysningCommand): KorrigerbartJaNeiVilkår {
         require(oppdatering.bruker is Saksbehandler) { "Støtter ikke oppdatering av systembruker" }
         return this.copy(

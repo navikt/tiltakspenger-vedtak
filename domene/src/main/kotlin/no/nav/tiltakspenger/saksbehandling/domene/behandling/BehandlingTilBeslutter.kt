@@ -64,7 +64,6 @@ data class BehandlingTilBeslutter(
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
             saksbehandler = saksbehandler,
-            status = BehandlingStatus.Innvilget,
         )
     }
 

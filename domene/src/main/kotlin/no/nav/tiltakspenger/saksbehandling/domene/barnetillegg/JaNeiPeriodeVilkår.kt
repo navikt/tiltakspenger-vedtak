@@ -12,6 +12,4 @@ data class JaNeiPeriodeVilkår private constructor(
     val korrigertSaksopplysning: JaNeiPeriodeSaksopplysning?,
     val avklartSaksopplysning: JaNeiPeriodeSaksopplysning,
     val vurdering: Periodisering<Utfall>,
-) {
-
-}
+)

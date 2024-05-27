@@ -253,12 +253,6 @@ internal class PostgresBehandlingRepo(
             )
 
             "Vilkårsvurdert" -> {
-                val behandlingVilkårsvurdertStatus = when (status) {
-                    "Innvilget" -> BehandlingStatus.Innvilget
-                    "Avslag" -> BehandlingStatus.Avslag
-                    "Manuell" -> BehandlingStatus.Manuell
-                    else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-                }
                 BehandlingVilkårsvurdert(
                     id = id,
                     sakId = sakId,
@@ -270,7 +264,6 @@ internal class PostgresBehandlingRepo(
                     vilkårsvurderinger = vurderingRepo.hent(id, txSession),
                     saksbehandler = saksbehandler,
                     utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                    status = behandlingVilkårsvurdertStatus,
                 )
             }
 
@@ -335,9 +328,7 @@ internal class PostgresBehandlingRepo(
     private fun finnStatus(behandling: Behandling): String =
         when {
             behandling is BehandlingOpprettet -> "Opprettet"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Manuell -> "Manuell"
+            behandling is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
             behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Avslag -> "Avslag"
             behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
             behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"

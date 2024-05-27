@@ -14,6 +14,7 @@ object SøknadBarnetilleggMapper {
         return søknad.barnetillegg.map {
             BarnetilleggBarn(
                 detaljer = KorrigerbareBarnDetaljer(
+                    vurderingsperiode = vurderingsperiode,
                     saksopplysning = when (it) {
                         is Barnetillegg.FraPdl ->
                             BarnetilleggBarnPdl(
