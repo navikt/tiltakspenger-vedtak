@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.innsending.domene.tolkere
 
-import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning

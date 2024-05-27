@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.math.BigDecimal
 import java.time.LocalDateTime
 

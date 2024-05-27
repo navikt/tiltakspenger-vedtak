@@ -34,6 +34,12 @@ sealed class Vilkår {
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
             TILTAKSDELTAGELSE -> Kilde.ARENA
+            BARNETILLEGG_FORSØRGES -> TODO()
+            BARNETILLEGG_BOSATT -> TODO()
+            BARNETILLEGG_OPPHOLD -> TODO()
+            BARNETILLEGG_DETALJER -> TODO()
+            BARNETILLEGG_SØKT -> TODO()
+            BARNETILLEGG_ALDER -> TODO()
         }
 
     object ALDER : Vilkår() {
@@ -180,5 +186,53 @@ sealed class Vilkår {
         override val flateTittel: String = "Tiltaksdeltagelse"
         override val lovReference: List<Lovreferanse> =
             listOf(Lovreferanse.TILTAKSDELTAGELSE)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_FORSØRGES : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_BOSATT : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_OPPHOLD : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_SØKT : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_ALDER : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
+    }
+
+    // TODO Fikse opp
+    object BARNETILLEGG_DETALJER : Vilkår() {
+        override val tittel: String = "BARNETILLEGG"
+        override val flateTittel: String = "Barnetillegg"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.ETTERLØNNARBEIDSMARKEDSLOV, Lovreferanse.ETTERLØNNRUNDSKRIV)
     }
 }

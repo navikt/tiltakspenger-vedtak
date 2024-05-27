@@ -5,9 +5,9 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer

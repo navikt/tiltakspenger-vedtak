@@ -3,6 +3,12 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import java.time.LocalDate
 
+data class NyVurdering(
+    val kilde: Kilde,
+    val utfall: Utfall,
+    val detaljer: String,
+)
+
 sealed class Vurdering {
     abstract val vilkår: Vilkår
     abstract val kilde: Kilde

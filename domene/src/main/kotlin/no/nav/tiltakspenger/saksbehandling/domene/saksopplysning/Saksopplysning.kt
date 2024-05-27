@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
-import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -49,7 +49,7 @@ data class Saksopplysning(
     }
 
     fun lagVurdering(periode: Periode): List<Vurdering> {
-        val vurdering = when (this.typeSaksopplysning) {
+        val vurdering: Vurdering = when (this.typeSaksopplysning) {
             TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering.KreverManuellVurdering(
                 vilkår = this.vilkår,
                 kilde = this.kilde,

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 
 interface SakDetaljer {
     val id: SakId

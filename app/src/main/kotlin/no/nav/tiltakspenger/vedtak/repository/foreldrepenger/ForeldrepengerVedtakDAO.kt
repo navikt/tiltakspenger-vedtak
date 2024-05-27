@@ -5,8 +5,8 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr

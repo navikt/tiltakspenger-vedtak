@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling

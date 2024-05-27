@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.innsending.domene
 
 import no.nav.tiltakspenger.felles.ForeldrepengerVedtakId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Tidsstempler
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import java.math.BigDecimal
 import java.time.LocalDateTime

@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet

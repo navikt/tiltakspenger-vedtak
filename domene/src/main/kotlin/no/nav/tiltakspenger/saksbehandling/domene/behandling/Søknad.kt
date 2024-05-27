@@ -2,8 +2,8 @@
 
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
 

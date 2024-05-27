@@ -2,9 +2,10 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.barnetillegg.BarnetilleggVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -18,14 +19,24 @@ data class BehandlingVilkårsvurdert(
     override val vurderingsperiode: Periode,
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
+    override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
-    val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
 ) : Førstegangsbehandling {
 
+    private fun status(): BehandlingStatus =
+        if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+            BehandlingStatus.Manuell
+        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+            BehandlingStatus.Innvilget
+        } else {
+            BehandlingStatus.Avslag
+        }
+
+    // TODO: Denne kalles aldri, og er det egentlig lov å gå direkte fra Vilkårsvurdert til Ivkersatt?
     fun iverksett(): BehandlingIverksatt {
-        return when (status) {
+        return when (status()) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")
             else ->
                 BehandlingIverksatt(
@@ -35,11 +46,12 @@ data class BehandlingVilkårsvurdert(
                     vurderingsperiode = vurderingsperiode,
                     saksopplysninger = saksopplysninger,
                     tiltak = tiltak,
+                    barnetillegg = barnetillegg,
                     vilkårsvurderinger = vilkårsvurderinger,
                     utfallsperioder = utfallsperioder,
                     saksbehandler = "Automatisk",
                     beslutter = "Automatisk",
-                    status = status,
+                    status = status(),
                 )
         }
     }
@@ -48,7 +60,7 @@ data class BehandlingVilkårsvurdert(
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
 
-        return when (status) {
+        return when (status()) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
             else -> BehandlingTilBeslutter(
                 id = id,
@@ -57,11 +69,12 @@ data class BehandlingVilkårsvurdert(
                 vurderingsperiode = vurderingsperiode,
                 saksopplysninger = saksopplysninger,
                 tiltak = tiltak,
+                barnetillegg = barnetillegg,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
-                status = status,
+                status = status(),
             )
         }
     }
@@ -93,6 +106,7 @@ data class BehandlingVilkårsvurdert(
         vurderingsperiode = this.vurderingsperiode,
         saksopplysninger = this.saksopplysninger,
         tiltak = this.tiltak,
+        barnetillegg = barnetillegg,
         saksbehandler = this.saksbehandler,
     )
 }

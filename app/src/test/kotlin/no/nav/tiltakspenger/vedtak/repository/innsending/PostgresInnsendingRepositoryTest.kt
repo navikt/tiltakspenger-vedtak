@@ -5,10 +5,10 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.innsending.domene.Innsending
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
