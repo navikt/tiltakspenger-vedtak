@@ -17,7 +17,7 @@ data class AntallDagerSaksopplysninger(
     fun avklar(): AntallDagerSaksopplysninger {
         val avklart = antallDagerSaksopplysningerFraSBH.ifEmpty { antallDagerSaksopplysningerFraRegister }
         return this.copy(
-            avklartAntallDager = avklart
+            avklartAntallDager = avklart,
         )
     }
 }

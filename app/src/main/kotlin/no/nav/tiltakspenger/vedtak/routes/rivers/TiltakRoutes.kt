@@ -105,12 +105,12 @@ private fun mapTiltak(
                             // TODO: Vi må sørge for at dersom prosent == 100 og vi mangler antall dager, setter vi antall dager til 5
                             verdi = if (it.deltakelseDagerUke != null) it.deltakelseDagerUke!!.roundToInt() else 0,
                             periode = Periode(
-                                fra=it.deltakelseFom!!,
-                                til=it.deltakelseTom!!
-                            )
-                        )
-                    )
-                )
+                                fra = it.deltakelseFom!!,
+                                til = it.deltakelseTom!!,
+                            ),
+                        ),
+                    ),
+                ),
             )
         }
 }

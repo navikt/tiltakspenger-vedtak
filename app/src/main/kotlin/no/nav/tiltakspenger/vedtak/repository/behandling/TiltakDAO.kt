@@ -5,6 +5,8 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -15,7 +17,12 @@ class TiltakDAO {
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Tiltak> {
         return txSession.run(
             queryOf(hentTiltakSql, behandlingId.toString())
-                .map { row -> row.toTiltak() }
+                .map { row ->
+                    val tiltak = row.toTiltak()
+                    val antallDagerSaksopplysninger = hentAntallDager(behandlingId, tiltak, txSession)
+                    // TODO: sette de her på tiltaket på en eller annen måte
+                    tiltak
+                }
                 .asList,
         )
     }
@@ -27,6 +34,23 @@ class TiltakDAO {
             lagreTiltak(behandlingId, tiltak, txSession)
             lagreStønadsdager(behandlingId, tiltak, txSession)
         }
+    }
+
+    private fun hentAntallDager(
+        behandlingId: BehandlingId,
+        tiltak: Tiltak,
+        txSession: TransactionalSession,
+
+    ): List<PeriodeMedVerdi<Int>> {
+        txSession.run(
+            queryOf(
+                hentAntallDagerSql,
+                mapOf(
+                    "behandlingId" to behandlingId.toString(),
+                    "tiltakId" to tiltak.id,
+                ),
+            ).map { row -> row.toStønadsdager() }.asList,
+        )
     }
 
     private fun lagreTiltak(
@@ -118,6 +142,16 @@ class TiltakDAO {
         )
     }
 
+    private fun Row.toStønadsdager(): PeriodeMedVerdi<Int> {
+        return PeriodeMedVerdi(
+            periode = Periode(
+                fra = localDate("fom"),
+                til = localDate("tom"),
+            ),
+            verdi = int("antall_dager"),
+        )
+    }
+
     @Language("SQL")
     private val lagreStønadsdagerSql = """
         insert into stønadsdager_tiltak (
@@ -190,6 +224,9 @@ class TiltakDAO {
 
     @Language("SQL")
     private val hentTiltakSql = "select * from tiltak where behandling_id = ?"
+
+    @Language("SQL")
+    private val hentAntallDagerSql = "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND datakilde = ?"
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "takt"
