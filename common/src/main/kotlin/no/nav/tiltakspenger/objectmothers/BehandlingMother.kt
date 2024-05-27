@@ -137,7 +137,7 @@ interface BehandlingMother {
             innhentet = 1.januarDateTime(2023),
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
                 antallDagerSaksopplysningerFraSBH = emptyList(),
-                antallDagerSaksopplysningerFraRegister = mptyList(),
+                antallDagerSaksopplysningerFraRegister = emptyList(),
                 avklartAntallDager = emptyList(),
             ),
         )
