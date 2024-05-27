@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
@@ -524,6 +525,11 @@ interface InnsendingMother {
             kilde = kilde,
             registrertDato = registrertDato,
             innhentet = innhentet,
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                antallDagerSaksopplysningerFraSBH = emptyList(),
+                antallDagerSaksopplysningerFraRegister = emptyList(),
+                avklartAntallDager = emptyList(),
+            ),
         )
     }
 }

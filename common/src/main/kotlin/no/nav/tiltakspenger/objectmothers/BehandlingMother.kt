@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
@@ -134,6 +135,11 @@ interface BehandlingMother {
             kilde = kilde,
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                antallDagerSaksopplysningerFraSBH = emptyList(),
+                antallDagerSaksopplysningerFraRegister = mptyList(),
+                avklartAntallDager = emptyList(),
+            ),
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)

@@ -459,7 +459,7 @@ CREATE TABLE stønadsdager_tiltak
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
     tiltak_id           VARCHAR                  NOT NULL REFERENCES tiltak (id),
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    avklartTidspunkt    TIMESTAMP WITH TIME ZONE NULL
+    avklart_tidspunkt    TIMESTAMP WITH TIME ZONE NULL
 );
 
 create sequence sak_løpenr start 1001;
