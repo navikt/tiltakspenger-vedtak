@@ -13,7 +13,9 @@ data class KorrigerbartJaNeiPeriodeVilkår private constructor(
     val korrigertSaksopplysning: JaNeiPeriodeSaksopplysning?,
     val avklartSaksopplysning: JaNeiPeriodeSaksopplysning,
     val vurdering: Periodisering<Utfall>,
-) {
+) : JaNeiPeriodeVurdering {
+
+    override fun vurdering(): Periodisering<Utfall> = vurdering
 
     fun oppdaterVurderingsperiode(nyVurderingsperiode: Periode): KorrigerbartJaNeiPeriodeVilkår {
         return this.copy(

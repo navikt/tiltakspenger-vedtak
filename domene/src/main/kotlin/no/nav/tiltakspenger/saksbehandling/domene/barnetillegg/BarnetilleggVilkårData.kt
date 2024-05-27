@@ -16,10 +16,12 @@ TODO: Hvorfor kalle avklarFakta og vilkårsvurder hele tiden? Når data settes, 
 data class BarnetilleggVilkårData private constructor(
     val vurderingsperiode: Periode,
     val barnetilleggBarn: List<BarnetilleggBarn>,
+    // TODO: disse to kan vel kanskje kombineres i en?
     val samletVurdering: Periodisering<UtfallForBarnetilleggPeriode>,
     val antallBarnPeriodisering: Periodisering<Int>,
 ) {
 
+    // TODO: Skal vel egentlig bli håndter(event: VurderingsperiodeEndretEvent)
     fun oppdaterVurderingsperiode(nyVurderingsperiode: Periode): BarnetilleggVilkårData {
         require(nyVurderingsperiode.inneholderHele(this.vurderingsperiode)) { "Vurderingsperioden kan kun utvides" }
 
@@ -29,26 +31,27 @@ data class BarnetilleggVilkårData private constructor(
         ).vilkårsvurder()
     }
 
-    fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiSaksopplysningCommand): BarnetilleggVilkårData {
-        require(barnetilleggBarn.find { it.id == oppdatering.barn } != null) { "Barnet finnes ikke" }
+    fun oppdaterSaksopplysning(command: OppdaterJaNeiSaksopplysningCommand): BarnetilleggVilkårData {
+        require(barnetilleggBarn.find { it.id == command.barn } != null) { "Barnet finnes ikke" }
 
         return this.copy(
             barnetilleggBarn = this.barnetilleggBarn.map {
-                if (it.id == oppdatering.barn) it.oppdaterSaksopplysning(oppdatering) else it
+                if (it.id == command.barn) it.oppdaterSaksopplysning(command) else it
             },
         ).vilkårsvurder()
     }
 
-    fun oppdaterSaksopplysning(oppdatering: OppdaterJaNeiPeriodeSaksopplysningCommand): BarnetilleggVilkårData {
-        if (barnetilleggBarn.find { it.id == oppdatering.barn } == null) throw IllegalStateException("Barnet finnes ikke")
+    fun oppdaterSaksopplysning(command: OppdaterJaNeiPeriodeSaksopplysningCommand): BarnetilleggVilkårData {
+        if (barnetilleggBarn.find { it.id == command.barn } == null) throw IllegalStateException("Barnet finnes ikke")
 
         return this.copy(
             barnetilleggBarn = this.barnetilleggBarn.map {
-                if (it.id == oppdatering.barn) it.oppdaterSaksopplysning(oppdatering) else it
+                if (it.id == command.barn) it.oppdaterSaksopplysning(command) else it
             },
         ).vilkårsvurder()
     }
 
+    // TODO: Gjøre om til command
     fun oppdaterSøknad(søknad: Søknad, systembruker: Systembruker): BarnetilleggVilkårData {
         // Når en ny søknad mottas nukes alle eksisterende data, inkl det saksbehandler har lagt inn.
         // TODO: Dette er trolig ikke bra nok. Hvis det er like barn i de to søknadene kan de vel beholdes f.eks?
@@ -65,7 +68,7 @@ data class BarnetilleggVilkårData private constructor(
         )
     }
 
-    fun antallBarn(): Int = antallBarnPeriodisering.maksAntall()
+    fun antallBarn(): Int = antallBarnPeriodisering.perioder().maxOfOrNull { it.verdi } ?: 0
 
     companion object {
         operator fun invoke(vurderingsperiode: Periode): BarnetilleggVilkårData {
@@ -81,28 +84,16 @@ data class BarnetilleggVilkårData private constructor(
         private fun samletVurdering(
             vurderingsperiode: Periode,
             barnetilleggBarn: List<BarnetilleggBarn>,
-        ): Periodisering<UtfallForBarnetilleggPeriode> =
-            kombinerVurderinger(vurderingsperiode, barnetilleggBarn)
-
-        private fun antallBarnPeriodisering(
-            vurderingsperiode: Periode,
-            barnetilleggBarn: List<BarnetilleggBarn>,
-        ): Periodisering<Int> =
-            kombinerAntallbarn(vurderingsperiode, barnetilleggBarn)
-
-        private fun kombinerVurderinger(
-            vurderingsperiode: Periode,
-            barnetilleggBarn: List<BarnetilleggBarn>,
         ): Periodisering<UtfallForBarnetilleggPeriode> {
             if (barnetilleggBarn.isEmpty()) {
-                return Periodisering(UtfallForBarnetilleggPeriode.KREVER_MANUELL_VURDERING, vurderingsperiode)
+                return Periodisering(UtfallForBarnetilleggPeriode.GIR_IKKE_RETT_BARNETILLEGG, vurderingsperiode)
             }
             return barnetilleggBarn.map { it.samletVurdering }
                 .reduser { utfall1, utfall2 ->
                     when {
-                        utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> Utfall.IKKE_OPPFYLT
                         utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
-                        else -> Utfall.OPPFYLT
+                        utfall1 == Utfall.OPPFYLT || utfall2 == Utfall.OPPFYLT -> Utfall.OPPFYLT
+                        else -> Utfall.IKKE_OPPFYLT
                     }
                 }.map { utfall ->
                     when (utfall) {
@@ -113,7 +104,7 @@ data class BarnetilleggVilkårData private constructor(
                 }
         }
 
-        private fun kombinerAntallbarn(
+        private fun antallBarnPeriodisering(
             vurderingsperiode: Periode,
             barnetilleggBarn: List<BarnetilleggBarn>,
         ): Periodisering<Int> {
@@ -133,7 +124,5 @@ data class BarnetilleggVilkårData private constructor(
                     antall1 + antall2
                 }
         }
-
-        private fun Periodisering<Int>.maksAntall(): Int = this.perioder().maxOfOrNull { it.verdi } ?: 0
     }
 }

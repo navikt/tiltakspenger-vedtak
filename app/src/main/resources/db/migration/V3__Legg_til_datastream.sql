@@ -10,7 +10,7 @@ $$
 
             ALTER USER "tiltakspenger-vedtak" WITH REPLICATION;
             ALTER USER "tpts_datastream" WITH REPLICATION;
-            CREATE PUBLICATION "ds_publication" FOR ALL TABLES;
+            -- CREATE PUBLICATION "ds_publication" FOR ALL TABLES; -- Denne er kommentert ut fordi flyway kjører migrering hver gang V1 endres, og da får vi feil på at 'ds_publication' finnes fra før på deploy.
         END IF;
     END
 $$;

@@ -22,12 +22,21 @@ data class BehandlingVilkårsvurdert(
     override val barnetillegg: BarnetilleggVilkårData,
     override val saksbehandler: String?,
     override val utfallsperioder: List<Utfallsperiode> = emptyList(),
-    val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
 ) : Førstegangsbehandling {
 
+    private fun status(): BehandlingStatus =
+        if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+            BehandlingStatus.Manuell
+        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+            BehandlingStatus.Innvilget
+        } else {
+            BehandlingStatus.Avslag
+        }
+
+    //TODO: Denne kalles aldri, og er det egentlig lov å gå direkte fra Vilkårsvurdert til Ivkersatt?
     fun iverksett(): BehandlingIverksatt {
-        return when (status) {
+        return when (status()) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")
             else ->
                 BehandlingIverksatt(
@@ -42,7 +51,7 @@ data class BehandlingVilkårsvurdert(
                     utfallsperioder = utfallsperioder,
                     saksbehandler = "Automatisk",
                     beslutter = "Automatisk",
-                    status = status,
+                    status = status(),
                 )
         }
     }
@@ -51,7 +60,7 @@ data class BehandlingVilkårsvurdert(
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
 
-        return when (status) {
+        return when (status()) {
             BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke sende denne behandlingen til beslutter")
             else -> BehandlingTilBeslutter(
                 id = id,
@@ -65,7 +74,7 @@ data class BehandlingVilkårsvurdert(
                 utfallsperioder = utfallsperioder,
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
-                status = status,
+                status = status(),
             )
         }
     }

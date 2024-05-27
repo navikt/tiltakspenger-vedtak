@@ -1,7 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import java.time.LocalDate
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+
+data class NyVurdering(
+    val kilde: Kilde,
+    val utfall: Utfall,
+    val detaljer: String,
+)
 
 sealed class Vurdering {
     abstract val vilkår: Vilkår
@@ -10,6 +16,7 @@ sealed class Vurdering {
     abstract val tom: LocalDate?
     abstract val utfall: Utfall
     abstract val detaljer: String
+    abstract val grunnlagId: String?
 
     data class Oppfylt(
         override val vilkår: Vilkår,
@@ -17,6 +24,7 @@ sealed class Vurdering {
         override val detaljer: String,
         override val fom: LocalDate,
         override val tom: LocalDate,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.OPPFYLT
     }
@@ -27,6 +35,7 @@ sealed class Vurdering {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val detaljer: String,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.IKKE_OPPFYLT
     }
@@ -37,6 +46,7 @@ sealed class Vurdering {
         override val fom: LocalDate,
         override val tom: LocalDate,
         override val detaljer: String,
+        override val grunnlagId: String? = null,
     ) : Vurdering() {
         override val utfall = Utfall.KREVER_MANUELL_VURDERING
     }

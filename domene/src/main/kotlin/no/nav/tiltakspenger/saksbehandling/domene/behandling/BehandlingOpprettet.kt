@@ -81,7 +81,7 @@ data class BehandlingOpprettet(
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
-        this.copy(tiltak = tiltak)
+        this.copy(tiltak = tiltak).vilkårsvurder()
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
@@ -103,8 +103,6 @@ data class BehandlingOpprettet(
             vurderinger = vurderinger,
         )
 
-        val status = status(this.utfallsperioder)
-
         return BehandlingVilkårsvurdert(
             id = id,
             sakId = sakId,
@@ -113,26 +111,16 @@ data class BehandlingOpprettet(
             saksopplysninger = saksopplysninger,
             tiltak = tiltak,
             barnetillegg = barnetillegg,
-            vilkårsvurderinger = vurderinger,
             saksbehandler = saksbehandler,
+            vilkårsvurderinger = vurderinger,
             utfallsperioder = utfallsperioder,
-            status = status,
         )
     }
-
-    private fun status(utfallsperioder: List<Utfallsperiode>): BehandlingStatus =
-        if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
-            BehandlingStatus.Manuell
-        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-            BehandlingStatus.Innvilget
-        } else {
-            BehandlingStatus.Avslag
-        }
 
     private fun vurderinger(vurderingsperiode: Periode, saksopplysninger: List<Saksopplysning>): List<Vurdering> =
         saksopplysninger.flatMap {
             it.lagVurdering(vurderingsperiode)
-        }
+        } + tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() } // TODO: Disse må kombineres separat
 
     private fun utfallsperioder(
         vurderingsperiode: Periode,
