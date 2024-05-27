@@ -24,26 +24,6 @@ data class BehandlingVilkårsvurdert(
     val vilkårsvurderinger: List<Vurdering>,
 ) : Førstegangsbehandling {
 
-    fun iverksett(): BehandlingIverksatt {
-        return when (status) {
-            BehandlingStatus.Manuell -> throw IllegalStateException("Kan ikke iverksette denne behandlingen")
-            else ->
-                BehandlingIverksatt(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknader,
-                    vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
-                    tiltak = tiltak,
-                    vilkårsvurderinger = vilkårsvurderinger,
-                    utfallsperioder = utfallsperioder,
-                    saksbehandler = "Automatisk",
-                    beslutter = "Automatisk",
-                    status = status,
-                )
-        }
-    }
-
     fun tilBeslutting(saksbehandler: Saksbehandler): BehandlingTilBeslutter {
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }

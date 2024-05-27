@@ -5,21 +5,29 @@ import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
 import no.nav.tiltakspenger.libs.dokument.TiltaksinfoDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+val norskDatoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.Builder().setLanguage("no").setRegion("NO").build())
 
 object VedtaksbrevMapper {
-    fun mapVedtaksBrevDTO(vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
+    fun mapVedtaksBrevDTO(saksnummer: Saksnummer, vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
         BrevDTO(
-            personaliaDTO = mapPersonaliaDTO(vedtak, personopplysninger),
-            tiltaksinfoDTO = mapTiltaksinfo(vedtak),
-            fraDato = vedtak.periode.fra.toString(),
-            tilDato = vedtak.periode.til.toString(),
-            saksnummer = vedtak.sakId.toString(),
-            barnetillegg = false,
+            personalia = mapPersonaliaDTO(vedtak, personopplysninger),
+            tiltaksinfo = mapTiltaksinfo(vedtak),
+            fraDato = vedtak.periode.fra.format(norskDatoFormatter),
+            tilDato = vedtak.periode.til.format(norskDatoFormatter),
+            saksnummer = saksnummer.verdi,
+            barnetillegg = vedtak.utfallsperioder.any { it.antallBarn > 0 },
             saksbehandler = vedtak.saksbehandler,
+            beslutter = vedtak.beslutter,
+            sats = 285, // TODO Disse satsene bor i utbetaling. Burde vi hente de derfra?
+            satsBarn = 53,
             kontor = "måkk",
-            datoForUtsending = LocalDate.now(),
+            datoForUtsending = LocalDate.now().format(norskDatoFormatter),
         )
 
     private fun mapPersonaliaDTO(vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
