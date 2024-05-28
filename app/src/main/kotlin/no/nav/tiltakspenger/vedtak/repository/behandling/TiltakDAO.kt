@@ -6,9 +6,10 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedKildeOgVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import org.intellij.lang.annotations.Language
 
@@ -22,7 +23,10 @@ class TiltakDAO {
                     val antallDager = hentAntallDager(behandlingId, tiltak, txSession)
                     val avklarteAntallDager = hentAvklarteAntallDager(behandlingId, tiltak, txSession)
                     tiltak.copy(
-                        antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager, avklarteAntallDager),
+                        antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+                            antallDager,
+                            avklarteAntallDager,
+                        ),
                     )
                 }
                 .asList,
@@ -42,8 +46,7 @@ class TiltakDAO {
         behandlingId: BehandlingId,
         tiltak: Tiltak,
         txSession: TransactionalSession,
-
-    ): List<PeriodeMedKildeOgVerdi<Int>> {
+    ): List<PeriodeMedVerdi<AntallDager>> {
         return txSession.run(
             queryOf(
                 hentAntallDagerSql,
@@ -59,8 +62,7 @@ class TiltakDAO {
         behandlingId: BehandlingId,
         tiltak: Tiltak,
         txSession: TransactionalSession,
-
-    ): List<PeriodeMedKildeOgVerdi<Int>> {
+    ): List<PeriodeMedVerdi<AntallDager>> {
         return txSession.run(
             queryOf(
                 hentAvklarteAntallDagerSql,
@@ -125,6 +127,7 @@ class TiltakDAO {
             ).asUpdate,
         )
     }
+
     private fun slettTiltak(behandlingId: BehandlingId, txSession: TransactionalSession) {
         txSession.run(queryOf(slettTiltakSql, behandlingId.toString()).asUpdate)
     }
@@ -161,14 +164,16 @@ class TiltakDAO {
         )
     }
 
-    private fun Row.toStønadsdager(): PeriodeMedKildeOgVerdi<Int> {
-        return PeriodeMedKildeOgVerdi(
+    private fun Row.toStønadsdager(): PeriodeMedVerdi<AntallDager> {
+        return PeriodeMedVerdi(
             periode = Periode(
                 fra = localDate("fom"),
                 til = localDate("tom"),
             ),
-            verdi = int("antall_dager"),
-            kilde = string("datakilde"),
+            verdi = AntallDager(
+                antallDager = int("antall_dager"),
+                kilde = Kilde.valueOf(string("datakilde")),
+            ),
         )
     }
 
@@ -246,10 +251,12 @@ class TiltakDAO {
     private val hentTiltakSql = "select * from tiltak where behandling_id = ?"
 
     @Language("SQL")
-    private val hentAntallDagerSql = "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND datakilde = ?"
+    private val hentAntallDagerSql =
+        "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND datakilde = ?"
 
     @Language("SQL")
-    private val hentAvklarteAntallDagerSql = "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND avklart_tidspunkt IS NOT NULL"
+    private val hentAvklarteAntallDagerSql =
+        "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND avklart_tidspunkt IS NOT NULL"
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "takt"

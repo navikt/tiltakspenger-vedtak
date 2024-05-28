@@ -10,7 +10,8 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -58,6 +59,7 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager = emptyList(), avklarteAntallDager = emptyList()),
         )
 
         val behandling = lagreSakOgBehandling()
@@ -97,6 +99,7 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager = emptyList(), avklarteAntallDager = emptyList()),
         )
 
         val behandling = lagreSakOgBehandling()

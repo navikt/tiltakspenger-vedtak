@@ -26,9 +26,9 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker

@@ -1,38 +1,11 @@
-package no.nav.tiltakspenger.saksbehandling.domene.behandling
+package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedKildeOgVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-data class AntallDagerSaksopplysninger(
-    // todo: Vi trenger informasjon om hvilken saksbehandler som har endret antall dager.
-    val antallDagerSaksopplysningerFraSBH: List<PeriodeMedKildeOgVerdi<Int>> = emptyList(),
-    val antallDagerSaksopplysningerFraRegister: List<PeriodeMedKildeOgVerdi<Int>>,
-    val avklartAntallDager: List<PeriodeMedKildeOgVerdi<Int>> = emptyList(),
-) {
-    companion object {
-        fun initAntallDagerSaksopplysning(
-            antallDager: List<PeriodeMedKildeOgVerdi<Int>>,
-            avklarteAntallDager: List<PeriodeMedKildeOgVerdi<Int>>,
-        ): AntallDagerSaksopplysninger {
-            return AntallDagerSaksopplysninger(
-                antallDagerSaksopplysningerFraSBH = antallDager.filter { it.kilde == Kilde.SAKSB.toString() },
-                antallDagerSaksopplysningerFraRegister = antallDager.filter { it.kilde != Kilde.SAKSB.toString() },
-                avklartAntallDager = avklarteAntallDager,
-            )
-        }
-    }
-    fun avklar(): AntallDagerSaksopplysninger {
-        val avklart = antallDagerSaksopplysningerFraSBH.ifEmpty { antallDagerSaksopplysningerFraRegister }
-        return this.copy(
-            avklartAntallDager = avklart,
-        )
-    }
-}
 
 data class Tiltak(
     val id: String,
