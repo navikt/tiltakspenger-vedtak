@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
@@ -81,7 +82,8 @@ private fun mapTiltak(
         .filterNot { it.deltakelseTom == null }
         .map {
             Tiltak(
-                id = it.id,
+                id = TiltakId.random(),
+                eksternId = it.id,
                 gjennomføring = Tiltak.Gjennomføring(
                     id = it.gjennomforing.id,
                     arrangørnavn = it.gjennomforing.arrangørnavn,
@@ -109,12 +111,12 @@ private fun mapTiltak(
                             if (it.deltakelseDagerUke != null) {
                                 AntallDager(
                                     antallDager = it.deltakelseDagerUke!!.roundToInt(),
-                                    kilde = Kilde.valueOf(it.kilde),
+                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
                                 )
                             } else {
                                 AntallDager(
                                     antallDager = 0,
-                                    kilde = Kilde.valueOf(it.kilde),
+                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
                                 )
                             },
                             periode = Periode(

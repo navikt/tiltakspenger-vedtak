@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -112,7 +113,7 @@ interface BehandlingMother {
     )
 
     fun tiltak(
-        id: String = "TiltakId",
+        eksternId: String = "TiltakId",
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
@@ -125,7 +126,8 @@ interface BehandlingMother {
         kilde: String = "Komet",
     ) =
         Tiltak(
-            id = id,
+            id = TiltakId.random(),
+            eksternId = eksternId,
             gjennomføring = gjennomføring,
             deltakelseFom = fom,
             deltakelseTom = tom,

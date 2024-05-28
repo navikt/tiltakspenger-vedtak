@@ -44,7 +44,7 @@ object MeldekortGrunnlagDTOMapper {
 
     fun mapTiltakDTO(vedtak: Vedtak) =
         vedtak.behandling.tiltak
-            .filter { it.id == vedtak.behandling.søknad().tiltak.id }
+            .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
             .map {
                 TiltakDTO(
                     periodeDTO = PeriodeDTO(

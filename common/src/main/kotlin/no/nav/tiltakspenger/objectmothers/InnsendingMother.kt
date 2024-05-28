@@ -4,6 +4,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -497,7 +498,7 @@ interface InnsendingMother {
     }
 
     fun tiltak(
-        id: String = "123",
+        eksternId: String = "123",
         gjennomføring: Tiltak.Gjennomføring = Tiltak.Gjennomføring(
             id = "123",
             arrangørnavn = "arrangør",
@@ -515,7 +516,8 @@ interface InnsendingMother {
         innhentet: LocalDateTime = 1.januarDateTime(2022),
     ): Tiltak {
         return Tiltak(
-            id = id,
+            id = TiltakId.random(),
+            eksternId = eksternId,
             gjennomføring = gjennomføring,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,

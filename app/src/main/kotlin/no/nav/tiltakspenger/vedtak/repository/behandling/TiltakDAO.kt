@@ -4,6 +4,7 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
@@ -52,7 +53,7 @@ class TiltakDAO {
                 hentAntallDagerSql,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
-                    "tiltakId" to tiltak.id,
+                    "tiltakId" to tiltak.id.toString(),
                 ),
             ).map { row -> row.toStønadsdager() }.asList,
         )
@@ -68,7 +69,7 @@ class TiltakDAO {
                 hentAvklarteAntallDagerSql,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
-                    "tiltakId" to tiltak.id,
+                    "tiltakId" to tiltak.id.toString(),
                 ),
             ).map { row -> row.toStønadsdager() }.asList,
         )
@@ -83,9 +84,9 @@ class TiltakDAO {
             queryOf(
                 lagreTiltakSql,
                 mapOf(
-                    "id" to random(ULID_PREFIX_TILTAK).toString(),
+                    "id" to tiltak.id.toString(),
                     "behandlingId" to behandlingId.toString(),
-                    "eksternId" to tiltak.id,
+                    "eksternId" to tiltak.eksternId,
                     "gjennomforingId" to tiltak.gjennomføring.id,
                     "tiltaktypeKode" to tiltak.gjennomføring.typeKode,
                     "tiltaktypeNavn" to tiltak.gjennomføring.typeNavn,
@@ -119,9 +120,10 @@ class TiltakDAO {
                     "antallDager" to tiltak.deltakelseDagerUke,
                     "fom" to tiltak.deltakelseFom,
                     "tom" to tiltak.deltakelseTom,
-                    "datakilde" to kilde,
-                    "tidsstempel" to tiltak.innhentet,
-                    "tiltakId" to tiltak.id,
+                    "datakilde" to kilde.toString(),
+                    "tidsstempelKilde" to tiltak.registrertDato,
+                    "tidsstempelHosOss" to tiltak.innhentet,
+                    "tiltakId" to tiltak.id.toString(),
                     "behandlingId" to behandlingId.toString(),
                 ),
             ).asUpdate,
@@ -138,7 +140,8 @@ class TiltakDAO {
 
     private fun Row.toTiltak(): Tiltak {
         return Tiltak(
-            id = string("ekstern_id"),
+            id = TiltakId.fromDb(string("id")),
+            eksternId = string("ekstern_id"),
             gjennomføring = Tiltak.Gjennomføring(
                 id = string("gjennomføring_id"),
                 typeKode = string("tiltaktype_kode"),
@@ -160,6 +163,8 @@ class TiltakDAO {
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
                 // TODO: Vi må se på lagringen før vi finner ut av hvordan vi kan hente ut data om antall dager fra db
                 antallDagerSaksopplysningerFraRegister = emptyList(),
+                antallDagerSaksopplysningerFraSBH = emptyList(),
+                avklartAntallDager = emptyList(),
             ),
         )
     }
@@ -185,7 +190,8 @@ class TiltakDAO {
             fom,
             tom,
             datakilde,
-            tidsstempel,
+            tidsstempel_kilde,
+            tidsstempel_hos_oss,
             tiltak_id,
             behandling_id
         ) values (
@@ -194,7 +200,8 @@ class TiltakDAO {
             :fom,
             :tom,
             :datakilde,
-            :tidsstempel,
+            :tidsstempelKilde,
+            :tidsstempelHosOss,
             :tiltakId,
             :behandlingId
         )

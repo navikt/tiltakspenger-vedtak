@@ -4,6 +4,7 @@ import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -43,7 +44,8 @@ internal class TiltakDAOTest {
         val tiltakDAO = TiltakDAO()
 
         val tiltak = Tiltak(
-            id = "123",
+            id = TiltakId.random(),
+            eksternId = "1234",
             gjennomføring = Tiltak.Gjennomføring(
                 id = "",
                 arrangørnavn = "arrangør",
@@ -54,7 +56,7 @@ internal class TiltakDAOTest {
             deltakelseFom = 1.januar(2023),
             deltakelseTom = 31.januar(2023),
             deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
-            deltakelseDagerUke = null,
+            deltakelseDagerUke = 1.0f,
             deltakelseProsent = null,
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
@@ -83,7 +85,8 @@ internal class TiltakDAOTest {
     fun `lagre og hente med non-null felter`() {
         val tiltakDAO = TiltakDAO()
         val tiltak = Tiltak(
-            id = "123",
+            id = TiltakId.random(),
+            eksternId = "123",
             gjennomføring = Tiltak.Gjennomføring(
                 id = "123",
                 arrangørnavn = "arrangør",

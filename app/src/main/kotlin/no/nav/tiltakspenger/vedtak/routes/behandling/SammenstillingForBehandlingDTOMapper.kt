@@ -198,8 +198,8 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.eksternId)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
+                    begrunnelse = utledDeltagelseUtfall(behandling, it.eksternId)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->

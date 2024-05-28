@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -50,8 +51,9 @@ internal class RevurderingOpprettetTest {
         søknader = emptyList(),
     )
 
-    private fun mockTiltak(id: String = "test"): Tiltak = Tiltak(
-        id = id,
+    private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(
+        id = TiltakId.random(),
+        eksternId = eksternId,
         kilde = "test",
         deltakelseStatus = mockk<Tiltak.DeltakerStatus>(),
         deltakelseFom = LocalDate.now(),
@@ -86,7 +88,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `oppdaterTiltak skal returnere en kopi av behandlingen med de nye tiltakene lagt inn`() {
         val gamleTiltak = listOf(mockTiltak())
-        val nyeTiltak = listOf(mockTiltak(id = "nyttTiltak"))
+        val nyeTiltak = listOf(mockTiltak(eksternId = "nyttTiltak"))
         val revurderingOpprettetMedGamleTiltak = mockRevurderingOpprettet(tiltak = gamleTiltak)
         val revurderingOppprettetMedNyeTiltak = revurderingOpprettetMedGamleTiltak.oppdaterTiltak(nyeTiltak)
         assertTrue { revurderingOpprettetMedGamleTiltak.tiltak == gamleTiltak }

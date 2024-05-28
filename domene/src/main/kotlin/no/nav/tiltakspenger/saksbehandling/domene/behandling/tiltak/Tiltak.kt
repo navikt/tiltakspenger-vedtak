@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -8,7 +9,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Tiltak(
-    val id: String,
+    val id: TiltakId,
+    val eksternId: String,
     val gjennomføring: Gjennomføring,
     val deltakelseFom: LocalDate,
     val deltakelseTom: LocalDate,
@@ -55,7 +57,7 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
-                grunnlagId = this.id,
+                grunnlagId = this.id.toString(),
             )
 
             Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
@@ -64,7 +66,7 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
-                grunnlagId = this.id,
+                grunnlagId = this.id.toString(),
             )
 
             Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
@@ -73,7 +75,7 @@ data class Tiltak(
                 detaljer = detaljer,
                 fom = deltakelseFom,
                 tom = deltakelseTom,
-                grunnlagId = this.id,
+                grunnlagId = this.id.toString(),
             )
         }
     }
