@@ -20,15 +20,7 @@ class TiltakDAO {
         return txSession.run(
             queryOf(hentTiltakSql, behandlingId.toString())
                 .map { row ->
-                    val tiltak = row.toTiltak()
-                    val antallDager = hentAntallDager(behandlingId, tiltak, txSession)
-                    val avklarteAntallDager = hentAvklarteAntallDager(behandlingId, tiltak, txSession)
-                    tiltak.copy(
-                        antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
-                            antallDager,
-                            avklarteAntallDager,
-                        ),
-                    )
+                    row.toTiltak(behandlingId = behandlingId, txSession = txSession)
                 }
                 .asList,
         )
@@ -45,7 +37,7 @@ class TiltakDAO {
 
     private fun hentAntallDager(
         behandlingId: BehandlingId,
-        tiltak: Tiltak,
+        tiltakId: TiltakId,
         txSession: TransactionalSession,
     ): List<PeriodeMedVerdi<AntallDager>> {
         return txSession.run(
@@ -53,7 +45,7 @@ class TiltakDAO {
                 hentAntallDagerSql,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
-                    "tiltakId" to tiltak.id.toString(),
+                    "tiltakId" to tiltakId.toString(),
                 ),
             ).map { row -> row.toStønadsdager() }.asList,
         )
@@ -61,7 +53,7 @@ class TiltakDAO {
 
     private fun hentAvklarteAntallDager(
         behandlingId: BehandlingId,
-        tiltak: Tiltak,
+        tiltakId: TiltakId,
         txSession: TransactionalSession,
     ): List<PeriodeMedVerdi<AntallDager>> {
         return txSession.run(
@@ -69,7 +61,7 @@ class TiltakDAO {
                 hentAvklarteAntallDagerSql,
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
-                    "tiltakId" to tiltak.id.toString(),
+                    "tiltakId" to tiltakId.toString(),
                 ),
             ).map { row -> row.toStønadsdager() }.asList,
         )
@@ -138,7 +130,7 @@ class TiltakDAO {
         txSession.run(queryOf(slettStønadsdagerSql, behandlingId.toString()).asUpdate)
     }
 
-    private fun Row.toTiltak(): Tiltak {
+    private fun Row.toTiltak(behandlingId: BehandlingId, txSession: TransactionalSession): Tiltak {
         return Tiltak(
             id = TiltakId.fromDb(string("id")),
             eksternId = string("ekstern_id"),
@@ -160,11 +152,9 @@ class TiltakDAO {
             kilde = string("kilde"),
             registrertDato = localDateTime("tidsstempel_kilde"),
             innhentet = localDateTime("tidsstempel_hos_oss"),
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
-                // TODO: Vi må se på lagringen før vi finner ut av hvordan vi kan hente ut data om antall dager fra db
-                antallDagerSaksopplysningerFraRegister = emptyList(),
-                antallDagerSaksopplysningerFraSBH = emptyList(),
-                avklartAntallDager = emptyList(),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+                antallDager = hentAntallDager(behandlingId, TiltakId.fromDb(string("id")), txSession),
+                avklarteAntallDager = hentAvklarteAntallDager(behandlingId, TiltakId.fromDb(string("id")), txSession),
             ),
         )
     }
