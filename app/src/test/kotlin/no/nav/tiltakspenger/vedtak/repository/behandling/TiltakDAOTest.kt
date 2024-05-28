@@ -8,14 +8,17 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -61,7 +64,16 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager = emptyList(), avklarteAntallDager = emptyList()),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+                antallDager = listOf(
+                    PeriodeMedVerdi(
+                        verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA),
+                        periode =
+                        no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.januar(2023)),
+                    ),
+                ),
+                avklarteAntallDager = emptyList(),
+            ),
         )
 
         val behandling = lagreSakOgBehandling()
@@ -102,7 +114,16 @@ internal class TiltakDAOTest {
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager = emptyList(), avklarteAntallDager = emptyList()),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+                antallDager = listOf(
+                    PeriodeMedVerdi(
+                        verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA),
+                        periode =
+                        no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.mars(2023)),
+                    ),
+                ),
+                avklarteAntallDager = emptyList(),
+            ),
         )
 
         val behandling = lagreSakOgBehandling()
