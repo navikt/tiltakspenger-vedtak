@@ -1,26 +1,23 @@
 package no.nav.tiltakspenger.innsending.domene.tolkere
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 class AapTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning> {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): Saksopplysning {
             if (ytelser == null) {
-                return listOf(
-                    Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
-                        vilkår = Vilkår.AAP,
-                        kilde = Kilde.ARENA,
-                        detaljer = "",
-                        typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
-                    ),
+                return Saksopplysning(
+                    vilkår = Vilkår.AAP,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    harYtelseSaksopplysning = Periodisering(null, vurderingsperiode),
                 )
             }
 
@@ -34,31 +31,41 @@ class AapTolker {
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
                         (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX),
-                    ).overlapperMed(periode)
+                    ).overlapperMed(vurderingsperiode)
                 }
 
             if (ytelseListe.isEmpty()) {
-                return listOf(
-                    Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
-                        vilkår = Vilkår.AAP,
-                        kilde = Kilde.ARENA,
-                        detaljer = "",
-                        typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
-                    ),
+                return Saksopplysning(
+                    vilkår = Vilkår.AAP,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                        .setVerdiForDelPeriode(
+                            HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                            vurderingsperiode,
+                        ),
                 )
             }
 
             return ytelseListe
-                .map {
+                .fold(
                     Saksopplysning(
-                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
-                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
-                        typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                        harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                            .setVerdiForDelPeriode(HarYtelseSaksopplysning.HAR_IKKE_YTELSE, vurderingsperiode),
+                    ),
+                ) { resultat: Saksopplysning, ytelse: YtelseSak ->
+                    resultat.copy(
+                        harYtelseSaksopplysning = resultat.harYtelseSaksopplysning.setVerdiForDelPeriode(
+                            HarYtelseSaksopplysning.HAR_YTELSE,
+                            Periode(
+                                ytelse.fomGyldighetsperiode.toLocalDate(),
+                                ytelse.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX,
+                            )
+                                .overlappendePeriode(vurderingsperiode)!!,
+                        ),
                     )
                 }
         }

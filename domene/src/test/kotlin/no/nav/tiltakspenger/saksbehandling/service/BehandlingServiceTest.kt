@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.desember
@@ -16,6 +15,7 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.juli
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
@@ -30,9 +30,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -138,7 +138,7 @@ internal class BehandlingServiceTest {
             kilde = Kilde.SAKSB,
             vilkår = Vilkår.AAP,
             detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+            harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
@@ -146,12 +146,12 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.IKKE_INNHENTET_ENDA
         }
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
             it.fom shouldBe 1.februar(2023)
             it.tom shouldBe 28.februar(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
         }
     }
 
@@ -175,7 +175,7 @@ internal class BehandlingServiceTest {
             kilde = Kilde.ARENA,
             vilkår = Vilkår.AAP,
             detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+            harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
@@ -184,7 +184,7 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
         }
     }
 
@@ -199,7 +199,7 @@ internal class BehandlingServiceTest {
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.AAP,
                 detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
                 saksbehandler = "Z999999",
             ),
         ).behandling
@@ -214,7 +214,7 @@ internal class BehandlingServiceTest {
             kilde = Kilde.ARENA,
             vilkår = Vilkår.AAP,
             detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+            harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
@@ -223,7 +223,7 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.februar(2023)
             it.tom shouldBe 28.februar(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
         }
     }
 
@@ -238,7 +238,7 @@ internal class BehandlingServiceTest {
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.AAP,
                 detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
                 saksbehandler = "Z999999",
             ),
         ).behandling
@@ -253,7 +253,7 @@ internal class BehandlingServiceTest {
             kilde = Kilde.ARENA,
             vilkår = Vilkår.AAP,
             detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+            harYtelseSaksopplysning = HarYtelseSaksopplysning.IKKE_INNHENTET_ENDA,
             saksbehandler = null,
         )
         behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
@@ -262,12 +262,12 @@ internal class BehandlingServiceTest {
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.IKKE_INNHENTET_ENDA
         }
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
             it.fom shouldBe 1.januar(2023)
             it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
+            it.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
         }
     }
 

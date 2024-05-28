@@ -1,11 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -16,10 +18,10 @@ interface Behandling {
     val id: BehandlingId
     val sakId: SakId
     val vurderingsperiode: Periode
-    val saksopplysninger: List<Saksopplysning>
+    val ytelserVilkårData: YtelserVilkårData
     val tiltak: List<Tiltak>
     val saksbehandler: String?
-    val utfallsperioder: List<Utfallsperiode>
+    val utfallsperioder: Periodisering<Utfallsdetaljer>?
     val søknader: List<Søknad>
 
     fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
@@ -28,10 +30,14 @@ interface Behandling {
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
     fun saksopplysninger(): List<Saksopplysning> {
-        return saksopplysninger.groupBy { it.vilkår }.map { entry ->
-            entry.value.reduce { acc, saksopplysning ->
-                if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
-            }
+        return ytelserVilkårData.korrigerbareYtelser.values.map {
+            it.avklartSaksopplysning
+        }
+    }
+
+    fun vilkårsvurderinger(): List<Vurdering> {
+        return ytelserVilkårData.korrigerbareYtelser.values.map {
+            it.vurdering
         }
     }
 

@@ -7,9 +7,9 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakspplysningId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import org.intellij.lang.annotations.Language
 
 internal class SaksopplysningRepo {
@@ -63,7 +63,12 @@ internal class SaksopplysningRepo {
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
+    private fun lagre(
+        behandlingId: BehandlingId?,
+        vedtakId: VedtakId?,
+        saksopplysning: Saksopplysning,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(
             queryOf(
                 sqlLagreSaksopplysning,
@@ -76,7 +81,7 @@ internal class SaksopplysningRepo {
                     "kilde" to saksopplysning.kilde.name,
                     "vilkar" to saksopplysning.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
                     "detaljer" to saksopplysning.detaljer,
-                    "typeSaksopplysning" to saksopplysning.typeSaksopplysning.name,
+                    "typeSaksopplysning" to saksopplysning.harYtelseSaksopplysning.name,
                     "saksbehandler" to saksopplysning.saksbehandler,
                     "opprettet" to nå(),
                 ),
@@ -110,7 +115,7 @@ internal class SaksopplysningRepo {
             kilde = Kilde.valueOf(string("kilde")),
             vilkår = vilkår,
             detaljer = string("detaljer"),
-            typeSaksopplysning = TypeSaksopplysning.valueOf(string("typeSaksopplysning")),
+            harYtelseSaksopplysning = HarYtelseSaksopplysning.valueOf(string("typeSaksopplysning")),
             saksbehandler = stringOrNull("saksbehandler"),
         )
     }

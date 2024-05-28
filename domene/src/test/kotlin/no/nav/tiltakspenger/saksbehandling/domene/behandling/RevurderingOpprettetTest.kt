@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import io.kotest.assertions.throwables.shouldThrowWithMessage
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
 internal class RevurderingOpprettetTest {
 
     private val saksopplysning = Saksopplysning(
-        typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+        harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
         fom = LocalDate.MIN,
         tom = LocalDate.MAX,
         vilkår = Vilkår.AAP,

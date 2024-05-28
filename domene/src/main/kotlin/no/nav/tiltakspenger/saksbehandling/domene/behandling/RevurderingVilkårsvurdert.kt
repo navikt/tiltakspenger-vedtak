@@ -1,10 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -12,11 +14,11 @@ data class RevurderingVilkårsvurdert(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val ytelserVilkårData: YtelserVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val forrigeVedtak: Vedtak,
-    override val utfallsperioder: List<Utfallsperiode>,
+    override val utfallsperioder: Periodisering<Utfallsdetaljer>? = null,
     override val søknader: List<Søknad>,
     val status: BehandlingStatus,
     val vilkårsvurderinger: List<Vurdering>,
@@ -31,7 +33,7 @@ data class RevurderingVilkårsvurdert(
                     sakId = sakId,
                     forrigeVedtak = forrigeVedtak,
                     vurderingsperiode = vurderingsperiode,
-                    saksopplysninger = saksopplysninger,
+                    ytelserVilkårData = ytelserVilkårData,
                     tiltak = tiltak,
                     vilkårsvurderinger = vilkårsvurderinger,
                     utfallsperioder = utfallsperioder,
@@ -53,7 +55,7 @@ data class RevurderingVilkårsvurdert(
                 id = id,
                 sakId = sakId,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
+                ytelserVilkårData = ytelserVilkårData,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
@@ -89,7 +91,7 @@ data class RevurderingVilkårsvurdert(
             sakId = sakId,
             forrigeVedtak = forrigeVedtak,
             vurderingsperiode = vurderingsperiode,
-            saksopplysninger = saksopplysninger,
+            ytelserVilkårData = ytelserVilkårData,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,

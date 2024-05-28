@@ -7,14 +7,14 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.getBeslutter
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
@@ -121,7 +121,7 @@ class SammenstillingForBehandlingDTOTest {
         tom = LocalDate.now(),
         detaljer = "test",
         kilde = mockk<Kilde>(),
-        typeSaksopplysning = mockk<TypeSaksopplysning>(),
+        harYtelseSaksopplysning = mockk<HarYtelseSaksopplysning>(),
         saksbehandler = "test",
     )
 
@@ -197,16 +197,16 @@ class SammenstillingForBehandlingDTOTest {
 
         val behandlingIverksatt = mockk<BehandlingIverksatt>()
         every { behandlingIverksatt.beslutter } returns beslutter
-        val iverksattBeslutter = settBeslutter(behandlingIverksatt)
+        val iverksattBeslutter = getBeslutter(behandlingIverksatt)
         assert(iverksattBeslutter == beslutter)
 
         val behandlingTilBeslutter = mockk<BehandlingTilBeslutter>()
         every { behandlingTilBeslutter.beslutter } returns beslutter
-        val tilBeslutter = settBeslutter(behandlingTilBeslutter)
+        val tilBeslutter = getBeslutter(behandlingTilBeslutter)
         assert(tilBeslutter == beslutter)
 
         val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
-        val vilkårsvurdertBeslutter = settBeslutter(behandlingVilkårsvurdert)
+        val vilkårsvurdertBeslutter = getBeslutter(behandlingVilkårsvurdert)
         assert(vilkårsvurdertBeslutter == null)
     }
 }

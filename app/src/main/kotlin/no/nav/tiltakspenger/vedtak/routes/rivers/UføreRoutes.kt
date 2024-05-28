@@ -60,7 +60,7 @@ fun Route.uføreRoutes(
                     val uføreVedtak = mapUføre(dto, uføreDTO.innhentet)
 
                     behandlingService.hentBehandlingForJournalpostId(uføreDTO.journalpostId)?.let { behandling ->
-                        UføreTolker.tolkeData(uføreVedtak, behandling.vurderingsperiode).forEach { saksopplysning ->
+                        UføreTolker.tolkeData(uføreVedtak, behandling.vurderingsperiode).let { saksopplysning ->
                             behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
                         }
                     }

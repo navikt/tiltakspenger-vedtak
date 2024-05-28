@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
@@ -44,7 +44,7 @@ object SaksopplysningDTOMapper {
             tom = LocalDate.parse(saksopplysning.tom),
             vilkår = vilkår,
             detaljer = saksopplysning.begrunnelse,
-            typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+            harYtelseSaksopplysning = if (saksopplysning.harYtelse) HarYtelseSaksopplysning.HAR_YTELSE else HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
             saksbehandler = saksbehandler.navIdent,
         )
     }

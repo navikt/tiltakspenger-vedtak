@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.felles
 
+/*
 import com.google.common.collect.BoundType
 import com.google.common.collect.DiscreteDomain
 import com.google.common.collect.ImmutableRangeSet
@@ -159,3 +160,6 @@ fun Range<LocalDate>.tilOgMed(): LocalDate =
     } else {
         LocalDate.MAX
     }
+
+
+ */

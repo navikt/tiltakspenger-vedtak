@@ -7,12 +7,12 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
 import org.intellij.lang.annotations.Language
 
 class UtfallsperiodeDAO {
 
-    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Utfallsperiode> {
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Utfallsdetaljer> {
         return txSession.run(
             queryOf(hentUtfallsperioder, behandlingId.toString())
                 .map { row -> row.toUtfallsperiode() }
@@ -20,7 +20,7 @@ class UtfallsperiodeDAO {
         )
     }
 
-    fun hentForVedtak(vedtakId: VedtakId, txSession: TransactionalSession): List<Utfallsperiode> {
+    fun hentForVedtak(vedtakId: VedtakId, txSession: TransactionalSession): List<Utfallsdetaljer> {
         return txSession.run(
             queryOf(hentUtfallsperioderForVedtak, vedtakId.toString())
                 .map { row -> row.toUtfallsperiode() }
@@ -40,7 +40,7 @@ class UtfallsperiodeDAO {
         )
     }
 
-    fun lagre(behandlingId: BehandlingId, utfallsperioder: List<Utfallsperiode>, txSession: TransactionalSession) {
+    fun lagre(behandlingId: BehandlingId, utfallsperioder: List<Utfallsdetaljer>, txSession: TransactionalSession) {
         slettUtfallsperioder(behandlingId, txSession)
         utfallsperioder.forEach { utfallsperiode ->
             lagreUtfallsperiode(behandlingId, utfallsperiode, txSession)
@@ -49,7 +49,7 @@ class UtfallsperiodeDAO {
 
     private fun lagreUtfallsperiode(
         behandlingId: BehandlingId,
-        utfallsperiode: Utfallsperiode,
+        utfallsperiode: Utfallsdetaljer,
         txSession: TransactionalSession,
     ) {
         txSession.run(
@@ -71,8 +71,8 @@ class UtfallsperiodeDAO {
         txSession.run(queryOf(slettUtfallsperioder, behandlingId.toString()).asUpdate)
     }
 
-    private fun Row.toUtfallsperiode(): Utfallsperiode {
-        return Utfallsperiode(
+    private fun Row.toUtfallsperiode(): Utfallsdetaljer {
+        return Utfallsdetaljer(
             fom = localDate("fom"),
             tom = localDate("tom"),
             antallBarn = int("antall_barn"),

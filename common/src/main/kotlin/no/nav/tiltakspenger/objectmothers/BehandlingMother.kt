@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -14,9 +14,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
@@ -37,7 +37,7 @@ interface BehandlingMother {
         tom: LocalDate = 31.mars(2023),
         kilde: Kilde = Kilde.SAKSB,
         vilkår: Vilkår = Vilkår.AAP,
-        type: TypeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+        type: HarYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
         saksbehandler: String? = null,
     ): Saksopplysning =
         Saksopplysning(
@@ -46,7 +46,7 @@ interface BehandlingMother {
             kilde = kilde,
             vilkår = vilkår,
             detaljer = "",
-            typeSaksopplysning = type,
+            harYtelseSaksopplysning = type,
             saksbehandler = saksbehandler,
         )
 
@@ -61,7 +61,7 @@ interface BehandlingMother {
                     fom = periode.fra,
                     tom = periode.til,
                     vilkår = vilkår,
-                    type = TypeSaksopplysning.HAR_IKKE_YTELSE,
+                    type = HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
                 ),
             ).behandling
         } as BehandlingVilkårsvurdert
@@ -79,7 +79,7 @@ interface BehandlingMother {
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 vilkår = Vilkår.KVP,
-                type = TypeSaksopplysning.HAR_YTELSE,
+                type = HarYtelseSaksopplysning.HAR_YTELSE,
             ),
         ).behandling as BehandlingVilkårsvurdert
 

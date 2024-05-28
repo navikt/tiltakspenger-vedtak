@@ -43,10 +43,10 @@ fun Route.ytelseRoutes(
         )
 
         behandlingService.hentBehandlingForJournalpostId(arenaYtelser.journalpostId)?.let { behandling ->
-            AapTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
+            AapTolker.tolkeData(ytelser, behandling.vurderingsperiode).let { saksopplysning ->
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
-            DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).forEach { saksopplysning ->
+            DagpengerTolker.tolkeData(ytelser, behandling.vurderingsperiode).let { saksopplysning ->
                 behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
             }
         }

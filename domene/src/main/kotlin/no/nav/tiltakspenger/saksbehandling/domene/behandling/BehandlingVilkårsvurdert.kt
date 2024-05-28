@@ -2,11 +2,12 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -16,12 +17,11 @@ data class BehandlingVilkårsvurdert(
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val ytelserVilkårData: YtelserVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
-    override val utfallsperioder: List<Utfallsperiode> = emptyList(),
+    override val utfallsperioder: Periodisering<Utfallsdetaljer>? = null,
     val status: BehandlingStatus,
-    val vilkårsvurderinger: List<Vurdering>,
 ) : Førstegangsbehandling {
 
     fun tilBeslutting(saksbehandler: Saksbehandler): BehandlingTilBeslutter {
@@ -35,9 +35,8 @@ data class BehandlingVilkårsvurdert(
                 sakId = sakId,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                saksopplysninger = saksopplysninger,
+                ytelserVilkårData = ytelserVilkårData,
                 tiltak = tiltak,
-                vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = this.saksbehandler,
                 beslutter = null,
@@ -71,7 +70,7 @@ data class BehandlingVilkårsvurdert(
         sakId = this.sakId,
         søknader = this.søknader,
         vurderingsperiode = this.vurderingsperiode,
-        saksopplysninger = this.saksopplysninger,
+        ytelserVilkårData = this.ytelserVilkårData,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
     )

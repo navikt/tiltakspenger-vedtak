@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -151,10 +151,10 @@ class BehandlingServiceImpl(
             behandling = behandling,
             vedtaksdato = LocalDateTime.now(),
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
-            utfallsperioder = behandling.utfallsperioder,
+            utfallsperioder = behandling.utfallsperioder!!,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.saksopplysninger(),
-            vurderinger = behandling.vilkårsvurderinger,
+            saksopplysninger = emptyList(), // TODO behandling.saksopplysninger(),
+            vurderinger = emptyList(), // TODO behandling.vilkårsvurderinger(),
             saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,
         )

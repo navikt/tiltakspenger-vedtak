@@ -1,22 +1,22 @@
 package no.nav.tiltakspenger.innsending.domene.tolkere
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 class ForeldrepengerTolker {
     companion object {
         fun tolkeData(
             vedtak: List<ForeldrepengerVedtak>,
-            periode: Periode,
+            vurderingsperiode: Periode,
         ): List<Saksopplysning> {
-            return ForeldrepengerVedtak.Ytelser.entries.filter { it.rettTilTiltakspenger }.flatMap { type ->
+            return ForeldrepengerVedtak.Ytelser.entries.filter { it.rettTilTiltakspenger }.map { type ->
                 tolkeForEttVilkår(
                     vedtak = vedtak,
-                    periode = periode,
+                    vurderingsperiode = vurderingsperiode,
                     type = type,
                     vilkår = when (type) {
                         ForeldrepengerVedtak.Ytelser.PLEIEPENGER_SYKT_BARN -> Vilkår.PLEIEPENGER_SYKT_BARN
@@ -35,40 +35,29 @@ class ForeldrepengerTolker {
 
 private fun tolkeForEttVilkår(
     vedtak: List<ForeldrepengerVedtak>,
-    periode: Periode,
+    vurderingsperiode: Periode,
     type: ForeldrepengerVedtak.Ytelser,
     vilkår: Vilkår,
-): List<Saksopplysning> {
+): Saksopplysning {
     return vedtak
-        .filter {
-            Periode(
-                it.periode.fra,
-                it.periode.til,
-            ).overlapperMed(periode)
-        }
+        .filter { it.periode.overlapperMed(vurderingsperiode) }
         .filter { it.ytelse == type }
-        .map {
+        .fold(
             Saksopplysning(
-                fom = maxOf(periode.fra, it.periode.fra),
-                tom = minOf(periode.til, it.periode.til),
                 vilkår = vilkår,
-                kilde = when (it.kildesystem) {
-                    ForeldrepengerVedtak.Kildesystem.FPSAK -> Kilde.FPSAK
-                    ForeldrepengerVedtak.Kildesystem.K9SAK -> Kilde.K9SAK
-                },
+                kilde = type.kilde,
                 detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-            )
-        }
-        .ifEmpty {
-            listOf(
-                Saksopplysning(
-                    fom = periode.fra,
-                    tom = periode.til,
-                    vilkår = vilkår,
-                    kilde = type.kilde,
-                    detaljer = "",
-                    typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
+                harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                    .setVerdiForDelPeriode(
+                        HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                        vurderingsperiode,
+                    ),
+            ),
+        ) { resultat: Saksopplysning, vedtak: ForeldrepengerVedtak ->
+            resultat.copy(
+                harYtelseSaksopplysning = resultat.harYtelseSaksopplysning.setVerdiForDelPeriode(
+                    HarYtelseSaksopplysning.HAR_YTELSE,
+                    vedtak.periode.overlappendePeriode(vurderingsperiode)!!,
                 ),
             )
         }

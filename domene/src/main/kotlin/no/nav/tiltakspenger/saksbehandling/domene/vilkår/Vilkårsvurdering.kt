@@ -1,55 +1,38 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingVilkårsvurdert
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
 
 fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
     TODO()
 }
 
 fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
-    val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+    val tiltaksdeltakelseUtfall: Periodisering<Utfall> =
+        tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+            .samletUtfall()
 
-    val vurderinger = saksopplysninger().flatMap {
-        it.lagVurdering(vurderingsperiode)
-    } + deltagelseVurderinger
-
-    val utfallsperioder =
-        vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
-            val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
-            val utfallYtelser = when {
-                idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
-                idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
-                else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+    val samletUtfall: Periodisering<UtfallForPeriode> = this.ytelserVilkårData.samletUtfall()
+        .kombiner(tiltaksdeltakelseUtfall) { utfall1, utfall2 ->
+            when {
+                utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                else -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
             }
-
-            val harManuelleBarnUnder16 = this.søknad().barnetillegg.filterIsInstance<Barnetillegg.Manuell>()
-                .filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }.count { it.under16ForDato(dag) } > 0
-
-            val utfall =
-                if (utfallYtelser == UtfallForPeriode.GIR_RETT_TILTAKSPENGER && harManuelleBarnUnder16) UtfallForPeriode.KREVER_MANUELL_VURDERING else utfallYtelser
-
-            Utfallsperiode(
-                fom = dag,
-                tom = dag,
-                antallBarn = this.søknad().barnetillegg.filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }
-                    .count { it.under16ForDato(dag) },
-                utfall = utfall,
-            )
-        }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
-            periodisertliste.slåSammen(nesteDag)
         }
 
-    val status = if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+    val utfallsperioder: Periodisering<Utfallsdetaljer> =
+        samletUtfall.map { Utfallsdetaljer(1, it) }
+
+    val status = if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
         BehandlingStatus.Manuell
-    } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+    } else if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
         BehandlingStatus.Innvilget
     } else {
         BehandlingStatus.Avslag
@@ -59,23 +42,14 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         sakId = sakId,
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
-        saksopplysninger = saksopplysninger,
+        ytelserVilkårData = ytelserVilkårData,
         tiltak = tiltak,
-        vilkårsvurderinger = vurderinger,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,
         status = status,
     )
 }
 
-private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
-    if (this.isEmpty()) return listOf(neste)
-    val forrige = this.last()
-    return if (forrige.kanSlåsSammen(neste)) {
-        this.dropLast(1) + forrige.copy(
-            tom = neste.tom,
-        )
-    } else {
-        this + neste
-    }
+private fun List<Vurdering>.samletUtfall(): Periodisering<Utfall> {
+    return TODO()
 }

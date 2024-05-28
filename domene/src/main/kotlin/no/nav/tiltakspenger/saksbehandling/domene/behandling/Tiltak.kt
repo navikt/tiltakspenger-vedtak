@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -47,34 +49,14 @@ data class Tiltak(
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
-        return when (utfall) {
-            Utfall.OPPFYLT -> Vurdering.Oppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id,
-            )
-
-            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id,
-            )
-
-            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id,
-            )
-        }
+        return Vurdering(
+            vilkår = Vilkår.TILTAKSDELTAGELSE,
+            utfall = Periodisering(Utfall.KREVER_MANUELL_VURDERING, Periode(this.deltakelseFom, this.deltakelseTom))
+                .setVerdiForDelPeriode(utfall, Periode(this.deltakelseFom, this.deltakelseTom)),
+            kilde = Kilde.SAKSB, // TODO: Finn ut av dette
+            detaljer = detaljer,
+            grunnlagId = null,
+        )
     }
 
     fun vilkårsvurderTiltaksdeltagelse(): Vurdering {

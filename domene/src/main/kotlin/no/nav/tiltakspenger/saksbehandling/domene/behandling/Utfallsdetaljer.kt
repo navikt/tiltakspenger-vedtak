@@ -1,14 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
-import java.time.LocalDate
-
-data class Utfallsperiode(
-    val fom: LocalDate,
-    val tom: LocalDate,
+data class Utfallsdetaljer(
     val antallBarn: Int,
     val utfall: UtfallForPeriode,
 ) {
-    fun kanSlåsSammen(other: Utfallsperiode): Boolean {
+    fun kanSlåsSammen(other: Utfallsdetaljer): Boolean {
         return this.antallBarn == other.antallBarn && this.utfall == other.utfall
     }
 }

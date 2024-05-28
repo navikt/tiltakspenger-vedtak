@@ -1,21 +1,18 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Kategori
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
@@ -31,37 +28,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 
 object SammenstillingForBehandlingDTOMapper {
-    enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
-        ALDER("Alder", listOf(Vilkår.ALDER)),
-        INTROKVP(
-            "Introduksjonsprogrammet og Kvalifiseringsprogrammet",
-            listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP),
-        ),
-        UTBETALINGER(
-            "Utbetalinger",
-            listOf(
-                Vilkår.FORELDREPENGER,
-                Vilkår.PLEIEPENGER_SYKT_BARN,
-                Vilkår.PLEIEPENGER_NÆRSTÅENDE,
-                Vilkår.ALDERSPENSJON,
-                Vilkår.PENSJONSINNTEKT,
-                Vilkår.ETTERLØNN,
-                Vilkår.AAP,
-                Vilkår.DAGPENGER,
-                Vilkår.GJENLEVENDEPENSJON,
-                Vilkår.FORELDREPENGER,
-                Vilkår.JOBBSJANSEN,
-                Vilkår.UFØRETRYGD,
-                Vilkår.OMSORGSPENGER,
-                Vilkår.OPPLÆRINGSPENGER,
-                Vilkår.OVERGANGSSTØNAD,
-                Vilkår.SYKEPENGER,
-                Vilkår.SVANGERSKAPSPENGER,
-                Vilkår.SUPPLERENDESTØNADFLYKTNING,
-            ),
-        ),
-        INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
-    }
 
     private val fakta = hashMapOf(
         "AAP" to FaktaDTO(
@@ -174,7 +140,7 @@ object SammenstillingForBehandlingDTOMapper {
         return SammenstillingForBehandlingDTO(
             behandlingId = behandling.id.toString(),
             saksbehandler = behandling.saksbehandler,
-            beslutter = settBeslutter(behandling),
+            beslutter = getBeslutter(behandling),
             fom = behandling.vurderingsperiode.fra,
             tom = behandling.vurderingsperiode.til,
             søknad = SøknadDTO(
@@ -198,43 +164,46 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    deltagelseUtfall = it.vilkårsvurderTiltaksdeltagelse().utfall.utfallForPeriodisering(), // TODO: Det kan jo være mer enn ett utfall!
+                    begrunnelse = it.vilkårsvurderTiltaksdeltagelse().detaljer,
                 )
             },
+            // TODO: Vi bør nok ha en litt annen struktur også mot frontend..
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
-                        .map { it ->
+                    saksopplysninger = behandling.ytelserVilkårData.korrigerbareYtelser
+                        .flatMap { it.value.periodiseringAvSaksopplysningOgUtfall().perioder() }
+                        .filter { kategori.vilkår.contains(it.verdi.vilkår) }
+                        .map {
                             val fakta =
-                                fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
+                                fakta[it.verdi.vilkår.tittel] ?: FaktaDTO(
+                                    harYtelse = "ukjent",
+                                    harIkkeYtelse = "ukjent",
+                                )
                             SaksopplysningUtDTO(
-                                fom = it.fom,
-                                tom = it.tom,
-                                kilde = it.kilde.navn,
-                                detaljer = it.detaljer,
-                                typeSaksopplysning = it.typeSaksopplysning.name,
-                                vilkårTittel = it.vilkår.tittel,
-                                vilkårFlateTittel = it.vilkår.flateTittel,
+                                fom = it.periode.fra,
+                                tom = it.periode.til,
+                                kilde = it.verdi.kilde.navn,
+                                detaljer = it.verdi.detaljer,
+                                typeSaksopplysning = it.verdi.harYtelse.name,
+                                vilkårTittel = it.verdi.vilkår.tittel,
+                                vilkårFlateTittel = it.verdi.vilkår.flateTittel,
                                 fakta = fakta,
-                                utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                                vilkårLovReferense = it.vilkår.lovReference.map {
+                                utfall = it.verdi.utfall.name,
+                                vilkårLovReferense = it.verdi.vilkår.lovReference.map { lovRef ->
                                     LovreferanseDTO(
-                                        lovverk = it.lovverk,
-                                        paragraf = it.paragraf,
-                                        beskrivelse = it.beskrivelse,
+                                        lovverk = lovRef.lovverk,
+                                        paragraf = lovRef.paragraf,
+                                        beskrivelse = lovRef.beskrivelse,
                                     )
                                 },
                             )
                         },
-                    samletUtfall = settSamletUtfallForSaksopplysninger(
-                        behandling,
-                        behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
-                    ),
+                    samletUtfall = behandling.ytelserVilkårData.samletUtfallPerKategori()[kategori]!!.utfallForPeriodisering().name,
                 )
             },
-            personopplysninger = personopplysninger.søkere().map {
+            personopplysninger = personopplysninger.søker().let {
                 PersonopplysningerDTO(
                     ident = it.ident,
                     fornavn = it.fornavn,
@@ -243,7 +212,7 @@ object SammenstillingForBehandlingDTOMapper {
                     strengtFortrolig = it.strengtFortrolig,
                     fortrolig = it.fortrolig,
                 )
-            }.first(),
+            },
             tilstand = when (behandling) {
                 // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
                 is BehandlingIverksatt -> "iverksatt"
@@ -263,104 +232,36 @@ object SammenstillingForBehandlingDTOMapper {
                     endretTidspunkt = att.tidspunkt,
                 )
             },
-            samletUtfall = settSamletUtfallForUtfallsperioder(
-                utfallsperioder = behandling.utfallsperioder,
-            ),
-            utfallsperioder = behandling.utfallsperioder.map {
+            samletUtfall = behandling.ytelserVilkårData.samletUtfall().utfallForPeriodisering().name,
+            utfallsperioder = behandling.utfallsperioder?.perioder()?.map {
                 UtfallsperiodeDTO(
-                    fom = it.fom,
-                    tom = it.tom,
-                    antallBarn = it.antallBarn,
-                    utfall = when (it.utfall) {
+                    fom = it.periode.fra,
+                    tom = it.periode.til,
+                    antallBarn = it.verdi.antallBarn,
+                    utfall = when (it.verdi.utfall) {
                         UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
                         UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
                         UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING
                     },
                 )
-            },
+            } ?: emptyList(),
         )
     }
 
-    private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: String): Vurdering? {
-        return when (behandling) {
-            is BehandlingVilkårsvurdert -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
-            }
-            is BehandlingTilBeslutter -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
-            }
-            is BehandlingIverksatt -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
-            }
-            else -> { null }
-        }
-    }
-
-    fun settBeslutter(behandling: Førstegangsbehandling): String? =
+    fun getBeslutter(behandling: Førstegangsbehandling): String? =
         when (behandling) {
             is BehandlingIverksatt -> behandling.beslutter
             is BehandlingTilBeslutter -> behandling.beslutter
             else -> null
         }
 
-    fun settSamletUtfallForSaksopplysninger(
-        behandling: Behandling,
-        saksopplysninger: List<Saksopplysning>,
-    ): String {
-        if (saksopplysninger.any { s ->
-                settUtfall(
-                    behandling,
-                    s,
-                ) == Utfall.IKKE_OPPFYLT.name
-            }
-        ) {
-            return Utfall.IKKE_OPPFYLT.name
+    fun Periodisering<Utfall>.utfallForPeriodisering(): Utfall {
+        if (this.perioder().any { it.verdi == Utfall.KREVER_MANUELL_VURDERING }) {
+            return Utfall.KREVER_MANUELL_VURDERING
         }
-        if (saksopplysninger.any { s ->
-                settUtfall(
-                    behandling,
-                    s,
-                ) == Utfall.KREVER_MANUELL_VURDERING.name
-            }
-        ) {
-            return Utfall.KREVER_MANUELL_VURDERING.name
+        if (this.perioder().any { it.verdi == Utfall.OPPFYLT }) {
+            return Utfall.OPPFYLT
         }
-        return Utfall.OPPFYLT.name
-    }
-
-    fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
-        if (utfallsperioder.any { utfallsperiode ->
-                utfallsperiode.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING
-            }
-        ) {
-            return Utfall.KREVER_MANUELL_VURDERING.name
-        }
-        if (utfallsperioder.any { utfallsperiode ->
-                utfallsperiode.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER
-            }
-        ) {
-            return Utfall.OPPFYLT.name
-        }
-        return Utfall.IKKE_OPPFYLT.name
-    }
-
-    fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
-        return when (behandling) {
-            is BehandlingVilkårsvurdert -> hentUtfallForVilkår(
-                saksopplysning.vilkår,
-                behandling.vilkårsvurderinger,
-            ).name
-
-            is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
-            is BehandlingIverksatt -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
-            else -> Utfall.KREVER_MANUELL_VURDERING.name
-        }
-    }
-
-    fun hentUtfallForVilkår(vilkår: Vilkår, vurderinger: List<Vurdering>): Utfall {
-        if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.KREVER_MANUELL_VURDERING }) return Utfall.KREVER_MANUELL_VURDERING
-        if (vurderinger.any { it.vilkår == vilkår && it.utfall == Utfall.IKKE_OPPFYLT }) return Utfall.IKKE_OPPFYLT
-        if (vurderinger.filter { it.vilkår == vilkår }.all { it.utfall == Utfall.OPPFYLT }) return Utfall.OPPFYLT
-        throw IllegalStateException("Kunne ikke finne utfall for vilkår $vilkår")
+        return Utfall.IKKE_OPPFYLT
     }
 }
