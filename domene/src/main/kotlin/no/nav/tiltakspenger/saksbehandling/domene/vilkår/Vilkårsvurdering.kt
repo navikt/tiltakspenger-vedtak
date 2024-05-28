@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprette
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData.Companion.kombinerToUtfall
 
 fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
     TODO()
@@ -19,11 +20,12 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
             .samletUtfall()
 
     val samletUtfall: Periodisering<UtfallForPeriode> = this.ytelserVilkårData.samletUtfall()
-        .kombiner(tiltaksdeltakelseUtfall) { utfall1, utfall2 ->
-            when {
-                utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
-                utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
-                else -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
+        .kombiner(tiltaksdeltakelseUtfall, ::kombinerToUtfall)
+        .map {
+            when (it) {
+                Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                Utfall.OPPFYLT -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
             }
         }
 
