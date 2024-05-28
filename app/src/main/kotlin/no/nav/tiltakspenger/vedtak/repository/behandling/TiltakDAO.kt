@@ -252,11 +252,11 @@ class TiltakDAO {
 
     @Language("SQL")
     private val hentAntallDagerSql =
-        "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND datakilde = ?"
+        "select * from stønadsdager_tiltak where behandling_id = :behandlingId and tiltak_id = :tiltakId"
 
     @Language("SQL")
     private val hentAvklarteAntallDagerSql =
-        "select * from tiltak_stonadsdager where behandling_id = ? and tiltak_id = ? AND avklart_tidspunkt IS NOT NULL"
+        "select * from stønadsdager_tiltak where behandling_id = :behandlingId and tiltak_id = :tiltakId AND avklart_tidspunkt IS NOT NULL"
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "takt"
