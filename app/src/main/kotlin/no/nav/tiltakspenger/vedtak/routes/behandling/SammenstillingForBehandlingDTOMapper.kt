@@ -200,6 +200,7 @@ object SammenstillingForBehandlingDTOMapper {
                     harSøkt = true,
                     deltagelseUtfall = utledDeltagelseUtfall(behandling, it.eksternId)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
                     begrunnelse = utledDeltagelseUtfall(behandling, it.eksternId)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    antallDagerSaksopplysninger = it.antallDagerSaksopplysninger,
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->

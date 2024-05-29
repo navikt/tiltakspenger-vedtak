@@ -167,7 +167,7 @@ class TiltakDAO {
             ),
             verdi = AntallDager(
                 antallDager = int("antall_dager"),
-                kilde = Kilde.valueOf(string("datakilde")),
+                kilde = Kilde.valueOf(string("datakilde").uppercase()),
             ),
         )
     }
