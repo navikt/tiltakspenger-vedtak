@@ -10,6 +10,8 @@ $$
 
             ALTER USER "tiltakspenger-vedtak" WITH REPLICATION;
             ALTER USER "tpts_datastream" WITH REPLICATION;
+            select pg_create_logical_replication_slot('tpts_datastream_slot', 'test_slot');
+
             -- CREATE PUBLICATION "ds_publication" FOR ALL TABLES; -- Denne er kommentert ut fordi flyway kjører migrering hver gang V1 endres, og da får vi feil på at 'ds_publication' finnes fra før på deploy.
         END IF;
     END
