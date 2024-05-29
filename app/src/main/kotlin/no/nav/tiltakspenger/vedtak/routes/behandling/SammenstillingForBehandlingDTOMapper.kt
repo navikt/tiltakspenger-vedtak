@@ -192,7 +192,6 @@ object SammenstillingForBehandlingDTOMapper {
             registrerteTiltak = behandling.tiltak.map {
                 RegistrertTiltakDTO(
                     arrangør = it.gjennomføring.arrangørnavn,
-                    dagerIUken = it.deltakelseDagerUke?.toInt() ?: 0,
                     navn = it.gjennomføring.typeNavn,
                     periode = PeriodeDTO(
                         fra = it.deltakelseFom,

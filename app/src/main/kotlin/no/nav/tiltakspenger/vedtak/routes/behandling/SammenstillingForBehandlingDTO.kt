@@ -46,7 +46,6 @@ data class SammenstillingForBehandlingDTO(
 
     data class RegistrertTiltakDTO(
         val arrangør: String,
-        val dagerIUken: Int,
         val navn: String,
         val periode: PeriodeDTO,
         val prosent: Int,

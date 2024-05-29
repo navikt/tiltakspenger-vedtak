@@ -522,7 +522,6 @@ interface InnsendingMother {
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
             deltakelseStatus = deltakerStatus,
-            deltakelseDagerUke = antallDagerPerUke,
             deltakelseProsent = deltakelseProsent,
             kilde = kilde,
             registrertDato = registrertDato,

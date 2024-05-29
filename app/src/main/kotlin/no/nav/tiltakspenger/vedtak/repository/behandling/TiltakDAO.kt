@@ -31,7 +31,15 @@ class TiltakDAO {
         slettTiltak(behandlingId, txSession)
         tiltakListe.forEach { tiltak ->
             lagreTiltak(behandlingId, tiltak, txSession)
-            lagreStønadsdager(behandlingId, tiltak, txSession)
+            tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.forEach { antallDager ->
+                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+            }
+            tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.forEach { antallDager ->
+                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+            }
+            tiltak.antallDagerSaksopplysninger.avklartAntallDager.forEach { antallDager ->
+                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+            }
         }
     }
 
@@ -87,7 +95,6 @@ class TiltakDAO {
                     "deltakelseFom" to tiltak.deltakelseFom,
                     "deltakelseTom" to tiltak.deltakelseTom,
                     "deltakelseProsent" to tiltak.deltakelseProsent,
-                    "deltakelseDagerUke" to tiltak.deltakelseDagerUke,
                     "deltakerStatus" to tiltak.deltakelseStatus.status,
                     "rettTilASoke" to tiltak.deltakelseStatus.rettTilÅASøke,
                     "kilde" to tiltak.kilde,
@@ -101,22 +108,25 @@ class TiltakDAO {
     private fun lagreStønadsdager(
         behandlingId: BehandlingId,
         tiltak: Tiltak,
+        antallDagerMedPeriode: PeriodeMedVerdi<AntallDager>,
         txSession: TransactionalSession,
-        kilde: Kilde = Kilde.ARENA,
     ) {
+        val periode = antallDagerMedPeriode.periode
+        val antallDagerSaksopplysning = antallDagerMedPeriode.verdi
         txSession.run(
             queryOf(
                 lagreStønadsdagerSql,
                 mapOf(
                     "id" to random(ULID_PREFIX_STØNADSDAGER).toString(),
-                    "antallDager" to tiltak.deltakelseDagerUke,
-                    "fom" to tiltak.deltakelseFom,
-                    "tom" to tiltak.deltakelseTom,
-                    "datakilde" to kilde.toString(),
+                    "antallDager" to antallDagerSaksopplysning.antallDager,
+                    "fom" to periode.fra,
+                    "tom" to periode.til,
+                    "datakilde" to antallDagerSaksopplysning.kilde.toString(),
                     "tidsstempelKilde" to tiltak.registrertDato,
                     "tidsstempelHosOss" to tiltak.innhentet,
                     "tiltakId" to tiltak.id.toString(),
                     "behandlingId" to behandlingId.toString(),
+                    "saksbehandler" to antallDagerSaksopplysning.saksbehandlerIdent,
                 ),
             ).asUpdate,
         )
@@ -147,7 +157,6 @@ class TiltakDAO {
                 status = string("deltakelse_status"),
                 rettTilÅASøke = boolean("rett_til_å_søke"),
             ),
-            deltakelseDagerUke = floatOrNull("deltakelse_dager_uke"),
             deltakelseProsent = floatOrNull("deltakelse_prosent"),
             kilde = string("kilde"),
             registrertDato = localDateTime("tidsstempel_kilde"),
@@ -168,6 +177,7 @@ class TiltakDAO {
             verdi = AntallDager(
                 antallDager = int("antall_dager"),
                 kilde = Kilde.valueOf(string("datakilde").uppercase()),
+                saksbehandlerIdent = stringOrNull("saksbehandler"),
             ),
         )
     }
@@ -183,7 +193,8 @@ class TiltakDAO {
             tidsstempel_kilde,
             tidsstempel_hos_oss,
             tiltak_id,
-            behandling_id
+            behandling_id,
+            saksbehandler
         ) values (
             :id,
             :antallDager,
@@ -193,7 +204,8 @@ class TiltakDAO {
             :tidsstempelKilde,
             :tidsstempelHosOss,
             :tiltakId,
-            :behandlingId
+            :behandlingId,
+            :saksbehandler
         )
     """.trimIndent()
 
@@ -211,7 +223,6 @@ class TiltakDAO {
             deltakelse_fom,
             deltakelse_tom,
             deltakelse_prosent,
-            deltakelse_dager_uke,
             deltakelse_status,
             rett_til_å_søke,
             kilde,
@@ -229,7 +240,6 @@ class TiltakDAO {
             :deltakelseFom,
             :deltakelseTom,
             :deltakelseProsent,
-            :deltakelseDagerUke,
             :deltakerStatus,
             :rettTilASoke,
             :kilde,

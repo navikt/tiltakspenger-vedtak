@@ -59,7 +59,6 @@ internal class TiltakDAOTest {
             deltakelseFom = 1.januar(2023),
             deltakelseTom = 31.januar(2023),
             deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
-            deltakelseDagerUke = 1.0f,
             deltakelseProsent = null,
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
@@ -67,7 +66,7 @@ internal class TiltakDAOTest {
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
                 antallDager = listOf(
                     PeriodeMedVerdi(
-                        verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA),
+                        verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                         periode =
                         no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.januar(2023)),
                     ),
@@ -109,7 +108,6 @@ internal class TiltakDAOTest {
             deltakelseFom = 1.januar(2023),
             deltakelseTom = 31.mars(2023),
             deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
-            deltakelseDagerUke = 2.0F,
             deltakelseProsent = 100.0F,
             kilde = "Komet",
             registrertDato = 1.januarDateTime(2023),
@@ -117,7 +115,7 @@ internal class TiltakDAOTest {
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
                 antallDager = listOf(
                     PeriodeMedVerdi(
-                        verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA),
+                        verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                         periode =
                         no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.mars(2023)),
                     ),

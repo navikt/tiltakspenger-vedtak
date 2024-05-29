@@ -241,6 +241,7 @@ class SammenstillingForBehandlingDTOTest {
                     verdi = AntallDager(
                         kilde = Kilde.valueOf(antallDagerMock.kilde.uppercase()),
                         antallDager = antallDagerMock.antallDager,
+                        saksbehandlerIdent = null,
                     ),
                     periode = Periode(
                         fra = antallDagerMock.periode.fra,

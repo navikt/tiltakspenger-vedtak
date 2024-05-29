@@ -97,7 +97,6 @@ private fun mapTiltak(
                     status = it.deltakelseStatus.name,
                     rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
                 ),
-                deltakelseDagerUke = it.deltakelseDagerUke,
                 deltakelseProsent = it.deltakelseProsent,
                 kilde = it.kilde,
                 registrertDato = it.registrertDato,
@@ -105,18 +104,18 @@ private fun mapTiltak(
                 antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
                     antallDagerSaksopplysningerFraRegister = listOf(
                         PeriodeMedVerdi(
-                            // TODO: Dette bør kanskje leve inni saksopplysningen?
-                            // TODO: Vi må sørge for at dersom prosent == 100 og vi mangler antall dager, setter vi antall dager til 5
                             verdi =
                             if (it.deltakelseDagerUke != null) {
                                 AntallDager(
                                     antallDager = it.deltakelseDagerUke!!.roundToInt(),
                                     kilde = Kilde.valueOf(it.kilde.uppercase()),
+                                    saksbehandlerIdent = null,
                                 )
                             } else {
                                 AntallDager(
-                                    antallDager = 0,
+                                    antallDager = if (it.deltakelseProsent == 100f) 5 else 0,
                                     kilde = Kilde.valueOf(it.kilde.uppercase()),
+                                    saksbehandlerIdent = null,
                                 )
                             },
                             periode = Periode(

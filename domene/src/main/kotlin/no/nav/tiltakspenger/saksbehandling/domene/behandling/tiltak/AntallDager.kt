@@ -6,10 +6,22 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 data class AntallDager(
     val antallDager: Int,
     val kilde: Kilde,
-)
+    val saksbehandlerIdent: String?,
+) {
+    init {
+        if (kilde == Kilde.SAKSB) {
+            require(saksbehandlerIdent != null) {
+                "Må ha saksbehandler-ident når opplysningen kommer fra saksbehandler"
+            }
+        } else {
+            require(saksbehandlerIdent == null) {
+                "En opplysning som kommer fra et register kan ikke ha en saksbehandler-ident"
+            }
+        }
+    }
+}
 
 data class AntallDagerSaksopplysninger(
-    // todo: Vi trenger informasjon om hvilken saksbehandler som har endret antall dager.
     val antallDagerSaksopplysningerFraSBH: List<PeriodeMedVerdi<AntallDager>> = emptyList(),
     val antallDagerSaksopplysningerFraRegister: List<PeriodeMedVerdi<AntallDager>>,
     val avklartAntallDager: List<PeriodeMedVerdi<AntallDager>> = emptyList(),

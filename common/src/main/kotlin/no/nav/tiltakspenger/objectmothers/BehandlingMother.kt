@@ -132,7 +132,6 @@ interface BehandlingMother {
             deltakelseFom = fom,
             deltakelseTom = tom,
             deltakelseStatus = status,
-            deltakelseDagerUke = dagerPrUke,
             deltakelseProsent = prosent,
             kilde = kilde,
             registrertDato = 1.januarDateTime(2023),

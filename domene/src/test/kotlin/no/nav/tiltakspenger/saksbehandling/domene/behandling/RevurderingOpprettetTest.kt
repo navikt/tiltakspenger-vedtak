@@ -62,7 +62,6 @@ internal class RevurderingOpprettetTest {
         gjennomføring = mockk<Tiltak.Gjennomføring>(),
         registrertDato = LocalDateTime.now(),
         deltakelseProsent = null,
-        deltakelseDagerUke = null,
         antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(antallDager = emptyList(), avklarteAntallDager = emptyList()),
     )
 

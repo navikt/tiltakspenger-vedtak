@@ -15,7 +15,6 @@ data class Tiltak(
     val deltakelseFom: LocalDate,
     val deltakelseTom: LocalDate,
     val deltakelseStatus: DeltakerStatus,
-    val deltakelseDagerUke: Float?,
     val deltakelseProsent: Float?,
     val kilde: String,
     val registrertDato: LocalDateTime,

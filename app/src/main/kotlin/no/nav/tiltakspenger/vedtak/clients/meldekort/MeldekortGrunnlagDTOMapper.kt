@@ -53,12 +53,7 @@ object MeldekortGrunnlagDTOMapper {
                     ),
                     typeBeskrivelse = it.gjennomføring.typeNavn,
                     typeKode = it.gjennomføring.typeKode,
-                    antDagerIUken = it.deltakelseDagerUke
-                        ?: if (it.deltakelseProsent == 100F) {
-                            5F
-                        } else {
-                            throw IllegalStateException("Kan ikke beregne antall dager i uken for tiltak uten deltakelseDagerUke eller deltakelseProsent")
-                        },
+                    antDagerIUken = 5f,
                 )
             }
 }
