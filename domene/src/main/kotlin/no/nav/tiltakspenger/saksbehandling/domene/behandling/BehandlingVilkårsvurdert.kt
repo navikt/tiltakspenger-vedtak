@@ -6,8 +6,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -17,7 +17,7 @@ data class BehandlingVilkårsvurdert(
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val ytelserVilkårData: YtelserVilkårData,
+    override val livsoppholdVilkårData: LivsoppholdVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val utfallsperioder: Periodisering<Utfallsdetaljer>? = null,
@@ -35,7 +35,7 @@ data class BehandlingVilkårsvurdert(
                 sakId = sakId,
                 søknader = søknader,
                 vurderingsperiode = vurderingsperiode,
-                ytelserVilkårData = ytelserVilkårData,
+                livsoppholdVilkårData = livsoppholdVilkårData,
                 tiltak = tiltak,
                 utfallsperioder = utfallsperioder,
                 saksbehandler = this.saksbehandler,
@@ -48,8 +48,8 @@ data class BehandlingVilkårsvurdert(
     override fun leggTilSøknad(søknad: Søknad): BehandlingVilkårsvurdert =
         this.spolTilbake().leggTilSøknad(søknad = søknad)
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
-        this.spolTilbake().leggTilSaksopplysning(saksopplysning)
+    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons =
+        this.spolTilbake().leggTilSaksopplysning(livoppholdSaksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
@@ -70,7 +70,7 @@ data class BehandlingVilkårsvurdert(
         sakId = this.sakId,
         søknader = this.søknader,
         vurderingsperiode = this.vurderingsperiode,
-        ytelserVilkårData = this.ytelserVilkårData,
+        livsoppholdVilkårData = this.livsoppholdVilkårData,
         tiltak = this.tiltak,
         saksbehandler = this.saksbehandler,
     )

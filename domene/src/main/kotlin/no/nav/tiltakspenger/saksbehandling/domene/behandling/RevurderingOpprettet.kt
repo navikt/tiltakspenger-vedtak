@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
@@ -15,7 +15,7 @@ data class RevurderingOpprettet(
     override val sakId: SakId,
     override val forrigeVedtak: Vedtak,
     override val vurderingsperiode: Periode,
-    override val ytelserVilkårData: YtelserVilkårData,
+    override val livsoppholdVilkårData: LivsoppholdVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String?,
     override val søknader: List<Søknad>,
@@ -27,7 +27,7 @@ data class RevurderingOpprettet(
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
-                ytelserVilkårData = vedtak.behandling.ytelserVilkårData,
+                livsoppholdVilkårData = vedtak.behandling.livsoppholdVilkårData,
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
@@ -38,16 +38,16 @@ data class RevurderingOpprettet(
     override val utfallsperioder: Periodisering<Utfallsdetaljer>
         get() = TODO("Not yet implemented")
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertYtelserVilkårData = ytelserVilkårData.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertYtelserVilkårData == this.ytelserVilkårData) {
+    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons {
+        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livoppholdSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.livsoppholdVilkårData) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(ytelserVilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
+                behandling = this.copy(livsoppholdVilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
                 erEndret = true,
             )
         }

@@ -15,118 +15,118 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import kotlin.test.Test
 
-internal class SaksopplysningTest {
+internal class LivoppholdSaksopplysningTest {
 
     @Test
     fun `sjekk at oppdatering av saksopplysninger fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
-            Saksopplysning(
+            LivoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
-                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                harYtelse = HarYtelse.HAR_IKKE_YTELSE,
                 saksbehandler = null,
             )
 
-        val nySaksopplysning =
-            Saksopplysning(
+        val nyLivoppholdSaksopplysning =
+            LivoppholdSaksopplysning(
                 fom = 15.januar(2023),
                 tom = 15.mars(2023),
                 kilde = Kilde.ARENA,
                 vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
-                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
+                harYtelse = HarYtelse.HAR_YTELSE,
                 saksbehandler = null,
             )
 
         val behandling =
             BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
-        behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.IKKE_INNHENTET_ENDA
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.IKKE_INNHENTET_ENDA
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
         behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.IKKE_INNHENTET_ENDA
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.IKKE_INNHENTET_ENDA
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
 
-        val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nySaksopplysning).behandling
+        val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nyLivoppholdSaksopplysning).behandling
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
-        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
+        behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.HAR_YTELSE
     }
 
     @Test
     fun `ny søknad med samme saksopplysning fjerner ikke saksbehandler`() {
         val sakbehandlerOpplysning =
-            Saksopplysning(
+            LivoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.INTROPROGRAMMET,
                 detaljer = "",
-                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
+                harYtelse = HarYtelse.HAR_YTELSE,
                 saksbehandler = null,
             )
 
         val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
-        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
         behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelse shouldBe HarYtelse.HAR_YTELSE
 
         val behandlingMedUendretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad())
         behandlingMedUendretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
-        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
-        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
+        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
+        behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelse shouldBe HarYtelse.HAR_YTELSE
     }
 
     @Test
     fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
-            Saksopplysning(
+            LivoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.INTROPROGRAMMET,
                 detaljer = "",
-                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
+                harYtelse = HarYtelse.HAR_YTELSE,
                 saksbehandler = null,
             )
 
         val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
-        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
+        behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
 
         val behandlingMedSaksbehandler = behandling.leggTilSaksopplysning(sakbehandlerOpplysning).behandling
         behandlingMedSaksbehandler.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 2
-        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_IKKE_YTELSE
-        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SØKNAD }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
+        behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.harYtelse shouldBe HarYtelse.HAR_YTELSE
 
         val behandlingMedEndretSøknad = behandlingMedSaksbehandler.leggTilSøknad(nySøknad(intro = periodeJa()))
         behandlingMedEndretSøknad.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
-        behandlingMedEndretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelseSaksopplysning shouldBe HarYtelseSaksopplysning.HAR_YTELSE
+        behandlingMedEndretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.harYtelse shouldBe HarYtelse.HAR_YTELSE
     }
 
     @Test
     fun `hvis det finnes ytelse i starten av en vurderingsperiode får man IkkeOppfylt i denne perioden og Oppfylt i resten`() {
         val periode = Periode(fra = 1.januar(2023), til = 31.mars(2023))
 
-        val saksopplysning =
-            Saksopplysning(
+        val livoppholdSaksopplysning =
+            LivoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
                 kilde = Kilde.SAKSB,
                 vilkår = Vilkår.FORELDREPENGER,
                 detaljer = "",
-                harYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
+                harYtelse = HarYtelse.HAR_YTELSE,
                 saksbehandler = null,
             )
 
-        saksopplysning.lagVurdering(periode) shouldContainAll listOf(
+        livoppholdSaksopplysning.lagVurdering(periode) shouldContainAll listOf(
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,

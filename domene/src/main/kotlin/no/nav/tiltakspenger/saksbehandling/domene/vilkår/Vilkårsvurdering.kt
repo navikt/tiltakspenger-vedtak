@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprette
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData.Companion.kombinerToUtfall
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData.Companion.kombinerToUtfall
 
 fun RevurderingOpprettet.vilkårsvurder(): RevurderingVilkårsvurdert {
     TODO()
@@ -19,7 +19,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
             .samletUtfall()
 
-    val samletUtfall: Periodisering<UtfallForPeriode> = this.ytelserVilkårData.samletUtfall()
+    val samletUtfall: Periodisering<UtfallForPeriode> = this.livsoppholdVilkårData.samletUtfall()
         .kombiner(tiltaksdeltakelseUtfall, ::kombinerToUtfall)
         .map {
             when (it) {
@@ -44,7 +44,7 @@ fun BehandlingOpprettet.vilkårsvurder(): BehandlingVilkårsvurdert {
         sakId = sakId,
         søknader = søknader,
         vurderingsperiode = vurderingsperiode,
-        ytelserVilkårData = ytelserVilkårData,
+        livsoppholdVilkårData = livsoppholdVilkårData,
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         utfallsperioder = utfallsperioder,

@@ -172,7 +172,7 @@ object SammenstillingForBehandlingDTOMapper {
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.ytelserVilkårData.korrigerbareYtelser
+                    saksopplysninger = behandling.livsoppholdVilkårData.korrigerbareYtelser
                         .flatMap { it.value.periodiseringAvSaksopplysningOgUtfall().perioder() }
                         .filter { kategori.vilkår.contains(it.verdi.vilkår) }
                         .map {
@@ -200,7 +200,7 @@ object SammenstillingForBehandlingDTOMapper {
                                 },
                             )
                         },
-                    samletUtfall = behandling.ytelserVilkårData.samletUtfallPerKategori()[kategori]!!.utfallForPeriodisering().name,
+                    samletUtfall = behandling.livsoppholdVilkårData.samletUtfallPerKategori()[kategori]!!.utfallForPeriodisering().name,
                 )
             },
             personopplysninger = personopplysninger.søker().let {
@@ -232,7 +232,7 @@ object SammenstillingForBehandlingDTOMapper {
                     endretTidspunkt = att.tidspunkt,
                 )
             },
-            samletUtfall = behandling.ytelserVilkårData.samletUtfall().utfallForPeriodisering().name,
+            samletUtfall = behandling.livsoppholdVilkårData.samletUtfall().utfallForPeriodisering().name,
             utfallsperioder = behandling.utfallsperioder?.perioder()?.map {
                 UtfallsperiodeDTO(
                     fom = it.periode.fra,

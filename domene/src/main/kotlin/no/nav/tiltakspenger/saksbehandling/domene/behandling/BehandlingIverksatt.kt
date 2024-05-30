@@ -4,8 +4,8 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 data class BehandlingIverksatt(
@@ -13,7 +13,7 @@ data class BehandlingIverksatt(
     override val sakId: SakId,
     override val søknader: List<Søknad>,
     override val vurderingsperiode: Periode,
-    override val ytelserVilkårData: YtelserVilkårData,
+    override val livsoppholdVilkårData: LivsoppholdVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     override val utfallsperioder: Periodisering<Utfallsdetaljer>?,
@@ -21,9 +21,9 @@ data class BehandlingIverksatt(
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertYtelserVilkårData = ytelserVilkårData.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertYtelserVilkårData == this.ytelserVilkårData) {
+    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons {
+        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livoppholdSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.livsoppholdVilkårData) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
@@ -35,7 +35,7 @@ data class BehandlingIverksatt(
                 sakId = this.sakId,
                 søknader = listOf(this.søknad()),
                 vurderingsperiode = this.vurderingsperiode,
-                ytelserVilkårData = oppdatertYtelserVilkårData,
+                livsoppholdVilkårData = oppdatertYtelserVilkårData,
                 tiltak = this.tiltak,
                 saksbehandler = null,
             ).vilkårsvurder()

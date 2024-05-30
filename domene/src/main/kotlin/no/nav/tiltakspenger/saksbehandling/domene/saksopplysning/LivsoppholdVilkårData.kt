@@ -8,12 +8,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Kategori
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
-data class YtelserVilkårData(
+data class LivsoppholdVilkårData(
     val vurderingsperiode: Periode,
-    val korrigerbareYtelser: Map<Vilkår, KorrigerbarYtelse>,
+    val korrigerbareYtelser: Map<Vilkår, KorrigerbarLivsopphold>,
 ) {
 
-    fun håndterSøknad(søknad: Søknad): YtelserVilkårData {
+    fun håndterSøknad(søknad: Søknad): LivsoppholdVilkårData {
         val periodeSpmISøknaden = mapOf(
             Vilkår.KVP to søknad.kvp,
             Vilkår.INTROPROGRAMMET to søknad.intro,
@@ -59,8 +59,8 @@ data class YtelserVilkårData(
             )
     }
 
-    fun oppdaterSaksopplysninger(saksopplysning: Saksopplysning): YtelserVilkårData {
-        require(korrigerbareYtelser.containsKey(saksopplysning.vilkår)) { "Saksopplysning med vilkår ${saksopplysning.vilkår} matcher ingen ytelse" }
+    fun oppdaterSaksopplysninger(livoppholdSaksopplysning: LivoppholdSaksopplysning): LivsoppholdVilkårData {
+        require(korrigerbareYtelser.containsKey(livoppholdSaksopplysning.vilkår)) { "Saksopplysning med vilkår ${livoppholdSaksopplysning.vilkår} matcher ingen ytelse" }
 
         /*
          fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
@@ -77,8 +77,8 @@ data class YtelserVilkårData(
         return this.copy(
             korrigerbareYtelser = korrigerbareYtelser +
                 (
-                    saksopplysning.vilkår to korrigerbareYtelser[saksopplysning.vilkår]!!.oppdaterSaksopplysning(
-                        saksopplysning,
+                    livoppholdSaksopplysning.vilkår to korrigerbareYtelser[livoppholdSaksopplysning.vilkår]!!.oppdaterSaksopplysning(
+                        livoppholdSaksopplysning,
                     )
                     ),
         )
@@ -126,10 +126,10 @@ data class YtelserVilkårData(
         val alleVilkår =
             Kategori.ALDER.vilkår + Kategori.INTROKVP.vilkår + Kategori.INSTITUSJONSOPPHOLD.vilkår + Kategori.UTBETALINGER.vilkår
 
-        operator fun invoke(vurderingsperiode: Periode): YtelserVilkårData {
-            return YtelserVilkårData(
+        operator fun invoke(vurderingsperiode: Periode): LivsoppholdVilkårData {
+            return LivsoppholdVilkårData(
                 vurderingsperiode,
-                alleVilkår.associateWith { KorrigerbarYtelse(vurderingsperiode, it) },
+                alleVilkår.associateWith { KorrigerbarLivsopphold(vurderingsperiode, it) },
             )
         }
 

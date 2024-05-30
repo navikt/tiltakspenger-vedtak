@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class LeggTilSaksopplysningRespons(
@@ -18,7 +18,7 @@ interface Behandling {
     val id: BehandlingId
     val sakId: SakId
     val vurderingsperiode: Periode
-    val ytelserVilkårData: YtelserVilkårData
+    val livsoppholdVilkårData: LivsoppholdVilkårData
     val tiltak: List<Tiltak>
     val saksbehandler: String?
     val utfallsperioder: Periodisering<Utfallsdetaljer>?
@@ -29,14 +29,14 @@ interface Behandling {
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
-    fun saksopplysninger(): List<Saksopplysning> {
-        return ytelserVilkårData.korrigerbareYtelser.values.map {
-            it.avklartSaksopplysning
+    fun saksopplysninger(): List<LivoppholdSaksopplysning> {
+        return livsoppholdVilkårData.korrigerbareYtelser.values.map {
+            it.avklartLivoppholdSaksopplysning
         }
     }
 
     fun vilkårsvurderinger(): List<Vurdering> {
-        return ytelserVilkårData.korrigerbareYtelser.values.map {
+        return livsoppholdVilkårData.korrigerbareYtelser.values.map {
             it.vurdering
         }
     }
@@ -45,7 +45,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }
 
-    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+    fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 

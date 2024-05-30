@@ -14,9 +14,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
@@ -37,16 +37,16 @@ interface BehandlingMother {
         tom: LocalDate = 31.mars(2023),
         kilde: Kilde = Kilde.SAKSB,
         vilkår: Vilkår = Vilkår.AAP,
-        type: HarYtelseSaksopplysning = HarYtelseSaksopplysning.HAR_YTELSE,
+        type: HarYtelse = HarYtelse.HAR_YTELSE,
         saksbehandler: String? = null,
-    ): Saksopplysning =
-        Saksopplysning(
+    ): LivoppholdSaksopplysning =
+        LivoppholdSaksopplysning(
             fom = fom,
             tom = tom,
             kilde = kilde,
             vilkår = vilkår,
             detaljer = "",
-            harYtelseSaksopplysning = type,
+            harYtelse = type,
             saksbehandler = saksbehandler,
         )
 
@@ -61,7 +61,7 @@ interface BehandlingMother {
                     fom = periode.fra,
                     tom = periode.til,
                     vilkår = vilkår,
-                    type = HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                    type = HarYtelse.HAR_IKKE_YTELSE,
                 ),
             ).behandling
         } as BehandlingVilkårsvurdert
@@ -79,7 +79,7 @@ interface BehandlingMother {
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 vilkår = Vilkår.KVP,
-                type = HarYtelseSaksopplysning.HAR_YTELSE,
+                type = HarYtelse.HAR_YTELSE,
             ),
         ).behandling as BehandlingVilkårsvurdert
 

@@ -3,21 +3,21 @@ package no.nav.tiltakspenger.innsending.domene.tolkere
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 class DagpengerTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): Saksopplysning {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivoppholdSaksopplysning {
             if (ytelser == null) {
-                return Saksopplysning(
+                return LivoppholdSaksopplysning(
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelseSaksopplysning = Periodisering(null, vurderingsperiode),
+                    harYtelse = Periodisering(null, vurderingsperiode),
                 )
             }
 
@@ -35,34 +35,34 @@ class DagpengerTolker {
                 }
 
             if (ytelseListe.isEmpty()) {
-                return Saksopplysning(
+                return LivoppholdSaksopplysning(
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                    harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
                         .setVerdiForDelPeriode(
-                            HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                            HarYtelse.HAR_IKKE_YTELSE,
                             vurderingsperiode,
                         ),
                 )
             }
             return ytelseListe
                 .fold(
-                    Saksopplysning(
+                    LivoppholdSaksopplysning(
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         // TODO: Denne blir annerledes når vi ikke lenger har én saksopplysning per sak
                         detaljer = ytelseListe.lastOrNull()?.let { detaljerForDagpenger(it) } ?: "",
-                        harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                        harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
                             .setVerdiForDelPeriode(
-                                HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                                HarYtelse.HAR_IKKE_YTELSE,
                                 vurderingsperiode,
                             ),
                     ),
-                ) { resultat: Saksopplysning, ytelse: YtelseSak ->
+                ) { resultat: LivoppholdSaksopplysning, ytelse: YtelseSak ->
                     resultat.copy(
-                        harYtelseSaksopplysning = resultat.harYtelseSaksopplysning.setVerdiForDelPeriode(
-                            HarYtelseSaksopplysning.HAR_YTELSE,
+                        harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
+                            HarYtelse.HAR_YTELSE,
                             Periode(
                                 ytelse.fomGyldighetsperiode.toLocalDate(),
                                 ytelse.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX,

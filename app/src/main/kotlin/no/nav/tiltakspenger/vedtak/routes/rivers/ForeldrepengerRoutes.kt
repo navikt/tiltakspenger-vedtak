@@ -73,7 +73,7 @@ fun Route.foreldrepengerRoutes(
                             ).forEach { saksopplysning ->
                                 behandlingService.leggTilSaksopplysning(
                                     behandlingId = behandling.id,
-                                    saksopplysning = saksopplysning,
+                                    livoppholdSaksopplysning = saksopplysning,
                                 )
                             }
                         }

@@ -21,7 +21,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -239,7 +239,7 @@ internal class SakServiceTest {
                 match { behandling ->
                     behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
                         behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 31.mars(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.harYtelseSaksopplysning == HarYtelseSaksopplysning.HAR_IKKE_YTELSE
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.harYtelse == HarYtelse.HAR_IKKE_YTELSE
                 },
             )
         }
@@ -303,7 +303,7 @@ internal class SakServiceTest {
                 match { behandling ->
                     behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
                         behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
-                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.harYtelseSaksopplysning == HarYtelseSaksopplysning.HAR_YTELSE &&
+                        behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.harYtelse == HarYtelse.HAR_YTELSE &&
                         (behandling as BehandlingVilkårsvurdert).vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
                             .sortedBy { it.fom }.first().fom == 1.januar(2023) &&
                         behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }

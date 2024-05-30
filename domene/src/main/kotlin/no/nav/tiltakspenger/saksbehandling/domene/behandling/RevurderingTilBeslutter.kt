@@ -6,8 +6,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelserVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -15,7 +15,7 @@ data class RevurderingTilBeslutter(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val vurderingsperiode: Periode,
-    override val ytelserVilkårData: YtelserVilkårData,
+    override val livsoppholdVilkårData: LivsoppholdVilkårData,
     override val tiltak: List<Tiltak>,
     override val saksbehandler: String,
     override val forrigeVedtak: Vedtak,
@@ -39,7 +39,7 @@ data class RevurderingTilBeslutter(
                 sakId = sakId,
                 forrigeVedtak = forrigeVedtak,
                 vurderingsperiode = vurderingsperiode,
-                ytelserVilkårData = ytelserVilkårData,
+                livsoppholdVilkårData = livsoppholdVilkårData,
                 tiltak = tiltak,
                 vilkårsvurderinger = vilkårsvurderinger,
                 utfallsperioder = utfallsperioder,
@@ -59,7 +59,7 @@ data class RevurderingTilBeslutter(
             sakId = sakId,
             forrigeVedtak = forrigeVedtak,
             vurderingsperiode = vurderingsperiode,
-            ytelserVilkårData = ytelserVilkårData,
+            livsoppholdVilkårData = livsoppholdVilkårData,
             tiltak = tiltak,
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
@@ -69,8 +69,8 @@ data class RevurderingTilBeslutter(
         )
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons =
-        spolTilbake().leggTilSaksopplysning(saksopplysning)
+    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons =
+        spolTilbake().leggTilSaksopplysning(livoppholdSaksopplysning)
 
     override fun startBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         check(this.beslutter == null) { "Denne behandlingen har allerede en beslutter" }
@@ -86,7 +86,7 @@ data class RevurderingTilBeslutter(
             sakId = sakId,
             forrigeVedtak = forrigeVedtak,
             vurderingsperiode = vurderingsperiode,
-            ytelserVilkårData = ytelserVilkårData,
+            livsoppholdVilkårData = livsoppholdVilkårData,
             tiltak = tiltak,
             saksbehandler = saksbehandler,
             søknader = søknader,

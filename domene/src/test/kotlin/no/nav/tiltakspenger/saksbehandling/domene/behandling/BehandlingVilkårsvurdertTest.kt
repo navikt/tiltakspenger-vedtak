@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import org.junit.jupiter.api.Test
@@ -23,7 +23,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 31.januar(2024),
             kilde = Kilde.K9SAK,
             vilkår = Vilkår.FORELDREPENGER,
-            type = HarYtelseSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = null,
         )
 
@@ -61,7 +61,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 31.mars(2024),
             kilde = Kilde.PESYS,
             vilkår = Vilkår.GJENLEVENDEPENSJON,
-            type = HarYtelseSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = null,
         )
 
@@ -96,7 +96,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 29.februar(2024),
             kilde = Kilde.SAKSB,
             vilkår = Vilkår.KVP,
-            type = HarYtelseSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = "Z12345",
         )
 

@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.innsending.domene.tolkere
 import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelseSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 class ForeldrepengerTolker {
@@ -12,7 +12,7 @@ class ForeldrepengerTolker {
         fun tolkeData(
             vedtak: List<ForeldrepengerVedtak>,
             vurderingsperiode: Periode,
-        ): List<Saksopplysning> {
+        ): List<LivoppholdSaksopplysning> {
             return ForeldrepengerVedtak.Ytelser.entries.filter { it.rettTilTiltakspenger }.map { type ->
                 tolkeForEttVilkår(
                     vedtak = vedtak,
@@ -38,25 +38,25 @@ private fun tolkeForEttVilkår(
     vurderingsperiode: Periode,
     type: ForeldrepengerVedtak.Ytelser,
     vilkår: Vilkår,
-): Saksopplysning {
+): LivoppholdSaksopplysning {
     return vedtak
         .filter { it.periode.overlapperMed(vurderingsperiode) }
         .filter { it.ytelse == type }
         .fold(
-            Saksopplysning(
+            LivoppholdSaksopplysning(
                 vilkår = vilkår,
                 kilde = type.kilde,
                 detaljer = "",
-                harYtelseSaksopplysning = Periodisering<HarYtelseSaksopplysning?>(null, vurderingsperiode)
+                harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
                     .setVerdiForDelPeriode(
-                        HarYtelseSaksopplysning.HAR_IKKE_YTELSE,
+                        HarYtelse.HAR_IKKE_YTELSE,
                         vurderingsperiode,
                     ),
             ),
-        ) { resultat: Saksopplysning, vedtak: ForeldrepengerVedtak ->
+        ) { resultat: LivoppholdSaksopplysning, vedtak: ForeldrepengerVedtak ->
             resultat.copy(
-                harYtelseSaksopplysning = resultat.harYtelseSaksopplysning.setVerdiForDelPeriode(
-                    HarYtelseSaksopplysning.HAR_YTELSE,
+                harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
+                    HarYtelse.HAR_YTELSE,
                     vedtak.periode.overlappendePeriode(vurderingsperiode)!!,
                 ),
             )

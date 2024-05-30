@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -63,9 +63,9 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
-    override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
+    override fun leggTilSaksopplysning(behandlingId: BehandlingId, livoppholdSaksopplysning: LivoppholdSaksopplysning) {
         val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
+            .leggTilSaksopplysning(livoppholdSaksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
