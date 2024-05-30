@@ -45,6 +45,7 @@ data class SammenstillingForBehandlingDTO(
     )
 
     data class RegistrertTiltakDTO(
+        val id: String,
         val arrangør: String,
         val navn: String,
         val periode: PeriodeDTO,

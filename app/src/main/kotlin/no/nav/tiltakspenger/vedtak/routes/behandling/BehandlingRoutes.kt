@@ -15,9 +15,8 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -127,11 +126,10 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val tiltakId = call.parameter("tiltakId")
         val behandling = behandlingService.hentBehandling(behandlingId)
-        // todo: før vi oppdaterer, sjekke at body-en med antall dager dekker hele vurderingsperioden på behandlingen
-        val antallDagerVerdier = call.receive<List<PeriodeMedVerdi<AntallDager>>>()
+        val antallDagerVerdier = call.receive<AntallDagerDTO>()
         behandling.oppdaterAntallDager(
             tiltakId = tiltakId,
-            verdier = antallDagerVerdier,
+            verdi = antallDagerVerdier,
             saksbehandler = saksbehandler,
         )
         call.respond(message = "{}", status = HttpStatusCode.OK)

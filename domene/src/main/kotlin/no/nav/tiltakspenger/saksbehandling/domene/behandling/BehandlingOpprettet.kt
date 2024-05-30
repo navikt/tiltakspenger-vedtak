@@ -6,7 +6,9 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -87,7 +89,7 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdier: List<PeriodeMedVerdi<AntallDager>>, saksbehandler: Saksbehandler): Behandling {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): Behandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
         val tiltakTilOppdatering = tiltak.find { it.eksternId == tiltakId }
@@ -95,7 +97,18 @@ data class BehandlingOpprettet(
 
         val oppdatertTiltak = tiltakTilOppdatering.copy(
             antallDagerSaksopplysninger = tiltakTilOppdatering.antallDagerSaksopplysninger.copy(
-                antallDagerSaksopplysningerFraSBH = verdier,
+                antallDagerSaksopplysningerFraSBH =
+                tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH + PeriodeMedVerdi(
+                    periode = no.nav.tiltakspenger.libs.periodisering.Periode(
+                        fra = verdi.periode.fra,
+                        til = verdi.periode.til,
+                    ),
+                    verdi = AntallDager(
+                        antallDager = (verdi.antallDager),
+                        kilde = Kilde.SAKSB,
+                        saksbehandlerIdent = saksbehandler.navIdent,
+                    ),
+                ),
             ).avklar(),
         )
 
