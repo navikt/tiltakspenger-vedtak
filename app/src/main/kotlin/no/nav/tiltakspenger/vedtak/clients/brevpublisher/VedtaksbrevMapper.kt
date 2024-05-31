@@ -11,7 +11,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-val norskDatoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.Builder().setLanguage("no").setRegion("NO").build())
+val norskDatoFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.Builder().setLanguage("no").setRegion("NO").build())
 
 object VedtaksbrevMapper {
     fun mapVedtaksBrevDTO(saksnummer: Saksnummer, vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =

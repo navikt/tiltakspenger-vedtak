@@ -36,4 +36,5 @@ interface Behandling {
     fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
     fun vilkårsvurder(): Behandling
     fun saksopplysninger(): List<Saksopplysning>
+    fun søknad(): Søknad
 }

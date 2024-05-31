@@ -49,7 +49,7 @@ data class Førstegangsbehandling(
         }
     }
 
-    fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
+    override fun søknad(): Søknad = sisteSøknadMedOpprettetFraFørste()
 
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
@@ -181,7 +181,7 @@ data class Førstegangsbehandling(
         return when (status) {
             BehandlingStatus.Manuell -> throw IllegalStateException("En behandling til beslutter kan ikke være manuell")
             BehandlingStatus.Avslag -> throw IllegalStateException("Iverksett av Avslag fungerer, men skal ikke tillates i mvp 1 ${this.id}")
-            else -> this.copy(tilstand = BehandlingTilstand.TIL_BESLUTTER)
+            else -> this.copy(tilstand = BehandlingTilstand.IVERKSATT)
         }
     }
 
@@ -240,6 +240,7 @@ data class Førstegangsbehandling(
             vilkårsvurderinger = vurderinger,
             utfallsperioder = utfallsperioder,
             status = status,
+            tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
     }
 

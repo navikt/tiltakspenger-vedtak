@@ -27,14 +27,12 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -127,7 +125,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
@@ -164,7 +162,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0

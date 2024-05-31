@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -120,7 +119,7 @@ internal class VedtakRepoImpl(
         return Vedtak(
             id = id,
             sakId = SakId.fromDb(string("sak_id")),
-            behandling = behandlingRepo.hentOrNull(BehandlingId.fromString(string("behandling_id"))) as BehandlingIverksatt,
+            behandling = behandlingRepo.hent(BehandlingId.fromString(string("behandling_id"))),
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),

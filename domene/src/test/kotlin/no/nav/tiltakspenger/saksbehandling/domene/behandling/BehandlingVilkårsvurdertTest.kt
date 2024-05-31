@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
@@ -32,12 +31,12 @@ internal class BehandlingVilkårsvurdertTest {
         )
 
         // Alt ok
-        behandlingInnvilget.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
+        behandlingInnvilget.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingInnvilget.status shouldBe BehandlingStatus.Innvilget
 
         // Legg til Foreldrepenger i januar. Skal fortsatt være innvilget med januar git ikke rett
         val behandling = behandlingInnvilget.leggTilSaksopplysning(foreldrepenger).behandling
-        behandling.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
+        behandling.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandling.status shouldBe BehandlingStatus.Innvilget
 
         behandling.utfallsperioder shouldContainExactlyInAnyOrder listOf(
@@ -66,7 +65,7 @@ internal class BehandlingVilkårsvurdertTest {
         )
 
         val behandlingMedYtelseStartOgSlutt = behandling.leggTilSaksopplysning(pensjon).behandling
-        behandlingMedYtelseStartOgSlutt.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
+        behandlingMedYtelseStartOgSlutt.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
         behandlingMedYtelseStartOgSlutt.utfallsperioder shouldContainExactlyInAnyOrder listOf(
@@ -101,7 +100,7 @@ internal class BehandlingVilkårsvurdertTest {
         )
 
         val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(kvp).behandling
-        behandlingAvslag.shouldBeInstanceOf<BehandlingVilkårsvurdert>()
+        behandlingAvslag.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 
         behandlingAvslag.utfallsperioder shouldContainExactlyInAnyOrder listOf(

@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -149,7 +149,7 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad)
 
         return behandlingRepo.lagre(behandling)
     }

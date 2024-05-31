@@ -2,11 +2,9 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -25,16 +23,19 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst basert på behandlingen`() {
-        val opprettetBehandling = mockk<BehandlingOpprettet>()
+        val opprettetBehandling = mockk<Førstegangsbehandling>()
+        every { opprettetBehandling.tilstand } returns BehandlingTilstand.OPPRETTET
         val opprettetStatus = finnStatus(opprettetBehandling)
         assert(opprettetStatus === "Klar til behandling")
 
-        val avslåttBehandling = mockk<BehandlingIverksatt>()
+        val avslåttBehandling = mockk<Førstegangsbehandling>()
+        every { avslåttBehandling.tilstand } returns BehandlingTilstand.IVERKSATT
         every { avslåttBehandling.status } returns BehandlingStatus.Avslag
         val avslagStatus = finnStatus(avslåttBehandling)
         assert(avslagStatus === "Iverksatt Avslag")
 
-        val innvilgetBehandling = mockk<BehandlingIverksatt>()
+        val innvilgetBehandling = mockk<Førstegangsbehandling>()
+        every { innvilgetBehandling.tilstand } returns BehandlingTilstand.IVERKSATT
         every { innvilgetBehandling.status } returns BehandlingStatus.Innvilget
         val innvilgetStatus = finnStatus(innvilgetBehandling)
         assert(innvilgetStatus === "Iverksatt Innvilget")
@@ -42,7 +43,8 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst når behandlingen er sendt til beslutter`() {
-        val behandlingTilBeslutter = mockk<BehandlingTilBeslutter>()
+        val behandlingTilBeslutter = mockk<Førstegangsbehandling>()
+        every { behandlingTilBeslutter.tilstand } returns BehandlingTilstand.TIL_BESLUTTER
         every { behandlingTilBeslutter.beslutter } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingTilBeslutter)
         assert(klarTilBeslutningTekst === "Klar til beslutning")
@@ -54,7 +56,8 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `finnStatus skal gi riktig statustekst når behandlingen er ferdig vilkårsvurdert`() {
-        val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
+        val behandlingVilkårsvurdert = mockk<Førstegangsbehandling>()
+        every { behandlingVilkårsvurdert.tilstand } returns BehandlingTilstand.VILKÅRSVURDERT
         every { behandlingVilkårsvurdert.saksbehandler } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingVilkårsvurdert)
         assert(klarTilBeslutningTekst === "Klar til behandling")
@@ -129,17 +132,20 @@ class SammenstillingForBehandlingDTOTest {
     fun `settUtfall svarer med utfall sålenge behandlingen er enten vilkårsvurdert, til beslutter, eller iverksatt`() {
         val saksopplysning = mockSaksopplysning()
 
-        val iverksatt = mockk<BehandlingIverksatt>()
+        val iverksatt = mockk<Førstegangsbehandling>()
+        every { iverksatt.tilstand } returns BehandlingTilstand.IVERKSATT
         every { iverksatt.vilkårsvurderinger } returns emptyList()
         val iverksattUtfall = settUtfall(iverksatt, saksopplysning)
         assert(iverksattUtfall == Utfall.OPPFYLT.name)
 
-        val vilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
+        val vilkårsvurdert = mockk<Førstegangsbehandling>()
+        every { vilkårsvurdert.tilstand } returns BehandlingTilstand.VILKÅRSVURDERT
         every { vilkårsvurdert.vilkårsvurderinger } returns emptyList()
         val vilkårsvurdertUtfall = settUtfall(vilkårsvurdert, saksopplysning)
         assert(vilkårsvurdertUtfall == Utfall.OPPFYLT.name)
 
-        val tilBeslutter = mockk<BehandlingVilkårsvurdert>()
+        val tilBeslutter = mockk<Førstegangsbehandling>()
+        every { tilBeslutter.tilstand } returns BehandlingTilstand.TIL_BESLUTTER
         every { tilBeslutter.vilkårsvurderinger } returns emptyList()
         val tilBeslutterUtfall = settUtfall(vilkårsvurdert, saksopplysning)
         assert(tilBeslutterUtfall == Utfall.OPPFYLT.name)
@@ -147,11 +153,12 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `settSamletUtfall svarer med IKKE_OPPFYLT hvis noen av utfallene ikke er oppfylt`() {
-        val behandling = mockk<BehandlingIverksatt>()
+        val behandling = mockk<Førstegangsbehandling>()
         val saksopplysninger = listOf(mockSaksopplysning())
         val ikkeOppfyltVurdering = mockIkkeOppfyltVurdering()
         val vilkårsvurderinger = listOf(ikkeOppfyltVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
+        every { behandling.tilstand } returns BehandlingTilstand.IVERKSATT
 
         val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfall == Utfall.IKKE_OPPFYLT.name)
@@ -159,11 +166,12 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `settSamletUtfall svarer med KREVER_MANUELL_VURDERING hvis noen av utfallene er Krever Manuell Vurdering`() {
-        val behandling = mockk<BehandlingIverksatt>()
+        val behandling = mockk<Førstegangsbehandling>()
         val saksopplysninger = listOf(mockSaksopplysning())
         val manuellVurdering = mockKreverManuellVurdering()
         val vilkårsvurderinger = listOf(manuellVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
+        every { behandling.tilstand } returns BehandlingTilstand.IVERKSATT
 
         val samletUtfall = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfall == Utfall.KREVER_MANUELL_VURDERING.name)
@@ -171,11 +179,12 @@ class SammenstillingForBehandlingDTOTest {
 
     @Test
     fun `settSamletUtfall svarer kun med OPPFYLT hvis alle vurderingene er oppfylt`() {
-        val behandling = mockk<BehandlingIverksatt>()
+        val behandling = mockk<Førstegangsbehandling>()
         val saksopplysninger = listOf(mockSaksopplysning())
         val oppfyltVurdering = mockOppfyltVurdering()
         val vilkårsvurderinger = listOf(oppfyltVurdering)
         every { behandling.vilkårsvurderinger } returns vilkårsvurderinger
+        every { behandling.tilstand } returns BehandlingTilstand.IVERKSATT
 
         val samletUtfallOppfylt = settSamletUtfallForSaksopplysninger(behandling, saksopplysninger)
         assert(samletUtfallOppfylt == Utfall.OPPFYLT.name)
@@ -195,17 +204,20 @@ class SammenstillingForBehandlingDTOTest {
     fun `settBeslutter skal kun svare med beslutter hvis behandlingen er iverksatt, eller til beslutter`() {
         val beslutter = "Test Beslutter"
 
-        val behandlingIverksatt = mockk<BehandlingIverksatt>()
+        val behandlingIverksatt = mockk<Førstegangsbehandling>()
+        every { behandlingIverksatt.tilstand } returns BehandlingTilstand.IVERKSATT
         every { behandlingIverksatt.beslutter } returns beslutter
         val iverksattBeslutter = settBeslutter(behandlingIverksatt)
         assert(iverksattBeslutter == beslutter)
 
-        val behandlingTilBeslutter = mockk<BehandlingTilBeslutter>()
+        val behandlingTilBeslutter = mockk<Førstegangsbehandling>()
+        every { behandlingTilBeslutter.tilstand } returns BehandlingTilstand.TIL_BESLUTTER
         every { behandlingTilBeslutter.beslutter } returns beslutter
         val tilBeslutter = settBeslutter(behandlingTilBeslutter)
         assert(tilBeslutter == beslutter)
 
-        val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
+        val behandlingVilkårsvurdert = mockk<Førstegangsbehandling>()
+        every { behandlingVilkårsvurdert.tilstand } returns BehandlingTilstand.VILKÅRSVURDERT
         val vilkårsvurdertBeslutter = settBeslutter(behandlingVilkårsvurdert)
         assert(vilkårsvurdertBeslutter == null)
     }

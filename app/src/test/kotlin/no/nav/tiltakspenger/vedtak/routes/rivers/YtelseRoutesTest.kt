@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -47,7 +47,7 @@ class YtelseRoutesTest {
 
     @Test
     fun `sjekk at kall til river ytelse route ikke sender ut et behov`() {
-        val behandling = BehandlingOpprettet.opprettBehandling(
+        val behandling = Førstegangsbehandling.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -91,7 +91,7 @@ class YtelseRoutesTest {
 
     @Test
     fun `sjekk at kall til river ytelse route ikke tryner med tom tidligere enn fom`() {
-        val behandling = BehandlingOpprettet.opprettBehandling(
+        val behandling = Førstegangsbehandling.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )

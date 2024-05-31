@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
@@ -48,7 +48,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at kall til river tiltak route sender ut et behov`() {
-        val behandling = BehandlingOpprettet.opprettBehandling(
+        val behandling = Førstegangsbehandling.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )
@@ -93,7 +93,7 @@ class TiltakRoutesTest {
 
     @Test
     fun `sjekk at tiltak uten deltakerFom eller tom blir filtrert bort`() {
-        val behandling = BehandlingOpprettet.opprettBehandling(
+        val behandling = Førstegangsbehandling.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
         )

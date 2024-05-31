@@ -3,10 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
@@ -198,8 +195,10 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall
+                        ?: Utfall.KREVER_MANUELL_VURDERING,
+                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer
+                        ?: "Fant ikke noe utfall for tiltaksdeltagelse",
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->
@@ -244,12 +243,11 @@ object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             }.first(),
-            tilstand = when (behandling) {
-                // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
-                is BehandlingIverksatt -> "iverksatt"
-                is BehandlingTilBeslutter -> "tilBeslutter"
-                is BehandlingVilkårsvurdert -> "vilkårsvurdert"
-                is BehandlingOpprettet -> "opprettet"
+            tilstand = when (behandling.tilstand) {
+                BehandlingTilstand.IVERKSATT -> "iverksatt"
+                BehandlingTilstand.TIL_BESLUTTER -> "tilBeslutter"
+                BehandlingTilstand.VILKÅRSVURDERT -> "vilkårsvurdert"
+                BehandlingTilstand.OPPRETTET -> "opprettet"
             },
             status = finnStatus(behandling),
             endringslogg = attesteringer.map { att ->
@@ -282,24 +280,29 @@ object SammenstillingForBehandlingDTOMapper {
     }
 
     private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: String): Vurdering? {
-        return when (behandling) {
-            is BehandlingVilkårsvurdert -> {
+        return when (behandling.tilstand) {
+            BehandlingTilstand.VILKÅRSVURDERT -> {
                 behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
             }
-            is BehandlingTilBeslutter -> {
+
+            BehandlingTilstand.TIL_BESLUTTER -> {
                 behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
             }
-            is BehandlingIverksatt -> {
+
+            BehandlingTilstand.IVERKSATT -> {
                 behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
             }
-            else -> { null }
+
+            else -> {
+                null
+            }
         }
     }
 
     fun settBeslutter(behandling: Førstegangsbehandling): String? =
-        when (behandling) {
-            is BehandlingIverksatt -> behandling.beslutter
-            is BehandlingTilBeslutter -> behandling.beslutter
+        when (behandling.tilstand) {
+            BehandlingTilstand.IVERKSATT -> behandling.beslutter
+            BehandlingTilstand.TIL_BESLUTTER -> behandling.beslutter
             else -> null
         }
 
@@ -345,14 +348,22 @@ object SammenstillingForBehandlingDTOMapper {
     }
 
     fun settUtfall(behandling: Behandling, saksopplysning: Saksopplysning): String {
-        return when (behandling) {
-            is BehandlingVilkårsvurdert -> hentUtfallForVilkår(
+        return when (behandling.tilstand) {
+            BehandlingTilstand.VILKÅRSVURDERT -> hentUtfallForVilkår(
                 saksopplysning.vilkår,
                 behandling.vilkårsvurderinger,
             ).name
 
-            is BehandlingTilBeslutter -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
-            is BehandlingIverksatt -> hentUtfallForVilkår(saksopplysning.vilkår, behandling.vilkårsvurderinger).name
+            BehandlingTilstand.TIL_BESLUTTER -> hentUtfallForVilkår(
+                saksopplysning.vilkår,
+                behandling.vilkårsvurderinger,
+            ).name
+
+            BehandlingTilstand.IVERKSATT -> hentUtfallForVilkår(
+                saksopplysning.vilkår,
+                behandling.vilkårsvurderinger,
+            ).name
+
             else -> Utfall.KREVER_MANUELL_VURDERING.name
         }
     }
