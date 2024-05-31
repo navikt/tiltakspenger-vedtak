@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerS
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
 
 class TiltakDAO {
 
@@ -20,7 +21,8 @@ class TiltakDAO {
         return txSession.run(
             queryOf(hentTiltakSql, behandlingId.toString())
                 .map { row ->
-                    row.toTiltak(behandlingId = behandlingId, txSession = txSession)
+                    val tiltak = row.toTiltak(behandlingId = behandlingId, txSession = txSession)
+                    tiltak
                 }
                 .asList,
         )
@@ -31,14 +33,18 @@ class TiltakDAO {
         slettTiltak(behandlingId, txSession)
         tiltakListe.forEach { tiltak ->
             lagreTiltak(behandlingId, tiltak, txSession)
-            tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.forEach { antallDager ->
-                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+            if (tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister != tiltak.antallDagerSaksopplysninger.avklartAntallDager) {
+                tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.forEach { antallDager ->
+                    lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+                }
             }
-            tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.forEach { antallDager ->
-                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+            if (tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH != tiltak.antallDagerSaksopplysninger.avklartAntallDager) {
+                tiltak.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.forEach { antallDager ->
+                    lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+                }
             }
             tiltak.antallDagerSaksopplysninger.avklartAntallDager.forEach { antallDager ->
-                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession)
+                lagreStønadsdager(behandlingId, tiltak, antallDager, txSession, avklart = true)
             }
         }
     }
@@ -110,6 +116,7 @@ class TiltakDAO {
         tiltak: Tiltak,
         antallDagerMedPeriode: PeriodeMedVerdi<AntallDager>,
         txSession: TransactionalSession,
+        avklart: Boolean = false,
     ) {
         val periode = antallDagerMedPeriode.periode
         val antallDagerSaksopplysning = antallDagerMedPeriode.verdi
@@ -127,6 +134,7 @@ class TiltakDAO {
                     "tiltakId" to tiltak.id.toString(),
                     "behandlingId" to behandlingId.toString(),
                     "saksbehandler" to antallDagerSaksopplysning.saksbehandlerIdent,
+                    "avklartTidspunkt" to if (avklart) LocalDateTime.now() else null,
                 ),
             ).asUpdate,
         )
@@ -194,7 +202,8 @@ class TiltakDAO {
             tidsstempel_hos_oss,
             tiltak_id,
             behandling_id,
-            saksbehandler
+            saksbehandler,
+            avklart_tidspunkt
         ) values (
             :id,
             :antallDager,
@@ -205,7 +214,8 @@ class TiltakDAO {
             :tidsstempelHosOss,
             :tiltakId,
             :behandlingId,
-            :saksbehandler
+            :saksbehandler,
+            :avklartTidspunkt
         )
     """.trimIndent()
 

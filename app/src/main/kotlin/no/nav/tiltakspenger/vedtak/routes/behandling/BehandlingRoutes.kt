@@ -127,10 +127,14 @@ fun Route.behandlingRoutes(
         val tiltakId = call.parameter("tiltakId")
         val behandling = behandlingService.hentBehandling(behandlingId)
         val antallDagerVerdier = call.receive<AntallDagerDTO>()
-        behandling.oppdaterAntallDager(
+        val oppdaterteTiltak = behandling.oppdaterAntallDager(
             tiltakId = tiltakId,
             verdi = antallDagerVerdier,
             saksbehandler = saksbehandler,
+        )
+        behandlingService.oppdaterTiltak(
+            behandlingId = behandlingId,
+            tiltak = oppdaterteTiltak,
         )
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }

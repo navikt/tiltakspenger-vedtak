@@ -89,10 +89,10 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): Behandling {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): List<Tiltak> {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.eksternId == tiltakId }
+        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
         check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
 
         val oppdatertTiltak = tiltakTilOppdatering.copy(
@@ -120,6 +120,6 @@ data class BehandlingOpprettet(
             }
         }
 
-        return this.oppdaterTiltak(tiltak = nyeTiltak)
+        return nyeTiltak
     }
 }
