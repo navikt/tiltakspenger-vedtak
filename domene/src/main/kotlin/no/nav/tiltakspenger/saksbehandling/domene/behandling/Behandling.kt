@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -57,7 +56,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 
-    fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): List<Tiltak> {
+    fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, saksbehandler: Saksbehandler): Behandling {
         throw IllegalStateException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }

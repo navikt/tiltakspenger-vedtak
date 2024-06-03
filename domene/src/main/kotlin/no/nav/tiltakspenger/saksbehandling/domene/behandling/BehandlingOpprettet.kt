@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -89,7 +88,7 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): List<Tiltak> {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, saksbehandler: Saksbehandler): Behandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
         val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
@@ -100,8 +99,8 @@ data class BehandlingOpprettet(
                 antallDagerSaksopplysningerFraSBH =
                 tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH + PeriodeMedVerdi(
                     periode = no.nav.tiltakspenger.libs.periodisering.Periode(
-                        fra = verdi.periode.fra,
-                        til = verdi.periode.til,
+                        fra = verdi.fra,
+                        til = verdi.til,
                     ),
                     verdi = AntallDager(
                         antallDager = (verdi.antallDager),
@@ -120,6 +119,8 @@ data class BehandlingOpprettet(
             }
         }
 
-        return nyeTiltak
+        return this.copy(
+            tiltak = nyeTiltak,
+        )
     }
 }

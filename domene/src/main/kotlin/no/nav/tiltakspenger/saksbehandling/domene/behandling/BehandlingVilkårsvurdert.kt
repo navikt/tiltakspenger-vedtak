@@ -60,26 +60,54 @@ data class BehandlingVilkårsvurdert(
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): List<Tiltak> {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): Behandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
         val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
         check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
 
-        val oppdatertTiltak = tiltakTilOppdatering.copy(
-            antallDagerSaksopplysninger = tiltakTilOppdatering.antallDagerSaksopplysninger.copy(
-                antallDagerSaksopplysningerFraSBH =
-                tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH + PeriodeMedVerdi(
-                    periode = no.nav.tiltakspenger.libs.periodisering.Periode(
-                        fra = verdi.periode.fra,
-                        til = verdi.periode.til,
-                    ),
+        val tiltaksperiode = no.nav.tiltakspenger.libs.periodisering.Periode(
+            fra = tiltakTilOppdatering.deltakelseFom,
+            til = tiltakTilOppdatering.deltakelseTom,
+        )
+
+        val nyPeriode = no.nav.tiltakspenger.libs.periodisering.Periode(
+            fra = verdi.periode.fra,
+            til = verdi.periode.til,
+        )
+
+        val eksisterendePerioderMergetSammen = nyPeriode.mergeInnIPerioder(tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map { it.periode })
+        val allePerioder = tiltaksperiode.kompletter(
+            eksisterendePerioderMergetSammen,
+        )
+
+        val nyeOpplysningerFraSBH = allePerioder.map { periode ->
+            if (periode == nyPeriode) {
+                PeriodeMedVerdi(
+                    periode = periode,
                     verdi = AntallDager(
                         antallDager = (verdi.antallDager),
                         kilde = Kilde.SAKSB,
                         saksbehandlerIdent = saksbehandler.navIdent,
                     ),
-                ),
+                )
+            } else {
+                val eksisterendeSaksopplysningFraSBH = tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.find { it.periode.overlapperMed(periode) }
+                val eksisterendeSaksopplysningFraRegister = tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.find { it.periode.overlapperMed(periode) }
+                PeriodeMedVerdi(
+                    periode = periode,
+                    verdi = AntallDager(
+                        antallDager = eksisterendeSaksopplysningFraSBH?.verdi?.antallDager ?: eksisterendeSaksopplysningFraRegister?.verdi!!.antallDager,
+                        kilde = Kilde.SAKSB,
+                        saksbehandlerIdent = saksbehandler.navIdent,
+                    ),
+                )
+            }
+        }
+
+        val oppdatertTiltak = tiltakTilOppdatering.copy(
+            antallDagerSaksopplysninger = tiltakTilOppdatering.antallDagerSaksopplysninger.copy(
+                antallDagerSaksopplysningerFraSBH = nyeOpplysningerFraSBH,
             ).avklar(),
         )
 
@@ -91,7 +119,9 @@ data class BehandlingVilkårsvurdert(
             }
         }
 
-        return nyeTiltak
+        return this.copy(
+            tiltak = nyeTiltak,
+        )
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {

@@ -126,12 +126,14 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val tiltakId = call.parameter("tiltakId")
         val behandling = behandlingService.hentBehandling(behandlingId)
-        val antallDagerVerdier = call.receive<AntallDagerDTO>()
-        val oppdaterteTiltak = behandling.oppdaterAntallDager(
-            tiltakId = tiltakId,
-            verdi = antallDagerVerdier,
-            saksbehandler = saksbehandler,
+        val antallDagerDto = call.receive<AntallDagerDTO>()
+
+        behandlingService.oppdaterAntallDagerPåTiltak(
+            behandlingId,
+            tiltakId,
+            antallDagerDto.toAntallDager(saksbehandler.navIdent),
         )
+
         behandlingService.oppdaterTiltak(
             behandlingId = behandlingId,
             tiltak = oppdaterteTiltak,
