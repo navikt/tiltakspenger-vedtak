@@ -1,13 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import jdk.jshell.spi.ExecutionControl.NotImplementedException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -88,39 +87,7 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, saksbehandler: Saksbehandler): Behandling {
-        check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
-
-        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.copy(
-            antallDagerSaksopplysninger = tiltakTilOppdatering.antallDagerSaksopplysninger.copy(
-                antallDagerSaksopplysningerFraSBH =
-                tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH + PeriodeMedVerdi(
-                    periode = no.nav.tiltakspenger.libs.periodisering.Periode(
-                        fra = verdi.fra,
-                        til = verdi.til,
-                    ),
-                    verdi = AntallDager(
-                        antallDager = (verdi.antallDager),
-                        kilde = Kilde.SAKSB,
-                        saksbehandlerIdent = saksbehandler.navIdent,
-                    ),
-                ),
-            ).avklar(),
-        )
-
-        val nyeTiltak = tiltak.map {
-            if (it.eksternId == oppdatertTiltak.eksternId) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
-        return this.copy(
-            tiltak = nyeTiltak,
-        )
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, periode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
+        throw NotImplementedException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }

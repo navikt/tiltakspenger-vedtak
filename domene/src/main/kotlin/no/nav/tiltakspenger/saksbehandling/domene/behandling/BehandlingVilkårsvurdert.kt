@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -60,7 +59,7 @@ data class BehandlingVilkårsvurdert(
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDagerDTO, saksbehandler: Saksbehandler): Behandling {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, nyPeriode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
         val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
@@ -69,11 +68,6 @@ data class BehandlingVilkårsvurdert(
         val tiltaksperiode = no.nav.tiltakspenger.libs.periodisering.Periode(
             fra = tiltakTilOppdatering.deltakelseFom,
             til = tiltakTilOppdatering.deltakelseTom,
-        )
-
-        val nyPeriode = no.nav.tiltakspenger.libs.periodisering.Periode(
-            fra = verdi.periode.fra,
-            til = verdi.periode.til,
         )
 
         val eksisterendePerioderMergetSammen = nyPeriode.mergeInnIPerioder(tiltakTilOppdatering.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map { it.periode })
