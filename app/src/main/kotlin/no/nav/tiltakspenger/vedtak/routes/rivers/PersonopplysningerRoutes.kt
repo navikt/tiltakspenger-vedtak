@@ -64,7 +64,7 @@ fun Route.personopplysningerRoutes(
                     ident = personopplysningerMottattDTO.ident,
                     feil = when (personopplysningerMottattDTO.personopplysninger.feil!!) {
                         Feilmelding.PersonIkkeFunnet -> Feil.PersonIkkeFunnet
-                        Feilmelding.NavnIkkeFunnet -> TODO()
+                        Feilmelding.NavnIkkeFunnet -> TODO() // Noen må se på hva som skal gjøres med disse
                         Feilmelding.NavnKunneIkkeAvklares -> TODO()
                         Feilmelding.FødselKunneIkkeAvklares -> TODO()
                         Feilmelding.AdressebeskyttelseKunneIkkeAvklares -> TODO()

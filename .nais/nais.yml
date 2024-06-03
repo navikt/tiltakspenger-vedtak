@@ -51,7 +51,7 @@ spec:
           - name: vedtak
             envVarPrefix: DB
             users:
-              - name: datastream
+              - name: tpts_ds
   accessPolicy:
     inbound:
       rules:

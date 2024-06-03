@@ -139,9 +139,8 @@ class BehandlingServiceImpl(
 
         meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)
 
-        val personopplysninger =
-            personopplysningRepo.hent(vedtak.sakId).søker()
-        brevPublisherGateway.sendBrev(vedtak, personopplysninger)
+        val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
+        brevPublisherGateway.sendBrev(sak.saknummer, vedtak, personopplysninger)
     }
 
     private fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
