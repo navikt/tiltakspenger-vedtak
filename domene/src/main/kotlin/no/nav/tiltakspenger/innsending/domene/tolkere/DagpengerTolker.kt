@@ -17,7 +17,7 @@ class DagpengerTolker {
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelse = Periodisering(null, vurderingsperiode),
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
                 )
             }
 
@@ -39,7 +39,7 @@ class DagpengerTolker {
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                         .setVerdiForDelPeriode(
                             HarYtelse.HAR_IKKE_YTELSE,
                             vurderingsperiode,
@@ -53,7 +53,7 @@ class DagpengerTolker {
                         kilde = Kilde.ARENA,
                         // TODO: Denne blir annerledes når vi ikke lenger har én saksopplysning per sak
                         detaljer = ytelseListe.lastOrNull()?.let { detaljerForDagpenger(it) } ?: "",
-                        harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                        harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                             .setVerdiForDelPeriode(
                                 HarYtelse.HAR_IKKE_YTELSE,
                                 vurderingsperiode,

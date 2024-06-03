@@ -46,7 +46,7 @@ object SaksopplysningDTOMapper {
             vilkår = vilkår,
             kilde = Kilde.SAKSB,
             detaljer = saksopplysning.begrunnelse, // TODO: Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
-            harYtelse = Periodisering<no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse?>(
+            harYtelse = Periodisering(
                 defaultVerdi = if (saksopplysning.harYtelse) HarYtelse.HAR_YTELSE else HarYtelse.HAR_IKKE_YTELSE,
                 totalePeriode = Periode(LocalDate.parse(saksopplysning.fom), LocalDate.parse(saksopplysning.tom)),
             ),

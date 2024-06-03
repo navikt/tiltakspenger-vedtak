@@ -78,6 +78,7 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
 
+        // TODO: Må dekke hele vurderingsperioden, her mangler logikk og validering
         behandlingService.leggTilSaksopplysning(
             behandlingId,
             lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),

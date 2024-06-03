@@ -49,6 +49,7 @@ data class KorrigerbarLivsopphold private constructor(
         return this.copy(vurdering = vilkårsvurder(this.avklartLivoppholdSaksopplysning))
     }
 
+    // TODO: Denne er ment å være midlertidig. Kanskje..?
     fun periodiseringAvSaksopplysningOgUtfall(): Periodisering<SaksopplysningOgUtfallForPeriode> {
         return avklartLivoppholdSaksopplysning.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
             SaksopplysningOgUtfallForPeriode(
@@ -121,7 +122,7 @@ data class KorrigerbarLivsopphold private constructor(
                 kilde = vilkår.kilde(),
                 detaljer = "",
                 saksbehandler = null, // TODO: Bør være system?
-                harYtelse = Periodisering(null, vurderingsperiode),
+                harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
             )
             return KorrigerbarLivsopphold(
                 vurderingsperiode,
@@ -171,6 +172,6 @@ data class SaksopplysningOgUtfallForPeriode(
     val kilde: Kilde,
     val detaljer: String,
     val saksbehandler: String?,
-    val harYtelse: HarYtelse?,
+    val harYtelse: HarYtelse,
     val utfall: Utfall,
 )

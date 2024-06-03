@@ -28,7 +28,7 @@ class UføreTolker {
                     vilkår = Vilkår.UFØRETRYGD,
                     detaljer = "",
                     saksbehandler = null,
-                    harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                         .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, vurderingsperiode),
                 )
             }
@@ -40,7 +40,7 @@ class UføreTolker {
                     vilkår = Vilkår.UFØRETRYGD,
                     detaljer = "",
                     saksbehandler = null,
-                    harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                         .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, vurderingsperiode)
                         .setVerdiForDelPeriode(
                             HarYtelse.HAR_YTELSE,
@@ -55,7 +55,7 @@ class UføreTolker {
                 vilkår = Vilkår.UFØRETRYGD,
                 detaljer = "",
                 saksbehandler = null,
-                harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                     .setVerdiForDelPeriode(HarYtelse.HAR_YTELSE, vurderingsperiode),
             )
         }

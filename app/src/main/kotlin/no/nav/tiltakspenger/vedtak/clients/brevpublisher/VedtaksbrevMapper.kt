@@ -11,7 +11,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-val norskDatoFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.Builder().setLanguage("no").setRegion("NO").build())
+val norskDatoFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("d. MMMM yyyy", Locale.Builder().setLanguage("no").setRegion("NO").build())
 
 object VedtaksbrevMapper {
     fun mapVedtaksBrevDTO(saksnummer: Saksnummer, vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
@@ -21,7 +22,7 @@ object VedtaksbrevMapper {
             fraDato = vedtak.periode.fra.format(norskDatoFormatter),
             tilDato = vedtak.periode.til.format(norskDatoFormatter),
             saksnummer = saksnummer.verdi,
-            barnetillegg = vedtak.utfallsperioder.any { it.antallBarn > 0 },
+            barnetillegg = vedtak.utfallsperioder.perioder().any { it.verdi.antallBarn > 0 },
             saksbehandler = vedtak.saksbehandler,
             beslutter = vedtak.beslutter,
             sats = 285, // TODO Disse satsene bor i utbetaling. Burde vi hente de derfra?

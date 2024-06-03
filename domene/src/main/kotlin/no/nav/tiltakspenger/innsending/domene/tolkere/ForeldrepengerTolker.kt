@@ -47,7 +47,7 @@ private fun tolkeForEttVilkår(
                 vilkår = vilkår,
                 kilde = type.kilde,
                 detaljer = "",
-                harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                     .setVerdiForDelPeriode(
                         HarYtelse.HAR_IKKE_YTELSE,
                         vurderingsperiode,

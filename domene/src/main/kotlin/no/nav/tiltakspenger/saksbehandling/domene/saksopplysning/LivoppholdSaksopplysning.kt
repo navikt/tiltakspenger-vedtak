@@ -7,6 +7,6 @@ data class LivoppholdSaksopplysning(
     val kilde: Kilde,
     val vilkår: Vilkår,
     val detaljer: String,
-    val harYtelse: Periodisering<HarYtelse?>,
+    val harYtelse: Periodisering<HarYtelse>,
     val saksbehandler: String? = null,
 )

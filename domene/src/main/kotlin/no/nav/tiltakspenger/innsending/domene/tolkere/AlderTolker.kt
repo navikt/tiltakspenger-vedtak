@@ -19,7 +19,7 @@ class AlderTolker {
                         vilkår = Vilkår.ALDER,
                         detaljer = "",
                         saksbehandler = null,
-                        harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                        harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                             .setVerdiForDelPeriode(HarYtelse.HAR_YTELSE, vurderingsperiode)
                             .setVerdiForDelPeriode(
                                 HarYtelse.HAR_IKKE_YTELSE,
@@ -33,7 +33,7 @@ class AlderTolker {
                             vilkår = Vilkår.ALDER,
                             detaljer = "",
                             saksbehandler = null,
-                            harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                            harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                                 .setVerdiForDelPeriode(HarYtelse.HAR_YTELSE, vurderingsperiode),
                         )
                     } else {
@@ -42,7 +42,7 @@ class AlderTolker {
                             vilkår = Vilkår.ALDER,
                             detaljer = "",
                             saksbehandler = null,
-                            harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                            harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                                 .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, vurderingsperiode),
                         )
                     }

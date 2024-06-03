@@ -17,7 +17,7 @@ class AapTolker {
                     vilkår = Vilkår.AAP,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelse = Periodisering(null, vurderingsperiode),
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
                 )
             }
 
@@ -39,7 +39,7 @@ class AapTolker {
                     vilkår = Vilkår.AAP,
                     kilde = Kilde.ARENA,
                     detaljer = "",
-                    harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                         .setVerdiForDelPeriode(
                             HarYtelse.HAR_IKKE_YTELSE,
                             vurderingsperiode,
@@ -53,7 +53,7 @@ class AapTolker {
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
-                        harYtelse = Periodisering<HarYtelse?>(null, vurderingsperiode)
+                        harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                             .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, vurderingsperiode),
                     ),
                 ) { resultat: LivoppholdSaksopplysning, ytelse: YtelseSak ->
