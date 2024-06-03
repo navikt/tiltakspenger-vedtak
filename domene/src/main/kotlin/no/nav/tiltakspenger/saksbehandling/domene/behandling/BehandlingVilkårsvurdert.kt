@@ -59,6 +59,7 @@ data class BehandlingVilkårsvurdert(
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
 
+    // TODO: Refaktorer denne! Mye av logikken her bør sikkert flyttes inn i domeneklasser
     override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, nyPeriode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 

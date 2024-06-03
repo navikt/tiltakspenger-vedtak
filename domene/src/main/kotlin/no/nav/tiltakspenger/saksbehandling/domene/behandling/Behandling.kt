@@ -57,7 +57,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke avbryte en behandling med denne statusen")
     }
 
-    fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, periode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
+    fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, nyPeriode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
         throw IllegalStateException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }

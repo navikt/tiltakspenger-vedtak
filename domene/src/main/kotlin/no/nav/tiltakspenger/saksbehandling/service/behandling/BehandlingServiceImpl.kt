@@ -207,7 +207,7 @@ class BehandlingServiceImpl(
         val oppdatertBehandling = behandling.oppdaterAntallDager(
             tiltakId = tiltakId,
             verdi = antallDager,
-            periode = periode,
+            nyPeriode = periode,
             saksbehandler = saksbehandler,
         )
         behandlingRepo.lagre(oppdatertBehandling)

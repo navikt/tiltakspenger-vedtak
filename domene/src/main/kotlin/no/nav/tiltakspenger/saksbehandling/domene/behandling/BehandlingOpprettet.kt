@@ -87,7 +87,7 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, periode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, nyPeriode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
         throw NotImplementedException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }
