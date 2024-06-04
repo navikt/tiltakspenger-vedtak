@@ -2,7 +2,7 @@ val ktorVersion = "2.3.11"
 val kotestVersion = "5.9.0"
 val mockkVersion = "1.13.11"
 val testContainersVersion = "1.19.8"
-val felleslibVersion = "0.0.108"
+val felleslibVersion = "0.0.120"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -27,6 +27,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.6")
@@ -70,7 +71,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.13.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.14.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")

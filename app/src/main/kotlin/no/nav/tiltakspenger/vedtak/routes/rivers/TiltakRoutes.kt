@@ -7,13 +7,20 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 data class TiltakMottattDTO(
     val respons: TiltakResponsDTO,
@@ -75,7 +82,8 @@ private fun mapTiltak(
         .filterNot { it.deltakelseTom == null }
         .map {
             Tiltak(
-                id = it.id,
+                id = TiltakId.random(),
+                eksternId = it.id,
                 gjennomføring = Tiltak.Gjennomføring(
                     id = it.gjennomforing.id,
                     arrangørnavn = it.gjennomforing.arrangørnavn,
@@ -89,11 +97,34 @@ private fun mapTiltak(
                     status = it.deltakelseStatus.name,
                     rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
                 ),
-                deltakelseDagerUke = it.deltakelseDagerUke,
                 deltakelseProsent = it.deltakelseProsent,
                 kilde = it.kilde,
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
+                antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                    antallDagerSaksopplysningerFraRegister = listOf(
+                        PeriodeMedVerdi(
+                            verdi =
+                            if (it.deltakelseDagerUke != null) {
+                                AntallDager(
+                                    antallDager = it.deltakelseDagerUke!!.roundToInt(),
+                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
+                                    saksbehandlerIdent = null,
+                                )
+                            } else {
+                                AntallDager(
+                                    antallDager = if (it.deltakelseProsent == 100f) 5 else 0,
+                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
+                                    saksbehandlerIdent = null,
+                                )
+                            },
+                            periode = Periode(
+                                fra = it.deltakelseFom!!,
+                                til = it.deltakelseTom!!,
+                            ),
+                        ),
+                    ),
+                ),
             )
         }
 }

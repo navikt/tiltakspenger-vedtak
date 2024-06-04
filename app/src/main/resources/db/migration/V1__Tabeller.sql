@@ -347,7 +347,6 @@ CREATE TABLE tiltak
     deltakelse_fom         DATE                     NULL,
     deltakelse_tom         DATE                     NULL,
     deltakelse_prosent     FLOAT                    NULL,
-    deltakelse_dager_uke   FLOAT                    NULL,
     deltakelse_status      VARCHAR                  NOT NULL,
     rett_til_å_søke        BOOLEAN                  NOT NULL,
     kilde                  VARCHAR                  NOT NULL,
@@ -446,6 +445,21 @@ CREATE TABLE overgangsstønad_vedtak
     datakilde           VARCHAR                  NOT NULL,
     innhentet           TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE stønadsdager_tiltak
+(
+    id                  VARCHAR PRIMARY KEY,
+    antall_dager        NUMERIC                  NOT NULL,
+    fom                 DATE                     NOT NULL,
+    tom                 DATE                     NOT NULL,
+    datakilde           VARCHAR                  NOT NULL,
+    tidsstempel_kilde   TIMESTAMP WITH TIME ZONE NOT NULL,
+    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
+    tiltak_id           VARCHAR                  NOT NULL REFERENCES tiltak (id),
+    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
+    avklart_tidspunkt    TIMESTAMP WITH TIME ZONE NULL,
+    saksbehandler       VARCHAR                 NULL
 );
 
 create sequence sak_løpenr start 1001;

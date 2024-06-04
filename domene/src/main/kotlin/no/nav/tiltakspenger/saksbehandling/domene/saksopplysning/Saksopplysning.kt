@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
-import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår

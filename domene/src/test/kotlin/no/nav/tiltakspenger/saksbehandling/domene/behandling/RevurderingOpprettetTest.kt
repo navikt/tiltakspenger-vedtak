@@ -3,10 +3,13 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import io.kotest.assertions.throwables.shouldThrowWithMessage
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -54,8 +57,9 @@ internal class RevurderingOpprettetTest {
         vilkårsvurderinger = emptyList(),
     )
 
-    private fun mockTiltak(id: String = "test"): Tiltak = Tiltak(
-        id = id,
+    private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(
+        id = TiltakId.random(),
+        eksternId = eksternId,
         kilde = "test",
         deltakelseStatus = mockk<Tiltak.DeltakerStatus>(),
         deltakelseFom = LocalDate.now(),
@@ -64,7 +68,10 @@ internal class RevurderingOpprettetTest {
         gjennomføring = mockk<Tiltak.Gjennomføring>(),
         registrertDato = LocalDateTime.now(),
         deltakelseProsent = null,
-        deltakelseDagerUke = null,
+        antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+            antallDager = emptyList(),
+            avklarteAntallDager = emptyList(),
+        ),
     )
 
     private fun mockSaksbehandler(
@@ -90,7 +97,7 @@ internal class RevurderingOpprettetTest {
     @Disabled("Denne ble rød, vet ikke helt hvorfor..")
     fun `oppdaterTiltak skal returnere en kopi av behandlingen med de nye tiltakene lagt inn`() {
         val gamleTiltak = listOf(mockTiltak())
-        val nyeTiltak = listOf(mockTiltak(id = "nyttTiltak"))
+        val nyeTiltak = listOf(mockTiltak(eksternId = "nyttTiltak"))
         val revurderingOpprettetMedGamleTiltak = mockRevurderingOpprettet(tiltak = gamleTiltak)
         val revurderingOppprettetMedNyeTiltak = revurderingOpprettetMedGamleTiltak.oppdaterTiltak(nyeTiltak)
         assertTrue { revurderingOpprettetMedGamleTiltak.tiltak == gamleTiltak }

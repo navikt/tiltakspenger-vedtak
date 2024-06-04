@@ -1,10 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -122,6 +125,42 @@ data class Revurderingsbehandling(
                 erEndret = true,
             )
         }
+    }
+
+    override fun oppdaterAntallDager(
+        tiltakId: String,
+        nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
+        saksbehandler: Saksbehandler,
+    ): Behandling {
+        require(
+            this.tilstand in listOf(
+                BehandlingTilstand.OPPRETTET,
+                BehandlingTilstand.VILKÅRSVURDERT,
+                BehandlingTilstand.TIL_BESLUTTER,
+            ),
+        ) { "Kan ikke oppdatere antall dager i tiltak, feil tilstand $tilstand" }
+
+        if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            // TODO Gjør noe ekstra
+        }
+        check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
+
+        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
+        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
+
+        val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
+
+        val nyeTiltak = tiltak.map {
+            if (it.eksternId == oppdatertTiltak.eksternId) {
+                oppdatertTiltak
+            } else {
+                it
+            }
+        }
+
+        return this.copy(
+            tiltak = nyeTiltak,
+        )
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling {

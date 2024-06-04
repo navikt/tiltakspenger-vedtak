@@ -7,9 +7,9 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo

@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vedtak
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning

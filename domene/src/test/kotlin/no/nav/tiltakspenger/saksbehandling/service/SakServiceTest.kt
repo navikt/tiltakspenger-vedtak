@@ -5,10 +5,10 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingInnvilgetIverksatt
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad

@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.innsending.domene.meldinger
 
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.InnsendingHendelse
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import java.time.LocalDateTime
 
 class TiltakMottattHendelse(

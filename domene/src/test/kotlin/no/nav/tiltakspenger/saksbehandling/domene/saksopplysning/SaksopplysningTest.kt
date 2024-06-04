@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
