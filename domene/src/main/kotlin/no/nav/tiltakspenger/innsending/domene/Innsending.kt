@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.innsending.domene
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.DomeneMetrikker
 import no.nav.tiltakspenger.felles.InnsendingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
@@ -19,6 +18,7 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent

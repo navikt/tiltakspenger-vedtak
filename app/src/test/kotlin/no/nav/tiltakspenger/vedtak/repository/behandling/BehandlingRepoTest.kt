@@ -2,17 +2,17 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -69,7 +69,7 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
@@ -108,12 +108,12 @@ internal class BehandlingRepoTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad)
 
         behandlingRepo.lagre(behandling)
 
-        val hentBehandling = behandlingRepo.hentOrNull(behandling.id)
-        if (hentBehandling is BehandlingOpprettet) {
+        val hentBehandling = behandlingRepo.hent(behandling.id)
+        if (hentBehandling.tilstand == BehandlingTilstand.OPPRETTET) {
             val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
             behandlingRepo.lagre(behandlingVilkårsvurdert)
             behandlingVilkårsvurdert shouldNotBe null

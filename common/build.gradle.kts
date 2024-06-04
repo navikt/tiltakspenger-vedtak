@@ -1,5 +1,7 @@
+val felleslibVersion = "0.0.120"
+
 dependencies {
     implementation(project(":domene"))
     implementation(project(":app"))
-    implementation("com.github.navikt.tiltakspenger-libs:periodisering:0.0.119")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 }

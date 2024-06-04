@@ -1,18 +1,15 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
@@ -20,7 +17,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -28,8 +24,8 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): BehandlingOpprettet =
-        BehandlingOpprettet.opprettBehandling(
+    ): Førstegangsbehandling =
+        Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
         )
@@ -56,7 +52,7 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): BehandlingVilkårsvurdert {
+    ): Førstegangsbehandling {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
@@ -65,17 +61,17 @@ interface BehandlingMother {
                     vilkår = vilkår,
                     type = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 ),
-            ).behandling
-        } as BehandlingVilkårsvurdert
+            ).behandling as Førstegangsbehandling
+        }
 
-        return behandling.spolTilbake().vilkårsvurder()
+        return behandling.vilkårsvurder()
     }
 
     fun behandlingVilkårsvurdertAvslag(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-    ): BehandlingVilkårsvurdert {
+    ): Førstegangsbehandling {
         val behandling = behandlingVilkårsvurdertInnvilget().leggTilSaksopplysning(
             saksopplysning(
                 fom = 1.januar(2023),
@@ -83,20 +79,20 @@ interface BehandlingMother {
                 vilkår = Vilkår.KVP,
                 type = TypeSaksopplysning.HAR_YTELSE,
             ),
-        ).behandling as BehandlingVilkårsvurdert
+        ).behandling as Førstegangsbehandling
 
-        return behandling.spolTilbake().vilkårsvurder()
+        return behandling.vilkårsvurder()
     }
 
-    fun behandlingTilBeslutterInnvilget(): BehandlingTilBeslutter =
+    fun behandlingTilBeslutterInnvilget(): Førstegangsbehandling =
         behandlingVilkårsvurdertInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutting(saksbehandler123())
 
-    fun behandlingTilBeslutterAvslag(): BehandlingTilBeslutter =
+    fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
         behandlingVilkårsvurdertAvslag().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutting(saksbehandler123())
 
-    fun behandlingInnvilgetIverksatt(): BehandlingIverksatt =
+    fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
         behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent).iverksett(beslutter())
 
     fun vilkårViHenter() = listOf(

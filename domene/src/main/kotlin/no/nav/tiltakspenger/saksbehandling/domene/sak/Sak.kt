@@ -1,15 +1,14 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -21,9 +20,9 @@ data class Sak(
     val vedtak: List<Vedtak>,
 ) : SakDetaljer by sakDetaljer {
     fun håndter(søknad: Søknad): Sak {
-        val iverksatteBehandlinger = behandlinger.filterIsInstance<BehandlingIverksatt>()
+        val iverksatteBehandlinger = behandlinger.filter { it.tilstand == BehandlingTilstand.IVERKSATT }
         val behandlinger = behandlinger
-            .filterNot { it is BehandlingIverksatt }
+            .filterNot { it.tilstand == BehandlingTilstand.IVERKSATT }
             .map {
                 try {
                     it.leggTilSøknad(søknad)
@@ -35,7 +34,7 @@ data class Sak(
                     }
                 }
             }.ifEmpty {
-                listOf(BehandlingOpprettet.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
+                listOf(Førstegangsbehandling.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
             }
 
         return this.copy(

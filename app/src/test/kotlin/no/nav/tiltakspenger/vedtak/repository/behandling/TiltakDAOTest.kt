@@ -2,16 +2,16 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
@@ -174,7 +174,7 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad)
 
         return behandlingRepo.lagre(behandling)
     }
