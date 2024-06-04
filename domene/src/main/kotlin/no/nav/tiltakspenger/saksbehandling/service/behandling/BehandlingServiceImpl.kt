@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -63,9 +63,12 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
-    override fun leggTilSaksopplysning(behandlingId: BehandlingId, livoppholdSaksopplysning: LivoppholdSaksopplysning) {
+    override fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+    ) {
         val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(livoppholdSaksopplysning)
+            .leggTilSaksopplysning(livsoppholdSaksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
@@ -152,8 +155,8 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder!!,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = emptyList(), // TODO behandling.saksopplysninger(),
-            vurderinger = emptyList(), // TODO behandling.vilkårsvurderinger(),
+            // saksopplysninger = emptyList(), // TODO behandling.saksopplysninger(),
+            // vurderinger = emptyList(), // TODO behandling.vilkårsvurderinger(),
             saksbehandler = behandling.saksbehandler,
             beslutter = behandling.beslutter,
         )

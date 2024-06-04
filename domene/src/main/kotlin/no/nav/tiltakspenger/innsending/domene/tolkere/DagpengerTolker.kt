@@ -5,15 +5,15 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 class DagpengerTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivoppholdSaksopplysning {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdSaksopplysning {
             if (ytelser == null) {
-                return LivoppholdSaksopplysning(
+                return LivsoppholdSaksopplysning(
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
@@ -35,7 +35,7 @@ class DagpengerTolker {
                 }
 
             if (ytelseListe.isEmpty()) {
-                return LivoppholdSaksopplysning(
+                return LivsoppholdSaksopplysning(
                     vilkår = Vilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
@@ -48,7 +48,7 @@ class DagpengerTolker {
             }
             return ytelseListe
                 .fold(
-                    LivoppholdSaksopplysning(
+                    LivsoppholdSaksopplysning(
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         // TODO: Denne blir annerledes når vi ikke lenger har én saksopplysning per sak
@@ -59,7 +59,7 @@ class DagpengerTolker {
                                 vurderingsperiode,
                             ),
                     ),
-                ) { resultat: LivoppholdSaksopplysning, ytelse: YtelseSak ->
+                ) { resultat: LivsoppholdSaksopplysning, ytelse: YtelseSak ->
                     resultat.copy(
                         harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
                             HarYtelse.HAR_YTELSE,

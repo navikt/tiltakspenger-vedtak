@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 
@@ -21,8 +21,8 @@ data class BehandlingIverksatt(
     val status: BehandlingStatus,
 ) : Førstegangsbehandling {
 
-    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons {
-        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livoppholdSaksopplysning)
+    override fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons {
+        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
         return if (oppdatertYtelserVilkårData == this.livsoppholdVilkårData) {
             LeggTilSaksopplysningRespons(
                 behandling = this,

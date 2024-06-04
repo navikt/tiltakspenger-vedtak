@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -68,8 +68,8 @@ data class RevurderingVilkårsvurdert(
         }
     }
 
-    override fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons =
-        spolTilbake().leggTilSaksopplysning(livoppholdSaksopplysning)
+    override fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons =
+        spolTilbake().leggTilSaksopplysning(livsoppholdSaksopplysning)
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling =
         this.copy(tiltak = tiltak)

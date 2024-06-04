@@ -10,9 +10,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 data class KorrigerbarLivsopphold private constructor(
     val vurderingsperiode: Periode,
     val vilkår: Vilkår,
-    val opprinneligLivoppholdSaksopplysning: LivoppholdSaksopplysning,
-    val korrigertLivoppholdSaksopplysning: LivoppholdSaksopplysning?,
-    val avklartLivoppholdSaksopplysning: LivoppholdSaksopplysning,
+    val opprinneligLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+    val korrigertLivsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
+    val avklartLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
     val vurdering: Vurdering,
 ) {
     fun lagSaksopplysningFraPeriodeSpørsmål(
@@ -23,16 +23,16 @@ data class KorrigerbarLivsopphold private constructor(
         require(vilkår == this.vilkår) { "Feil vilkår $vilkår for korrigerbare ytelse med vilkår ${this.vilkår}" }
 
         return this.copy(
-            opprinneligLivoppholdSaksopplysning = opprinneligLivoppholdSaksopplysning.copy(
+            opprinneligLivsoppholdSaksopplysning = opprinneligLivsoppholdSaksopplysning.copy(
                 harYtelse = if (periodeSpm is Søknad.PeriodeSpm.Ja) {
-                    opprinneligLivoppholdSaksopplysning.harYtelse
+                    opprinneligLivsoppholdSaksopplysning.harYtelse
                         .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, periode)
                         .setVerdiForDelPeriode(
                             HarYtelse.HAR_YTELSE,
                             periodeSpm.periode,
                         )
                 } else {
-                    opprinneligLivoppholdSaksopplysning.harYtelse
+                    opprinneligLivsoppholdSaksopplysning.harYtelse
                         .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, periode)
                 },
             ),
@@ -41,22 +41,23 @@ data class KorrigerbarLivsopphold private constructor(
 
     private fun faktaavklar(): KorrigerbarLivsopphold {
         return this.copy(
-            avklartLivoppholdSaksopplysning = korrigertLivoppholdSaksopplysning ?: opprinneligLivoppholdSaksopplysning,
+            avklartLivsoppholdSaksopplysning = korrigertLivsoppholdSaksopplysning
+                ?: opprinneligLivsoppholdSaksopplysning,
         )
     }
 
     private fun vilkårsvurder(): KorrigerbarLivsopphold {
-        return this.copy(vurdering = vilkårsvurder(this.avklartLivoppholdSaksopplysning))
+        return this.copy(vurdering = vilkårsvurder(this.avklartLivsoppholdSaksopplysning))
     }
 
     // TODO: Denne er ment å være midlertidig. Kanskje..?
     fun periodiseringAvSaksopplysningOgUtfall(): Periodisering<SaksopplysningOgUtfallForPeriode> {
-        return avklartLivoppholdSaksopplysning.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
+        return avklartLivsoppholdSaksopplysning.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
             SaksopplysningOgUtfallForPeriode(
-                avklartLivoppholdSaksopplysning.vilkår,
-                avklartLivoppholdSaksopplysning.kilde,
-                avklartLivoppholdSaksopplysning.detaljer,
-                avklartLivoppholdSaksopplysning.saksbehandler,
+                avklartLivsoppholdSaksopplysning.vilkår,
+                avklartLivsoppholdSaksopplysning.kilde,
+                avklartLivsoppholdSaksopplysning.detaljer,
+                avklartLivsoppholdSaksopplysning.saksbehandler,
                 harYtelse,
                 utfall,
             )
@@ -71,9 +72,9 @@ data class KorrigerbarLivsopphold private constructor(
         require(vilkår == this.vilkår) { "Feil vilkår $vilkår for korrigerbare ytelse med vilkår ${this.vilkår}" }
 
         return this.copy(
-            opprinneligLivoppholdSaksopplysning = opprinneligLivoppholdSaksopplysning.copy(
+            opprinneligLivsoppholdSaksopplysning = opprinneligLivsoppholdSaksopplysning.copy(
                 harYtelse = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) {
-                    opprinneligLivoppholdSaksopplysning.harYtelse
+                    opprinneligLivsoppholdSaksopplysning.harYtelse
                         .setVerdiForDelPeriode(
                             HarYtelse.HAR_IKKE_YTELSE,
                             periode,
@@ -83,7 +84,7 @@ data class KorrigerbarLivsopphold private constructor(
                             Periode(fraOgMedDatoSpm.fra, periode.til),
                         )
                 } else {
-                    opprinneligLivoppholdSaksopplysning.harYtelse.setVerdiForDelPeriode(
+                    opprinneligLivsoppholdSaksopplysning.harYtelse.setVerdiForDelPeriode(
                         HarYtelse.HAR_IKKE_YTELSE,
                         periode,
                     )
@@ -100,8 +101,8 @@ data class KorrigerbarLivsopphold private constructor(
         require(vilkår == this.vilkår) { "Feil vilkår $vilkår for korrigerbare ytelse med vilkår ${this.vilkår}" }
 
         return this.copy(
-            opprinneligLivoppholdSaksopplysning = opprinneligLivoppholdSaksopplysning.copy(
-                harYtelse = opprinneligLivoppholdSaksopplysning.harYtelse.setVerdiForDelPeriode(
+            opprinneligLivsoppholdSaksopplysning = opprinneligLivsoppholdSaksopplysning.copy(
+                harYtelse = opprinneligLivsoppholdSaksopplysning.harYtelse.setVerdiForDelPeriode(
                     if (jaNeiSpm is Søknad.JaNeiSpm.Ja) HarYtelse.HAR_YTELSE else HarYtelse.HAR_IKKE_YTELSE,
                     periode,
                 ),
@@ -109,15 +110,33 @@ data class KorrigerbarLivsopphold private constructor(
         ).faktaavklar().vilkårsvurder()
     }
 
-    fun oppdaterSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): KorrigerbarLivsopphold {
+    fun oppdaterSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): KorrigerbarLivsopphold {
         return this.copy(
-            korrigertLivoppholdSaksopplysning = livoppholdSaksopplysning,
+            korrigertLivsoppholdSaksopplysning = livsoppholdSaksopplysning,
         )
     }
 
     companion object {
+
+        fun fromDb(
+            vurderingsperiode: Periode,
+            vilkår: Vilkår,
+            opprinneligLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+            korrigertLivsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
+            avklartLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+            vurdering: Vurdering,
+        ): KorrigerbarLivsopphold =
+            KorrigerbarLivsopphold(
+                vurderingsperiode,
+                vilkår,
+                opprinneligLivsoppholdSaksopplysning,
+                korrigertLivsoppholdSaksopplysning,
+                avklartLivsoppholdSaksopplysning,
+                vurdering,
+            )
+
         operator fun invoke(vurderingsperiode: Periode, vilkår: Vilkår): KorrigerbarLivsopphold {
-            val tomLivoppholdSaksopplysning = LivoppholdSaksopplysning(
+            val tomLivsoppholdSaksopplysning = LivsoppholdSaksopplysning(
                 vilkår = vilkår,
                 kilde = vilkår.kilde(),
                 detaljer = "",
@@ -127,35 +146,31 @@ data class KorrigerbarLivsopphold private constructor(
             return KorrigerbarLivsopphold(
                 vurderingsperiode,
                 vilkår,
-                tomLivoppholdSaksopplysning,
-                tomLivoppholdSaksopplysning,
-                tomLivoppholdSaksopplysning,
-                vilkårsvurder(tomLivoppholdSaksopplysning),
+                tomLivsoppholdSaksopplysning,
+                tomLivsoppholdSaksopplysning,
+                tomLivsoppholdSaksopplysning,
+                vilkårsvurder(tomLivsoppholdSaksopplysning),
             )
         }
 
-        private fun vilkårsvurder(livoppholdSaksopplysning: LivoppholdSaksopplysning): Vurdering {
-            if (livoppholdSaksopplysning.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER) &&
-                livoppholdSaksopplysning.kilde != Kilde.SAKSB
+        private fun vilkårsvurder(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): Vurdering {
+            if (livsoppholdSaksopplysning.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER) &&
+                livsoppholdSaksopplysning.kilde != Kilde.SAKSB
             ) {
                 return Vurdering(
-                    livoppholdSaksopplysning.vilkår,
-                    livoppholdSaksopplysning.kilde,
+                    livsoppholdSaksopplysning.vilkår,
                     Periodisering(
                         Utfall.KREVER_MANUELL_VURDERING,
-                        livoppholdSaksopplysning.harYtelse.totalePeriode,
+                        livsoppholdSaksopplysning.harYtelse.totalePeriode,
                     ),
-                    livoppholdSaksopplysning.detaljer,
-                    null,
+                    livsoppholdSaksopplysning.detaljer,
                 )
             }
 
             return Vurdering(
-                vilkår = livoppholdSaksopplysning.vilkår,
-                kilde = livoppholdSaksopplysning.kilde,
-                detaljer = livoppholdSaksopplysning.detaljer,
-                grunnlagId = null,
-                utfall = livoppholdSaksopplysning.harYtelse.map {
+                vilkår = livsoppholdSaksopplysning.vilkår,
+                detaljer = livsoppholdSaksopplysning.detaljer,
+                utfall = livsoppholdSaksopplysning.harYtelse.map {
                     when (it) {
                         HarYtelse.HAR_YTELSE -> Utfall.IKKE_OPPFYLT
                         HarYtelse.HAR_IKKE_YTELSE -> Utfall.OPPFYLT

@@ -15,12 +15,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import kotlin.test.Test
 
-internal class LivoppholdSaksopplysningTest {
+internal class LivsoppholdSaksopplysningTest {
 
     @Test
     fun `sjekk at oppdatering av saksopplysninger fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
@@ -30,8 +30,8 @@ internal class LivoppholdSaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val nyLivoppholdSaksopplysning =
-            LivoppholdSaksopplysning(
+        val nyLivsoppholdSaksopplysning =
+            LivsoppholdSaksopplysning(
                 fom = 15.januar(2023),
                 tom = 15.mars(2023),
                 kilde = Kilde.ARENA,
@@ -51,7 +51,8 @@ internal class LivoppholdSaksopplysningTest {
         behandlingMedSaksbehandler.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.IKKE_INNHENTET_ENDA
         behandlingMedSaksbehandler.saksopplysninger.last { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.HAR_IKKE_YTELSE
 
-        val behandlingOppdatertMedNyDataFraAAP = behandling.leggTilSaksopplysning(nyLivoppholdSaksopplysning).behandling
+        val behandlingOppdatertMedNyDataFraAAP =
+            behandling.leggTilSaksopplysning(nyLivsoppholdSaksopplysning).behandling
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
         behandlingOppdatertMedNyDataFraAAP.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.harYtelse shouldBe HarYtelse.HAR_YTELSE
     }
@@ -59,7 +60,7 @@ internal class LivoppholdSaksopplysningTest {
     @Test
     fun `ny søknad med samme saksopplysning fjerner ikke saksbehandler`() {
         val sakbehandlerOpplysning =
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
@@ -87,7 +88,7 @@ internal class LivoppholdSaksopplysningTest {
     @Test
     fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
         val sakbehandlerOpplysning =
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
@@ -115,8 +116,8 @@ internal class LivoppholdSaksopplysningTest {
     fun `hvis det finnes ytelse i starten av en vurderingsperiode får man IkkeOppfylt i denne perioden og Oppfylt i resten`() {
         val periode = Periode(fra = 1.januar(2023), til = 31.mars(2023))
 
-        val livoppholdSaksopplysning =
-            LivoppholdSaksopplysning(
+        val livsoppholdSaksopplysning =
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
                 kilde = Kilde.SAKSB,
@@ -126,7 +127,7 @@ internal class LivoppholdSaksopplysningTest {
                 saksbehandler = null,
             )
 
-        livoppholdSaksopplysning.lagVurdering(periode) shouldContainAll listOf(
+        livsoppholdSaksopplysning.lagVurdering(periode) shouldContainAll listOf(
             Vurdering.IkkeOppfylt(
                 vilkår = Vilkår.FORELDREPENGER,
                 kilde = Kilde.SAKSB,

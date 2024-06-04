@@ -32,7 +32,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -132,7 +132,7 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
-        val livoppholdSaksopplysning = LivoppholdSaksopplysning(
+        val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
             fom = 1.februar(2023),
             tom = 28.februar(2023),
             kilde = Kilde.SAKSB,
@@ -141,7 +141,7 @@ internal class BehandlingServiceTest {
             harYtelse = HarYtelse.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, livoppholdSaksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, livsoppholdSaksopplysning)
 
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
             it.fom shouldBe 1.januar(2023)
@@ -169,7 +169,7 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
-        val livoppholdSaksopplysning = LivoppholdSaksopplysning(
+        val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
             fom = 1.januar(2023),
             tom = 31.mars(2023),
             kilde = Kilde.ARENA,
@@ -178,7 +178,7 @@ internal class BehandlingServiceTest {
             harYtelse = HarYtelse.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, livoppholdSaksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, livsoppholdSaksopplysning)
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
@@ -193,7 +193,7 @@ internal class BehandlingServiceTest {
         val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
             periode = Periode(1.januar(2023), 31.mars(2023)),
         ).leggTilSaksopplysning(
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
@@ -208,7 +208,7 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
-        val livoppholdSaksopplysning = LivoppholdSaksopplysning(
+        val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
             fom = 1.februar(2023),
             tom = 28.februar(2023),
             kilde = Kilde.ARENA,
@@ -217,7 +217,7 @@ internal class BehandlingServiceTest {
             harYtelse = HarYtelse.HAR_YTELSE,
             saksbehandler = "Z999999",
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, livoppholdSaksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, livsoppholdSaksopplysning)
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
@@ -232,7 +232,7 @@ internal class BehandlingServiceTest {
         val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
             periode = Periode(1.januar(2023), 31.mars(2023)),
         ).leggTilSaksopplysning(
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 kilde = Kilde.SAKSB,
@@ -247,7 +247,7 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
-        val livoppholdSaksopplysning = LivoppholdSaksopplysning(
+        val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
             fom = 1.januar(2023),
             tom = 31.mars(2023),
             kilde = Kilde.ARENA,
@@ -256,7 +256,7 @@ internal class BehandlingServiceTest {
             harYtelse = HarYtelse.IKKE_INNHENTET_ENDA,
             saksbehandler = null,
         )
-        behandlingService.leggTilSaksopplysning(behandling.id, livoppholdSaksopplysning)
+        behandlingService.leggTilSaksopplysning(behandling.id, livsoppholdSaksopplysning)
 
         lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
         lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {

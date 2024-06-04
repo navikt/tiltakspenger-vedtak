@@ -4,17 +4,17 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 // TODO: Denne vil jeg skrive om, vi burde ikke vilkårsvurdere når vi mottar dataene.
 class AlderTolker {
     companion object {
-        fun tolkeData(fdato: LocalDate, vurderingsperiode: Periode): LivoppholdSaksopplysning =
+        fun tolkeData(fdato: LocalDate, vurderingsperiode: Periode): LivsoppholdSaksopplysning =
             fdato.plusYears(18).let {
                 if (vurderingsperiode.inneholder(it)) {
-                    LivoppholdSaksopplysning(
+                    LivsoppholdSaksopplysning(
                         kilde = Kilde.PDL,
                         vilkår = Vilkår.ALDER,
                         detaljer = "",
@@ -28,7 +28,7 @@ class AlderTolker {
                     )
                 } else {
                     if (vurderingsperiode.før(it)) {
-                        LivoppholdSaksopplysning(
+                        LivsoppholdSaksopplysning(
                             kilde = Kilde.PDL,
                             vilkår = Vilkår.ALDER,
                             detaljer = "",
@@ -37,7 +37,7 @@ class AlderTolker {
                                 .setVerdiForDelPeriode(HarYtelse.HAR_YTELSE, vurderingsperiode),
                         )
                     } else {
-                        LivoppholdSaksopplysning(
+                        LivsoppholdSaksopplysning(
                             kilde = Kilde.PDL,
                             vilkår = Vilkår.ALDER,
                             detaljer = "",

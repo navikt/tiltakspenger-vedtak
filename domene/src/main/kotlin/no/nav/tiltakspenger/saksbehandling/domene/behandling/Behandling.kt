@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -29,9 +29,9 @@ interface Behandling {
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
-    fun saksopplysninger(): List<LivoppholdSaksopplysning> {
+    fun saksopplysninger(): List<LivsoppholdSaksopplysning> {
         return livsoppholdVilkårData.korrigerbareYtelser.values.map {
-            it.avklartLivoppholdSaksopplysning
+            it.avklartLivsoppholdSaksopplysning
         }
     }
 
@@ -45,7 +45,7 @@ interface Behandling {
         throw IllegalStateException("Kan ikke legge til søknad på denne behandlingen")
     }
 
-    fun leggTilSaksopplysning(livoppholdSaksopplysning: LivoppholdSaksopplysning): LeggTilSaksopplysningRespons {
+    fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons {
         throw IllegalStateException("Kan ikke legge til saksopplysning på denne behandlingen")
     }
 

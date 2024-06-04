@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 class ForeldrepengerTolker {
@@ -12,7 +12,7 @@ class ForeldrepengerTolker {
         fun tolkeData(
             vedtak: List<ForeldrepengerVedtak>,
             vurderingsperiode: Periode,
-        ): List<LivoppholdSaksopplysning> {
+        ): List<LivsoppholdSaksopplysning> {
             return ForeldrepengerVedtak.Ytelser.entries.filter { it.rettTilTiltakspenger }.map { type ->
                 tolkeForEttVilkår(
                     vedtak = vedtak,
@@ -38,12 +38,12 @@ private fun tolkeForEttVilkår(
     vurderingsperiode: Periode,
     type: ForeldrepengerVedtak.Ytelser,
     vilkår: Vilkår,
-): LivoppholdSaksopplysning {
+): LivsoppholdSaksopplysning {
     return vedtak
         .filter { it.periode.overlapperMed(vurderingsperiode) }
         .filter { it.ytelse == type }
         .fold(
-            LivoppholdSaksopplysning(
+            LivsoppholdSaksopplysning(
                 vilkår = vilkår,
                 kilde = type.kilde,
                 detaljer = "",
@@ -53,7 +53,7 @@ private fun tolkeForEttVilkår(
                         vurderingsperiode,
                     ),
             ),
-        ) { resultat: LivoppholdSaksopplysning, vedtak: ForeldrepengerVedtak ->
+        ) { resultat: LivsoppholdSaksopplysning, vedtak: ForeldrepengerVedtak ->
             resultat.copy(
                 harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
                     HarYtelse.HAR_YTELSE,

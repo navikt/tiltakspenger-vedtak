@@ -6,26 +6,31 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
 import org.intellij.lang.annotations.Language
 
 class UtfallsperiodeDAO {
 
-    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Utfallsdetaljer> {
-        return txSession.run(
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): Periodisering<Utfallsdetaljer> {
+        val liste: List<PeriodeMedVerdi<Utfallsdetaljer>> = txSession.run(
             queryOf(hentUtfallsperioder, behandlingId.toString())
                 .map { row -> row.toUtfallsperiode() }
                 .asList,
         )
+        return Periodisering.fraPeriodeListe(liste)
     }
 
-    fun hentForVedtak(vedtakId: VedtakId, txSession: TransactionalSession): List<Utfallsdetaljer> {
-        return txSession.run(
+    fun hentForVedtak(vedtakId: VedtakId, txSession: TransactionalSession): Periodisering<Utfallsdetaljer> {
+        val liste = txSession.run(
             queryOf(hentUtfallsperioderForVedtak, vedtakId.toString())
                 .map { row -> row.toUtfallsperiode() }
                 .asList,
         )
+        return Periodisering.fraPeriodeListe(liste)
     }
 
     fun oppdaterVedtak(vedtakId: VedtakId, behandlingId: BehandlingId, txSession: TransactionalSession) {
@@ -40,16 +45,20 @@ class UtfallsperiodeDAO {
         )
     }
 
-    fun lagre(behandlingId: BehandlingId, utfallsperioder: List<Utfallsdetaljer>, txSession: TransactionalSession) {
+    fun lagre(
+        behandlingId: BehandlingId,
+        utfallsperioder: Periodisering<Utfallsdetaljer>,
+        txSession: TransactionalSession,
+    ) {
         slettUtfallsperioder(behandlingId, txSession)
-        utfallsperioder.forEach { utfallsperiode ->
+        utfallsperioder.perioder().forEach { utfallsperiode ->
             lagreUtfallsperiode(behandlingId, utfallsperiode, txSession)
         }
     }
 
     private fun lagreUtfallsperiode(
         behandlingId: BehandlingId,
-        utfallsperiode: Utfallsdetaljer,
+        utfallsperiode: PeriodeMedVerdi<Utfallsdetaljer>,
         txSession: TransactionalSession,
     ) {
         txSession.run(
@@ -58,10 +67,10 @@ class UtfallsperiodeDAO {
                 mapOf(
                     "id" to random(ULID_PREFIX_UTFALLSPERIODE).toString(),
                     "behandlingId" to behandlingId.toString(),
-                    "fom" to utfallsperiode.fom,
-                    "tom" to utfallsperiode.tom,
-                    "antallBarn" to utfallsperiode.antallBarn,
-                    "utfall" to utfallsperiode.utfall.name,
+                    "fom" to utfallsperiode.periode.fra,
+                    "tom" to utfallsperiode.periode.til,
+                    "antallBarn" to utfallsperiode.verdi.antallBarn,
+                    "utfall" to utfallsperiode.verdi.utfall.name,
                 ),
             ).asUpdate,
         )
@@ -71,12 +80,16 @@ class UtfallsperiodeDAO {
         txSession.run(queryOf(slettUtfallsperioder, behandlingId.toString()).asUpdate)
     }
 
-    private fun Row.toUtfallsperiode(): Utfallsdetaljer {
-        return Utfallsdetaljer(
-            fom = localDate("fom"),
-            tom = localDate("tom"),
-            antallBarn = int("antall_barn"),
-            utfall = UtfallForPeriode.valueOf(string("utfall")),
+    private fun Row.toUtfallsperiode(): PeriodeMedVerdi<Utfallsdetaljer> {
+        return PeriodeMedVerdi(
+            verdi = Utfallsdetaljer(
+                antallBarn = int("antall_barn"),
+                utfall = UtfallForPeriode.valueOf(string("utfall")),
+            ),
+            periode = Periode(
+                fra = localDate("fom"),
+                til = localDate("tom"),
+            ),
         )
     }
 

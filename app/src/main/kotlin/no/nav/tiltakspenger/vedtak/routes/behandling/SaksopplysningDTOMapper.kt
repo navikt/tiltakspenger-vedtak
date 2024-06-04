@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
@@ -14,7 +14,7 @@ object SaksopplysningDTOMapper {
     fun lagSaksopplysningMedVilkår(
         saksbehandler: Saksbehandler,
         saksopplysning: SaksopplysningDTO,
-    ): LivoppholdSaksopplysning {
+    ): LivsoppholdSaksopplysning {
         val vilkår = when (saksopplysning.vilkår) {
             "AAP" -> Vilkår.AAP
             "ALDER" -> Vilkår.ALDER
@@ -42,12 +42,12 @@ object SaksopplysningDTOMapper {
             else -> throw IllegalStateException("Kan ikke lage saksopplysning for vilkår ${saksopplysning.vilkår}")
         }
 
-        return LivoppholdSaksopplysning(
+        return LivsoppholdSaksopplysning(
             vilkår = vilkår,
             kilde = Kilde.SAKSB,
             detaljer = saksopplysning.begrunnelse, // TODO: Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
             harYtelse = Periodisering(
-                defaultVerdi = if (saksopplysning.harYtelse) HarYtelse.HAR_YTELSE else HarYtelse.HAR_IKKE_YTELSE,
+                initiellVerdi = if (saksopplysning.harYtelse) HarYtelse.HAR_YTELSE else HarYtelse.HAR_IKKE_YTELSE,
                 totalePeriode = Periode(LocalDate.parse(saksopplysning.fom), LocalDate.parse(saksopplysning.tom)),
             ),
             saksbehandler = saksbehandler.navIdent,

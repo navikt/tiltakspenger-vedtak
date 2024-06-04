@@ -17,9 +17,8 @@ import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.behandling.LivsoppholdVilkårDataDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
@@ -68,10 +67,9 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val søkerRepository = SøkerRepositoryImpl()
     private val behandlingRepo = PostgresBehandlingRepo()
-    private val saksopplysningRepo = SaksopplysningRepo()
-    private val vurderingRepo = VurderingRepo()
+    private val livsoppholdVilkårDataDAO = LivsoppholdVilkårDataDAO()
     private val attesteringRepo = AttesteringRepoImpl()
-    private val vedtakRepo = VedtakRepoImpl(behandlingRepo, saksopplysningRepo, vurderingRepo)
+    private val vedtakRepo = VedtakRepoImpl(behandlingRepo, livsoppholdVilkårDataDAO)
     private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo)
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val vedtakService = VedtakServiceImpl(vedtakRepo)

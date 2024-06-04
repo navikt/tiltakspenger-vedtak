@@ -59,8 +59,8 @@ data class LivsoppholdVilkårData(
             )
     }
 
-    fun oppdaterSaksopplysninger(livoppholdSaksopplysning: LivoppholdSaksopplysning): LivsoppholdVilkårData {
-        require(korrigerbareYtelser.containsKey(livoppholdSaksopplysning.vilkår)) { "Saksopplysning med vilkår ${livoppholdSaksopplysning.vilkår} matcher ingen ytelse" }
+    fun oppdaterSaksopplysninger(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LivsoppholdVilkårData {
+        require(korrigerbareYtelser.containsKey(livsoppholdSaksopplysning.vilkår)) { "Saksopplysning med vilkår ${livsoppholdSaksopplysning.vilkår} matcher ingen ytelse" }
 
         /*
          fun List<Saksopplysning>.oppdaterSaksopplysninger(saksopplysning: Saksopplysning) =
@@ -77,8 +77,8 @@ data class LivsoppholdVilkårData(
         return this.copy(
             korrigerbareYtelser = korrigerbareYtelser +
                 (
-                    livoppholdSaksopplysning.vilkår to korrigerbareYtelser[livoppholdSaksopplysning.vilkår]!!.oppdaterSaksopplysning(
-                        livoppholdSaksopplysning,
+                    livsoppholdSaksopplysning.vilkår to korrigerbareYtelser[livsoppholdSaksopplysning.vilkår]!!.oppdaterSaksopplysning(
+                        livsoppholdSaksopplysning,
                     )
                     ),
         )

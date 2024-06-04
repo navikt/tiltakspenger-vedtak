@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
 
 internal class RevurderingOpprettetTest {
 
-    private val livoppholdSaksopplysning = LivoppholdSaksopplysning(
+    private val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
         harYtelse = HarYtelse.HAR_YTELSE,
         fom = LocalDate.MIN,
         tom = LocalDate.MAX,
@@ -42,7 +42,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        saksopplysninger = listOf(livoppholdSaksopplysning),
+        saksopplysninger = listOf(livsoppholdSaksopplysning),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
@@ -75,7 +75,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
-        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(livoppholdSaksopplysning)
+        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(livsoppholdSaksopplysning)
         assertEquals(revurderingOpprettet, leggTilSaksopplysningRespons.behandling)
         assertFalse { leggTilSaksopplysningRespons.erEndret }
     }

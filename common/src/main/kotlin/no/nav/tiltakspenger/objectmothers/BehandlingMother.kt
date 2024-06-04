@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import java.time.LocalDate
@@ -39,8 +39,8 @@ interface BehandlingMother {
         vilkår: Vilkår = Vilkår.AAP,
         type: HarYtelse = HarYtelse.HAR_YTELSE,
         saksbehandler: String? = null,
-    ): LivoppholdSaksopplysning =
-        LivoppholdSaksopplysning(
+    ): LivsoppholdSaksopplysning =
+        LivsoppholdSaksopplysning(
             fom = fom,
             tom = tom,
             kilde = kilde,

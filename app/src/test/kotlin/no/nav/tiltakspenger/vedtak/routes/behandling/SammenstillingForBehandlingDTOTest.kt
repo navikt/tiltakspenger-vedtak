@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslut
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -115,7 +115,7 @@ class SammenstillingForBehandlingDTOTest {
         assert(utfall == Utfall.OPPFYLT)
     }
 
-    private fun mockSaksopplysning(vilkår: Vilkår = Vilkår.AAP): LivoppholdSaksopplysning = LivoppholdSaksopplysning(
+    private fun mockSaksopplysning(vilkår: Vilkår = Vilkår.AAP): LivsoppholdSaksopplysning = LivsoppholdSaksopplysning(
         vilkår = vilkår,
         fom = LocalDate.now(),
         tom = LocalDate.now(),

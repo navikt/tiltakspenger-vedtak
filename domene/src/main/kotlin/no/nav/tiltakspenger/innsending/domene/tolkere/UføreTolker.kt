@@ -6,12 +6,12 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
 class UføreTolker {
     companion object {
-        fun tolkeData(vedtak: UføreVedtak, vurderingsperiode: Periode): LivoppholdSaksopplysning {
+        fun tolkeData(vedtak: UføreVedtak, vurderingsperiode: Periode): LivsoppholdSaksopplysning {
             val dato = if (
                 (!vedtak.harUføregrad) or
                 (vedtak.virkDato == null)
@@ -23,7 +23,7 @@ class UføreTolker {
 
             // har ikke uførevedtak eller det starter etter vår periode
             if (vurderingsperiode.før(dato)) {
-                return LivoppholdSaksopplysning(
+                return LivsoppholdSaksopplysning(
                     kilde = Kilde.PESYS,
                     vilkår = Vilkår.UFØRETRYGD,
                     detaljer = "",
@@ -35,7 +35,7 @@ class UføreTolker {
 
             // Vedtak om uførevedtak skjer et sted i vår periode
             if (vurderingsperiode.inneholder(dato)) {
-                return LivoppholdSaksopplysning(
+                return LivsoppholdSaksopplysning(
                     kilde = Kilde.PESYS,
                     vilkår = Vilkår.UFØRETRYGD,
                     detaljer = "",
@@ -50,7 +50,7 @@ class UføreTolker {
             }
 
             // Vedtak om uførevedtak skjer før vår periode
-            return LivoppholdSaksopplysning(
+            return LivsoppholdSaksopplysning(
                 kilde = Kilde.PESYS,
                 vilkår = Vilkår.UFØRETRYGD,
                 detaljer = "",
