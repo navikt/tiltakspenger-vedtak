@@ -73,6 +73,28 @@ fun Route.tiltakRoutes(
     }
 }
 
+private fun mapAntallDager(tiltak: TiltakResponsDTO.TiltakDTO): PeriodeMedVerdi<AntallDager> =
+    PeriodeMedVerdi(
+        verdi =
+        if (tiltak.deltakelseDagerUke != null) {
+            AntallDager(
+                antallDager = tiltak.deltakelseDagerUke!!.roundToInt(),
+                kilde = Kilde.valueOf(tiltak.kilde.uppercase()),
+                saksbehandlerIdent = null,
+            )
+        } else {
+            AntallDager(
+                antallDager = if (tiltak.deltakelseProsent == 100f) 5 else 0,
+                kilde = Kilde.valueOf(tiltak.kilde.uppercase()),
+                saksbehandlerIdent = null,
+            )
+        },
+        periode = Periode(
+            fra = tiltak.deltakelseFom!!,
+            til = tiltak.deltakelseTom!!,
+        ),
+    )
+
 private fun mapTiltak(
     tiltakDTO: List<TiltakResponsDTO.TiltakDTO>,
     innhentet: LocalDateTime,
@@ -81,6 +103,7 @@ private fun mapTiltak(
         .filterNot { it.deltakelseFom == null }
         .filterNot { it.deltakelseTom == null }
         .map {
+            val antallDager = mapAntallDager(it)
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = it.id,
@@ -102,29 +125,8 @@ private fun mapTiltak(
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
                 antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
-                    antallDagerSaksopplysningerFraRegister = listOf(
-                        PeriodeMedVerdi(
-                            verdi =
-                            if (it.deltakelseDagerUke != null) {
-                                AntallDager(
-                                    antallDager = it.deltakelseDagerUke!!.roundToInt(),
-                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
-                                    saksbehandlerIdent = null,
-                                )
-                            } else {
-                                AntallDager(
-                                    antallDager = if (it.deltakelseProsent == 100f) 5 else 0,
-                                    kilde = Kilde.valueOf(it.kilde.uppercase()),
-                                    saksbehandlerIdent = null,
-                                )
-                            },
-                            periode = Periode(
-                                fra = it.deltakelseFom!!,
-                                til = it.deltakelseTom!!,
-                            ),
-                        ),
-                    ),
-                ),
+                    antallDagerSaksopplysningerFraRegister = listOf(antallDager),
+                ).avklar(),
             )
         }
 }
