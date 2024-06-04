@@ -1,7 +1,7 @@
 val jacksonVersion = "2.17.1"
 val kotestVersion = "5.9.0"
 val mockkVersion = "1.13.11"
-val felleslibVersion = "0.0.117"
+val felleslibVersion = "0.0.119"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
