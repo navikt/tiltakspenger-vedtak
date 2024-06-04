@@ -1,14 +1,16 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Kategori
@@ -152,8 +154,8 @@ object SammenstillingForBehandlingDTOMapper {
             ),
             registrerteTiltak = behandling.tiltak.map {
                 RegistrertTiltakDTO(
+                    id = it.id.toString(),
                     arrangør = it.gjennomføring.arrangørnavn,
-                    dagerIUken = it.deltakelseDagerUke?.toInt() ?: 0,
                     navn = it.gjennomføring.typeNavn,
                     periode = PeriodeDTO(
                         fra = it.deltakelseFom,
@@ -166,6 +168,7 @@ object SammenstillingForBehandlingDTOMapper {
                     harSøkt = true,
                     deltagelseUtfall = it.vilkårsvurderTiltaksdeltagelse().utfall.utfallForPeriodisering(), // TODO: Det kan jo være mer enn ett utfall!
                     begrunnelse = it.vilkårsvurderTiltaksdeltagelse().detaljer,
+                    antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
                 )
             },
             // TODO: Vi bør nok ha en litt annen struktur også mot frontend..
@@ -213,12 +216,11 @@ object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             },
-            tilstand = when (behandling) {
-                // todo: dette kunne kanskje vært en egen "tilstand"-property på de ulike behandlingstypene?
-                is BehandlingIverksatt -> "iverksatt"
-                is BehandlingTilBeslutter -> "tilBeslutter"
-                is BehandlingVilkårsvurdert -> "vilkårsvurdert"
-                is BehandlingOpprettet -> "opprettet"
+            tilstand = when (behandling.tilstand) {
+                BehandlingTilstand.IVERKSATT -> "iverksatt"
+                BehandlingTilstand.TIL_BESLUTTER -> "tilBeslutter"
+                BehandlingTilstand.VILKÅRSVURDERT -> "vilkårsvurdert"
+                BehandlingTilstand.OPPRETTET -> "opprettet"
             },
             status = finnStatus(behandling),
             endringslogg = attesteringer.map { att ->
@@ -248,13 +250,6 @@ object SammenstillingForBehandlingDTOMapper {
         )
     }
 
-    fun getBeslutter(behandling: Førstegangsbehandling): String? =
-        when (behandling) {
-            is BehandlingIverksatt -> behandling.beslutter
-            is BehandlingTilBeslutter -> behandling.beslutter
-            else -> null
-        }
-
     fun Periodisering<Utfall>.utfallForPeriodisering(): Utfall {
         if (this.perioder().any { it.verdi == Utfall.KREVER_MANUELL_VURDERING }) {
             return Utfall.KREVER_MANUELL_VURDERING
@@ -264,4 +259,32 @@ object SammenstillingForBehandlingDTOMapper {
         }
         return Utfall.IKKE_OPPFYLT
     }
+
+    fun getBeslutter(behandling: Førstegangsbehandling): String? =
+        when (behandling.tilstand) {
+            BehandlingTilstand.IVERKSATT -> behandling.beslutter
+            BehandlingTilstand.TIL_BESLUTTER -> behandling.beslutter
+            else -> null
+        }
+
+    fun settAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
+        AntallDagerSaksopplysningerDTO(
+            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
+            antallDagerSaksopplysningerFraSBH = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map {
+                settAntallDagerSaksopplysning(it)
+            },
+            antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
+                settAntallDagerSaksopplysning(it)
+            },
+        )
+
+    fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
+        AntallDagerDTO(
+            antallDager = saksopplysning.verdi.antallDager,
+            kilde = saksopplysning.verdi.kilde.toString(),
+            periode = PeriodeDTO(
+                fra = saksopplysning.periode.fra,
+                til = saksopplysning.periode.til,
+            ),
+        )
 }

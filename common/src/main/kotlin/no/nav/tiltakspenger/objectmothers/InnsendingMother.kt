@@ -3,6 +3,7 @@
 package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.SøkerId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -27,7 +28,8 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
@@ -496,7 +498,7 @@ interface InnsendingMother {
     }
 
     fun tiltak(
-        id: String = "123",
+        eksternId: String = "123",
         gjennomføring: Tiltak.Gjennomføring = Tiltak.Gjennomføring(
             id = "123",
             arrangørnavn = "arrangør",
@@ -514,16 +516,21 @@ interface InnsendingMother {
         innhentet: LocalDateTime = 1.januarDateTime(2022),
     ): Tiltak {
         return Tiltak(
-            id = id,
+            id = TiltakId.random(),
+            eksternId = eksternId,
             gjennomføring = gjennomføring,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
             deltakelseStatus = deltakerStatus,
-            deltakelseDagerUke = antallDagerPerUke,
             deltakelseProsent = deltakelseProsent,
             kilde = kilde,
             registrertDato = registrertDato,
             innhentet = innhentet,
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                antallDagerSaksopplysningerFraSBH = emptyList(),
+                antallDagerSaksopplysningerFraRegister = emptyList(),
+                avklartAntallDager = emptyList(),
+            ),
         )
     }
 }

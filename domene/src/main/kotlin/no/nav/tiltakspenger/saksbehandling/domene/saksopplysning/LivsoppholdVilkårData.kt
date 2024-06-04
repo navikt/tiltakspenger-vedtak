@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Kategori
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
-data class LivsoppholdVilkårData(
+data class LivsoppholdVilkårData private constructor(
     val vurderingsperiode: Periode,
     val korrigerbareYtelser: Map<Vilkår, KorrigerbarLivsopphold>,
 ) {
@@ -123,8 +123,11 @@ data class LivsoppholdVilkårData(
 
     companion object {
 
-        val alleVilkår =
-            Kategori.ALDER.vilkår + Kategori.INTROKVP.vilkår + Kategori.INSTITUSJONSOPPHOLD.vilkår + Kategori.UTBETALINGER.vilkår
+        val alleVilkår: List<Vilkår> =
+            Kategori.ALDER.vilkår +
+                Kategori.INTROKVP.vilkår +
+                Kategori.INSTITUSJONSOPPHOLD.vilkår +
+                Kategori.UTBETALINGER.vilkår
 
         operator fun invoke(vurderingsperiode: Periode): LivsoppholdVilkårData {
             return LivsoppholdVilkårData(
@@ -139,5 +142,12 @@ data class LivsoppholdVilkårData(
                 utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
                 else -> Utfall.OPPFYLT
             }
+
+        fun fromDb(
+            vurderingsperiode: Periode,
+            korrigerbareYtelser: Map<Vilkår, KorrigerbarLivsopphold>,
+        ): LivsoppholdVilkårData {
+            return LivsoppholdVilkårData(vurderingsperiode, korrigerbareYtelser)
+        }
     }
 }

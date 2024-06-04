@@ -13,7 +13,7 @@ internal class LivsoppholdVilkårDataDAO(
         txSession: TransactionalSession,
     ): LivsoppholdVilkårData {
         val korrigerbarLivsopphold = korrigerbarLivsoppholdDAO.hent(behandlingId, txSession)
-        return LivsoppholdVilkårData(
+        return LivsoppholdVilkårData.fromDb(
             vurderingsperiode = korrigerbarLivsopphold.values.first().vurderingsperiode,
             korrigerbareYtelser = korrigerbarLivsopphold,
         )

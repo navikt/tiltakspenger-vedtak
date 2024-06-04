@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -15,6 +16,7 @@ import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -117,6 +119,20 @@ fun Route.behandlingRoutes(
 
         // TODO: Skriv denne om til en sjekk på om det faktisk er oppdatert
         delay(3000)
+        call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
+
+    put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
+        val tiltakId = call.parameter("tiltakId")
+        val antallDagerDto = call.receive<AntallDagerDTO>()
+        behandlingService.oppdaterAntallDagerPåTiltak(
+            behandlingId = behandlingId,
+            tiltakId = tiltakId,
+            periodeMedAntallDager = antallDagerDto.toPeriodeMedAntallDager(saksbehandler.navIdent),
+            saksbehandler = saksbehandler,
+        )
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 

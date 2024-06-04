@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
@@ -44,8 +45,8 @@ data class SammenstillingForBehandlingDTO(
     )
 
     data class RegistrertTiltakDTO(
+        val id: String,
         val arrangør: String,
-        val dagerIUken: Int,
         val navn: String,
         val periode: PeriodeDTO,
         val prosent: Int,
@@ -55,6 +56,7 @@ data class SammenstillingForBehandlingDTO(
         val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
         val begrunnelse: String,
+        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
     )
 
     data class SøknadDTO(

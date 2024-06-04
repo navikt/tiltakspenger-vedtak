@@ -118,23 +118,6 @@ data class KorrigerbarLivsopphold private constructor(
 
     companion object {
 
-        fun fromDb(
-            vurderingsperiode: Periode,
-            vilkår: Vilkår,
-            opprinneligLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
-            korrigertLivsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
-            avklartLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
-            vurdering: Vurdering,
-        ): KorrigerbarLivsopphold =
-            KorrigerbarLivsopphold(
-                vurderingsperiode,
-                vilkår,
-                opprinneligLivsoppholdSaksopplysning,
-                korrigertLivsoppholdSaksopplysning,
-                avklartLivsoppholdSaksopplysning,
-                vurdering,
-            )
-
         operator fun invoke(vurderingsperiode: Periode, vilkår: Vilkår): KorrigerbarLivsopphold {
             val tomLivsoppholdSaksopplysning = LivsoppholdSaksopplysning(
                 vilkår = vilkår,
@@ -152,6 +135,23 @@ data class KorrigerbarLivsopphold private constructor(
                 vilkårsvurder(tomLivsoppholdSaksopplysning),
             )
         }
+
+        fun fromDb(
+            vurderingsperiode: Periode,
+            vilkår: Vilkår,
+            opprinneligLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+            korrigertLivsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
+            avklartLivsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+            vurdering: Vurdering,
+        ): KorrigerbarLivsopphold =
+            KorrigerbarLivsopphold(
+                vurderingsperiode,
+                vilkår,
+                opprinneligLivsoppholdSaksopplysning,
+                korrigertLivsoppholdSaksopplysning,
+                avklartLivsoppholdSaksopplysning,
+                vurdering,
+            )
 
         private fun vilkårsvurder(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): Vurdering {
             if (livsoppholdSaksopplysning.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER) &&

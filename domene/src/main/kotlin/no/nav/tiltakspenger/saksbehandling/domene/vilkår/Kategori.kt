@@ -26,6 +26,7 @@ enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
             Vilkår.OVERGANGSSTØNAD,
             Vilkår.SYKEPENGER,
             Vilkår.SVANGERSKAPSPENGER,
+            Vilkår.SUPPLERENDESTØNADALDER,
             Vilkår.SUPPLERENDESTØNADFLYKTNING,
         ),
     ),

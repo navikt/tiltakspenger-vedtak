@@ -183,6 +183,17 @@ data class KorrigerbarLivsoppholdId private constructor(private val ulid: UlidBa
     }
 }
 
+data class TiltakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "takt"
+        fun random() = TiltakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
+
+        fun fromDb(stringValue: String) = TiltakId(ulid = UlidBase(stringValue))
+
+        fun fromUUID(uuid: UUID) = TiltakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
+    }
+}
+
 private fun ulidToUuid(ulid: String): UUID {
     val (most, least) = ulidStringToLongs(ulid)
     return UUID(most, least)

@@ -1,6 +1,8 @@
-package no.nav.tiltakspenger.saksbehandling.domene.behandling
+package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -9,16 +11,17 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Tiltak(
-    val id: String,
+    val id: TiltakId,
+    val eksternId: String,
     val gjennomføring: Gjennomføring,
     val deltakelseFom: LocalDate,
     val deltakelseTom: LocalDate,
     val deltakelseStatus: DeltakerStatus,
-    val deltakelseDagerUke: Float?,
     val deltakelseProsent: Float?,
     val kilde: String,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
+    val antallDagerSaksopplysninger: AntallDagerSaksopplysninger,
 ) {
     data class Gjennomføring(
         val id: String,
@@ -45,6 +48,17 @@ data class Tiltak(
             status.equals("Deltakelse avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avlyst", ignoreCase = true)
+    }
+
+    fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
+        val tiltaksPeriode = Periode(fra = deltakelseFom, til = deltakelseTom)
+
+        val oppdatertAntallDager =
+            antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
+
+        return this.copy(
+            antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
+        )
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {

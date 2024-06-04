@@ -6,7 +6,7 @@ val felleslibVersion = "0.0.120"
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("com.google.guava:guava:33.2.0-jre")
+    implementation("com.google.guava:guava:33.2.1-jre")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -14,6 +14,8 @@ dependencies {
     implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("io.micrometer:micrometer-core:1.13.0")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
+
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
