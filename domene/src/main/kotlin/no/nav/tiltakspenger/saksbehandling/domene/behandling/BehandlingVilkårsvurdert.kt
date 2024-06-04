@@ -5,6 +5,9 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -54,6 +57,27 @@ data class BehandlingVilkårsvurdert(
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling =
         this.copy(tiltak = tiltak)
+
+    override fun oppdaterAntallDager(tiltakId: String, nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>, saksbehandler: Saksbehandler): Behandling {
+        check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
+
+        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
+        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
+
+        val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
+
+        val nyeTiltak = tiltak.map {
+            if (it.eksternId == oppdatertTiltak.eksternId) {
+                oppdatertTiltak
+            } else {
+                it
+            }
+        }
+
+        return this.copy(
+            tiltak = nyeTiltak,
+        )
+    }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }

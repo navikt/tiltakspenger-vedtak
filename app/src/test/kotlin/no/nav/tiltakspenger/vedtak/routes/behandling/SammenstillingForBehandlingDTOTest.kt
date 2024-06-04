@@ -2,22 +2,32 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settAntallDagerSaksopplysninger
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
@@ -208,5 +218,47 @@ class SammenstillingForBehandlingDTOTest {
         val behandlingVilkårsvurdert = mockk<BehandlingVilkårsvurdert>()
         val vilkårsvurdertBeslutter = settBeslutter(behandlingVilkårsvurdert)
         assert(vilkårsvurdertBeslutter == null)
+    }
+
+    @Test
+    fun `settAntallDager skal mappe AntallDagerSaksopplysning-data til et format som gir mer mening for frontend`() {
+        val tiltak = mockk<Tiltak>()
+
+        val antallDagerMock = AntallDagerDTO(
+            antallDager = 2,
+            periode = PeriodeDTO(
+                fra = LocalDate.MIN,
+                til = LocalDate.MAX,
+            ),
+            kilde = Kilde.ARENA.toString(),
+        )
+
+        every { tiltak.antallDagerSaksopplysninger } returns AntallDagerSaksopplysninger(
+            antallDagerSaksopplysningerFraSBH = emptyList(),
+            avklartAntallDager = emptyList(),
+            antallDagerSaksopplysningerFraRegister = listOf(
+                PeriodeMedVerdi(
+                    verdi = AntallDager(
+                        kilde = Kilde.valueOf(antallDagerMock.kilde.uppercase()),
+                        antallDager = antallDagerMock.antallDager,
+                        saksbehandlerIdent = null,
+                    ),
+                    periode = Periode(
+                        fra = antallDagerMock.periode.fra,
+                        til = antallDagerMock.periode.til,
+                    ),
+                ),
+            ),
+        )
+        val resultat = settAntallDagerSaksopplysninger(
+            antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger,
+        )
+
+        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister.get(0)
+        assertNotNull(saksopplysningElement)
+        assertEquals(saksopplysningElement.antallDager, antallDagerMock.antallDager)
+        assertEquals(saksopplysningElement.periode.fra, antallDagerMock.periode.fra)
+        assertEquals(saksopplysningElement.periode.til, antallDagerMock.periode.til)
+        assertEquals(saksopplysningElement.kilde, antallDagerMock.kilde)
     }
 }

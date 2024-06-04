@@ -27,6 +27,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.6")

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -10,6 +11,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsv
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -186,8 +191,8 @@ object SammenstillingForBehandlingDTOMapper {
             ),
             registrerteTiltak = behandling.tiltak.map {
                 RegistrertTiltakDTO(
+                    id = it.id.toString(),
                     arrangør = it.gjennomføring.arrangørnavn,
-                    dagerIUken = it.deltakelseDagerUke?.toInt() ?: 0,
                     navn = it.gjennomføring.typeNavn,
                     periode = PeriodeDTO(
                         fra = it.deltakelseFom,
@@ -198,8 +203,9 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.eksternId)?.utfall ?: Utfall.KREVER_MANUELL_VURDERING,
+                    begrunnelse = utledDeltagelseUtfall(behandling, it.eksternId)?.detaljer ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
                 )
             },
             saksopplysninger = Kategori.entries.map { kategori ->
@@ -302,6 +308,23 @@ object SammenstillingForBehandlingDTOMapper {
             is BehandlingTilBeslutter -> behandling.beslutter
             else -> null
         }
+
+    fun settAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
+        AntallDagerSaksopplysningerDTO(
+            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
+            antallDagerSaksopplysningerFraSBH = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map { settAntallDagerSaksopplysning(it) },
+            antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map { settAntallDagerSaksopplysning(it) },
+        )
+
+    fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
+        AntallDagerDTO(
+            antallDager = saksopplysning.verdi.antallDager,
+            kilde = saksopplysning.verdi.kilde.toString(),
+            periode = PeriodeDTO(
+                fra = saksopplysning.periode.fra,
+                til = saksopplysning.periode.til,
+            ),
+        )
 
     fun settSamletUtfallForSaksopplysninger(
         behandling: Behandling,

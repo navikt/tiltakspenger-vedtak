@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedSkjerming
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization

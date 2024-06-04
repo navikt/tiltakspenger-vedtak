@@ -1,9 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import jdk.jshell.spi.ExecutionControl.NotImplementedException
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
@@ -82,5 +86,9 @@ data class BehandlingOpprettet(
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
+    }
+
+    override fun oppdaterAntallDager(tiltakId: String, verdi: PeriodeMedVerdi<AntallDager>, saksbehandler: Saksbehandler): Behandling {
+        throw NotImplementedException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }

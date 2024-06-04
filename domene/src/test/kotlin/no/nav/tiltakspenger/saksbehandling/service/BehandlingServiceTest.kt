@@ -282,16 +282,16 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val tiltak = listOf(
-            tiltak(id = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
-            tiltak(id = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
-            tiltak(id = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
-            tiltak(id = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
+            tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
+            tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
+            tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
+            tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
         )
         behandlingService.oppdaterTiltak(behandling.id, tiltak)
 
         lagretBehandling.captured.tiltak.size shouldBe 2
-        lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"
-        lagretBehandling.captured.tiltak.first { it.id == "starterInni" }.id shouldBe "starterInni"
+        lagretBehandling.captured.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"
+        lagretBehandling.captured.tiltak.first { it.eksternId == "starterInni" }.eksternId shouldBe "starterInni"
     }
 
     @Test

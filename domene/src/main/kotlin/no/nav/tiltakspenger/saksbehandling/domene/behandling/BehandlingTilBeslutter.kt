@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 

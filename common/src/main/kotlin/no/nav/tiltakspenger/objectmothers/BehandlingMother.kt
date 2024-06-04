@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -13,7 +14,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -111,7 +113,7 @@ interface BehandlingMother {
     )
 
     fun tiltak(
-        id: String = "TiltakId",
+        eksternId: String = "TiltakId",
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
@@ -124,16 +126,21 @@ interface BehandlingMother {
         kilde: String = "Komet",
     ) =
         Tiltak(
-            id = id,
+            id = TiltakId.random(),
+            eksternId = eksternId,
             gjennomføring = gjennomføring,
             deltakelseFom = fom,
             deltakelseTom = tom,
             deltakelseStatus = status,
-            deltakelseDagerUke = dagerPrUke,
             deltakelseProsent = prosent,
             kilde = kilde,
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
+            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
+                antallDagerSaksopplysningerFraSBH = emptyList(),
+                antallDagerSaksopplysningerFraRegister = emptyList(),
+                avklartAntallDager = emptyList(),
+            ),
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)

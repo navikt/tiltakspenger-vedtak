@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -17,7 +18,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsv
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
@@ -193,5 +195,20 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(revurderingBehandling)
 
         return revurderingBehandling
+    }
+
+    override fun oppdaterAntallDagerPåTiltak(
+        behandlingId: BehandlingId,
+        tiltakId: String,
+        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
+        saksbehandler: Saksbehandler,
+    ) {
+        val behandling = hentBehandling(behandlingId)
+        val oppdatertBehandling = behandling.oppdaterAntallDager(
+            tiltakId = tiltakId,
+            verdi = periodeMedAntallDager,
+            saksbehandler = saksbehandler,
+        )
+        behandlingRepo.lagre(oppdatertBehandling)
     }
 }
