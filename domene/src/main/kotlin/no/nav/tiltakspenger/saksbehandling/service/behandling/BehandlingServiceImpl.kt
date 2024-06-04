@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -199,15 +200,13 @@ class BehandlingServiceImpl(
     override fun oppdaterAntallDagerPåTiltak(
         behandlingId: BehandlingId,
         tiltakId: String,
-        antallDager: AntallDager,
-        periode: no.nav.tiltakspenger.libs.periodisering.Periode,
+        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ) {
         val behandling = hentBehandling(behandlingId)
         val oppdatertBehandling = behandling.oppdaterAntallDager(
             tiltakId = tiltakId,
-            verdi = antallDager,
-            nyPeriode = periode,
+            verdi = periodeMedAntallDager,
             saksbehandler = saksbehandler,
         )
         behandlingRepo.lagre(oppdatertBehandling)

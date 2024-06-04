@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 
@@ -42,6 +43,36 @@ data class AntallDagerSaksopplysninger(
         val avklart = antallDagerSaksopplysningerFraSBH.ifEmpty { antallDagerSaksopplysningerFraRegister }
         return this.copy(
             avklartAntallDager = avklart,
+        )
+    }
+
+    fun leggTilAntallDagerFraSaksbehandler(tiltaksperiode: Periode, nyAntallDager: PeriodeMedVerdi<AntallDager>): AntallDagerSaksopplysninger {
+        val eksisterendePerioderMergetSammen = nyAntallDager.periode.mergeInnIPerioder(antallDagerSaksopplysningerFraSBH.map { it.periode })
+        val allePerioder = tiltaksperiode.kompletter(
+            eksisterendePerioderMergetSammen,
+        )
+
+        val nyeOpplysningerFraSBH = allePerioder.map { periode ->
+            if (periode == nyAntallDager.periode) {
+                PeriodeMedVerdi(
+                    periode = periode,
+                    verdi = nyAntallDager.verdi,
+                )
+            } else {
+                val eksisterendeSaksopplysningFraSBH = antallDagerSaksopplysningerFraSBH.find { it.periode.overlapperMed(periode) }
+                val eksisterendeSaksopplysningFraRegister = antallDagerSaksopplysningerFraRegister.find { it.periode.overlapperMed(periode) }
+                PeriodeMedVerdi(
+                    periode = periode,
+                    verdi = AntallDager(
+                        antallDager = eksisterendeSaksopplysningFraSBH?.verdi?.antallDager ?: eksisterendeSaksopplysningFraRegister?.verdi!!.antallDager,
+                        kilde = nyAntallDager.verdi.kilde,
+                        saksbehandlerIdent = nyAntallDager.verdi.saksbehandlerIdent,
+                    ),
+                )
+            }
+        }
+        return this.copy(
+            antallDagerSaksopplysningerFraSBH = nyeOpplysningerFraSBH,
         )
     }
 }

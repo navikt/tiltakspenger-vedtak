@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
@@ -127,15 +126,10 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val tiltakId = call.parameter("tiltakId")
         val antallDagerDto = call.receive<AntallDagerDTO>()
-        val periode = Periode(
-            fra = antallDagerDto.periode.fra,
-            til = antallDagerDto.periode.til,
-        )
         behandlingService.oppdaterAntallDagerPåTiltak(
             behandlingId = behandlingId,
             tiltakId = tiltakId,
-            antallDager = antallDagerDto.toAntallDager(saksbehandler.navIdent),
-            periode = periode,
+            periodeMedAntallDager = antallDagerDto.toPeriodeMedAntallDager(saksbehandler.navIdent),
             saksbehandler = saksbehandler,
         )
         call.respond(message = "{}", status = HttpStatusCode.OK)

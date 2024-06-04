@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -87,7 +88,7 @@ data class BehandlingOpprettet(
         return this.copy(saksbehandler = null)
     }
 
-    override fun oppdaterAntallDager(tiltakId: String, verdi: AntallDager, nyPeriode: no.nav.tiltakspenger.libs.periodisering.Periode, saksbehandler: Saksbehandler): Behandling {
+    override fun oppdaterAntallDager(tiltakId: String, verdi: PeriodeMedVerdi<AntallDager>, saksbehandler: Saksbehandler): Behandling {
         throw NotImplementedException("Kan ikke oppdatere antall dager på denne behandlingen")
     }
 }

@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -46,6 +48,16 @@ data class Tiltak(
             status.equals("Deltakelse avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avlyst", ignoreCase = true)
+    }
+
+    fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
+        val tiltaksPeriode = Periode(fra = deltakelseFom, til = deltakelseTom)
+
+        val oppdatertAntallDager = antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
+
+        return this.copy(
+            antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
+        )
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
