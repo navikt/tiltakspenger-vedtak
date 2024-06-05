@@ -69,7 +69,7 @@ data class Saksopplysning(
                         fom = this.fom,
                         tom = this.tom,
                         detaljer = this.detaljer,
-                        utfall = Utfall.OPPFYLT,
+                        utfall = Utfall.IKKE_OPPFYLT,
                         grunnlagId = null,
                     )
                 } else {
