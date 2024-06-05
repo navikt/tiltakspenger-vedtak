@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import org.intellij.lang.annotations.Language
@@ -63,7 +64,12 @@ internal class VurderingRepo {
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, vurdering: Vurdering, txSession: TransactionalSession) {
+    private fun lagre(
+        behandlingId: BehandlingId?,
+        vedtakId: VedtakId?,
+        vurdering: Vurdering,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(
             queryOf(
                 sqlLagreVurdering,
@@ -106,38 +112,23 @@ internal class VurderingRepo {
         val vilkår = hentVilkår(string("vilkår"))
         val kilde = Kilde.valueOf(string("kilde"))
         val detaljer = string("detaljer")
-        return when (val utfall = string("utfall")) {
-            "OPPFYLT" -> Vurdering.Oppfylt(
-                vilkår = vilkår,
-                kilde = kilde,
-                detaljer = detaljer,
-                fom = localDate("fom"),
-                tom = localDate("tom"),
-                grunnlagId = stringOrNull("grunnlagId"),
-            )
-
-            "IKKE_OPPFYLT" -> Vurdering.IkkeOppfylt(
-                vilkår = vilkår,
-                kilde = kilde,
-                detaljer = detaljer,
-                fom = localDate("fom"),
-                tom = localDate("tom"),
-                grunnlagId = stringOrNull("grunnlagId"),
-            )
-
-            "KREVER_MANUELL_VURDERING" -> Vurdering.KreverManuellVurdering(
-                vilkår = vilkår,
-                kilde = kilde,
-                detaljer = detaljer,
-                fom = localDate("fom"),
-                tom = localDate("tom"),
-                grunnlagId = stringOrNull("grunnlagId"),
-            )
-
+        val utfall = when (val utfallString = string("utfall")) {
+            "OPPFYLT" -> Utfall.OPPFYLT
+            "IKKE_OPPFYLT" -> Utfall.IKKE_OPPFYLT
+            "KREVER_MANUELL_VURDERING" -> Utfall.KREVER_MANUELL_VURDERING
             else -> {
-                throw IllegalStateException("Vurdering med ukjent utfall $utfall")
+                throw IllegalStateException("Vurdering med ukjent utfall $utfallString")
             }
         }
+        return Vurdering(
+            vilkår = vilkår,
+            kilde = kilde,
+            detaljer = detaljer,
+            fom = localDate("fom"),
+            tom = localDate("tom"),
+            utfall = utfall,
+            grunnlagId = stringOrNull("grunnlagId"),
+        )
     }
 
     @Language("SQL")

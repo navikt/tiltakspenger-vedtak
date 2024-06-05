@@ -53,7 +53,8 @@ data class Tiltak(
     fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
         val tiltaksPeriode = Periode(fra = deltakelseFom, til = deltakelseTom)
 
-        val oppdatertAntallDager = antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
+        val oppdatertAntallDager =
+            antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
 
         return this.copy(
             antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
@@ -69,34 +70,15 @@ data class Tiltak(
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
-        return when (utfall) {
-            Utfall.OPPFYLT -> Vurdering.Oppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-
-            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-
-            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-        }
+        return Vurdering(
+            vilkår = Vilkår.TILTAKSDELTAGELSE,
+            kilde = Kilde.SAKSB, // TODO: Finn ut av dette
+            detaljer = detaljer,
+            fom = deltakelseFom,
+            tom = deltakelseTom,
+            utfall = utfall,
+            grunnlagId = this.id.toString(),
+        )
     }
 
     fun vilkårsvurderTiltaksdeltagelse(): Vurdering {
