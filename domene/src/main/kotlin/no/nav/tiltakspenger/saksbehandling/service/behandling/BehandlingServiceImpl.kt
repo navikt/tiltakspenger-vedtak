@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -62,9 +62,12 @@ class BehandlingServiceImpl(
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
-    override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
+    override fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+    ) {
         val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
+            .leggTilSaksopplysning(livsoppholdSaksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
     }
 
@@ -152,10 +155,10 @@ class BehandlingServiceImpl(
             behandling = behandling,
             vedtaksdato = LocalDateTime.now(),
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
-            utfallsperioder = behandling.utfallsperioder,
+            utfallsperioder = behandling.utfallsperioder!!,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.saksopplysninger(),
-            vurderinger = behandling.vilkårsvurderinger,
+            // saksopplysninger = emptyList(), // TODO behandling.saksopplysninger(),
+            // vurderinger = emptyList(), // TODO behandling.vilkårsvurderinger(),
             saksbehandler = behandling.saksbehandler!!,
             beslutter = behandling.beslutter!!,
         )

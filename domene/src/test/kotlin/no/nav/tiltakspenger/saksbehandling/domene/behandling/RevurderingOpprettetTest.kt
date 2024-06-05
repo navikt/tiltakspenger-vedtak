@@ -8,11 +8,13 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import org.junit.jupiter.api.Disabled
@@ -26,10 +28,8 @@ import kotlin.test.assertTrue
 
 internal class RevurderingOpprettetTest {
 
-    private val saksopplysning = Saksopplysning(
-        typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-        fom = LocalDate.MIN,
-        tom = LocalDate.MAX,
+    private val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
+        harYtelse = Periodisering(HarYtelse.HAR_YTELSE, Periode(LocalDate.MIN, LocalDate.MAX)),
         vilkår = Vilkår.AAP,
         kilde = Kilde.PESYS,
         detaljer = "test",
@@ -46,15 +46,25 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        saksopplysninger = listOf(saksopplysning),
+        livsoppholdVilkårData = LivsoppholdVilkårData(
+            Periode(
+                fra = LocalDate.MIN,
+                til = LocalDate.MAX,
+            ),
+        ),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
         beslutter = null,
         status = BehandlingStatus.Manuell,
         tilstand = BehandlingTilstand.OPPRETTET,
-        utfallsperioder = emptyList(),
-        vilkårsvurderinger = emptyList(),
+        utfallsperioder = Periodisering(
+            Utfallsdetaljer(0, UtfallForPeriode.KREVER_MANUELL_VURDERING),
+            Periode(
+                fra = LocalDate.MIN,
+                til = LocalDate.MAX,
+            ),
+        ),
     )
 
     private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(
@@ -88,7 +98,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
-        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(saksopplysning)
+        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(livsoppholdSaksopplysning)
         assertEquals(revurderingOpprettet, leggTilSaksopplysningRespons.behandling)
         assertFalse { leggTilSaksopplysningRespons.erEndret }
     }

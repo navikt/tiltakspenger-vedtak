@@ -172,6 +172,17 @@ data class AttesteringId private constructor(private val ulid: UlidBase) : Ulid 
     }
 }
 
+data class KorrigerbarLivsoppholdId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+    companion object {
+        private const val PREFIX = "kliv"
+        fun random() = KorrigerbarLivsoppholdId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
+
+        fun fromDb(stringValue: String) = KorrigerbarLivsoppholdId(ulid = UlidBase(stringValue))
+
+        fun fromUUID(uuid: UUID) = KorrigerbarLivsoppholdId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
+    }
+}
+
 data class TiltakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
     companion object {
         private const val PREFIX = "takt"

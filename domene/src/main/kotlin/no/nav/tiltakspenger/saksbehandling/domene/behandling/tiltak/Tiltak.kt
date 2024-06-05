@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -53,7 +53,8 @@ data class Tiltak(
     fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
         val tiltaksPeriode = Periode(fra = deltakelseFom, til = deltakelseTom)
 
-        val oppdatertAntallDager = antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
+        val oppdatertAntallDager =
+            antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
 
         return this.copy(
             antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
@@ -61,34 +62,12 @@ data class Tiltak(
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
-        return when (utfall) {
-            Utfall.OPPFYLT -> Vurdering.Oppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-
-            Utfall.IKKE_OPPFYLT -> Vurdering.IkkeOppfylt(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-
-            Utfall.KREVER_MANUELL_VURDERING -> Vurdering.KreverManuellVurdering(
-                vilkår = Vilkår.TILTAKSDELTAGELSE,
-                kilde = Kilde.SAKSB, // TODO: Finn ut av dette
-                detaljer = detaljer,
-                fom = deltakelseFom,
-                tom = deltakelseTom,
-                grunnlagId = this.id.toString(),
-            )
-        }
+        return Vurdering(
+            vilkår = Vilkår.TILTAKSDELTAGELSE,
+            utfall = Periodisering(Utfall.KREVER_MANUELL_VURDERING, Periode(this.deltakelseFom, this.deltakelseTom))
+                .setVerdiForDelPeriode(utfall, Periode(this.deltakelseFom, this.deltakelseTom)),
+            detaljer = detaljer,
+        )
     }
 
     fun vilkårsvurderTiltaksdeltagelse(): Vurdering {

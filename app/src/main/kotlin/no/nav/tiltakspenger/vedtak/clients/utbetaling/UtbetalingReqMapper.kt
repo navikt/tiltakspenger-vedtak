@@ -11,12 +11,12 @@ object UtbetalingReqMapper {
             sakId = sak.saknummer.verdi,
             utløsendeId = vedtak.behandling.id.toString(),
             ident = sak.ident,
-            utfallsperioder = vedtak.utfallsperioder.map {
+            utfallsperioder = vedtak.utfallsperioder.perioder().map {
                 UtfallsperiodeDTO(
-                    fom = it.fom,
-                    tom = it.tom,
-                    antallBarn = it.antallBarn,
-                    utfall = when (it.utfall) {
+                    fom = it.periode.fra,
+                    tom = it.periode.til,
+                    antallBarn = it.verdi.antallBarn,
+                    utfall = when (it.verdi.utfall) {
                         UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
                         UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
                         UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING

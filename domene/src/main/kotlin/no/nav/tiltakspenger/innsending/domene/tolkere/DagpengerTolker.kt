@@ -2,25 +2,22 @@ package no.nav.tiltakspenger.innsending.domene.tolkere
 
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 class DagpengerTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, periode: Periode): List<Saksopplysning> {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdSaksopplysning {
             if (ytelser == null) {
-                return listOf(
-                    Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
-                        vilkår = Vilkår.DAGPENGER,
-                        kilde = Kilde.ARENA,
-                        detaljer = "",
-                        typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
-                    ),
+                return LivsoppholdSaksopplysning(
+                    vilkår = Vilkår.DAGPENGER,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
                 )
             }
 
@@ -34,30 +31,44 @@ class DagpengerTolker {
                     Periode(
                         it.fomGyldighetsperiode.toLocalDate(),
                         (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX),
-                    ).overlapperMed(periode)
+                    ).overlapperMed(vurderingsperiode)
                 }
 
             if (ytelseListe.isEmpty()) {
-                return listOf(
-                    Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
-                        vilkår = Vilkår.DAGPENGER,
-                        kilde = Kilde.ARENA,
-                        detaljer = "",
-                        typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
-                    ),
+                return LivsoppholdSaksopplysning(
+                    vilkår = Vilkår.DAGPENGER,
+                    kilde = Kilde.ARENA,
+                    detaljer = "",
+                    harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
+                        .setVerdiForDelPeriode(
+                            HarYtelse.HAR_IKKE_YTELSE,
+                            vurderingsperiode,
+                        ),
                 )
             }
             return ytelseListe
-                .map {
-                    Saksopplysning(
-                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
-                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
+                .fold(
+                    LivsoppholdSaksopplysning(
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
-                        detaljer = detaljerForDagpenger(it),
-                        typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+                        // TODO: Denne blir annerledes når vi ikke lenger har én saksopplysning per sak
+                        detaljer = ytelseListe.lastOrNull()?.let { detaljerForDagpenger(it) } ?: "",
+                        harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
+                            .setVerdiForDelPeriode(
+                                HarYtelse.HAR_IKKE_YTELSE,
+                                vurderingsperiode,
+                            ),
+                    ),
+                ) { resultat: LivsoppholdSaksopplysning, ytelse: YtelseSak ->
+                    resultat.copy(
+                        harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
+                            HarYtelse.HAR_YTELSE,
+                            Periode(
+                                ytelse.fomGyldighetsperiode.toLocalDate(),
+                                ytelse.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX,
+                            )
+                                .overlappendePeriode(vurderingsperiode)!!,
+                        ),
                     )
                 }
         }

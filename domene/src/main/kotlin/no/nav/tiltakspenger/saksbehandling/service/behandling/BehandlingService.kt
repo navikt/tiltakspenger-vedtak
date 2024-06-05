@@ -8,14 +8,14 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 
 interface BehandlingService {
     fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling?
     fun hentBehandling(behandlingId: BehandlingId): Behandling
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
+    fun leggTilSaksopplysning(behandlingId: BehandlingId, livsoppholdSaksopplysning: LivsoppholdSaksopplysning)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
     fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String?)
@@ -24,5 +24,10 @@ interface BehandlingService {
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling
-    fun oppdaterAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: String, periodeMedAntallDager: PeriodeMedVerdi<AntallDager>, saksbehandler: Saksbehandler)
+    fun oppdaterAntallDagerPåTiltak(
+        behandlingId: BehandlingId,
+        tiltakId: String,
+        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
+        saksbehandler: Saksbehandler,
+    )
 }

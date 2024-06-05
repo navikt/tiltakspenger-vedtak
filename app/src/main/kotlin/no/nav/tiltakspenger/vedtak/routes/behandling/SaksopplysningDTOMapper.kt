@@ -1,8 +1,11 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
@@ -11,7 +14,7 @@ object SaksopplysningDTOMapper {
     fun lagSaksopplysningMedVilkår(
         saksbehandler: Saksbehandler,
         saksopplysning: SaksopplysningDTO,
-    ): Saksopplysning {
+    ): LivsoppholdSaksopplysning {
         val vilkår = when (saksopplysning.vilkår) {
             "AAP" -> Vilkår.AAP
             "ALDER" -> Vilkår.ALDER
@@ -39,12 +42,14 @@ object SaksopplysningDTOMapper {
             else -> throw IllegalStateException("Kan ikke lage saksopplysning for vilkår ${saksopplysning.vilkår}")
         }
 
-        return Saksopplysning.lagSaksopplysningFraSBH(
-            fom = LocalDate.parse(saksopplysning.fom),
-            tom = LocalDate.parse(saksopplysning.tom),
+        return LivsoppholdSaksopplysning(
             vilkår = vilkår,
-            detaljer = saksopplysning.begrunnelse,
-            typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,
+            kilde = Kilde.SAKSB,
+            detaljer = saksopplysning.begrunnelse, // TODO: Her blir detaljer brukt til begrunnelse, bør kanskje revurderes
+            harYtelse = Periodisering(
+                initiellVerdi = if (saksopplysning.harYtelse) HarYtelse.HAR_YTELSE else HarYtelse.HAR_IKKE_YTELSE,
+                totalePeriode = Periode(LocalDate.parse(saksopplysning.fom), LocalDate.parse(saksopplysning.tom)),
+            ),
             saksbehandler = saksbehandler.navIdent,
         )
     }

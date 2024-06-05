@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -13,9 +14,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
@@ -35,16 +36,14 @@ interface BehandlingMother {
         tom: LocalDate = 31.mars(2023),
         kilde: Kilde = Kilde.SAKSB,
         vilkår: Vilkår = Vilkår.AAP,
-        type: TypeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
+        type: HarYtelse = HarYtelse.HAR_YTELSE,
         saksbehandler: String? = null,
-    ): Saksopplysning =
-        Saksopplysning(
-            fom = fom,
-            tom = tom,
+    ): LivsoppholdSaksopplysning =
+        LivsoppholdSaksopplysning(
             kilde = kilde,
             vilkår = vilkår,
             detaljer = "",
-            typeSaksopplysning = type,
+            harYtelse = Periodisering(type, Periode(fom, tom)), // TODO: Dekker neppe hele vurderingsperioden
             saksbehandler = saksbehandler,
         )
 
@@ -59,7 +58,7 @@ interface BehandlingMother {
                     fom = periode.fra,
                     tom = periode.til,
                     vilkår = vilkår,
-                    type = TypeSaksopplysning.HAR_IKKE_YTELSE,
+                    type = HarYtelse.HAR_IKKE_YTELSE,
                 ),
             ).behandling as Førstegangsbehandling
         }
@@ -77,7 +76,7 @@ interface BehandlingMother {
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
                 vilkår = Vilkår.KVP,
-                type = TypeSaksopplysning.HAR_YTELSE,
+                type = HarYtelse.HAR_YTELSE,
             ),
         ).behandling as Førstegangsbehandling
 

@@ -6,12 +6,11 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
@@ -22,10 +21,9 @@ data class Førstegangsbehandling(
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
     override val beslutter: String?,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val livsoppholdVilkårData: LivsoppholdVilkårData,
     override val tiltak: List<Tiltak>,
-    override val vilkårsvurderinger: List<Vurdering>,
-    override val utfallsperioder: List<Utfallsperiode>,
+    override val utfallsperioder: Periodisering<Utfallsdetaljer>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
 ) : Behandling {
@@ -38,14 +36,14 @@ data class Førstegangsbehandling(
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
-                saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                    søknad,
-                ),
+                livsoppholdVilkårData = LivsoppholdVilkårData(søknad.vurderingsperiode()).håndterSøknad(søknad),
                 tiltak = emptyList(),
                 saksbehandler = null,
                 beslutter = null,
-                vilkårsvurderinger = emptyList(),
-                utfallsperioder = emptyList(),
+                utfallsperioder = Periodisering(
+                    Utfallsdetaljer(0, UtfallForPeriode.KREVER_MANUELL_VURDERING),
+                    søknad.vurderingsperiode(),
+                ),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
             )
@@ -56,14 +54,6 @@ data class Førstegangsbehandling(
 
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
-
-    override fun saksopplysninger(): List<Saksopplysning> {
-        return saksopplysninger.groupBy { it.vilkår }.map { entry ->
-            entry.value.reduce { acc, saksopplysning ->
-                if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
-            }
-        }
-    }
 
     override fun leggTilSøknad(søknad: Søknad): Førstegangsbehandling {
         // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
@@ -81,6 +71,11 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
+        // TODO: Egentlig har vi ikke definert godt nok hva vi skal gjøre i disse tilfellene
+        return this.copy(
+            livsoppholdVilkårData = livsoppholdVilkårData.håndterSøknad(søknad),
+        ).vilkårsvurder()
+        /*
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
             Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
                 Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
@@ -96,9 +91,11 @@ data class Førstegangsbehandling(
             vurderingsperiode = søknad.vurderingsperiode(),
             saksopplysninger = fakta,
         ).vilkårsvurder()
+
+         */
     }
 
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
+    override fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons {
         // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
         // det hører hjemme i SakService
         require(
@@ -113,15 +110,15 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.livsoppholdVilkårData) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
+                behandling = this.copy(livsoppholdVilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -160,7 +157,8 @@ data class Førstegangsbehandling(
 
         return this.copy(
             tiltak = nyeTiltak,
-        )
+            tilstand = BehandlingTilstand.OPPRETTET,
+        ).vilkårsvurder()
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
@@ -235,63 +233,40 @@ data class Førstegangsbehandling(
     }
 
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+        val tiltaksdeltakelseUtfall: Periodisering<Utfall> =
+            tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+                .samletUtfall()
 
-        val vurderinger = saksopplysninger().flatMap {
-            it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger
-
-        val utfallsperioder =
-            vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
-                val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
-                val utfallYtelser = when {
-                    idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
-                    idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
-                    else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+        val samletUtfall: Periodisering<UtfallForPeriode> = this.livsoppholdVilkårData.samletUtfall()
+            .kombiner(tiltaksdeltakelseUtfall, LivsoppholdVilkårData.Companion::kombinerToUtfall)
+            .map {
+                when (it) {
+                    Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                    Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                    Utfall.OPPFYLT -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
                 }
-
-                val harManuelleBarnUnder16 = this.søknad().barnetillegg.filterIsInstance<Barnetillegg.Manuell>()
-                    .filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }.count { it.under16ForDato(dag) } > 0
-
-                val utfall =
-                    if (utfallYtelser == UtfallForPeriode.GIR_RETT_TILTAKSPENGER && harManuelleBarnUnder16) UtfallForPeriode.KREVER_MANUELL_VURDERING else utfallYtelser
-
-                Utfallsperiode(
-                    fom = dag,
-                    tom = dag,
-                    antallBarn = this.søknad().barnetillegg.filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }
-                        .count { it.under16ForDato(dag) },
-                    utfall = utfall,
-                )
-            }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
-                periodisertliste.slåSammen(nesteDag)
             }
 
-        val status = if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
-            BehandlingStatus.Manuell
-        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-            BehandlingStatus.Innvilget
-        } else {
-            BehandlingStatus.Avslag
-        }
+        val utfallsperioder: Periodisering<Utfallsdetaljer> =
+            samletUtfall.map { Utfallsdetaljer(1, it) }
+
+        val status =
+            if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+                BehandlingStatus.Manuell
+            } else if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+                BehandlingStatus.Innvilget
+            } else {
+                BehandlingStatus.Avslag
+            }
 
         return this.copy(
-            vilkårsvurderinger = vurderinger,
             utfallsperioder = utfallsperioder,
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
     }
 
-    private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
-        if (this.isEmpty()) return listOf(neste)
-        val forrige = this.last()
-        return if (forrige.kanSlåsSammen(neste)) {
-            this.dropLast(1) + forrige.copy(
-                tom = neste.tom,
-            )
-        } else {
-            this + neste
-        }
+    private fun List<Vurdering>.samletUtfall(): Periodisering<Utfall> {
+        return TODO()
     }
 }

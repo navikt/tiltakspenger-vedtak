@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+/*
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -7,13 +8,13 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakspplysningId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
 import org.intellij.lang.annotations.Language
 
-internal class SaksopplysningRepo {
-    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Saksopplysning> {
+internal class SaksopplysningDAO {
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<LivsoppholdSaksopplysning> {
         return txSession.run(
             queryOf(
                 sqlHentForBehandling,
@@ -26,7 +27,7 @@ internal class SaksopplysningRepo {
         )
     }
 
-    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<Saksopplysning> {
+    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<LivsoppholdSaksopplysning> {
         return txSession.run(
             queryOf(
                 sqlHentForVedtak,
@@ -39,31 +40,40 @@ internal class SaksopplysningRepo {
         )
     }
 
-    fun lagre(vedtakId: VedtakId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
+    fun lagre(vedtakId: VedtakId, saksopplysninger: List<LivsoppholdSaksopplysning>, txSession: TransactionalSession) {
         slett(vedtakId, txSession)
         saksopplysninger.forEach { saksopplysning ->
             lagre(
                 behandlingId = null,
                 vedtakId = vedtakId,
-                saksopplysning = saksopplysning,
+                livsoppholdSaksopplysning = saksopplysning,
                 txSession = txSession,
             )
         }
     }
 
-    fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
+    fun lagre(
+        behandlingId: BehandlingId,
+        saksopplysninger: List<LivsoppholdSaksopplysning>,
+        txSession: TransactionalSession,
+    ) {
         slett(behandlingId, txSession)
         saksopplysninger.forEach { saksopplysning ->
             lagre(
                 behandlingId = behandlingId,
                 vedtakId = null,
-                saksopplysning = saksopplysning,
+                livsoppholdSaksopplysning = saksopplysning,
                 txSession = txSession,
             )
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
+    private fun lagre(
+        behandlingId: BehandlingId?,
+        vedtakId: VedtakId?,
+        livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(
             queryOf(
                 sqlLagreSaksopplysning,
@@ -71,13 +81,13 @@ internal class SaksopplysningRepo {
                     "id" to SakspplysningId.random().toString(),
                     "behandlingId" to behandlingId?.toString(),
                     "vedtakId" to vedtakId?.toString(),
-                    "fom" to saksopplysning.fom,
-                    "tom" to saksopplysning.tom,
-                    "kilde" to saksopplysning.kilde.name,
-                    "vilkar" to saksopplysning.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
-                    "detaljer" to saksopplysning.detaljer,
-                    "typeSaksopplysning" to saksopplysning.typeSaksopplysning.name,
-                    "saksbehandler" to saksopplysning.saksbehandler,
+                    "fom" to livsoppholdSaksopplysning.fom,
+                    "tom" to livsoppholdSaksopplysning.tom,
+                    "kilde" to livsoppholdSaksopplysning.kilde.name,
+                    "vilkar" to livsoppholdSaksopplysning.vilkår.tittel, // her burde vi kanskje lage en when over vilkår i stedet for å bruke tittel?
+                    "detaljer" to livsoppholdSaksopplysning.detaljer,
+                    "typeSaksopplysning" to livsoppholdSaksopplysning.harYtelse.name,
+                    "saksbehandler" to livsoppholdSaksopplysning.saksbehandler,
                     "opprettet" to nå(),
                 ),
             ).asUpdate,
@@ -102,15 +112,15 @@ internal class SaksopplysningRepo {
         )
     }
 
-    private fun Row.toSaksopplysning(): Saksopplysning {
+    private fun Row.toSaksopplysning(): LivsoppholdSaksopplysning {
         val vilkår = hentVilkår(string("vilkår"))
-        return Saksopplysning(
+        return LivsoppholdSaksopplysning(
             fom = localDate("fom"),
             tom = localDate("tom"),
             kilde = Kilde.valueOf(string("kilde")),
             vilkår = vilkår,
             detaljer = string("detaljer"),
-            typeSaksopplysning = TypeSaksopplysning.valueOf(string("typeSaksopplysning")),
+            harYtelse = HarYtelse.valueOf(string("typeSaksopplysning")),
             saksbehandler = stringOrNull("saksbehandler"),
         )
     }
@@ -160,3 +170,5 @@ internal class SaksopplysningRepo {
             )
     """.trimIndent()
 }
+
+ */

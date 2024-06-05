@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+/*
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -12,7 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import org.intellij.lang.annotations.Language
 
-internal class VurderingRepo {
+internal class VurderingDAO {
     fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Vurdering> {
         return txSession.run(
             queryOf(
@@ -63,7 +64,12 @@ internal class VurderingRepo {
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, vurdering: Vurdering, txSession: TransactionalSession) {
+    private fun lagre(
+        behandlingId: BehandlingId?,
+        vedtakId: VedtakId?,
+        vurdering: Vurdering,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(
             queryOf(
                 sqlLagreVurdering,
@@ -190,7 +196,7 @@ internal class VurderingRepo {
     """.trimIndent()
 }
 
-fun hentVilkår(vilkår: String) =
+private fun hentVilkår(vilkår: String) =
     when (vilkår) {
         "AAP" -> Vilkår.AAP
         "ALDER" -> Vilkår.ALDER
@@ -220,3 +226,5 @@ fun hentVilkår(vilkår: String) =
             throw IllegalStateException("Vurdering med ukjent vilkår $vilkår")
         }
     }
+
+ */

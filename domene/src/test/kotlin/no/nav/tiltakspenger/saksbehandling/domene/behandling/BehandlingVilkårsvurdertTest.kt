@@ -6,10 +6,11 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import org.junit.jupiter.api.Test
 
@@ -22,7 +23,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 31.januar(2024),
             kilde = Kilde.K9SAK,
             vilkår = Vilkår.FORELDREPENGER,
-            type = TypeSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = null,
         )
 
@@ -39,18 +40,26 @@ internal class BehandlingVilkårsvurdertTest {
         behandling.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandling.status shouldBe BehandlingStatus.Innvilget
 
-        behandling.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
-                fom = 1.januar(2024),
-                tom = 31.januar(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+        behandling.utfallsperioder!!.perioder() shouldContainExactlyInAnyOrder listOf(
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.januar(2024),
+                    31.januar(2024),
+                ),
             ),
-            Utfallsperiode(
-                fom = 1.februar(2024),
-                tom = 31.mars(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.februar(2024),
+                    31.mars(2024),
+                ),
             ),
         )
 
@@ -60,7 +69,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 31.mars(2024),
             kilde = Kilde.PESYS,
             vilkår = Vilkår.GJENLEVENDEPENSJON,
-            type = TypeSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = null,
         )
 
@@ -68,24 +77,36 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingMedYtelseStartOgSlutt.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
-        behandlingMedYtelseStartOgSlutt.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
-                fom = 1.januar(2024),
-                tom = 31.januar(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+        behandlingMedYtelseStartOgSlutt.utfallsperioder!!.perioder() shouldContainExactlyInAnyOrder listOf(
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.januar(2024),
+                    31.januar(2024),
+                ),
             ),
-            Utfallsperiode(
-                fom = 1.februar(2024),
-                tom = 29.februar(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.februar(2024),
+                    29.februar(2024),
+                ),
             ),
-            Utfallsperiode(
-                fom = 1.mars(2024),
-                tom = 31.mars(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.mars(2024),
+                    31.mars(2024),
+                ),
             ),
         )
 
@@ -95,7 +116,7 @@ internal class BehandlingVilkårsvurdertTest {
             tom = 29.februar(2024),
             kilde = Kilde.SAKSB,
             vilkår = Vilkår.KVP,
-            type = TypeSaksopplysning.HAR_YTELSE,
+            type = HarYtelse.HAR_YTELSE,
             saksbehandler = "Z12345",
         )
 
@@ -103,12 +124,16 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingAvslag.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 
-        behandlingAvslag.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
-                fom = 1.januar(2024),
-                tom = 31.mars(2024),
-                antallBarn = 0,
-                utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+        behandlingAvslag.utfallsperioder!!.perioder() shouldContainExactlyInAnyOrder listOf(
+            PeriodeMedVerdi(
+                Utfallsdetaljer(
+                    antallBarn = 0,
+                    utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
+                ),
+                Periode(
+                    1.januar(2024),
+                    31.mars(2024),
+                ),
             ),
         )
     }

@@ -14,6 +14,7 @@ dependencies {
     implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("io.micrometer:micrometer-core:1.13.0")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 

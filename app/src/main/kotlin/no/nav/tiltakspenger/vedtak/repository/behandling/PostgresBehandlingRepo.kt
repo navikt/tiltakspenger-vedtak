@@ -26,8 +26,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingRepo: VurderingRepo = VurderingRepo(),
+    private val livsoppholdVilkårDataDAO: LivsoppholdVilkårDataDAO = LivsoppholdVilkårDataDAO(),
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
@@ -133,14 +132,13 @@ internal class PostgresBehandlingRepo(
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
+            livsoppholdVilkårDataDAO.lagre(behandling.id, behandling.livsoppholdVilkårData, tx)
             // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
-            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-            utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
+            behandling.utfallsperioder?.let { utfallsperiodeDAO.lagre(behandling.id, it, tx) }
         }
     }
 
@@ -236,9 +234,8 @@ internal class PostgresBehandlingRepo(
             sakId = sakId,
             søknader = søknadDAO.hent(id, txSession),
             vurderingsperiode = Periode(fom, tom),
-            saksopplysninger = saksopplysningRepo.hent(id, txSession),
+            livsoppholdVilkårData = livsoppholdVilkårDataDAO.hent(id, txSession),
             tiltak = tiltakDAO.hent(id, txSession),
-            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
