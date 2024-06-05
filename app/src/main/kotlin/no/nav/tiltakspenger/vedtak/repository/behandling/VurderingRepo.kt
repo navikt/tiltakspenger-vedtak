@@ -84,6 +84,7 @@ internal class VurderingRepo {
                     "detaljer" to vurdering.detaljer,
                     "utfall" to vurdering.utfall.name,
                     "opprettet" to nå(),
+                    "grunnlagId" to vurdering.grunnlagId,
                 ),
             ).asUpdate,
         )
@@ -126,6 +127,7 @@ internal class VurderingRepo {
             fom = localDate("fom"),
             tom = localDate("tom"),
             utfall = utfall,
+            grunnlagId = stringOrNull("grunnlagId"),
         )
     }
 
@@ -141,7 +143,8 @@ internal class VurderingRepo {
             vilkår,
             detaljer,
             utfall,
-            opprettet
+            opprettet,
+            grunnlagId
         ) values (
             :id,
             :behandlingId,
@@ -152,7 +155,8 @@ internal class VurderingRepo {
             :vilkar,
             :detaljer,
             :utfall,
-            :opprettet
+            :opprettet,
+            :grunnlagId
         )
     """.trimIndent()
 
@@ -200,9 +204,9 @@ fun hentVilkår(vilkår: String) =
         "SUPPLERENDESTØNADFLYKTNING" -> Vilkår.SUPPLERENDESTØNADFLYKTNING
         "SVANGERSKAPSPENGER" -> Vilkår.SVANGERSKAPSPENGER
         "SYKEPENGER" -> Vilkår.SYKEPENGER
-        "TILTAKSPENGER" -> Vilkår.TILTAKSPENGER
         "UFØRETRYGD" -> Vilkår.UFØRETRYGD
         "ETTERLØNN" -> Vilkår.ETTERLØNN
+        "TILTAKSDELTAGELSE" -> Vilkår.TILTAKSDELTAGELSE
         else -> {
             throw IllegalStateException("Vurdering med ukjent vilkår $vilkår")
         }

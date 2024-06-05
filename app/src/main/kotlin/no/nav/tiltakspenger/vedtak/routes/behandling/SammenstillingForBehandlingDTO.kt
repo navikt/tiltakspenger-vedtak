@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -18,6 +21,7 @@ data class SammenstillingForBehandlingDTO(
     val status: String,
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
+    val utfallsperioder: List<UtfallsperiodeDTO>,
 ) {
     data class EndringDTO(
         val type: String,
@@ -41,12 +45,18 @@ data class SammenstillingForBehandlingDTO(
     )
 
     data class RegistrertTiltakDTO(
+        val id: String,
         val arrangør: String,
-        val dagerIUken: Int,
         val navn: String,
         val periode: PeriodeDTO,
         val prosent: Int,
         val status: String,
+        val kilde: String,
+        val girRett: Boolean,
+        val harSøkt: Boolean,
+        val deltagelseUtfall: Utfall,
+        val begrunnelse: String,
+        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
     )
 
     data class SøknadDTO(
@@ -67,6 +77,13 @@ data class SammenstillingForBehandlingDTO(
         val vilkårFlateTittel: String,
         val fakta: FaktaDTO,
         val utfall: String,
+        val vilkårLovReferense: List<LovreferanseDTO>,
+    )
+
+    data class LovreferanseDTO(
+        val lovverk: String,
+        val paragraf: String,
+        val beskrivelse: String,
     )
 
     data class KategoriserteSaksopplysningerDTO(

@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.desember
@@ -16,6 +15,7 @@ import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.juli
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
@@ -27,19 +27,18 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -57,6 +56,7 @@ internal class BehandlingServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var multiRepo: MultiRepo
+    private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
 
     @BeforeEach
@@ -68,6 +68,7 @@ internal class BehandlingServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         multiRepo = mockk(relaxed = true)
+        sakRepo = mockk(relaxed = true)
 
         behandlingService =
             BehandlingServiceImpl(
@@ -78,6 +79,7 @@ internal class BehandlingServiceTest {
                 brevPublisherGateway,
                 meldekortGrunnlagGateway,
                 multiRepo,
+                sakRepo,
             )
     }
 
@@ -123,7 +125,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
@@ -160,7 +162,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = BehandlingOpprettet.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hentOrNull(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
@@ -278,16 +280,16 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         val tiltak = listOf(
-            tiltak(id = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
-            tiltak(id = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
-            tiltak(id = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
-            tiltak(id = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
+            tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
+            tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
+            tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
+            tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
         )
         behandlingService.oppdaterTiltak(behandling.id, tiltak)
 
         lagretBehandling.captured.tiltak.size shouldBe 2
-        lagretBehandling.captured.tiltak.first { it.id == "slutterInni" }.id shouldBe "slutterInni"
-        lagretBehandling.captured.tiltak.first { it.id == "starterInni" }.id shouldBe "starterInni"
+        lagretBehandling.captured.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"
+        lagretBehandling.captured.tiltak.first { it.eksternId == "starterInni" }.eksternId shouldBe "starterInni"
     }
 
     @Test

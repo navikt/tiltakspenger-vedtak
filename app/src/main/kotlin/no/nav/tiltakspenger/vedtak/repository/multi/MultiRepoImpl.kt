@@ -2,8 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.multi
 
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -17,7 +16,7 @@ class MultiRepoImpl(
     private val vedtakDao: VedtakDAO,
 ) : MultiRepo {
     override suspend fun lagreOgKjør(
-        iverksattBehandling: BehandlingIverksatt,
+        iverksattBehandling: Behandling,
         attestering: Attestering,
         vedtak: Vedtak,
         operasjon: suspend () -> String,
@@ -32,7 +31,7 @@ class MultiRepoImpl(
         }
     }
 
-    override fun lagre(behandling: BehandlingVilkårsvurdert, attestering: Attestering) {
+    override fun lagre(behandling: Behandling, attestering: Attestering) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 behandlingDao.lagre(behandling, txSession)

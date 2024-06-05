@@ -1,15 +1,14 @@
 package no.nav.tiltakspenger.saksbehandling.service
 
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.beInstanceOf
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingInnvilgetIverksatt
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
@@ -17,8 +16,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -75,6 +73,7 @@ internal class SakServiceTest {
                 brevPublisherGateway,
                 meldekortGrunnlagGateway,
                 multiRepo,
+                sakRepo,
             )
         sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
     }
@@ -88,6 +87,7 @@ internal class SakServiceTest {
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteLøpenr() } returns "1"
 
         val søknad = nySøknad(
             tiltak = søknadTiltak(
@@ -99,9 +99,9 @@ internal class SakServiceTest {
         val sak = sakService.motta(søknad)
 
         sak.behandlinger.size shouldBe 1
-        sak.behandlinger.first() shouldBe beInstanceOf<BehandlingVilkårsvurdert>()
+        sak.behandlinger.first().tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
 
-        val behandling = sak.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
+        val behandling = sak.behandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
         behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
         behandling.søknader.first() shouldBe søknad
     }
@@ -110,6 +110,7 @@ internal class SakServiceTest {
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteLøpenr() } returns "1"
 
         val søknad = nySøknad(
             journalpostId = "søknad1",
@@ -135,7 +136,7 @@ internal class SakServiceTest {
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id
-        sak2.behandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
+        sak2.behandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
             .søknad() shouldBe søknad2.copy(opprettet = søknad.opprettet)
     }
 
@@ -200,10 +201,10 @@ internal class SakServiceTest {
 
         sak.behandlinger.size shouldBe 3
 
-        val åpenBehandlinger = sak.behandlinger.filterNot { it is BehandlingIverksatt }
+        val åpenBehandlinger = sak.behandlinger.filterNot { it.tilstand == BehandlingTilstand.IVERKSATT }
 
         åpenBehandlinger.size shouldBe 1
-        val b = åpenBehandlinger.filterIsInstance<BehandlingVilkårsvurdert>().first()
+        val b = åpenBehandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
         b.søknader.size shouldBe 2
         b.søknad().journalpostId shouldBe nyJournalpostId
     }
@@ -301,7 +302,7 @@ internal class SakServiceTest {
                     behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.fom == 1.januar(2023) &&
                         behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.tom == 30.januar(2023) &&
                         behandling.saksopplysninger.first { it.vilkår == Vilkår.ALDER }.typeSaksopplysning == TypeSaksopplysning.HAR_YTELSE &&
-                        (behandling as BehandlingVilkårsvurdert).vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
+                        behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
                             .sortedBy { it.fom }.first().fom == 1.januar(2023) &&
                         behandling.vilkårsvurderinger.filter { it.vilkår == Vilkår.ALDER }
                             .sortedBy { it.fom }.first().tom == 30.januar(2023) &&

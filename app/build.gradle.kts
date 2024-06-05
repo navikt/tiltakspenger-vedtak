@@ -1,8 +1,8 @@
-val ktorVersion = "2.3.9"
-val kotestVersion = "5.8.1"
-val mockkVersion = "1.13.10"
-val testContainersVersion = "1.19.7"
-val felleslibVersion = "0.0.89"
+val ktorVersion = "2.3.11"
+val kotestVersion = "5.9.0"
+val mockkVersion = "1.13.11"
+val testContainersVersion = "1.19.8"
+val felleslibVersion = "0.0.120"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -27,9 +27,10 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("ch.qos.logback:logback-classic:1.5.3")
+    implementation("ch.qos.logback:logback-classic:1.5.6")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
@@ -49,7 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2024022311041708682651.01821651ed22")
+    implementation("com.github.navikt:rapids-and-rivers:2024041714471713358051.71746f05c18e")
     implementation("com.natpryce:konfig:1.6.10.0")
 
     // Http
@@ -70,7 +71,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.10.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.14.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -89,6 +90,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.8.3")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.11.0")
     testImplementation(project(":common"))
 }

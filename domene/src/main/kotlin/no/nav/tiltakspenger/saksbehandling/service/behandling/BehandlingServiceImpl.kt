@@ -2,22 +2,21 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
@@ -26,6 +25,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -41,6 +41,7 @@ class BehandlingServiceImpl(
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val multiRepo: MultiRepo,
+    private val sakRepo: SakRepo,
 ) : BehandlingService {
 
     override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
@@ -83,7 +84,7 @@ class BehandlingServiceImpl(
     ) {
         check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
         val behandling = hentBehandling(behandlingId)
-        if (behandling is BehandlingVilkårsvurdert) {
+        if (behandling.tilstand == BehandlingTilstand.VILKÅRSVURDERT) {
             behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))
         }
     }
@@ -103,8 +104,8 @@ class BehandlingServiceImpl(
             beslutter = utøvendeBeslutter.navIdent,
         )
 
-        when (behandling) {
-            is BehandlingTilBeslutter -> {
+        when (behandling.tilstand) {
+            BehandlingTilstand.TIL_BESLUTTER -> {
                 multiRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), attestering)
             }
 
@@ -114,9 +115,11 @@ class BehandlingServiceImpl(
 
     override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
+        val sak = sakRepo.hentSakDetaljer(behandling.sakId)
+            ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
 
-        val iverksattBehandling = when (behandling) {
-            is BehandlingTilBeslutter -> behandling.iverksett(utøvendeBeslutter)
+        val iverksattBehandling = when (behandling.tilstand) {
+            BehandlingTilstand.TIL_BESLUTTER -> behandling.iverksett(utøvendeBeslutter)
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke iverksettes. BehandlingId: $behandlingId")
         }
         val attestering = Attestering(
@@ -130,17 +133,19 @@ class BehandlingServiceImpl(
         multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
             // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
             // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
-            utbetalingService.sendBehandlingTilUtbetaling(vedtak)
+            utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak)
         }
 
-        meldekortGrunnlagGateway.sendMeldekortGrunnlag(vedtak)
+        meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)
 
-        val personopplysninger =
-            personopplysningRepo.hent(vedtak.sakId).søker()
-        brevPublisherGateway.sendBrev(vedtak, personopplysninger)
+        val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
+        brevPublisherGateway.sendBrev(sak.saknummer, vedtak, personopplysninger)
     }
 
-    private fun lagVedtakForBehandling(behandling: BehandlingIverksatt): Vedtak {
+    private fun lagVedtakForBehandling(behandling: Behandling): Vedtak {
+        require(behandling.tilstand == BehandlingTilstand.IVERKSATT) { "Kan ikke lage vedtakk for behandling som ikke er iverksatt" }
+        require(behandling.saksbehandler != null) { "Kan ikke lage vedtakk for behandling som ikke har saksbehandler" }
+        require(behandling.beslutter != null) { "Kan ikke lage vedtakk for behandling som ikke har beslutter" }
         return Vedtak(
             id = VedtakId.random(),
             sakId = behandling.sakId,
@@ -151,8 +156,8 @@ class BehandlingServiceImpl(
             periode = behandling.vurderingsperiode,
             saksopplysninger = behandling.saksopplysninger(),
             vurderinger = behandling.vilkårsvurderinger,
-            saksbehandler = behandling.saksbehandler,
-            beslutter = behandling.beslutter,
+            saksbehandler = behandling.saksbehandler!!,
+            beslutter = behandling.beslutter!!,
         )
     }
 
@@ -182,7 +187,7 @@ class BehandlingServiceImpl(
         check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
 
         val vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)
-        val revurderingBehandling = RevurderingOpprettet.opprettRevurderingsbehandling(
+        val revurderingBehandling = Revurderingsbehandling.opprettRevurderingsbehandling(
             vedtak = vedtak,
             navIdent = utøvendeSaksbehandler.navIdent,
         )
@@ -190,5 +195,20 @@ class BehandlingServiceImpl(
         behandlingRepo.lagre(revurderingBehandling)
 
         return revurderingBehandling
+    }
+
+    override fun oppdaterAntallDagerPåTiltak(
+        behandlingId: BehandlingId,
+        tiltakId: String,
+        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
+        saksbehandler: Saksbehandler,
+    ) {
+        val behandling = hentBehandling(behandlingId)
+        val oppdatertBehandling = behandling.oppdaterAntallDager(
+            tiltakId = tiltakId,
+            nyPeriodeMedAntallDager = periodeMedAntallDager,
+            saksbehandler = saksbehandler,
+        )
+        behandlingRepo.lagre(oppdatertBehandling)
     }
 }

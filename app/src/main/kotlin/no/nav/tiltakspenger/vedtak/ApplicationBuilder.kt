@@ -65,7 +65,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val utbetalingGateway = UtbetalingGatewayImpl(utbetalingClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
-    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway, sakRepo)
+    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val søkerRepository = SøkerRepositoryImpl()
     private val behandlingRepo = PostgresBehandlingRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
@@ -86,6 +86,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             brevPublisherGateway,
             meldekortGrunnlagGateway,
             multiRepo,
+            sakRepo,
         )
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)

@@ -6,18 +6,14 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingIverksatt
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilBeslutter
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingVilkårsvurdert
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.RevurderingOpprettet
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -143,24 +139,8 @@ internal class PostgresBehandlingRepo(
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
-            when (behandling) {
-                is BehandlingIverksatt -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
-                }
-
-                is BehandlingVilkårsvurdert -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
-                }
-
-                is BehandlingTilBeslutter -> {
-                    vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-                    utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
-                }
-
-                is BehandlingOpprettet -> {}
-            }
+            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
+            utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
         }
     }
 
@@ -184,7 +164,7 @@ internal class PostgresBehandlingRepo(
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                     "saksbehandler" to behandling.saksbehandler,
-                    "beslutter" to if (behandling is BehandlingTilBeslutter) behandling.beslutter else if (behandling is BehandlingIverksatt) behandling.beslutter else null,
+                    "beslutter" to behandling.beslutter,
                 ),
             ).asUpdate,
         )
@@ -238,106 +218,49 @@ internal class PostgresBehandlingRepo(
         val status = string("status")
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
-        return when (val type = string("tilstand")) {
-            "søknadsbehandling" -> BehandlingOpprettet(
-                id = id,
-                sakId = sakId,
-                søknader = søknadDAO.hent(id, txSession),
-                vurderingsperiode = Periode(fom, tom),
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                tiltak = tiltakDAO.hent(id, txSession),
-                saksbehandler = saksbehandler,
-            )
-
-            "Vilkårsvurdert" -> {
-                val behandlingVilkårsvurdertStatus = when (status) {
-                    "Innvilget" -> BehandlingStatus.Innvilget
-                    "Avslag" -> BehandlingStatus.Avslag
-                    "Manuell" -> BehandlingStatus.Manuell
-                    else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-                }
-                BehandlingVilkårsvurdert(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                    tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                    saksbehandler = saksbehandler,
-                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                    status = behandlingVilkårsvurdertStatus,
-                )
-            }
-
-            "TilBeslutting" -> {
-                val behandlingStatus = when (status) {
-                    "Innvilget" -> BehandlingStatus.Innvilget
-                    "Avslag" -> BehandlingStatus.Avslag
-                    else -> throw IllegalStateException("Ukjent BehandlingTilBeslutting $id med status $status")
-                }
-                BehandlingTilBeslutter(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                    tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                    saksbehandler = checkNotNull(saksbehandler) { "Behandling som er til beslutning mangler saksbehandler i basen" },
-                    beslutter = beslutter,
-                    status = behandlingStatus,
-                )
-            }
-
-            "Iverksatt" -> {
-                val behandlingStatus = when (status) {
-                    "Innvilget" -> BehandlingStatus.Innvilget
-                    "Avslag" -> BehandlingStatus.Avslag
-                    else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-                }
-                BehandlingIverksatt(
-                    id = id,
-                    sakId = sakId,
-                    søknader = søknadDAO.hent(id, txSession),
-                    vurderingsperiode = Periode(fom, tom),
-                    saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                    tiltak = tiltakDAO.hent(id, txSession),
-                    vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                    utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-                    saksbehandler = checkNotNull(saksbehandler) { "Behandling som er iverksatt mangler saksbehandler i basen" },
-                    beslutter = checkNotNull(beslutter) { "Behandling som er iverksatt mangler beslutter i basen" },
-                    status = behandlingStatus,
-                )
-            }
-
+        val behandlingStatus = when (status) {
+            "Innvilget" -> BehandlingStatus.Innvilget
+            "Avslag" -> BehandlingStatus.Avslag
+            "Manuell" -> BehandlingStatus.Manuell
+            else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
+        }
+        val tilstand = when (val type = string("tilstand")) {
+            "søknadsbehandling" -> BehandlingTilstand.OPPRETTET
+            "Vilkårsvurdert" -> BehandlingTilstand.VILKÅRSVURDERT
+            "TilBeslutting" -> BehandlingTilstand.TIL_BESLUTTER
+            "Iverksatt" -> BehandlingTilstand.IVERKSATT
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
+        return Førstegangsbehandling(
+            id = id,
+            sakId = sakId,
+            søknader = søknadDAO.hent(id, txSession),
+            vurderingsperiode = Periode(fom, tom),
+            saksopplysninger = saksopplysningRepo.hent(id, txSession),
+            tiltak = tiltakDAO.hent(id, txSession),
+            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+            utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+            status = behandlingStatus,
+            tilstand = tilstand,
+        )
     }
 
-    private fun finnTilstand(behandling: Behandling) =
-        when (behandling) {
-            is BehandlingOpprettet -> "søknadsbehandling"
-            is BehandlingVilkårsvurdert -> "Vilkårsvurdert"
-            is BehandlingTilBeslutter -> "TilBeslutting"
-            is BehandlingIverksatt -> "Iverksatt"
-            is RevurderingOpprettet -> "revurderingsbehandling"
-            else -> throw IllegalStateException("Finner ikke tilstand")
+    private fun finnTilstand(behandling: Behandling): String =
+        when (behandling.tilstand) {
+            BehandlingTilstand.OPPRETTET -> "søknadsbehandling"
+            BehandlingTilstand.VILKÅRSVURDERT -> "Vilkårsvurdert"
+            BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutting"
+            BehandlingTilstand.IVERKSATT -> "Iverksatt"
+            // BehandlingTilstand.OPPRETTET -> "revurderingsbehandling"  TODO: Fiks revurdering
         }
 
     private fun finnStatus(behandling: Behandling): String =
-        when {
-            behandling is BehandlingOpprettet -> "Opprettet"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Avslag -> "Avslag"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
-            behandling is BehandlingVilkårsvurdert && behandling.status == BehandlingStatus.Manuell -> "Manuell"
-            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Avslag -> "Avslag"
-            behandling is BehandlingIverksatt && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
-            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Avslag -> "Avslag"
-            behandling is BehandlingTilBeslutter && behandling.status == BehandlingStatus.Innvilget -> "Innvilget"
-            behandling is RevurderingOpprettet -> "Opprettet"
-            else -> throw IllegalStateException("Finner ikke status")
+        when (behandling.status) {
+            BehandlingStatus.Innvilget -> "Innvilget"
+            BehandlingStatus.Manuell -> "Manuell"
+            BehandlingStatus.Avslag -> "Avslag"
         }
 
     private val sqlHentSistEndret = """

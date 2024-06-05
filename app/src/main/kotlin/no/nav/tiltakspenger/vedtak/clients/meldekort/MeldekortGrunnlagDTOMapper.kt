@@ -1,14 +1,15 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 
 object MeldekortGrunnlagDTOMapper {
-    fun mapMeldekortGrunnlagDTO(vedtak: Vedtak) =
+    fun mapMeldekortGrunnlagDTO(sak: SakDetaljer, vedtak: Vedtak) =
         MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
-            sakId = vedtak.sakId.toString(),
+            sakId = sak.saknummer.verdi,
             behandlingId = vedtak.behandling.id.toString(),
             status = when (vedtak.vedtaksType) {
                 VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV
@@ -43,7 +44,7 @@ object MeldekortGrunnlagDTOMapper {
 
     fun mapTiltakDTO(vedtak: Vedtak) =
         vedtak.behandling.tiltak
-            .filter { it.id == vedtak.behandling.søknad().tiltak.id }
+            .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
             .map {
                 TiltakDTO(
                     periodeDTO = PeriodeDTO(
@@ -52,12 +53,7 @@ object MeldekortGrunnlagDTOMapper {
                     ),
                     typeBeskrivelse = it.gjennomføring.typeNavn,
                     typeKode = it.gjennomføring.typeKode,
-                    antDagerIUken = it.deltakelseDagerUke
-                        ?: if (it.deltakelseProsent == 100F) {
-                            5F
-                        } else {
-                            throw IllegalStateException("Kan ikke beregne antall dager i uken for tiltak uten deltakelseDagerUke eller deltakelseProsent")
-                        },
+                    antDagerIUken = 5f,
                 )
             }
 }

@@ -64,6 +64,16 @@ fun Route.personopplysningerRoutes(
                     ident = personopplysningerMottattDTO.ident,
                     feil = when (personopplysningerMottattDTO.personopplysninger.feil!!) {
                         Feilmelding.PersonIkkeFunnet -> Feil.PersonIkkeFunnet
+                        Feilmelding.NavnIkkeFunnet -> TODO() // Noen må se på hva som skal gjøres med disse
+                        Feilmelding.NavnKunneIkkeAvklares -> TODO()
+                        Feilmelding.FødselKunneIkkeAvklares -> TODO()
+                        Feilmelding.AdressebeskyttelseKunneIkkeAvklares -> TODO()
+                        Feilmelding.NetworkError -> TODO()
+                        Feilmelding.UkjentFeil -> TODO()
+                        Feilmelding.ResponsManglerPerson -> TODO()
+                        Feilmelding.SerializationException -> TODO()
+                        Feilmelding.GraderingKunneIkkeAvklares -> TODO()
+                        Feilmelding.AzureAuthFailureException -> TODO()
                     },
                 )
                 innsendingMediator.håndter(feilMottattHendelse)

@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
-import no.nav.tiltakspenger.felles.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
@@ -58,9 +58,10 @@ data class Saksopplysning(
                 tom = this.tom,
                 detaljer = this.detaljer,
                 utfall = Utfall.KREVER_MANUELL_VURDERING,
+                grunnlagId = null,
             )
 
-            HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER, Vilkår.TILTAKSPENGER)) {
+            HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER)) {
                 if (this.kilde == Kilde.SAKSB) {
                     Vurdering(
                         vilkår = this.vilkår,
@@ -69,6 +70,7 @@ data class Saksopplysning(
                         tom = this.tom,
                         detaljer = this.detaljer,
                         utfall = Utfall.OPPFYLT,
+                        grunnlagId = null,
                     )
                 } else {
                     Vurdering(
@@ -78,6 +80,7 @@ data class Saksopplysning(
                         tom = this.tom,
                         detaljer = this.detaljer,
                         utfall = Utfall.KREVER_MANUELL_VURDERING,
+                        grunnlagId = null,
                     )
                 }
             } else {
@@ -88,6 +91,7 @@ data class Saksopplysning(
                     tom = this.tom,
                     detaljer = this.detaljer,
                     utfall = Utfall.IKKE_OPPFYLT,
+                    grunnlagId = null,
                 )
             }
 
@@ -98,6 +102,7 @@ data class Saksopplysning(
                 tom = this.tom,
                 detaljer = this.detaljer,
                 utfall = Utfall.OPPFYLT,
+                grunnlagId = null,
             )
         }
 
@@ -110,6 +115,7 @@ data class Saksopplysning(
                     tom = it.til,
                     detaljer = this.detaljer,
                     utfall = Utfall.OPPFYLT,
+                    grunnlagId = null,
                 )
             }
 

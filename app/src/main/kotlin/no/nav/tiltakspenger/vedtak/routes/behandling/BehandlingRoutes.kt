@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.server.routing.put
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -15,6 +16,7 @@ import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -109,13 +111,27 @@ fun Route.behandlingRoutes(
         behandlingService.hentBehandling(behandlingId).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
-                journalpostId = it.søknad().journalpostId ?: "",
+                journalpostId = it.søknad().journalpostId,
             )
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         }
 
         // TODO: Skriv denne om til en sjekk på om det faktisk er oppdatert
         delay(3000)
+        call.respond(message = "{}", status = HttpStatusCode.OK)
+    }
+
+    put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
+        val tiltakId = call.parameter("tiltakId")
+        val antallDagerDto = call.receive<AntallDagerDTO>()
+        behandlingService.oppdaterAntallDagerPåTiltak(
+            behandlingId = behandlingId,
+            tiltakId = tiltakId,
+            periodeMedAntallDager = antallDagerDto.toPeriodeMedAntallDager(saksbehandler.navIdent),
+            saksbehandler = saksbehandler,
+        )
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
@@ -130,18 +146,18 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    post("$behandlingPath/opprettrevurdering/{}") {
-        val behandlingId = call.parameters["behandlingId"]?.let { BehandlingId.fromString(it) }
-            ?: return@post call.respond(message = "BehandlingId ikke funnet", status = HttpStatusCode.NotFound)
+    post("$behandlingPath/opprettrevurdering/{saksnummer}") {
+        val saksnummer = call.parameters["saksnummer"]
+            ?: return@post call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
 
-        LOG.info { "Mottatt request om å opprette en revurdering på behandlingen: $behandlingId" }
+        LOG.info { "Mottatt request om å opprette en revurdering på sak med saksnummer: $saksnummer" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
             ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
 
-        val revurdering = behandlingService.opprettRevurdering(behandlingId, saksbehandler)
-
-        LOG.info { "Revurderingen: $revurdering" }
+        val sak = sakService.hentForSaksnummer(saksnummer = saksnummer, saksbehandler = saksbehandler)
+        val sisteBehandlingId = sak.vedtak.maxBy { it.vedtaksdato }.behandling.id
+        val revurdering = behandlingService.opprettRevurdering(sisteBehandlingId, saksbehandler)
 
         call.respond(message = "{ \"id\":\"${revurdering.id}\"}", status = HttpStatusCode.OK)
     }

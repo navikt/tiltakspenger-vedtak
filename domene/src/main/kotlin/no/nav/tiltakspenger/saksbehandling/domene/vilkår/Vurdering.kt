@@ -10,4 +10,5 @@ data class Vurdering(
     val tom: LocalDate?,
     val utfall: Utfall,
     val detaljer: String,
+    val grunnlagId: String?,
 )

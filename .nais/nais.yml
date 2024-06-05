@@ -44,9 +44,14 @@ spec:
         type: POSTGRES_15
         diskAutoresize: {{ sqlInstances.diskAutoresize }}
         pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
+        flags:
+          - name: cloudsql.logical_decoding
+            value: "on"
         databases:
           - name: vedtak
             envVarPrefix: DB
+            users:
+              - name: tpts_ds
   accessPolicy:
     inbound:
       rules:

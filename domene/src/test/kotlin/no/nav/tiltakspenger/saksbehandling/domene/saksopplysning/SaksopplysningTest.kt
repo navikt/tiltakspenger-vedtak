@@ -2,18 +2,17 @@ package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.Periode
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingOpprettet
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.vilkårsvurder
 import kotlin.test.Test
 
 internal class SaksopplysningTest {
@@ -43,7 +42,7 @@ internal class SaksopplysningTest {
             )
 
         val behandling =
-            BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+            Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
@@ -70,7 +69,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
@@ -98,7 +97,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = BehandlingOpprettet.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
@@ -135,6 +134,7 @@ internal class SaksopplysningTest {
                 fom = 1.januar(2023),
                 tom = 31.januar(2023),
                 utfall = Utfall.IKKE_OPPFYLT,
+                grunnlagId = null,
             ),
             Vurdering(
                 vilkår = Vilkår.FORELDREPENGER,
@@ -143,6 +143,7 @@ internal class SaksopplysningTest {
                 fom = 1.februar(2023),
                 tom = 31.mars(2023),
                 utfall = Utfall.OPPFYLT,
+                grunnlagId = null,
             ),
         )
     }
