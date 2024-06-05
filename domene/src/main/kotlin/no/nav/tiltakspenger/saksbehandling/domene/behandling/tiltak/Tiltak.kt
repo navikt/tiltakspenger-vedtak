@@ -60,6 +60,14 @@ data class Tiltak(
         )
     }
 
+    fun tilbakestillAntallDagerFraSaksbehandler(): Tiltak {
+        val oppdatertAntallDager = antallDagerSaksopplysninger.tilbakestillAntallDagerFraSaksbehandler()
+
+        return this.copy(
+            antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
+        )
+    }
+
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
         return when (utfall) {
             Utfall.OPPFYLT -> Vurdering.Oppfylt(

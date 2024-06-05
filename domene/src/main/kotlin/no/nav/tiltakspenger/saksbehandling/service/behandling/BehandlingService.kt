@@ -25,4 +25,5 @@ interface BehandlingService {
     fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun opprettRevurdering(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Revurderingsbehandling
     fun oppdaterAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: String, periodeMedAntallDager: PeriodeMedVerdi<AntallDager>, saksbehandler: Saksbehandler)
+    fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: String, saksbehandler: Saksbehandler)
 }

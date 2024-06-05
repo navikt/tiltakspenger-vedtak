@@ -75,4 +75,10 @@ data class AntallDagerSaksopplysninger(
             antallDagerSaksopplysningerFraSBH = nyeOpplysningerFraSBH,
         )
     }
+
+    fun tilbakestillAntallDagerFraSaksbehandler(): AntallDagerSaksopplysninger {
+        return this.copy(
+            antallDagerSaksopplysningerFraSBH = emptyList(),
+        )
+    }
 }

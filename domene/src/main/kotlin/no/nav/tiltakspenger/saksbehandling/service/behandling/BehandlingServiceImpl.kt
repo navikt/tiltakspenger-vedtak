@@ -211,4 +211,12 @@ class BehandlingServiceImpl(
         )
         behandlingRepo.lagre(oppdatertBehandling)
     }
+    override fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: String, saksbehandler: Saksbehandler) {
+        val behandling = hentBehandling(behandlingId)
+        val oppdatertBehandling = behandling.tilbakestillAntallDager(
+            tiltakId = tiltakId,
+            saksbehandler = saksbehandler,
+        )
+        behandlingRepo.lagre(oppdatertBehandling)
+    }
 }

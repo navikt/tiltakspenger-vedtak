@@ -45,4 +45,8 @@ interface Behandling {
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ): Behandling
+    fun tilbakestillAntallDager(
+        tiltakId: String,
+        saksbehandler: Saksbehandler,
+    ): Behandling
 }

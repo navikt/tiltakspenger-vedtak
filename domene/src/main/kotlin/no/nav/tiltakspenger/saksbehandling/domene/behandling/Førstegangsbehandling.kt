@@ -163,6 +163,41 @@ data class Førstegangsbehandling(
         )
     }
 
+    override fun tilbakestillAntallDager(
+        tiltakId: String,
+        saksbehandler: Saksbehandler,
+    ): Behandling {
+        require(
+            this.tilstand in listOf(
+                BehandlingTilstand.OPPRETTET,
+                BehandlingTilstand.VILKÅRSVURDERT,
+                BehandlingTilstand.TIL_BESLUTTER,
+            ),
+        ) { "Kan ikke tilbakestille antall dager i tiltak, feil tilstand $tilstand" }
+
+        if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            // TODO Gjør noe ekstra
+        }
+        check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke tilbakestille antall dager uten å være saksbehandler eller admin" }
+
+        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
+        check(tiltakTilOppdatering != null) { "Kan ikke tilbakestille antall dager fordi vi fant ikke tiltaket på behandlingen" }
+
+        val oppdatertTiltak = tiltakTilOppdatering.tilbakestillAntallDagerFraSaksbehandler()
+
+        val nyeTiltak = tiltak.map {
+            if (it.eksternId == oppdatertTiltak.eksternId) {
+                oppdatertTiltak
+            } else {
+                it
+            }
+        }
+
+        return this.copy(
+            tiltak = nyeTiltak,
+        )
+    }
+
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
         // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
         // det hører hjemme i SakService

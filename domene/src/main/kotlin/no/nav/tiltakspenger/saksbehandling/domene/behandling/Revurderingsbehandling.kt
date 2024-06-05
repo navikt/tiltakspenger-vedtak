@@ -163,6 +163,10 @@ data class Revurderingsbehandling(
         )
     }
 
+    override fun tilbakestillAntallDager(tiltakId: String, saksbehandler: Saksbehandler): Behandling {
+        TODO("Not yet implemented")
+    }
+
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Revurderingsbehandling {
         // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
         // det hører hjemme i SakService
