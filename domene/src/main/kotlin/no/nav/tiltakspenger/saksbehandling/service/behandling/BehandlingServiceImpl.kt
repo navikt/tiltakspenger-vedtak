@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -199,7 +200,7 @@ class BehandlingServiceImpl(
 
     override fun oppdaterAntallDagerPåTiltak(
         behandlingId: BehandlingId,
-        tiltakId: String,
+        tiltakId: TiltakId,
         periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ) {
@@ -211,7 +212,7 @@ class BehandlingServiceImpl(
         )
         behandlingRepo.lagre(oppdatertBehandling)
     }
-    override fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: String, saksbehandler: Saksbehandler) {
+    override fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: TiltakId, saksbehandler: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
         val oppdatertBehandling = behandling.tilbakestillAntallDager(
             tiltakId = tiltakId,

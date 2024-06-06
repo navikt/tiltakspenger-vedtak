@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
@@ -128,7 +129,7 @@ data class Revurderingsbehandling(
     }
 
     override fun oppdaterAntallDager(
-        tiltakId: String,
+        tiltakId: TiltakId,
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ): Behandling {
@@ -145,7 +146,7 @@ data class Revurderingsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
+        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
         check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
 
         val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
@@ -163,7 +164,7 @@ data class Revurderingsbehandling(
         )
     }
 
-    override fun tilbakestillAntallDager(tiltakId: String, saksbehandler: Saksbehandler): Behandling {
+    override fun tilbakestillAntallDager(tiltakId: TiltakId, saksbehandler: Saksbehandler): Behandling {
         TODO("Not yet implemented")
     }
 

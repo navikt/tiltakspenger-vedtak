@@ -179,6 +179,8 @@ data class TiltakId private constructor(private val ulid: UlidBase) : Ulid by ul
 
         fun fromDb(stringValue: String) = TiltakId(ulid = UlidBase(stringValue))
 
+        fun fromString(stringValue: String) = TiltakId(ulid = UlidBase(stringValue))
+
         fun fromUUID(uuid: UUID) = TiltakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }
 }

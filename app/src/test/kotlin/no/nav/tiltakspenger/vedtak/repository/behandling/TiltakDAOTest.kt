@@ -117,7 +117,7 @@ internal class TiltakDAOTest {
                     PeriodeMedVerdi(
                         verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                         periode =
-                        no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.mars(2023)),
+                        Periode(fra = 1.januar(2023), til = 31.mars(2023)),
                     ),
                 ),
                 avklarteAntallDager = emptyList(),

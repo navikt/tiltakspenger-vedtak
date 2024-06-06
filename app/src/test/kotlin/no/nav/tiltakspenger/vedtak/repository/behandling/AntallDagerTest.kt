@@ -139,7 +139,7 @@ class AntallDagerTest {
 
         behandlingService.oppdaterAntallDagerPåTiltak(
             behandlingId = behandlingId,
-            tiltakId = tiltakId.toString(),
+            tiltakId = tiltakId,
             periodeMedAntallDager = periodeMedAntallDager,
             saksbehandler = saksbehandlerMedTilgang,
         )
@@ -191,7 +191,7 @@ class AntallDagerTest {
 
         behandlingService.oppdaterAntallDagerPåTiltak(
             behandlingId = behandlingId,
-            tiltakId = tiltakId.toString(),
+            tiltakId = tiltakId,
             periodeMedAntallDager = periodeMedAntallDager,
             saksbehandler = saksbehandlerMedTilgang,
         )
@@ -202,7 +202,7 @@ class AntallDagerTest {
 
         behandlingService.tilbakestillAntallDagerPåTiltak(
             behandlingId = oppdatertBehandling.id,
-            tiltakId = oppdatertBehandling.tiltak.first().id.toString(),
+            tiltakId = oppdatertBehandling.tiltak.first().id,
             saksbehandler = saksbehandlerMedTilgang,
         )
 

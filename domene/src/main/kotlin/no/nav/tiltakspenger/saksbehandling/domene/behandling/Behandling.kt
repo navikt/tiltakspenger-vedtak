@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
@@ -41,12 +42,12 @@ interface Behandling {
     fun saksopplysninger(): List<Saksopplysning>
     fun søknad(): Søknad
     fun oppdaterAntallDager(
-        tiltakId: String,
+        tiltakId: TiltakId,
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ): Behandling
     fun tilbakestillAntallDager(
-        tiltakId: String,
+        tiltakId: TiltakId,
         saksbehandler: Saksbehandler,
     ): Behandling
 }

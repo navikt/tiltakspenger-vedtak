@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
@@ -125,7 +126,7 @@ fun Route.behandlingRoutes(
     put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = call.parameter("tiltakId")
+        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
         val antallDagerDto = call.receive<AntallDagerDTO>()
         behandlingService.oppdaterAntallDagerPåTiltak(
             behandlingId = behandlingId,
@@ -139,7 +140,7 @@ fun Route.behandlingRoutes(
     delete("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = call.parameter("tiltakId")
+        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
 
         behandlingService.tilbakestillAntallDagerPåTiltak(
             behandlingId = behandlingId,
