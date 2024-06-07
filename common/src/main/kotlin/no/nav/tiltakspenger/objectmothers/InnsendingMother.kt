@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.innsending.domene.Søker
 import no.nav.tiltakspenger.innsending.domene.UføreVedtak
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
@@ -28,6 +29,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
@@ -514,6 +516,7 @@ interface InnsendingMother {
         antallDagerPerUke: Float? = 1F,
         registrertDato: LocalDateTime = 1.januarDateTime(2022),
         innhentet: LocalDateTime = 1.januarDateTime(2022),
+        antallDagerFraSaksbehandler: List<PeriodeMedVerdi<AntallDager>> = emptyList(),
     ): Tiltak {
         return Tiltak(
             id = TiltakId.random(),

@@ -123,6 +123,7 @@ interface BehandlingMother {
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,
         kilde: String = "Komet",
+        antallDagerFraSaksbehandler: List<PeriodeMedVerdi<AntallDager>> = emptyList(),
     ) =
         Tiltak(
             id = id,
@@ -136,7 +137,7 @@ interface BehandlingMother {
             registrertDato = 1.januarDateTime(2023),
             innhentet = 1.januarDateTime(2023),
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
-                antallDagerSaksopplysningerFraSBH = emptyList(),
+                antallDagerSaksopplysningerFraSBH = antallDagerFraSaksbehandler,
                 antallDagerSaksopplysningerFraRegister =
                 listOf(
                     antallDagerFraRegister(

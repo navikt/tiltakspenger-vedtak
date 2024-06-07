@@ -187,7 +187,7 @@ data class Førstegangsbehandling(
         val oppdatertTiltak = tiltakTilOppdatering.tilbakestillAntallDagerFraSaksbehandler()
 
         val nyeTiltak = tiltak.map {
-            if (it.eksternId == oppdatertTiltak.eksternId) {
+            if (it.id == oppdatertTiltak.id) {
                 oppdatertTiltak
             } else {
                 it

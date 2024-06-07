@@ -2,8 +2,10 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.assertions.throwables.shouldThrowWithMessage
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
+import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -101,8 +103,12 @@ class FørstegangsbehandlingTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        tiltak1 shouldNotBeEqual vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
-        tiltak2 shouldBeEqual vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+
+        tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
+        tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldContain periodisertAntallDagerVerdi
+        tiltak2FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.size shouldBe 0
     }
 
     @Test
@@ -172,6 +178,62 @@ class FørstegangsbehandlingTest {
                 saksbehandler = saksbehandlerUtenTilgang,
             )
         }
+    }
+
+    @Test
+    fun `det skal ikke være mulig å tilbakestille antall dager på et tiltak som ikke fins på behandlingen`() {
+        val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
+        shouldThrowWithMessage<IllegalStateException>(
+            "Kan ikke tilbakestille antall dager fordi vi fant ikke tiltaket på behandlingen",
+        ) {
+            vilkårsvurdertBehandling.tilbakestillAntallDager(
+                tiltakId = TiltakId.random(),
+                saksbehandler = saksbehandlerMedTilgang,
+            )
+        }
+    }
+
+    @Test
+    fun `når man tilbakestiller antall dager skal man kun tilbakestille dagene på det tiltaket som man har oppgitt i tiltakId-parameteren`() {
+        val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
+
+        val lagretBehandling = slot<Førstegangsbehandling>()
+        every { behandlingRepo.hentOrNull(any()) } returns vilkårsvurdertBehandling
+        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
+
+        val periodisertAntallDagerVerdi = antallDagerFraSaksbehandler(
+            periode = Periode(
+                fra = 1.januar(2026),
+                til = 1.februar(2026),
+            ),
+        )
+        val tiltak1 = ObjectMother.tiltak(
+            id = TiltakId.random(),
+            fom = 1.januar(2026),
+            tom = 31.januar(2026),
+            antallDagerFraSaksbehandler = listOf(periodisertAntallDagerVerdi),
+        )
+        val tiltak2 = ObjectMother.tiltak(
+            id = TiltakId.random(),
+            fom = 1.februar(2026),
+            tom = 28.februar(2026),
+            antallDagerFraSaksbehandler = listOf(periodisertAntallDagerVerdi),
+        )
+        val tiltak = listOf(tiltak1, tiltak2)
+        val vilkårsvurdertBehandlingMedToTiltak = vilkårsvurdertBehandling.oppdaterTiltak(tiltak)
+
+        val vilkårsvurdertBehandlingMedAntallDager = vilkårsvurdertBehandlingMedToTiltak.tilbakestillAntallDager(
+            tiltakId = tiltak1.id,
+            saksbehandler = saksbehandlerMedTilgang,
+        )
+
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+
+        tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
+        tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldBeEqual emptyList()
+        tiltak2 shouldBeEqual tiltak2FraBehandlingen
+        tiltak2.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldBeEqual tiltak2FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH
     }
 
     @Test
