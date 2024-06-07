@@ -11,6 +11,13 @@ interface SaksbehandlerMother {
         roller = listOf(Rolle.SAKSBEHANDLER),
     )
 
+    fun saksbehandlerUtenTilgang() = Saksbehandler(
+        navIdent = "Z12345",
+        brukernavn = "Sak Behandler",
+        epost = "Sak.Behandler@nav.no",
+        roller = emptyList(),
+    )
+
     fun beslutter() = Saksbehandler(
         navIdent = "Z12345",
         brukernavn = "Sak Behandler",
