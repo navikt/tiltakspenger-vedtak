@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.assertions.throwables.shouldThrowWithMessage
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
@@ -102,6 +103,47 @@ class FørstegangsbehandlingTest {
 
         tiltak1 shouldNotBeEqual vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
         tiltak2 shouldBeEqual vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+    }
+
+    @Test
+    fun `det skal ikke være mulig å legge til antall dager i uken for en periode som går utenfor perioden på tiltaket`() {
+        val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
+
+        val lagretBehandling = slot<Førstegangsbehandling>()
+        every { behandlingRepo.hentOrNull(any()) } returns vilkårsvurdertBehandling
+        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
+
+        val tiltak = ObjectMother.tiltak(id = TiltakId.random(), fom = 1.januar(2026), tom = 31.januar(2026))
+        val vilkårsvurdertBehandlingMedToTiltak = vilkårsvurdertBehandling.oppdaterTiltak(listOf(tiltak))
+
+        val periodisertAntallDagerVerdi = antallDagerFraSaksbehandler(
+            periode = Periode(
+                fra = 1.januar(2026),
+                til = 1.februar(2026),
+            ),
+        )
+
+        shouldThrow<IllegalArgumentException> {
+            vilkårsvurdertBehandlingMedToTiltak.oppdaterAntallDager(
+                tiltakId = tiltak.id,
+                nyPeriodeMedAntallDager = periodisertAntallDagerVerdi,
+                saksbehandler = saksbehandlerMedTilgang,
+            )
+        }
+    }
+
+    @Test
+    fun `det skal ikke være mulig å legge til antall dager i uken på et tiltak som ikke fins på behandlingen`() {
+        val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
+        shouldThrowWithMessage<IllegalStateException>(
+            "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen",
+        ) {
+            vilkårsvurdertBehandling.oppdaterAntallDager(
+                tiltakId = TiltakId.random(),
+                nyPeriodeMedAntallDager = mockk<PeriodeMedVerdi<AntallDager>>(),
+                saksbehandler = saksbehandlerMedTilgang,
+            )
+        }
     }
 
     @Test
