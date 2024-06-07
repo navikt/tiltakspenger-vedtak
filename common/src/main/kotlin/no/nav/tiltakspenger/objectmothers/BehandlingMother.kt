@@ -6,11 +6,13 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -109,6 +111,7 @@ interface BehandlingMother {
     )
 
     fun tiltak(
+        id: TiltakId = TiltakId.random(),
         eksternId: String = "TiltakId",
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
@@ -122,7 +125,7 @@ interface BehandlingMother {
         kilde: String = "Komet",
     ) =
         Tiltak(
-            id = TiltakId.random(),
+            id = id,
             eksternId = eksternId,
             gjennomføring = gjennomføring,
             deltakelseFom = fom,
@@ -134,9 +137,37 @@ interface BehandlingMother {
             innhentet = 1.januarDateTime(2023),
             antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
                 antallDagerSaksopplysningerFraSBH = emptyList(),
-                antallDagerSaksopplysningerFraRegister = emptyList(),
+                antallDagerSaksopplysningerFraRegister =
+                listOf(
+                    antallDagerFraRegister(
+                        periode = Periode(
+                            fra = fom,
+                            til = tom,
+                        ),
+                    ),
+                ),
                 avklartAntallDager = emptyList(),
             ),
+        )
+
+    fun antallDagerFraRegister(periode: Periode) =
+        PeriodeMedVerdi(
+            verdi = AntallDager(
+                antallDager = 5,
+                kilde = Kilde.ARENA,
+                saksbehandlerIdent = null,
+            ),
+            periode = periode,
+        )
+
+    fun antallDagerFraSaksbehandler(periode: Periode, saksbehandlerIdent: String = "test") =
+        PeriodeMedVerdi(
+            verdi = AntallDager(
+                antallDager = 5,
+                kilde = Kilde.SAKSB,
+                saksbehandlerIdent = saksbehandlerIdent,
+            ),
+            periode = periode,
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)

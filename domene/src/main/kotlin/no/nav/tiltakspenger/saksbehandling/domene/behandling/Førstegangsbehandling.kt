@@ -152,7 +152,7 @@ data class Førstegangsbehandling(
         val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
 
         val nyeTiltak = tiltak.map {
-            if (it.eksternId == oppdatertTiltak.eksternId) {
+            if (it.id == oppdatertTiltak.id) {
                 oppdatertTiltak
             } else {
                 it
