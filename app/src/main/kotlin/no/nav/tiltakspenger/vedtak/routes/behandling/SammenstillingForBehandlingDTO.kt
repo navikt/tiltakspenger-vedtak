@@ -11,13 +11,13 @@ data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
     val saksbehandler: String?,
     val beslutter: String?,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val søknad: SøknadDTO,
+    val vurderingsperiode: PeriodeDTO,
+    val søknadsdato: LocalDate,
     val registrerteTiltak: List<RegistrertTiltakDTO>,
-    val saksopplysninger: List<KategoriserteSaksopplysningerDTO>,
+    val alderssaksopplysning: List<AlderssaksopplysningDTO>,
+    val ytelsessaksopplysninger: List<SaksopplysningUtDTO>,
     val personopplysninger: PersonopplysningerDTO,
-    val tilstand: String,
+    val behandlingsteg: String,
     val status: String,
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
@@ -59,12 +59,15 @@ data class SammenstillingForBehandlingDTO(
         val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
     )
 
-    data class SøknadDTO(
-        val søknadsdato: LocalDate,
-        val arrangoernavn: String,
-        val tiltakstype: String,
-        val deltakelseFom: LocalDate,
-        val deltakelseTom: LocalDate,
+    data class AlderssaksopplysningDTO(
+        val periode: PeriodeDTO,
+        val kilde: String,
+        val detaljer: String,
+        val vilkår: String,
+        val vilkårTittel: String,
+        val fakta: FaktaDTO,
+        val utfall: String,
+        val vilkårLovReferense: List<LovreferanseDTO>,
     )
 
     data class SaksopplysningUtDTO(
