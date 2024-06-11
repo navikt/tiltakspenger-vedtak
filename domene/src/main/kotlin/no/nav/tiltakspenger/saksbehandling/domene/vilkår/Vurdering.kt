@@ -1,14 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import java.time.LocalDate
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 
 data class Vurdering(
     val vilkår: Vilkår,
-    val kilde: Kilde,
-    val fom: LocalDate?,
-    val tom: LocalDate?,
-    val utfall: Utfall,
+    val utfall: Periodisering<Utfall>,
     val detaljer: String,
-    val grunnlagId: String?,
 )

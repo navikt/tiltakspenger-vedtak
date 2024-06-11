@@ -25,7 +25,7 @@ interface Behandling {
     val saksopplysninger: List<Saksopplysning>
     val tiltak: List<Tiltak>
     val vilkårsvurderinger: List<Vurdering>
-    val utfallsperioder: List<Utfallsperiode>
+    val utfallsperioder: List<Utfallsdetaljer>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
 
@@ -45,6 +45,7 @@ interface Behandling {
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ): Behandling
+
     fun tilbakestillAntallDager(
         tiltakId: String,
         saksbehandler: Saksbehandler,

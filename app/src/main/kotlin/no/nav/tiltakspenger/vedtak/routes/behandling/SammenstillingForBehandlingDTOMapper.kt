@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsdetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
@@ -362,7 +362,7 @@ object SammenstillingForBehandlingDTOMapper {
         return Utfall.OPPFYLT.name
     }
 
-    fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
+    fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsdetaljer>): String {
         if (utfallsperioder.any { utfallsperiode ->
                 utfallsperiode.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING
             }

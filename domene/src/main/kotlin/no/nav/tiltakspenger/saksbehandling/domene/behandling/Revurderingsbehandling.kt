@@ -26,7 +26,7 @@ data class Revurderingsbehandling(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val vilkårsvurderinger: List<Vurdering>,
-    override val utfallsperioder: List<Utfallsperiode>,
+    override val utfallsperioder: List<Utfallsdetaljer>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
     val forrigeVedtak: Vedtak,
@@ -239,7 +239,7 @@ data class Revurderingsbehandling(
     }
 
     override fun vilkårsvurder(): Revurderingsbehandling {
-        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse(vurderingsperiode) }
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
@@ -260,14 +260,14 @@ data class Revurderingsbehandling(
                 val utfall =
                     if (utfallYtelser == UtfallForPeriode.GIR_RETT_TILTAKSPENGER && harManuelleBarnUnder16) UtfallForPeriode.KREVER_MANUELL_VURDERING else utfallYtelser
 
-                Utfallsperiode(
+                Utfallsdetaljer(
                     fom = dag,
                     tom = dag,
                     antallBarn = this.søknad().barnetillegg.filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }
                         .count { it.under16ForDato(dag) },
                     utfall = utfall,
                 )
-            }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
+            }.fold(emptyList<Utfallsdetaljer>()) { periodisertliste, nesteDag ->
                 periodisertliste.slåSammen(nesteDag)
             }
 
@@ -287,7 +287,7 @@ data class Revurderingsbehandling(
         )
     }
 
-    private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
+    private fun List<Utfallsdetaljer>.slåSammen(neste: Utfallsdetaljer): List<Utfallsdetaljer> {
         if (this.isEmpty()) return listOf(neste)
         val forrige = this.last()
         return if (forrige.kanSlåsSammen(neste)) {

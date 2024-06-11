@@ -40,13 +40,13 @@ internal class BehandlingVilkårsvurdertTest {
         behandling.status shouldBe BehandlingStatus.Innvilget
 
         behandling.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.januar(2024),
                 tom = 31.januar(2024),
                 antallBarn = 0,
                 utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.februar(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,
@@ -69,19 +69,19 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingMedYtelseStartOgSlutt.status shouldBe BehandlingStatus.Innvilget
 
         behandlingMedYtelseStartOgSlutt.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.januar(2024),
                 tom = 31.januar(2024),
                 antallBarn = 0,
                 utfall = UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER,
             ),
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.februar(2024),
                 tom = 29.februar(2024),
                 antallBarn = 0,
                 utfall = UtfallForPeriode.GIR_RETT_TILTAKSPENGER,
             ),
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.mars(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,
@@ -104,7 +104,7 @@ internal class BehandlingVilkårsvurdertTest {
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 
         behandlingAvslag.utfallsperioder shouldContainExactlyInAnyOrder listOf(
-            Utfallsperiode(
+            Utfallsdetaljer(
                 fom = 1.januar(2024),
                 tom = 31.mars(2024),
                 antallBarn = 0,

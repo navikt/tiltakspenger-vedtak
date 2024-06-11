@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.libs.periodisering.Periodisering.Companion.reduser
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -13,6 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class Førstegangsbehandling(
@@ -25,7 +28,7 @@ data class Førstegangsbehandling(
     override val saksopplysninger: List<Saksopplysning>,
     override val tiltak: List<Tiltak>,
     override val vilkårsvurderinger: List<Vurdering>,
-    override val utfallsperioder: List<Utfallsperiode>,
+    override val utfallsperioder: List<Utfallsdetaljer>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
 ) : Behandling {
@@ -270,15 +273,22 @@ data class Førstegangsbehandling(
     }
 
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+        val deltagelseVurdering: Vurdering = tiltak
+            .map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse(vurderingsperiode) }
+            .map { it.copy(utfall = it.utfall.utvid(Utfall.IKKE_OPPFYLT, vurderingsperiode)) }
+            .slåSammenTiltakVurderinger()
 
-        val vurderinger = saksopplysninger().flatMap {
+        val livsoppholdsytelserVurderinger: List<Vurdering> = saksopplysninger().map {
             it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger
+        }
 
+        val samletUtfall: Periodisering<Utfall> = (livsoppholdsytelserVurderinger + deltagelseVurdering) // + alder mm
+            .samletUtfall()
+
+        /*
         val utfallsperioder =
             vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
-                val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
+                val idag = livsoppholdsytelserVurderinger.filter { dag >= it.fom && dag <= it.tom }
                 val utfallYtelser = when {
                     idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
                     idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
@@ -302,31 +312,52 @@ data class Førstegangsbehandling(
                 periodisertliste.slåSammen(nesteDag)
             }
 
-        val status = if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
-            BehandlingStatus.Manuell
-        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-            BehandlingStatus.Innvilget
-        } else {
-            BehandlingStatus.Avslag
+         */
+
+        // TODO Barnetillegg gjenstår
+        val utfallsperioder: Periodisering<Utfallsdetaljer> = samletUtfall.map {
+            Utfallsdetaljer(
+                antallBarn = 0,
+                utfall = when (it) {
+                    Utfall.OPPFYLT -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
+                    Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
+                    Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                },
+            )
         }
 
+        val status =
+            if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
+                BehandlingStatus.Manuell
+            } else if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+                BehandlingStatus.Innvilget
+            } else {
+                BehandlingStatus.Avslag
+            }
+
         return this.copy(
-            vilkårsvurderinger = vurderinger,
+            vilkårsvurderinger = livsoppholdsytelserVurderinger,
             utfallsperioder = utfallsperioder,
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
     }
 
-    private fun List<Utfallsperiode>.slåSammen(neste: Utfallsperiode): List<Utfallsperiode> {
-        if (this.isEmpty()) return listOf(neste)
-        val forrige = this.last()
-        return if (forrige.kanSlåsSammen(neste)) {
-            this.dropLast(1) + forrige.copy(
-                tom = neste.tom,
-            )
-        } else {
-            this + neste
+    private fun List<Vurdering>.slåSammenTiltakVurderinger(): Vurdering =
+        this.map { it.utfall }.reduser { utfall1, utfall2 ->
+            when {
+                utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
+                utfall1 == Utfall.OPPFYLT || utfall2 == Utfall.OPPFYLT -> Utfall.OPPFYLT
+                else -> Utfall.IKKE_OPPFYLT
+            }
+        }.let { Vurdering(Vilkår.TILTAKSDELTAGELSE, it, "") }
+
+    private fun List<Vurdering>.samletUtfall(): Periodisering<Utfall> =
+        this.map { it.utfall }.reduser { utfall1, utfall2 ->
+            when {
+                utfall1 == Utfall.IKKE_OPPFYLT || utfall2 == Utfall.IKKE_OPPFYLT -> Utfall.IKKE_OPPFYLT
+                utfall1 == Utfall.KREVER_MANUELL_VURDERING || utfall2 == Utfall.KREVER_MANUELL_VURDERING -> Utfall.KREVER_MANUELL_VURDERING
+                else -> Utfall.OPPFYLT
+            }
         }
-    }
 }

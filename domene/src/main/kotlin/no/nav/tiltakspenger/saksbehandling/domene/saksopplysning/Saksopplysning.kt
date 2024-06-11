@@ -1,8 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_IKKE_YTELSE
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.HAR_YTELSE
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning.IKKE_INNHENTET_ENDA
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -25,7 +27,7 @@ data class Saksopplysning(
                 vilkår = vilkår,
                 kilde = vilkår.kilde(),
                 detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
+                typeSaksopplysning = IKKE_INNHENTET_ENDA,
             )
         }
 
@@ -49,78 +51,40 @@ data class Saksopplysning(
         }
     }
 
-    fun lagVurdering(periode: Periode): List<Vurdering> {
+    fun lagVurdering(periode: Periode): Vurdering {
+        val manuell = Periodisering(Utfall.KREVER_MANUELL_VURDERING, periode)
+        val ikkeOppfylt = Periodisering(Utfall.IKKE_OPPFYLT, periode)
+
         val vurdering = when (this.typeSaksopplysning) {
-            TypeSaksopplysning.IKKE_INNHENTET_ENDA -> Vurdering(
+            IKKE_INNHENTET_ENDA -> Vurdering(
                 vilkår = this.vilkår,
-                kilde = this.kilde,
-                fom = this.fom,
-                tom = this.tom,
                 detaljer = this.detaljer,
-                utfall = Utfall.KREVER_MANUELL_VURDERING,
-                grunnlagId = null,
+                utfall = manuell,
             )
 
-            HAR_YTELSE -> if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER)) {
-                if (this.kilde == Kilde.SAKSB) {
+            // TODO: Hvorfor setter man ikke OPPFYLT for hele vurderingsperioden?
+            HAR_IKKE_YTELSE -> Vurdering(
+                vilkår = this.vilkår,
+                detaljer = this.detaljer,
+                utfall = manuell.setVerdiForDelPeriode(Utfall.OPPFYLT, Periode(this.fom, this.tom)),
+            )
+
+            HAR_YTELSE -> {
+                if (this.vilkår in listOf(Vilkår.AAP, Vilkår.DAGPENGER) && this.kilde == Kilde.SAKSB) {
                     Vurdering(
                         vilkår = this.vilkår,
-                        kilde = this.kilde,
-                        fom = this.fom,
-                        tom = this.tom,
                         detaljer = this.detaljer,
-                        utfall = Utfall.IKKE_OPPFYLT,
-                        grunnlagId = null,
+                        utfall = manuell,
                     )
                 } else {
                     Vurdering(
                         vilkår = this.vilkår,
-                        kilde = this.kilde,
-                        fom = this.fom,
-                        tom = this.tom,
                         detaljer = this.detaljer,
-                        utfall = Utfall.KREVER_MANUELL_VURDERING,
-                        grunnlagId = null,
+                        utfall = ikkeOppfylt.setVerdiForDelPeriode(Utfall.IKKE_OPPFYLT, Periode(this.fom, this.tom)),
                     )
                 }
-            } else {
-                Vurdering(
-                    vilkår = this.vilkår,
-                    kilde = this.kilde,
-                    fom = this.fom,
-                    tom = this.tom,
-                    detaljer = this.detaljer,
-                    utfall = Utfall.IKKE_OPPFYLT,
-                    grunnlagId = null,
-                )
             }
-
-            HAR_IKKE_YTELSE -> Vurdering(
-                vilkår = this.vilkår,
-                kilde = this.kilde,
-                fom = this.fom,
-                tom = this.tom,
-                detaljer = this.detaljer,
-                utfall = Utfall.OPPFYLT,
-                grunnlagId = null,
-            )
         }
-
-        if (vurdering.utfall == Utfall.IKKE_OPPFYLT) {
-            val oppfyltePerioder = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom)).map {
-                Vurdering(
-                    vilkår = this.vilkår,
-                    kilde = this.kilde,
-                    fom = it.fra,
-                    tom = it.til,
-                    detaljer = this.detaljer,
-                    utfall = Utfall.OPPFYLT,
-                    grunnlagId = null,
-                )
-            }
-
-            return oppfyltePerioder + vurdering
-        }
-        return listOf(vurdering)
+        return vurdering
     }
 }

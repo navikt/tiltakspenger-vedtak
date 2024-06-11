@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -72,16 +72,13 @@ data class Tiltak(
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
         return Vurdering(
             vilkår = Vilkår.TILTAKSDELTAGELSE,
-            kilde = Kilde.SAKSB, // TODO: Finn ut av dette
             detaljer = detaljer,
-            fom = deltakelseFom,
-            tom = deltakelseTom,
-            utfall = utfall,
-            grunnlagId = this.id.toString(),
+            utfall = Periodisering(utfall, Periode(deltakelseFom, deltakelseTom)),
+            // TODO grunnlagId = this.id.toString(),
         )
     }
 
-    fun vilkårsvurderTiltaksdeltagelse(): Vurdering {
+    fun vilkårsvurderTiltaksdeltagelse(vurderingsperiode: Periode): Vurdering {
         val vurdering = if (gjennomføring.rettPåTiltakspenger) {
             if (brukerDeltarPåTiltak(deltakelseStatus.status)) {
                 lagVurderingAvTiltakdeltagelse(Utfall.OPPFYLT)
