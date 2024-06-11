@@ -5,16 +5,16 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVilkår
 import java.time.LocalDate
 
 class AapTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdSaksopplysning {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdYtelseSaksopplysning {
             if (ytelser == null) {
-                return LivsoppholdSaksopplysning(
-                    vilkår = Vilkår.AAP,
+                return LivsoppholdYtelseSaksopplysning(
+                    vilkår = LivsoppholdDelVilkår.AAP,
                     kilde = Kilde.ARENA,
                     detaljer = "",
                     harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
@@ -35,8 +35,8 @@ class AapTolker {
                 }
 
             if (ytelseListe.isEmpty()) {
-                return LivsoppholdSaksopplysning(
-                    vilkår = Vilkår.AAP,
+                return LivsoppholdYtelseSaksopplysning(
+                    vilkår = LivsoppholdDelVilkår.AAP,
                     kilde = Kilde.ARENA,
                     detaljer = "",
                     harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
@@ -49,14 +49,14 @@ class AapTolker {
 
             return ytelseListe
                 .fold(
-                    LivsoppholdSaksopplysning(
-                        vilkår = Vilkår.AAP,
+                    LivsoppholdYtelseSaksopplysning(
+                        vilkår = LivsoppholdDelVilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
                         harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                             .setVerdiForDelPeriode(HarYtelse.HAR_IKKE_YTELSE, vurderingsperiode),
                     ),
-                ) { resultat: LivsoppholdSaksopplysning, ytelse: YtelseSak ->
+                ) { resultat: LivsoppholdYtelseSaksopplysning, ytelse: YtelseSak ->
                     resultat.copy(
                         harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
                             HarYtelse.HAR_YTELSE,

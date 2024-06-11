@@ -8,8 +8,9 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårData
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -23,14 +24,14 @@ interface Behandling {
     val søknader: List<Søknad>
     val saksbehandler: String?
     val beslutter: String?
-    val livsoppholdVilkårData: LivsoppholdVilkårData
-    val tiltak: List<Tiltak>
+    val vilkårData: VilkårData
     val utfallsperioder: Periodisering<Utfallsdetaljer>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
 
     fun leggTilSøknad(søknad: Søknad): Behandling
-    fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons
+    fun leggTilSaksopplysning(ytelseSaksopplysning: YtelseSaksopplysning): LeggTilSaksopplysningRespons
+    fun leggTilSaksopplysning(livsoppholdYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LeggTilSaksopplysningRespons
     fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling
     fun startBehandling(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling

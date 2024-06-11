@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerS
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
@@ -38,8 +38,8 @@ interface BehandlingMother {
         vilkår: Vilkår = Vilkår.AAP,
         type: HarYtelse = HarYtelse.HAR_YTELSE,
         saksbehandler: String? = null,
-    ): LivsoppholdSaksopplysning =
-        LivsoppholdSaksopplysning(
+    ): YtelseSaksopplysning =
+        YtelseSaksopplysning(
             kilde = kilde,
             vilkår = vilkår,
             detaljer = "",

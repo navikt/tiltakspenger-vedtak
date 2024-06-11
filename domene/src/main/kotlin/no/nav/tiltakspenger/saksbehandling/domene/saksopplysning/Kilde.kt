@@ -10,4 +10,5 @@ enum class Kilde(val navn: String) {
     SØKNAD("Søknad"),
     SAKSB("Saksbehandler"),
     KOMET("Komet"),
+    FLERE(""),
 }

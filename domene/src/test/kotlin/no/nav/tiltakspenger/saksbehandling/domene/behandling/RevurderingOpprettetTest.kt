@@ -13,10 +13,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerS
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkårData
 import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
 
 internal class RevurderingOpprettetTest {
 
-    private val livsoppholdSaksopplysning = LivsoppholdSaksopplysning(
+    private val ytelseSaksopplysning = YtelseSaksopplysning(
         harYtelse = Periodisering(HarYtelse.HAR_YTELSE, Periode(LocalDate.MIN, LocalDate.MAX)),
         vilkår = Vilkår.AAP,
         kilde = Kilde.PESYS,
@@ -98,7 +98,7 @@ internal class RevurderingOpprettetTest {
     @Test
     fun `leggTilSaksopplysning skal returnere en LeggTilSaksopplysningRespons med den samme behandlingen dersom saksopplysningene ikke har endret seg fra sist`() {
         val revurderingOpprettet = mockRevurderingOpprettet()
-        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(livsoppholdSaksopplysning)
+        val leggTilSaksopplysningRespons = revurderingOpprettet.leggTilSaksopplysning(ytelseSaksopplysning)
         assertEquals(revurderingOpprettet, leggTilSaksopplysningRespons.behandling)
         assertFalse { leggTilSaksopplysningRespons.erEndret }
     }

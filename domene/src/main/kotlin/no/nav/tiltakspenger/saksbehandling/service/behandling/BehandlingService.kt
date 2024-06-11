@@ -8,14 +8,16 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 
 interface BehandlingService {
     fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling?
     fun hentBehandling(behandlingId: BehandlingId): Behandling
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun leggTilSaksopplysning(behandlingId: BehandlingId, livsoppholdSaksopplysning: LivsoppholdSaksopplysning)
+    fun leggTilSaksopplysning(behandlingId: BehandlingId, ytelseSaksopplysning: YtelseSaksopplysning)
+    fun leggTilSaksopplysning(behandlingId: BehandlingId, livsoppholdSaksopplysning: LivsoppholdYtelseSaksopplysning)
     fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>)
     fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String?)

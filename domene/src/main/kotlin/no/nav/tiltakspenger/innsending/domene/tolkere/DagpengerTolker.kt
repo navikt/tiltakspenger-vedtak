@@ -5,16 +5,16 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVilkår
 import java.time.LocalDate
 
 class DagpengerTolker {
     companion object {
-        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdSaksopplysning {
+        fun tolkeData(ytelser: List<YtelseSak>?, vurderingsperiode: Periode): LivsoppholdYtelseSaksopplysning {
             if (ytelser == null) {
-                return LivsoppholdSaksopplysning(
-                    vilkår = Vilkår.DAGPENGER,
+                return LivsoppholdYtelseSaksopplysning(
+                    vilkår = LivsoppholdDelVilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
                     harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
@@ -35,8 +35,8 @@ class DagpengerTolker {
                 }
 
             if (ytelseListe.isEmpty()) {
-                return LivsoppholdSaksopplysning(
-                    vilkår = Vilkår.DAGPENGER,
+                return LivsoppholdYtelseSaksopplysning(
+                    vilkår = LivsoppholdDelVilkår.DAGPENGER,
                     kilde = Kilde.ARENA,
                     detaljer = "",
                     harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
@@ -48,8 +48,8 @@ class DagpengerTolker {
             }
             return ytelseListe
                 .fold(
-                    LivsoppholdSaksopplysning(
-                        vilkår = Vilkår.DAGPENGER,
+                    LivsoppholdYtelseSaksopplysning(
+                        vilkår = LivsoppholdDelVilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         // TODO: Denne blir annerledes når vi ikke lenger har én saksopplysning per sak
                         detaljer = ytelseListe.lastOrNull()?.let { detaljerForDagpenger(it) } ?: "",
@@ -59,7 +59,7 @@ class DagpengerTolker {
                                 vurderingsperiode,
                             ),
                     ),
-                ) { resultat: LivsoppholdSaksopplysning, ytelse: YtelseSak ->
+                ) { resultat: LivsoppholdYtelseSaksopplysning, ytelse: YtelseSak ->
                     resultat.copy(
                         harYtelse = resultat.harYtelse.setVerdiForDelPeriode(
                             HarYtelse.HAR_YTELSE,

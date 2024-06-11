@@ -4,19 +4,19 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 import java.time.LocalDate
 
 // TODO: Denne vil jeg skrive om, vi burde ikke vilkårsvurdere når vi mottar dataene.
 class AlderTolker {
     companion object {
-        fun tolkeData(fdato: LocalDate, vurderingsperiode: Periode): LivsoppholdSaksopplysning =
+        fun tolkeData(fdato: LocalDate, vurderingsperiode: Periode): YtelseSaksopplysning =
             fdato.plusYears(18).let {
                 if (vurderingsperiode.inneholder(it)) {
-                    LivsoppholdSaksopplysning(
+                    YtelseSaksopplysning(
                         kilde = Kilde.PDL,
-                        vilkår = Vilkår.ALDER,
+                        vilkår = Inngangsvilkår.ALDER,
                         detaljer = "",
                         saksbehandler = null,
                         harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
@@ -28,18 +28,18 @@ class AlderTolker {
                     )
                 } else {
                     if (vurderingsperiode.før(it)) {
-                        LivsoppholdSaksopplysning(
+                        YtelseSaksopplysning(
                             kilde = Kilde.PDL,
-                            vilkår = Vilkår.ALDER,
+                            vilkår = Inngangsvilkår.ALDER,
                             detaljer = "",
                             saksbehandler = null,
                             harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)
                                 .setVerdiForDelPeriode(HarYtelse.HAR_YTELSE, vurderingsperiode),
                         )
                     } else {
-                        LivsoppholdSaksopplysning(
+                        YtelseSaksopplysning(
                             kilde = Kilde.PDL,
-                            vilkår = Vilkår.ALDER,
+                            vilkår = Inngangsvilkår.ALDER,
                             detaljer = "",
                             saksbehandler = null,
                             harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode)

@@ -17,7 +17,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -64,7 +65,16 @@ class BehandlingServiceImpl(
 
     override fun leggTilSaksopplysning(
         behandlingId: BehandlingId,
-        livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
+        ytelseSaksopplysning: YtelseSaksopplysning,
+    ) {
+        val behandlingRespons = hentBehandling(behandlingId)
+            .leggTilSaksopplysning(ytelseSaksopplysning)
+        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+    }
+
+    override fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        livsoppholdSaksopplysning: LivsoppholdYtelseSaksopplysning,
     ) {
         val behandlingRespons = hentBehandling(behandlingId)
             .leggTilSaksopplysning(livsoppholdSaksopplysning)

@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 
-data class Vurdering(
-    val vilkår: Inngangsvilkår,
+data class LivsoppholdDelVurdering(
+    val delVilkår: LivsoppholdDelVilkår,
     val utfall: Periodisering<Utfall>,
     val detaljer: String,
 ) {
@@ -11,16 +11,16 @@ data class Vurdering(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Vurdering
+        other as LivsoppholdDelVurdering
 
-        if (vilkår != other.vilkår) return false
+        if (delVilkår != other.delVilkår) return false
         if (utfall != other.utfall) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = vilkår.hashCode()
+        var result = delVilkår.hashCode()
         result = 31 * result + utfall.hashCode()
         return result
     }

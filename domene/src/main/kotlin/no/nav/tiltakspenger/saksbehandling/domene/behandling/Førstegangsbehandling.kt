@@ -9,10 +9,13 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.SøknadTilSaksopplysningMapper
+import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårData
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -21,8 +24,7 @@ data class Førstegangsbehandling(
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
     override val beslutter: String?,
-    override val livsoppholdVilkårData: LivsoppholdVilkårData,
-    override val tiltak: List<Tiltak>,
+    override val vilkårData: VilkårData,
     override val utfallsperioder: Periodisering<Utfallsdetaljer>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
@@ -36,8 +38,7 @@ data class Førstegangsbehandling(
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
-                livsoppholdVilkårData = LivsoppholdVilkårData(søknad.vurderingsperiode()).håndterSøknad(søknad),
-                tiltak = emptyList(),
+                vilkårData = VilkårData(søknad.vurderingsperiode()),
                 saksbehandler = null,
                 beslutter = null,
                 utfallsperioder = Periodisering(
@@ -46,7 +47,7 @@ data class Førstegangsbehandling(
                 ),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
-            )
+            ).leggTilSøknad(søknad) // TODO: Denne likte jeg ikke helt, var kulere da det ble da vi opprettet LivsoppholdVilkårData?
         }
     }
 
@@ -71,10 +72,6 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        // TODO: Egentlig har vi ikke definert godt nok hva vi skal gjøre i disse tilfellene
-        return this.copy(
-            livsoppholdVilkårData = livsoppholdVilkårData.håndterSøknad(søknad),
-        ).vilkårsvurder()
         /*
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
             Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
@@ -93,9 +90,75 @@ data class Førstegangsbehandling(
         ).vilkårsvurder()
 
          */
+
+        // TODO: Håndter flere søknader
+        val ytelseSaksopplysninger: Map<Inngangsvilkår, YtelseSaksopplysning> = mapOf(
+            Inngangsvilkår.KVP to søknad.kvp,
+            Inngangsvilkår.INTROPROGRAMMET to søknad.intro,
+            Inngangsvilkår.INSTITUSJONSOPPHOLD to søknad.institusjon,
+        ).mapValues {
+            SøknadTilSaksopplysningMapper.lagYtelseSaksopplysningFraPeriodeSpørsmål(
+                it.key,
+                it.value,
+                søknad.vurderingsperiode(),
+            )
+        }
+        val livsoppholdYtelseSaksopplysninger: Map<LivsoppholdDelVilkår, LivsoppholdYtelseSaksopplysning> = mapOf(
+            LivsoppholdDelVilkår.GJENLEVENDEPENSJON to søknad.gjenlevendepensjon,
+            LivsoppholdDelVilkår.SYKEPENGER to søknad.sykepenger,
+            LivsoppholdDelVilkår.SUPPLERENDESTØNADALDER to søknad.supplerendeStønadAlder,
+            LivsoppholdDelVilkår.SUPPLERENDESTØNADFLYKTNING to søknad.supplerendeStønadFlyktning,
+            LivsoppholdDelVilkår.JOBBSJANSEN to søknad.jobbsjansen,
+            LivsoppholdDelVilkår.PENSJONSINNTEKT to søknad.trygdOgPensjon,
+        ).mapValues {
+            SøknadTilSaksopplysningMapper.lagYtelseSaksopplysningFraPeriodeSpørsmål(
+                it.key,
+                it.value,
+                søknad.vurderingsperiode(),
+            )
+        } + (
+            LivsoppholdDelVilkår.ALDERSPENSJON to SøknadTilSaksopplysningMapper.lagSaksopplysningFraFraOgMedDatospørsmål(
+                LivsoppholdDelVilkår.ALDERSPENSJON,
+                søknad.alderspensjon,
+                søknad.vurderingsperiode(),
+            )
+            ) + (
+            LivsoppholdDelVilkår.ETTERLØNN to
+                SøknadTilSaksopplysningMapper.lagSaksopplysningFraJaNeiSpørsmål(
+                    LivsoppholdDelVilkår.ETTERLØNN,
+                    søknad.etterlønn,
+                    søknad.vurderingsperiode(),
+                )
+            )
+
+        return this
+            .copy(
+                søknader = søknader + søknad,
+                vurderingsperiode = søknad.vurderingsperiode(),
+
+                vilkårData = vilkårData
+                    .oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.GJENLEVENDEPENSJON]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.SYKEPENGER]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.SUPPLERENDESTØNADALDER]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.SUPPLERENDESTØNADFLYKTNING]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.JOBBSJANSEN]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.PENSJONSINNTEKT]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.ALDERSPENSJON]!!,
+                    ).oppdaterSaksopplysninger(
+                        livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.ETTERLØNN]!!,
+                    ),
+            )
+            .vilkårsvurder()
     }
 
-    override fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdSaksopplysning): LeggTilSaksopplysningRespons {
+    override fun leggTilSaksopplysning(ytelseSaksopplysning: YtelseSaksopplysning): LeggTilSaksopplysningRespons {
         // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
         // det hører hjemme i SakService
         require(
@@ -110,15 +173,44 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertYtelserVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
-        return if (oppdatertYtelserVilkårData == this.livsoppholdVilkårData) {
+        val oppdatertYtelserVilkårData = vilkårData.oppdaterSaksopplysninger(ytelseSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.vilkårData) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(livsoppholdVilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
+                behandling = this.copy(vilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
+                erEndret = true,
+            )
+        }
+    }
+
+    override fun leggTilSaksopplysning(livsoppholdSaksopplysning: LivsoppholdYtelseSaksopplysning): LeggTilSaksopplysningRespons {
+        // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
+        // det hører hjemme i SakService
+        require(
+            this.tilstand in listOf(
+                BehandlingTilstand.OPPRETTET,
+                BehandlingTilstand.VILKÅRSVURDERT,
+                BehandlingTilstand.TIL_BESLUTTER,
+            ),
+        ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
+
+        if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            // TODO Gjør noe ekstra
+        }
+
+        val oppdatertYtelserVilkårData = vilkårData.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.vilkårData) {
+            LeggTilSaksopplysningRespons(
+                behandling = this,
+                erEndret = false,
+            )
+        } else {
+            LeggTilSaksopplysningRespons(
+                behandling = this.copy(vilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -142,21 +234,12 @@ data class Førstegangsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
-
-        val nyeTiltak = tiltak.map {
-            if (it.eksternId == oppdatertTiltak.eksternId) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
         return this.copy(
-            tiltak = nyeTiltak,
+            vilkårData = vilkårData.oppdaterAntallDager(
+                tiltakId,
+                nyPeriodeMedAntallDager,
+                saksbehandler,
+            ),
             tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
@@ -176,7 +259,11 @@ data class Førstegangsbehandling(
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             // TODO Gjør noe ekstra
         }
-        return this.copy(tiltak = tiltak, tilstand = BehandlingTilstand.OPPRETTET).vilkårsvurder()
+
+        return this.copy(
+            vilkårData = vilkårData.oppdaterTiltak(tiltak),
+            tilstand = BehandlingTilstand.OPPRETTET,
+        ).vilkårsvurder()
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -233,22 +320,20 @@ data class Førstegangsbehandling(
     }
 
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val tiltaksdeltakelseUtfall: Periodisering<Utfall> =
-            tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
-                .samletUtfallForTiltaksdeltakelse()
-
-        val samletUtfall: Periodisering<UtfallForPeriode> = this.livsoppholdVilkårData.samletUtfall()
-            .kombiner(tiltaksdeltakelseUtfall, LivsoppholdVilkårData::kombinerToUtfall)
+        val samletUtfall: Periodisering<UtfallForPeriode> = this.vilkårData.samletUtfall()
             .map {
                 when (it) {
-                    Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
+                    Utfall.UAVKLART -> UtfallForPeriode.KREVER_MANUELL_VURDERING
                     Utfall.IKKE_OPPFYLT -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
                     Utfall.OPPFYLT -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
                 }
             }
 
         // TODO: Mangler barnetillegg
-        val utfallsperioder: Periodisering<Utfallsdetaljer> = samletUtfall.map { Utfallsdetaljer(1, it) }
+        val utfallsperioder: Periodisering<Utfallsdetaljer> =
+            samletUtfall.map {
+                Utfallsdetaljer(1, it)
+            }
 
         val status =
             if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
@@ -264,8 +349,5 @@ data class Førstegangsbehandling(
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
-    }
-
-    private fun List<Vurdering>.samletUtfallForTiltaksdeltakelse(): Periodisering<Utfall> {
     }
 }

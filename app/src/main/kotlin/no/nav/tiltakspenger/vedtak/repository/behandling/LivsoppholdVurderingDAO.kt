@@ -80,7 +80,7 @@ internal class LivsoppholdVurderingDAO {
         val utfall = when (utfallStr) {
             "OPPFYLT" -> Utfall.OPPFYLT
             "IKKE_OPPFYLT" -> Utfall.IKKE_OPPFYLT
-            "KREVER_MANUELL_VURDERING" -> Utfall.KREVER_MANUELL_VURDERING
+            "KREVER_MANUELL_VURDERING" -> Utfall.UAVKLART
             else -> {
                 throw IllegalStateException("Vurdering med ukjent utfall $utfallStr")
             }

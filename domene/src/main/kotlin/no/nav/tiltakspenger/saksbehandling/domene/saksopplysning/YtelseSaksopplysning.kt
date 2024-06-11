@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 
-data class LivsoppholdSaksopplysning(
+data class YtelseSaksopplysning(
     val kilde: Kilde,
-    val vilkår: Vilkår,
+    val vilkår: Inngangsvilkår,
     val detaljer: String,
     val harYtelse: Periodisering<HarYtelse>,
     val saksbehandler: String? = null,

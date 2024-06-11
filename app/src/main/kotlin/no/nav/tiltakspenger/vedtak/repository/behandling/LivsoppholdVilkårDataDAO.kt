@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import kotliquery.TransactionalSession
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkårData
 
 internal class LivsoppholdVilkårDataDAO(
     private val korrigerbarLivsoppholdDAO: KorrigerbarLivsoppholdDAO = KorrigerbarLivsoppholdDAO(),
@@ -25,6 +25,6 @@ internal class LivsoppholdVilkårDataDAO(
         txSession: TransactionalSession,
     ) {
         korrigerbarLivsoppholdDAO.slett(behandlingId, txSession)
-        korrigerbarLivsoppholdDAO.lagre(behandlingId, livsoppholdVilkårData.korrigerbareYtelser.values, txSession)
+        korrigerbarLivsoppholdDAO.lagre(behandlingId, livsoppholdVilkårData.livsoppholdYtelser.values, txSession)
     }
 }

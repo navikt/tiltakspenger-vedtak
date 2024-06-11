@@ -4,8 +4,8 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -63,8 +63,8 @@ data class Tiltak(
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {
         return Vurdering(
-            vilkår = Vilkår.TILTAKSDELTAGELSE,
-            utfall = Periodisering(Utfall.KREVER_MANUELL_VURDERING, Periode(this.deltakelseFom, this.deltakelseTom))
+            vilkår = Inngangsvilkår.TILTAKSDELTAGELSE,
+            utfall = Periodisering(Utfall.UAVKLART, Periode(this.deltakelseFom, this.deltakelseTom))
                 .setVerdiForDelPeriode(utfall, Periode(this.deltakelseFom, this.deltakelseTom)),
             detaljer = detaljer,
         )
@@ -79,13 +79,13 @@ data class Tiltak(
                     lagVurderingAvTiltakdeltagelse(Utfall.OPPFYLT)
                 } else {
                     lagVurderingAvTiltakdeltagelse(
-                        Utfall.KREVER_MANUELL_VURDERING,
+                        Utfall.UAVKLART,
                         "Status tilsier at bruker har sluttet på tiltak, men tiltaksperioden er fremover i tid",
                     )
                 }
             } else {
                 lagVurderingAvTiltakdeltagelse(
-                    Utfall.KREVER_MANUELL_VURDERING,
+                    Utfall.UAVKLART,
                     "Vi har mottatt en status vi ikke hånderer enda. Setter til manuell",
                 )
             }

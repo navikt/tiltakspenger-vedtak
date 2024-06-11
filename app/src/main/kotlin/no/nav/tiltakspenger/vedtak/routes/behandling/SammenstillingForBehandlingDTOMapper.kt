@@ -152,7 +152,7 @@ object SammenstillingForBehandlingDTOMapper {
                 deltakelseFom = behandling.søknad().tiltak.deltakelseFom,
                 deltakelseTom = behandling.søknad().tiltak.deltakelseTom,
             ),
-            registrerteTiltak = behandling.tiltak.map {
+            registrerteTiltak = behandling.vilkårData.tiltakVilkårData.tiltak.map {
                 RegistrertTiltakDTO(
                     id = it.id.toString(),
                     arrangør = it.gjennomføring.arrangørnavn,
@@ -175,7 +175,7 @@ object SammenstillingForBehandlingDTOMapper {
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.livsoppholdVilkårData.korrigerbareYtelser
+                    saksopplysninger = behandling.livsoppholdVilkårData.livsoppholdYtelser
                         .flatMap { it.value.periodiseringAvSaksopplysningOgUtfall().perioder() }
                         .filter { kategori.vilkår.contains(it.verdi.vilkår) }
                         .map {
@@ -251,8 +251,8 @@ object SammenstillingForBehandlingDTOMapper {
     }
 
     fun Periodisering<Utfall>.utfallForPeriodisering(): Utfall {
-        if (this.perioder().any { it.verdi == Utfall.KREVER_MANUELL_VURDERING }) {
-            return Utfall.KREVER_MANUELL_VURDERING
+        if (this.perioder().any { it.verdi == Utfall.UAVKLART }) {
+            return Utfall.UAVKLART
         }
         if (this.perioder().any { it.verdi == Utfall.OPPFYLT }) {
             return Utfall.OPPFYLT

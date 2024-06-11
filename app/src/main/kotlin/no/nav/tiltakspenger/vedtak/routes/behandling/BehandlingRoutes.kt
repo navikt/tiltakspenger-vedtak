@@ -20,7 +20,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerD
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagLivsoppholdSaksopplysningMedVilkår
+import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagYtelseSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -81,10 +82,17 @@ fun Route.behandlingRoutes(
         val nySaksopplysning = call.receive<SaksopplysningDTO>()
 
         // TODO: Må dekke hele vurderingsperioden, her mangler logikk og validering
-        behandlingService.leggTilSaksopplysning(
-            behandlingId,
-            lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
-        )
+        if (nySaksopplysning.vilkår in listOf("ALDER", "INSTITUSJONSOPPHOLD", "INTROPROGRAMMET", "KVP")) {
+            behandlingService.leggTilSaksopplysning(
+                behandlingId,
+                lagYtelseSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
+            )
+        } else {
+            behandlingService.leggTilSaksopplysning(
+                behandlingId,
+                lagLivsoppholdSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
+            )
+        }
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
