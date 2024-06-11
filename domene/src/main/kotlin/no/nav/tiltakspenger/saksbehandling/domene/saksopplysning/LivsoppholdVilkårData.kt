@@ -8,6 +8,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Kategori
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 
+/*
+TODO: Denne inneholder pt også data om ting som ikke er livsopphold, nemlig alder, intro, kvp og institusjonsopphold.
+TODO: Dette må dras ut i egne klasser.
+ */
 data class LivsoppholdVilkårData private constructor(
     val vurderingsperiode: Periode,
     val korrigerbareYtelser: Map<Vilkår, KorrigerbarLivsopphold>,
@@ -75,12 +79,10 @@ data class LivsoppholdVilkårData private constructor(
         }.plus(saksopplysning)
          */
         return this.copy(
-            korrigerbareYtelser = korrigerbareYtelser +
-                (
-                    livsoppholdSaksopplysning.vilkår to korrigerbareYtelser[livsoppholdSaksopplysning.vilkår]!!.oppdaterSaksopplysning(
-                        livsoppholdSaksopplysning,
-                    )
-                    ),
+            korrigerbareYtelser = korrigerbareYtelser + (
+                livsoppholdSaksopplysning.vilkår to korrigerbareYtelser[livsoppholdSaksopplysning.vilkår]!!
+                    .oppdaterSaksopplysning(livsoppholdSaksopplysning)
+                ),
         )
     }
 

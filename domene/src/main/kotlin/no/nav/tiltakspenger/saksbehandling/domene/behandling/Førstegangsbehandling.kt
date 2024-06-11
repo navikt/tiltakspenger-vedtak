@@ -235,10 +235,10 @@ data class Førstegangsbehandling(
     override fun vilkårsvurder(): Førstegangsbehandling {
         val tiltaksdeltakelseUtfall: Periodisering<Utfall> =
             tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
-                .samletUtfall()
+                .samletUtfallForTiltaksdeltakelse()
 
         val samletUtfall: Periodisering<UtfallForPeriode> = this.livsoppholdVilkårData.samletUtfall()
-            .kombiner(tiltaksdeltakelseUtfall, LivsoppholdVilkårData.Companion::kombinerToUtfall)
+            .kombiner(tiltaksdeltakelseUtfall, LivsoppholdVilkårData::kombinerToUtfall)
             .map {
                 when (it) {
                     Utfall.KREVER_MANUELL_VURDERING -> UtfallForPeriode.KREVER_MANUELL_VURDERING
@@ -247,8 +247,8 @@ data class Førstegangsbehandling(
                 }
             }
 
-        val utfallsperioder: Periodisering<Utfallsdetaljer> =
-            samletUtfall.map { Utfallsdetaljer(1, it) }
+        // TODO: Mangler barnetillegg
+        val utfallsperioder: Periodisering<Utfallsdetaljer> = samletUtfall.map { Utfallsdetaljer(1, it) }
 
         val status =
             if (utfallsperioder.perioder().any { it.verdi.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
@@ -266,7 +266,7 @@ data class Førstegangsbehandling(
         )
     }
 
-    private fun List<Vurdering>.samletUtfall(): Periodisering<Utfall> {
-        return TODO()
+    private fun List<Vurdering>.samletUtfallForTiltaksdeltakelse(): Periodisering<Utfall> {
+
     }
 }
