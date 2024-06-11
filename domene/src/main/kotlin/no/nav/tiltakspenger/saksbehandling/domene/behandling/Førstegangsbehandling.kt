@@ -267,6 +267,5 @@ data class Førstegangsbehandling(
     }
 
     private fun List<Vurdering>.samletUtfallForTiltaksdeltakelse(): Periodisering<Utfall> {
-
     }
 }
