@@ -197,6 +197,16 @@ data class Revurderingsbehandling(
         return this.copy(saksbehandler = saksbehandler.navIdent)
     }
 
+    override fun startGodkjenning(saksbehandler: Saksbehandler): Revurderingsbehandling {
+        require(
+            this.tilstand in listOf(BehandlingTilstand.TIL_BESLUTTER),
+        ) { "Kan ikke godkjenne behandling, feil tilstand $tilstand" }
+
+        check(this.beslutter == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isBeslutter()) { "Saksbehandler må være beslutter" }
+        return this.copy(beslutter = saksbehandler.navIdent)
+    }
+
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Revurderingsbehandling {
         require(
             this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
