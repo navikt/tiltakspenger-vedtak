@@ -11,14 +11,19 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.felles.april
+import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.antallDagerFraSaksbehandler
+import no.nav.tiltakspenger.objectmothers.ObjectMother.fristForFramsettingAvKravVurdering
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -260,5 +265,43 @@ class FørstegangsbehandlingTest {
                 saksbehandler = saksbehandlerUtenTilgang,
             )
         }
+    }
+
+    @Test
+    fun `når man vilkårsvurderer frist for framsetting av krav skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
+        val behandlingMock = ObjectMother.behandling(
+            periode = Periode(fra = 1.januar(2026), til = 25.april(2026)),
+            søknad = nySøknad(
+                opprettet = 30.april(2026).atStartOfDay(),
+            ),
+        )
+        val vurderinger = behandlingMock.vilkårsvurderSøknadsfrist()
+        vurderinger.size shouldBe 1
+        vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
+            fom = behandlingMock.vurderingsperiode.fra,
+            tom = behandlingMock.vurderingsperiode.til,
+        )
+    }
+
+    @Test
+    fun `når man vilkårsvurderer frist for framsetting av krav skal man avslå i de delene av vurderingsperioden som går lengre tilbake i tid enn 3 måneder + søknadsdatoens inneværende måned`() {
+        val behandlingMock = ObjectMother.behandling(
+            periode = Periode(fra = 25.desember(2025), til = 25.april(2026)),
+            søknad = nySøknad(
+                opprettet = 30.april(2026).atStartOfDay(),
+            ),
+        )
+        val vurderinger = behandlingMock.vilkårsvurderSøknadsfrist()
+        vurderinger.size shouldBe 2
+        vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
+            fom = behandlingMock.vurderingsperiode.fra,
+            tom = 31.desember(2026),
+            utfall = Utfall.IKKE_OPPFYLT,
+        )
+        vurderinger[1] shouldBe fristForFramsettingAvKravVurdering(
+            fom = behandlingMock.vurderingsperiode.fra,
+            tom = 31.desember(2026),
+            utfall = Utfall.IKKE_OPPFYLT,
+        )
     }
 }

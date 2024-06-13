@@ -10,4 +10,5 @@ object ObjectMother :
     SøknadMother,
     YtelsesakMother,
     BehandlingMother,
-    SakMother
+    SakMother,
+    VurderingMother

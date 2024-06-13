@@ -330,4 +330,8 @@ data class Førstegangsbehandling(
             this + neste
         }
     }
+
+    fun vilkårsvurderSøknadsfrist(): List<Vurdering> {
+        return emptyList()
+    }
 }
