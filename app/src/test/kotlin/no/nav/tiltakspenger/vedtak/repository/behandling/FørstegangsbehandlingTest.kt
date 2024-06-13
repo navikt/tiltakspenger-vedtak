@@ -268,6 +268,26 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
+    fun `det skal ikke være mulig å vilkårsvurdere frist for framsetting av krav hvis behandlingen er til beslutter`() {
+        val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()
+        shouldThrowWithMessage<IllegalStateException>(
+            "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
+        ) {
+            behandlingSendtTilBeslutter.vilkårsvurderSøknadsfrist()
+        }
+    }
+
+    @Test
+    fun `det skal ikke være mulig å vilkårsvurdere frist for framsetting av krav hvis behandlingen er iverksatt`() {
+        val iverksattBehandling = ObjectMother.behandlingInnvilgetIverksatt()
+        shouldThrowWithMessage<IllegalStateException>(
+            "Man kan ikke vilkårsvurdere en behandling som er iverksatt",
+        ) {
+            iverksattBehandling.vilkårsvurderSøknadsfrist()
+        }
+    }
+
+    @Test
     fun `når man vilkårsvurderer frist for framsetting av krav skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
         val behandlingMock = ObjectMother.behandling(
             periode = Periode(fra = 1.januar(2026), til = 25.april(2026)),
