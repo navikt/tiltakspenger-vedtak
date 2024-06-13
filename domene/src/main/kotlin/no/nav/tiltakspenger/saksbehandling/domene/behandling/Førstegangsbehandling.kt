@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class Førstegangsbehandling(
@@ -334,6 +335,56 @@ data class Førstegangsbehandling(
     fun vilkårsvurderSøknadsfrist(): List<Vurdering> {
         check(this.tilstand != BehandlingTilstand.TIL_BESLUTTER) { "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter" }
         check(this.tilstand != BehandlingTilstand.IVERKSATT) { "Man kan ikke vilkårsvurdere en behandling som er iverksatt" }
-        return emptyList()
+
+        // TODO: Søknadsdatoen skal også kunne komme fra saksbehandler, så her skal det gjøres mer. Placeholder enn så lenge.
+        val søknadsdato = this.sisteSøknadMedOpprettetFraFørste().opprettet.toLocalDate()
+        val datoDetKanInnvilgesFra = søknadsdato.withDayOfMonth(1).minusMonths(3)
+
+        if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
+            return listOf(
+                Vurdering(
+                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+                    detaljer = "",
+                    kilde = Kilde.SØKNAD,
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
+                    utfall = Utfall.OPPFYLT,
+                    grunnlagId = null,
+                ),
+            )
+        } else if (datoDetKanInnvilgesFra > vurderingsperiode.til) {
+            return listOf(
+                Vurdering(
+                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+                    detaljer = "",
+                    kilde = Kilde.SØKNAD,
+                    fom = vurderingsperiode.fra,
+                    tom = vurderingsperiode.til,
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    grunnlagId = null,
+                ),
+            )
+        } else {
+            return listOf(
+                Vurdering(
+                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+                    detaljer = "",
+                    kilde = Kilde.SØKNAD,
+                    fom = vurderingsperiode.fra,
+                    tom = datoDetKanInnvilgesFra.minusDays(1),
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    grunnlagId = null,
+                ),
+                Vurdering(
+                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+                    detaljer = "",
+                    kilde = Kilde.SØKNAD,
+                    fom = datoDetKanInnvilgesFra,
+                    tom = vurderingsperiode.til,
+                    utfall = Utfall.OPPFYLT,
+                    grunnlagId = null,
+                ),
+            )
+        }
     }
 }
