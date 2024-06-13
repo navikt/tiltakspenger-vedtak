@@ -13,9 +13,10 @@ data class SammenstillingForBehandlingDTO(
     val beslutter: String?,
     val vurderingsperiode: PeriodeDTO,
     val søknadsdato: LocalDate,
-    val registrerteTiltak: List<RegistrertTiltakDTO>,
+    val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
     val alderssaksopplysning: AlderssaksopplysningDTO,
     val ytelsessaksopplysninger: YtelsessaksopplysningerDTO,
+    val stønadsdager: List<StønadsdagerDTO>,
     val personopplysninger: PersonopplysningerDTO,
     val behandlingsteg: String,
     val status: String,
@@ -44,19 +45,31 @@ data class SammenstillingForBehandlingDTO(
         val fortrolig: Boolean,
     )
 
+    // Bør sende med samletUtfall her også
+    data class TiltaksdeltagelsesaksopplysningDTO(
+        val vilkår: String,
+        val saksopplysninger: List<RegistrertTiltakDTO>,
+        val vilkårLovreferanse: LovreferanseDTO,
+    )
+
+    data class StønadsdagerDTO(
+        val tiltak: String,
+        val arrangør: String,
+        val kilde: String,
+        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
+    )
+
     data class RegistrertTiltakDTO(
         val id: String,
         val arrangør: String,
         val navn: String,
         val periode: PeriodeDTO,
-        val prosent: Int,
         val status: String,
         val kilde: String,
         val girRett: Boolean,
         val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
         val begrunnelse: String,
-        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
     )
 
     data class AlderssaksopplysningDTO(
@@ -66,7 +79,7 @@ data class SammenstillingForBehandlingDTO(
         val vilkår: String,
         val vilkårTittel: String,
         val utfall: String,
-        val vilkårLovReferanse: List<LovreferanseDTO>,
+        val vilkårLovreferanse: List<LovreferanseDTO>,
         val grunnlag: LocalDate,
     )
 
@@ -74,7 +87,7 @@ data class SammenstillingForBehandlingDTO(
         val vilkår: String,
         val saksopplysninger: List<SaksopplysningUtDTO>,
         val samletUtfall: String,
-        val vilkårLovReferanse: LovreferanseDTO,
+        val vilkårLovreferanse: LovreferanseDTO,
     )
 
     data class SaksopplysningUtDTO(
