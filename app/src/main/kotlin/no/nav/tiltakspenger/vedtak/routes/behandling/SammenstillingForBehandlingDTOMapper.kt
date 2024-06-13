@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -81,6 +82,7 @@ object SammenstillingForBehandlingDTOMapper {
                             beskrivelse = it.beskrivelse,
                         )
                     },
+                    grunnlag = 1.januar(2000), // Dette må vi hente fra noe sted. Kommer senere
                 )
             }.first(),
             ytelsessaksopplysninger = YtelsessaksopplysningerDTO(

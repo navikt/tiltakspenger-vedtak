@@ -67,6 +67,7 @@ data class SammenstillingForBehandlingDTO(
         val vilkårTittel: String,
         val utfall: String,
         val vilkårLovReferanse: List<LovreferanseDTO>,
+        val grunnlag: LocalDate,
     )
 
     data class YtelsessaksopplysningerDTO(
