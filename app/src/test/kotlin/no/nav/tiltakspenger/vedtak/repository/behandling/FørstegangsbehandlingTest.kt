@@ -295,12 +295,12 @@ class FørstegangsbehandlingTest {
         vurderinger.size shouldBe 2
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
             fom = behandlingMock.vurderingsperiode.fra,
-            tom = 31.desember(2026),
+            tom = 31.desember(2025),
             utfall = Utfall.IKKE_OPPFYLT,
         )
         vurderinger[1] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fra,
-            tom = 31.desember(2026),
+            fom = 1.januar(2026),
+            tom = behandlingMock.vurderingsperiode.til,
             utfall = Utfall.IKKE_OPPFYLT,
         )
     }
