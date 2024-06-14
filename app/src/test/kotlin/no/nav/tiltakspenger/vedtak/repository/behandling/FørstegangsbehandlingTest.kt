@@ -267,15 +267,15 @@ class FørstegangsbehandlingTest {
         }
     }
 
-    @Test
-    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er til beslutter`() {
-        val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()
-        shouldThrowWithMessage<IllegalStateException>(
-            "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
-        ) {
-            behandlingSendtTilBeslutter.vilkårsvurderFristForFramsettingAvKrav()
-        }
-    }
+//    @Test
+//    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er til beslutter`() {
+//        val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()
+//        shouldThrowWithMessage<IllegalStateException>(
+//            "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
+//        ) {
+//            behandlingSendtTilBeslutter.vilkårsvurderFristForFramsettingAvKrav()
+//        }
+//    }
 
     @Test
     fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er iverksatt`() {

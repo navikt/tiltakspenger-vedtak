@@ -283,8 +283,22 @@ object SammenstillingForBehandlingDTOMapper {
                     },
                 )
             },
+            kravdatoSaksopplysninger = SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
+                behandling.kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad!!.kravdato,
+                behandling.kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler?.kravdato,
+                vurderinger = behandling.vilkårsvurderinger
+                    .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
+                    .map { it.toVurderingDTO() },
+            ),
         )
     }
+
+    private fun Vurdering.toVurderingDTO(): SammenstillingForBehandlingDTO.VurderingDTO =
+        SammenstillingForBehandlingDTO.VurderingDTO(
+            fra = this.fom!!,
+            til = this.tom!!,
+            utfall = this.utfall.toString(),
+        )
 
     private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: String): Vurdering? {
         return when (behandling.tilstand) {
