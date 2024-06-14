@@ -4,10 +4,71 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
 
 internal class KravdatoSaksopplysningRepo {
+    fun lagre(behandlingId: BehandlingId, kravdatoSaksopplysninger: KravdatoSaksopplysninger, txSession: TransactionalSession) {
+        slettKravdatoSaksopplysninger(behandlingId, txSession)
+        if (kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad != kravdatoSaksopplysninger.avklartKravdatoSaksopplysning) {
+            lagreUavklartKravdatoSaksopplysning(behandlingId, kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad!!, txSession)
+        }
+        if (
+            kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler != null &&
+            kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler != kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
+        ) {
+            lagreUavklartKravdatoSaksopplysning(behandlingId, kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler!!, txSession)
+        }
+        if (kravdatoSaksopplysninger.avklartKravdatoSaksopplysning != null) {
+            lagreAvklartKravdatoSaksopplysning(
+                behandlingId,
+                kravdatoSaksopplysninger.avklartKravdatoSaksopplysning!!,
+                txSession,
+            )
+        }
+    }
+
+    fun lagreUavklartKravdatoSaksopplysning(behandlingId: BehandlingId, kravdatoSaksopplysning: KravdatoSaksopplysning, txSession: TransactionalSession) {
+        lagreKravdatoSaksopplysning(
+            avklart = false,
+            behandlingId = behandlingId,
+            kravdatoSaksopplysning = kravdatoSaksopplysning,
+            txSession = txSession,
+        )
+    }
+
+    fun lagreAvklartKravdatoSaksopplysning(behandlingId: BehandlingId, kravdatoSaksopplysning: KravdatoSaksopplysning, txSession: TransactionalSession) {
+        lagreKravdatoSaksopplysning(
+            avklart = true,
+            behandlingId = behandlingId,
+            kravdatoSaksopplysning = kravdatoSaksopplysning,
+            txSession = txSession,
+        )
+    }
+
+    fun lagreKravdatoSaksopplysning(avklart: Boolean, kravdatoSaksopplysning: KravdatoSaksopplysning, behandlingId: BehandlingId, txSession: TransactionalSession) {
+        txSession.run(
+            queryOf(
+                lagreKravdatoSaksopplysningSql,
+                mapOf(
+                    "id" to UlidBase.random(ULID_PREFIX_KRAVDATO_SAKSOPPLYSNING).toString(),
+                    "kravdato" to kravdatoSaksopplysning.kravdato,
+                    "behandlingId" to behandlingId.toString(),
+                    "avklartTidspunkt" to if (avklart) LocalDateTime.now() else null,
+                    "saksbehandler" to kravdatoSaksopplysning.saksbehandlerIdent,
+                    "datakilde" to kravdatoSaksopplysning.kilde.toString(),
+                ),
+            ).asUpdate,
+        )
+    }
+
+    fun slettKravdatoSaksopplysninger(behandlingId: BehandlingId, txSession: TransactionalSession) =
+        txSession.run(queryOf(slettKravdatoSaksopplysningerSql, behandlingId.toString()).asUpdate)
+
     fun hentKravdatoFraSaksbehandler(behandlingId: BehandlingId, txSession: TransactionalSession): KravdatoSaksopplysning? {
         return txSession.run(
             queryOf(
@@ -56,11 +117,39 @@ internal class KravdatoSaksopplysningRepo {
             saksbehandlerIdent = stringOrNull("saksbehandler"),
         )
 
+    @Language("SQL")
     private val sqlHentKravdatoFraKilde = """
         select * from kravdato_saksopplysning where behandling_id = :behandlingId and datakilde = :kilde
     """.trimIndent()
 
+    @Language("SQL")
     private val sqlHentAvklartKravdato = """
         select * from kravdato_saksopplysning where behandling_id = :behandlingId and avklart_tidspunkt is not null
     """.trimIndent()
+
+    @Language("SQL")
+    private val slettKravdatoSaksopplysningerSql = "delete from kravdato_saksopplysning where behandling_id = ?"
+
+    @Language("SQL")
+    private val lagreKravdatoSaksopplysningSql = """
+        insert into kravdato_saksopplysning (
+            id,
+            kravdato,
+            behandling_id,
+            avklart_tidspunkt,
+            saksbehandler,
+            datakilde
+        ) values (
+            :id,
+            :kravdato,
+            :behandlingId,
+            :avklartTidspunkt,
+            :saksbehandler,
+            :datakilde
+        )
+    """.trimIndent()
+
+    companion object {
+        private const val ULID_PREFIX_KRAVDATO_SAKSOPPLYSNING = "kravd"
+    }
 }

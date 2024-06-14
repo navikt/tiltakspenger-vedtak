@@ -143,6 +143,7 @@ internal class PostgresBehandlingRepo(
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
             utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
+            kravdatoSaksopplysningRepo.lagre(behandling.id, behandling.kravdatoSaksopplysninger, tx)
         }
     }
 

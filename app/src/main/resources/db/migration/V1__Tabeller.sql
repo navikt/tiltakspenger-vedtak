@@ -466,7 +466,6 @@ CREATE TABLE kravdato_saksopplysning
 (
     id                  VARCHAR PRIMARY KEY,
     kravdato            TIMESTAMP WITH TIME ZONE NOT NULL,
-    søknad_id           VARCHAR                  NULL REFERENCES søknad (id),
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
     avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
     saksbehandler       VARCHAR                  NULL,
