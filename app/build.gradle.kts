@@ -50,7 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2024041714471713358051.71746f05c18e")
+    implementation("com.github.navikt:rapids-and-rivers:2024061408021718344972.64ebbdb34321")
     implementation("com.natpryce:konfig:1.6.10.0")
 
     // Http
