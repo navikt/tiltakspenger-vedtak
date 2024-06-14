@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -31,6 +32,7 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -244,6 +246,11 @@ internal class PostgresBehandlingRepo(
             beslutter = beslutter,
             status = behandlingStatus,
             tilstand = tilstand,
+            kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
+                kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(id, txSession),
+                avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
+            ),
         )
     }
 

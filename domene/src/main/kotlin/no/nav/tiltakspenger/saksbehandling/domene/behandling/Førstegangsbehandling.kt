@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -30,6 +32,7 @@ data class Førstegangsbehandling(
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
+    override val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
 ) : Behandling {
 
     companion object {
@@ -50,6 +53,12 @@ data class Førstegangsbehandling(
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
+                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                    kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
+                        kravdato = søknad.opprettet.toLocalDate(),
+                        kilde = Kilde.SØKNAD,
+                    ),
+                ).avklar(),
             )
         }
     }
@@ -336,10 +345,10 @@ data class Førstegangsbehandling(
         check(this.tilstand != BehandlingTilstand.TIL_BESLUTTER) { "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter" }
         check(this.tilstand != BehandlingTilstand.IVERKSATT) { "Man kan ikke vilkårsvurdere en behandling som er iverksatt" }
 
-        // TODO: Søknadsdatoen skal også kunne komme fra saksbehandler, så her skal det gjøres mer. Placeholder enn så lenge.
-        val søknadsdato = this.sisteSøknadMedOpprettetFraFørste().opprettet.toLocalDate()
-        val datoDetKanInnvilgesFra = søknadsdato.withDayOfMonth(1).minusMonths(3)
+        val kravdato = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning?.kravdato
+        check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
 
+        val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
         if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
             return listOf(
                 Vurdering(

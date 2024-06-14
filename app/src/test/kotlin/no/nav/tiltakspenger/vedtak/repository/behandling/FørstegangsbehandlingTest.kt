@@ -268,7 +268,7 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
-    fun `det skal ikke være mulig å vilkårsvurdere søknadsfrist hvis behandlingen er til beslutter`() {
+    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er til beslutter`() {
         val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()
         shouldThrowWithMessage<IllegalStateException>(
             "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
@@ -278,7 +278,7 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
-    fun `det skal ikke være mulig å vilkårsvurdere søknadsfrist hvis behandlingen er iverksatt`() {
+    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er iverksatt`() {
         val iverksattBehandling = ObjectMother.behandlingInnvilgetIverksatt()
         shouldThrowWithMessage<IllegalStateException>(
             "Man kan ikke vilkårsvurdere en behandling som er iverksatt",
@@ -288,7 +288,7 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
-    fun `når man vilkårsvurderer søknadsfrist skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
+    fun `når man vilkårsvurderer frist om krav til framsatt dato skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 30.april(2026).atStartOfDay(),
@@ -305,7 +305,7 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
-    fun `når man vilkårsvurderer søknadsfrist skal hele vurderingsperioden avslås dersom den, fra søknadsdato, slutter tidligere enn 3 måneder tilbake i tid + søknadsdatoens inneværende måned`() {
+    fun `når man vilkårsvurderer frist om krav til framsatt dato skal hele vurderingsperioden avslås dersom den, fra søknadsdato, slutter tidligere enn 3 måneder tilbake i tid + søknadsdatoens inneværende måned`() {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 1.april(2026).atStartOfDay(),
@@ -322,7 +322,7 @@ class FørstegangsbehandlingTest {
     }
 
     @Test
-    fun `når man vilkårsvurderer søknadsfrist skal man avslå i de delene av vurderingsperioden som går lengre tilbake i tid enn 3 måneder + søknadsdatoens inneværende måned`() {
+    fun `når man vilkårsvurderer frist om krav til framsatt dato skal man avslå i de delene av vurderingsperioden som går lengre tilbake i tid enn 3 måneder + søknadsdatoens inneværende måned`() {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 30.april(2026).atStartOfDay(),

@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -55,6 +56,7 @@ internal class RevurderingOpprettetTest {
         tilstand = BehandlingTilstand.OPPRETTET,
         utfallsperioder = emptyList(),
         vilkårsvurderinger = emptyList(),
+        kravdatoSaksopplysninger = mockk<KravdatoSaksopplysninger>(),
     )
 
     private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(

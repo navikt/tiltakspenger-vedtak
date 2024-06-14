@@ -458,8 +458,19 @@ CREATE TABLE stønadsdager_tiltak
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
     tiltak_id           VARCHAR                  NOT NULL REFERENCES tiltak (id),
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    avklart_tidspunkt    TIMESTAMP WITH TIME ZONE NULL,
-    saksbehandler       VARCHAR                 NULL
+    avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
+    saksbehandler       VARCHAR                  NULL
+);
+
+CREATE TABLE kravdato_saksopplysning
+(
+    id                  VARCHAR PRIMARY KEY,
+    kravdato            TIMESTAMP WITH TIME ZONE NOT NULL,
+    søknad_id           VARCHAR                  NULL REFERENCES søknad (id),
+    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
+    avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
+    saksbehandler       VARCHAR                  NULL,
+    datakilde           VARCHAR                  NOT NULL
 );
 
 create sequence sak_løpenr start 1001;

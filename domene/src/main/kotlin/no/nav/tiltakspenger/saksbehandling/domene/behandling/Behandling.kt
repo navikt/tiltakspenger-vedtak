@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -29,6 +30,7 @@ interface Behandling {
     val utfallsperioder: List<Utfallsperiode>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
+    val kravdatoSaksopplysninger: KravdatoSaksopplysninger
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
