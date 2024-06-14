@@ -285,7 +285,7 @@ data class Førstegangsbehandling(
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger
+        } + deltagelseVurderinger + vilkårsvurderFristForFramsettingAvKrav()
 
         val utfallsperioder =
             vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
@@ -341,7 +341,7 @@ data class Førstegangsbehandling(
         }
     }
 
-    fun vilkårsvurderSøknadsfrist(): List<Vurdering> {
+    fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
         check(this.tilstand != BehandlingTilstand.TIL_BESLUTTER) { "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter" }
         check(this.tilstand != BehandlingTilstand.IVERKSATT) { "Man kan ikke vilkårsvurdere en behandling som er iverksatt" }
 

@@ -273,7 +273,7 @@ class FørstegangsbehandlingTest {
         shouldThrowWithMessage<IllegalStateException>(
             "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
         ) {
-            behandlingSendtTilBeslutter.vilkårsvurderSøknadsfrist()
+            behandlingSendtTilBeslutter.vilkårsvurderFristForFramsettingAvKrav()
         }
     }
 
@@ -283,7 +283,7 @@ class FørstegangsbehandlingTest {
         shouldThrowWithMessage<IllegalStateException>(
             "Man kan ikke vilkårsvurdere en behandling som er iverksatt",
         ) {
-            iverksattBehandling.vilkårsvurderSøknadsfrist()
+            iverksattBehandling.vilkårsvurderFristForFramsettingAvKrav()
         }
     }
 
@@ -295,7 +295,7 @@ class FørstegangsbehandlingTest {
                 periode = Periode(fra = 1.januar(2026), til = 25.april(2026)),
             ),
         )
-        val vurderinger = behandlingMock.vilkårsvurderSøknadsfrist()
+        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 1
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
             fom = behandlingMock.vurderingsperiode.fra,
@@ -312,7 +312,7 @@ class FørstegangsbehandlingTest {
                 periode = Periode(fra = 1.desember(2025), til = 31.desember(2025)),
             ),
         )
-        val vurderinger = behandlingMock.vilkårsvurderSøknadsfrist()
+        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 1
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
             fom = behandlingMock.vurderingsperiode.fra,
@@ -329,7 +329,7 @@ class FørstegangsbehandlingTest {
                 periode = Periode(fra = 25.desember(2025), til = 25.april(2026)),
             ),
         )
-        val vurderinger = behandlingMock.vilkårsvurderSøknadsfrist()
+        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 2
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
             fom = behandlingMock.vurderingsperiode.fra,
