@@ -53,6 +53,7 @@ data class Førstegangsbehandling(
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
+                // TODO: Skal trekkes inn i Vilkårssett
                 kravdatoSaksopplysninger = KravdatoSaksopplysninger(
                     kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
                         kravdato = søknad.opprettet.toLocalDate(),
