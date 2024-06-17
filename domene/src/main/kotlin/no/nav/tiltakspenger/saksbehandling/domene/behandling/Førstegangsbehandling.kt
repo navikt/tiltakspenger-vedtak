@@ -403,7 +403,7 @@ data class Førstegangsbehandling(
                         fra = datoDetKanInnvilgesFra,
                         til = vurderingsperiode.til,
                     ),
-                    kilde = Kilde.SØKNAD,
+                    kilde = kravdatoSaksopplysning.kilde,
                 ),
             )
         }
