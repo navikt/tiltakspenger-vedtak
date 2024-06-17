@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
@@ -15,7 +15,7 @@ data class SammenstillingForBehandlingDTO(
     val vurderingsperiode: PeriodeDTO,
     val søknadsdato: LocalDate,
     val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
-    val stønadsdager: StønadsdagerDTO,
+    val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
     val alderssaksopplysning: AlderssaksopplysningDTO,
     val ytelsessaksopplysninger: YtelsessaksopplysningerDTO,
     val personopplysninger: PersonopplysningerDTO,
@@ -53,10 +53,12 @@ data class SammenstillingForBehandlingDTO(
         val saksopplysninger: List<RegistrertTiltakDTO>,
     )
 
-    data class StønadsdagerDTO(
-        val vilkår: String,
-        val vilkårLovreferanse: LovreferanseDTO,
-        val antallDagerSaksopplysninger: List<AntallDagerSaksopplysningerDTO>,
+    data class AntallDagerSaksopplysningerDTO(
+        val tiltakId: String,
+        val tiltak: String,
+        val arrangør: String,
+        val avklartAntallDager: List<AntallDagerDTO>,
+        val antallDagerSaksopplysningerFraRegister: AntallDagerDTO,
     )
 
     data class RegistrertTiltakDTO(

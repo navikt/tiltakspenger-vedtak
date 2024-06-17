@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
@@ -24,13 +23,13 @@ import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AlderssaksopplysningDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.StønadsdagerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.TiltaksdeltagelsesaksopplysningDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.YtelsessaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
@@ -71,13 +70,7 @@ object SammenstillingForBehandlingDTOMapper {
                     )
                 },
             ),
-            stønadsdager = StønadsdagerDTO(
-                vilkår = "",
-                vilkårLovreferanse = LovreferanseDTO.fraLovreferanse(Lovreferanse.STØNADSDAGER),
-                antallDagerSaksopplysninger = behandling.tiltak.map {
-                    settAntallDagerSaksopplysninger(it)
-                },
-            ),
+            stønadsdager = behandling.tiltak.map { settAntallDagerSaksopplysninger(it) },
             alderssaksopplysning = behandling.saksopplysninger().filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
                 AlderssaksopplysningDTO(
                     periode = PeriodeDTO(fra = it.fom, til = it.tom),
@@ -198,9 +191,10 @@ object SammenstillingForBehandlingDTOMapper {
                 settAntallDagerSaksopplysning(
                     it,
                 )
-            },
+            }.first(),
             tiltak = tiltak.gjennomføring.typeNavn,
             arrangør = tiltak.gjennomføring.arrangørnavn,
+            tiltakId = tiltak.id.toString(),
         )
     }
 
