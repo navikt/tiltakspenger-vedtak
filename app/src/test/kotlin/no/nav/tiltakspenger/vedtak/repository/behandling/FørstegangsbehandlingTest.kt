@@ -267,6 +267,7 @@ class FørstegangsbehandlingTest {
         }
     }
 
+// TODO: Må finne ut av hva man skal gjøre når det kommer inn en ny søknad på en behandling som er til beslutter før denne sjekken kan gjøres i koden
 //    @Test
 //    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er til beslutter`() {
 //        val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()

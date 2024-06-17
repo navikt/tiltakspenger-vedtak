@@ -350,58 +350,60 @@ data class Førstegangsbehandling(
         }
     }
 
+    private fun lagFristForFramsettingAvKravVurdering(utfall: Utfall, periode: Periode, kilde: Kilde): Vurdering =
+        Vurdering(
+            utfall = utfall,
+            kilde = kilde,
+            fom = periode.fra,
+            tom = periode.til,
+            vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+            detaljer = "",
+            grunnlagId = null,
+        )
+
     fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
         // TODO: Må finne ut av hva man skal gjøre når det kommer inn en ny søknad på en behandling som er til beslutter før denne sjekken passerer gjennom tester.
         // check(this.tilstand != BehandlingTilstand.TIL_BESLUTTER) { "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter" }
         check(this.tilstand != BehandlingTilstand.IVERKSATT) { "Man kan ikke vilkårsvurdere en behandling som er iverksatt" }
 
-        val kravdato = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning?.kravdato
+        val kravdatoSaksopplysning = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
+        val kravdato = kravdatoSaksopplysning?.kravdato
         check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
 
         val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
         if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
             return listOf(
-                Vurdering(
-                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                    detaljer = "",
-                    kilde = Kilde.SØKNAD,
-                    fom = vurderingsperiode.fra,
-                    tom = vurderingsperiode.til,
+                lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.OPPFYLT,
-                    grunnlagId = null,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
                 ),
             )
         } else if (datoDetKanInnvilgesFra > vurderingsperiode.til) {
             return listOf(
-                Vurdering(
-                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                    detaljer = "",
-                    kilde = Kilde.SØKNAD,
-                    fom = vurderingsperiode.fra,
-                    tom = vurderingsperiode.til,
+                lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.IKKE_OPPFYLT,
-                    grunnlagId = null,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
                 ),
             )
         } else {
             return listOf(
-                Vurdering(
-                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                    detaljer = "",
-                    kilde = Kilde.SØKNAD,
-                    fom = vurderingsperiode.fra,
-                    tom = datoDetKanInnvilgesFra.minusDays(1),
+                lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.IKKE_OPPFYLT,
-                    grunnlagId = null,
+                    periode = Periode(
+                        fra = vurderingsperiode.fra,
+                        til = datoDetKanInnvilgesFra.minusDays(1),
+                    ),
+                    kilde = kravdatoSaksopplysning.kilde,
                 ),
-                Vurdering(
-                    vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                    detaljer = "",
-                    kilde = Kilde.SØKNAD,
-                    fom = datoDetKanInnvilgesFra,
-                    tom = vurderingsperiode.til,
+                lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.OPPFYLT,
-                    grunnlagId = null,
+                    periode = Periode(
+                        fra = datoDetKanInnvilgesFra,
+                        til = vurderingsperiode.til,
+                    ),
+                    kilde = Kilde.SØKNAD,
                 ),
             )
         }
