@@ -4,7 +4,6 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.VurderingId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -27,37 +26,11 @@ internal class VurderingRepo {
         )
     }
 
-    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<Vurdering> {
-        return txSession.run(
-            queryOf(
-                sqlHentForVedtak,
-                mapOf(
-                    "vedtakId" to vedtakId.toString(),
-                ),
-            ).map { row ->
-                row.toVurdering()
-            }.asList,
-        )
-    }
-
-    fun lagre(vedtakId: VedtakId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
-        slett(vedtakId, txSession)
-        vurderinger.forEach { vurdering ->
-            lagre(
-                behandlingId = null,
-                vedtakId = vedtakId,
-                vurdering = vurdering,
-                txSession = txSession,
-            )
-        }
-    }
-
     fun lagre(behandlingId: BehandlingId, vurderinger: List<Vurdering>, txSession: TransactionalSession) {
         slett(behandlingId, txSession)
         vurderinger.forEach { vurdering ->
             lagre(
                 behandlingId = behandlingId,
-                vedtakId = null,
                 vurdering = vurdering,
                 txSession = txSession,
             )
@@ -65,8 +38,7 @@ internal class VurderingRepo {
     }
 
     private fun lagre(
-        behandlingId: BehandlingId?,
-        vedtakId: VedtakId?,
+        behandlingId: BehandlingId,
         vurdering: Vurdering,
         txSession: TransactionalSession,
     ) {
@@ -76,7 +48,7 @@ internal class VurderingRepo {
                 mapOf(
                     "id" to VurderingId.random().toString(),
                     "behandlingId" to behandlingId?.toString(),
-                    "vedtakId" to vedtakId?.toString(),
+                    "vedtakId" to null, // TODO: Fjerne når databasen uansett skal nukes
                     "fom" to vurdering.fom,
                     "tom" to vurdering.tom,
                     "kilde" to vurdering.kilde.name,
@@ -95,15 +67,6 @@ internal class VurderingRepo {
             queryOf(
                 sqlSlettForBehandling,
                 mapOf("behandlingId" to behandlingId.toString()),
-            ).asUpdate,
-        )
-    }
-
-    private fun slett(vedtakId: VedtakId, txSession: TransactionalSession) {
-        txSession.run(
-            queryOf(
-                sqlSlettForVedtak,
-                mapOf("vedtakId" to vedtakId.toString()),
             ).asUpdate,
         )
     }
