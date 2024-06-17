@@ -40,7 +40,7 @@ data class Revurderingsbehandling(
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
-                saksopplysninger = vedtak.saksopplysninger,
+                saksopplysninger = vedtak.behandling.saksopplysninger,
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
