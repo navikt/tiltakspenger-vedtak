@@ -105,8 +105,7 @@ data class SammenstillingForBehandlingDTO(
     )
 
     data class VurderingDTO(
-        val fra: LocalDate,
-        val til: LocalDate,
+        val periode: PeriodeDTO,
         val utfall: String,
     )
 }

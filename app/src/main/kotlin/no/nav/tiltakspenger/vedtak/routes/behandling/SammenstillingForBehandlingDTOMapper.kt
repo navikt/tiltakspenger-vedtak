@@ -295,8 +295,10 @@ object SammenstillingForBehandlingDTOMapper {
 
     private fun Vurdering.toVurderingDTO(): SammenstillingForBehandlingDTO.VurderingDTO =
         SammenstillingForBehandlingDTO.VurderingDTO(
-            fra = this.fom!!,
-            til = this.tom!!,
+            periode = PeriodeDTO(
+                fra = this.fom!!,
+                til = this.tom!!,
+            ),
             utfall = this.utfall.toString(),
         )
 
