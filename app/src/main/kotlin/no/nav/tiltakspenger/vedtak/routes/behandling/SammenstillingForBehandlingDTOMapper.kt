@@ -8,6 +8,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
@@ -283,15 +285,27 @@ object SammenstillingForBehandlingDTOMapper {
                     },
                 )
             },
-            kravdatoSaksopplysninger = SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
-                behandling.kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad!!.kravdato,
-                behandling.kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler?.kravdato,
-                vurderinger = behandling.vilkårsvurderinger
-                    .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
-                    .map { it.toVurderingDTO() },
-            ),
+            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger, vilkårsvurderinger = behandling.vilkårsvurderinger),
         )
     }
+
+    private fun mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger: KravdatoSaksopplysninger, vilkårsvurderinger: List<Vurdering>): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
+        val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
+        val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
+        return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
+            opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
+            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) mapKravdatoSaksopplysningDTO(søknadstidspunktFraSaksbehandler) else null,
+            vurderinger = vilkårsvurderinger
+                .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
+                .map { it.toVurderingDTO() },
+        )
+    }
+
+    private fun mapKravdatoSaksopplysningDTO(kravdatoSaksopplysning: KravdatoSaksopplysning): SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO =
+        SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO(
+            verdi = kravdatoSaksopplysning.kravdato,
+            kilde = kravdatoSaksopplysning.kilde.toString(),
+        )
 
     private fun Vurdering.toVurderingDTO(): SammenstillingForBehandlingDTO.VurderingDTO =
         SammenstillingForBehandlingDTO.VurderingDTO(

@@ -99,9 +99,14 @@ data class SammenstillingForBehandlingDTO(
     )
 
     data class KravdatoSaksopplysningerDTO(
-        val opprinneligSøknadstidspunkt: LocalDate,
-        val søknadstidspunktFraSaksbehandler: LocalDate? = null,
+        val opprinneligKravdato: KravdatoSaksopplysningDTO,
+        val kravdatoFraSaksbehandler: KravdatoSaksopplysningDTO? = null,
         val vurderinger: List<VurderingDTO>,
+    )
+
+    data class KravdatoSaksopplysningDTO(
+        val verdi: LocalDate,
+        val kilde: String,
     )
 
     data class VurderingDTO(
