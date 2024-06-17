@@ -29,7 +29,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
@@ -55,7 +54,7 @@ object SammenstillingForBehandlingDTOMapper {
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
             tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
-                vilkårLovreferanse = LovreferanseDTO.fraLovreferanse(Lovreferanse.TILTAKSDELTAGELSE),
+                vilkårLovreferanse = Lovreferanse.TILTAKSDELTAGELSE.toDTO(),
                 saksopplysninger = behandling.tiltak.map {
                     RegistrertTiltakDTO(
                         id = it.id.toString(),
@@ -105,7 +104,7 @@ object SammenstillingForBehandlingDTOMapper {
                 ),
                 saksopplysninger = behandling.saksopplysninger()
                     .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }
-                    .map { it ->
+                    .map {
                         SaksopplysningUtDTO(
                             periode = PeriodeDTO(fra = it.fom, til = it.tom),
                             kilde = it.kilde.navn,
@@ -194,7 +193,7 @@ object SammenstillingForBehandlingDTOMapper {
             vurderinger = vilkårsvurderinger
                 .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
                 .map { it.toVurderingDTO() },
-            lovreferanse = LovreferanseDTO.fraLovreferanse(Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV),
+            lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV.toDTO(),
         )
     }
 
@@ -256,7 +255,7 @@ object SammenstillingForBehandlingDTOMapper {
         )
     }
 
-    fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
+    private fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
         AntallDagerDTO(
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),
@@ -291,7 +290,7 @@ object SammenstillingForBehandlingDTOMapper {
         return Utfall.OPPFYLT.name
     }
 
-    fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
+    private fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
         if (utfallsperioder.any { utfallsperiode ->
                 utfallsperiode.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING
             }
