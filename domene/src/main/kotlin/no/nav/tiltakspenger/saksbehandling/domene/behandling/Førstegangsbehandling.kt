@@ -228,7 +228,6 @@ data class Førstegangsbehandling(
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        // TODO: Jeg liker ikke at denne brukes både for å assigne saksbehandler OG beslutter, burde lage en egen for beslutter
         require(
             this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
         ) { "Kan ikke starte behandling, feil tilstand $tilstand" }
@@ -236,6 +235,16 @@ data class Førstegangsbehandling(
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent)
+    }
+
+    override fun startGodkjenning(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        require(
+            this.tilstand in listOf(BehandlingTilstand.TIL_BESLUTTER),
+        ) { "Kan ikke godkjenne behandling, feil tilstand $tilstand" }
+
+        check(this.beslutter == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isBeslutter()) { "Saksbehandler må være beslutter" }
+        return this.copy(beslutter = saksbehandler.navIdent)
     }
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {

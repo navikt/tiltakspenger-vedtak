@@ -36,6 +36,7 @@ interface Behandling {
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
     fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling
     fun startBehandling(saksbehandler: Saksbehandler): Behandling
+    fun startGodkjenning(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
     fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling

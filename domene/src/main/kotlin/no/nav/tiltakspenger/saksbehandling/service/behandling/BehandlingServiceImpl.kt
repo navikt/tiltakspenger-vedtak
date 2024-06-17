@@ -162,10 +162,13 @@ class BehandlingServiceImpl(
         )
     }
 
-    // TODO: Burde det vært to ulike funksjoner avhengig av om det er saksbehandler eller beslutter det gjelder?
     override fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
-        behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+        if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
+        } else {
+            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+        }
     }
 
     override fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {

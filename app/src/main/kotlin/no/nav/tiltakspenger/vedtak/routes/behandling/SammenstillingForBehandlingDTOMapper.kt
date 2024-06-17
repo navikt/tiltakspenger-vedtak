@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -202,9 +203,9 @@ object SammenstillingForBehandlingDTOMapper {
                     kilde = it.kilde,
                     girRett = it.gjennomføring.rettPåTiltakspenger,
                     harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.eksternId)?.utfall
+                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall
                         ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.eksternId)?.detaljer
+                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer
                         ?: "Fant ikke noe utfall for tiltaksdeltagelse",
                     antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
                 )
@@ -316,18 +317,18 @@ object SammenstillingForBehandlingDTOMapper {
             utfall = this.utfall.toString(),
         )
 
-    private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: String): Vurdering? {
+    private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
         return when (behandling.tilstand) {
             BehandlingTilstand.VILKÅRSVURDERT -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
+                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId.toString() }
             }
 
             BehandlingTilstand.TIL_BESLUTTER -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
+                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId.toString() }
             }
 
             BehandlingTilstand.IVERKSATT -> {
-                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId }
+                behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId.toString() }
             }
 
             else -> {
