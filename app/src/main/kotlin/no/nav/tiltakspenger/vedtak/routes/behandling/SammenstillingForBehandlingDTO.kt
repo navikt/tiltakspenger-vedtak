@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
@@ -14,9 +15,9 @@ data class SammenstillingForBehandlingDTO(
     val vurderingsperiode: PeriodeDTO,
     val søknadsdato: LocalDate,
     val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
+    val stønadsdager: StønadsdagerDTO,
     val alderssaksopplysning: AlderssaksopplysningDTO,
     val ytelsessaksopplysninger: YtelsessaksopplysningerDTO,
-    val stønadsdager: List<StønadsdagerDTO>,
     val personopplysninger: PersonopplysningerDTO,
     val behandlingsteg: String,
     val status: String,
@@ -48,15 +49,14 @@ data class SammenstillingForBehandlingDTO(
     // Bør sende med samletUtfall her også
     data class TiltaksdeltagelsesaksopplysningDTO(
         val vilkår: String,
-        val saksopplysninger: List<RegistrertTiltakDTO>,
         val vilkårLovreferanse: LovreferanseDTO,
+        val saksopplysninger: List<RegistrertTiltakDTO>,
     )
 
     data class StønadsdagerDTO(
-        val tiltak: String,
-        val arrangør: String,
-        val kilde: String,
-        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
+        val vilkår: String,
+        val vilkårLovreferanse: LovreferanseDTO,
+        val antallDagerSaksopplysninger: List<AntallDagerSaksopplysningerDTO>,
     )
 
     data class RegistrertTiltakDTO(
@@ -103,5 +103,13 @@ data class SammenstillingForBehandlingDTO(
         val lovverk: String,
         val paragraf: String,
         val beskrivelse: String,
-    )
+    ) {
+        companion object {
+            fun fraLovreferanse(lovreferanse: Lovreferanse) = LovreferanseDTO(
+                lovverk = lovreferanse.lovverk,
+                paragraf = lovreferanse.paragraf,
+                beskrivelse = lovreferanse.beskrivelse,
+            )
+        }
+    }
 }

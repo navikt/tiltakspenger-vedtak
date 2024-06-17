@@ -11,8 +11,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -50,7 +50,7 @@ object SammenstillingForBehandlingDTOMapper {
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
             tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
-                vilkårLovreferanse = LovreferanseDTO(lovverk = Lovreferanse.TILTAKSDELTAGELSE.lovverk, paragraf = Lovreferanse.TILTAKSDELTAGELSE.paragraf, beskrivelse = Lovreferanse.TILTAKSDELTAGELSE.beskrivelse),
+                vilkårLovreferanse = LovreferanseDTO.fraLovreferanse(Lovreferanse.TILTAKSDELTAGELSE),
                 saksopplysninger = behandling.tiltak.map {
                     RegistrertTiltakDTO(
                         id = it.id.toString(),
@@ -71,14 +71,13 @@ object SammenstillingForBehandlingDTOMapper {
                     )
                 },
             ),
-            stønadsdager = behandling.tiltak.map {
-                StønadsdagerDTO(
-                    tiltak = it.gjennomføring.typeNavn,
-                    arrangør = it.gjennomføring.arrangørnavn,
-                    kilde = it.kilde,
-                    antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
-                )
-            },
+            stønadsdager = StønadsdagerDTO(
+                vilkår = "",
+                vilkårLovreferanse = LovreferanseDTO.fraLovreferanse(Lovreferanse.STØNADSDAGER),
+                antallDagerSaksopplysninger = behandling.tiltak.map {
+                    settAntallDagerSaksopplysninger(it)
+                },
+            ),
             alderssaksopplysning = behandling.saksopplysninger().filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
                 AlderssaksopplysningDTO(
                     periode = PeriodeDTO(fra = it.fom, til = it.tom),
@@ -190,20 +189,20 @@ object SammenstillingForBehandlingDTOMapper {
             else -> null
         }
 
-    fun settAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
-        AntallDagerSaksopplysningerDTO(
+    fun settAntallDagerSaksopplysninger(tiltak: Tiltak): AntallDagerSaksopplysningerDTO {
+        val antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger
+
+        return AntallDagerSaksopplysningerDTO(
             avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
-            antallDagerSaksopplysningerFraSBH = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map {
-                settAntallDagerSaksopplysning(
-                    it,
-                )
-            },
             antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
                 settAntallDagerSaksopplysning(
                     it,
                 )
             },
+            tiltak = tiltak.gjennomføring.typeNavn,
+            arrangør = tiltak.gjennomføring.arrangørnavn,
         )
+    }
 
     fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
         AntallDagerDTO(

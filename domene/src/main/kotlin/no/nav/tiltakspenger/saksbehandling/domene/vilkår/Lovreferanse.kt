@@ -27,4 +27,5 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     ETTERLØNNARBEIDSMARKEDSLOV("Arbeidsmarkedsloven", "§13", "1", "Ytelser til gjennomføring av arbeidsmarkedstiltak mv."),
     ETTERLØNNRUNDSKRIV("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
     TILTAKSDELTAGELSE("TODO", "TODO", "TODO", "TODO"),
+    STØNADSDAGER("TODO", "TODO", "TODO", "TODO"),
 }

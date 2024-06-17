@@ -269,7 +269,7 @@ class SammenstillingForBehandlingDTOTest {
             ),
         )
         val resultat = settAntallDagerSaksopplysninger(
-            antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger,
+            tiltak = tiltak,
         )
 
         val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister.get(0)
