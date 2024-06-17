@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -236,9 +237,11 @@ internal class PostgresBehandlingRepo(
             sakId = sakId,
             søknader = søknadDAO.hent(id, txSession),
             vurderingsperiode = Periode(fom, tom),
-            saksopplysninger = saksopplysningRepo.hent(id, txSession),
+            vilkårssett = Vilkårssett(
+                saksopplysninger = saksopplysningRepo.hent(id, txSession),
+                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+            ),
             tiltak = tiltakDAO.hent(id, txSession),
-            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
