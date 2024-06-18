@@ -41,7 +41,7 @@ object VedtaksbrevMapper {
         )
 
     private fun mapTiltaksinfo(vedtak: Vedtak) =
-        vedtak.behandling.vilkårData.tiltakVilkårData.tiltak
+        vedtak.behandling.vilkårSett.tiltakVilkår.tiltak
             .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
             .map {
                 TiltaksinfoDTO(

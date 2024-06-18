@@ -11,26 +11,26 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtel
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.tiltak.TiltakVilkårData
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.ytelser.YtelseVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.ytelser.YtelseVilkår
 
-data class VilkårData private constructor(
-    val livsoppholdVilkårData: LivsoppholdVilkårData,
-    val kvpVilkårData: YtelseVilkårData,
-    val introVilkårData: YtelseVilkårData,
-    val institusjonsoppholdVilkårData: YtelseVilkårData,
-    val tiltakVilkårData: TiltakVilkårData,
+data class VilkårSett private constructor(
+    val livsoppholdVilkår: LivsoppholdVilkår,
+    val kvpVilkårData: YtelseVilkår,
+    val introVilkårData: YtelseVilkår,
+    val institusjonsoppholdVilkårData: YtelseVilkår,
+    val tiltakVilkår: TiltakVilkår,
     val samletUtfall: Periodisering<Utfall>,
 ) {
 
-    fun oppdaterSaksopplysninger(saksopplysning: LivsoppholdYtelseSaksopplysning): VilkårData {
+    fun oppdaterSaksopplysninger(saksopplysning: LivsoppholdYtelseSaksopplysning): VilkårSett {
         return this.copy(
-            livsoppholdVilkårData = livsoppholdVilkårData.oppdaterSaksopplysninger(saksopplysning),
+            livsoppholdVilkår = livsoppholdVilkår.oppdaterSaksopplysninger(saksopplysning),
         ).vilkårsvurder()
     }
 
-    fun oppdaterSaksopplysninger(saksopplysning: YtelseSaksopplysning): VilkårData {
+    fun oppdaterSaksopplysninger(saksopplysning: YtelseSaksopplysning): VilkårSett {
         return when (saksopplysning.vilkår) {
             Inngangsvilkår.ALDER -> TODO()
             Inngangsvilkår.INSTITUSJONSOPPHOLD -> this.copy(
@@ -55,15 +55,15 @@ data class VilkårData private constructor(
         return samletUtfall
     }
 
-    fun vilkårsvurder(): VilkårData {
+    fun vilkårsvurder(): VilkårSett {
         return this.copy(
             samletUtfall = Companion.vilkårsvurder(
                 listOf(
-                    livsoppholdVilkårData,
+                    livsoppholdVilkår,
                     kvpVilkårData,
                     introVilkårData,
                     institusjonsoppholdVilkårData,
-                    tiltakVilkårData,
+                    tiltakVilkår,
                 ),
             ),
         )
@@ -75,8 +75,8 @@ data class VilkårData private constructor(
             Inngangsvilkår.INSTITUSJONSOPPHOLD to institusjonsoppholdVilkårData.vurdering().utfall,
             Inngangsvilkår.INTROPROGRAMMET to introVilkårData.vurdering().utfall,
             Inngangsvilkår.KVP to kvpVilkårData.vurdering().utfall,
-            Inngangsvilkår.LIVSOPPHOLDSYTELSER to livsoppholdVilkårData.vurdering().utfall,
-            Inngangsvilkår.TILTAKSDELTAGELSE to tiltakVilkårData.vurdering().utfall,
+            Inngangsvilkår.LIVSOPPHOLDSYTELSER to livsoppholdVilkår.vurdering().utfall,
+            Inngangsvilkår.TILTAKSDELTAGELSE to tiltakVilkår.vurdering().utfall,
         )
     }
 
@@ -84,9 +84,9 @@ data class VilkårData private constructor(
         tiltakId: String,
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
-    ): VilkårData {
+    ): VilkårSett {
         return this.copy(
-            tiltakVilkårData = tiltakVilkårData.oppdaterAntallDager(
+            tiltakVilkår = tiltakVilkår.oppdaterAntallDager(
                 tiltakId,
                 nyPeriodeMedAntallDager,
                 saksbehandler,
@@ -94,37 +94,55 @@ data class VilkårData private constructor(
         ).vilkårsvurder()
     }
 
-    fun oppdaterTiltak(tiltak: List<Tiltak>): VilkårData {
+    fun oppdaterTiltak(tiltak: List<Tiltak>): VilkårSett {
         return this.copy(
-            tiltakVilkårData = tiltakVilkårData.oppdaterTiltak(
+            tiltakVilkår = tiltakVilkår.oppdaterTiltak(
                 tiltak,
             ),
         ).vilkårsvurder()
     }
 
+    // TODO: Denne er ment å være midlertidig. Kanskje..?
+    fun periodiseringAvSaksopplysningOgUtfall(): List<Periodisering<LivsoppholdSaksopplysningOgUtfallForPeriode>> {
+        return livsoppholdVilkår.livsoppholdYtelser.map {
+            val fakta = it.value.avklartYtelseSaksopplysning
+            val vurdering = it.value.vurdering
+            fakta.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
+                LivsoppholdSaksopplysningOgUtfallForPeriode(
+                    fakta.vilkår,
+                    fakta.kilde,
+                    fakta.detaljer,
+                    fakta.saksbehandler,
+                    harYtelse,
+                    utfall,
+                )
+            }
+        }
+    }
+
     companion object {
-        operator fun invoke(vurderingsperiode: Periode): VilkårData {
-            val livsoppholdVilkårData = LivsoppholdVilkårData(vurderingsperiode)
-            val kvpVilkårData = YtelseVilkårData(vurderingsperiode, Inngangsvilkår.KVP)
-            val introVilkårData = YtelseVilkårData(vurderingsperiode, Inngangsvilkår.INTROPROGRAMMET)
-            val institusjonsoppholdVilkårData = YtelseVilkårData(
+        operator fun invoke(vurderingsperiode: Periode): VilkårSett {
+            val livsoppholdVilkår = LivsoppholdVilkår(vurderingsperiode)
+            val kvpVilkårData = YtelseVilkår(vurderingsperiode, Inngangsvilkår.KVP)
+            val introVilkårData = YtelseVilkår(vurderingsperiode, Inngangsvilkår.INTROPROGRAMMET)
+            val institusjonsoppholdVilkårData = YtelseVilkår(
                 vurderingsperiode,
                 Inngangsvilkår.INSTITUSJONSOPPHOLD,
             )
-            val tiltakVilkårData = TiltakVilkårData(vurderingsperiode)
-            return VilkårData(
-                livsoppholdVilkårData = livsoppholdVilkårData,
+            val tiltakVilkår = TiltakVilkår(vurderingsperiode)
+            return VilkårSett(
+                livsoppholdVilkår = livsoppholdVilkår,
                 kvpVilkårData = kvpVilkårData,
                 introVilkårData = introVilkårData,
                 institusjonsoppholdVilkårData = institusjonsoppholdVilkårData,
-                tiltakVilkårData = tiltakVilkårData,
+                tiltakVilkår = tiltakVilkår,
                 samletUtfall = vilkårsvurder(
                     listOf(
-                        livsoppholdVilkårData,
+                        livsoppholdVilkår,
                         kvpVilkårData,
                         introVilkårData,
                         institusjonsoppholdVilkårData,
-                        tiltakVilkårData,
+                        tiltakVilkår,
                     ),
                 ),
             )
@@ -135,7 +153,7 @@ data class VilkårData private constructor(
         ): Periodisering<Utfall> {
             return inngangsvilkår
                 .map { it.vurdering().utfall }
-                .reduser(LivsoppholdVilkårData.Companion::kombinerToUtfall)
+                .reduser(LivsoppholdVilkår.Companion::kombinerToUtfall)
         }
     }
 }

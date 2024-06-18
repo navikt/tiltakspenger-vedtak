@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårSett
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -24,7 +24,7 @@ interface Behandling {
     val søknader: List<Søknad>
     val saksbehandler: String?
     val beslutter: String?
-    val vilkårData: VilkårData
+    val vilkårSett: VilkårSett
     val utfallsperioder: Periodisering<Utfallsdetaljer>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand

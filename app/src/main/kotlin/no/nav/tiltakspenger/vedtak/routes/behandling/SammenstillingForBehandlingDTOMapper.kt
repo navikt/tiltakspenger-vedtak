@@ -152,7 +152,7 @@ object SammenstillingForBehandlingDTOMapper {
                 deltakelseFom = behandling.søknad().tiltak.deltakelseFom,
                 deltakelseTom = behandling.søknad().tiltak.deltakelseTom,
             ),
-            registrerteTiltak = behandling.vilkårData.tiltakVilkårData.tiltak.map {
+            registrerteTiltak = behandling.vilkårSett.tiltakVilkår.tiltak.map {
                 RegistrertTiltakDTO(
                     id = it.id.toString(),
                     arrangør = it.gjennomføring.arrangørnavn,
@@ -168,16 +168,17 @@ object SammenstillingForBehandlingDTOMapper {
                     harSøkt = true,
                     deltagelseUtfall = it.vilkårsvurderTiltaksdeltagelse().utfall.utfallForPeriodisering(), // TODO: Det kan jo være mer enn ett utfall!
                     begrunnelse = it.vilkårsvurderTiltaksdeltagelse().detaljer,
-                    antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
+                    antallDagerSaksopplysninger = mapAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
                 )
             },
             // TODO: Vi bør nok ha en litt annen struktur også mot frontend..
+            // TOOD: Denne mappinga blir nok ikke helt riktig..
             saksopplysninger = Kategori.entries.map { kategori ->
                 KategoriserteSaksopplysningerDTO(
                     kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.livsoppholdVilkårData.livsoppholdYtelser
-                        .flatMap { it.value.periodiseringAvSaksopplysningOgUtfall().perioder() }
-                        .filter { kategori.vilkår.contains(it.verdi.vilkår) }
+                    saksopplysninger = behandling.vilkårSett.periodiseringAvSaksopplysningOgUtfall()
+                        .flatMap { it.perioder() }
+                        .filter { kategori.vilkår.contains(it.verdi.vilkår.tittel) }
                         .map {
                             val fakta =
                                 fakta[it.verdi.vilkår.tittel] ?: FaktaDTO(
@@ -203,7 +204,8 @@ object SammenstillingForBehandlingDTOMapper {
                                 },
                             )
                         },
-                    samletUtfall = behandling.livsoppholdVilkårData.samletUtfallPerKategori()[kategori]!!.utfallForPeriodisering().name,
+                    // TODO: Denne er hacky..
+                    samletUtfall = behandling.vilkårSett.utfallPerInngangsvilkår()[kategori.inngangsvilkår]!!.utfallForPeriodisering().name,
                 )
             },
             personopplysninger = personopplysninger.søker().let {
@@ -234,7 +236,7 @@ object SammenstillingForBehandlingDTOMapper {
                     endretTidspunkt = att.tidspunkt,
                 )
             },
-            samletUtfall = behandling.livsoppholdVilkårData.samletUtfall().utfallForPeriodisering().name,
+            samletUtfall = behandling.vilkårSett.samletUtfall().utfallForPeriodisering().name,
             utfallsperioder = behandling.utfallsperioder?.perioder()?.map {
                 UtfallsperiodeDTO(
                     fom = it.periode.fra,
@@ -250,7 +252,7 @@ object SammenstillingForBehandlingDTOMapper {
         )
     }
 
-    fun Periodisering<Utfall>.utfallForPeriodisering(): Utfall {
+    private fun Periodisering<Utfall>.utfallForPeriodisering(): Utfall {
         if (this.perioder().any { it.verdi == Utfall.UAVKLART }) {
             return Utfall.UAVKLART
         }
@@ -267,18 +269,18 @@ object SammenstillingForBehandlingDTOMapper {
             else -> null
         }
 
-    fun settAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
+    fun mapAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
         AntallDagerSaksopplysningerDTO(
-            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
+            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { mapAntallDager(it) },
             antallDagerSaksopplysningerFraSBH = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map {
-                settAntallDagerSaksopplysning(it)
+                mapAntallDager(it)
             },
             antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
-                settAntallDagerSaksopplysning(it)
+                mapAntallDager(it)
             },
         )
 
-    fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
+    fun mapAntallDager(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
         AntallDagerDTO(
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),

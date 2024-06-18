@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdVilkår
 import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -46,7 +46,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        livsoppholdVilkårData = LivsoppholdVilkårData(
+        livsoppholdVilkårData = LivsoppholdVilkår(
             Periode(
                 fra = LocalDate.MIN,
                 til = LocalDate.MAX,

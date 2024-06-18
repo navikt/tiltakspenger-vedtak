@@ -8,9 +8,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.Inngangsvilkårsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.SaksopplysningOgUtfallForPeriode
 
-data class YtelseVilkårData private constructor(
+data class YtelseVilkår private constructor(
     val vurderingsperiode: Periode,
     val vilkår: Inngangsvilkår,
     val opprinneligYtelseSaksopplysning: YtelseSaksopplysning,
@@ -25,40 +24,26 @@ data class YtelseVilkårData private constructor(
 
     override fun vurdering(): Vurdering = vurdering
 
-    fun oppdaterSaksopplysning(ytelseSaksopplysning: YtelseSaksopplysning): YtelseVilkårData {
+    fun oppdaterSaksopplysning(ytelseSaksopplysning: YtelseSaksopplysning): YtelseVilkår {
         return this.copy(
             korrigertYtelseSaksopplysning = ytelseSaksopplysning,
         ).faktaavklar().vilkårsvurder()
     }
 
-    private fun faktaavklar(): YtelseVilkårData {
+    private fun faktaavklar(): YtelseVilkår {
         return this.copy(
             avklartYtelseSaksopplysning = korrigertYtelseSaksopplysning
                 ?: opprinneligYtelseSaksopplysning,
         )
     }
 
-    private fun vilkårsvurder(): YtelseVilkårData {
+    private fun vilkårsvurder(): YtelseVilkår {
         return this.copy(vurdering = vilkårsvurder(this.avklartYtelseSaksopplysning))
-    }
-
-    // TODO: Denne er ment å være midlertidig. Kanskje..?
-    fun periodiseringAvSaksopplysningOgUtfall(): Periodisering<SaksopplysningOgUtfallForPeriode> {
-        return avklartYtelseSaksopplysning.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
-            SaksopplysningOgUtfallForPeriode(
-                avklartYtelseSaksopplysning.vilkår,
-                avklartYtelseSaksopplysning.kilde,
-                avklartYtelseSaksopplysning.detaljer,
-                avklartYtelseSaksopplysning.saksbehandler,
-                harYtelse,
-                utfall,
-            )
-        }
     }
 
     companion object {
 
-        operator fun invoke(vurderingsperiode: Periode, vilkår: Inngangsvilkår): YtelseVilkårData {
+        operator fun invoke(vurderingsperiode: Periode, vilkår: Inngangsvilkår): YtelseVilkår {
             val tomYtelseSaksopplysning = YtelseSaksopplysning(
                 vilkår = vilkår,
                 kilde = vilkår.kilde(),
@@ -66,7 +51,7 @@ data class YtelseVilkårData private constructor(
                 saksbehandler = null, // TODO: Bør være system?
                 harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
             )
-            return YtelseVilkårData(
+            return YtelseVilkår(
                 vurderingsperiode,
                 vilkår,
                 tomYtelseSaksopplysning,
@@ -83,8 +68,8 @@ data class YtelseVilkårData private constructor(
             korrigertYtelseSaksopplysning: YtelseSaksopplysning?,
             avklartYtelseSaksopplysning: YtelseSaksopplysning,
             vurdering: Vurdering,
-        ): YtelseVilkårData =
-            YtelseVilkårData(
+        ): YtelseVilkår =
+            YtelseVilkår(
                 vurderingsperiode,
                 vilkår,
                 opprinneligYtelseSaksopplysning,
@@ -95,7 +80,6 @@ data class YtelseVilkårData private constructor(
 
         private fun vilkårsvurder(ytelseSaksopplysning: YtelseSaksopplysning): Vurdering {
             return Vurdering(
-                vilkår = ytelseSaksopplysning.vilkår,
                 detaljer = ytelseSaksopplysning.detaljer,
                 utfall = ytelseSaksopplysning.harYtelse.map {
                     when (it) {

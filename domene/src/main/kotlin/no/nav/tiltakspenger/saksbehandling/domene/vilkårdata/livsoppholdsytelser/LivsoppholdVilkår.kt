@@ -9,9 +9,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.Inngangsvilkårsbehandling
 
-data class LivsoppholdVilkårData private constructor(
+data class LivsoppholdVilkår private constructor(
     val vurderingsperiode: Periode,
-    val livsoppholdYtelser: Map<LivsoppholdDelVilkår, LivsoppholdYtelseVilkårData>,
+    val livsoppholdYtelser: Map<LivsoppholdDelVilkår, LivsoppholdYtelseDelVilkår>,
     val vurdering: Vurdering,
 ) : Inngangsvilkårsbehandling {
 
@@ -21,7 +21,7 @@ data class LivsoppholdVilkårData private constructor(
 
     override fun vurdering(): Vurdering = vurdering
 
-    fun oppdaterSaksopplysninger(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LivsoppholdVilkårData {
+    fun oppdaterSaksopplysninger(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LivsoppholdVilkår {
         require(livsoppholdYtelser.containsKey(ytelseSaksopplysning.vilkår)) { "Saksopplysning med vilkår ${ytelseSaksopplysning.vilkår} matcher ingen ytelse" }
 
         /*
@@ -44,7 +44,7 @@ data class LivsoppholdVilkårData private constructor(
         ).vilkårsvurder()
     }
 
-    private fun vilkårsvurder(): LivsoppholdVilkårData {
+    private fun vilkårsvurder(): LivsoppholdVilkår {
         return this.copy(
             vurdering = vilkårsvurder(this.vurderingsperiode, this.livsoppholdYtelser),
         )
@@ -74,9 +74,9 @@ data class LivsoppholdVilkårData private constructor(
             LivsoppholdDelVilkår.SUPPLERENDESTØNADFLYKTNING,
         )
 
-        operator fun invoke(vurderingsperiode: Periode): LivsoppholdVilkårData {
-            val vilkårDataPerVilkår = alleDelVilkår.associateWith { LivsoppholdYtelseVilkårData(vurderingsperiode, it) }
-            return LivsoppholdVilkårData(
+        operator fun invoke(vurderingsperiode: Periode): LivsoppholdVilkår {
+            val vilkårDataPerVilkår = alleDelVilkår.associateWith { LivsoppholdYtelseDelVilkår(vurderingsperiode, it) }
+            return LivsoppholdVilkår(
                 vurderingsperiode,
                 vilkårDataPerVilkår,
                 vilkårsvurder(vurderingsperiode, vilkårDataPerVilkår),
@@ -85,10 +85,9 @@ data class LivsoppholdVilkårData private constructor(
 
         private fun vilkårsvurder(
             vurderingsperiode: Periode,
-            vilkårDataPerVilkår: Map<LivsoppholdDelVilkår, LivsoppholdYtelseVilkårData>,
+            vilkårDataPerVilkår: Map<LivsoppholdDelVilkår, LivsoppholdYtelseDelVilkår>,
         ): Vurdering {
             return Vurdering(
-                vilkår = Inngangsvilkår.LIVSOPPHOLDSYTELSER,
                 utfall = vilkårDataPerVilkår.values.fold(
                     Periodisering(Utfall.UAVKLART, vurderingsperiode),
                 ) { periodisering, ytelse ->
@@ -107,10 +106,10 @@ data class LivsoppholdVilkårData private constructor(
 
         fun fromDb(
             vurderingsperiode: Periode,
-            korrigerbareYtelser: Map<LivsoppholdDelVilkår, LivsoppholdYtelseVilkårData>,
+            korrigerbareYtelser: Map<LivsoppholdDelVilkår, LivsoppholdYtelseDelVilkår>,
             vurdering: Vurdering,
-        ): LivsoppholdVilkårData {
-            return LivsoppholdVilkårData(vurderingsperiode, korrigerbareYtelser, vurdering)
+        ): LivsoppholdVilkår {
+            return LivsoppholdVilkår(vurderingsperiode, korrigerbareYtelser, vurdering)
         }
     }
 }

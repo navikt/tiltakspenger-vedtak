@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 
 data class Vurdering(
-    val vilkår: Inngangsvilkår,
     val utfall: Periodisering<Utfall>,
     val detaljer: String,
 ) {
@@ -13,15 +12,10 @@ data class Vurdering(
 
         other as Vurdering
 
-        if (vilkår != other.vilkår) return false
-        if (utfall != other.utfall) return false
-
-        return true
+        return utfall == other.utfall
     }
 
     override fun hashCode(): Int {
-        var result = vilkår.hashCode()
-        result = 31 * result + utfall.hashCode()
-        return result
+        return utfall.hashCode()
     }
 }

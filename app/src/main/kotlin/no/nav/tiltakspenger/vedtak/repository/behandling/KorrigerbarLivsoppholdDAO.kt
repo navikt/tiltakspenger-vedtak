@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopply
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdYtelseVilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.livsoppholdsytelser.LivsoppholdYtelseDelVilkår
 import java.time.LocalDate
 
 internal class KorrigerbarLivsoppholdDAO(
@@ -19,7 +19,7 @@ internal class KorrigerbarLivsoppholdDAO(
     private val livsoppholdSaksopplysningDAO: LivsoppholdSaksopplysningDAO = LivsoppholdSaksopplysningDAO(),
 ) {
 
-    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): Map<Vilkår, LivsoppholdYtelseVilkårData> {
+    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): Map<Vilkår, LivsoppholdYtelseDelVilkår> {
         val denormaliserteVurderinger: List<DenormalisertLivsoppholdVurdering> =
             livsoppholdVurderingDAO.hent(behandlingId, txSession)
         val denormaliserteSaksopplysninger: List<DenormalisertLivsoppholdSaksopplysning> =
@@ -43,7 +43,7 @@ internal class KorrigerbarLivsoppholdDAO(
             )
 
         return vurderinger.values.map { vurdering ->
-            LivsoppholdYtelseVilkårData.fromDb(
+            LivsoppholdYtelseDelVilkår.fromDb(
                 vurderingsperiode = vurdering.utfall.totalePeriode,
                 vilkår = vurdering.vilkår,
                 opprinneligYtelseSaksopplysning = opprinneligeSaksopplysninger.get(vurdering.vilkår)!!,
@@ -61,7 +61,7 @@ internal class KorrigerbarLivsoppholdDAO(
 
     fun lagre(
         behandlingId: BehandlingId,
-        livsopphold: Collection<LivsoppholdYtelseVilkårData>,
+        livsopphold: Collection<LivsoppholdYtelseDelVilkår>,
         txSession: TransactionalSession,
     ) {
         livsopphold.forEach {
@@ -71,7 +71,7 @@ internal class KorrigerbarLivsoppholdDAO(
 
     private fun lagre(
         behandlingId: BehandlingId,
-        livsopphold: LivsoppholdYtelseVilkårData,
+        livsopphold: LivsoppholdYtelseDelVilkår,
         txSession: TransactionalSession,
     ) {
         denormaliserVurderinger(Pair(livsopphold.vilkår, livsopphold)).forEach {
@@ -82,7 +82,7 @@ internal class KorrigerbarLivsoppholdDAO(
         }
     }
 
-    private fun denormaliserVurderinger(livsopphold: Pair<Vilkår, LivsoppholdYtelseVilkårData>): List<DenormalisertLivsoppholdVurdering> {
+    private fun denormaliserVurderinger(livsopphold: Pair<Vilkår, LivsoppholdYtelseDelVilkår>): List<DenormalisertLivsoppholdVurdering> {
         return livsopphold.second.vurdering.utfall.perioder().map {
             DenormalisertLivsoppholdVurdering(
                 vilkår = livsopphold.first,
@@ -141,7 +141,7 @@ internal class KorrigerbarLivsoppholdDAO(
         return noe.associateBy { it.vilkår }
     }
 
-    private fun denormaliserSaksopplysninger(livsopphold: Pair<Vilkår, LivsoppholdYtelseVilkårData>): List<DenormalisertLivsoppholdSaksopplysning> {
+    private fun denormaliserSaksopplysninger(livsopphold: Pair<Vilkår, LivsoppholdYtelseDelVilkår>): List<DenormalisertLivsoppholdSaksopplysning> {
         return livsopphold.second.opprinneligYtelseSaksopplysning.harYtelse.perioder().map {
             DenormalisertLivsoppholdSaksopplysning(
                 vilkår = livsopphold.first,

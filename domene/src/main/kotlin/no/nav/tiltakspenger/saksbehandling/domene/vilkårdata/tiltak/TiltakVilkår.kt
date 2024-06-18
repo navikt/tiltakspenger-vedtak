@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.Inngangsvilkårsbehandling
 
-data class TiltakVilkårData(
+data class TiltakVilkår(
     val vurderingsperiode: Periode,
     val tiltak: List<Tiltak>,
     val vurdering: Vurdering,
@@ -24,7 +24,7 @@ data class TiltakVilkårData(
         return vurdering
     }
 
-    fun oppdaterTiltak(tiltak: List<Tiltak>): TiltakVilkårData {
+    fun oppdaterTiltak(tiltak: List<Tiltak>): TiltakVilkår {
         return this.copy(tiltak = tiltak).vilkårsvurder()
     }
 
@@ -32,7 +32,7 @@ data class TiltakVilkårData(
         tiltakId: String,
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
-    ): TiltakVilkårData {
+    ): TiltakVilkår {
         val tiltakTilOppdatering = tiltak.find { it.id.toString() == tiltakId }
         check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
 
@@ -49,13 +49,13 @@ data class TiltakVilkårData(
         return this.copy(tiltak = nyeTiltak).vilkårsvurder()
     }
 
-    private fun vilkårsvurder(): TiltakVilkårData {
+    private fun vilkårsvurder(): TiltakVilkår {
         return this.copy(vurdering = vilkårsvurder(vurderingsperiode, tiltak))
     }
 
     companion object {
-        operator fun invoke(vurderingsperiode: Periode): TiltakVilkårData {
-            return TiltakVilkårData(
+        operator fun invoke(vurderingsperiode: Periode): TiltakVilkår {
+            return TiltakVilkår(
                 vurderingsperiode,
                 emptyList(),
                 vilkårsvurder(vurderingsperiode, emptyList()),
@@ -76,7 +76,6 @@ data class TiltakVilkårData(
                     }
                 }.let {
                     Vurdering(
-                        vilkår = Inngangsvilkår.TILTAKSDELTAGELSE,
                         utfall = it,
                         detaljer = "",
                     )

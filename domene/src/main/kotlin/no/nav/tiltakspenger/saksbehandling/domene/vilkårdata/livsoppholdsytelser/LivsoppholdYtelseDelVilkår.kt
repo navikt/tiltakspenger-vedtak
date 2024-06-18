@@ -6,31 +6,30 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.HarYtelse
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.LivsoppholdYtelseSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.LivsoppholdSaksopplysningOgUtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
-data class LivsoppholdYtelseVilkårData private constructor(
+data class LivsoppholdYtelseDelVilkår private constructor(
     val vurderingsperiode: Periode,
     val vilkår: LivsoppholdDelVilkår,
     val opprinneligYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning,
     val korrigertYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning?,
     val avklartYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning,
-    val vurdering: LivsoppholdDelVurdering,
+    val vurdering: Vurdering,
 ) {
 
-    private fun faktaavklar(): LivsoppholdYtelseVilkårData {
+    private fun faktaavklar(): LivsoppholdYtelseDelVilkår {
         return this.copy(
             avklartYtelseSaksopplysning = korrigertYtelseSaksopplysning
                 ?: opprinneligYtelseSaksopplysning,
         )
     }
 
-    private fun vilkårsvurder(): LivsoppholdYtelseVilkårData {
+    private fun vilkårsvurder(): LivsoppholdYtelseDelVilkår {
         return this.copy(vurdering = vilkårsvurder(this.avklartYtelseSaksopplysning))
     }
 
-    fun oppdaterSaksopplysning(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LivsoppholdYtelseVilkårData {
+    fun oppdaterSaksopplysning(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LivsoppholdYtelseDelVilkår {
         return if (ytelseSaksopplysning.kilde == Kilde.SAKSB) {
             this.copy(
                 korrigertYtelseSaksopplysning = ytelseSaksopplysning,
@@ -42,23 +41,9 @@ data class LivsoppholdYtelseVilkårData private constructor(
         }.faktaavklar().vilkårsvurder()
     }
 
-    // TODO: Denne er ment å være midlertidig. Kanskje..?
-    fun periodiseringAvSaksopplysningOgUtfall(): Periodisering<LivsoppholdSaksopplysningOgUtfallForPeriode> {
-        return avklartYtelseSaksopplysning.harYtelse.kombiner(vurdering.utfall) { harYtelse, utfall ->
-            LivsoppholdSaksopplysningOgUtfallForPeriode(
-                avklartYtelseSaksopplysning.vilkår,
-                avklartYtelseSaksopplysning.kilde,
-                avklartYtelseSaksopplysning.detaljer,
-                avklartYtelseSaksopplysning.saksbehandler,
-                harYtelse,
-                utfall,
-            )
-        }
-    }
-
     companion object {
 
-        operator fun invoke(vurderingsperiode: Periode, vilkår: LivsoppholdDelVilkår): LivsoppholdYtelseVilkårData {
+        operator fun invoke(vurderingsperiode: Periode, vilkår: LivsoppholdDelVilkår): LivsoppholdYtelseDelVilkår {
             val tomYtelseSaksopplysning = LivsoppholdYtelseSaksopplysning(
                 vilkår = vilkår,
                 kilde = vilkår.kilde(),
@@ -66,7 +51,7 @@ data class LivsoppholdYtelseVilkårData private constructor(
                 saksbehandler = null, // TODO: Bør være system?
                 harYtelse = Periodisering(HarYtelse.IKKE_INNHENTET, vurderingsperiode),
             )
-            return LivsoppholdYtelseVilkårData(
+            return LivsoppholdYtelseDelVilkår(
                 vurderingsperiode,
                 vilkår,
                 tomYtelseSaksopplysning,
@@ -82,9 +67,9 @@ data class LivsoppholdYtelseVilkårData private constructor(
             opprinneligYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning,
             korrigertYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning?,
             avklartYtelseSaksopplysning: LivsoppholdYtelseSaksopplysning,
-            vurdering: LivsoppholdDelVurdering,
-        ): LivsoppholdYtelseVilkårData =
-            LivsoppholdYtelseVilkårData(
+            vurdering: Vurdering,
+        ): LivsoppholdYtelseDelVilkår =
+            LivsoppholdYtelseDelVilkår(
                 vurderingsperiode,
                 vilkår,
                 opprinneligYtelseSaksopplysning,
@@ -93,12 +78,11 @@ data class LivsoppholdYtelseVilkårData private constructor(
                 vurdering,
             )
 
-        private fun vilkårsvurder(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): LivsoppholdDelVurdering {
+        private fun vilkårsvurder(ytelseSaksopplysning: LivsoppholdYtelseSaksopplysning): Vurdering {
             if (ytelseSaksopplysning.vilkår in listOf(LivsoppholdDelVilkår.AAP, LivsoppholdDelVilkår.DAGPENGER) &&
                 ytelseSaksopplysning.kilde != Kilde.SAKSB
             ) {
-                return LivsoppholdDelVurdering(
-                    ytelseSaksopplysning.vilkår,
+                return Vurdering(
                     Periodisering(
                         Utfall.UAVKLART,
                         ytelseSaksopplysning.harYtelse.totalePeriode,
@@ -107,8 +91,7 @@ data class LivsoppholdYtelseVilkårData private constructor(
                 )
             }
 
-            return LivsoppholdDelVurdering(
-                delVilkår = ytelseSaksopplysning.vilkår,
+            return Vurdering(
                 detaljer = ytelseSaksopplysning.detaljer,
                 utfall = ytelseSaksopplysning.harYtelse.map {
                     when (it) {

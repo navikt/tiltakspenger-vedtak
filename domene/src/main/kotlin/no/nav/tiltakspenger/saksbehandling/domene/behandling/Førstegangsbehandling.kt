@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.YtelseSaksopply
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Inngangsvilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.LivsoppholdDelVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårData
+import no.nav.tiltakspenger.saksbehandling.domene.vilkårdata.VilkårSett
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -24,7 +24,7 @@ data class Førstegangsbehandling(
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
     override val beslutter: String?,
-    override val vilkårData: VilkårData,
+    val vilkårSett: VilkårSett,
     override val utfallsperioder: Periodisering<Utfallsdetaljer>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
@@ -38,7 +38,7 @@ data class Førstegangsbehandling(
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
-                vilkårData = VilkårData(søknad.vurderingsperiode()),
+                vilkårSett = VilkårSett(søknad.vurderingsperiode()),
                 saksbehandler = null,
                 beslutter = null,
                 utfallsperioder = Periodisering(
@@ -136,7 +136,7 @@ data class Førstegangsbehandling(
                 søknader = søknader + søknad,
                 vurderingsperiode = søknad.vurderingsperiode(),
 
-                vilkårData = vilkårData
+                vilkårSett = vilkårSett
                     .oppdaterSaksopplysninger(
                         livsoppholdYtelseSaksopplysninger[LivsoppholdDelVilkår.GJENLEVENDEPENSJON]!!,
                     ).oppdaterSaksopplysninger(
@@ -173,15 +173,15 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertYtelserVilkårData = vilkårData.oppdaterSaksopplysninger(ytelseSaksopplysning)
-        return if (oppdatertYtelserVilkårData == this.vilkårData) {
+        val oppdatertYtelserVilkårData = vilkårSett.oppdaterSaksopplysninger(ytelseSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.vilkårSett) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(vilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
+                behandling = this.copy(vilkårSett = oppdatertYtelserVilkårData).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -202,15 +202,15 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertYtelserVilkårData = vilkårData.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
-        return if (oppdatertYtelserVilkårData == this.vilkårData) {
+        val oppdatertYtelserVilkårData = vilkårSett.oppdaterSaksopplysninger(livsoppholdSaksopplysning)
+        return if (oppdatertYtelserVilkårData == this.vilkårSett) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(vilkårData = oppdatertYtelserVilkårData).vilkårsvurder(),
+                behandling = this.copy(vilkårSett = oppdatertYtelserVilkårData).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -235,7 +235,7 @@ data class Førstegangsbehandling(
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
         return this.copy(
-            vilkårData = vilkårData.oppdaterAntallDager(
+            vilkårSett = vilkårSett.oppdaterAntallDager(
                 tiltakId,
                 nyPeriodeMedAntallDager,
                 saksbehandler,
@@ -261,7 +261,7 @@ data class Førstegangsbehandling(
         }
 
         return this.copy(
-            vilkårData = vilkårData.oppdaterTiltak(tiltak),
+            vilkårSett = vilkårSett.oppdaterTiltak(tiltak),
             tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
@@ -320,7 +320,7 @@ data class Førstegangsbehandling(
     }
 
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val samletUtfall: Periodisering<UtfallForPeriode> = this.vilkårData.samletUtfall()
+        val samletUtfall: Periodisering<UtfallForPeriode> = this.vilkårSett.samletUtfall()
             .map {
                 when (it) {
                     Utfall.UAVKLART -> UtfallForPeriode.KREVER_MANUELL_VURDERING
