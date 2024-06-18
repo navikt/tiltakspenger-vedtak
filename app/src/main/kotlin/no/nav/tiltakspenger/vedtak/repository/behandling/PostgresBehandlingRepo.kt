@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
@@ -32,6 +33,7 @@ internal class PostgresBehandlingRepo(
     private val søknadDAO: SøknadDAO = SøknadDAO(),
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
         return sessionOf(DataSource.hikariDataSource).use {
@@ -142,6 +144,7 @@ internal class PostgresBehandlingRepo(
             tiltakDAO.lagre(behandling.id, behandling.tiltak, tx)
             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
             utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
+            kravdatoSaksopplysningRepo.lagre(behandling.id, behandling.kravdatoSaksopplysninger, tx)
         }
     }
 
@@ -241,12 +244,18 @@ internal class PostgresBehandlingRepo(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             ),
+            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             tiltak = tiltakDAO.hent(id, txSession),
             utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
             status = behandlingStatus,
             tilstand = tilstand,
+            kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
+                kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(id, txSession),
+                avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
+            ),
         )
     }
 

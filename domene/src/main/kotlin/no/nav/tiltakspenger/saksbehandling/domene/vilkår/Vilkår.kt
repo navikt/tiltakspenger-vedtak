@@ -34,6 +34,7 @@ sealed class Vilkår {
             UFØRETRYGD -> Kilde.PESYS
             ETTERLØNN -> Kilde.SØKNAD
             TILTAKSDELTAGELSE -> Kilde.ARENA
+            FRIST_FOR_FRAMSETTING_AV_KRAV -> Kilde.SØKNAD
         }
 
     object ALDER : Vilkår() {
@@ -180,5 +181,12 @@ sealed class Vilkår {
         override val flateTittel: String = "Tiltaksdeltagelse"
         override val lovReference: List<Lovreferanse> =
             listOf(Lovreferanse.TILTAKSDELTAGELSE)
+    }
+
+    object FRIST_FOR_FRAMSETTING_AV_KRAV : Vilkår() {
+        override val tittel: String = "FRIST_FOR_FRAMSETTING_AV_KRAV"
+        override val flateTittel: String = "Frist for framsetting av krav"
+        override val lovReference: List<Lovreferanse> =
+            listOf(Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV)
     }
 }

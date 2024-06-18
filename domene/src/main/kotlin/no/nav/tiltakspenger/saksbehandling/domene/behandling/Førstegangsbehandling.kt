@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -14,7 +16,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -25,9 +29,11 @@ data class Førstegangsbehandling(
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
     override val tiltak: List<Tiltak>,
+    override val vilkårsvurderinger: List<Vurdering>,
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
+    override val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
 ) : Behandling {
 
     companion object {
@@ -47,9 +53,17 @@ data class Førstegangsbehandling(
                 tiltak = emptyList(),
                 saksbehandler = null,
                 beslutter = null,
+                vilkårsvurderinger = emptyList(),
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
+                // TODO: Skal trekkes inn i Vilkårssett
+                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                    kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
+                        kravdato = søknad.opprettet.toLocalDate(),
+                        kilde = Kilde.SØKNAD,
+                    ),
+                ).avklar(),
             )
         }
     }
@@ -289,7 +303,7 @@ data class Førstegangsbehandling(
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger
+        } + deltagelseVurderinger + vilkårsvurderFristForFramsettingAvKrav()
 
         val utfallsperioder =
             vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
@@ -326,6 +340,7 @@ data class Førstegangsbehandling(
         }
 
         return this.copy(
+            vilkårsvurderinger = vurderinger,
             vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
             utfallsperioder = utfallsperioder,
             status = status,
@@ -342,6 +357,62 @@ data class Førstegangsbehandling(
             )
         } else {
             this + neste
+        }
+    }
+
+    private fun lagFristForFramsettingAvKravVurdering(utfall: Utfall, periode: Periode, kilde: Kilde): Vurdering =
+        Vurdering(
+            utfall = utfall,
+            kilde = kilde,
+            fom = periode.fra,
+            tom = periode.til,
+            vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+            detaljer = "",
+            grunnlagId = null,
+        )
+
+    fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
+        // Sjekker av behandlingstilstand gjøres på et tidligere tidspunkt
+        val kravdatoSaksopplysning = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
+        val kravdato = kravdatoSaksopplysning?.kravdato
+        check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
+
+        val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
+        if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.OPPFYLT,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
+                ),
+            )
+        } else if (datoDetKanInnvilgesFra > vurderingsperiode.til) {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
+                ),
+            )
+        } else {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    periode = Periode(
+                        fra = vurderingsperiode.fra,
+                        til = datoDetKanInnvilgesFra.minusDays(1),
+                    ),
+                    kilde = kravdatoSaksopplysning.kilde,
+                ),
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.OPPFYLT,
+                    periode = Periode(
+                        fra = datoDetKanInnvilgesFra,
+                        til = vurderingsperiode.til,
+                    ),
+                    kilde = kravdatoSaksopplysning.kilde,
+                ),
+            )
         }
     }
 }

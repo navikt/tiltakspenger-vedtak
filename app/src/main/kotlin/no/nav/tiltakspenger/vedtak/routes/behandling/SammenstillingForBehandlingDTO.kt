@@ -22,6 +22,7 @@ data class SammenstillingForBehandlingDTO(
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
     val utfallsperioder: List<UtfallsperiodeDTO>,
+    val kravdatoSaksopplysninger: KravdatoSaksopplysningerDTO,
 ) {
     data class EndringDTO(
         val type: String,
@@ -95,5 +96,21 @@ data class SammenstillingForBehandlingDTO(
     data class FaktaDTO(
         val harYtelse: String,
         val harIkkeYtelse: String,
+    )
+
+    data class KravdatoSaksopplysningerDTO(
+        val opprinneligKravdato: KravdatoSaksopplysningDTO,
+        val kravdatoFraSaksbehandler: KravdatoSaksopplysningDTO? = null,
+        val vurderinger: List<VurderingDTO>,
+    )
+
+    data class KravdatoSaksopplysningDTO(
+        val verdi: LocalDate,
+        val kilde: String,
+    )
+
+    data class VurderingDTO(
+        val periode: PeriodeDTO,
+        val utfall: String,
     )
 }
