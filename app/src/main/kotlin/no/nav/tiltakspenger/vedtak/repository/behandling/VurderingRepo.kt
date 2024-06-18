@@ -170,6 +170,7 @@ fun hentVilkår(vilkår: String) =
         "UFØRETRYGD" -> Vilkår.UFØRETRYGD
         "ETTERLØNN" -> Vilkår.ETTERLØNN
         "TILTAKSDELTAGELSE" -> Vilkår.TILTAKSDELTAGELSE
+        "FRIST_FOR_FRAMSETTING_AV_KRAV" -> Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV
         else -> {
             throw IllegalStateException("Vurdering med ukjent vilkår $vilkår")
         }
