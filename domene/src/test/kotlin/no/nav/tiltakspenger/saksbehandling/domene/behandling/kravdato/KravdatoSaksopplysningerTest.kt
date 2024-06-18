@@ -18,4 +18,28 @@ internal class KravdatoSaksopplysningerTest {
         val avklarteSaksopplysninger = kravdatoSaksopplysninger.avklar().avklartKravdatoSaksopplysning
         avklarteSaksopplysninger shouldBe kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
     }
+
+    @Test
+    fun `erOpplysningFraSøknadAvklart skal returnere true hvis opplysningen om kravdato fra søknaden er den som er avklart`() {
+        val kravdatoSaksopplysninger = kravdatoSaksopplysninger(kravdatoSaksopplysningFraSaksbehandler = null).avklar()
+        kravdatoSaksopplysninger.erOpplysningFraSøknadAvklart() shouldBe true
+    }
+
+    @Test
+    fun `erOpplysningFraSøknadAvklart skal returnere false hvis opplysningen om kravdato fra søknaden ikke er den som er avklart`() {
+        val kravdatoSaksopplysninger = kravdatoSaksopplysninger().avklar()
+        kravdatoSaksopplysninger.erOpplysningFraSøknadAvklart() shouldBe false
+    }
+
+    @Test
+    fun `erOpplysningFraSaksbehandlerAvklart skal returnere true hvis opplysningen om kravdato fra saksbehandler er den som er avklart`() {
+        val kravdatoSaksopplysninger = kravdatoSaksopplysninger().avklar()
+        kravdatoSaksopplysninger.erOpplysningFraSaksbehandlerAvklart() shouldBe true
+    }
+
+    @Test
+    fun `erOpplysningFraSaksbehandlerAvklart skal returnere false hvis opplysningen om kravdato fra saksbehandler ikke er den som er avklart`() {
+        val kravdatoSaksopplysninger = kravdatoSaksopplysninger(kravdatoSaksopplysningFraSaksbehandler = null).avklar()
+        kravdatoSaksopplysninger.erOpplysningFraSaksbehandlerAvklart() shouldBe false
+    }
 }

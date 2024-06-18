@@ -26,10 +26,11 @@ interface KravdatoSaksopplysningMother {
         )
 
     fun kravdatoSaksopplysninger(
+        kravdatoSaksopplysningFraSøknad: KravdatoSaksopplysning? = kravdatoSaksopplysningFraSøknad(),
         kravdatoSaksopplysningFraSaksbehandler: KravdatoSaksopplysning? = kravdatoSaksopplysningFraSaksbehandler(),
     ): KravdatoSaksopplysninger =
         KravdatoSaksopplysninger(
-            kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningFraSøknad(),
+            kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningFraSøknad,
             kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningFraSaksbehandler,
         )
 }

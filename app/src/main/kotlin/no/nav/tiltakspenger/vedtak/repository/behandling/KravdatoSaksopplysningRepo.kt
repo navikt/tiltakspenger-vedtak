@@ -14,36 +14,30 @@ import java.time.LocalDateTime
 internal class KravdatoSaksopplysningRepo {
     fun lagre(behandlingId: BehandlingId, kravdatoSaksopplysninger: KravdatoSaksopplysninger, txSession: TransactionalSession) {
         slettKravdatoSaksopplysninger(behandlingId, txSession)
-        if (kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad != kravdatoSaksopplysninger.avklartKravdatoSaksopplysning) {
-            lagreUavklartKravdatoSaksopplysning(behandlingId, kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad!!, txSession)
-        }
-        if (
-            kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler != null &&
-            kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler != kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
-        ) {
-            lagreUavklartKravdatoSaksopplysning(behandlingId, kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler!!, txSession)
-        }
-        if (kravdatoSaksopplysninger.avklartKravdatoSaksopplysning != null) {
-            lagreAvklartKravdatoSaksopplysning(
-                behandlingId,
-                kravdatoSaksopplysninger.avklartKravdatoSaksopplysning!!,
-                txSession,
+        lagreKravdatoSaksopplysning(
+            behandlingId = behandlingId,
+            kravdatoSaksopplysning = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad!!,
+            erAvklart = kravdatoSaksopplysninger.erOpplysningFraSøknadAvklart(),
+            txSession = txSession,
+        )
+        if (kravdatoSaksopplysninger.harOpplysningFraSaksbehandler()) {
+            lagreKravdatoSaksopplysning(
+                behandlingId = behandlingId,
+                kravdatoSaksopplysning = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler!!,
+                erAvklart = kravdatoSaksopplysninger.erOpplysningFraSaksbehandlerAvklart(),
+                txSession = txSession,
             )
         }
     }
 
-    fun lagreUavklartKravdatoSaksopplysning(behandlingId: BehandlingId, kravdatoSaksopplysning: KravdatoSaksopplysning, txSession: TransactionalSession) {
+    fun lagreKravdatoSaksopplysning(
+        behandlingId: BehandlingId,
+        kravdatoSaksopplysning: KravdatoSaksopplysning,
+        erAvklart: Boolean,
+        txSession: TransactionalSession,
+    ) {
         lagreKravdatoSaksopplysning(
-            avklart = false,
-            behandlingId = behandlingId,
-            kravdatoSaksopplysning = kravdatoSaksopplysning,
-            txSession = txSession,
-        )
-    }
-
-    fun lagreAvklartKravdatoSaksopplysning(behandlingId: BehandlingId, kravdatoSaksopplysning: KravdatoSaksopplysning, txSession: TransactionalSession) {
-        lagreKravdatoSaksopplysning(
-            avklart = true,
+            avklart = erAvklart,
             behandlingId = behandlingId,
             kravdatoSaksopplysning = kravdatoSaksopplysning,
             txSession = txSession,

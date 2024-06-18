@@ -8,4 +8,10 @@ data class KravdatoSaksopplysninger(
     fun avklar(): KravdatoSaksopplysninger = this.copy(
         avklartKravdatoSaksopplysning = kravdatoSaksopplysningFraSaksbehandler ?: kravdatoSaksopplysningFraSøknad,
     )
+
+    fun erOpplysningFraSøknadAvklart(): Boolean = this.avklartKravdatoSaksopplysning == kravdatoSaksopplysningFraSøknad
+
+    fun erOpplysningFraSaksbehandlerAvklart(): Boolean = this.avklartKravdatoSaksopplysning == kravdatoSaksopplysningFraSaksbehandler
+
+    fun harOpplysningFraSaksbehandler(): Boolean = this.kravdatoSaksopplysningFraSaksbehandler != null
 }
