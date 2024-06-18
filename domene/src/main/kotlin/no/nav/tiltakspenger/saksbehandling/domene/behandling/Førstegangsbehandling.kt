@@ -80,7 +80,7 @@ data class Førstegangsbehandling(
         ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
 
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
-            // TODO Gjør noe ekstra
+            // TODO Gjør noe ekstra (notifiser beslutter/behandler)
         }
 
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
@@ -97,6 +97,7 @@ data class Førstegangsbehandling(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
             vilkårssett = vilkårssett.oppdaterSaksopplysninger(fakta),
+            tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
 
@@ -280,6 +281,9 @@ data class Førstegangsbehandling(
         )
     }
 
+    /**
+     * Endrer tilstand til VILKÅRSVURDERT
+     */
     override fun vilkårsvurder(): Førstegangsbehandling {
         val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
 
