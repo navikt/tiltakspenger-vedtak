@@ -155,8 +155,6 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.saksopplysninger(),
-            vurderinger = behandling.vilkårsvurderinger,
             saksbehandler = behandling.saksbehandler!!,
             beslutter = behandling.beslutter!!,
         )
@@ -215,7 +213,12 @@ class BehandlingServiceImpl(
         )
         behandlingRepo.lagre(oppdatertBehandling)
     }
-    override fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: TiltakId, saksbehandler: Saksbehandler) {
+
+    override fun tilbakestillAntallDagerPåTiltak(
+        behandlingId: BehandlingId,
+        tiltakId: TiltakId,
+        saksbehandler: Saksbehandler,
+    ) {
         val behandling = hentBehandling(behandlingId)
         val oppdatertBehandling = behandling.tilbakestillAntallDager(
             tiltakId = tiltakId,

@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class LeggTilSaksopplysningRespons(
@@ -24,13 +25,15 @@ interface Behandling {
     val søknader: List<Søknad>
     val saksbehandler: String?
     val beslutter: String?
-    val saksopplysninger: List<Saksopplysning>
+    val vilkårssett: Vilkårssett
     val tiltak: List<Tiltak>
-    val vilkårsvurderinger: List<Vurdering>
     val utfallsperioder: List<Utfallsperiode>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger
+
+    val saksopplysninger: List<Saksopplysning> get() = vilkårssett.saksopplysninger
+    val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons

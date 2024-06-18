@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninge
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class Førstegangsbehandling(
@@ -26,7 +27,7 @@ data class Førstegangsbehandling(
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
     override val beslutter: String?,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårssett: Vilkårssett,
     override val tiltak: List<Tiltak>,
     override val vilkårsvurderinger: List<Vurdering>,
     override val utfallsperioder: List<Utfallsperiode>,
@@ -43,8 +44,11 @@ data class Førstegangsbehandling(
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
-                saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                    søknad,
+                vilkårssett = Vilkårssett(
+                    saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
+                        søknad,
+                    ),
+                    vilkårsvurderinger = emptyList(),
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
@@ -90,7 +94,7 @@ data class Førstegangsbehandling(
         ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
 
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
-            // TODO Gjør noe ekstra
+            // TODO Gjør noe ekstra (notifiser beslutter/behandler)
         }
 
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
@@ -98,7 +102,7 @@ data class Førstegangsbehandling(
                 Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
         } else {
             Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(this.saksopplysninger) { acc, saksopplysning ->
+                .fold(saksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
@@ -106,7 +110,8 @@ data class Førstegangsbehandling(
         return this.copy(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            saksopplysninger = fakta,
+            vilkårssett = vilkårssett.oppdaterSaksopplysninger(fakta),
+            tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
 
@@ -125,15 +130,15 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+        val oppdatertVilkårssett = vilkårssett.oppdaterSaksopplysning(saksopplysning)
+        return if (oppdatertVilkårssett == vilkårssett) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
+                behandling = this.copy(vilkårssett = oppdatertVilkårssett).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -290,6 +295,9 @@ data class Førstegangsbehandling(
         )
     }
 
+    /**
+     * Endrer tilstand til VILKÅRSVURDERT
+     */
     override fun vilkårsvurder(): Førstegangsbehandling {
         val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
 
@@ -333,6 +341,7 @@ data class Førstegangsbehandling(
 
         return this.copy(
             vilkårsvurderinger = vurderinger,
+            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
             utfallsperioder = utfallsperioder,
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,

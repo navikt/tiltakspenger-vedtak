@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,7 +48,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        saksopplysninger = listOf(saksopplysning),
+        vilkårssett = Vilkårssett(listOf(saksopplysning), emptyList()),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
@@ -55,7 +56,6 @@ internal class RevurderingOpprettetTest {
         status = BehandlingStatus.Manuell,
         tilstand = BehandlingTilstand.OPPRETTET,
         utfallsperioder = emptyList(),
-        vilkårsvurderinger = emptyList(),
         kravdatoSaksopplysninger = mockk<KravdatoSaksopplysninger>(),
     )
 
