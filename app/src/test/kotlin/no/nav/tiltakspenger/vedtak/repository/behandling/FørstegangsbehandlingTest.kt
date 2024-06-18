@@ -267,27 +267,6 @@ class FørstegangsbehandlingTest {
         }
     }
 
-// TODO: Må finne ut av hva man skal gjøre når det kommer inn en ny søknad på en behandling som er til beslutter før denne sjekken kan gjøres i koden
-//    @Test
-//    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er til beslutter`() {
-//        val behandlingSendtTilBeslutter = ObjectMother.behandlingTilBeslutterInnvilget()
-//        shouldThrowWithMessage<IllegalStateException>(
-//            "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter",
-//        ) {
-//            behandlingSendtTilBeslutter.vilkårsvurderFristForFramsettingAvKrav()
-//        }
-//    }
-
-    @Test
-    fun `det skal ikke være mulig å vilkårsvurdere frist om krav til framsatt dato hvis behandlingen er iverksatt`() {
-        val iverksattBehandling = ObjectMother.behandlingInnvilgetIverksatt()
-        shouldThrowWithMessage<IllegalStateException>(
-            "Man kan ikke vilkårsvurdere en behandling som er iverksatt",
-        ) {
-            iverksattBehandling.vilkårsvurderFristForFramsettingAvKrav()
-        }
-    }
-
     @Test
     fun `når man vilkårsvurderer frist om krav til framsatt dato skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
         val behandlingMock = ObjectMother.behandling(

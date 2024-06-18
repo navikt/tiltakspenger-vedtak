@@ -363,10 +363,7 @@ data class Førstegangsbehandling(
         )
 
     fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
-        // TODO: Må finne ut av hva man skal gjøre når det kommer inn en ny søknad på en behandling som er til beslutter før denne sjekken passerer gjennom tester.
-        // check(this.tilstand != BehandlingTilstand.TIL_BESLUTTER) { "Man kan ikke vilkårsvurdere en behandling som er sendt til beslutter" }
-        check(this.tilstand != BehandlingTilstand.IVERKSATT) { "Man kan ikke vilkårsvurdere en behandling som er iverksatt" }
-
+        // Sjekker av behandlingstilstand gjøres på et tidligere tidspunkt
         val kravdatoSaksopplysning = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
         val kravdato = kravdatoSaksopplysning?.kravdato
         check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
