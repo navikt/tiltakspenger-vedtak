@@ -29,11 +29,9 @@ data class Førstegangsbehandling(
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
     override val tiltak: List<Tiltak>,
-    override val vilkårsvurderinger: List<Vurdering>,
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
-    override val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
 ) : Behandling {
 
     companion object {
@@ -49,21 +47,19 @@ data class Førstegangsbehandling(
                         søknad,
                     ),
                     vilkårsvurderinger = emptyList(),
+                    kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                        kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
+                            kravdato = søknad.opprettet.toLocalDate(),
+                            kilde = Kilde.SØKNAD,
+                        ),
+                    ).avklar(),
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
                 beslutter = null,
-                vilkårsvurderinger = emptyList(),
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
-                // TODO: Skal trekkes inn i Vilkårssett
-                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
-                    kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
-                        kravdato = søknad.opprettet.toLocalDate(),
-                        kilde = Kilde.SØKNAD,
-                    ),
-                ).avklar(),
             )
         }
     }
@@ -340,7 +336,6 @@ data class Førstegangsbehandling(
         }
 
         return this.copy(
-            vilkårsvurderinger = vurderinger,
             vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
             utfallsperioder = utfallsperioder,
             status = status,

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 
@@ -12,6 +13,7 @@ data class Vilkårssett(
     // TODO jah: Disse flyttes iterativt til hvert sitt vilkår.
     val saksopplysninger: List<Saksopplysning>,
     val vilkårsvurderinger: List<Vurdering>,
+    val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
 ) {
 
     fun oppdaterSaksopplysninger(saksopplysninger: List<Saksopplysning>): Vilkårssett {

@@ -48,7 +48,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        vilkårssett = Vilkårssett(listOf(saksopplysning), emptyList()),
+        vilkårssett = Vilkårssett(listOf(saksopplysning), emptyList(), mockk<KravdatoSaksopplysninger>()),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
@@ -56,7 +56,6 @@ internal class RevurderingOpprettetTest {
         status = BehandlingStatus.Manuell,
         tilstand = BehandlingTilstand.OPPRETTET,
         utfallsperioder = emptyList(),
-        kravdatoSaksopplysninger = mockk<KravdatoSaksopplysninger>(),
     )
 
     private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(
