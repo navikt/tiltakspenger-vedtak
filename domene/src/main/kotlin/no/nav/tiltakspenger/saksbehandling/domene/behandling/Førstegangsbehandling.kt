@@ -302,7 +302,7 @@ data class Førstegangsbehandling(
         } + deltagelseVurderinger + vilkårsvurderFristForFramsettingAvKrav()
 
         val utfallsperioder =
-            vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
+            vurderingsperiode.fraOgMed.datesUntil(vurderingsperiode.tilOgMed.plusDays(1)).toList().map { dag ->
                 val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
                 val utfallYtelser = when {
                     idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
@@ -359,8 +359,8 @@ data class Førstegangsbehandling(
         Vurdering(
             utfall = utfall,
             kilde = kilde,
-            fom = periode.fra,
-            tom = periode.til,
+            fom = periode.fraOgMed,
+            tom = periode.tilOgMed,
             vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
             detaljer = "",
             grunnlagId = null,
@@ -373,7 +373,7 @@ data class Førstegangsbehandling(
         check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
 
         val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
-        if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
+        if (datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed) {
             return listOf(
                 lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.OPPFYLT,
@@ -381,7 +381,7 @@ data class Førstegangsbehandling(
                     periode = vurderingsperiode,
                 ),
             )
-        } else if (datoDetKanInnvilgesFra > vurderingsperiode.til) {
+        } else if (datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed) {
             return listOf(
                 lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.IKKE_OPPFYLT,
@@ -394,16 +394,16 @@ data class Førstegangsbehandling(
                 lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.IKKE_OPPFYLT,
                     periode = Periode(
-                        fra = vurderingsperiode.fra,
-                        til = datoDetKanInnvilgesFra.minusDays(1),
+                        fraOgMed = vurderingsperiode.fraOgMed,
+                        tilOgMed = datoDetKanInnvilgesFra.minusDays(1),
                     ),
                     kilde = kravdatoSaksopplysning.kilde,
                 ),
                 lagFristForFramsettingAvKravVurdering(
                     utfall = Utfall.OPPFYLT,
                     periode = Periode(
-                        fra = datoDetKanInnvilgesFra,
-                        til = vurderingsperiode.til,
+                        fraOgMed = datoDetKanInnvilgesFra,
+                        tilOgMed = vurderingsperiode.tilOgMed,
                     ),
                     kilde = kravdatoSaksopplysning.kilde,
                 ),

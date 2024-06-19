@@ -589,8 +589,8 @@ class Innsending private constructor(
             melding = "Trenger fpytelser",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fra,
-                "tom" to this.filtreringsperiode().til,
+                "fom" to this.filtreringsperiode().fraOgMed,
+                "tom" to this.filtreringsperiode().tilOgMed,
             ),
         )
     }
@@ -601,8 +601,8 @@ class Innsending private constructor(
             melding = "Trenger overgangsstønad",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fra,
-                "tom" to this.filtreringsperiode().til,
+                "fom" to this.filtreringsperiode().fraOgMed,
+                "tom" to this.filtreringsperiode().tilOgMed,
             ),
         )
     }
@@ -613,8 +613,8 @@ class Innsending private constructor(
             melding = "Trenger uføre",
             detaljer = mapOf(
                 "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fra,
-                "tom" to this.filtreringsperiode().til,
+                "fom" to this.filtreringsperiode().fraOgMed,
+                "tom" to this.filtreringsperiode().tilOgMed,
             ),
         )
     }

@@ -18,7 +18,7 @@ interface ForeldrepengerMother {
         vedtakRef: String = "vedtakRef",
         status: ForeldrepengerVedtak.Status = ForeldrepengerVedtak.Status.LØPENDE,
         kildesystem: ForeldrepengerVedtak.Kildesystem = ForeldrepengerVedtak.Kildesystem.FPSAK,
-        periode: Periode = Periode(fra = 1.januar(2022), til = 31.januar(2022)),
+        periode: Periode = Periode(fraOgMed = 1.januar(2022), tilOgMed = 31.januar(2022)),
         tilleggsopplysninger: String = "Tillegg",
         anvist: List<ForeldrepengerVedtak.ForeldrepengerAnvisning> = listOf(anvist(periode = periode)),
         innhentet: LocalDateTime = LocalDateTime.of(2022, 1, 1, 12, 0, 0, 0),
@@ -40,7 +40,7 @@ interface ForeldrepengerMother {
         )
 
     fun anvist(
-        periode: Periode = Periode(fra = 1.januar(2022), til = 31.januar(2022)),
+        periode: Periode = Periode(fraOgMed = 1.januar(2022), tilOgMed = 31.januar(2022)),
         beløp: BigDecimal = 100.toBigDecimal(),
         dagsats: BigDecimal = 100.toBigDecimal(),
         utbetalingsgrad: BigDecimal = 100.toBigDecimal(),

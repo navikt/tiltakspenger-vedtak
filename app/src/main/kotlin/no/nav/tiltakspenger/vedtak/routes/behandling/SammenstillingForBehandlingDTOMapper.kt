@@ -180,8 +180,8 @@ object SammenstillingForBehandlingDTOMapper {
             behandlingId = behandling.id.toString(),
             saksbehandler = behandling.saksbehandler,
             beslutter = settBeslutter(behandling),
-            fom = behandling.vurderingsperiode.fra,
-            tom = behandling.vurderingsperiode.til,
+            fom = behandling.vurderingsperiode.fraOgMed,
+            tom = behandling.vurderingsperiode.tilOgMed,
             søknad = SøknadDTO(
                 søknadsdato = behandling.søknad().opprettet.toLocalDate(),
                 arrangoernavn = behandling.søknad().tiltak.arrangør,
@@ -286,16 +286,28 @@ object SammenstillingForBehandlingDTOMapper {
                     },
                 )
             },
-            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger, vilkårsvurderinger = behandling.vilkårsvurderinger),
+            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(
+                kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger,
+                vilkårsvurderinger = behandling.vilkårsvurderinger,
+            ),
         )
     }
 
-    private fun mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger: KravdatoSaksopplysninger, vilkårsvurderinger: List<Vurdering>): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
+    private fun mapKravdatoSaksopplysningerDTO(
+        kravdatoSaksopplysninger: KravdatoSaksopplysninger,
+        vilkårsvurderinger: List<Vurdering>,
+    ): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
         val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
         val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
         return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
             opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
-            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) mapKravdatoSaksopplysningDTO(søknadstidspunktFraSaksbehandler) else null,
+            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) {
+                mapKravdatoSaksopplysningDTO(
+                    søknadstidspunktFraSaksbehandler,
+                )
+            } else {
+                null
+            },
             vurderinger = vilkårsvurderinger
                 .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
                 .map { it.toVurderingDTO() },
@@ -364,8 +376,8 @@ object SammenstillingForBehandlingDTOMapper {
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),
             periode = PeriodeDTO(
-                fra = saksopplysning.periode.fra,
-                til = saksopplysning.periode.til,
+                fra = saksopplysning.periode.fraOgMed,
+                til = saksopplysning.periode.tilOgMed,
             ),
         )
 

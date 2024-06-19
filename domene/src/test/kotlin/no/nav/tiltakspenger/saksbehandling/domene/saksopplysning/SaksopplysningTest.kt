@@ -113,7 +113,7 @@ internal class SaksopplysningTest {
 
     @Test
     fun `hvis det finnes ytelse i starten av en vurderingsperiode får man IkkeOppfylt i denne perioden og Oppfylt i resten`() {
-        val periode = Periode(fra = 1.januar(2023), til = 31.mars(2023))
+        val periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.mars(2023))
 
         val saksopplysning =
             Saksopplysning(

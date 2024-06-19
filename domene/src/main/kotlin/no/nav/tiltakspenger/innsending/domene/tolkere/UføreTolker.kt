@@ -24,8 +24,8 @@ class UføreTolker {
             if (periode.før(dato)) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = periode.fraOgMed,
+                        tom = periode.tilOgMed,
                         kilde = Kilde.PESYS,
                         vilkår = Vilkår.UFØRETRYGD,
                         detaljer = "",
@@ -39,7 +39,7 @@ class UføreTolker {
             if (periode.inneholder(dato)) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
+                        fom = periode.fraOgMed,
                         tom = dato.minusDays(1),
                         kilde = Kilde.PESYS,
                         vilkår = Vilkår.UFØRETRYGD,
@@ -49,7 +49,7 @@ class UføreTolker {
                     ),
                     Saksopplysning(
                         fom = dato,
-                        tom = periode.til,
+                        tom = periode.tilOgMed,
                         kilde = Kilde.PESYS,
                         vilkår = Vilkår.UFØRETRYGD,
                         detaljer = "",
@@ -62,8 +62,8 @@ class UføreTolker {
             // Vedtak om uførevedtak skjer før vår periode
             return listOf(
                 Saksopplysning(
-                    fom = periode.fra,
-                    tom = periode.til,
+                    fom = periode.fraOgMed,
+                    tom = periode.tilOgMed,
                     kilde = Kilde.PESYS,
                     vilkår = Vilkår.UFØRETRYGD,
                     detaljer = "",

@@ -12,7 +12,7 @@ data class AntallDagerDTO(
 ) {
     fun toPeriodeMedAntallDager(saksbehandlerIdent: String): PeriodeMedVerdi<AntallDager> {
         return PeriodeMedVerdi(
-            periode = Periode(fra = periode.fra, til = periode.til),
+            periode = Periode(fraOgMed = periode.fra, tilOgMed = periode.til),
             verdi = AntallDager(
                 antallDager = antallDager,
                 kilde = Kilde.valueOf(kilde.uppercase()),

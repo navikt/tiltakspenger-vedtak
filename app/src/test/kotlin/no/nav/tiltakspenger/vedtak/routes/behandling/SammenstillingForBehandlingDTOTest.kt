@@ -262,8 +262,8 @@ class SammenstillingForBehandlingDTOTest {
                         saksbehandlerIdent = null,
                     ),
                     periode = Periode(
-                        fra = antallDagerMock.periode.fra,
-                        til = antallDagerMock.periode.til,
+                        fraOgMed = antallDagerMock.periode.fra,
+                        tilOgMed = antallDagerMock.periode.til,
                     ),
                 ),
             ),

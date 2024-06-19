@@ -161,8 +161,8 @@ internal class PostgresBehandlingRepo(
                 mapOf(
                     "id" to behandling.id.toString(),
                     "sakId" to behandling.sakId.toString(),
-                    "fom" to behandling.vurderingsperiode.fra,
-                    "tom" to behandling.vurderingsperiode.til,
+                    "fom" to behandling.vurderingsperiode.fraOgMed,
+                    "tom" to behandling.vurderingsperiode.tilOgMed,
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
                     "sistEndretOld" to sistEndret,
@@ -192,8 +192,8 @@ internal class PostgresBehandlingRepo(
                 mapOf(
                     "id" to behandling.id.toString(),
                     "sakId" to behandling.sakId.toString(),
-                    "fom" to behandling.vurderingsperiode.fra,
-                    "tom" to behandling.vurderingsperiode.til,
+                    "fom" to behandling.vurderingsperiode.fraOgMed,
+                    "tom" to behandling.vurderingsperiode.tilOgMed,
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
                     "sistEndret" to nå,

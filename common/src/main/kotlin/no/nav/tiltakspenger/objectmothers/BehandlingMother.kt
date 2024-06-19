@@ -58,8 +58,8 @@ interface BehandlingMother {
         val behandling = vilkårViHenter().fold(behandling(periode, sakId, søknad)) { b: Behandling, vilkår ->
             b.leggTilSaksopplysning(
                 saksopplysning(
-                    fom = periode.fra,
-                    tom = periode.til,
+                    fom = periode.fraOgMed,
+                    tom = periode.tilOgMed,
                     vilkår = vilkår,
                     type = TypeSaksopplysning.HAR_IKKE_YTELSE,
                 ),
@@ -142,8 +142,8 @@ interface BehandlingMother {
                 listOf(
                     antallDagerFraRegister(
                         periode = Periode(
-                            fra = fom,
-                            til = tom,
+                            fraOgMed = fom,
+                            tilOgMed = tom,
                         ),
                     ),
                 ),

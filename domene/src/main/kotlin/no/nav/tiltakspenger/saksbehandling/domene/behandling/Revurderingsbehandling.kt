@@ -39,7 +39,11 @@ data class Revurderingsbehandling(
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
-                vilkårssett = Vilkårssett(vedtak.behandling.saksopplysninger, emptyList(), vedtak.behandling.kravdatoSaksopplysninger),
+                vilkårssett = Vilkårssett(
+                    vedtak.behandling.saksopplysninger,
+                    emptyList(),
+                    vedtak.behandling.kravdatoSaksopplysninger,
+                ),
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
@@ -255,7 +259,7 @@ data class Revurderingsbehandling(
         } + deltagelseVurderinger
 
         val utfallsperioder =
-            vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
+            vurderingsperiode.fraOgMed.datesUntil(vurderingsperiode.tilOgMed.plusDays(1)).toList().map { dag ->
                 val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
                 val utfallYtelser = when {
                     idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING

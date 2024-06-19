@@ -14,8 +14,8 @@ class DagpengerTolker {
             if (ytelser == null) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = periode.fraOgMed,
+                        tom = periode.tilOgMed,
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = "",
@@ -40,8 +40,8 @@ class DagpengerTolker {
             if (ytelseListe.isEmpty()) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = periode.fraOgMed,
+                        tom = periode.tilOgMed,
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = "",
@@ -52,8 +52,8 @@ class DagpengerTolker {
             return ytelseListe
                 .map {
                     Saksopplysning(
-                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
-                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
+                        fom = maxOf(periode.fraOgMed, it.fomGyldighetsperiode.toLocalDate()),
+                        tom = minOf(periode.tilOgMed, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.DAGPENGER,
                         kilde = Kilde.ARENA,
                         detaljer = detaljerForDagpenger(it),

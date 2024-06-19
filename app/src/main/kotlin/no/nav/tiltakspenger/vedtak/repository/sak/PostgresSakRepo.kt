@@ -165,8 +165,8 @@ internal class PostgresSakRepo(
                 sqlOppdaterSak,
                 mapOf(
                     "id" to sak.id.toString(),
-                    "fom" to sak.periode.fra,
-                    "tom" to sak.periode.til,
+                    "fom" to sak.periode.fraOgMed,
+                    "tom" to sak.periode.tilOgMed,
                     "ident" to sak.ident,
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
@@ -191,8 +191,8 @@ internal class PostgresSakRepo(
                     "id" to sak.id.toString(),
                     "ident" to sak.ident,
                     "saksnummer" to sak.saknummer.verdi,
-                    "fom" to sak.periode.fra,
-                    "tom" to sak.periode.til,
+                    "fom" to sak.periode.fraOgMed,
+                    "tom" to sak.periode.tilOgMed,
                     "sistEndret" to nå,
                     "opprettet" to nå,
                 ),
@@ -243,7 +243,7 @@ internal class PostgresSakRepo(
             id = id,
             ident = string("ident"),
             saknummer = Saksnummer(verdi = string("saksnummer")),
-            periode = Periode(fra = localDate("fom"), til = localDate("tom")),
+            periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
         )
     }
 

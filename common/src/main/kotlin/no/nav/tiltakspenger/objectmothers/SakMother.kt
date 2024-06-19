@@ -20,15 +20,15 @@ interface SakMother {
         id: SakId = SakId.random(),
         ident: String = Random().nextInt().toString(),
         saksnummer: Saksnummer = Saksnummer("saksnr"),
-        periode: Periode = Periode(fra = 1.januar(2023), til = 31.januar(2023)),
+        periode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
         behandlinger: List<Førstegangsbehandling> = listOf(
             Førstegangsbehandling.opprettBehandling(
                 id,
                 nySøknad(
                     personopplysninger = personSøknad(ident = ident),
                     tiltak = søknadTiltak(
-                        deltakelseFom = periode.fra,
-                        deltakelseTom = periode.til,
+                        deltakelseFom = periode.fraOgMed,
+                        deltakelseTom = periode.tilOgMed,
                     ),
                 ),
             ),
@@ -59,7 +59,7 @@ interface SakMother {
         id: SakId = SakId.random(),
         ident: String = Random().nextInt().toString(),
         saksnummer: Saksnummer = Saksnummer("saksnr"),
-        periode: Periode = Periode(fra = 1.januar(2022), til = 31.januar(2022)),
+        periode: Periode = Periode(fraOgMed = 1.januar(2022), tilOgMed = 31.januar(2022)),
         behandlinger: List<Førstegangsbehandling> = emptyList(),
         personopplysninger: SakPersonopplysninger = SakPersonopplysninger(),
     ): Sak =

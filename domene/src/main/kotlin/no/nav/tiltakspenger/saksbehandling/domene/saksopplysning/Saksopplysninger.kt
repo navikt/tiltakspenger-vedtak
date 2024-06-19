@@ -77,8 +77,8 @@ object Saksopplysninger {
     private fun lagSaksopplysningFraSøknad(søknad: Søknad): Saksopplysning {
         if (søknad.kvp is Søknad.PeriodeSpm.Ja) {
             return Saksopplysning(
-                fom = søknad.kvp.periode.fra,
-                tom = søknad.kvp.periode.til,
+                fom = søknad.kvp.periode.fraOgMed,
+                tom = søknad.kvp.periode.tilOgMed,
                 vilkår = Vilkår.KVP,
                 kilde = Kilde.SØKNAD,
                 detaljer = "Har svart Ja i søknaden",
@@ -86,8 +86,8 @@ object Saksopplysninger {
             )
         } else {
             return Saksopplysning(
-                fom = søknad.vurderingsperiode().fra,
-                tom = søknad.vurderingsperiode().til,
+                fom = søknad.vurderingsperiode().fraOgMed,
+                tom = søknad.vurderingsperiode().tilOgMed,
                 vilkår = Vilkår.KVP,
                 kilde = Kilde.SØKNAD,
                 detaljer = "Har svart Nei i søknaden",
@@ -102,8 +102,8 @@ object Saksopplysninger {
         periode: Periode,
     ): Saksopplysning {
         return Saksopplysning(
-            fom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fra else periode.fra,
-            tom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.til else periode.til,
+            fom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.fraOgMed else periode.fraOgMed,
+            tom = if (periodeSpm is Søknad.PeriodeSpm.Ja) periodeSpm.periode.tilOgMed else periode.tilOgMed,
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",
@@ -117,8 +117,8 @@ object Saksopplysninger {
         periode: Periode,
     ): Saksopplysning {
         return Saksopplysning(
-            fom = periode.fra,
-            tom = periode.til,
+            fom = periode.fraOgMed,
+            tom = periode.tilOgMed,
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",
@@ -132,8 +132,8 @@ object Saksopplysninger {
         periode: Periode,
     ): Saksopplysning {
         return Saksopplysning(
-            fom = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) fraOgMedDatoSpm.fra else periode.fra,
-            tom = periode.til,
+            fom = if (fraOgMedDatoSpm is Søknad.FraOgMedDatoSpm.Ja) fraOgMedDatoSpm.fra else periode.fraOgMed,
+            tom = periode.tilOgMed,
             vilkår = vilkår,
             kilde = Kilde.SØKNAD,
             detaljer = "",

@@ -42,15 +42,15 @@ private fun tolkeForEttVilkår(
     return vedtak
         .filter {
             Periode(
-                it.periode.fra,
-                it.periode.til,
+                it.periode.fraOgMed,
+                it.periode.tilOgMed,
             ).overlapperMed(periode)
         }
         .filter { it.ytelse == type }
         .map {
             Saksopplysning(
-                fom = maxOf(periode.fra, it.periode.fra),
-                tom = minOf(periode.til, it.periode.til),
+                fom = maxOf(periode.fraOgMed, it.periode.fraOgMed),
+                tom = minOf(periode.tilOgMed, it.periode.tilOgMed),
                 vilkår = vilkår,
                 kilde = when (it.kildesystem) {
                     ForeldrepengerVedtak.Kildesystem.FPSAK -> Kilde.FPSAK
@@ -63,8 +63,8 @@ private fun tolkeForEttVilkår(
         .ifEmpty {
             listOf(
                 Saksopplysning(
-                    fom = periode.fra,
-                    tom = periode.til,
+                    fom = periode.fraOgMed,
+                    tom = periode.tilOgMed,
                     vilkår = vilkår,
                     kilde = type.kilde,
                     detaljer = "",

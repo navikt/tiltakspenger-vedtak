@@ -14,7 +14,7 @@ class AlderTolker {
                 if (periode.inneholder(it)) {
                     listOf(
                         Saksopplysning(
-                            fom = periode.fra,
+                            fom = periode.fraOgMed,
                             tom = it.minusDays(1),
                             kilde = Kilde.PDL,
                             vilkår = Vilkår.ALDER,
@@ -24,7 +24,7 @@ class AlderTolker {
                         ),
                         Saksopplysning(
                             fom = it,
-                            tom = periode.til,
+                            tom = periode.tilOgMed,
                             kilde = Kilde.PDL,
                             vilkår = Vilkår.ALDER,
                             detaljer = "",
@@ -36,8 +36,8 @@ class AlderTolker {
                     if (periode.før(it)) {
                         listOf(
                             Saksopplysning(
-                                fom = periode.fra,
-                                tom = periode.til,
+                                fom = periode.fraOgMed,
+                                tom = periode.tilOgMed,
                                 kilde = Kilde.PDL,
                                 vilkår = Vilkår.ALDER,
                                 detaljer = "",
@@ -48,8 +48,8 @@ class AlderTolker {
                     } else {
                         listOf(
                             Saksopplysning(
-                                fom = periode.fra,
-                                tom = periode.til,
+                                fom = periode.fraOgMed,
+                                tom = periode.tilOgMed,
                                 kilde = Kilde.PDL,
                                 vilkår = Vilkår.ALDER,
                                 detaljer = "",

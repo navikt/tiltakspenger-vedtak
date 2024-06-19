@@ -45,8 +45,8 @@ internal class RevurderingOpprettetTest {
         sakId = SakId.random(),
         forrigeVedtak = mockk<Vedtak>(),
         vurderingsperiode = Periode(
-            fra = LocalDate.MIN,
-            til = LocalDate.MAX,
+            fraOgMed = LocalDate.MIN,
+            tilOgMed = LocalDate.MAX,
         ),
         vilkårssett = Vilkårssett(listOf(saksopplysning), emptyList(), mockk<KravdatoSaksopplysninger>()),
         tiltak = tiltak,
