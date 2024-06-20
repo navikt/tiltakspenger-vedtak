@@ -78,9 +78,6 @@ data class Førstegangsbehandling(
     }
 
     override fun leggTilSøknad(søknad: Søknad): Førstegangsbehandling {
-        // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
-        // det hører hjemme i SakService
-
         require(
             this.tilstand in listOf(
                 BehandlingTilstand.OPPRETTET,
@@ -112,8 +109,6 @@ data class Førstegangsbehandling(
     }
 
     override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
-        // det hører hjemme i SakService
         require(
             this.tilstand in listOf(
                 BehandlingTilstand.OPPRETTET,
@@ -212,9 +207,6 @@ data class Førstegangsbehandling(
     }
 
     override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
-        // TODO: Jeg synes ikke det bør opprettes revurdering herfra hvis behandlingen er Iverksatt,
-        // det hører hjemme i SakService
-
         require(
             this.tilstand in listOf(
                 BehandlingTilstand.OPPRETTET,
