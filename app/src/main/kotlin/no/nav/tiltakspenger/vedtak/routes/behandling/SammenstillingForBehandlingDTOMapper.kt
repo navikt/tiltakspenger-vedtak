@@ -48,7 +48,10 @@ object SammenstillingForBehandlingDTOMapper {
             behandlingId = behandling.id.toString(),
             saksbehandler = behandling.saksbehandler,
             beslutter = settBeslutter(behandling),
-            vurderingsperiode = PeriodeDTO(fra = behandling.vurderingsperiode.fra, til = behandling.vurderingsperiode.til),
+            vurderingsperiode = PeriodeDTO(
+                fra = behandling.vurderingsperiode.fraOgMed,
+                til = behandling.vurderingsperiode.tilOgMed,
+            ),
             søknadsdato = behandling.søknad().opprettet.toLocalDate(),
             tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
@@ -66,32 +69,33 @@ object SammenstillingForBehandlingDTOMapper {
                         kilde = it.kilde,
                         girRett = it.gjennomføring.rettPåTiltakspenger,
                         harSøkt = true,
-                        deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall
+                        deltagelseUtfall = utledVurdertUtfall(behandling, it.id)?.utfall
                             ?: Utfall.KREVER_MANUELL_VURDERING,
-                        begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer
+                        begrunnelse = utledVurdertUtfall(behandling, it.id)?.detaljer
                             ?: "Fant ikke noe utfall for tiltaksdeltagelse",
                     )
                 },
             ),
             stønadsdager = behandling.tiltak.map { settAntallDagerSaksopplysninger(it) },
-            alderssaksopplysning = behandling.saksopplysninger().filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
-                AlderssaksopplysningDTO(
-                    periode = PeriodeDTO(fra = it.fom, til = it.tom),
-                    kilde = it.kilde.navn,
-                    detaljer = it.detaljer,
-                    vilkår = it.vilkår.tittel,
-                    vilkårTittel = it.vilkår.flateTittel,
-                    utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                    vilkårLovreferanse = it.vilkår.lovReferanse.map {
-                        LovreferanseDTO(
-                            lovverk = it.lovverk,
-                            paragraf = it.paragraf,
-                            beskrivelse = it.beskrivelse,
-                        )
-                    },
-                    grunnlag = 1.januar(2000), // Dette må vi hente fra noe sted. Kommer senere
-                )
-            }.first(),
+            alderssaksopplysning = behandling.saksopplysninger()
+                .filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
+                    AlderssaksopplysningDTO(
+                        periode = PeriodeDTO(fra = it.fom, til = it.tom),
+                        kilde = it.kilde.navn,
+                        detaljer = it.detaljer,
+                        vilkår = it.vilkår.tittel,
+                        vilkårTittel = it.vilkår.flateTittel,
+                        utfall = settUtfall(behandling = behandling, saksopplysning = it),
+                        vilkårLovreferanse = it.vilkår.lovReferanse.map {
+                            LovreferanseDTO(
+                                lovverk = it.lovverk,
+                                paragraf = it.paragraf,
+                                beskrivelse = it.beskrivelse,
+                            )
+                        },
+                        grunnlag = 1.januar(2000), // Dette må vi hente fra noe sted. Kommer senere
+                    )
+                }.first(),
             ytelsessaksopplysninger = YtelsessaksopplysningerDTO(
                 vilkår = "ANDRE_YTELSER",
                 vilkårLovreferanse = LovreferanseDTO(
@@ -99,7 +103,8 @@ object SammenstillingForBehandlingDTOMapper {
                     paragraf = Lovreferanse.AAP.paragraf,
                     beskrivelse = Lovreferanse.AAP.beskrivelse,
                 ),
-                saksopplysninger = behandling.saksopplysninger().filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }
+                saksopplysninger = behandling.saksopplysninger()
+                    .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }
                     .map { it ->
                         SaksopplysningUtDTO(
                             periode = PeriodeDTO(fra = it.fom, til = it.tom),
@@ -110,7 +115,11 @@ object SammenstillingForBehandlingDTOMapper {
                             utfall = settUtfall(behandling = behandling, saksopplysning = it),
                         )
                     },
-                samletUtfall = settSamletUtfallForSaksopplysninger(behandling = behandling, saksopplysninger = behandling.saksopplysninger().filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }),
+                samletUtfall = settSamletUtfallForSaksopplysninger(
+                    behandling = behandling,
+                    saksopplysninger = behandling.saksopplysninger()
+                        .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER },
+                ),
             ),
             personopplysninger = personopplysninger.søkere().map {
                 PersonopplysningerDTO(
@@ -155,11 +164,17 @@ object SammenstillingForBehandlingDTOMapper {
                     },
                 )
             },
-            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger, vilkårsvurderinger = behandling.vilkårsvurderinger),
+            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(
+                kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger,
+                vilkårsvurderinger = behandling.vilkårsvurderinger,
+            ),
         )
     }
 
-    private fun mapKravdatoSaksopplysningerDTO(kravdatoSaksopplysninger: KravdatoSaksopplysninger, vilkårsvurderinger: List<Vurdering>): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
+    private fun mapKravdatoSaksopplysningerDTO(
+        kravdatoSaksopplysninger: KravdatoSaksopplysninger,
+        vilkårsvurderinger: List<Vurdering>,
+    ): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
         val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
         val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
         return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
@@ -169,7 +184,13 @@ object SammenstillingForBehandlingDTOMapper {
                     .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV },
             ).toString(),
             opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
-            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) mapKravdatoSaksopplysningDTO(søknadstidspunktFraSaksbehandler) else null,
+            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) {
+                mapKravdatoSaksopplysningDTO(
+                    søknadstidspunktFraSaksbehandler,
+                )
+            } else {
+                null
+            },
             vurderinger = vilkårsvurderinger
                 .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
                 .map { it.toVurderingDTO() },
@@ -192,7 +213,7 @@ object SammenstillingForBehandlingDTOMapper {
             utfall = this.utfall.toString(),
         )
 
-    private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
+    private fun utledVurdertUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
         return when (behandling.tilstand) {
             BehandlingTilstand.VILKÅRSVURDERT -> {
                 behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId.toString() }
@@ -240,8 +261,8 @@ object SammenstillingForBehandlingDTOMapper {
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),
             periode = PeriodeDTO(
-                fra = saksopplysning.periode.fra,
-                til = saksopplysning.periode.til,
+                fra = saksopplysning.periode.fraOgMed,
+                til = saksopplysning.periode.tilOgMed,
             ),
         )
 

@@ -44,8 +44,8 @@ class ForeldrepengerAnvisningDAO() {
                 mapOf(
                     "id" to id.toString(),
                     "foreldrepengerVedtakId" to foreldrepengerVedtakId.toString(),
-                    "fra" to anvisning.periode.fra,
-                    "til" to anvisning.periode.til,
+                    "fra" to anvisning.periode.fraOgMed,
+                    "til" to anvisning.periode.tilOgMed,
                     "belop" to anvisning.beløp,
                     "dagsats" to anvisning.dagsats,
                     "utbetalingsgrad" to anvisning.utbetalingsgrad,
@@ -63,7 +63,7 @@ class ForeldrepengerAnvisningDAO() {
 
     private fun Row.toForeldrepengerAnvisning(): ForeldrepengerVedtak.ForeldrepengerAnvisning {
         return ForeldrepengerVedtak.ForeldrepengerAnvisning(
-            periode = Periode(fra = localDate("fra"), til = localDate("til")),
+            periode = Periode(fraOgMed = localDate("fra"), tilOgMed = localDate("til")),
             beløp = bigDecimalOrNull("beløp"),
             dagsats = bigDecimalOrNull("dagsats"),
             utbetalingsgrad = bigDecimalOrNull("utbetalingsgrad"),

@@ -49,8 +49,8 @@ class AntallDagerTest {
     private val vurderingFom = LocalDate.of(2023, 1, 1)
     private val vurderingTom = LocalDate.of(2023, 6, 1)
     private val vurderingsPeriode = Periode(
-        fra = vurderingFom,
-        til = vurderingTom,
+        fraOgMed = vurderingFom,
+        tilOgMed = vurderingTom,
     )
 
     private val oppdatertAntallDagerVerdi = 1
@@ -124,8 +124,8 @@ class AntallDagerTest {
         val tiltakId = lagretBehandling.captured.tiltak.first().id
 
         val saksbehandlerPeriode = Periode(
-            fra = vurderingsPeriode.fra,
-            til = vurderingsPeriode.til.minusDays(1),
+            fraOgMed = vurderingsPeriode.fraOgMed,
+            tilOgMed = vurderingsPeriode.tilOgMed.minusDays(1),
         )
 
         val periodeMedAntallDager = PeriodeMedVerdi(
@@ -176,8 +176,8 @@ class AntallDagerTest {
         val tiltakId = lagretBehandling.captured.tiltak.first().id
 
         val saksbehandlerPeriode = Periode(
-            fra = vurderingsPeriode.fra,
-            til = vurderingsPeriode.til.minusDays(1),
+            fraOgMed = vurderingsPeriode.fraOgMed,
+            tilOgMed = vurderingsPeriode.tilOgMed.minusDays(1),
         )
 
         val periodeMedAntallDager = PeriodeMedVerdi(

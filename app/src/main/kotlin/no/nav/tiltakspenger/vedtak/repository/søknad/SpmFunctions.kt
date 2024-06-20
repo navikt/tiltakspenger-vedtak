@@ -89,13 +89,13 @@ fun lagrePeriodeSpmJa(periodeSpm: Søknad.PeriodeSpm) =
 
 fun lagrePeriodeSpmFra(periodeSpm: Søknad.PeriodeSpm) =
     when (periodeSpm) {
-        is Søknad.PeriodeSpm.Ja -> periodeSpm.periode.fra
+        is Søknad.PeriodeSpm.Ja -> periodeSpm.periode.fraOgMed
         is Søknad.PeriodeSpm.Nei -> null
     }
 
 fun lagrePeriodeSpmTil(periodeSpm: Søknad.PeriodeSpm) =
     when (periodeSpm) {
-        is Søknad.PeriodeSpm.Ja -> periodeSpm.periode.til
+        is Søknad.PeriodeSpm.Ja -> periodeSpm.periode.tilOgMed
         is Søknad.PeriodeSpm.Nei -> null
     }
 

@@ -126,8 +126,8 @@ class TiltakDAO {
                 mapOf(
                     "id" to random(ULID_PREFIX_STØNADSDAGER).toString(),
                     "antallDager" to antallDagerSaksopplysning.antallDager,
-                    "fom" to periode.fra,
-                    "tom" to periode.til,
+                    "fom" to periode.fraOgMed,
+                    "tom" to periode.tilOgMed,
                     "datakilde" to antallDagerSaksopplysning.kilde.toString(),
                     "tidsstempelKilde" to tiltak.registrertDato,
                     "tidsstempelHosOss" to tiltak.innhentet,
@@ -179,8 +179,8 @@ class TiltakDAO {
     private fun Row.toStønadsdager(): PeriodeMedVerdi<AntallDager> {
         return PeriodeMedVerdi(
             periode = Periode(
-                fra = localDate("fom"),
-                til = localDate("tom"),
+                fraOgMed = localDate("fom"),
+                tilOgMed = localDate("tom"),
             ),
             verdi = AntallDager(
                 antallDager = int("antall_dager"),

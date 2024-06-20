@@ -51,7 +51,7 @@ data class Tiltak(
     }
 
     fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
-        val tiltaksPeriode = Periode(fra = deltakelseFom, til = deltakelseTom)
+        val tiltaksPeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom)
 
         val oppdatertAntallDager =
             antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)

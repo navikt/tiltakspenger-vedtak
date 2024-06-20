@@ -20,8 +20,8 @@ data class Saksopplysning(
     companion object {
         fun saksopplysningIkkeInnhentet(periode: Periode, vilkår: Vilkår): Saksopplysning {
             return Saksopplysning(
-                fom = periode.fra,
-                tom = periode.til,
+                fom = periode.fraOgMed,
+                tom = periode.tilOgMed,
                 vilkår = vilkår,
                 kilde = vilkår.kilde(),
                 detaljer = "",
@@ -107,17 +107,18 @@ data class Saksopplysning(
         }
 
         if (vurdering.utfall == Utfall.IKKE_OPPFYLT) {
-            val oppfyltePerioder = periode.ikkeOverlappendePeriode(Periode(fra = this.fom, til = this.tom)).map {
-                Vurdering(
-                    vilkår = this.vilkår,
-                    kilde = this.kilde,
-                    fom = it.fra,
-                    tom = it.til,
-                    detaljer = this.detaljer,
-                    utfall = Utfall.OPPFYLT,
-                    grunnlagId = null,
-                )
-            }
+            val oppfyltePerioder =
+                periode.ikkeOverlappendePeriode(Periode(fraOgMed = this.fom, tilOgMed = this.tom)).map {
+                    Vurdering(
+                        vilkår = this.vilkår,
+                        kilde = this.kilde,
+                        fom = it.fraOgMed,
+                        tom = it.tilOgMed,
+                        detaljer = this.detaljer,
+                        utfall = Utfall.OPPFYLT,
+                        grunnlagId = null,
+                    )
+                }
 
             return oppfyltePerioder + vurdering
         }

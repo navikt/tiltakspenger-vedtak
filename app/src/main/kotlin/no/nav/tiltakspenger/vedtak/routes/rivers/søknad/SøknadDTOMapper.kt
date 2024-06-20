@@ -48,8 +48,8 @@ object SøknadDTOMapper {
             SpmSvarDTO.Nei -> Søknad.PeriodeSpm.Nei
             SpmSvarDTO.Ja -> Søknad.PeriodeSpm.Ja(
                 periode = Periode(
-                    fra = periodeSpmDTO.fom!!,
-                    til = periodeSpmDTO.tom!!,
+                    fraOgMed = periodeSpmDTO.fom!!,
+                    tilOgMed = periodeSpmDTO.tom!!,
                 ),
             )
         }

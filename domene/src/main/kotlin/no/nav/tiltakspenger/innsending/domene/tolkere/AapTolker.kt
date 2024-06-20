@@ -14,8 +14,8 @@ class AapTolker {
             if (ytelser == null) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = periode.fraOgMed,
+                        tom = periode.tilOgMed,
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
@@ -40,8 +40,8 @@ class AapTolker {
             if (ytelseListe.isEmpty()) {
                 return listOf(
                     Saksopplysning(
-                        fom = periode.fra,
-                        tom = periode.til,
+                        fom = periode.fraOgMed,
+                        tom = periode.tilOgMed,
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",
@@ -53,8 +53,8 @@ class AapTolker {
             return ytelseListe
                 .map {
                     Saksopplysning(
-                        fom = maxOf(periode.fra, it.fomGyldighetsperiode.toLocalDate()),
-                        tom = minOf(periode.til, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
+                        fom = maxOf(periode.fraOgMed, it.fomGyldighetsperiode.toLocalDate()),
+                        tom = minOf(periode.tilOgMed, (it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX)),
                         vilkår = Vilkår.AAP,
                         kilde = Kilde.ARENA,
                         detaljer = "",

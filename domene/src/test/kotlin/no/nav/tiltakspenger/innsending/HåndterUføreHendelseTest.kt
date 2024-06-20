@@ -55,6 +55,6 @@ internal class HåndterUføreHendelseTest {
         innsending.aktivitetslogg.aktiviteter()
             .map { it.melding }.forEach { println(it) }
         innsending.aktivitetslogg.aktiviteter()
-            .map { it.melding } shouldContain "Filtrer bort vedtak da virkDato ikke er i vurderingsperioden Periode(fra=2023-01-01 til=2023-01-31)"
+            .map { it.melding } shouldContain "Filtrer bort vedtak da virkDato ikke er i vurderingsperioden Periode(fraOgMed=2023-01-01 tilOgMed=2023-01-31)"
     }
 }

@@ -81,7 +81,7 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        tiltak: SøknadsTiltak = søknadTiltak(deltakelseFom = periode.fra, deltakelseTom = periode.til),
+        tiltak: SøknadsTiltak = søknadTiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: List<Vedlegg> = emptyList(),
         etterlønn: Søknad.JaNeiSpm = nei(),
@@ -144,8 +144,8 @@ interface SøknadMother {
         tom: LocalDate = 31.januar(2022),
     ) = Søknad.PeriodeSpm.Ja(
         periode = Periode(
-            fra = fom,
-            til = tom,
+            fraOgMed = fom,
+            tilOgMed = tom,
         ),
     )
 }

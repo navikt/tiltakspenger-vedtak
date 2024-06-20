@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -30,7 +29,6 @@ data class Revurderingsbehandling(
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
-    override val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val forrigeVedtak: Vedtak,
 ) : Behandling {
 
@@ -41,7 +39,11 @@ data class Revurderingsbehandling(
                 sakId = vedtak.sakId,
                 forrigeVedtak = vedtak,
                 vurderingsperiode = vedtak.periode,
-                vilkårssett = Vilkårssett(vedtak.behandling.saksopplysninger, emptyList()),
+                vilkårssett = Vilkårssett(
+                    vedtak.behandling.saksopplysninger,
+                    emptyList(),
+                    vedtak.behandling.kravdatoSaksopplysninger,
+                ),
                 tiltak = vedtak.behandling.tiltak,
                 saksbehandler = navIdent,
                 søknader = vedtak.behandling.søknader,
@@ -49,7 +51,6 @@ data class Revurderingsbehandling(
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
                 utfallsperioder = emptyList(),
-                kravdatoSaksopplysninger = vedtak.behandling.kravdatoSaksopplysninger,
             )
         }
     }
@@ -258,7 +259,7 @@ data class Revurderingsbehandling(
         } + deltagelseVurderinger
 
         val utfallsperioder =
-            vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
+            vurderingsperiode.fraOgMed.datesUntil(vurderingsperiode.tilOgMed.plusDays(1)).toList().map { dag ->
                 val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
                 val utfallYtelser = when {
                     idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING

@@ -97,8 +97,8 @@ class FørstegangsbehandlingTest {
 
         val periodisertAntallDagerVerdi = antallDagerFraSaksbehandler(
             periode = Periode(
-                fra = 1.januar(2026),
-                til = 15.januar(2026),
+                fraOgMed = 1.januar(2026),
+                tilOgMed = 15.januar(2026),
             ),
         )
 
@@ -129,8 +129,8 @@ class FørstegangsbehandlingTest {
 
         val periodisertAntallDagerVerdi = antallDagerFraSaksbehandler(
             periode = Periode(
-                fra = 1.januar(2026),
-                til = 1.februar(2026),
+                fraOgMed = 1.januar(2026),
+                tilOgMed = 1.februar(2026),
             ),
         )
 
@@ -208,8 +208,8 @@ class FørstegangsbehandlingTest {
 
         val periodisertAntallDagerVerdi = antallDagerFraSaksbehandler(
             periode = Periode(
-                fra = 1.januar(2026),
-                til = 1.februar(2026),
+                fraOgMed = 1.januar(2026),
+                tilOgMed = 1.februar(2026),
             ),
         )
         val tiltak1 = ObjectMother.tiltak(
@@ -272,14 +272,14 @@ class FørstegangsbehandlingTest {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 30.april(2026).atStartOfDay(),
-                periode = Periode(fra = 1.januar(2026), til = 25.april(2026)),
+                periode = Periode(fraOgMed = 1.januar(2026), tilOgMed = 25.april(2026)),
             ),
         )
         val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 1
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fra,
-            tom = behandlingMock.vurderingsperiode.til,
+            fom = behandlingMock.vurderingsperiode.fraOgMed,
+            tom = behandlingMock.vurderingsperiode.tilOgMed,
             utfall = Utfall.OPPFYLT,
         )
     }
@@ -289,14 +289,14 @@ class FørstegangsbehandlingTest {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 1.april(2026).atStartOfDay(),
-                periode = Periode(fra = 1.desember(2025), til = 31.desember(2025)),
+                periode = Periode(fraOgMed = 1.desember(2025), tilOgMed = 31.desember(2025)),
             ),
         )
         val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 1
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fra,
-            tom = behandlingMock.vurderingsperiode.til,
+            fom = behandlingMock.vurderingsperiode.fraOgMed,
+            tom = behandlingMock.vurderingsperiode.tilOgMed,
             utfall = Utfall.IKKE_OPPFYLT,
         )
     }
@@ -306,19 +306,19 @@ class FørstegangsbehandlingTest {
         val behandlingMock = ObjectMother.behandling(
             søknad = nySøknad(
                 opprettet = 30.april(2026).atStartOfDay(),
-                periode = Periode(fra = 25.desember(2025), til = 25.april(2026)),
+                periode = Periode(fraOgMed = 25.desember(2025), tilOgMed = 25.april(2026)),
             ),
         )
         val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
         vurderinger.size shouldBe 2
         vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fra,
+            fom = behandlingMock.vurderingsperiode.fraOgMed,
             tom = 31.desember(2025),
             utfall = Utfall.IKKE_OPPFYLT,
         )
         vurderinger[1] shouldBe fristForFramsettingAvKravVurdering(
             fom = 1.januar(2026),
-            tom = behandlingMock.vurderingsperiode.til,
+            tom = behandlingMock.vurderingsperiode.tilOgMed,
             utfall = Utfall.OPPFYLT,
         )
     }

@@ -68,7 +68,10 @@ internal class TiltakDAOTest {
                     PeriodeMedVerdi(
                         verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                         periode =
-                        no.nav.tiltakspenger.libs.periodisering.Periode(fra = 1.januar(2023), til = 31.januar(2023)),
+                        no.nav.tiltakspenger.libs.periodisering.Periode(
+                            fraOgMed = 1.januar(2023),
+                            tilOgMed = 31.januar(2023),
+                        ),
                     ),
                 ),
                 avklarteAntallDager = emptyList(),
@@ -117,7 +120,7 @@ internal class TiltakDAOTest {
                     PeriodeMedVerdi(
                         verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                         periode =
-                        Periode(fra = 1.januar(2023), til = 31.mars(2023)),
+                        Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.mars(2023)),
                     ),
                 ),
                 avklarteAntallDager = emptyList(),
@@ -155,7 +158,7 @@ internal class TiltakDAOTest {
             id = sakId,
             ident = ident,
             saknummer = Saksnummer(verdi = "123"),
-            periode = Periode(fra = deltakelseFom, til = deltakelseTom),
+            periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = SakPersonopplysninger(),
             vedtak = listOf(),

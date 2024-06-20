@@ -19,8 +19,8 @@ object VedtaksbrevMapper {
         BrevDTO(
             personalia = mapPersonaliaDTO(vedtak, personopplysninger),
             tiltaksinfo = mapTiltaksinfo(vedtak),
-            fraDato = vedtak.periode.fra.format(norskDatoFormatter),
-            tilDato = vedtak.periode.til.format(norskDatoFormatter),
+            fraDato = vedtak.periode.fraOgMed.format(norskDatoFormatter),
+            tilDato = vedtak.periode.tilOgMed.format(norskDatoFormatter),
             saksnummer = saksnummer.verdi,
             barnetillegg = vedtak.utfallsperioder.any { it.antallBarn > 0 },
             saksbehandler = vedtak.saksbehandler,

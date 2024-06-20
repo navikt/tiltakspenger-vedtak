@@ -125,11 +125,11 @@ private fun mapFPYtelser(ytelseV1DTO: FPResponsDTO.YtelseV1DTO, innhentet: Local
             FPResponsDTO.Kildesystem.FPSAK -> ForeldrepengerVedtak.Kildesystem.FPSAK
             FPResponsDTO.Kildesystem.K9SAK -> ForeldrepengerVedtak.Kildesystem.K9SAK
         },
-        periode = Periode(fra = ytelseV1DTO.periode.fom, til = ytelseV1DTO.periode.tom),
+        periode = Periode(fraOgMed = ytelseV1DTO.periode.fom, tilOgMed = ytelseV1DTO.periode.tom),
         tilleggsopplysninger = ytelseV1DTO.tilleggsopplysninger,
         anvist = ytelseV1DTO.anvist.map {
             ForeldrepengerVedtak.ForeldrepengerAnvisning(
-                periode = Periode(fra = it.periode.fom, til = it.periode.tom),
+                periode = Periode(fraOgMed = it.periode.fom, tilOgMed = it.periode.tom),
                 beløp = it.beløp,
                 dagsats = it.dagsats,
                 utbetalingsgrad = it.utbetalingsgrad,

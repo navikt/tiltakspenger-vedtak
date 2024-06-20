@@ -39,11 +39,11 @@ internal class SakRepoTest {
         val startdato = 1.januar(2023)
         val sluttdato = 31.mars(2023)
 
-        val sak = tomSak(ident = ident, periode = Periode(fra = startdato, til = sluttdato))
+        val sak = tomSak(ident = ident, periode = Periode(fraOgMed = startdato, tilOgMed = sluttdato))
 
         sakRepo.lagre(sak)
 
-        val hentSak = sakRepo.hentForIdentMedPeriode(ident, Periode(fra = startdato, til = sluttdato))
+        val hentSak = sakRepo.hentForIdentMedPeriode(ident, Periode(fraOgMed = startdato, tilOgMed = sluttdato))
 
         hentSak shouldNotBe emptyList<Sak>()
     }

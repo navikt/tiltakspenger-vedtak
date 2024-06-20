@@ -90,8 +90,8 @@ private fun mapAntallDager(tiltak: TiltakResponsDTO.TiltakDTO): PeriodeMedVerdi<
             )
         },
         periode = Periode(
-            fra = tiltak.deltakelseFom!!,
-            til = tiltak.deltakelseTom!!,
+            fraOgMed = tiltak.deltakelseFom!!,
+            tilOgMed = tiltak.deltakelseTom!!,
         ),
     )
 

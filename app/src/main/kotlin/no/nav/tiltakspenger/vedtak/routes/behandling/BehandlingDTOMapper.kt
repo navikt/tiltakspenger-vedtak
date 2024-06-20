@@ -18,8 +18,8 @@ object BehandlingDTOMapper {
                 },
                 status = finnStatus(it),
                 typeBehandling = "Førstegangsbehandling",
-                fom = it.vurderingsperiode.fra,
-                tom = it.vurderingsperiode.til,
+                fom = it.vurderingsperiode.fraOgMed,
+                tom = it.vurderingsperiode.tilOgMed,
             )
         }.sortedBy { it.id }
 }

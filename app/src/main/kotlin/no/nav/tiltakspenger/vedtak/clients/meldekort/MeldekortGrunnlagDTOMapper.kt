@@ -18,8 +18,8 @@ object MeldekortGrunnlagDTOMapper {
                 VedtaksType.FORLENGELSE -> StatusDTO.AKTIV
             },
             vurderingsperiode = PeriodeDTO(
-                fra = vedtak.periode.fra,
-                til = vedtak.periode.til,
+                fra = vedtak.periode.fraOgMed,
+                til = vedtak.periode.tilOgMed,
             ),
             tiltak = mapTiltakDTO(vedtak),
             personopplysninger = PersonopplysningerDTO(

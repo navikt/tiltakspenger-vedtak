@@ -262,8 +262,8 @@ class SammenstillingForBehandlingDTOTest {
                         saksbehandlerIdent = null,
                     ),
                     periode = Periode(
-                        fra = antallDagerMock.periode.fra,
-                        til = antallDagerMock.periode.til,
+                        fraOgMed = antallDagerMock.periode.fra,
+                        tilOgMed = antallDagerMock.periode.til,
                     ),
                 ),
             ),
@@ -272,7 +272,7 @@ class SammenstillingForBehandlingDTOTest {
             tiltak = tiltak,
         )
 
-        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister.get(0)
+        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister
         assertNotNull(saksopplysningElement)
         assertEquals(saksopplysningElement.antallDager, antallDagerMock.antallDager)
         assertEquals(saksopplysningElement.periode.fra, antallDagerMock.periode.fra)

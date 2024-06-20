@@ -161,8 +161,8 @@ internal class PostgresBehandlingRepo(
                 mapOf(
                     "id" to behandling.id.toString(),
                     "sakId" to behandling.sakId.toString(),
-                    "fom" to behandling.vurderingsperiode.fra,
-                    "tom" to behandling.vurderingsperiode.til,
+                    "fom" to behandling.vurderingsperiode.fraOgMed,
+                    "tom" to behandling.vurderingsperiode.tilOgMed,
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
                     "sistEndretOld" to sistEndret,
@@ -192,8 +192,8 @@ internal class PostgresBehandlingRepo(
                 mapOf(
                     "id" to behandling.id.toString(),
                     "sakId" to behandling.sakId.toString(),
-                    "fom" to behandling.vurderingsperiode.fra,
-                    "tom" to behandling.vurderingsperiode.til,
+                    "fom" to behandling.vurderingsperiode.fraOgMed,
+                    "tom" to behandling.vurderingsperiode.tilOgMed,
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
                     "sistEndret" to nå,
@@ -243,19 +243,21 @@ internal class PostgresBehandlingRepo(
             vilkårssett = Vilkårssett(
                 saksopplysninger = saksopplysningRepo.hent(id, txSession),
                 vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                    kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
+                    kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(
+                        behandlingId = id,
+                        txSession = txSession,
+                    ),
+                    avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
+                ),
             ),
-            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             tiltak = tiltakDAO.hent(id, txSession),
             utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
             status = behandlingStatus,
             tilstand = tilstand,
-            kravdatoSaksopplysninger = KravdatoSaksopplysninger(
-                kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
-                kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(id, txSession),
-                avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
-            ),
         )
     }
 
