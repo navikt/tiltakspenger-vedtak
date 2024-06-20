@@ -137,7 +137,6 @@ internal class PostgresBehandlingRepo(
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
             saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
-            // Todo: Vi må kanskje  ha med søknad på revurdering også
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
@@ -267,7 +266,6 @@ internal class PostgresBehandlingRepo(
             BehandlingTilstand.VILKÅRSVURDERT -> "Vilkårsvurdert"
             BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutting"
             BehandlingTilstand.IVERKSATT -> "Iverksatt"
-            // BehandlingTilstand.OPPRETTET -> "revurderingsbehandling"  TODO: Fiks revurdering
         }
 
     private fun finnStatus(behandling: Behandling): String =

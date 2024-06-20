@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Revurderingsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -180,23 +179,6 @@ class BehandlingServiceImpl(
     ): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
-    }
-
-    override fun opprettRevurdering(
-        behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
-    ): Revurderingsbehandling {
-        check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
-
-        val vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)
-        val revurderingBehandling = Revurderingsbehandling.opprettRevurderingsbehandling(
-            vedtak = vedtak,
-            navIdent = utøvendeSaksbehandler.navIdent,
-        )
-
-        behandlingRepo.lagre(revurderingBehandling)
-
-        return revurderingBehandling
     }
 
     override fun oppdaterAntallDagerPåTiltak(
