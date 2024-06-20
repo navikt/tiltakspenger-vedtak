@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
@@ -11,13 +12,14 @@ data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
     val saksbehandler: String?,
     val beslutter: String?,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val søknad: SøknadDTO,
-    val registrerteTiltak: List<RegistrertTiltakDTO>,
-    val saksopplysninger: List<KategoriserteSaksopplysningerDTO>,
+    val vurderingsperiode: PeriodeDTO,
+    val søknadsdato: LocalDate,
+    val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
+    val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
+    val alderssaksopplysning: AlderssaksopplysningDTO,
+    val ytelsessaksopplysninger: YtelsessaksopplysningerDTO,
     val personopplysninger: PersonopplysningerDTO,
-    val tilstand: String,
+    val behandlingsteg: String,
     val status: String,
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
@@ -45,67 +47,86 @@ data class SammenstillingForBehandlingDTO(
         val fortrolig: Boolean,
     )
 
+    // Bør sende med samletUtfall her også
+    data class TiltaksdeltagelsesaksopplysningDTO(
+        val vilkår: String,
+        val vilkårLovreferanse: LovreferanseDTO,
+        val saksopplysninger: List<RegistrertTiltakDTO>,
+    )
+
+    data class AntallDagerSaksopplysningerDTO(
+        val tiltakId: String,
+        val tiltak: String,
+        val arrangør: String,
+        val avklartAntallDager: List<AntallDagerDTO>,
+        val antallDagerSaksopplysningerFraRegister: AntallDagerDTO,
+    )
+
     data class RegistrertTiltakDTO(
         val id: String,
         val arrangør: String,
         val navn: String,
         val periode: PeriodeDTO,
-        val prosent: Int,
         val status: String,
         val kilde: String,
         val girRett: Boolean,
         val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
         val begrunnelse: String,
-        val antallDagerSaksopplysninger: AntallDagerSaksopplysningerDTO,
     )
 
-    data class SøknadDTO(
-        val søknadsdato: LocalDate,
-        val arrangoernavn: String,
-        val tiltakstype: String,
-        val deltakelseFom: LocalDate,
-        val deltakelseTom: LocalDate,
+    data class AlderssaksopplysningDTO(
+        val periode: PeriodeDTO,
+        val kilde: String,
+        val detaljer: String,
+        val vilkår: String,
+        val vilkårTittel: String,
+        val utfall: String,
+        val vilkårLovreferanse: List<LovreferanseDTO>,
+        val grunnlag: LocalDate,
+    )
+
+    data class YtelsessaksopplysningerDTO(
+        val vilkår: String,
+        val saksopplysninger: List<SaksopplysningUtDTO>,
+        val samletUtfall: String,
+        val vilkårLovreferanse: LovreferanseDTO,
     )
 
     data class SaksopplysningUtDTO(
-        val fom: LocalDate,
-        val tom: LocalDate,
+        val periode: PeriodeDTO,
         val kilde: String,
         val detaljer: String,
-        val typeSaksopplysning: String,
-        val vilkårTittel: String,
-        val vilkårFlateTittel: String,
-        val fakta: FaktaDTO,
+        val saksopplysning: String,
+        val saksopplysningTittel: String,
         val utfall: String,
-        val vilkårLovReferense: List<LovreferanseDTO>,
     )
 
     data class LovreferanseDTO(
         val lovverk: String,
         val paragraf: String,
         val beskrivelse: String,
-    )
 
-    data class KategoriserteSaksopplysningerDTO(
-        val kategoriTittel: String,
-        val saksopplysninger: List<SaksopplysningUtDTO>,
-        val samletUtfall: String,
-    )
-
-    data class FaktaDTO(
-        val harYtelse: String,
-        val harIkkeYtelse: String,
-    )
+    ) {
+        companion object {
+            fun fraLovreferanse(lovreferanse: Lovreferanse) = LovreferanseDTO(
+                lovverk = lovreferanse.lovverk,
+                paragraf = lovreferanse.paragraf,
+                beskrivelse = lovreferanse.beskrivelse,
+            )
+        }
+    }
 
     data class KravdatoSaksopplysningerDTO(
         val opprinneligKravdato: KravdatoSaksopplysningDTO,
         val kravdatoFraSaksbehandler: KravdatoSaksopplysningDTO? = null,
         val vurderinger: List<VurderingDTO>,
+        val samletUtfall: String,
+        val lovreferanse: LovreferanseDTO,
     )
 
     data class KravdatoSaksopplysningDTO(
-        val verdi: LocalDate,
+        val kravdato: LocalDate,
         val kilde: String,
     )
 
