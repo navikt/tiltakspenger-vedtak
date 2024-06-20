@@ -16,9 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
-import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -27,8 +25,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
-    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingRepo: VurderingRepo = VurderingRepo(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {
@@ -108,8 +104,6 @@ internal class VedtakRepoImpl(
                 ),
             ).asUpdate,
         )
-        saksopplysningRepo.lagre(vedtak.id, vedtak.saksopplysninger, tx)
-        vurderingRepo.lagre(vedtak.id, vedtak.vurderinger, tx)
         utfallsperiodeDAO.oppdaterVedtak(vedtak.id, vedtak.behandling.id, tx)
         return vedtak
     }
@@ -123,9 +117,7 @@ internal class VedtakRepoImpl(
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fra = localDate("fom"), til = localDate("tom")),
-            saksopplysninger = saksopplysningRepo.hent(id, txSession),
             utfallsperioder = utfallsperiodeDAO.hentForVedtak(id, txSession),
-            vurderinger = vurderingRepo.hent(id, txSession),
             saksbehandler = string("saksbehandler"),
             beslutter = string("beslutter"),
         )

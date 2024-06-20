@@ -24,6 +24,7 @@ data class SammenstillingForBehandlingDTO(
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
     val utfallsperioder: List<UtfallsperiodeDTO>,
+    val kravdatoSaksopplysninger: KravdatoSaksopplysningerDTO,
 ) {
     data class EndringDTO(
         val type: String,
@@ -105,6 +106,7 @@ data class SammenstillingForBehandlingDTO(
         val lovverk: String,
         val paragraf: String,
         val beskrivelse: String,
+
     ) {
         companion object {
             fun fraLovreferanse(lovreferanse: Lovreferanse) = LovreferanseDTO(
@@ -114,4 +116,22 @@ data class SammenstillingForBehandlingDTO(
             )
         }
     }
+
+    data class KravdatoSaksopplysningerDTO(
+        val opprinneligKravdato: KravdatoSaksopplysningDTO,
+        val kravdatoFraSaksbehandler: KravdatoSaksopplysningDTO? = null,
+        val vurderinger: List<VurderingDTO>,
+        val samletUtfall: String,
+        val lovreferanse: LovreferanseDTO,
+    )
+
+    data class KravdatoSaksopplysningDTO(
+        val kravdato: LocalDate,
+        val kilde: String,
+    )
+
+    data class VurderingDTO(
+        val periode: PeriodeDTO,
+        val utfall: String,
+    )
 }

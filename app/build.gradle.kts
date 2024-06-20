@@ -2,7 +2,7 @@ val ktorVersion = "2.3.11"
 val kotestVersion = "5.9.0"
 val mockkVersion = "1.13.11"
 val testContainersVersion = "1.19.8"
-val felleslibVersion = "0.0.120"
+val felleslibVersion = "0.0.125"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -50,7 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2024041714471713358051.71746f05c18e")
+    implementation("com.github.navikt:rapids-and-rivers:2024061408021718344972.64ebbdb34321")
     implementation("com.natpryce:konfig:1.6.10.0")
 
     // Http
@@ -71,7 +71,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.14.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.15.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -90,6 +90,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.11.1")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.11.2")
     testImplementation(project(":common"))
 }

@@ -155,17 +155,18 @@ class BehandlingServiceImpl(
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
             utfallsperioder = behandling.utfallsperioder,
             periode = behandling.vurderingsperiode,
-            saksopplysninger = behandling.saksopplysninger(),
-            vurderinger = behandling.vilkårsvurderinger,
             saksbehandler = behandling.saksbehandler!!,
             beslutter = behandling.beslutter!!,
         )
     }
 
-    // TODO: Burde det vært to ulike funksjoner avhengig av om det er saksbehandler eller beslutter det gjelder?
     override fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
         val behandling = hentBehandling(behandlingId)
-        behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+        if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
+        } else {
+            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+        }
     }
 
     override fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
@@ -212,7 +213,12 @@ class BehandlingServiceImpl(
         )
         behandlingRepo.lagre(oppdatertBehandling)
     }
-    override fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: TiltakId, saksbehandler: Saksbehandler) {
+
+    override fun tilbakestillAntallDagerPåTiltak(
+        behandlingId: BehandlingId,
+        tiltakId: TiltakId,
+        saksbehandler: Saksbehandler,
+    ) {
         val behandling = hentBehandling(behandlingId)
         val oppdatertBehandling = behandling.tilbakestillAntallDager(
             tiltakId = tiltakId,

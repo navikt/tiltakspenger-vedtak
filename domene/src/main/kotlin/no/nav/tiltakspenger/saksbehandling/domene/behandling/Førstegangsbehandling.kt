@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -14,6 +16,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class Førstegangsbehandling(
@@ -23,12 +27,13 @@ data class Førstegangsbehandling(
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
     override val beslutter: String?,
-    override val saksopplysninger: List<Saksopplysning>,
+    override val vilkårssett: Vilkårssett,
     override val tiltak: List<Tiltak>,
     override val vilkårsvurderinger: List<Vurdering>,
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
+    override val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
 ) : Behandling {
 
     companion object {
@@ -39,8 +44,11 @@ data class Førstegangsbehandling(
                 sakId = sakId,
                 søknader = listOf(søknad),
                 vurderingsperiode = søknad.vurderingsperiode(),
-                saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                    søknad,
+                vilkårssett = Vilkårssett(
+                    saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
+                        søknad,
+                    ),
+                    vilkårsvurderinger = emptyList(),
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
@@ -49,6 +57,13 @@ data class Førstegangsbehandling(
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
+                // TODO: Skal trekkes inn i Vilkårssett
+                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                    kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
+                        kravdato = søknad.opprettet.toLocalDate(),
+                        kilde = Kilde.SØKNAD,
+                    ),
+                ).avklar(),
             )
         }
     }
@@ -79,7 +94,7 @@ data class Førstegangsbehandling(
         ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
 
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
-            // TODO Gjør noe ekstra
+            // TODO Gjør noe ekstra (notifiser beslutter/behandler)
         }
 
         val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
@@ -87,7 +102,7 @@ data class Førstegangsbehandling(
                 Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
         } else {
             Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(this.saksopplysninger) { acc, saksopplysning ->
+                .fold(saksopplysninger) { acc, saksopplysning ->
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
@@ -95,7 +110,8 @@ data class Førstegangsbehandling(
         return this.copy(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            saksopplysninger = fakta,
+            vilkårssett = vilkårssett.oppdaterSaksopplysninger(fakta),
+            tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
 
@@ -114,15 +130,15 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val oppdatertSaksopplysningListe = saksopplysninger.oppdaterSaksopplysninger(saksopplysning)
-        return if (oppdatertSaksopplysningListe == this.saksopplysninger) {
+        val oppdatertVilkårssett = vilkårssett.oppdaterSaksopplysning(saksopplysning)
+        return if (oppdatertVilkårssett == vilkårssett) {
             LeggTilSaksopplysningRespons(
                 behandling = this,
                 erEndret = false,
             )
         } else {
             LeggTilSaksopplysningRespons(
-                behandling = this.copy(saksopplysninger = oppdatertSaksopplysningListe).vilkårsvurder(),
+                behandling = this.copy(vilkårssett = oppdatertVilkårssett).vilkårsvurder(),
                 erEndret = true,
             )
         }
@@ -218,7 +234,6 @@ data class Førstegangsbehandling(
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        // TODO: Jeg liker ikke at denne brukes både for å assigne saksbehandler OG beslutter, burde lage en egen for beslutter
         require(
             this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
         ) { "Kan ikke starte behandling, feil tilstand $tilstand" }
@@ -226,6 +241,16 @@ data class Førstegangsbehandling(
         check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent)
+    }
+
+    override fun startGodkjenning(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        require(
+            this.tilstand in listOf(BehandlingTilstand.TIL_BESLUTTER),
+        ) { "Kan ikke godkjenne behandling, feil tilstand $tilstand" }
+
+        check(this.beslutter == null) { "Denne behandlingen er allerede tatt" }
+        check(saksbehandler.isBeslutter()) { "Saksbehandler må være beslutter" }
+        return this.copy(beslutter = saksbehandler.navIdent)
     }
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -270,12 +295,15 @@ data class Førstegangsbehandling(
         )
     }
 
+    /**
+     * Endrer tilstand til VILKÅRSVURDERT
+     */
     override fun vilkårsvurder(): Førstegangsbehandling {
         val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger
+        } + deltagelseVurderinger + vilkårsvurderFristForFramsettingAvKrav()
 
         val utfallsperioder =
             vurderingsperiode.fra.datesUntil(vurderingsperiode.til.plusDays(1)).toList().map { dag ->
@@ -313,6 +341,7 @@ data class Førstegangsbehandling(
 
         return this.copy(
             vilkårsvurderinger = vurderinger,
+            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
             utfallsperioder = utfallsperioder,
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
@@ -328,6 +357,62 @@ data class Førstegangsbehandling(
             )
         } else {
             this + neste
+        }
+    }
+
+    private fun lagFristForFramsettingAvKravVurdering(utfall: Utfall, periode: Periode, kilde: Kilde): Vurdering =
+        Vurdering(
+            utfall = utfall,
+            kilde = kilde,
+            fom = periode.fra,
+            tom = periode.til,
+            vilkår = Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+            detaljer = "",
+            grunnlagId = null,
+        )
+
+    fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
+        // Sjekker av behandlingstilstand gjøres på et tidligere tidspunkt
+        val kravdatoSaksopplysning = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
+        val kravdato = kravdatoSaksopplysning?.kravdato
+        check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
+
+        val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
+        if (datoDetKanInnvilgesFra <= vurderingsperiode.fra) {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.OPPFYLT,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
+                ),
+            )
+        } else if (datoDetKanInnvilgesFra > vurderingsperiode.til) {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    kilde = kravdatoSaksopplysning.kilde,
+                    periode = vurderingsperiode,
+                ),
+            )
+        } else {
+            return listOf(
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.IKKE_OPPFYLT,
+                    periode = Periode(
+                        fra = vurderingsperiode.fra,
+                        til = datoDetKanInnvilgesFra.minusDays(1),
+                    ),
+                    kilde = kravdatoSaksopplysning.kilde,
+                ),
+                lagFristForFramsettingAvKravVurdering(
+                    utfall = Utfall.OPPFYLT,
+                    periode = Periode(
+                        fra = datoDetKanInnvilgesFra,
+                        til = vurderingsperiode.til,
+                    ),
+                    kilde = kravdatoSaksopplysning.kilde,
+                ),
+            )
         }
     }
 }

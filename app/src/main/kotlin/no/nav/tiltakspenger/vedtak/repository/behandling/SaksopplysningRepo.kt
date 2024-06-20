@@ -26,51 +26,25 @@ internal class SaksopplysningRepo {
         )
     }
 
-    fun hent(vedtakId: VedtakId, txSession: TransactionalSession): List<Saksopplysning> {
-        return txSession.run(
-            queryOf(
-                sqlHentForVedtak,
-                mapOf(
-                    "behandlingId" to vedtakId.toString(),
-                ),
-            ).map { row ->
-                row.toSaksopplysning()
-            }.asList,
-        )
-    }
-
-    fun lagre(vedtakId: VedtakId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
-        slett(vedtakId, txSession)
-        saksopplysninger.forEach { saksopplysning ->
-            lagre(
-                behandlingId = null,
-                vedtakId = vedtakId,
-                saksopplysning = saksopplysning,
-                txSession = txSession,
-            )
-        }
-    }
-
     fun lagre(behandlingId: BehandlingId, saksopplysninger: List<Saksopplysning>, txSession: TransactionalSession) {
         slett(behandlingId, txSession)
         saksopplysninger.forEach { saksopplysning ->
             lagre(
                 behandlingId = behandlingId,
-                vedtakId = null,
                 saksopplysning = saksopplysning,
                 txSession = txSession,
             )
         }
     }
 
-    private fun lagre(behandlingId: BehandlingId?, vedtakId: VedtakId?, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
+    private fun lagre(behandlingId: BehandlingId, saksopplysning: Saksopplysning, txSession: TransactionalSession) {
         txSession.run(
             queryOf(
                 sqlLagreSaksopplysning,
                 mapOf(
                     "id" to SakspplysningId.random().toString(),
                     "behandlingId" to behandlingId?.toString(),
-                    "vedtakId" to vedtakId?.toString(),
+                    "vedtakId" to null, // TODO: Fjerne når databasen uansett skal nukes
                     "fom" to saksopplysning.fom,
                     "tom" to saksopplysning.tom,
                     "kilde" to saksopplysning.kilde.name,

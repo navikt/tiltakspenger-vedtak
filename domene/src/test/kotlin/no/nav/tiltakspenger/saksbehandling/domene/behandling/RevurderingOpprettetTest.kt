@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
@@ -15,6 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import org.junit.jupiter.api.Disabled
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -46,7 +48,7 @@ internal class RevurderingOpprettetTest {
             fra = LocalDate.MIN,
             til = LocalDate.MAX,
         ),
-        saksopplysninger = listOf(saksopplysning),
+        vilkårssett = Vilkårssett(listOf(saksopplysning), emptyList()),
         tiltak = tiltak,
         saksbehandler = saksbehandler,
         søknader = emptyList(),
@@ -54,7 +56,7 @@ internal class RevurderingOpprettetTest {
         status = BehandlingStatus.Manuell,
         tilstand = BehandlingTilstand.OPPRETTET,
         utfallsperioder = emptyList(),
-        vilkårsvurderinger = emptyList(),
+        kravdatoSaksopplysninger = mockk<KravdatoSaksopplysninger>(),
     )
 
     private fun mockTiltak(eksternId: String = "test"): Tiltak = Tiltak(

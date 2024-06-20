@@ -6,9 +6,11 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 
 data class LeggTilSaksopplysningRespons(
@@ -23,17 +25,21 @@ interface Behandling {
     val søknader: List<Søknad>
     val saksbehandler: String?
     val beslutter: String?
-    val saksopplysninger: List<Saksopplysning>
+    val vilkårssett: Vilkårssett
     val tiltak: List<Tiltak>
-    val vilkårsvurderinger: List<Vurdering>
     val utfallsperioder: List<Utfallsperiode>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
+    val kravdatoSaksopplysninger: KravdatoSaksopplysninger
+
+    val saksopplysninger: List<Saksopplysning> get() = vilkårssett.saksopplysninger
+    val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
     fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling
     fun startBehandling(saksbehandler: Saksbehandler): Behandling
+    fun startGodkjenning(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
     fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
