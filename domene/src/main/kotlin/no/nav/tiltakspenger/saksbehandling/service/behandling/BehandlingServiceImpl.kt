@@ -28,6 +28,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
 
@@ -39,6 +40,7 @@ class BehandlingServiceImpl(
     private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val utbetalingService: UtbetalingService,
+    private val statistikkService: StatistikkService,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val multiRepo: MultiRepo,
@@ -134,6 +136,7 @@ class BehandlingServiceImpl(
         multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
             // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
             // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
+            statistikkService.iverksattBehandlingTilDvh(vedtak)
             utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak)
         }
 

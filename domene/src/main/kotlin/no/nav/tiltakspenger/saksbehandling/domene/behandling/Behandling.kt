@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import java.time.LocalDateTime
 
 data class LeggTilSaksopplysningRespons(
     val behandling: Behandling,
@@ -30,6 +31,7 @@ interface Behandling {
     val utfallsperioder: List<Utfallsperiode>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
+    val opprettet: LocalDateTime
 
     val saksopplysninger: List<Saksopplysning> get() = vilkårssett.saksopplysninger
     val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger

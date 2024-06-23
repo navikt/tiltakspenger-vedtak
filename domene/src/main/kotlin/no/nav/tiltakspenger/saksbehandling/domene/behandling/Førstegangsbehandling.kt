@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import java.time.LocalDateTime
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -32,6 +33,7 @@ data class Førstegangsbehandling(
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
+    override val opprettet: LocalDateTime,
 ) : Behandling {
 
     companion object {
@@ -60,6 +62,7 @@ data class Førstegangsbehandling(
                 utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
+                opprettet = LocalDateTime.now(), // husk å lagre denne i basen...
             )
         }
     }
