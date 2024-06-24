@@ -1,5 +1,5 @@
 package no.nav.tiltakspenger.innsending.domene.tolkere
-
+/*
 import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.innsending.domene.UføreVedtak
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -74,3 +74,5 @@ class UføreTolker {
         }
     }
 }
+
+ */

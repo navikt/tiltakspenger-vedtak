@@ -2,24 +2,15 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.Feil
-import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
-import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
-import no.nav.tiltakspenger.innsending.domene.UføreVedtak
-import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingFalse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
@@ -100,76 +91,6 @@ interface HendelserMother {
             tiltaks = tiltak,
             aktivitetslogg = aktivitetslogg,
             tidsstempelTiltakInnhentet = tidsstempelTiltakInnhentet,
-        )
-    }
-
-    fun nyYtelseHendelse(
-        journalpostId: String = Random().nextInt().toString(),
-        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
-            forelder = null,
-        ),
-        tidsstempelYtelserInnhentet: LocalDateTime = LocalDateTime.now(),
-    ): YtelserMottattHendelse {
-        return YtelserMottattHendelse(
-            journalpostId = journalpostId,
-            ytelseSak = ytelseSak,
-            aktivitetslogg = aktivitetslogg,
-            tidsstempelYtelserInnhentet = tidsstempelYtelserInnhentet,
-        )
-    }
-
-    fun nyForeldrepengerHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
-        foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(ObjectMother.foreldrepengerVedtak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
-            forelder = null,
-        ),
-        tidsstempelForeldrepengerInnhentet: LocalDateTime = LocalDateTime.now(),
-    ): ForeldrepengerMottattHendelse {
-        return ForeldrepengerMottattHendelse(
-            ident = ident,
-            journalpostId = journalpostId,
-            foreldrepengerVedtakListe = foreldrepengerVedtakListe,
-            aktivitetslogg = aktivitetslogg,
-            tidsstempelForeldrepengerVedtakInnhentet = tidsstempelForeldrepengerInnhentet,
-        )
-    }
-
-    fun nyOvergangsstønadHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
-        overgansstønader: List<OvergangsstønadVedtak> = listOf(ObjectMother.overgangsstønadVedtak()),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
-            forelder = null,
-        ),
-        innhentet: LocalDateTime = LocalDateTime.now(),
-    ): OvergangsstønadMottattHendelse {
-        return OvergangsstønadMottattHendelse(
-            ident = ident,
-            journalpostId = journalpostId,
-            overgangsstønadVedtakListe = overgansstønader,
-            aktivitetslogg = aktivitetslogg,
-            innhentet = innhentet,
-        )
-    }
-
-    fun nyUføreHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
-        uføreVedtak: UføreVedtak = ObjectMother.uføreVedtak(),
-        aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
-            forelder = null,
-        ),
-        tidsstempelUføreVedtakInnhentet: LocalDateTime = LocalDateTime.now(),
-    ): UføreMottattHendelse {
-        return UføreMottattHendelse(
-            ident = ident,
-            journalpostId = journalpostId,
-            uføreVedtak = uføreVedtak,
-            aktivitetslogg = aktivitetslogg,
-            tidsstempelUføreVedtakInnhentet = tidsstempelUføreVedtakInnhentet,
         )
     }
 

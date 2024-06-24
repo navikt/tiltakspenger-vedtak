@@ -47,7 +47,7 @@ class TiltakRoutesTest {
     }
 
     @Test
-    fun `sjekk at kall til river tiltak route sender ut et behov`() {
+    fun `sjekk at kall til river tiltak route ikke sender ut et behov`() {
         val behandling = Førstegangsbehandling.opprettBehandling(
             sakId = SakId.random(),
             søknad = ObjectMother.nySøknad(),
@@ -85,9 +85,7 @@ class TiltakRoutesTest {
                 }
         }
         with(testRapid.inspektør) {
-            Assertions.assertEquals(1, size)
-            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("arenaytelser", field(0, "@behov")[0].asText())
+            Assertions.assertEquals(0, size)
         }
     }
 

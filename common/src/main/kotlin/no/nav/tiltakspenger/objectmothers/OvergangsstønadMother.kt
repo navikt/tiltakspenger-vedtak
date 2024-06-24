@@ -1,5 +1,5 @@
 package no.nav.tiltakspenger.objectmothers
-
+/*
 import no.nav.tiltakspenger.felles.OvergangsstønadVedtakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -24,3 +24,6 @@ interface OvergangsstønadMother {
             innhentet = innhentet,
         )
 }
+
+
+ */

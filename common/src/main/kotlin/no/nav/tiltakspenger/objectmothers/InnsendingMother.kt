@@ -7,27 +7,15 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.innsending.domene.ForeldrepengerVedtak
 import no.nav.tiltakspenger.innsending.domene.Innsending
-import no.nav.tiltakspenger.innsending.domene.OvergangsstønadVedtak
 import no.nav.tiltakspenger.innsending.domene.Søker
-import no.nav.tiltakspenger.innsending.domene.UføreVedtak
-import no.nav.tiltakspenger.innsending.domene.YtelseSak
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.objectmothers.ObjectMother.foreldrepengerVedtak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nyForeldrepengerHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nyOvergangsstønadHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyPersonopplysningHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknadMottattHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nyTiltakHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nyUføreHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nyYtelseHendelse
-import no.nav.tiltakspenger.objectmothers.ObjectMother.overgangsstønadVedtak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.uføreVedtak
-import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
@@ -205,185 +193,6 @@ interface InnsendingMother {
                 tidsstempelTiltakInnhentet = LocalDateTime.now(),
             ),
         )
-        return innsending
-    }
-
-    fun innsendingMedYtelse(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
-        fom: LocalDate = 1.januar(2022),
-        tom: LocalDate = 31.mars(2022),
-        søknad: Søknad = nySøknad(
-            periode = Periode(fom, tom),
-            personopplysninger = Søknad.Personopplysninger(
-                ident = ident,
-                fornavn = "Fornavn",
-                etternavn = "Etternavn",
-            ),
-        ),
-        personopplysninger: List<Personopplysninger> = listOf(
-            personopplysningKjedeligFyr(
-                ident = ident,
-                strengtFortroligUtland = false,
-            ),
-        ),
-        skjerming: Skjerming = skjermingFalse(ident = ident),
-        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-    ): Innsending {
-        val innsending = innsendingMedTiltak(
-            journalpostId = journalpostId,
-            ident = ident,
-            fom = fom,
-            tom = tom,
-            søknad = søknad,
-            personopplysninger = personopplysninger,
-            skjerming = skjerming,
-        )
-        innsending.håndter(
-            nyYtelseHendelse(
-                journalpostId = journalpostId,
-                ytelseSak = ytelseSak,
-            ),
-        )
-        return innsending
-    }
-
-    fun innsendingMedForeldrepenger(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
-        fom: LocalDate = 1.januar(2022),
-        tom: LocalDate = 31.mars(2022),
-        søknad: Søknad = nySøknad(
-            periode = Periode(fom, tom),
-            personopplysninger = Søknad.Personopplysninger(
-                ident = ident,
-                fornavn = "Fornavn",
-                etternavn = "Etternavn",
-            ),
-        ),
-        personopplysninger: List<Personopplysninger> = listOf(
-            personopplysningKjedeligFyr(
-                ident = ident,
-                strengtFortroligUtland = false,
-            ),
-        ),
-        skjerming: Skjerming = skjermingFalse(ident = ident),
-        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-        foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
-    ): Innsending {
-        val innsending = innsendingMedYtelse(
-            journalpostId = journalpostId,
-            ident = ident,
-            fom = fom,
-            tom = tom,
-            søknad = søknad,
-            personopplysninger = personopplysninger,
-            skjerming = skjerming,
-            ytelseSak = ytelseSak,
-        )
-
-        innsending.håndter(
-            nyForeldrepengerHendelse(
-                ident = ident,
-                journalpostId = journalpostId,
-                foreldrepengerVedtakListe = foreldrepengerVedtakListe,
-            ),
-        )
-
-        return innsending
-    }
-
-    fun innsendingMedOvergangsstønad(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
-        fom: LocalDate = 1.januar(2022),
-        tom: LocalDate = 31.mars(2022),
-        søknad: Søknad = nySøknad(
-            periode = Periode(fom, tom),
-            personopplysninger = Søknad.Personopplysninger(
-                ident = ident,
-                fornavn = "Fornavn",
-                etternavn = "Etternavn",
-            ),
-        ),
-        personopplysninger: List<Personopplysninger> = listOf(
-            personopplysningKjedeligFyr(
-                ident = ident,
-                strengtFortroligUtland = false,
-            ),
-        ),
-        skjerming: Skjerming = skjermingFalse(ident = ident),
-        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-        foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
-        overgangsstønader: List<OvergangsstønadVedtak> = listOf(overgangsstønadVedtak()),
-    ): Innsending {
-        val innsending = innsendingMedForeldrepenger(
-            journalpostId = journalpostId,
-            ident = ident,
-            fom = fom,
-            tom = tom,
-            søknad = søknad,
-            personopplysninger = personopplysninger,
-            skjerming = skjerming,
-            ytelseSak = ytelseSak,
-            foreldrepengerVedtakListe = foreldrepengerVedtakListe,
-        )
-
-        innsending.håndter(
-            nyOvergangsstønadHendelse(
-                ident = ident,
-                journalpostId = journalpostId,
-                overgansstønader = overgangsstønader,
-            ),
-        )
-
-        return innsending
-    }
-
-    fun innsendingMedUføre(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
-        fom: LocalDate = 1.januar(2022),
-        tom: LocalDate = 31.mars(2022),
-        søknad: Søknad = nySøknad(
-            periode = Periode(fom, tom),
-            personopplysninger = Søknad.Personopplysninger(
-                ident = ident,
-                fornavn = "Fornavn",
-                etternavn = "Etternavn",
-            ),
-        ),
-        personopplysninger: List<Personopplysninger> = listOf(
-            personopplysningKjedeligFyr(
-                ident = ident,
-                strengtFortroligUtland = false,
-            ),
-        ),
-        skjerming: Skjerming = skjermingFalse(ident = ident),
-        ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
-        foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(foreldrepengerVedtak()),
-        uføreVedtak: UføreVedtak = uføreVedtak(),
-    ): Innsending {
-        val innsending = innsendingMedOvergangsstønad(
-            journalpostId = journalpostId,
-            ident = ident,
-            fom = fom,
-            tom = tom,
-            søknad = søknad,
-            personopplysninger = personopplysninger,
-            skjerming = skjerming,
-            ytelseSak = ytelseSak,
-            foreldrepengerVedtakListe = foreldrepengerVedtakListe,
-        )
-
-        innsending.håndter(
-            nyUføreHendelse(
-                ident = ident,
-                journalpostId = journalpostId,
-                uføreVedtak = uføreVedtak,
-            ),
-        )
-
         return innsending
     }
 
