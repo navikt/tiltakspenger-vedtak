@@ -29,7 +29,6 @@ data class Førstegangsbehandling(
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
     override val tiltak: List<Tiltak>,
-    override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
 ) : Behandling {
@@ -53,11 +52,11 @@ data class Førstegangsbehandling(
                             kilde = Kilde.SØKNAD,
                         ),
                     ).avklar(),
+                    utfallsperioder = emptyList(),
                 ),
                 tiltak = emptyList(),
                 saksbehandler = null,
                 beslutter = null,
-                utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
             )
@@ -328,8 +327,7 @@ data class Førstegangsbehandling(
         }
 
         return this.copy(
-            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
-            utfallsperioder = utfallsperioder,
+            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger, utfallsperioder),
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
