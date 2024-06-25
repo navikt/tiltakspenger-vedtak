@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -28,7 +29,7 @@ data class Førstegangsbehandling(
     override val saksbehandler: String?,
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
-    override val tiltak: List<Tiltak>,
+    override val tiltak: TiltakVilkår,
     override val utfallsperioder: List<Utfallsperiode>,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
@@ -54,7 +55,7 @@ data class Førstegangsbehandling(
                         ),
                     ).avklar(),
                 ),
-                tiltak = emptyList(),
+                tiltak = TiltakVilkår(),
                 saksbehandler = null,
                 beslutter = null,
                 utfallsperioder = emptyList(),
@@ -153,21 +154,8 @@ data class Førstegangsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
-
-        val nyeTiltak = tiltak.map {
-            if (it.id == oppdatertTiltak.id) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
         return this.copy(
-            tiltak = nyeTiltak,
+            tiltak = tiltak.oppdaterAntallDager(tiltakId, nyPeriodeMedAntallDager, saksbehandler),
         )
     }
 
@@ -188,25 +176,10 @@ data class Førstegangsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke tilbakestille antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke tilbakestille antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.tilbakestillAntallDagerFraSaksbehandler()
-
-        val nyeTiltak = tiltak.map {
-            if (it.id == oppdatertTiltak.id) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
-        return this.copy(
-            tiltak = nyeTiltak,
-        )
+        return this.copy(tiltak = tiltak.tilbakestillAntallDager(tiltakId, saksbehandler))
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
+    override fun oppdaterTiltak(nyeTiltak: List<Tiltak>): Førstegangsbehandling {
         require(
             this.tilstand in listOf(
                 BehandlingTilstand.OPPRETTET,
@@ -218,7 +191,8 @@ data class Førstegangsbehandling(
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             // TODO Gjør noe ekstra
         }
-        return this.copy(tiltak = tiltak, tilstand = BehandlingTilstand.OPPRETTET).vilkårsvurder()
+        return this.copy(tiltak = tiltak.oppdaterTiltak(nyeTiltak), tilstand = BehandlingTilstand.OPPRETTET)
+            .vilkårsvurder()
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -287,7 +261,7 @@ data class Førstegangsbehandling(
      * Endrer tilstand til VILKÅRSVURDERT
      */
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+        val deltagelseVurderinger = tiltak.vilkårsvurder()
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)

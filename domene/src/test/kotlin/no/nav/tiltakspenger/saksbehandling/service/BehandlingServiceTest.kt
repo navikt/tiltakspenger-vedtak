@@ -287,9 +287,9 @@ internal class BehandlingServiceTest {
         )
         behandlingService.oppdaterTiltak(behandling.id, tiltak)
 
-        lagretBehandling.captured.tiltak.size shouldBe 2
-        lagretBehandling.captured.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"
-        lagretBehandling.captured.tiltak.first { it.eksternId == "starterInni" }.eksternId shouldBe "starterInni"
+        lagretBehandling.captured.tiltak.tiltak.size shouldBe 2
+        lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"
+        lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "starterInni" }.eksternId shouldBe "starterInni"
     }
 
     @Test
