@@ -9,4 +9,5 @@ fun Route.kvpRoutes(
     kvpVilkårService: KvpVilkårService,
 ) {
     oppdaterKvpRoute(innloggetSaksbehandlerProvider, kvpVilkårService)
+    hentKvpRoute(innloggetSaksbehandlerProvider, kvpVilkårService)
 }
