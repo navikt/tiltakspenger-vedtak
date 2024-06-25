@@ -192,21 +192,24 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        val vurderingsperiodeFraTiltak = nyeTiltak.vurderingsperiodeFraTiltak()
-        if (vurderingsperiodeFraTiltak != null && vurderingsperiodeFraTiltak != this.vurderingsperiode) {
-            // Vurderingsperioden må endres!
-            val nyVurderingsperiode = Periode(
-                minOf(vurderingsperiode.fraOgMed, vurderingsperiodeFraTiltak.fraOgMed),
-                maxOf(vurderingsperiode.tilOgMed, vurderingsperiodeFraTiltak.tilOgMed),
-            )
+        if (vurderingsperiodeRommerPeriodeFraTiltak(nyeTiltak.vurderingsperiodeFraTiltak())) {
+            // Vurderingsperioden endres ikke
             return this.copy(
-                vurderingsperiode = nyVurderingsperiode,
-                vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
                 tiltak = tiltak.oppdaterTiltak(nyeTiltak),
                 tilstand = BehandlingTilstand.OPPRETTET,
             ).vilkårsvurder()
         }
+
+        // Vurderingsperioden må endres
+        val vurderingsperiodeFraTiltak = nyeTiltak.vurderingsperiodeFraTiltak()!!
+        val nyVurderingsperiode = Periode(
+            minOf(vurderingsperiode.fraOgMed, vurderingsperiodeFraTiltak.fraOgMed),
+            maxOf(vurderingsperiode.tilOgMed, vurderingsperiodeFraTiltak.tilOgMed),
+        )
+        // TODO: Må hente inn tiltak på nytt. Idag betyr det å publisere et behov
         return this.copy(
+            vurderingsperiode = nyVurderingsperiode,
+            vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
             tiltak = tiltak.oppdaterTiltak(nyeTiltak),
             tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
@@ -392,4 +395,7 @@ data class Førstegangsbehandling(
             )
         }
     }
+
+    private fun vurderingsperiodeRommerPeriodeFraTiltak(periode: Periode?): Boolean =
+        periode?.let { vurderingsperiode.inneholderHele(it) } ?: true
 }
