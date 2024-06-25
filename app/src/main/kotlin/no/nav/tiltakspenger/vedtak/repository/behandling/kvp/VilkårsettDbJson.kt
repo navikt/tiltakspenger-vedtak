@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
 
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
@@ -19,6 +20,7 @@ internal fun String.toVilkårssett(
     saksopplysninger: List<Saksopplysning>,
     vilkårsvurderinger: List<Vurdering>,
     kravdatoSaksopplysninger: KravdatoSaksopplysninger,
+    utfallsperioder: List<Utfallsperiode>,
 ): Vilkårssett {
     try {
         val vilkårssettJson = deserialize<VilkårssettJson>(this)
@@ -27,6 +29,7 @@ internal fun String.toVilkårssett(
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             kravdatoSaksopplysninger = kravdatoSaksopplysninger,
+            utfallsperioder = utfallsperioder,
         )
     } catch (exception: Exception) {
         throw InvalidParameterException("Det oppstod en feil ved parsing av json: " + exception.message)

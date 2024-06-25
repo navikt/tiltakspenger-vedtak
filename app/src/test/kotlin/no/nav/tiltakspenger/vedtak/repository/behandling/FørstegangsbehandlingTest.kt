@@ -109,8 +109,8 @@ class FørstegangsbehandlingTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
-        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(1)
 
         tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
         tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldContain periodisertAntallDagerVerdi
@@ -234,8 +234,8 @@ class FørstegangsbehandlingTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
-        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(1)
 
         tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
         tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldBeEqual emptyList()

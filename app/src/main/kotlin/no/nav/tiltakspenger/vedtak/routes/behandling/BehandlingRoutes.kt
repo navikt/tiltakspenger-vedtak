@@ -112,8 +112,7 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        // TODO: Rollesjekk ikke helt landet
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,

@@ -55,7 +55,7 @@ object SammenstillingForBehandlingDTOMapper {
             tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
                 vilkårLovreferanse = Lovreferanse.TILTAKSDELTAGELSE.toDTO(),
-                saksopplysninger = behandling.tiltak.map {
+                saksopplysninger = behandling.tiltak.tiltak.map {
                     RegistrertTiltakDTO(
                         id = it.id.toString(),
                         arrangør = it.gjennomføring.arrangørnavn,
@@ -75,7 +75,7 @@ object SammenstillingForBehandlingDTOMapper {
                     )
                 },
             ),
-            stønadsdager = behandling.tiltak.map { settAntallDagerSaksopplysninger(it) },
+            stønadsdager = behandling.tiltak.tiltak.map { settAntallDagerSaksopplysninger(it) },
             alderssaksopplysning = behandling.saksopplysninger()
                 .filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
                     AlderssaksopplysningDTO(
