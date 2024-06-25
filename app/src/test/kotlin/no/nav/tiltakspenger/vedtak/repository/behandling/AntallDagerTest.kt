@@ -115,7 +115,7 @@ class AntallDagerTest {
         val lagretBehandling = slot<Førstegangsbehandling>()
         val oppdatertBehandling = behandling.oppdaterTiltak(listOf(tiltak))
 
-        every { behandlingRepo.hentOrNull(any()) } returns oppdatertBehandling
+        every { behandlingRepo.hent(any()) } returns oppdatertBehandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         behandlingRepo.lagre(oppdatertBehandling)
@@ -167,7 +167,7 @@ class AntallDagerTest {
         val lagretBehandling = slot<Førstegangsbehandling>()
         val oppdatertBehandling = behandling.oppdaterTiltak(listOf(tiltak))
 
-        every { behandlingRepo.hentOrNull(any()) } returns oppdatertBehandling
+        every { behandlingRepo.hent(any()) } returns oppdatertBehandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
 
         behandlingRepo.lagre(oppdatertBehandling)
