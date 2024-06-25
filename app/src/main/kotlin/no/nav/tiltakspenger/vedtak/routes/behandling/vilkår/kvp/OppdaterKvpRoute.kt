@@ -46,8 +46,8 @@ fun Route.oppdaterKvpRoute(
             )
         }
     }
-    post("$behandlingPath/{behandlingId}/vilkår/kvp") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkår/kvp")
+    post("$behandlingPath/{behandlingId}/vilkar/kvp") {
+        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kvp")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

@@ -18,8 +18,8 @@ fun Route.hentKvpRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     kvpVilkårService: KvpVilkårService,
 ) {
-    get("$behandlingPath/{behandlingId}/vilkår/kvp") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkår/kvp")
+    get("$behandlingPath/{behandlingId}/vilkar/kvp") {
+        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kvp")
 
         innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
