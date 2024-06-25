@@ -12,7 +12,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 data class TiltakVilkår(
     val tiltak: List<Tiltak> = emptyList(),
 ) {
-
     val lovreferanse = Lovreferanse.TILTAKSDELTAGELSE
 
     fun vilkårsvurder(): List<Vurdering> {
@@ -38,8 +37,9 @@ data class TiltakVilkår(
             }
     }
 
-    fun oppdaterTiltak(tiltak: List<Tiltak>): TiltakVilkår =
-        this.copy(tiltak = tiltak)
+    fun oppdaterTiltak(oppdaterteTiltak: List<Tiltak>): TiltakVilkår {
+        return this.copy(tiltak = oppdaterteTiltak)
+    }
 
     fun oppdaterAntallDager(
         tiltakId: TiltakId,

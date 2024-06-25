@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.vurderingsperiodeFraTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -190,8 +191,25 @@ data class Førstegangsbehandling(
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             // TODO Gjør noe ekstra
         }
-        return this.copy(tiltak = tiltak.oppdaterTiltak(nyeTiltak), tilstand = BehandlingTilstand.OPPRETTET)
-            .vilkårsvurder()
+
+        val vurderingsperiodeFraTiltak = nyeTiltak.vurderingsperiodeFraTiltak()
+        if (vurderingsperiodeFraTiltak != null && vurderingsperiodeFraTiltak != this.vurderingsperiode) {
+            // Vurderingsperioden må endres!
+            val nyVurderingsperiode = Periode(
+                minOf(vurderingsperiode.fraOgMed, vurderingsperiodeFraTiltak.fraOgMed),
+                maxOf(vurderingsperiode.tilOgMed, vurderingsperiodeFraTiltak.tilOgMed),
+            )
+            return this.copy(
+                vurderingsperiode = nyVurderingsperiode,
+                vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
+                tiltak = tiltak.oppdaterTiltak(nyeTiltak),
+                tilstand = BehandlingTilstand.OPPRETTET,
+            ).vilkårsvurder()
+        }
+        return this.copy(
+            tiltak = tiltak.oppdaterTiltak(nyeTiltak),
+            tilstand = BehandlingTilstand.OPPRETTET,
+        ).vilkårsvurder()
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {

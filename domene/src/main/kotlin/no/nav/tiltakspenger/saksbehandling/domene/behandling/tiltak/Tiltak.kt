@@ -117,3 +117,12 @@ data class Tiltak(
         return vurdering
     }
 }
+
+fun List<Tiltak>.vurderingsperiodeFraTiltak(): Periode? {
+    val fraOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.minOfOrNull { it.deltakelseFom }
+    val tilOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.maxOfOrNull { it.deltakelseTom }
+    if (fraOgMed == null || tilOgMed == null) {
+        return null
+    }
+    return Periode(fraOgMed, tilOgMed)
+}
