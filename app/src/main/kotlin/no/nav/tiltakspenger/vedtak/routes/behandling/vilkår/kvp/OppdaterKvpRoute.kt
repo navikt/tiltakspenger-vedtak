@@ -10,7 +10,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
@@ -19,7 +18,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-fun Route.kvpVilkårRoute(
+fun Route.oppdaterKvpRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     kvpVilkårService: KvpVilkårService,
 ) {
@@ -59,21 +58,8 @@ fun Route.kvpVilkårRoute(
         ).let {
             call.respond(
                 status = HttpStatusCode.Created,
-                message = it.vilkårssett.kvpVilkår.toDTO(),
+                message = it.toDTO(),
             )
-        }
-    }
-}
-
-private enum class ÅrsakTilEndringDTO {
-    FEIL_I_INNHENTET_DATA,
-    ENDRING_ETTER_SØKNADSTIDSPUNKT,
-    ;
-
-    fun toDomain(): ÅrsakTilEndring {
-        return when (this) {
-            FEIL_I_INNHENTET_DATA -> ÅrsakTilEndring.FEIL_I_INNHENTET_DATA
-            ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT
         }
     }
 }
