@@ -28,7 +28,6 @@ interface Behandling {
     val beslutter: String?
     val vilkårssett: Vilkårssett
     val tiltak: TiltakVilkår
-    val utfallsperioder: List<Utfallsperiode>
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
 
@@ -36,6 +35,8 @@ interface Behandling {
     val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
 
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger get() = vilkårssett.kravdatoSaksopplysninger
+
+    val utfallsperioder: List<Utfallsperiode> get() = vilkårssett.utfallsperioder
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
