@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
@@ -34,5 +35,10 @@ data class Vilkårssett(
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
         )
+    }
+
+    fun vurderingsperiodeEndret(nyVurderingsperiode: Periode): Vilkårssett {
+        // TODO: "Saksopplysninger fra registre må hentes inn på nytt, saksopplysninger fra søknad må paddes med UAVKLART, saksopplysninger fra saksbehandler må enten paddes eller slettes."
+        return this
     }
 }

@@ -120,8 +120,8 @@ class AntallDagerTest {
 
         behandlingRepo.lagre(oppdatertBehandling)
 
-        lagretBehandling.captured.tiltak shouldHaveSize 1
-        val tiltakId = lagretBehandling.captured.tiltak.first().id
+        lagretBehandling.captured.tiltak.tiltak shouldHaveSize 1
+        val tiltakId = lagretBehandling.captured.tiltak.tiltak.first().id
 
         val saksbehandlerPeriode = Periode(
             fraOgMed = vurderingsPeriode.fraOgMed,
@@ -144,7 +144,7 @@ class AntallDagerTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val antallDagerSaksopplysning = lagretBehandling.captured.tiltak.first().antallDagerSaksopplysninger
+        val antallDagerSaksopplysning = lagretBehandling.captured.tiltak.tiltak.first().antallDagerSaksopplysninger
 
         antallDagerSaksopplysning.antallDagerSaksopplysningerFraSBH shouldHaveSize 2
         antallDagerSaksopplysning.antallDagerSaksopplysningerFraSBH.forAll { it.verdi.kilde shouldBe Kilde.SAKSB }
@@ -172,8 +172,8 @@ class AntallDagerTest {
 
         behandlingRepo.lagre(oppdatertBehandling)
 
-        lagretBehandling.captured.tiltak shouldHaveSize 1
-        val tiltakId = lagretBehandling.captured.tiltak.first().id
+        lagretBehandling.captured.tiltak.tiltak shouldHaveSize 1
+        val tiltakId = lagretBehandling.captured.tiltak.tiltak.first().id
 
         val saksbehandlerPeriode = Periode(
             fraOgMed = vurderingsPeriode.fraOgMed,
@@ -196,17 +196,18 @@ class AntallDagerTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val antallDagerSaksopplysning = lagretBehandling.captured.tiltak.first().antallDagerSaksopplysninger
+        val antallDagerSaksopplysning = lagretBehandling.captured.tiltak.tiltak.first().antallDagerSaksopplysninger
 
         antallDagerSaksopplysning.antallDagerSaksopplysningerFraSBH shouldHaveSize 2
 
         behandlingService.tilbakestillAntallDagerPåTiltak(
             behandlingId = oppdatertBehandling.id,
-            tiltakId = oppdatertBehandling.tiltak.first().id,
+            tiltakId = oppdatertBehandling.tiltak.tiltak.first().id,
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val antallDagerEtterTilbakestilling = lagretBehandling.captured.tiltak.first().antallDagerSaksopplysninger
+        val antallDagerEtterTilbakestilling =
+            lagretBehandling.captured.tiltak.tiltak.first().antallDagerSaksopplysninger
 
         antallDagerEtterTilbakestilling.antallDagerSaksopplysningerFraSBH shouldHaveSize 0
         antallDagerEtterTilbakestilling.avklartAntallDager

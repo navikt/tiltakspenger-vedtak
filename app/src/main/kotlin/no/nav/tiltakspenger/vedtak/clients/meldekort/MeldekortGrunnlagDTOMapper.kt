@@ -42,8 +42,12 @@ object MeldekortGrunnlagDTOMapper {
             },
         )
 
-    fun mapTiltakDTO(vedtak: Vedtak) =
-        vedtak.behandling.tiltak
+    // TODO: Denne tar bare med informasjon om tiltaket fra søknaden, her må vi ta med alle tiltakene som er OPPFYLT.
+    // TODO: Og antall dager i uken må fylles ut korrekt.
+    // TODO: Egentlig er ikke List<TiltakDTO> en god nok struktur for å fange informasjonen vi er ute etter
+    // TODO: Det vil ikke håndtere to tiltak som begge er på tre dager i uka og hvor tiltakene er på de samme tre dagene
+    fun mapTiltakDTO(vedtak: Vedtak): List<TiltakDTO> =
+        vedtak.behandling.tiltak.tiltak
             .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
             .map {
                 TiltakDTO(
