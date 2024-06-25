@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -70,11 +69,7 @@ class BehandlingServiceImpl(
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
         val behandling = hentBehandling(behandlingId)
-        val oppdatertBehandling = behandling.oppdaterTiltak(
-            tiltak.filter {
-                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
-            },
-        )
+        val oppdatertBehandling = behandling.oppdaterTiltak(tiltak)
         behandlingRepo.lagre(oppdatertBehandling)
     }
 

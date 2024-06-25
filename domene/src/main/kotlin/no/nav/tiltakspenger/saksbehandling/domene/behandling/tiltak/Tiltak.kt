@@ -37,6 +37,9 @@ data class Tiltak(
         val rettTilÅASøke: Boolean,
     )
 
+    fun girRettPåTiltakspenger(): Boolean = gjennomføring.rettPåTiltakspenger
+    fun deltakelsePeriode(): Periode = Periode(deltakelseFom, deltakelseTom)
+
     fun brukerDeltarPåTiltak(status: String): Boolean {
         return status.equals("Gjennomføres", ignoreCase = true) ||
             status.equals("Deltar", ignoreCase = true)
@@ -118,11 +121,34 @@ data class Tiltak(
     }
 }
 
-fun List<Tiltak>.vurderingsperiodeFraTiltak(): Periode? {
-    val fraOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.minOfOrNull { it.deltakelseFom }
-    val tilOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.maxOfOrNull { it.deltakelseTom }
+private fun List<Tiltak>.vurderingsperiodeFraTiltak(): Periode? {
+    val fraOgMed = this.filter { it.girRettPåTiltakspenger() }.minOfOrNull { it.deltakelsePeriode().fraOgMed }
+    val tilOgMed = this.filter { it.girRettPåTiltakspenger() }.maxOfOrNull { it.deltakelsePeriode().tilOgMed }
     if (fraOgMed == null || tilOgMed == null) {
         return null
     }
     return Periode(fraOgMed, tilOgMed)
+}
+
+tailrec fun filtrerTiltakOgBeregnVurderingsperiode(
+    vurderingsperiode: Periode,
+    nyeTiltak: List<Tiltak>,
+): Pair<Periode, List<Tiltak>> {
+    val filtrerteTiltak = nyeTiltak.filter {
+        it.deltakelsePeriode().overlapperMed(vurderingsperiode)
+    }
+
+    val vurderingsperiodeFraTiltak = filtrerteTiltak.vurderingsperiodeFraTiltak()
+    val nyVurderingsperiode = vurderingsperiodeFraTiltak?.let {
+        Periode(
+            minOf(it.fraOgMed, vurderingsperiode.fraOgMed),
+            maxOf(it.tilOgMed, vurderingsperiode.tilOgMed),
+        )
+    } ?: vurderingsperiode
+
+    return if (vurderingsperiode == nyVurderingsperiode) {
+        Pair(vurderingsperiode, filtrerteTiltak)
+    } else {
+        filtrerTiltakOgBeregnVurderingsperiode(nyVurderingsperiode, nyeTiltak)
+    }
 }

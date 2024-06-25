@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.vurderingsperiodeFraTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.filtrerTiltakOgBeregnVurderingsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -192,27 +192,24 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra
         }
 
-        if (vurderingsperiodeRommerPeriodeFraTiltak(nyeTiltak.vurderingsperiodeFraTiltak())) {
+        val (nyVurderingsperiode, filtrerteTiltak) =
+            filtrerTiltakOgBeregnVurderingsperiode(vurderingsperiode, nyeTiltak)
+
+        return if (nyVurderingsperiode == vurderingsperiode) {
             // Vurderingsperioden endres ikke
             return this.copy(
                 tiltak = tiltak.oppdaterTiltak(nyeTiltak),
                 tilstand = BehandlingTilstand.OPPRETTET,
             ).vilkårsvurder()
+        } else {
+            // Vurderingsperioden må endres
+            this.copy(
+                vurderingsperiode = nyVurderingsperiode,
+                vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
+                tiltak = tiltak.oppdaterTiltak(filtrerteTiltak),
+                tilstand = BehandlingTilstand.OPPRETTET,
+            ).vilkårsvurder()
         }
-
-        // Vurderingsperioden må endres
-        val vurderingsperiodeFraTiltak = nyeTiltak.vurderingsperiodeFraTiltak()!!
-        val nyVurderingsperiode = Periode(
-            minOf(vurderingsperiode.fraOgMed, vurderingsperiodeFraTiltak.fraOgMed),
-            maxOf(vurderingsperiode.tilOgMed, vurderingsperiodeFraTiltak.tilOgMed),
-        )
-        // TODO: Må hente inn tiltak på nytt. Idag betyr det å publisere et behov
-        return this.copy(
-            vurderingsperiode = nyVurderingsperiode,
-            vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
-            tiltak = tiltak.oppdaterTiltak(nyeTiltak),
-            tilstand = BehandlingTilstand.OPPRETTET,
-        ).vilkårsvurder()
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -395,7 +392,4 @@ data class Førstegangsbehandling(
             )
         }
     }
-
-    private fun vurderingsperiodeRommerPeriodeFraTiltak(periode: Periode?): Boolean =
-        periode?.let { vurderingsperiode.inneholderHele(it) } ?: true
 }
