@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.routes.dto.toDto
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal data class PeriodisertUtfallDTO(
     val utfall: UtfallDTO,
@@ -20,7 +20,7 @@ internal fun Periodisering<Utfall2>.toDTO(): List<PeriodisertUtfallDTO> {
     return this.perioder().map {
         PeriodisertUtfallDTO(
             utfall = it.verdi.toDTO(),
-            periode = it.periode.toDto(),
+            periode = it.periode.toDTO(),
         )
     }
 }

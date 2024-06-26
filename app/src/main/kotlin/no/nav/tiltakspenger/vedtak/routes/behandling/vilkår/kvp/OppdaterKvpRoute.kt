@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksoppl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -52,13 +53,15 @@ fun Route.oppdaterKvpRoute(
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val body = call.receive<Body>()
-
+        if (body.ytelseForPeriode.isEmpty()) {
+            throw IllegalArgumentException("Dersom saksbehandler ønsker å legge til en kvp-saksopplysning må hen spesifisere minst én periode")
+        }
         kvpVilkårService.leggTilSaksopplysning(
             body.toCommand(behandlingId, saksbehandler),
         ).let {
             call.respond(
                 status = HttpStatusCode.Created,
-                message = it.toDTO(),
+                message = it.vilkårssett.kvpVilkår.toDTO(it.vurderingsperiode.toDTO()),
             )
         }
     }

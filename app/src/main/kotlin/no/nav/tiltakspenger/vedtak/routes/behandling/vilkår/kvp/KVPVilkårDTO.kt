@@ -3,26 +3,28 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.PeriodisertUtfallDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 /**
  * Har ansvar for å serialisere Vilkårssett til json. Kontrakt mot frontend.
  */
 internal data class KVPVilkårDTO(
     val søknadSaksopplysning: KvpSaksopplysningDTO,
-    val saksbehandlerSaksopplysning: KvpSaksopplysningDTO?,
     val avklartSaksopplysning: KvpSaksopplysningDTO,
-    val utfallsperioder: List<PeriodisertUtfallDTO>,
     val vilkårLovreferanse: LovreferanseDTO,
+    val vurderingsperiode: PeriodeDTO,
+    val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun KVPVilkår.toDTO(): KVPVilkårDTO {
+internal fun KVPVilkår.toDTO(vurderingsperiode: PeriodeDTO): KVPVilkårDTO {
     return KVPVilkårDTO(
-        søknadSaksopplysning = søknadSaksopplysning.toDTO(),
-        saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDTO(),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(),
-        utfallsperioder = utfall.toDTO(),
+        søknadSaksopplysning = søknadSaksopplysning.toDTO(KildeDTO.SØKNAD),
+        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) KildeDTO.SØKNAD else KildeDTO.SAKSBEHANDLER),
         vilkårLovreferanse = lovreferanse.toDTO(),
+        vurderingsperiode = vurderingsperiode,
+        samletUtfall = this.samletUtfall.toDTO(),
     )
 }

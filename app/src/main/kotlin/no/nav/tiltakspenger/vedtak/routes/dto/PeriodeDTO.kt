@@ -15,6 +15,6 @@ data class PeriodeDTO(
     }
 }
 
-fun Periode.toDto(): PeriodeDTO {
+fun Periode.toDTO(): PeriodeDTO {
     return PeriodeDTO(fraOgMed.toString(), tilOgMed.toString())
 }

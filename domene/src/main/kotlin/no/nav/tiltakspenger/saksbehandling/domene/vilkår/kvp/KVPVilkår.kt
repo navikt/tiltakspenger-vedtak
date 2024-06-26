@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
@@ -23,10 +24,11 @@ data class KVPVilkår private constructor(
     val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val totaleUtfall: Utfall2 = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> Utfall2.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> Utfall2.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> Utfall2.IKKE_OPPFYLT
+    val samletUtfall: SamletUtfall = when {
+        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
+        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
+        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
+        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
         else -> throw IllegalStateException("Ugyldig utfall")
     }
 

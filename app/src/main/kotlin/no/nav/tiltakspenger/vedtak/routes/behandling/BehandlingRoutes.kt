@@ -163,5 +163,5 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService)
+    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
 }

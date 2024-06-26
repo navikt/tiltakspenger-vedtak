@@ -21,16 +21,16 @@ internal data class SaksbehandlerDTO(
     }
 }
 
-internal fun Saksbehandler.toDto(): SaksbehandlerDTO {
+internal fun Saksbehandler.toDTO(): SaksbehandlerDTO {
     return SaksbehandlerDTO(
         navIdent = navIdent,
         brukernavn = brukernavn,
         epost = epost,
-        roller = roller.map { it.toDto() },
+        roller = roller.map { it.toDTO() },
     )
 }
 
-internal fun Rolle.toDto(): SaksbehandlerDTO.RolleDTO {
+internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO {
     return when (this) {
         Rolle.SAKSBEHANDLER -> SaksbehandlerDTO.RolleDTO.SAKSBEHANDLER
         Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.FORTROLIG_ADRESSE
