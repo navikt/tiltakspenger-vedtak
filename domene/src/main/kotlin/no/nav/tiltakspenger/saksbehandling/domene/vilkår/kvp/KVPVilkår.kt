@@ -46,8 +46,10 @@ data class KVPVilkår private constructor(
             tidsstempel = LocalDateTime.now(),
         )
         // TODO jah: Må oppdatere utfall og avklartSaksopplysning, men vi kan vente til vi er ferdig i Vilkår 2.0
+        // Edit kew: Avklarte saksopplysninger må settes på ett eller annet sted, satte det her, så kan vi eventuelt flytte det om det ikke hører hjemme her
         return this.copy(
             saksbehandlerSaksopplysning = kvpSaksopplysning,
+            avklartSaksopplysning = kvpSaksopplysning,
         )
     }
 
