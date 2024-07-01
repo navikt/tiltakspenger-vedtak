@@ -5,9 +5,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkaar
 
 /**
  * Ref til begrepskatalogen.
@@ -21,6 +22,7 @@ data class Vilkårssett(
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val utfallsperioder: List<Utfallsperiode>,
     val kvpVilkår: KVPVilkår,
+    val livsoppholdVilkår: LivsoppholdVilkaar,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode
 
@@ -60,9 +62,17 @@ data class Vilkårssett(
         return this
     }
 
+    // TODO: Utfallperioder må oppdaterss
     fun oppdaterKVP(command: LeggTilKvpSaksopplysningCommand): Vilkårssett {
         return this.copy(
             kvpVilkår = kvpVilkår.leggTilSaksbehandlerSaksopplysning(command),
+        )
+    }
+
+    // TODO: Utfallperioder må oppdateres
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Vilkårssett {
+        return this.copy(
+            livsoppholdVilkår = livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
     }
 }

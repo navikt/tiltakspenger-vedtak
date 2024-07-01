@@ -24,7 +24,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class YtelseRoutesTest {
+class HarYtelseRoutesTest {
     private companion object {
         const val IDENT = "04927799109"
         const val JOURNALPOSTID = "foobar2"
