@@ -89,17 +89,17 @@ internal class BehandlingVilkårsvurdertTest {
             ),
         )
 
-        // Legg til kvp i februar. Ingen perioder med rett er igjen så da blir hele avslag
-        val kvp = saksopplysning(
+        // Legg til institusjonsopphold i februar. Ingen perioder med rett er igjen så da blir hele avslag
+        val institusjonsopphold = saksopplysning(
             fom = 1.februar(2024),
             tom = 29.februar(2024),
             kilde = Kilde.SAKSB,
-            vilkår = Vilkår.KVP,
+            vilkår = Vilkår.INSTITUSJONSOPPHOLD,
             type = TypeSaksopplysning.HAR_YTELSE,
             saksbehandler = "Z12345",
         )
 
-        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(kvp).behandling
+        val behandlingAvslag = behandlingMedYtelseStartOgSlutt.leggTilSaksopplysning(institusjonsopphold).behandling
         behandlingAvslag.tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
         behandlingAvslag.status shouldBe BehandlingStatus.Avslag
 

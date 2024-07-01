@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
@@ -52,6 +53,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
                 attesteringRepo = attesteringRepo,
+                kvpVilkårService = kvpVilkårService,
             )
         }
         .build()
@@ -90,7 +92,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         )
     private val sakService =
         SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
-
+    private val kvpVilkårService = KvpVilkårServiceImpl(
+        behandlingService = behandlingService,
+        behandlingRepo = behandlingRepo,
+    )
     val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,

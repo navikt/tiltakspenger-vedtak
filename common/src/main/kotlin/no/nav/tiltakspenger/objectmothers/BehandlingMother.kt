@@ -78,7 +78,7 @@ interface BehandlingMother {
             saksopplysning(
                 fom = 1.januar(2023),
                 tom = 31.mars(2023),
-                vilkår = Vilkår.KVP,
+                vilkår = Vilkår.INSTITUSJONSOPPHOLD,
                 type = TypeSaksopplysning.HAR_YTELSE,
             ),
         ).behandling as Førstegangsbehandling

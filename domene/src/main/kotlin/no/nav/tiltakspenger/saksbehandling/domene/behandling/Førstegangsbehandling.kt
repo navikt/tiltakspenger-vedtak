@@ -21,6 +21,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -35,14 +37,20 @@ data class Førstegangsbehandling(
     override val tilstand: BehandlingTilstand,
 ) : Behandling {
 
+    init {
+        // TODO jah: Brekker for mange tester. Bør legges inn når vi er ferdig med vilkår 2.0
+        // require(vilkårssett.totalePeriode == vurderingsperiode) { "Vilkårssettets periode (${vilkårssett.totalePeriode} må være lik vurderingsperioden $vurderingsperiode" }
+    }
+
     companion object {
 
         fun opprettBehandling(sakId: SakId, søknad: Søknad): Førstegangsbehandling {
+            val vurderingsperiode = søknad.vurderingsperiode()
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
                 sakId = sakId,
                 søknader = listOf(søknad),
-                vurderingsperiode = søknad.vurderingsperiode(),
+                vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(
                     saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
                         søknad,
@@ -55,6 +63,7 @@ data class Førstegangsbehandling(
                         ),
                     ).avklar(),
                     utfallsperioder = emptyList(),
+                    kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,
@@ -100,11 +109,16 @@ data class Førstegangsbehandling(
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
-
+        // Avgjørelse jah: Vi skal ikke oppdatere vilkårsettet her mens vi skriver om til vilkår 2.0.
+        // TODO jah: Fjern mulighet for samtidige søknader.
+        //  Dersom avklaringen er basert på saksopplysning fra søknaden, bør vi nullstille avklaringen i påvente av en saksbehandler-opplysning.
+        //  Dersom vi allerede har en saksbehander-opplysning, bør vi kreve at saksbehandler tar stilling til alle vilkårene på nytt.
         return this.copy(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            vilkårssett = vilkårssett.oppdaterSaksopplysninger(fakta),
+            vilkårssett = vilkårssett.copy(
+                saksopplysninger = fakta,
+            ),
             tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }

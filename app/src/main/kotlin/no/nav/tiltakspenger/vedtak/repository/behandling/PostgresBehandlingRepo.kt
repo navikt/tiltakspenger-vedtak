@@ -16,9 +16,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -169,6 +170,7 @@ internal class PostgresBehandlingRepo(
                     "sistEndret" to nå(),
                     "saksbehandler" to behandling.saksbehandler,
                     "beslutter" to behandling.beslutter,
+                    "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                 ),
             ).asUpdate,
         )
@@ -198,6 +200,7 @@ internal class PostgresBehandlingRepo(
                     "status" to finnStatus(behandling),
                     "sistEndret" to nå,
                     "opprettet" to nå,
+                    "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                 ),
             ).asUpdate,
         )
@@ -235,24 +238,25 @@ internal class PostgresBehandlingRepo(
             "Iverksatt" -> BehandlingTilstand.IVERKSATT
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
+        val vilkårssett = string("vilkårssett").toVilkårssett(
+            saksopplysninger = saksopplysningRepo.hent(id, txSession),
+            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
+            kravdatoSaksopplysninger = KravdatoSaksopplysninger(
+                kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
+                kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(
+                    behandlingId = id,
+                    txSession = txSession,
+                ),
+                avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
+            ),
+            utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
+        )
         return Førstegangsbehandling(
             id = id,
             sakId = sakId,
             søknader = søknadDAO.hent(id, txSession),
             vurderingsperiode = Periode(fom, tom),
-            vilkårssett = Vilkårssett(
-                saksopplysninger = saksopplysningRepo.hent(id, txSession),
-                vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-                kravdatoSaksopplysninger = KravdatoSaksopplysninger(
-                    kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
-                    kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(
-                        behandlingId = id,
-                        txSession = txSession,
-                    ),
-                    avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
-                ),
-                utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-            ),
+            vilkårssett = vilkårssett,
             tiltak = TiltakVilkår(tiltakDAO.hent(id, txSession)),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
@@ -290,7 +294,8 @@ internal class PostgresBehandlingRepo(
             tilstand,
             status,
             sist_endret,
-            opprettet
+            opprettet,
+            vilkårssett
         ) values (
             :id,
             :sakId,
@@ -299,7 +304,8 @@ internal class PostgresBehandlingRepo(
             :tilstand,
             :status,
             :sistEndret,
-            :opprettet
+            :opprettet,
+            to_jsonb(:vilkaarssett::jsonb)
         )
     """.trimIndent()
 
@@ -313,7 +319,8 @@ internal class PostgresBehandlingRepo(
             status = :status,
             sist_endret = :sistEndret,
             saksbehandler = :saksbehandler,
-            beslutter = :beslutter
+            beslutter = :beslutter,
+            vilkårssett = to_jsonb(:vilkaarssett::json)
         where id = :id
           and sist_endret = :sistEndretOld
     """.trimIndent()

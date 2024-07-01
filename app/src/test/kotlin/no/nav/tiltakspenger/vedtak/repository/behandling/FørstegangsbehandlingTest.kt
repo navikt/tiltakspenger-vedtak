@@ -82,6 +82,7 @@ class FørstegangsbehandlingTest {
         clearAllMocks()
     }
 
+    // TODO jah: Tiltaksperiodene ligger nå på utsiden av vurderingsperioden. Rydd opp i testdata + muligens tiltakskoden.
     @Test
     fun `når man oppdaterer antall dager skal de kun oppdateres for det tiltaket som man har oppgitt i tiltakId-parameteren`() {
         val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
@@ -198,6 +199,7 @@ class FørstegangsbehandlingTest {
         }
     }
 
+    // TODO jah: Tiltaksperiodene ligger nå på utsiden av vurderingsperioden. Rydd opp i testdata + muligens tiltakskoden.
     @Test
     fun `når man tilbakestiller antall dager skal man kun tilbakestille dagene på det tiltaket som man har oppgitt i tiltakId-parameteren`() {
         val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()

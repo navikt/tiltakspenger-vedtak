@@ -22,7 +22,6 @@ object SaksopplysningDTOMapper {
             "INSTITUSJONSOPPHOLD" -> Vilkår.INSTITUSJONSOPPHOLD
             "INTROPROGRAMMET" -> Vilkår.INTROPROGRAMMET
             "JOBBSJANSEN" -> Vilkår.JOBBSJANSEN
-            "KVP" -> Vilkår.KVP
             "LØNNSINNTEKT" -> Vilkår.LØNNSINNTEKT
             "OMSORGSPENGER" -> Vilkår.OMSORGSPENGER
             "OPPLÆRINGSPENGER" -> Vilkår.OPPLÆRINGSPENGER
