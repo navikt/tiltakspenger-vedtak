@@ -50,6 +50,7 @@ import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KVPVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KildeDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KvpSaksopplysningDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
@@ -184,21 +185,89 @@ class KvpRoutesTest {
                 status shouldBe HttpStatusCode.Created
             }
 
-            // Sjekk at databasen blir oppdatert
+            // Hent data
             defaultRequest(
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/${objectMotherSak.behandlinger.first().id}/vilkar/kvp")
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
+
+                // sjekker at endringen har skjedd
+                kvpVilkår.avklartSaksopplysning.kilde shouldBe KildeDTO.SAKSBEHANDLER
+                kvpVilkår.avklartSaksopplysning.periodeMedDeltagelse.periode shouldBe periodeBrukerHarKvpEtterEndring
+            }
+        }
+    }
+
+    @Test
+    fun `test at endring av kvp ikke endrer søknadsdata`() {
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+
+        lateinit var originalDatoForKvpFraSøknaden: KvpSaksopplysningDTO
+
+        sessionOf(DataSource.hikariDataSource).use {
+            sakRepo.lagre(objectMotherSak)
+        }
+
+        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
+
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    kvpRoutes(
+                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                        kvpVilkårService = kvpVilkårService,
+                        behandlingService = behandlingService,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+                val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
+                originalDatoForKvpFraSøknaden = kvpVilkår.søknadSaksopplysning
+            }
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ) {
+                setBody(bodyEndreKvpInfo)
+            }.apply {
+                status shouldBe HttpStatusCode.Created
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK
                 contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
 
                 val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
-                print(kvpVilkår)
-                kvpVilkår.avklartSaksopplysning.kilde shouldBe KildeDTO.SAKSBEHANDLER
-                kvpVilkår.avklartSaksopplysning.periodeMedDeltagelse.periode shouldBe periodeBrukerHarKvpEtterEndring
+
+                // sjekker at ikke originale
+                kvpVilkår.søknadSaksopplysning shouldBe originalDatoForKvpFraSøknaden
             }
         }
     }
