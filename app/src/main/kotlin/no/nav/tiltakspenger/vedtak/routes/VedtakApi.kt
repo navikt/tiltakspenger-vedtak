@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -73,6 +74,7 @@ internal fun Application.vedtakApi(
     innsendingAdminService: InnsendingAdminService,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
+    livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -97,6 +99,7 @@ internal fun Application.vedtakApi(
                 innsendingMediator = innsendingMediator,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
+                livsoppholdVilkårService = livsoppholdVilkårService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
