@@ -1,5 +1,5 @@
 package no.nav.tiltakspenger.objectmothers
-
+/*
 import no.nav.tiltakspenger.felles.UføreVedtakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
@@ -23,3 +23,6 @@ interface UførevedtakMother {
             innhentet = innhentet,
         )
 }
+
+
+ */

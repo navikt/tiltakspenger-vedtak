@@ -6,16 +6,12 @@ import no.nav.tiltakspenger.innsending.domene.Innsending
 import no.nav.tiltakspenger.innsending.domene.InnsendingHendelse
 import no.nav.tiltakspenger.innsending.domene.InnsendingObserver
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import org.slf4j.MDC
@@ -48,12 +44,8 @@ class InnsendingMediatorImpl(
                         observatører.forEach { innsending.addObserver(it) }
                         when (hendelse) {
                             is TiltakMottattHendelse -> innsending.håndter(hendelse)
-                            is YtelserMottattHendelse -> innsending.håndter(hendelse)
                             is PersonopplysningerMottattHendelse -> innsending.håndter(hendelse)
                             is SkjermingMottattHendelse -> innsending.håndter(hendelse)
-                            is ForeldrepengerMottattHendelse -> innsending.håndter(hendelse)
-                            is OvergangsstønadMottattHendelse -> innsending.håndter(hendelse)
-                            is UføreMottattHendelse -> innsending.håndter(hendelse)
                             is ResetInnsendingHendelse -> innsending.håndter(hendelse)
                             is FeilMottattHendelse -> innsending.håndter(hendelse)
                             is InnsendingUtdatertHendelse -> innsending.håndter(hendelse)

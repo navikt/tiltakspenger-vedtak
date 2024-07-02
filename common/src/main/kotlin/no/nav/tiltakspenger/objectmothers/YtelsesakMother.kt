@@ -1,7 +1,5 @@
-@file:Suppress("LongParameterList")
-
 package no.nav.tiltakspenger.objectmothers
-
+/*
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.innsending.domene.YtelseSak
@@ -114,3 +112,6 @@ interface YtelsesakMother {
         )
     }
 }
+
+
+ */

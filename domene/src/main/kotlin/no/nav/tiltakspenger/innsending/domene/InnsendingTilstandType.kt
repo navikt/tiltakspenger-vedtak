@@ -5,10 +5,6 @@ enum class InnsendingTilstandType {
     AvventerPersonopplysninger,
     AvventerSkjermingdata,
     AvventerTiltak,
-    AvventerYtelser,
-    AvventerForeldrepenger,
-    AvventerOvergangsstønad,
-    AvventerUføre,
     InnsendingFerdigstilt,
     FaktainnhentingFeilet,
 }
