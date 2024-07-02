@@ -18,8 +18,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toVilkårssett
+import no.nav.tiltakspenger.vedtak.repository.behandling.vilkårssett.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.vilkårssett.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -239,6 +239,7 @@ internal class PostgresBehandlingRepo(
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
         val vilkårssett = string("vilkårssett").toVilkårssett(
+            vurderingsperiode = Periode(fom, tom),
             saksopplysninger = saksopplysningRepo.hent(id, txSession),
             vilkårsvurderinger = vurderingRepo.hent(id, txSession),
             kravdatoSaksopplysninger = KravdatoSaksopplysninger(

@@ -23,6 +23,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.SøknadMapper
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -64,6 +66,10 @@ data class Førstegangsbehandling(
                     ).avklar(),
                     utfallsperioder = emptyList(),
                     kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
+                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
+                        vurderingsperiode,
+                        SøknadMapper.mapSøknadTilLivsoppholdSaksopplysninger(søknad),
+                    ),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,
@@ -100,7 +106,7 @@ data class Førstegangsbehandling(
             // TODO Gjør noe ekstra (notifiser beslutter/behandler)
         }
 
-        val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
+        val fakta: List<Saksopplysning> = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
             Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
                 Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
         } else {
@@ -109,6 +115,7 @@ data class Førstegangsbehandling(
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
+
         // Avgjørelse jah: Vi skal ikke oppdatere vilkårsettet her mens vi skriver om til vilkår 2.0.
         // TODO jah: Fjern mulighet for samtidige søknader.
         //  Dersom avklaringen er basert på saksopplysning fra søknaden, bør vi nullstille avklaringen i påvente av en saksbehandler-opplysning.

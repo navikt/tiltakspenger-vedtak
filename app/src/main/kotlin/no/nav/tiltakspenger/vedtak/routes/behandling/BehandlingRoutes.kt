@@ -22,10 +22,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerD
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -46,6 +48,7 @@ fun Route.behandlingRoutes(
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
+    livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
@@ -164,4 +167,5 @@ fun Route.behandlingRoutes(
     }
 
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
+    livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService)
 }

@@ -8,8 +8,8 @@ data class LeggTilLivsoppholdSaksopplysningCommand(
     val behandlingId: BehandlingId,
     val saksbehandler: Saksbehandler,
     val ytelseForPeriode: List<YtelseForPeriode>,
-    val årsakTilEndring: AarsakTilEndring,
-    val livsoppholdsytelse: Livsoppholdsytelse,
+    val årsakTilEndring: ÅrsakTilEndring,
+    val livsoppholdsytelseType: LivsoppholdsytelseType,
 ) {
     data class YtelseForPeriode(
         val periode: Periode,

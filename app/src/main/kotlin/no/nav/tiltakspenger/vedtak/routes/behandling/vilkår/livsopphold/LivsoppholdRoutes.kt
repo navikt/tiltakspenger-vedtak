@@ -11,5 +11,5 @@ fun Route.livsoppholdRoutes(
     behandlingService: BehandlingService,
 ) {
     oppdaterLivsoppholdRoute(innloggetSaksbehandlerProvider, livsoppholdVilkårService)
-    // TODO hentLivsoppholdRoute(innloggetSaksbehandlerProvider, behandlingService)
+    hentLivsoppholdRoute(innloggetSaksbehandlerProvider, behandlingService)
 }

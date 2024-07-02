@@ -12,7 +12,9 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.dto.LivsoppholdsytelseTypeDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.dto.inn.PeriodeMedYtelse
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.dto.ÅrsakTilEndringDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -22,19 +24,14 @@ fun Route.oppdaterLivsoppholdRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
-    data class YtelseForPeriode(
-        val periode: PeriodeDTO,
-        val harYtelse: Boolean,
-    )
-
     data class Body(
-        val ytelseForPeriode: List<YtelseForPeriode>,
+        val ytelseForPeriode: List<PeriodeMedYtelse>,
         /** Drop-down i frontend. */
-        val årsakTilEndring: ÅrsakTilEndringDto,
+        val årsakTilEndring: ÅrsakTilEndringDTO,
     ) {
         fun toCommand(
             behandlingId: BehandlingId,
-            livsoppholdsytelse: LivsoppholdsytelseDto,
+            livsoppholdsytelse: LivsoppholdsytelseTypeDTO,
             saksbehandler: Saksbehandler,
         ): LeggTilLivsoppholdSaksopplysningCommand {
             return LeggTilLivsoppholdSaksopplysningCommand(
@@ -45,7 +42,7 @@ fun Route.oppdaterLivsoppholdRoute(
                     )
                 },
                 årsakTilEndring = this.årsakTilEndring.toDomain(),
-                livsoppholdsytelse = livsoppholdsytelse.toDomain(),
+                livsoppholdsytelseType = livsoppholdsytelse.toDomain(),
                 behandlingId = behandlingId,
                 saksbehandler = saksbehandler,
             )
@@ -56,7 +53,7 @@ fun Route.oppdaterLivsoppholdRoute(
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val ytelse = LivsoppholdsytelseDto.valueOf(call.parameter("ytelse"))
+        val ytelse = LivsoppholdsytelseTypeDTO.valueOf(call.parameter("ytelse"))
         val body = call.receive<Body>()
         if (body.ytelseForPeriode.isEmpty()) {
             throw IllegalArgumentException("Dersom saksbehandler ønsker å legge til en livsopphold-saksopplysning må hen spesifisere minst én periode")
@@ -66,7 +63,7 @@ fun Route.oppdaterLivsoppholdRoute(
         ).let {
             call.respond(
                 status = HttpStatusCode.Created,
-                message = it.vilkårssett.livsoppholdVilkår.toDTO(),
+                message = LivsoppholdVilkårMapper.toDTO(it.vilkårssett.livsoppholdVilkår),
             )
         }
     }

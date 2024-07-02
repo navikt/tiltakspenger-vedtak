@@ -1,0 +1,355 @@
+{
+  "kvpVilkår": {
+    "søknadSaksopplysning": {
+      "deltakelseForPeriode": [
+        {
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          },
+          "deltar": "DELTAR_IKKE"
+        }
+      ],
+      "årsakTilEndring": null,
+      "saksbehandler": null,
+      "tidsstempel": "2024-07-02T18:48:26.462184"
+    },
+    "saksbehandlerSaksopplysning": null,
+    "avklartSaksopplysning": {
+      "deltakelseForPeriode": [
+        {
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          },
+          "deltar": "DELTAR_IKKE"
+        }
+      ],
+      "årsakTilEndring": null,
+      "saksbehandler": null,
+      "tidsstempel": "2024-07-02T18:48:26.462184"
+    },
+    "utfallsperioder": [
+      {
+        "utfall": "OPPFYLT",
+        "periode": {
+          "fraOgMed": "2023-01-01",
+          "tilOgMed": "2023-03-31"
+        }
+      }
+    ]
+  },
+  "livsoppholdVilkår": {
+    "aapDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "dagpengerDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "foreldrepengerDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "omsorgspengerDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "opplæringspengerDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "overgangsstønadDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "pleiepengerNærståendeDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "pleiepengerSyktBarnDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "svangerskapspengerDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "uføretrygdDelVilkår": {
+      "saksbehandlerSaksopplysning": null,
+      "utfallsperioder": [
+        {
+          "utfall": "UAVKLART",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "alderspensjonDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "ALDERSPENSJON",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "ALDERSPENSJON",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "gjenlevendePensjonDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "GJENLEVENDEPENSJON",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "GJENLEVENDEPENSJON",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "sykepengerDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "SYKEPENGER",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "SYKEPENGER",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "jobbsjansenDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "JOBBSJANSEN",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "JOBBSJANSEN",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "pensjonsinntektDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "PENSJONSINNTEKT",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "PENSJONSINNTEKT",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "supplerendestønadAlderDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "SUPPLERENDESTØNAD_ALDER",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "SUPPLERENDESTØNAD_ALDER",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "supplerendestønadFlyktningDelVilkår": {
+      "søknadSaksopplysning": {
+        "livsoppholdsytelseType": "SUPPLERENDESTØNAD_FLYKTNING",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "saksbehandlerSaksopplysning": null,
+      "avklartSaksopplysning": {
+        "livsoppholdsytelseType": "SUPPLERENDESTØNAD_FLYKTNING",
+        "harYtelseForPeriode": [],
+        "tidsstempel": "2022-01-01T00:00",
+        "årsakTilEndring": null,
+        "saksbehandler": null
+      },
+      "utfallsperioder": [
+        {
+          "utfall": "OPPFYLT",
+          "periode": {
+            "fraOgMed": "2023-01-01",
+            "tilOgMed": "2023-03-31"
+          }
+        }
+      ]
+    },
+    "utfallsperioder": [
+      {
+        "utfall": "UAVKLART",
+        "periode": {
+          "fraOgMed": "2023-01-01",
+          "tilOgMed": "2023-03-31"
+        }
+      }
+    ]
+  }
+}

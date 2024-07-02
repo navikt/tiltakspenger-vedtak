@@ -1,0 +1,22 @@
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
+
+enum class LivsoppholdsytelseType {
+    AAP,
+    DAGPENGER,
+    ALDERSPENSJON,
+    GJENLEVENDEPENSJON,
+    SYKEPENGER,
+    JOBBSJANSEN,
+    FORELDREPENGER,
+    OMSORGSPENGER,
+    OPPLÆRINGSPENGER,
+    OVERGANGSSTØNAD,
+    PENSJONSINNTEKT,
+    PLEIEPENGER_NÆRSTÅENDE,
+    PLEIEPENGER_SYKTBARN,
+    SUPPLERENDESTØNAD_ALDER,
+    SUPPLERENDESTØNAD_FLYKTNING,
+    SVANGERSKAPSPENGER,
+    UFØRETRYGD
+    ;
+}
