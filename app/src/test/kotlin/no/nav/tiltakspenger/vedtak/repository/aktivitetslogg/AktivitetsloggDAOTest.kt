@@ -140,7 +140,7 @@ internal class AktivitetsloggDAOTest {
 
         val aktivitetslogg = Aktivitetslogg()
         aktivitetslogg.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.skjerming,
             melding = "melding",
             detaljer = mapOf(
                 "ident" to "1234",

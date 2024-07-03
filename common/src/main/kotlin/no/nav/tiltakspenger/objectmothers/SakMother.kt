@@ -52,6 +52,7 @@ interface SakMother {
         return Sak.lagSak(
             søknad = søknad,
             saksnummer = saksnummerGenerator.genererSaknummer("TODO"),
+            sakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr())),
         )
     }
 

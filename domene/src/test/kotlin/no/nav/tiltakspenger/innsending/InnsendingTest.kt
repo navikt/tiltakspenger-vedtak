@@ -34,14 +34,14 @@ internal class InnsendingTest {
         innsending.aktivitetslogg.aktiviteter().size - sizeBefore shouldBe 2
         innsending.aktivitetslogg.aktiviteter().map { it.melding } shouldContain "Registrert SøknadMottattHendelse"
         innsending.aktivitetslogg.aktiviteter()
-            .map { it.melding } shouldContain "Forventet ikke SøknadMottattHendelse i AvventerPersonopplysninger"
+            .map { it.melding } shouldContain "Forventet ikke SøknadMottattHendelse i AvventerSkjermingdata"
         innsending.aktivitetslogg.aktiviteter().map { it.alvorlighetsgrad } shouldContain 25
         innsending.aktivitetslogg.aktiviteter().map { it.label } shouldContain 'W'
         innsending.aktivitetslogg.aktiviteter().map { it.kontekster }
             .map { it.map { kontekst -> kontekst.melding() } } shouldContain listOf(
             "SøknadMottattHendelse - journalpostId: ${innsending.journalpostId}",
             "Innsending - journalpostId: ${innsending.journalpostId}",
-            "Tilstand - tilstandtype: AvventerPersonopplysninger",
+            "Tilstand - tilstandtype: AvventerSkjermingdata",
         )
         innsending.aktivitetslogg.aktiviteter().filter { it.alvorlighetsgrad == 50 }.size - behovCountBefore shouldBe 0
         innsending.isDirty() shouldBe true

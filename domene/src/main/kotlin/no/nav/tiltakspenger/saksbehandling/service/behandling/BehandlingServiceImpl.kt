@@ -66,9 +66,13 @@ class BehandlingServiceImpl(
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
+        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning)
+    }
+
+    override fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning): Behandling {
+        val behandlingRespons = behandling.leggTilSaksopplysning(saksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+        return behandlingRespons.behandling
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
