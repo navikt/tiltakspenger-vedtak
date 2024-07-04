@@ -25,6 +25,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+          queries: security-and-quality
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
