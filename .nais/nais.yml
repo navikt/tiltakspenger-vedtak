@@ -53,6 +53,9 @@ spec:
             users:
               - name: tpts_ds
   accessPolicy:
+    outbound:
+      external:
+        - host: { { urlPdl } }
     inbound:
       rules:
         - application: tiltakspenger-admin
