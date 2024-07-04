@@ -52,6 +52,8 @@ object Configuration {
         "logback.configurationFile" to "logback.xml",
         "SCOPE_UTBETALING" to System.getenv("SCOPE_UTBETALING"),
         "UTBETALING_URL" to System.getenv("UTBETALING_URL"),
+        "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
+        "PDL_SCOPE" to System.getenv("PDL_ENDPOINT_URL"),
     )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
@@ -69,6 +71,8 @@ object Configuration {
             "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
             "SCOPE_UTBETALING" to "localhost",
             "UTBETALING_URL" to "http://host.docker.internal:8083",
+            "PDL_SCOPE" to "api://localhost:8091/.default",
+            "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -76,6 +80,8 @@ object Configuration {
             "application.profile" to Profile.DEV.toString(),
             "SCOPE_UTBETALING" to "api://dev-gcp.tpts.tiltakspenger-utbetaling/.default",
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.dev.nav.no",
+            "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
+            "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -83,6 +89,8 @@ object Configuration {
             "application.profile" to Profile.PROD.toString(),
             "SCOPE_UTBETALING" to "api://prod-gcp.tpts.tiltakspenger-utbetaling/.default",
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.nav.no",
+            "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
+            "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
         ),
     )
 
@@ -140,6 +148,21 @@ object Configuration {
 
     fun oauthConfigUtbetaling(
         scope: String = config()[Key("SCOPE_UTBETALING", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun ouathConfigPdl(
+        scope: String = config()[Key("PDL_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],

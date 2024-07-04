@@ -4,7 +4,8 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 data class SakPersonopplysninger(
-    private val liste: List<Personopplysninger> = emptyList(),
+    // TODO jah: Midlertidig public, mens vi skriver oss bort fra RnR.
+    val liste: List<Personopplysninger> = emptyList(),
 ) {
 
     fun søkere(): List<PersonopplysningerSøker> =
@@ -87,8 +88,9 @@ data class SakPersonopplysninger(
     }
 
     override fun equals(other: Any?): Boolean {
+        if (other == null) return false
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (javaClass != other.javaClass) return false
 
         other as SakPersonopplysninger
         return erLik(other)

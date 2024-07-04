@@ -8,21 +8,25 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerMediator
 import org.slf4j.MDC
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-class SøkerMediator(
+/**
+ * TODO jah: Skal slettes når vi tar ned RnR.
+ */
+class SøkerMediatorImpl(
     private val søkerRepository: SøkerRepository,
     rapidsConnection: RapidsConnection,
-) {
+) : SøkerMediator {
 
     private val behovMediator: BehovMediator = BehovMediator(
         rapidsConnection = rapidsConnection,
     )
 
-    fun håndter(hendelse: ISøkerHendelse) {
+    override fun håndter(hendelse: ISøkerHendelse) {
         try {
             hentEllerOpprettSøker(hendelse).also { søker ->
                 when (hendelse) {

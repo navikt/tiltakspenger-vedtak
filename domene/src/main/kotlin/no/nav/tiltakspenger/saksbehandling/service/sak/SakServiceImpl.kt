@@ -1,10 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.service.sak
 
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
+import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.tolkere.AlderTolker
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -13,8 +16,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerMediator
+import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -23,50 +29,50 @@ class SakServiceImpl(
     val sakRepo: SakRepo,
     val behandlingRepo: BehandlingRepo,
     val behandlingService: BehandlingService,
+    val personGateway: PersonGateway,
+    val søkerMediator: SøkerMediator,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =
-            sakRepo.hentForIdentMedPeriode(
-                fnr = søknad.personopplysninger.ident,
-                periode = søknad.vurderingsperiode(),
-            ).singleOrNull() ?: Sak.lagSak(
-                søknad = søknad,
-                saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
+            (
+                sakRepo.hentForIdentMedPeriode(
+                    fnr = søknad.personopplysninger.ident,
+                    periode = søknad.vurderingsperiode(),
+                ).singleOrNull() ?: Sak.lagSak(
+                    søknad = søknad,
+                    saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
+                    sakPersonopplysninger = SakPersonopplysninger(
+                        liste = runBlocking { personGateway.hentPerson(søknad.personopplysninger.ident) },
+                    ),
+                )
+                ).håndter(søknad = søknad)
+
+        return sakRepo.lagre(sak).also {
+            // TODO jah: Skal slettes når vi tar ned RnR.
+            søkerMediator.håndter(
+                PersonopplysningerMottattHendelse(
+                    aktivitetslogg = Aktivitetslogg(),
+                    journalpostId = søknad.journalpostId,
+                    ident = søknad.personopplysninger.ident,
+                    personopplysninger = sak.personopplysninger.liste,
+                    tidsstempelPersonopplysningerInnhentet = LocalDateTime.now(),
+                ),
             )
-
-        val håndtertSak = sak.håndter(søknad = søknad)
-
-        return sakRepo.lagre(håndtertSak)
+            // TODO jah: Vil helst refaktorere dette, men beholder det inntil videre. Nå er hovedoppgaven av vi skal avvikle RnR.
+            oppdaterAldersvilkår(
+                sak = sak,
+            )
+        }
     }
 
-    override fun mottaPersonopplysninger(
-        journalpostId: String,
-        nyePersonopplysninger: SakPersonopplysninger,
-    ): Sak? {
-        val sak = sakRepo.hentForJournalpostId(journalpostId)
-            ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
-
-        val nyePersonopplysningerMedGammelSkjerming =
-            nyePersonopplysninger.medSkjermingFra(sak.personopplysninger.identerOgSkjerming())
-
-        val fdato = nyePersonopplysninger.søker().fødselsdato
+    private fun oppdaterAldersvilkår(
+        sak: Sak,
+    ) {
         sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach { behandling ->
-            AlderTolker.tolkeData(fdato, sak.periode).forEach {
-                behandlingService.leggTilSaksopplysning(behandling.id, it)
+            AlderTolker.tolkeData(sak.personopplysninger.søker().fødselsdato, sak.periode).forEach {
+                behandlingService.leggTilSaksopplysning(behandling, it)
             }
         }
-
-        // Hvis personopplysninger ikke er endret trenger vi ikke oppdatere
-        if (nyePersonopplysningerMedGammelSkjerming == sak.personopplysninger) return sak
-
-        // TODO: Hvorfor henter vi den igjen her, vi hentet den jo på starten av funksjonen?
-        val oppdatertSak = sakRepo.hentForJournalpostId(journalpostId)?.copy(
-            personopplysninger = nyePersonopplysningerMedGammelSkjerming,
-        )
-            ?: throw IllegalStateException("Fant ikke sak med journalpostId $journalpostId. Kunne ikke oppdatere personopplysninger")
-
-        sakRepo.lagre(oppdatertSak)
-        return sakRepo.hent(oppdatertSak.id)
     }
 
     override fun mottaSkjerming(journalpostId: String, skjerming: Skjerming): Sak {
@@ -105,7 +111,8 @@ class SakServiceImpl(
     }
 
     override fun hentForSaksnummer(saksnummer: String, saksbehandler: Saksbehandler): Sak {
-        val sak = sakRepo.hentForSaksnummer(saksnummer) ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
+        val sak = sakRepo.hentForSaksnummer(saksnummer)
+            ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }

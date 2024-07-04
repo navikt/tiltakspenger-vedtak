@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -20,7 +20,7 @@ const val søknadpath = "/rivers/soknad"
 
 fun Route.søknadRoutes(
     innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediator,
+    søkerMediator: SøkerMediatorImpl,
     sakService: SakService,
 ) {
     post(søknadpath) {

@@ -12,6 +12,7 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -56,7 +57,7 @@ class YtelseRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any<BehandlingId>(), any()) } returns Unit
 
         testApplication {
             application {
@@ -100,7 +101,7 @@ class YtelseRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
         every { behandlingService.hentBehandlingForJournalpostId(any()) } returns behandling
-        every { behandlingService.leggTilSaksopplysning(any(), any()) } returns Unit
+        every { behandlingService.leggTilSaksopplysning(any<BehandlingId>(), any()) } returns Unit
 
         testApplication {
             application {
@@ -117,7 +118,7 @@ class YtelseRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$ytelsepath")
+                    path(ytelsepath)
                 },
             ) {
                 setBody(ytelserMedTomFørFom())

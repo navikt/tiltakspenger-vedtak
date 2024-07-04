@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak
 
-import com.fasterxml.jackson.databind.JsonNode
+import io.kotest.matchers.shouldBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
@@ -44,13 +44,7 @@ internal class BehovMediatorTest {
     internal fun `grupperer behov`() {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(innsending)
-        hendelse.behov(
-            Behovtype.personopplysninger,
-            "Trenger personopplysninger",
-            mapOf(
-                "aktørId" to "12344",
-            ),
-        )
+
         hendelse.behov(Behovtype.tiltak, "Trenger tiltak")
         hendelse.behov(Behovtype.skjerming, "Trenger Skjermingdata")
 
@@ -67,9 +61,9 @@ internal class BehovMediatorTest {
             assertDoesNotThrow { UUID.fromString(it["@id"].asText()) }
             assertTrue(it.hasNonNull("@opprettet"))
             assertDoesNotThrow { LocalDateTime.parse(it["@opprettet"].asText()) }
-            assertEquals(listOf("personopplysninger", "tiltak", "skjerming"), it["@behov"].map(JsonNode::asText))
+            it["@behov"].toString() shouldBe "[\"tiltak\",\"skjerming\"]"
             assertEquals("behov", it["@event_name"].asText())
-            assertEquals("12344", it["aktørId"].asText())
+            // assertEquals("12344", it["aktørId"].asText())
             assertEquals(journalpostId, it["journalpostId"].asText())
         }
     }
@@ -79,14 +73,14 @@ internal class BehovMediatorTest {
         val hendelse = TestHendelse("Hendelse1", aktivitetslogg.barn())
         hendelse.setForelderAndAddKontekst(innsending)
         hendelse.behov(
-            Behovtype.personopplysninger,
+            Behovtype.skjerming,
             "Trenger personopplysninger",
             mapOf(
                 "aktørId" to "12344",
             ),
         )
         hendelse.behov(
-            Behovtype.personopplysninger,
+            Behovtype.skjerming,
             "Trenger personopplysninger",
             mapOf(
                 "aktørId" to "12344",

@@ -33,7 +33,7 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
@@ -69,7 +69,7 @@ internal fun Application.vedtakApi(
     sakService: SakService,
     behandlingService: BehandlingService,
     innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediator,
+    søkerMediator: SøkerMediatorImpl,
     innsendingAdminService: InnsendingAdminService,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
@@ -125,12 +125,7 @@ internal fun Application.vedtakApi(
             foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)
             uføreRoutes(innsendingMediator, behandlingService)
-            personopplysningerRoutes(
-                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                sakService = sakService,
-            )
+            personopplysningerRoutes()
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 sakService = sakService,

@@ -117,6 +117,8 @@ fun Route.behandlingRoutes(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
             )
+            // TODO jah: I forbindelse med å skrive oss bort fra RnR vil vi ikke lenger oppdatere personopplysninger når saksbehandler trykker på oppdater personopplysninger-knappen.
+            //  Vi gjør en ny vurdering når RnR er borte
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         }
 
