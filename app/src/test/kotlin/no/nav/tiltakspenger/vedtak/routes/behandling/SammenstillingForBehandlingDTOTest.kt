@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
@@ -11,6 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak.Gjennomføring
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
@@ -268,11 +270,22 @@ class SammenstillingForBehandlingDTOTest {
                 ),
             ),
         )
-        val resultat = settAntallDagerSaksopplysninger(
-            antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger,
+
+        every { tiltak.gjennomføring } returns Gjennomføring(
+            id = "id",
+            arrangørnavn = "arrangørnavn",
+            typeNavn = "typeNavn",
+            typeKode = "typeKode",
+            rettPåTiltakspenger = true,
         )
 
-        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister.get(0)
+        every { tiltak.id } returns TiltakId.fromString("tilt_01J0TN0C6WBSKMNVSH6B59D9TF")
+
+        val resultat = settAntallDagerSaksopplysninger(
+            tiltak = tiltak,
+        )
+
+        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister
         assertNotNull(saksopplysningElement)
         assertEquals(saksopplysningElement.antallDager, antallDagerMock.antallDager)
         assertEquals(saksopplysningElement.periode.fra, antallDagerMock.periode.fra)

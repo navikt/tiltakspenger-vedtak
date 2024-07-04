@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -81,6 +82,15 @@ data class Tiltak(
         )
     }
 
+    fun utfall(vurderingsperiode: Periode): Periodisering<Utfall> {
+        val vurdering = vilkårsvurderTiltaksdeltagelse()
+        // Den følgende koden forutsetter at tiltakene ikke går ut over vurderingsperioden (som de ikke skal gjøre..)
+        return Periodisering(Utfall.IKKE_OPPFYLT, vurderingsperiode).setVerdiForDelPeriode(
+            vurdering.utfall,
+            Periode(vurdering.fom!!, vurdering.tom!!),
+        )
+    }
+
     fun vilkårsvurderTiltaksdeltagelse(): Vurdering {
         val vurdering = if (gjennomføring.rettPåTiltakspenger) {
             if (brukerDeltarPåTiltak(deltakelseStatus.status)) {
@@ -106,4 +116,13 @@ data class Tiltak(
 
         return vurdering
     }
+}
+
+fun List<Tiltak>.vurderingsperiodeFraTiltak(): Periode? {
+    val fraOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.minOfOrNull { it.deltakelseFom }
+    val tilOgMed = this.filter { it.gjennomføring.rettPåTiltakspenger }.maxOfOrNull { it.deltakelseTom }
+    if (fraOgMed == null || tilOgMed == null) {
+        return null
+    }
+    return Periode(fraOgMed, tilOgMed)
 }

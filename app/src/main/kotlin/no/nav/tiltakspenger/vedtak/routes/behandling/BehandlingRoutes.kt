@@ -21,9 +21,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -43,6 +45,7 @@ fun Route.behandlingRoutes(
     sakService: SakService,
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,
+    kvpVilkårService: KvpVilkårService,
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
@@ -109,8 +112,7 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        // TODO: Rollesjekk ikke helt landet
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
@@ -161,19 +163,5 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    post("$behandlingPath/opprettrevurdering/{saksnummer}") {
-        val saksnummer = call.parameters["saksnummer"]
-            ?: return@post call.respond(message = "Sak ikke funnet", status = HttpStatusCode.NotFound)
-
-        LOG.info { "Mottatt request om å opprette en revurdering på sak med saksnummer: $saksnummer" }
-
-        val saksbehandler = innloggetSaksbehandlerProvider.hentInnloggetSaksbehandler(call)
-            ?: return@post call.respond(message = "JWTToken ikke funnet", status = HttpStatusCode.Unauthorized)
-
-        val sak = sakService.hentForSaksnummer(saksnummer = saksnummer, saksbehandler = saksbehandler)
-        val sisteBehandlingId = sak.vedtak.maxBy { it.vedtaksdato }.behandling.id
-        val revurdering = behandlingService.opprettRevurdering(sisteBehandlingId, saksbehandler)
-
-        call.respond(message = "{ \"id\":\"${revurdering.id}\"}", status = HttpStatusCode.OK)
-    }
+    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
 }

@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -27,8 +28,7 @@ interface Behandling {
     val saksbehandler: String?
     val beslutter: String?
     val vilkårssett: Vilkårssett
-    val tiltak: List<Tiltak>
-    val utfallsperioder: List<Utfallsperiode>
+    val tiltak: TiltakVilkår
     val status: BehandlingStatus
     val tilstand: BehandlingTilstand
     val opprettet: LocalDateTime
@@ -37,6 +37,8 @@ interface Behandling {
     val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
 
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger get() = vilkårssett.kravdatoSaksopplysninger
+
+    val utfallsperioder: List<Utfallsperiode> get() = vilkårssett.utfallsperioder
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
@@ -55,6 +57,7 @@ interface Behandling {
         nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
         saksbehandler: Saksbehandler,
     ): Behandling
+
     fun tilbakestillAntallDager(
         tiltakId: TiltakId,
         saksbehandler: Saksbehandler,

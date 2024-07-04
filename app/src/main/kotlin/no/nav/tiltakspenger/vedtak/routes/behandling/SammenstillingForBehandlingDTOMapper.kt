@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -13,163 +14,29 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysningerDTO
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AlderssaksopplysningDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.FaktaDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.KategoriserteSaksopplysningerDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SøknadDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.TiltaksdeltagelsesaksopplysningDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.YtelsessaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 
 object SammenstillingForBehandlingDTOMapper {
-    enum class Kategori(val tittel: String, val vilkår: List<Vilkår>) {
-        ALDER("Alder", listOf(Vilkår.ALDER)),
-        INTROKVP(
-            "Introduksjonsprogrammet og Kvalifiseringsprogrammet",
-            listOf(Vilkår.INTROPROGRAMMET, Vilkår.KVP),
-        ),
-        UTBETALINGER(
-            "Utbetalinger",
-            listOf(
-                Vilkår.FORELDREPENGER,
-                Vilkår.PLEIEPENGER_SYKT_BARN,
-                Vilkår.PLEIEPENGER_NÆRSTÅENDE,
-                Vilkår.ALDERSPENSJON,
-                Vilkår.PENSJONSINNTEKT,
-                Vilkår.ETTERLØNN,
-                Vilkår.AAP,
-                Vilkår.DAGPENGER,
-                Vilkår.GJENLEVENDEPENSJON,
-                Vilkår.FORELDREPENGER,
-                Vilkår.JOBBSJANSEN,
-                Vilkår.UFØRETRYGD,
-                Vilkår.OMSORGSPENGER,
-                Vilkår.OPPLÆRINGSPENGER,
-                Vilkår.OVERGANGSSTØNAD,
-                Vilkår.SYKEPENGER,
-                Vilkår.SVANGERSKAPSPENGER,
-                Vilkår.SUPPLERENDESTØNADFLYKTNING,
-            ),
-        ),
-        INSTITUSJONSOPPHOLD("Institusjonsopphold", listOf(Vilkår.INSTITUSJONSOPPHOLD)),
-    }
-
-    private val fakta = hashMapOf(
-        "AAP" to FaktaDTO(
-            harYtelse = "Bruker mottar AAP",
-            harIkkeYtelse = "Bruker mottar ikke AAP",
-        ),
-        "ALDER" to FaktaDTO(
-            harYtelse = "Bruker er under 18 år",
-            harIkkeYtelse = "Bruker er over 18 år",
-        ),
-        "ALDERSPENSJON" to FaktaDTO(
-            harYtelse = "Bruker mottar alderspensjon",
-            harIkkeYtelse = "Bruker mottar ikke alderspensjon",
-        ),
-        "DAGPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar dagpenger",
-            harIkkeYtelse = "Bruker mottar ikke dagpenger",
-        ),
-        "FORELDREPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar foreldrepenger",
-            harIkkeYtelse = "Bruker mottar ikke foreldrepenger",
-        ),
-        "GJENLEVENDEPENSJON" to FaktaDTO(
-            harYtelse = "Bruker mottar gjenlevendepensjon",
-            harIkkeYtelse = "Bruker mottar ikke gjenlevendepensjon",
-        ),
-        "INSTITUSJONSOPPHOLD" to FaktaDTO(
-            harYtelse = "Bruker har institusjonsopphold",
-            harIkkeYtelse = "Bruker har ikke institusjonsopphold",
-        ),
-        "INTROPROGRAMMET" to FaktaDTO(
-            harYtelse = "Bruker deltar på introduksjonsprogrammet",
-            harIkkeYtelse = "Bruker deltar ikke i introduksjonsprogrammet",
-        ),
-        "JOBBSJANSEN" to FaktaDTO(
-            harYtelse = "Bruker deltar på jobbsjansen",
-            harIkkeYtelse = "Bruker deltar ikke på jobbsjansen",
-        ),
-        "KOMMUNALEYTELSER" to FaktaDTO(
-            harYtelse = "Bruker mottar kommunaleytelser",
-            harIkkeYtelse = "Bruker mottar ikke kommunaleytelser",
-        ),
-        "KVP" to FaktaDTO(
-            harYtelse = "Bruker går på KVP",
-            harIkkeYtelse = "Bruker går ikke på KVP",
-        ),
-        "LØNNSINNTEKT" to FaktaDTO(
-            harYtelse = "Bruker mottar lønnsinntekt",
-            harIkkeYtelse = "Bruker mottar ikke lønnsinntekt",
-        ),
-        "OMSORGSPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar omsorgspenger",
-            harIkkeYtelse = "Bruker mottar ikke omsorgspenger",
-        ),
-        "OPPLÆRINGSPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar opplæringspenger",
-            harIkkeYtelse = "Bruker mottar ikke opplæringspenger",
-        ),
-        "OVERGANGSSTØNAD" to FaktaDTO(
-            harYtelse = "Bruker mottar overgangsstønad",
-            harIkkeYtelse = "Bruker mottar ikke overgangsstønad",
-        ),
-        "PENSJONSINNTEKT" to FaktaDTO(
-            harYtelse = "Bruker mottar pensjonsinntekt",
-            harIkkeYtelse = "Bruker mottar ikke pensjonsinntekt",
-        ),
-        "PLEIEPENGER_NÆRSTÅENDE" to FaktaDTO(
-            harYtelse = "Bruker mottar pleiepenger nærstående",
-            harIkkeYtelse = "Bruker mottar ikke pleiepenger nærstående",
-        ),
-        "PLEIEPENGER_SYKT_BARN" to FaktaDTO(
-            harYtelse = "Bruker mottar pleiepenger sykt barn",
-            harIkkeYtelse = "Bruker mottar ikke pleiepenger sykt barn",
-        ),
-        "STATLIGEYTELSER" to FaktaDTO(
-            harYtelse = "Bruker mottar statligeytelser",
-            harIkkeYtelse = "Bruker mottar ikke statligeytelser",
-        ),
-        "SUPPLERENDESTØNADALDER" to FaktaDTO(
-            harYtelse = "Bruker mottar supplerendestønadalder",
-            harIkkeYtelse = "Bruker mottar ikke supplerendestønadalder",
-        ),
-        "SUPPLERENDESTØNADFLYKTNING" to FaktaDTO(
-            harYtelse = "Bruker mottar supplerende stønad flyktning",
-            harIkkeYtelse = "Bruker mottar ikke supplerende stønad flyktning",
-        ),
-        "SVANGERSKAPSPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar svangerskapspenger",
-            harIkkeYtelse = "Bruker mottar ikke svangerskapspenger",
-        ),
-        "SYKEPENGER" to FaktaDTO(
-            harYtelse = "Bruker mottar sykepenger",
-            harIkkeYtelse = "Bruker mottar ikke sykepenger",
-        ),
-        "UFØRETRYGD" to FaktaDTO(
-            harYtelse = "Bruker mottar uføretrygd",
-            harIkkeYtelse = "Bruker mottar ikke uføretrygd",
-        ),
-        "ETTERLØNN" to FaktaDTO(
-            harYtelse = "Bruker mottar etterlønn",
-            harIkkeYtelse = "Bruker mottar ikke etterlønn",
-        ),
-    )
 
     fun mapSammenstillingDTO(
         behandling: Førstegangsbehandling,
@@ -180,69 +47,79 @@ object SammenstillingForBehandlingDTOMapper {
             behandlingId = behandling.id.toString(),
             saksbehandler = behandling.saksbehandler,
             beslutter = settBeslutter(behandling),
-            fom = behandling.vurderingsperiode.fraOgMed,
-            tom = behandling.vurderingsperiode.tilOgMed,
-            søknad = SøknadDTO(
-                søknadsdato = behandling.søknad().opprettet.toLocalDate(),
-                arrangoernavn = behandling.søknad().tiltak.arrangør,
-                tiltakstype = behandling.søknad().tiltak.typeNavn,
-                deltakelseFom = behandling.søknad().tiltak.deltakelseFom,
-                deltakelseTom = behandling.søknad().tiltak.deltakelseTom,
+            vurderingsperiode = PeriodeDTO(
+                fra = behandling.vurderingsperiode.fraOgMed,
+                til = behandling.vurderingsperiode.tilOgMed,
             ),
-            registrerteTiltak = behandling.tiltak.map {
-                RegistrertTiltakDTO(
-                    id = it.id.toString(),
-                    arrangør = it.gjennomføring.arrangørnavn,
-                    navn = it.gjennomføring.typeNavn,
-                    periode = PeriodeDTO(
-                        fra = it.deltakelseFom,
-                        til = it.deltakelseTom,
-                    ),
-                    prosent = it.deltakelseProsent?.toInt() ?: 0,
-                    status = it.deltakelseStatus.status,
-                    kilde = it.kilde,
-                    girRett = it.gjennomføring.rettPåTiltakspenger,
-                    harSøkt = true,
-                    deltagelseUtfall = utledDeltagelseUtfall(behandling, it.id)?.utfall
-                        ?: Utfall.KREVER_MANUELL_VURDERING,
-                    begrunnelse = utledDeltagelseUtfall(behandling, it.id)?.detaljer
-                        ?: "Fant ikke noe utfall for tiltaksdeltagelse",
-                    antallDagerSaksopplysninger = settAntallDagerSaksopplysninger(it.antallDagerSaksopplysninger),
-                )
-            },
-
-            saksopplysninger = Kategori.entries.map { kategori ->
-                KategoriserteSaksopplysningerDTO(
-                    kategoriTittel = kategori.tittel,
-                    saksopplysninger = behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) }
-                        .map { it ->
-                            val fakta =
-                                fakta[it.vilkår.tittel] ?: FaktaDTO(harYtelse = "ukjent", harIkkeYtelse = "ukjent")
-                            SaksopplysningUtDTO(
-                                fom = it.fom,
-                                tom = it.tom,
-                                kilde = it.kilde.navn,
-                                detaljer = it.detaljer,
-                                typeSaksopplysning = it.typeSaksopplysning.name,
-                                vilkårTittel = it.vilkår.tittel,
-                                vilkårFlateTittel = it.vilkår.flateTittel,
-                                fakta = fakta,
-                                utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                                vilkårLovReferense = it.vilkår.lovReference.map {
-                                    LovreferanseDTO(
-                                        lovverk = it.lovverk,
-                                        paragraf = it.paragraf,
-                                        beskrivelse = it.beskrivelse,
-                                    )
-                                },
+            søknadsdato = behandling.søknad().opprettet.toLocalDate(),
+            tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
+                vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
+                vilkårLovreferanse = Lovreferanse.TILTAKSDELTAGELSE.toDTO(),
+                saksopplysninger = behandling.tiltak.tiltak.map {
+                    RegistrertTiltakDTO(
+                        id = it.id.toString(),
+                        arrangør = it.gjennomføring.arrangørnavn,
+                        navn = it.gjennomføring.typeNavn,
+                        periode = PeriodeDTO(
+                            fra = it.deltakelseFom,
+                            til = it.deltakelseTom,
+                        ),
+                        status = it.deltakelseStatus.status,
+                        kilde = it.kilde,
+                        girRett = it.gjennomføring.rettPåTiltakspenger,
+                        harSøkt = true,
+                        deltagelseUtfall = utledVurdertUtfall(behandling, it.id)?.utfall
+                            ?: Utfall.KREVER_MANUELL_VURDERING,
+                        begrunnelse = utledVurdertUtfall(behandling, it.id)?.detaljer
+                            ?: "Fant ikke noe utfall for tiltaksdeltagelse",
+                    )
+                },
+            ),
+            stønadsdager = behandling.tiltak.tiltak.map { settAntallDagerSaksopplysninger(it) },
+            alderssaksopplysning = behandling.saksopplysninger()
+                .filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
+                    AlderssaksopplysningDTO(
+                        periode = PeriodeDTO(fra = it.fom, til = it.tom),
+                        kilde = it.kilde.navn,
+                        detaljer = it.detaljer,
+                        vilkår = it.vilkår.tittel,
+                        vilkårTittel = it.vilkår.flateTittel,
+                        utfall = settUtfall(behandling = behandling, saksopplysning = it),
+                        vilkårLovreferanse = it.vilkår.lovReferanse.map {
+                            LovreferanseDTO(
+                                lovverk = it.lovverk,
+                                paragraf = it.paragraf,
+                                beskrivelse = it.beskrivelse,
                             )
                         },
-                    samletUtfall = settSamletUtfallForSaksopplysninger(
-                        behandling,
-                        behandling.saksopplysninger().filter { kategori.vilkår.contains(it.vilkår) },
-                    ),
-                )
-            },
+                        grunnlag = 1.januar(2000), // Dette må vi hente fra noe sted. Kommer senere
+                    )
+                }.first(),
+            ytelsessaksopplysninger = YtelsessaksopplysningerDTO(
+                vilkår = "ANDRE_YTELSER",
+                vilkårLovreferanse = LovreferanseDTO(
+                    lovverk = Lovreferanse.AAP.lovverk,
+                    paragraf = Lovreferanse.AAP.paragraf,
+                    beskrivelse = Lovreferanse.AAP.beskrivelse,
+                ),
+                saksopplysninger = behandling.saksopplysninger()
+                    .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }
+                    .map {
+                        SaksopplysningUtDTO(
+                            periode = PeriodeDTO(fra = it.fom, til = it.tom),
+                            kilde = it.kilde.navn,
+                            detaljer = it.detaljer,
+                            saksopplysning = it.vilkår.tittel,
+                            saksopplysningTittel = it.vilkår.flateTittel,
+                            utfall = settUtfall(behandling = behandling, saksopplysning = it),
+                        )
+                    },
+                samletUtfall = settSamletUtfallForSaksopplysninger(
+                    behandling = behandling,
+                    saksopplysninger = behandling.saksopplysninger()
+                        .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER },
+                ),
+            ),
             personopplysninger = personopplysninger.søkere().map {
                 PersonopplysningerDTO(
                     ident = it.ident,
@@ -253,7 +130,7 @@ object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             }.first(),
-            tilstand = when (behandling.tilstand) {
+            behandlingsteg = when (behandling.tilstand) {
                 BehandlingTilstand.IVERKSATT -> "iverksatt"
                 BehandlingTilstand.TIL_BESLUTTER -> "tilBeslutter"
                 BehandlingTilstand.VILKÅRSVURDERT -> "vilkårsvurdert"
@@ -300,6 +177,11 @@ object SammenstillingForBehandlingDTOMapper {
         val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
         val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
         return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
+            samletUtfall = hentUtfallForVilkår(
+                Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
+                vilkårsvurderinger
+                    .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV },
+            ).toString(),
             opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
             kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) {
                 mapKravdatoSaksopplysningDTO(
@@ -311,12 +193,13 @@ object SammenstillingForBehandlingDTOMapper {
             vurderinger = vilkårsvurderinger
                 .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
                 .map { it.toVurderingDTO() },
+            lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV.toDTO(),
         )
     }
 
     private fun mapKravdatoSaksopplysningDTO(kravdatoSaksopplysning: KravdatoSaksopplysning): SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO =
         SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO(
-            verdi = kravdatoSaksopplysning.kravdato,
+            kravdato = kravdatoSaksopplysning.kravdato,
             kilde = kravdatoSaksopplysning.kilde.toString(),
         )
 
@@ -329,7 +212,7 @@ object SammenstillingForBehandlingDTOMapper {
             utfall = this.utfall.toString(),
         )
 
-    private fun utledDeltagelseUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
+    private fun utledVurdertUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
         return when (behandling.tilstand) {
             BehandlingTilstand.VILKÅRSVURDERT -> {
                 behandling.vilkårsvurderinger.find { vurdering -> vurdering.grunnlagId == tiltakId.toString() }
@@ -356,22 +239,23 @@ object SammenstillingForBehandlingDTOMapper {
             else -> null
         }
 
-    fun settAntallDagerSaksopplysninger(antallDagerSaksopplysninger: AntallDagerSaksopplysninger): AntallDagerSaksopplysningerDTO =
-        AntallDagerSaksopplysningerDTO(
+    fun settAntallDagerSaksopplysninger(tiltak: Tiltak): AntallDagerSaksopplysningerDTO {
+        val antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger
+
+        return AntallDagerSaksopplysningerDTO(
             avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
-            antallDagerSaksopplysningerFraSBH = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH.map {
-                settAntallDagerSaksopplysning(
-                    it,
-                )
-            },
             antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
                 settAntallDagerSaksopplysning(
                     it,
                 )
-            },
+            }.first(),
+            tiltak = tiltak.gjennomføring.typeNavn,
+            arrangør = tiltak.gjennomføring.arrangørnavn,
+            tiltakId = tiltak.id.toString(),
         )
+    }
 
-    fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
+    private fun settAntallDagerSaksopplysning(saksopplysning: PeriodeMedVerdi<AntallDager>): AntallDagerDTO =
         AntallDagerDTO(
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),
@@ -406,7 +290,7 @@ object SammenstillingForBehandlingDTOMapper {
         return Utfall.OPPFYLT.name
     }
 
-    fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
+    private fun settSamletUtfallForUtfallsperioder(utfallsperioder: List<Utfallsperiode>): String {
         if (utfallsperioder.any { utfallsperiode ->
                 utfallsperiode.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING
             }

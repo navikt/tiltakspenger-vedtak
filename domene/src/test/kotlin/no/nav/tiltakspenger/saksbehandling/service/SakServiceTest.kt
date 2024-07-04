@@ -106,6 +106,7 @@ internal class SakServiceTest {
         behandling.søknader.first() shouldBe søknad
     }
 
+    // TODO jah: Ser ikke ut som vi oppdaterer vurderingsperioden når vi legger til en overlappende søknad? Og dersom vi ikke har overlappene søknader, så får vi ikke forskjellige behandlinger? Ser på dette etter vilkår2
     @Test
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
@@ -127,6 +128,7 @@ internal class SakServiceTest {
         val søknad2 = nySøknad(
             journalpostId = "søknad2",
             tiltak = søknadTiltak(
+                // TODO jah: Mars overlapper vel ikke med januar? Hva skjer med testnavnet her. Og hvorfor forventer vi at behandlinger size er 1?
                 deltakelseFom = 1.mars(2023),
                 deltakelseTom = 31.mars(2023),
             ),
@@ -171,7 +173,7 @@ internal class SakServiceTest {
     }
 
     @Test
-    fun `legger til ny søknad med flere iverksatte og 1 tilbeslutter, legger søknad til den åpne behandlingen`() {
+    fun `legger til ny søknad med flere iverksatte og 1 til beslutter, legger søknad til den åpne behandlingen`() {
         val eksisterendeSak = tomSak(
             periode = Periode(
                 1.januar(2023),
@@ -221,7 +223,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
             .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
@@ -256,7 +258,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
             .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
@@ -280,7 +282,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForJournalpostId(any()) } returns sak
         every { sakRepo.lagre(any()) } returnsArgument 0
 
-        every { behandlingRepo.hentOrNull(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
+        every { behandlingRepo.hent(any()) } returns sak.behandlinger.filterIsInstance<Førstegangsbehandling>()
             .first()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 

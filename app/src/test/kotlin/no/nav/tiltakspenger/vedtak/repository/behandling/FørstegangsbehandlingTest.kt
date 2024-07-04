@@ -82,6 +82,7 @@ class FørstegangsbehandlingTest {
         clearAllMocks()
     }
 
+    // TODO jah: Tiltaksperiodene ligger nå på utsiden av vurderingsperioden. Rydd opp i testdata + muligens tiltakskoden.
     @Test
     fun `når man oppdaterer antall dager skal de kun oppdateres for det tiltaket som man har oppgitt i tiltakId-parameteren`() {
         val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
@@ -108,8 +109,8 @@ class FørstegangsbehandlingTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
-        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(1)
 
         tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
         tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldContain periodisertAntallDagerVerdi
@@ -198,6 +199,7 @@ class FørstegangsbehandlingTest {
         }
     }
 
+    // TODO jah: Tiltaksperiodene ligger nå på utsiden av vurderingsperioden. Rydd opp i testdata + muligens tiltakskoden.
     @Test
     fun `når man tilbakestiller antall dager skal man kun tilbakestille dagene på det tiltaket som man har oppgitt i tiltakId-parameteren`() {
         val vilkårsvurdertBehandling = ObjectMother.behandlingVilkårsvurdertInnvilget()
@@ -232,8 +234,8 @@ class FørstegangsbehandlingTest {
             saksbehandler = saksbehandlerMedTilgang,
         )
 
-        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(0)
-        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.get(1)
+        val tiltak1FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(0)
+        val tiltak2FraBehandlingen = vilkårsvurdertBehandlingMedAntallDager.tiltak.tiltak.get(1)
 
         tiltak1 shouldNotBeEqual tiltak1FraBehandlingen
         tiltak1FraBehandlingen.antallDagerSaksopplysninger.antallDagerSaksopplysningerFraSBH shouldBeEqual emptyList()

@@ -22,7 +22,6 @@ object SaksopplysningDTOMapper {
             "INSTITUSJONSOPPHOLD" -> Vilkår.INSTITUSJONSOPPHOLD
             "INTROPROGRAMMET" -> Vilkår.INTROPROGRAMMET
             "JOBBSJANSEN" -> Vilkår.JOBBSJANSEN
-            "KVP" -> Vilkår.KVP
             "LØNNSINNTEKT" -> Vilkår.LØNNSINNTEKT
             "OMSORGSPENGER" -> Vilkår.OMSORGSPENGER
             "OPPLÆRINGSPENGER" -> Vilkår.OPPLÆRINGSPENGER
@@ -40,8 +39,8 @@ object SaksopplysningDTOMapper {
         }
 
         return Saksopplysning.lagSaksopplysningFraSBH(
-            fom = LocalDate.parse(saksopplysning.fom),
-            tom = LocalDate.parse(saksopplysning.tom),
+            fom = LocalDate.parse(saksopplysning.fra),
+            tom = LocalDate.parse(saksopplysning.til),
             vilkår = vilkår,
             detaljer = saksopplysning.begrunnelse,
             typeSaksopplysning = if (saksopplysning.harYtelse) TypeSaksopplysning.HAR_YTELSE else TypeSaksopplysning.HAR_IKKE_YTELSE,

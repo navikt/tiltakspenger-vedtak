@@ -125,3 +125,10 @@ data class Saksopplysning(
         return listOf(vurdering)
     }
 }
+
+fun List<Saksopplysning>.totalePeriode(): Periode {
+    return Periode(
+        fraOgMed = this.minOfOrNull { it.fom } ?: LocalDate.MIN,
+        tilOgMed = this.maxOfOrNull { it.tom } ?: LocalDate.MAX,
+    )
+}
