@@ -55,7 +55,7 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: { { urlPdl } }
+        - host: {{ urlPdl }}
     inbound:
       rules:
         - application: tiltakspenger-admin
