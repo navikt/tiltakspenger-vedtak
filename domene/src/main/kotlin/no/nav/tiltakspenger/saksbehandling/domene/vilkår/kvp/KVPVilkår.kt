@@ -45,7 +45,6 @@ data class KVPVilkår private constructor(
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
         )
-        // TODO jah: Må oppdatere utfall og avklartSaksopplysning, men vi kan vente til vi er ferdig i Vilkår 2.0
         return this.copy(
             saksbehandlerSaksopplysning = kvpSaksopplysning,
             avklartSaksopplysning = kvpSaksopplysning,
