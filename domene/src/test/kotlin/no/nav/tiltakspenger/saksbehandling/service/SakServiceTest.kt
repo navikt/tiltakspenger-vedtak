@@ -8,6 +8,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -46,6 +47,7 @@ internal class SakServiceTest {
     private lateinit var sakService: SakService
     private lateinit var personGateway: PersonGateway
     private lateinit var søkerMediator: SøkerMediator
+    private lateinit var innsendingMediator: InnsendingMediator
 
     @BeforeEach
     fun setup() {
@@ -60,6 +62,7 @@ internal class SakServiceTest {
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
         søkerMediator = mockk(relaxed = true)
+        innsendingMediator = mockk(relaxed = true)
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo,
@@ -71,7 +74,7 @@ internal class SakServiceTest {
                 multiRepo,
                 sakRepo,
             )
-        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator)
+        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator)
     }
 
     @AfterEach

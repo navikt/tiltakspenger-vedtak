@@ -76,7 +76,7 @@ class SøknadRoutesTest {
             multiRepo,
             sakRepo,
         )
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator)
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator)
 
     @AfterEach
     fun reset() {

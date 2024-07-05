@@ -212,6 +212,7 @@ class Innsending private constructor(
         private fun convertTilstand(tilstand: String): Tilstand {
             return when (InnsendingTilstandType.valueOf(tilstand)) {
                 InnsendingTilstandType.InnsendingRegistrert -> InnsendingRegistrert
+                InnsendingTilstandType.AvventerPersonopplysninger -> AvventerPersonopplysninger
                 InnsendingTilstandType.AvventerSkjermingdata -> AvventerSkjermingdata
                 InnsendingTilstandType.AvventerTiltak -> AvventerTiltak
                 InnsendingTilstandType.AvventerYtelser -> AvventerYtelser
@@ -382,8 +383,8 @@ class Innsending private constructor(
         }
 
         fun håndter(innsending: Innsending, resetInnsendingHendelse: ResetInnsendingHendelse) {
-            innsending.trengerSkjermingdata(resetInnsendingHendelse)
-            innsending.tilstand(resetInnsendingHendelse, AvventerSkjermingdata)
+            innsending.trengerPersonopplysninger(resetInnsendingHendelse)
+            innsending.tilstand(resetInnsendingHendelse, AvventerPersonopplysninger)
             resetInnsendingHendelse.info("Innsending resatt, faktainnhenting begynner på nytt")
         }
 
@@ -417,8 +418,24 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
             DomeneMetrikker.søknadMottattCounter().increment()
-            innsending.trengerSkjermingdata(søknadMottattHendelse)
-            innsending.tilstand(søknadMottattHendelse, AvventerSkjermingdata)
+            innsending.trengerPersonopplysninger(søknadMottattHendelse)
+            innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
+        }
+    }
+
+    internal object AvventerPersonopplysninger : Tilstand {
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerPersonopplysninger
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+        override fun håndter(
+            innsending: Innsending,
+            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
+        ) {
+            innsending.mottaPersonopplysninger(personopplysningerMottattHendelse)
+            innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
+            innsending.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
 
@@ -514,6 +531,7 @@ class Innsending private constructor(
             innsendingUtdatertHendelse.info(
                 "Mottatt InnsendingUtdatertHendelse, trenger å oppdatere faktaene vi har hentet inn",
             )
+            innsending.trengerPersonopplysninger(innsendingUtdatertHendelse)
             innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
             innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
@@ -528,6 +546,14 @@ class Innsending private constructor(
             get() = InnsendingTilstandType.FaktainnhentingFeilet
         override val timeout: Duration
             get() = Duration.ofDays(1)
+    }
+
+    private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            melding = "Trenger personopplysninger",
+            detaljer = mapOf("ident" to this.ident),
+        )
     }
 
     private fun trengerSkjermingdata(hendelse: InnsendingHendelse) {

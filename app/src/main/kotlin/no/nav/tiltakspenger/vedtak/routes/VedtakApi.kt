@@ -125,7 +125,13 @@ internal fun Application.vedtakApi(
             foreldrepengerRoutes(innsendingMediator, behandlingService)
             overgangsstønadRoutes(innsendingMediator)
             uføreRoutes(innsendingMediator, behandlingService)
-            personopplysningerRoutes()
+            personopplysningerRoutes(
+                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
+                innsendingMediator = innsendingMediator,
+                søkerMediator = søkerMediator,
+                sakService = sakService,
+
+            )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 sakService = sakService,

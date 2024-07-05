@@ -84,20 +84,24 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
-    private val behandlingService =
-        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
-            behandlingRepo,
-            vedtakRepo,
-            personopplysningRepo,
-            utbetalingService,
-            brevPublisherGateway,
-            meldekortGrunnlagGateway,
-            multiRepo,
-            sakRepo,
-        )
+    private val behandlingService = no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
+        behandlingRepo,
+        vedtakRepo,
+        personopplysningRepo,
+        utbetalingService,
+        brevPublisherGateway,
+        meldekortGrunnlagGateway,
+        multiRepo,
+        sakRepo,
+    )
     private val søkerMediator = SøkerMediatorImpl(
         søkerRepository = søkerRepository,
         rapidsConnection = rapidsConnection,
+    )
+    val innsendingMediator = InnsendingMediatorImpl(
+        innsendingRepository = innsendingRepository,
+        rapidsConnection = rapidsConnection,
+        observatører = listOf(),
     )
     private val sakService =
         SakServiceImpl(
@@ -106,15 +110,11 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             behandlingService = behandlingService,
             personGateway = personGateway,
             søkerMediator = søkerMediator,
+            innsendingMediator = innsendingMediator,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
         behandlingRepo = behandlingRepo,
-    )
-    val innsendingMediator = InnsendingMediatorImpl(
-        innsendingRepository = innsendingRepository,
-        rapidsConnection = rapidsConnection,
-        observatører = listOf(),
     )
 
     private val innsendingAdminService = InnsendingAdminService(
