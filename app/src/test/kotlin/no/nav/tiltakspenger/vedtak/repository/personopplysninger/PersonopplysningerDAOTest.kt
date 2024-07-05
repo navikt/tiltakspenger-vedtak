@@ -24,6 +24,8 @@ import java.util.Random
 internal class PersonopplysningerDAOTest {
 
     companion object {
+        val random = Random()
+
         @Container
         val testcontainer = PostgresTestcontainer
     }
@@ -39,8 +41,8 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `lagre og hent`() {
         // given
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
@@ -65,8 +67,8 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `lagre og hent med null-verdier`() {
         // given
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
@@ -105,8 +107,8 @@ internal class PersonopplysningerDAOTest {
     @Test
     fun `legg til personopplysninger for en ident som finnes fra før - da skal de nye dataene gjelde`() {
         // given
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)
@@ -140,8 +142,8 @@ internal class PersonopplysningerDAOTest {
 
     @Test
     fun `lagre barn og hent opp igjen`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         val innsending = Innsending(journalpostId = journalpostId, ident = ident, fom = fom, tom = tom)

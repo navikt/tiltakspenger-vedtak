@@ -18,6 +18,8 @@ import java.util.Random
 @Testcontainers
 class UføreVedtakDAOTest {
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -31,7 +33,7 @@ class UføreVedtakDAOTest {
     fun `lagre og hente med null felter`() {
         val uføreVedtakDAO = UføreVedtakDAO()
         val repository = PostgresInnsendingRepository(uføreVedtakDAO = uføreVedtakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedForeldrepenger(ident = ident)
         repository.lagre(innsending)
 

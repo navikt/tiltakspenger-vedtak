@@ -16,10 +16,12 @@ import java.util.Random
 
 internal class HåndterUføreHendelseTest {
 
+    private val random = Random()
+
     @Test
     fun `uføreVedtak med virkDato utenfor vurderingsperioden blir filtrert bort`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val innhentet = nå()
 
         val innsending = innsendingMedOvergangsstønad(

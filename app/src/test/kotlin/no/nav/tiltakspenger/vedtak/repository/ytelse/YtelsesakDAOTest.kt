@@ -19,6 +19,8 @@ import java.util.Random
 @Testcontainers
 class YtelsesakDAOTest {
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -32,7 +34,7 @@ class YtelsesakDAOTest {
     fun `lagre og hente med null felter`() {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
@@ -58,7 +60,7 @@ class YtelsesakDAOTest {
     fun `lagre og hente med non-null felter`() {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
@@ -91,7 +93,7 @@ class YtelsesakDAOTest {
 
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 

@@ -29,9 +29,14 @@ import java.time.LocalDateTime
 import java.util.Random
 
 interface HendelserMother {
+
+    companion object {
+        private val random = Random()
+    }
+
     fun nySøknadMottattHendelse(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         søknad: Søknad = nySøknad(
             personopplysninger = Søknad.Personopplysninger(
                 ident = ident,
@@ -51,13 +56,13 @@ interface HendelserMother {
     }
 
     fun nyPersonopplysningHendelse(
-        journalpostId: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         personopplysninger: List<Personopplysninger> = listOf(personopplysningKjedeligFyr(strengtFortroligUtland = false)),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
         ),
         ident: String = personopplysninger.søkerOrNull()?.ident
-            ?: Random().nextInt().toString(),
+            ?: random.nextInt().toString(),
         tidsstempelPersonopplysningerInnhentet: LocalDateTime = LocalDateTime.now(),
     ): PersonopplysningerMottattHendelse {
         return PersonopplysningerMottattHendelse(
@@ -70,8 +75,8 @@ interface HendelserMother {
     }
 
     fun nySkjermingHendelse(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         skjerming: Skjerming = skjermingFalse(ident = journalpostId),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -88,7 +93,7 @@ interface HendelserMother {
     }
 
     fun nyTiltakHendelse(
-        journalpostId: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         tiltak: List<Tiltak> = listOf(tiltak()),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -104,7 +109,7 @@ interface HendelserMother {
     }
 
     fun nyYtelseHendelse(
-        journalpostId: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         ytelseSak: List<YtelseSak> = listOf(ytelseSak()),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -120,8 +125,8 @@ interface HendelserMother {
     }
 
     fun nyForeldrepengerHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         foreldrepengerVedtakListe: List<ForeldrepengerVedtak> = listOf(ObjectMother.foreldrepengerVedtak()),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -138,8 +143,8 @@ interface HendelserMother {
     }
 
     fun nyOvergangsstønadHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         overgansstønader: List<OvergangsstønadVedtak> = listOf(ObjectMother.overgangsstønadVedtak()),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -156,8 +161,8 @@ interface HendelserMother {
     }
 
     fun nyUføreHendelse(
-        ident: String = Random().nextInt().toString(),
-        journalpostId: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         uføreVedtak: UføreVedtak = ObjectMother.uføreVedtak(),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
@@ -174,11 +179,11 @@ interface HendelserMother {
     }
 
     fun nyFeilHendelse(
-        journalpostId: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
         aktivitetslogg: Aktivitetslogg = Aktivitetslogg(
             forelder = null,
         ),
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         feil: Feil = Feil.PersonIkkeFunnet,
     ) = FeilMottattHendelse(
         aktivitetslogg = aktivitetslogg,

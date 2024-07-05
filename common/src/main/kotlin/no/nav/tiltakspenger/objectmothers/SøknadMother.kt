@@ -15,6 +15,11 @@ import java.time.LocalDateTime
 import java.util.Random
 
 interface SøknadMother {
+
+    companion object {
+        private val random = Random()
+    }
+
     fun søknadTiltak(
         id: String = "arenaId",
         deltakelseFom: LocalDate = 1.januar(2022),
@@ -122,7 +127,7 @@ interface SøknadMother {
     fun personSøknad(
         fornavn: String = "Fornavn",
         etternavn: String = "Etternavn",
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
     ) = Søknad.Personopplysninger(
         fornavn = fornavn,
         etternavn = etternavn,

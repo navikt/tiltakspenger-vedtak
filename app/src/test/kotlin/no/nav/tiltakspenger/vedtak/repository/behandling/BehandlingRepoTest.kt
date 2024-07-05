@@ -30,6 +30,8 @@ internal class BehandlingRepoTest {
     private val sakRepo: SakRepo = PostgresSakRepo()
 
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -41,8 +43,8 @@ internal class BehandlingRepoTest {
 
     @Test
     fun `lagre og hente en behandling`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val deltakelseFom = 1.januar(2023)
         val deltakelseTom = 31.mars(2023)
         val sakId = SakId.random()
@@ -80,8 +82,8 @@ internal class BehandlingRepoTest {
 
     @Test
     fun `lagre og hente en behandling som er vilkårsvurdert`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val deltakelseFom = 1.januar(2023)
         val deltakelseTom = 31.mars(2023)
         val sakId = SakId.random()
@@ -124,7 +126,7 @@ internal class BehandlingRepoTest {
 
     @Test
     fun `hentAlleForIdent skal kun hente behandlinger for en ident og ikke de andre`() {
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val vårSakId = SakId.random()
         val enAnnenSakId = SakId.random()
         val sakForVårIdent = sakMedOpprettetBehandling(id = vårSakId, ident = ident)

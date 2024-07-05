@@ -20,6 +20,8 @@ import java.util.Random
 @Testcontainers
 class YtelsevedtakDAOTest {
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -33,7 +35,7 @@ class YtelsevedtakDAOTest {
     fun `lagre hele innsending med ytelser og vedtak med null verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedYtelse(
             ident = ident,
             ytelseSak = listOf(ytelseSak(vedtak = listOf(tomYtelsevedtak()))),
@@ -55,7 +57,7 @@ class YtelsevedtakDAOTest {
     fun `lagre innsending med ytelser og vedtak med null verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedSkjerming(ident = ident)
         repository.lagre(innsending)
 
@@ -83,7 +85,7 @@ class YtelsevedtakDAOTest {
     fun `lagre innsending med ytelser og vedtak med verdier og hente den ut igjen`() {
         val ytelsesakDAO = YtelsesakDAO()
         val repository = PostgresInnsendingRepository(ytelsesakDAO = ytelsesakDAO)
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val innsending = innsendingMedYtelse(
             ident = ident,
             ytelseSak = listOf(ytelseSak(vedtak = listOf(ytelseVedtak()))),

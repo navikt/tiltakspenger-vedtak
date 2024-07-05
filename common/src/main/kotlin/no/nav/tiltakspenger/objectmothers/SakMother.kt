@@ -16,9 +16,14 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import java.util.Random
 
 interface SakMother {
+
+    companion object {
+        private val random = Random()
+    }
+
     fun sakMedOpprettetBehandling(
         id: SakId = SakId.random(),
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         saksnummer: Saksnummer = Saksnummer("saksnr"),
         periode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
         behandlinger: List<Førstegangsbehandling> = listOf(
@@ -58,7 +63,7 @@ interface SakMother {
 
     fun tomSak(
         id: SakId = SakId.random(),
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         saksnummer: Saksnummer = Saksnummer("saksnr"),
         periode: Periode = Periode(fraOgMed = 1.januar(2022), tilOgMed = 31.januar(2022)),
         behandlinger: List<Førstegangsbehandling> = emptyList(),
