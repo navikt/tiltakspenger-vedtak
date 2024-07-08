@@ -29,6 +29,8 @@ internal class PostgresInnsendingRepositoryTest {
     private val innsendingRepository = PostgresInnsendingRepository()
 
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -46,8 +48,8 @@ internal class PostgresInnsendingRepositoryTest {
 
         innsendingRepository.lagre(
             Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
+                journalpostId = random.nextInt().toString(),
+                ident = random.nextInt().toString(),
                 fom = fom,
                 tom = tom,
             ),
@@ -57,8 +59,8 @@ internal class PostgresInnsendingRepositoryTest {
 
         innsendingRepository.lagre(
             Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
+                journalpostId = random.nextInt().toString(),
+                ident = random.nextInt().toString(),
                 fom = fom,
                 tom = tom,
             ),
@@ -66,8 +68,8 @@ internal class PostgresInnsendingRepositoryTest {
         antallInnsendinger++
         innsendingRepository.lagre(
             Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
+                journalpostId = random.nextInt().toString(),
+                ident = random.nextInt().toString(),
                 fom = fom,
                 tom = tom,
             ),
@@ -75,8 +77,8 @@ internal class PostgresInnsendingRepositoryTest {
         antallInnsendinger++
         innsendingRepository.lagre(
             Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
+                journalpostId = random.nextInt().toString(),
+                ident = random.nextInt().toString(),
                 fom = fom,
                 tom = tom,
             ),
@@ -106,8 +108,8 @@ internal class PostgresInnsendingRepositoryTest {
 
         innsendingRepository.lagre(
             Innsending(
-                journalpostId = Random().nextInt().toString(),
-                ident = Random().nextInt().toString(),
+                journalpostId = random.nextInt().toString(),
+                ident = random.nextInt().toString(),
                 fom = fom,
                 tom = tom,
             ),
@@ -118,8 +120,8 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `lagre og hente bare innsending`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         val innsending = Innsending(
@@ -141,8 +143,8 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `lagre og hente hele aggregatet med Skjerming`() {
-        val ident = Random().nextInt().toString()
-        val journalpostId = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
+        val journalpostId = random.nextInt().toString()
 
         val søknad = ObjectMother.nySøknad(
             journalpostId = journalpostId,
@@ -185,8 +187,8 @@ internal class PostgresInnsendingRepositoryTest {
 
     @Test
     fun `sjekk optimistisk locking`() {
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val fom = 1.januar(2022)
         val tom = 31.mars(2022)
         var innsending = Innsending(
@@ -214,7 +216,7 @@ internal class PostgresInnsendingRepositoryTest {
     @Test
     fun `skal hente journalpostId for innsendinger som har feilet`() {
         /*
-        val journalpostId = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
         val innsending = innsendingMedSkjerming(journalpostId = journalpostId)
 
         innsending.håndter(

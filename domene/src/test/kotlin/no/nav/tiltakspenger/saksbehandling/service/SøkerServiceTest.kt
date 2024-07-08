@@ -24,10 +24,11 @@ internal class SøkerServiceTest {
     private val innsendingRepo = mockk<InnsendingRepository>()
     private val søkerRepo = mockk<SøkerRepository>()
     private val service = SøkerServiceImpl(søkerRepo)
+    private val random = Random()
 
     @Test
     fun `skal kunne hente behandlingDTO`() {
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val søknad = nySøknad(
             personopplysninger = personSøknad(
                 ident = ident,
@@ -54,7 +55,7 @@ internal class SøkerServiceTest {
 
     @Test
     fun `skal ikke ha tilgang`() {
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val søknad = nySøknad(
             personopplysninger = personSøknad(
                 ident = ident,

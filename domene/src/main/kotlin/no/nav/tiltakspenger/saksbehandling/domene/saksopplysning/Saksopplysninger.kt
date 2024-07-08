@@ -21,7 +21,6 @@ object Saksopplysninger {
 
     fun lagSaksopplysningerAvSøknad(søknad: Søknad): List<Saksopplysning> {
         return listOf(
-            lagSaksopplysningFraPeriodespørsmål(Vilkår.KVP, søknad.kvp, søknad.vurderingsperiode()),
             lagSaksopplysningFraPeriodespørsmål(Vilkår.INTROPROGRAMMET, søknad.intro, søknad.vurderingsperiode()),
             lagSaksopplysningFraPeriodespørsmål(
                 Vilkår.INSTITUSJONSOPPHOLD,
@@ -73,28 +72,6 @@ object Saksopplysninger {
         } else {
             this.filterNot { it.vilkår == saksopplysning.vilkår && it.kilde == Kilde.SAKSB }
         }.plus(saksopplysning)
-
-    private fun lagSaksopplysningFraSøknad(søknad: Søknad): Saksopplysning {
-        if (søknad.kvp is Søknad.PeriodeSpm.Ja) {
-            return Saksopplysning(
-                fom = søknad.kvp.periode.fraOgMed,
-                tom = søknad.kvp.periode.tilOgMed,
-                vilkår = Vilkår.KVP,
-                kilde = Kilde.SØKNAD,
-                detaljer = "Har svart Ja i søknaden",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-            )
-        } else {
-            return Saksopplysning(
-                fom = søknad.vurderingsperiode().fraOgMed,
-                tom = søknad.vurderingsperiode().tilOgMed,
-                vilkår = Vilkår.KVP,
-                kilde = Kilde.SØKNAD,
-                detaljer = "Har svart Nei i søknaden",
-                typeSaksopplysning = TypeSaksopplysning.HAR_IKKE_YTELSE,
-            )
-        }
-    }
 
     private fun lagSaksopplysningFraPeriodespørsmål(
         vilkår: Vilkår,

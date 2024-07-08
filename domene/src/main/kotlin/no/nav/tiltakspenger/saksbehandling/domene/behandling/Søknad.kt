@@ -47,23 +47,23 @@ data class Søknad(
         val etternavn: String,
     )
 
-    sealed class PeriodeSpm {
-        data object Nei : PeriodeSpm()
+    sealed interface PeriodeSpm {
+        data object Nei : PeriodeSpm
         data class Ja(
             val periode: Periode,
-        ) : PeriodeSpm()
+        ) : PeriodeSpm
     }
 
-    sealed class JaNeiSpm {
-        data object Ja : JaNeiSpm()
-        data object Nei : JaNeiSpm()
+    sealed interface JaNeiSpm {
+        data object Ja : JaNeiSpm
+        data object Nei : JaNeiSpm
     }
 
-    sealed class FraOgMedDatoSpm {
-        data object Nei : FraOgMedDatoSpm()
+    sealed interface FraOgMedDatoSpm {
+        data object Nei : FraOgMedDatoSpm
         data class Ja(
             val fra: LocalDate,
-        ) : FraOgMedDatoSpm()
+        ) : FraOgMedDatoSpm
     }
 }
 

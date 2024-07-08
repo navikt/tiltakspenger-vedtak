@@ -2,11 +2,10 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.VedtakId
-import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
@@ -44,13 +43,16 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
 ) : BehandlingService {
 
-    override fun hentBehandlingOrNull(behandlingId: BehandlingId): Behandling? {
-        return behandlingRepo.hentOrNull(behandlingId)
+    override fun hentBehandling(behandlingId: BehandlingId): Behandling {
+        return behandlingRepo.hent(behandlingId)
     }
 
-    override fun hentBehandling(behandlingId: BehandlingId): Behandling {
-        return behandlingRepo.hentOrNull(behandlingId)
-            ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
+    override fun hentBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Behandling {
+        val behandling = hentBehandling(behandlingId)
+        if (!personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler)) {
+            throw TilgangException("Saksbehandler har ikke tilgang til behandling")
+        }
+        return behandling
     }
 
     override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
@@ -58,14 +60,19 @@ class BehandlingServiceImpl(
     }
 
     override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling> {
+        require(saksbehandler.isSaksbehandler())
         return behandlingRepo.hentAlle()
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
+        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning)
+    }
+
+    override fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning): Behandling {
+        val behandlingRespons = behandling.leggTilSaksopplysning(saksopplysning)
         if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+        return behandlingRespons.behandling
     }
 
     override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
@@ -82,7 +89,7 @@ class BehandlingServiceImpl(
         behandlingId: BehandlingId,
         utøvendeSaksbehandler: Saksbehandler,
     ) {
-        check(utøvendeSaksbehandler.roller.contains(Rolle.SAKSBEHANDLER)) { "Saksbehandler må være saksbehandler" }
+        require(utøvendeSaksbehandler.isSaksbehandler()) { "Saksbehandler må har rollen SAKSBEHANDLEr" }
         val behandling = hentBehandling(behandlingId)
         if (behandling.tilstand == BehandlingTilstand.VILKÅRSVURDERT) {
             behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))

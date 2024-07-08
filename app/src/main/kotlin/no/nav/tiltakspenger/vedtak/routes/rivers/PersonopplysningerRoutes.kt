@@ -27,12 +27,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerMediator
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSystembrukerProvider
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-val personopplysningerPath = "/rivers/personopplysninger"
+const val personopplysningerPath = "/rivers/personopplysninger"
 
 private val LOG = KotlinLogging.logger {}
 
@@ -49,7 +49,7 @@ fun Route.personopplysningerRoutes(
     søkerMediator: SøkerMediator,
     sakService: SakService,
 ) {
-    post("$personopplysningerPath") {
+    post(personopplysningerPath) {
         LOG.info { "Vi har mottatt personopplysninger fra river" }
         val systembruker: Systembruker = innloggetSystembrukerProvider.krevInnloggetSystembruker(call)
         LOG.info { "Vi ble kallt med systembruker : $systembruker" }

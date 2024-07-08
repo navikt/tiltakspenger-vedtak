@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
@@ -12,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -52,6 +54,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 søkerMediator = søkerMediator,
                 innsendingAdminService = innsendingAdminService,
                 attesteringRepo = attesteringRepo,
+                kvpVilkårService = kvpVilkårService,
             )
         }
         .build()
@@ -59,6 +62,8 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     val innsendingRepository = InnsendingRepositoryBuilder.build()
     private val tokenProviderUtbetaling: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
+    private val tokenProviderPdl: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.ouathConfigPdl())
 
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
@@ -77,29 +82,41 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-    private val behandlingService =
-        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
-            behandlingRepo,
-            vedtakRepo,
-            personopplysningRepo,
-            utbetalingService,
-            brevPublisherGateway,
-            meldekortGrunnlagGateway,
-            multiRepo,
-            sakRepo,
-        )
-    private val sakService =
-        SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
-
+    private val personGateway =
+        PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
+    private val behandlingService = no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
+        behandlingRepo,
+        vedtakRepo,
+        personopplysningRepo,
+        utbetalingService,
+        brevPublisherGateway,
+        meldekortGrunnlagGateway,
+        multiRepo,
+        sakRepo,
+    )
+    private val søkerMediator = SøkerMediatorImpl(
+        søkerRepository = søkerRepository,
+        rapidsConnection = rapidsConnection,
+    )
     val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = rapidsConnection,
         observatører = listOf(),
     )
-    private val søkerMediator = SøkerMediator(
-        søkerRepository = søkerRepository,
-        rapidsConnection = rapidsConnection,
+    private val sakService =
+        SakServiceImpl(
+            sakRepo = sakRepo,
+            behandlingRepo = behandlingRepo,
+            behandlingService = behandlingService,
+            personGateway = personGateway,
+            søkerMediator = søkerMediator,
+            innsendingMediator = innsendingMediator,
+        )
+    private val kvpVilkårService = KvpVilkårServiceImpl(
+        behandlingService = behandlingService,
+        behandlingRepo = behandlingRepo,
     )
+
     private val innsendingAdminService = InnsendingAdminService(
         innsendingRepository = innsendingRepository,
         innsendingMediator = innsendingMediator,

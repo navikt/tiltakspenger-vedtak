@@ -28,11 +28,12 @@ import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.SøkerMediator
+import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
 import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
@@ -64,9 +65,10 @@ internal fun Application.vedtakApi(
     sakService: SakService,
     behandlingService: BehandlingService,
     innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediator,
+    søkerMediator: SøkerMediatorImpl,
     innsendingAdminService: InnsendingAdminService,
     attesteringRepo: AttesteringRepo,
+    kvpVilkårService: KvpVilkårService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -90,6 +92,7 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
                 innsendingMediator = innsendingMediator,
                 attesteringRepo = attesteringRepo,
+                kvpVilkårService = kvpVilkårService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
@@ -119,6 +122,7 @@ internal fun Application.vedtakApi(
                 innsendingMediator = innsendingMediator,
                 søkerMediator = søkerMediator,
                 sakService = sakService,
+
             )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,

@@ -9,6 +9,7 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -19,15 +20,14 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
-import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
-import no.nav.tiltakspenger.vedtak.SøkerMediator
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
+import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -48,15 +48,13 @@ class SøknadRoutesTest {
     private val sakRepo = mockk<SakRepo>(relaxed = true)
     private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
     private val vedtakRepo = mockk<VedtakRepo>(relaxed = true)
-    private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
-    private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
         rapidsConnection = testRapid,
         observatører = listOf(),
     )
-    private val søkerMediator = SøkerMediator(
+    private val søkerMediator = SøkerMediatorImpl(
         søkerRepository = søkerRepository,
         rapidsConnection = testRapid,
     )
@@ -65,6 +63,7 @@ class SøknadRoutesTest {
     private val brevPublisherGateway = mockk<BrevPublisherGateway>(relaxed = true)
     private val meldekortGrunnlagGateway = mockk<MeldekortGrunnlagGateway>(relaxed = true)
     private val multiRepo = mockk<MultiRepo>(relaxed = true)
+    private val personGateway = mockk<PersonGateway>(relaxed = true)
 
     private val behandlingService =
         no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
@@ -77,7 +76,7 @@ class SøknadRoutesTest {
             multiRepo,
             sakRepo,
         )
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator)
 
     @AfterEach
     fun reset() {
@@ -91,12 +90,14 @@ class SøknadRoutesTest {
             journalpostId = JOURNALPOSTID,
         )
 
-        every { søkerRepository.findByIdent(IDENT) } returns nySøker(
+        val nySøker = nySøker(
             ident = IDENT,
         )
+        every { søkerRepository.findByIdent(IDENT) } returns nySøker
 
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
+        coEvery { personGateway.hentPerson(any()) } returns listOf(nySøker.personopplysninger!!)
 
         testApplication {
             application {
@@ -126,7 +127,6 @@ class SøknadRoutesTest {
         with(testRapid.inspektør) {
             Assertions.assertEquals(1, size)
             Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals("personopplysninger", field(0, "@behov")[0].asText())
             Assertions.assertEquals(IDENT, field(0, "ident").asText())
         }
     }

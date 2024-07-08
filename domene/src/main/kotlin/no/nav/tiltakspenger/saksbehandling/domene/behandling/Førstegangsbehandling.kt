@@ -11,6 +11,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.vurderingsperiodeFraTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -19,6 +21,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -28,20 +32,25 @@ data class Førstegangsbehandling(
     override val saksbehandler: String?,
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
-    override val tiltak: List<Tiltak>,
-    override val utfallsperioder: List<Utfallsperiode>,
+    override val tiltak: TiltakVilkår,
     override val status: BehandlingStatus,
     override val tilstand: BehandlingTilstand,
 ) : Behandling {
 
+    init {
+        // TODO jah: Brekker for mange tester. Bør legges inn når vi er ferdig med vilkår 2.0
+        // require(vilkårssett.totalePeriode == vurderingsperiode) { "Vilkårssettets periode (${vilkårssett.totalePeriode} må være lik vurderingsperioden $vurderingsperiode" }
+    }
+
     companion object {
 
         fun opprettBehandling(sakId: SakId, søknad: Søknad): Førstegangsbehandling {
+            val vurderingsperiode = søknad.vurderingsperiode()
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
                 sakId = sakId,
                 søknader = listOf(søknad),
-                vurderingsperiode = søknad.vurderingsperiode(),
+                vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(
                     saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
                         søknad,
@@ -53,11 +62,12 @@ data class Førstegangsbehandling(
                             kilde = Kilde.SØKNAD,
                         ),
                     ).avklar(),
+                    utfallsperioder = emptyList(),
+                    kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
                 ),
-                tiltak = emptyList(),
+                tiltak = TiltakVilkår(),
                 saksbehandler = null,
                 beslutter = null,
-                utfallsperioder = emptyList(),
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
             )
@@ -99,11 +109,16 @@ data class Førstegangsbehandling(
                     acc.oppdaterSaksopplysninger(saksopplysning)
                 }
         }
-
+        // Avgjørelse jah: Vi skal ikke oppdatere vilkårsettet her mens vi skriver om til vilkår 2.0.
+        // TODO jah: Fjern mulighet for samtidige søknader.
+        //  Dersom avklaringen er basert på saksopplysning fra søknaden, bør vi nullstille avklaringen i påvente av en saksbehandler-opplysning.
+        //  Dersom vi allerede har en saksbehander-opplysning, bør vi kreve at saksbehandler tar stilling til alle vilkårene på nytt.
         return this.copy(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            vilkårssett = vilkårssett.oppdaterSaksopplysninger(fakta),
+            vilkårssett = vilkårssett.copy(
+                saksopplysninger = fakta,
+            ),
             tilstand = BehandlingTilstand.OPPRETTET,
         ).vilkårsvurder()
     }
@@ -153,21 +168,8 @@ data class Førstegangsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke oppdatere antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke oppdatere antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.leggTilAntallDagerFraSaksbehandler(nyPeriodeMedAntallDager)
-
-        val nyeTiltak = tiltak.map {
-            if (it.id == oppdatertTiltak.id) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
         return this.copy(
-            tiltak = nyeTiltak,
+            tiltak = tiltak.oppdaterAntallDager(tiltakId, nyPeriodeMedAntallDager, saksbehandler),
         )
     }
 
@@ -188,25 +190,10 @@ data class Førstegangsbehandling(
         }
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Man kan ikke tilbakestille antall dager uten å være saksbehandler eller admin" }
 
-        val tiltakTilOppdatering = tiltak.find { it.id == tiltakId }
-        check(tiltakTilOppdatering != null) { "Kan ikke tilbakestille antall dager fordi vi fant ikke tiltaket på behandlingen" }
-
-        val oppdatertTiltak = tiltakTilOppdatering.tilbakestillAntallDagerFraSaksbehandler()
-
-        val nyeTiltak = tiltak.map {
-            if (it.id == oppdatertTiltak.id) {
-                oppdatertTiltak
-            } else {
-                it
-            }
-        }
-
-        return this.copy(
-            tiltak = nyeTiltak,
-        )
+        return this.copy(tiltak = tiltak.tilbakestillAntallDager(tiltakId, saksbehandler))
     }
 
-    override fun oppdaterTiltak(tiltak: List<Tiltak>): Førstegangsbehandling {
+    override fun oppdaterTiltak(nyeTiltak: List<Tiltak>): Førstegangsbehandling {
         require(
             this.tilstand in listOf(
                 BehandlingTilstand.OPPRETTET,
@@ -218,7 +205,28 @@ data class Førstegangsbehandling(
         if (tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             // TODO Gjør noe ekstra
         }
-        return this.copy(tiltak = tiltak, tilstand = BehandlingTilstand.OPPRETTET).vilkårsvurder()
+
+        if (vurderingsperiodeRommerPeriodeFraTiltak(nyeTiltak.vurderingsperiodeFraTiltak())) {
+            // Vurderingsperioden endres ikke
+            return this.copy(
+                tiltak = tiltak.oppdaterTiltak(nyeTiltak),
+                tilstand = BehandlingTilstand.OPPRETTET,
+            ).vilkårsvurder()
+        }
+
+        // Vurderingsperioden må endres
+        val vurderingsperiodeFraTiltak = nyeTiltak.vurderingsperiodeFraTiltak()!!
+        val nyVurderingsperiode = Periode(
+            minOf(vurderingsperiode.fraOgMed, vurderingsperiodeFraTiltak.fraOgMed),
+            maxOf(vurderingsperiode.tilOgMed, vurderingsperiodeFraTiltak.tilOgMed),
+        )
+        // TODO: Må hente inn tiltak på nytt. Idag betyr det å publisere et behov
+        return this.copy(
+            vurderingsperiode = nyVurderingsperiode,
+            vilkårssett = vilkårssett.vurderingsperiodeEndret(nyVurderingsperiode),
+            tiltak = tiltak.oppdaterTiltak(nyeTiltak),
+            tilstand = BehandlingTilstand.OPPRETTET,
+        ).vilkårsvurder()
     }
 
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -287,7 +295,7 @@ data class Førstegangsbehandling(
      * Endrer tilstand til VILKÅRSVURDERT
      */
     override fun vilkårsvurder(): Førstegangsbehandling {
-        val deltagelseVurderinger = tiltak.map { tiltak -> tiltak.vilkårsvurderTiltaksdeltagelse() }
+        val deltagelseVurderinger = tiltak.vilkårsvurder()
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
@@ -328,8 +336,7 @@ data class Førstegangsbehandling(
         }
 
         return this.copy(
-            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger),
-            utfallsperioder = utfallsperioder,
+            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger, utfallsperioder),
             status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
@@ -402,4 +409,7 @@ data class Førstegangsbehandling(
             )
         }
     }
+
+    private fun vurderingsperiodeRommerPeriodeFraTiltak(periode: Periode?): Boolean =
+        periode?.let { vurderingsperiode.inneholderHele(it) } ?: true
 }

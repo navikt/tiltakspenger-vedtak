@@ -38,19 +38,19 @@ class SammenstillingForBehandlingDTOTest {
         val opprettetBehandling = mockk<Førstegangsbehandling>()
         every { opprettetBehandling.tilstand } returns BehandlingTilstand.OPPRETTET
         val opprettetStatus = finnStatus(opprettetBehandling)
-        assert(opprettetStatus === "Klar til behandling")
+        assert(opprettetStatus == "Klar til behandling")
 
         val avslåttBehandling = mockk<Førstegangsbehandling>()
         every { avslåttBehandling.tilstand } returns BehandlingTilstand.IVERKSATT
         every { avslåttBehandling.status } returns BehandlingStatus.Avslag
         val avslagStatus = finnStatus(avslåttBehandling)
-        assert(avslagStatus === "Iverksatt Avslag")
+        assert(avslagStatus == "Iverksatt Avslag")
 
         val innvilgetBehandling = mockk<Førstegangsbehandling>()
         every { innvilgetBehandling.tilstand } returns BehandlingTilstand.IVERKSATT
         every { innvilgetBehandling.status } returns BehandlingStatus.Innvilget
         val innvilgetStatus = finnStatus(innvilgetBehandling)
-        assert(innvilgetStatus === "Iverksatt Innvilget")
+        assert(innvilgetStatus == "Iverksatt Innvilget")
     }
 
     @Test
@@ -59,11 +59,11 @@ class SammenstillingForBehandlingDTOTest {
         every { behandlingTilBeslutter.tilstand } returns BehandlingTilstand.TIL_BESLUTTER
         every { behandlingTilBeslutter.beslutter } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingTilBeslutter)
-        assert(klarTilBeslutningTekst === "Klar til beslutning")
+        assert(klarTilBeslutningTekst == "Klar til beslutning")
 
         every { behandlingTilBeslutter.beslutter } returns "test beslutter"
         val underBeslutningTekst = finnStatus(behandlingTilBeslutter)
-        assert(underBeslutningTekst === "Under beslutning")
+        assert(underBeslutningTekst == "Under beslutning")
     }
 
     @Test
@@ -72,11 +72,11 @@ class SammenstillingForBehandlingDTOTest {
         every { behandlingVilkårsvurdert.tilstand } returns BehandlingTilstand.VILKÅRSVURDERT
         every { behandlingVilkårsvurdert.saksbehandler } returns null
         val klarTilBeslutningTekst = finnStatus(behandlingVilkårsvurdert)
-        assert(klarTilBeslutningTekst === "Klar til behandling")
+        assert(klarTilBeslutningTekst == "Klar til behandling")
 
         every { behandlingVilkårsvurdert.saksbehandler } returns "test saksbehandler"
         val underBeslutningTekst = finnStatus(behandlingVilkårsvurdert)
-        assert(underBeslutningTekst === "Under behandling")
+        assert(underBeslutningTekst == "Under behandling")
     }
 
     private fun mockKreverManuellVurdering(vilkår: Vilkår = Vilkår.AAP): Vurdering =

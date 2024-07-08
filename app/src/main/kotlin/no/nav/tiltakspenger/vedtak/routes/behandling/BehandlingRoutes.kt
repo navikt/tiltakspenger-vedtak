@@ -21,9 +21,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -43,6 +45,7 @@ fun Route.behandlingRoutes(
     sakService: SakService,
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,
+    kvpVilkårService: KvpVilkårService,
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
@@ -109,12 +112,13 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        // TODO: Rollesjekk ikke helt landet
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
                 aktivitetslogg = Aktivitetslogg(),
                 journalpostId = it.søknad().journalpostId,
             )
+            // TODO jah: I forbindelse med å skrive oss bort fra RnR vil vi ikke lenger oppdatere personopplysninger når saksbehandler trykker på oppdater personopplysninger-knappen.
+            //  Vi gjør en ny vurdering når RnR er borte
             innsendingMediator.håndter(innsendingUtdatertHendelse)
         }
 
@@ -160,4 +164,6 @@ fun Route.behandlingRoutes(
 
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
+
+    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
 }

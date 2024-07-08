@@ -33,6 +33,8 @@ import java.util.Random
 internal class TiltakDAOTest {
 
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -149,8 +151,8 @@ internal class TiltakDAOTest {
         val behandlingRepo = PostgresBehandlingRepo()
         val sakRepo = PostgresSakRepo()
 
-        val journalpostId = Random().nextInt().toString()
-        val ident = Random().nextInt().toString()
+        val journalpostId = random.nextInt().toString()
+        val ident = random.nextInt().toString()
         val deltakelseFom = 1.januar(2023)
         val deltakelseTom = 31.mars(2023)
         val sakId = SakId.random()

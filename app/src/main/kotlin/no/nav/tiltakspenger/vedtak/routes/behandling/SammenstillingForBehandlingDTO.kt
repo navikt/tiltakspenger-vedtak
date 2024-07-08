@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
@@ -101,21 +100,6 @@ data class SammenstillingForBehandlingDTO(
         val saksopplysningTittel: String,
         val utfall: String,
     )
-
-    data class LovreferanseDTO(
-        val lovverk: String,
-        val paragraf: String,
-        val beskrivelse: String,
-
-    ) {
-        companion object {
-            fun fraLovreferanse(lovreferanse: Lovreferanse) = LovreferanseDTO(
-                lovverk = lovreferanse.lovverk,
-                paragraf = lovreferanse.paragraf,
-                beskrivelse = lovreferanse.beskrivelse,
-            )
-        }
-    }
 
     data class KravdatoSaksopplysningerDTO(
         val opprinneligKravdato: KravdatoSaksopplysningDTO,

@@ -30,9 +30,14 @@ import java.time.LocalDateTime
 import java.util.Random
 
 interface InnsendingMother {
+
+    companion object {
+        private val random = Random()
+    }
+
     fun innsendingRegistrert(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.mars(2022),
     ): Innsending {
@@ -46,7 +51,7 @@ interface InnsendingMother {
 
     fun nySøker(
         søkerId: SøkerId = SøkerId.random(),
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         personopplysninger: PersonopplysningerSøker = personopplysningKjedeligFyr(ident = ident),
     ): Søker {
         return Søker.fromDb(
@@ -57,8 +62,8 @@ interface InnsendingMother {
     }
 
     fun innsendingMedSøknad(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.mars(2022),
         søknad: Søknad = nySøknad(
@@ -81,8 +86,8 @@ interface InnsendingMother {
     }
 
     fun innsendingMedPersonopplysninger(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.mars(2022),
         søknad: Søknad = nySøknad(
@@ -118,8 +123,8 @@ interface InnsendingMother {
     }
 
     fun innsendingMedSkjerming(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.mars(2022),
         søknad: Søknad = nySøknad(
@@ -157,8 +162,8 @@ interface InnsendingMother {
     }
 
     fun innsendingMedTiltak(
-        journalpostId: String = Random().nextInt().toString(),
-        ident: String = Random().nextInt().toString(),
+        journalpostId: String = random.nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.mars(2022),
         søknad: Søknad = nySøknad(
@@ -197,7 +202,7 @@ interface InnsendingMother {
     }
 
     fun personopplysningKjedeligFyr(
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
@@ -225,7 +230,7 @@ interface InnsendingMother {
     )
 
     fun personopplysningMaxFyr(
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Kjell",
         mellomnavn: String? = "T.",
@@ -253,7 +258,7 @@ interface InnsendingMother {
     )
 
     fun barn(
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
@@ -281,7 +286,7 @@ interface InnsendingMother {
     }
 
     fun skjermingFalse(
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         barn: List<SkjermingPerson> = emptyList(),
     ): Skjerming {
         return Skjerming(
@@ -295,7 +300,7 @@ interface InnsendingMother {
     }
 
     fun skjermingTrue(
-        ident: String = Random().nextInt().toString(),
+        ident: String = random.nextInt().toString(),
         barn: List<SkjermingPerson> = emptyList(),
     ): Skjerming {
         return Skjerming(

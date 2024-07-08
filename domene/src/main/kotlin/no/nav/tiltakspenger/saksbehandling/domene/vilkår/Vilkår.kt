@@ -2,9 +2,18 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 
+/**
+ * TODO jah: Skal erstattes av Vilkår2.kt. Men vi gjør det iterativt.
+ */
 sealed class Vilkår {
-
+    /**
+     * TODO jah: Skal fjernes så fort frontend ikke er avhengig av disse.
+     */
     abstract val tittel: String
+
+    /**
+     * TODO jah: Skal fjernes så fort frontend ikke er avhengig av disse.
+     */
     abstract val flateTittel: String
     abstract val lovReferanse: List<Lovreferanse>
 
@@ -19,7 +28,6 @@ sealed class Vilkår {
             INSTITUSJONSOPPHOLD -> Kilde.SØKNAD
             INTROPROGRAMMET -> Kilde.SØKNAD
             JOBBSJANSEN -> Kilde.SØKNAD
-            KVP -> Kilde.SØKNAD
             LØNNSINNTEKT -> Kilde.SØKNAD
             OMSORGSPENGER -> Kilde.K9SAK
             OPPLÆRINGSPENGER -> Kilde.K9SAK
@@ -145,11 +153,12 @@ sealed class Vilkår {
         override val lovReferanse: List<Lovreferanse> = listOf(Lovreferanse.INTROPROGRAMMET)
     }
 
-    object KVP : Vilkår() {
-        override val tittel: String = "KVP"
-        override val flateTittel: String = "Kvalifiseringsprogrammet(KVP)"
-        override val lovReferanse: List<Lovreferanse> = listOf(Lovreferanse.KVP)
-    }
+    // Merknad JAH: KVPVilkår erstatter denne
+//    object KVP : Vilkår() {
+//        override val tittel: String = "KVP"
+//        override val flateTittel: String = "Kvalifiseringsprogrammet(KVP)"
+//        override val lovReferanse: List<Lovreferanse> = listOf(Lovreferanse.KVP)
+//    }
 
     object INSTITUSJONSOPPHOLD : Vilkår() {
         override val tittel: String = "INSTITUSJONSOPPHOLD"
