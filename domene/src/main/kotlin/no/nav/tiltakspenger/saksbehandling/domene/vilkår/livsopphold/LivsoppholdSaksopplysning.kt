@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDateTime
 
-sealed interface KvpSaksopplysning {
+sealed interface LivsoppholdSaksopplysning {
 
     val deltar: Periodisering<Deltagelse>
     val tidsstempel: LocalDateTime
@@ -20,7 +20,7 @@ sealed interface KvpSaksopplysning {
     data class Søknad(
         override val deltar: Periodisering<Deltagelse>,
         override val tidsstempel: LocalDateTime,
-    ) : KvpSaksopplysning {
+    ) : LivsoppholdSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
 
@@ -40,7 +40,7 @@ sealed interface KvpSaksopplysning {
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
         override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
-    ) : KvpSaksopplysning {
+    ) : LivsoppholdSaksopplysning {
         init {
             require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
         }

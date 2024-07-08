@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.Deltagelse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 

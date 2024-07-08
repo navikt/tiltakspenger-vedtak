@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.ÅrsakTilEndring
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 
 internal enum class ÅrsakTilEndringDTO {
     FEIL_I_INNHENTET_DATA,

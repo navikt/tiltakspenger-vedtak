@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.Deltagelse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KvpSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.ÅrsakTilEndring
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
