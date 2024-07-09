@@ -353,11 +353,7 @@ class Innsending private constructor(
             )
             innsending.trengerPersonopplysninger(innsendingUtdatertHendelse)
             innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
-            innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
-            innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
-            innsending.trengerOvergangsstønad(innsendingUtdatertHendelse)
-            innsending.trengerUføre(innsendingUtdatertHendelse)
         }
     }
 
@@ -392,50 +388,6 @@ class Innsending private constructor(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.tiltak,
             melding = "Trenger tiltak",
             detaljer = mapOf("ident" to this.ident),
-        )
-    }
-
-    private fun trengerArenaYtelse(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
-            melding = "Trenger arenaytelser",
-            detaljer = mapOf("ident" to this.ident),
-        )
-    }
-
-    private fun trengerForeldrepenger(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.fpytelser,
-            melding = "Trenger fpytelser",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
-        )
-    }
-
-    private fun trengerOvergangsstønad(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.overgangsstønad,
-            melding = "Trenger overgangsstønad",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
-        )
-    }
-
-    private fun trengerUføre(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.uføre,
-            melding = "Trenger uføre",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
         )
     }
 
