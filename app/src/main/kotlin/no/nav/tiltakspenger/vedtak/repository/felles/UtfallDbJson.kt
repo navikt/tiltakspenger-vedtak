@@ -1,10 +1,8 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
+package no.nav.tiltakspenger.vedtak.repository.felles
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
-import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
-import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 
 internal data class PeriodisertUtfallDbJson(
     val utfall: UtfallDbJson,

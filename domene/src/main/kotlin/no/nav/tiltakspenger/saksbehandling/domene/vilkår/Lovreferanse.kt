@@ -24,8 +24,19 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     INSTITUSJONSOPPHOLD("Tiltakspengeforskriften", "§9", "1", "Opphold i institusjon, fengsel mv."),
     PENSJONSINNTEKT("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
     LØNNSINNTEKT("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
-    ETTERLØNNARBEIDSMARKEDSLOV("Arbeidsmarkedsloven", "§13", "1", "Ytelser til gjennomføring av arbeidsmarkedstiltak mv."),
+    ETTERLØNNARBEIDSMARKEDSLOV(
+        "Arbeidsmarkedsloven",
+        "§13",
+        "1",
+        "Ytelser til gjennomføring av arbeidsmarkedstiltak mv.",
+    ),
     ETTERLØNNRUNDSKRIV("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
     TILTAKSDELTAGELSE("Tiltakspengeforskriften", "§2", "1", "Hvem som kan få tiltakspenger"),
-    FRIST_FOR_FRAMSETTING_AV_KRAV("Tiltakspengeforskriften", "§11", "1", "Utbetaling, frist for framsetting av krav og rett til etterbetaling"),
+    FRIST_FOR_FRAMSETTING_AV_KRAV(
+        "Tiltakspengeforskriften",
+        "§11",
+        "1",
+        "Utbetaling, frist for framsetting av krav og rett til etterbetaling",
+    ),
+    LIVSOPPHOLD("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
 }
