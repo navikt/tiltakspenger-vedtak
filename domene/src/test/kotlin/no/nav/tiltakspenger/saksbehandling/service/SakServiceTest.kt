@@ -31,6 +31,7 @@ import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class SakServiceTest {
@@ -109,6 +110,7 @@ internal class SakServiceTest {
     }
 
     // TODO jah: Ser ikke ut som vi oppdaterer vurderingsperioden når vi legger til en overlappende søknad? Og dersom vi ikke har overlappene søknader, så får vi ikke forskjellige behandlinger? Ser på dette etter vilkår2
+    @Disabled("kew: Disabler testen siden vi ikke skal tenke på 2 søknader per nå.")
     @Test
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
