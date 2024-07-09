@@ -1,23 +1,19 @@
 package no.nav.tiltakspenger.vedtak.repository.innsending
 
 import io.kotest.assertions.throwables.shouldThrowWithMessage
-import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.innsending.domene.Innsending
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barnetilleggUtenIdent
 import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedPersonopplysninger
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingMedYtelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySkjermingHendelse
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.skjermingTrue
-import no.nav.tiltakspenger.objectmothers.ObjectMother.ytelseSak
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayCleanAndMigrate
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -143,46 +139,6 @@ internal class PostgresInnsendingRepositoryTest {
         assertEquals(innsending.id, hentetInnsending.id)
         assertEquals(innsending.tilstand, hentetInnsending.tilstand)
         innsending.personopplysninger shouldBe null
-    }
-
-    @Test
-    fun `lagre og hente hele aggregatet med ArenaTiltak`() {
-        val ident = random.nextInt().toString()
-        val journalpostId = random.nextInt().toString()
-
-        val søknad = ObjectMother.nySøknad(
-            periode = Periode(1.januar(2022), 31.januar(2022)),
-            journalpostId = journalpostId,
-            personopplysninger = personSøknad(
-                ident = ident,
-            ),
-            barnetillegg = listOf(barnetilleggUtenIdent()),
-        )
-        val personopplysninger = personopplysningKjedeligFyr(ident = ident, strengtFortroligUtland = false)
-        val ytelseSak = listOf(ytelseSak())
-
-        val innsending = innsendingMedYtelse(
-            journalpostId = journalpostId,
-            ident = ident,
-            søknad = søknad,
-            personopplysninger = listOf(personopplysninger),
-            skjerming = skjermingTrue(ident = ident),
-            ytelseSak = ytelseSak,
-        )
-
-        innsendingRepository.lagre(innsending)
-
-        val hentetInnsending = innsendingRepository.hent(journalpostId)!!
-
-        assertEquals(innsending.journalpostId, hentetInnsending.journalpostId)
-        assertEquals(innsending.ident, hentetInnsending.ident)
-        assertEquals(innsending.id, hentetInnsending.id)
-        assertEquals(innsending.tilstand, hentetInnsending.tilstand)
-        assertEquals(innsending.fom, hentetInnsending.fom)
-        assertEquals(innsending.tom, hentetInnsending.tom)
-        hentetInnsending.personopplysninger!!.personopplysningerliste shouldBe listOf(personopplysninger.copy(skjermet = true))
-        hentetInnsending.ytelser!!.ytelserliste shouldContainExactly ytelseSak
-        hentetInnsending.aktivitetslogg shouldBeEqualToComparingFields innsending.aktivitetslogg
     }
 
     @Test
