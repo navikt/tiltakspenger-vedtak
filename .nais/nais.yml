@@ -56,6 +56,7 @@ spec:
     outbound:
       external:
         - host: {{ urlPdl }}
+        - host: {{ urlSkjerming }}
     inbound:
       rules:
         - application: tiltakspenger-admin

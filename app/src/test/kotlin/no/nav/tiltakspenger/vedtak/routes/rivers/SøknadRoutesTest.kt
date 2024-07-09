@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
@@ -64,6 +65,7 @@ class SøknadRoutesTest {
     private val meldekortGrunnlagGateway = mockk<MeldekortGrunnlagGateway>(relaxed = true)
     private val multiRepo = mockk<MultiRepo>(relaxed = true)
     private val personGateway = mockk<PersonGateway>(relaxed = true)
+    private val skjermingGateway = mockk<SkjermingGateway>(relaxed = true)
 
     private val behandlingService =
         no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
@@ -76,7 +78,7 @@ class SøknadRoutesTest {
             multiRepo,
             sakRepo,
         )
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator)
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator, skjermingGateway)
 
     @AfterEach
     fun reset() {

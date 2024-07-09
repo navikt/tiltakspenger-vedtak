@@ -52,6 +52,8 @@ object Configuration {
         "logback.configurationFile" to "logback.xml",
         "SCOPE_UTBETALING" to System.getenv("SCOPE_UTBETALING"),
         "UTBETALING_URL" to System.getenv("UTBETALING_URL"),
+        "SKJERMING_SCOPE" to System.getenv("SCOPE_SKJERMING"),
+        "SKJERMING_URL" to System.getenv("SKJERMING_URL"),
         "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
         "PDL_SCOPE" to System.getenv("PDL_ENDPOINT_URL"),
     )
@@ -73,6 +75,8 @@ object Configuration {
             "UTBETALING_URL" to "http://host.docker.internal:8083",
             "PDL_SCOPE" to "api://localhost:8091/.default",
             "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
+            "SKJERMING_SCOPE" to "localhost",
+            "SKJERMING_URL" to "http://host.docker.internal:8091",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -82,6 +86,8 @@ object Configuration {
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.dev.nav.no",
             "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
             "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
+            "SKJERMING_SCOPE" to "api://dev-gcp.nom.skjermede-personer-pip/.default",
+            "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -91,6 +97,8 @@ object Configuration {
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.nav.no",
             "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
             "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
+            "SKJERMING_SCOPE" to "api://prod-gcp.nom.skjermede-personer-pip/.default",
+            "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
         ),
     )
 
@@ -172,6 +180,21 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
+
+    fun oauthConfigSkjerming(
+        scope: String = config()[Key("SKJERMING_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
     fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
 }

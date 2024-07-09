@@ -14,6 +14,8 @@ import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
+import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingClientImpl
+import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -64,9 +66,13 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
     private val tokenProviderPdl: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.ouathConfigPdl())
+    private val tokenProviderSkjerming: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigSkjerming())
 
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
+    private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
+    private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
     private val utbetalingGateway = UtbetalingGatewayImpl(utbetalingClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
@@ -111,6 +117,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             personGateway = personGateway,
             søkerMediator = søkerMediator,
             innsendingMediator = innsendingMediator,
+            skjermingGateway = skjermingGateway,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,

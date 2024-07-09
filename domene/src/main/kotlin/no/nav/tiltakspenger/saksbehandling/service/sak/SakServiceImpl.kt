@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerMediator
 
@@ -33,10 +34,13 @@ class SakServiceImpl(
     val personGateway: PersonGateway,
     val søkerMediator: SøkerMediator,
     val innsendingMediator: InnsendingMediator,
+    val skjermingGateway: SkjermingGateway,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
         val journalpostId = søknad.journalpostId
+        val erSkjermet = runBlocking { skjermingGateway.erSkjermetPerson(ident) }
+        println("erSkjermet: $erSkjermet")
         val sak: Sak =
             (
                 sakRepo.hentForIdentMedPeriode(

@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -47,6 +48,7 @@ internal class SakServiceTest {
     private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
     private lateinit var personGateway: PersonGateway
+    private lateinit var skjermingGateway: SkjermingGateway
     private lateinit var søkerMediator: SøkerMediator
     private lateinit var innsendingMediator: InnsendingMediator
 
@@ -62,6 +64,7 @@ internal class SakServiceTest {
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
+        skjermingGateway = mockk(relaxed = true)
         søkerMediator = mockk(relaxed = true)
         innsendingMediator = mockk(relaxed = true)
         behandlingService =
@@ -75,7 +78,7 @@ internal class SakServiceTest {
                 multiRepo,
                 sakRepo,
             )
-        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator)
+        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator, skjermingGateway)
     }
 
     @AfterEach
