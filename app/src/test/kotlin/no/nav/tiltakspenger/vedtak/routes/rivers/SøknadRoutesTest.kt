@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
@@ -50,6 +51,7 @@ class SøknadRoutesTest {
     private val vedtakRepo = mockk<VedtakRepo>(relaxed = true)
     private val vedtakService = mockk<VedtakServiceImpl>(relaxed = true)
     private val attesteringRepo = mockk<AttesteringRepoImpl>(relaxed = true)
+    private val statistikkService = mockk<StatistikkService>(relaxed = true)
     private val testRapid = TestRapid()
     private val innsendingMediator = InnsendingMediatorImpl(
         innsendingRepository = innsendingRepository,
@@ -72,12 +74,13 @@ class SøknadRoutesTest {
             vedtakRepo,
             personopplysningRepo,
             utbetalingService,
+            statistikkService,
             brevPublisherGateway,
             meldekortGrunnlagGateway,
             multiRepo,
             sakRepo,
         )
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
+    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, statistikkService)
 
     @AfterEach
     fun reset() {

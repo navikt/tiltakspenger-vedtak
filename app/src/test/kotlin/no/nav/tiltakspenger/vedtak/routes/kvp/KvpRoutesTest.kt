@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
@@ -78,6 +79,7 @@ class KvpRoutesTest {
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
+    private val mockStatistikkService = mockk<StatistikkServiceImpl>()
 
     private val saksopplysningRepo = SaksopplysningRepo()
     private val behandlingRepo = PostgresBehandlingRepo(
@@ -122,7 +124,7 @@ class KvpRoutesTest {
         meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
         multiRepo = multiRepo,
         sakRepo = sakRepo,
-
+        statistikkService = mockStatistikkService,
     )
     private val kvpVilkårService = KvpVilkårServiceImpl(behandlingRepo, behandlingService)
 

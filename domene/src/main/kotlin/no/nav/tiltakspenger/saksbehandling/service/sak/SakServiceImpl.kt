@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.skjerming.Skjerming
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -23,6 +24,7 @@ class SakServiceImpl(
     val sakRepo: SakRepo,
     val behandlingRepo: BehandlingRepo,
     val behandlingService: BehandlingService,
+    val statistikkService: StatistikkService,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val sak: Sak =
@@ -35,6 +37,13 @@ class SakServiceImpl(
             )
 
         val håndtertSak = sak.håndter(søknad = søknad)
+
+        statistikkService.opprettBehandlingTilDvh(
+            sak = håndtertSak.sakDetaljer,
+            behandling = håndtertSak.behandlinger.single {
+                it.søknad().id == søknad.id
+            } as Førstegangsbehandling,
+        )
 
         return sakRepo.lagre(håndtertSak)
     }

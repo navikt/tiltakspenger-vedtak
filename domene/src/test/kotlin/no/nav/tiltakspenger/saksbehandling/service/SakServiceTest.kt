@@ -33,6 +33,7 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
@@ -52,6 +53,9 @@ internal class SakServiceTest {
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
+    private lateinit var statistikkService: StatistikkService
+
+    private val random = Random()
 
     @BeforeEach
     fun setup() {
@@ -64,18 +68,20 @@ internal class SakServiceTest {
         multiRepo = mockk()
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
+        statistikkService = mockk(relaxed = true)
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo,
                 vedtakRepo,
                 personopplysningRepo,
                 utbetalingService,
+                statistikkService,
                 brevPublisherGateway,
                 meldekortGrunnlagGateway,
                 multiRepo,
                 sakRepo,
             )
-        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService)
+        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, statistikkService)
     }
 
     @AfterEach
@@ -214,7 +220,7 @@ internal class SakServiceTest {
     @Test
     fun `motta personopplysninger oppdaterer saksopplysning for ALDER hvis det er en endring`() {
         val periode = Periode(1.januar(2023), 31.mars(2023))
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val sak = sakMedOpprettetBehandling(
             ident = ident,
             periode = periode,
@@ -273,7 +279,7 @@ internal class SakServiceTest {
     @Test
     fun `motta personopplysninger for en person som blir 18 midt i perioden`() {
         val periode = Periode(1.januar(2023), 31.mars(2023))
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val sak = sakMedOpprettetBehandling(
             ident = ident,
             periode = periode,

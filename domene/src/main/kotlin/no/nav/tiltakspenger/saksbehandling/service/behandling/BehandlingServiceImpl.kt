@@ -138,7 +138,7 @@ class BehandlingServiceImpl(
         multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
             // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
             // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
-            statistikkService.iverksattBehandlingTilDvh(vedtak)
+            statistikkService.iverksattBehandlingTilDvh(sak, iverksattBehandling, vedtak)
             utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak)
         }
 

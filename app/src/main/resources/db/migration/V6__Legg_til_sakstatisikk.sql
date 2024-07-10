@@ -32,7 +32,7 @@ create table statistikk_sak
     funksjonellPeriodeFom  DATE                     NOT NULL, -- funksjonell periode for tilbakekreving
     funksjonellPeriodeTom  DATE                     NOT NULL, -- funksjonell periode for tilbakekreving
     avsender               VARCHAR                  NOT NULL, -- tpts
-    versjon                VARCHAR                  NOT NULL, -- commit hash
+    versjon                VARCHAR                  NOT NULL  -- commit hash
 );
 
 create table statistikk_sak_vilkår
@@ -41,5 +41,5 @@ create table statistikk_sak_vilkår
     sak_id                 VARCHAR                  NOT NULL, -- fremmednøkkel til statistikk_sak
     vilkårId               VARCHAR                  NOT NULL, -- hva slags vilkår
     beskrivelse            VARCHAR                  NOT NULL, -- beskrivelse av vilkår
-    resultat               VARCHAR                  NOT NULL, -- GODKJENT, AVSLÅTT
+    resultat               VARCHAR                  NOT NULL  -- GODKJENT, AVSLÅTT
 );

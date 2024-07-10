@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
@@ -78,6 +79,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
+    private val statistikkService = StatistikkServiceImpl()
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val behandlingService =
         no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
@@ -85,13 +87,19 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             vedtakRepo,
             personopplysningRepo,
             utbetalingService,
+            statistikkService,
             brevPublisherGateway,
             meldekortGrunnlagGateway,
             multiRepo,
             sakRepo,
         )
     private val sakService =
-        SakServiceImpl(sakRepo = sakRepo, behandlingRepo = behandlingRepo, behandlingService = behandlingService)
+        SakServiceImpl(
+            sakRepo = sakRepo,
+            behandlingRepo = behandlingRepo,
+            behandlingService = behandlingService,
+            statistikkService = statistikkService,
+        )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
         behandlingRepo = behandlingRepo,

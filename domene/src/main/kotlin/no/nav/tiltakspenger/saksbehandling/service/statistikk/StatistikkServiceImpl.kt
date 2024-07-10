@@ -1,20 +1,22 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk
 
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
 class StatistikkServiceImpl() : StatistikkService {
-    override fun opprettBehandlingTilDvh(sak: Sak, behandling: Førstegangsbehandling) {
+    override fun opprettBehandlingTilDvh(sak: SakDetaljer, behandling: Førstegangsbehandling) {
         val dto = SakStatistikkDTO(
             id = UUID.randomUUID(),
             sakId = sak.id.toString(),
             saksnummer = sak.saknummer.toString(),
             behandlingId = behandling.id.toString(),
-            relatertBehandlingId = null,
+            relatertBehandlingId = null, // hvis revurdering
             ident = sak.ident,
             mottattTidspunkt = behandling.søknad().opprettet, // Denne bør vi hente fra den nye saksopplysningen for kravMottattDato?
             registrertTidspunkt = behandling.opprettet,
@@ -23,50 +25,58 @@ class StatistikkServiceImpl() : StatistikkService {
             endretTidspunkt = LocalDateTime.now(),
             // tekniskTidspunkt skal settes i bigquery når raden opprettes der
             søknadsformat = Format.DIGITAL.name,
-            forventetOppstartTidspunkt = LocalDate.now(),
+            forventetOppstartTidspunkt = behandling.vurderingsperiode.fraOgMed,
             vilkår = listOf(VilkårStatistikkDTO("vilkår", "beskrivelse", Resultat.OPPFYLT)),
-            sakYtelse = "sakYtelse",
+            sakYtelse = "IND",
             behandlingType = BehandlingType.FØRSTEGANGSBEHANDLING,
             behandlingStatus = BehandlingStatus.UNDER_BEHANDLING,
-            behandlingResultat = BehandlingResultat.INNVILGET,
-            resultatBegrunnelse = "resultatBegrunnelse",
-            behandlingMetode = "behandlingMetode",
-            opprettetAv = "opprettetAv",
-            saksbehandler = "saksbehandler",
-            ansvarligBeslutter = "ansvarligBeslutter",
-            ansvarligEnhet = "ansvarligEnhet",
-            avsender = "avsender",
+            behandlingResultat = null,
+            resultatBegrunnelse = null,
+            behandlingMetode = BehandlingMetode.MANUELL.name,
+            opprettetAv = "system",
+            saksbehandler = null,
+            ansvarligBeslutter = null,
+            ansvarligEnhet = null,
+            avsender = "tiltakspenger-vedtak",
             versjon = "versjon",
         )
     }
 
-    override fun iverksattBehandlingTilDvh(sak: Sak, vedtak: Vedtak) {
+    override fun iverksattBehandlingTilDvh(sak: SakDetaljer, behandling: Behandling, vedtak: Vedtak) {
+        val resultat = if (vedtak.utfallsperioder.all { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+            BehandlingResultat.INNVILGET
+        } else if (vedtak.utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
+            BehandlingResultat.DELVIS_INNVILGET
+        } else {
+            BehandlingResultat.AVSLAG
+        }
+
         val dto = SakStatistikkDTO(
             id = UUID.randomUUID(),
             sakId = sak.id.toString(),
             saksnummer = sak.saknummer.toString(),
             behandlingId = vedtak.behandling.id.toString(),
-            relatertBehandlingId = null,
-            ident = "ident",
-            mottattTidspunkt = LocalDateTime.now(),
-            registrertTidspunkt = LocalDateTime.now(),
-            ferdigBehandletTidspunkt = LocalDateTime.now(),
-            vedtakTidspunkt = LocalDateTime.now(),
+            relatertBehandlingId = null, // hvis revurdering
+            ident = sak.ident,
+            mottattTidspunkt = behandling.søknad().opprettet,
+            registrertTidspunkt = behandling.opprettet,
+            ferdigBehandletTidspunkt = null, // trenger et tidspunkt på iverksatt behandling hvis vi skal fylle ut denne
+            vedtakTidspunkt = vedtak.vedtaksdato,
             endretTidspunkt = LocalDateTime.now(),
-            søknadsformat = "søknadsformat",
-            forventetOppstartTidspunkt = LocalDate.now(),
+            søknadsformat = Format.DIGITAL.name,
+            forventetOppstartTidspunkt = vedtak.periode.fraOgMed,
             vilkår = listOf(VilkårStatistikkDTO("vilkår", "beskrivelse", Resultat.OPPFYLT)),
-            sakYtelse = "sakYtelse",
+            sakYtelse = "IND",
             behandlingType = BehandlingType.FØRSTEGANGSBEHANDLING,
-            behandlingStatus = BehandlingStatus.UNDER_BEHANDLING,
-            behandlingResultat = BehandlingResultat.INNVILGET,
+            behandlingStatus = BehandlingStatus.FERDIG_BEHANDLET,
+            behandlingResultat = resultat,
             resultatBegrunnelse = "resultatBegrunnelse",
-            behandlingMetode = "behandlingMetode",
-            opprettetAv = "opprettetAv",
-            saksbehandler = "saksbehandler",
-            ansvarligBeslutter = "ansvarligBeslutter",
-            ansvarligEnhet = "ansvarligEnhet",
-            avsender = "avsender",
+            behandlingMetode = BehandlingMetode.MANUELL.name,
+            opprettetAv = "system",
+            saksbehandler = behandling.saksbehandler,
+            ansvarligBeslutter = behandling.beslutter,
+            ansvarligEnhet = "må hentes fra NORG",
+            avsender = "tiltakspenger-vedtak",
             versjon = "versjon",
         )
     }
@@ -91,13 +101,13 @@ data class SakStatistikkDTO(
     val sakYtelse: String, // IND
     val behandlingType: BehandlingType,
     val behandlingStatus: BehandlingStatus,
-    val behandlingResultat: BehandlingResultat,
-    val resultatBegrunnelse: String,
+    val behandlingResultat: BehandlingResultat?,
+    val resultatBegrunnelse: String?, // fylles ut ved klage, avvisning, avslag
     val behandlingMetode: String, // manuell, automatisk
     val opprettetAv: String, // Settes til -5 hvis kode 6 kan være systembruker
-    val saksbehandler: String, // Settes til -5 hvis kode 6
-    val ansvarligBeslutter: String, // Settes til -5 hvis kode 6
-    val ansvarligEnhet: String, // Settes til -5 hvis kode 6
+    val saksbehandler: String?, // Settes til -5 hvis kode 6
+    val ansvarligBeslutter: String?, // Settes til -5 hvis kode 6
+    val ansvarligEnhet: String?, // Settes til -5 hvis kode 6
     val avsender: String,
     val versjon: String, // commit hash
 )
@@ -137,4 +147,9 @@ enum class BehandlingType {
     REVURDERING,
     KLAGE,
     ANKE,
+}
+
+enum class BehandlingMetode {
+    MANUELL,
+    AUTOMATISK,
 }

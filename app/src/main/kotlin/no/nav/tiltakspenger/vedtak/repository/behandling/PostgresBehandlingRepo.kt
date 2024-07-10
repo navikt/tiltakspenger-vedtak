@@ -199,7 +199,7 @@ internal class PostgresBehandlingRepo(
                     "tilstand" to finnTilstand(behandling),
                     "status" to finnStatus(behandling),
                     "sistEndret" to nå,
-                    "opprettet" to nå,
+                    "opprettet" to behandling.opprettet,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                 ),
             ).asUpdate,
@@ -262,6 +262,7 @@ internal class PostgresBehandlingRepo(
             beslutter = beslutter,
             status = behandlingStatus,
             tilstand = tilstand,
+            opprettet = localDateTime("opprettet"),
         )
     }
 
