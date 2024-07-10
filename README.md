@@ -17,6 +17,7 @@ For hvilke versjoner som brukes, [se byggefilen](build.gradle.kts)
 ## Bygging og denslags
 For å bygge artifaktene:
 
+
 ```sh
 ./gradlew build
 ```
