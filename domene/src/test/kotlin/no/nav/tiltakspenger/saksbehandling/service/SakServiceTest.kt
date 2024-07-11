@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
@@ -110,6 +111,31 @@ internal class SakServiceTest {
         val behandling = sak.behandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
         behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
         behandling.søknader.first() shouldBe søknad
+    }
+
+    @Test
+    fun `sjekk at skjerming blir satt riktit`() {
+        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
+        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteLøpenr() } returns "1"
+
+        val søknad = nySøknad(
+            tiltak = søknadTiltak(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
+            ),
+        )
+        val ident = søknad.personopplysninger.ident
+        val barnIdent = "barnIdent"
+        coEvery { skjermingGateway.erSkjermetPerson(ident) } returns true
+        coEvery { skjermingGateway.erSkjermetPerson(barnIdent) } returns false
+        coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident), barn(ident = barnIdent))
+        every { behandlingRepo.lagre(any()) } returnsArgument 0
+
+        val sak = sakService.motta(søknad)
+
+        sak.personopplysninger.søker().skjermet shouldBe true
+        sak.personopplysninger.barnMedIdent(barnIdent)?.skjermet shouldBe false
     }
 
     // TODO jah: Ser ikke ut som vi oppdaterer vurderingsperioden når vi legger til en overlappende søknad? Og dersom vi ikke har overlappene søknader, så får vi ikke forskjellige behandlinger? Ser på dette etter vilkår2

@@ -13,6 +13,10 @@ import no.nav.tiltakspenger.innsending.domene.tolkere.AlderTolker
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
@@ -38,9 +42,6 @@ class SakServiceImpl(
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
-        val journalpostId = søknad.journalpostId
-        val erSkjermet = runBlocking { skjermingGateway.erSkjermetPerson(ident) }
-        println("erSkjermet: $erSkjermet")
         val sak: Sak =
             (
                 sakRepo.hentForIdentMedPeriode(
@@ -52,13 +53,25 @@ class SakServiceImpl(
                     sakPersonopplysninger = SakPersonopplysninger(
                         // TODO jah: Bare for å verifisere at vi får hentet personopplysninger synkront fra PDL. De vil overskrives av Innsending i motta personopplysninger steget.
                         liste = runBlocking { personGateway.hentPerson(ident) },
-                    ),
+                    ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } },
                 )
                 ).håndter(søknad = søknad)
 
         return sakRepo.lagre(sak).also {
             utførLegacyInnsendingFørViSletterRnR(søknad)
         }
+    }
+
+    private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<String, Boolean> {
+        return liste
+            .filterNot { it is PersonopplysningerBarnUtenIdent }
+            .associate { // intellij liker bedre å bruke associate fremfor map {}.toMap()
+                when (it) {
+                    is PersonopplysningerSøker -> it.ident to skjermingGateway.erSkjermetPerson(it.ident)
+                    is PersonopplysningerBarnMedIdent -> it.ident to skjermingGateway.erSkjermetPerson(it.ident)
+                    is PersonopplysningerBarnUtenIdent -> throw IllegalStateException("Barn uten ident skal ikke være i listen")
+                }
+            }
     }
 
     /** TODO jah: Skal slettes når vi tar ned RnR. */
