@@ -1,52 +1,51 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import java.time.LocalDateTime
 
 /**
  * Livsoppholdytelser skal ha minimal med støtte ved lansering for én bruker.
  *
  *
- * @param harEnEllerFlereYtelserFraSøknaden Sier noe om det ble oppgitt.
+ * @param søknadssaksopplysning Sier noe om bruker har svart at hen mottar livsoppholdytelser i søknaden.
  * @param saksbehandlerUtfall Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
  *
  */
 data class LivsoppholdVilkår private constructor(
-    val harEnEllerFlereYtelserFraSøknaden: Boolean,
-    val saksbehandlerUtfall: Utfall2,
-    val periode: Periode,
+    val søknadssaksopplysning: LivsoppholdSaksopplysning,
+    val saksbehandlerSaksopplysning: LivsoppholdSaksopplysning?,
+    val vurderingsPeriode: Periode,
 ) : SkalErstatteVilkår {
+    override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
 
     val samletUtfall: SamletUtfall = when {
-        harEnEllerFlereYtelserFraSøknaden -> SamletUtfall.IKKE_OPPFYLT
-        saksbehandlerUtfall == Utfall2.IKKE_OPPFYLT -> SamletUtfall.IKKE_OPPFYLT
-        saksbehandlerUtfall == Utfall2.OPPFYLT -> SamletUtfall.OPPFYLT
+        saksbehandlerSaksopplysning != null && !saksbehandlerSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.OPPFYLT
+        saksbehandlerSaksopplysning != null && saksbehandlerSaksopplysning.harLivsoppholdYtelser -> throw IkkeImplementertException("Støtter ikke utfall 'IKKE_OPPFYLT' fra saksbehandler")
+        søknadssaksopplysning.harLivsoppholdYtelser -> SamletUtfall.IKKE_OPPFYLT
+        søknadssaksopplysning.harLivsoppholdYtelser -> SamletUtfall.OPPFYLT
+        saksbehandlerSaksopplysning == null -> SamletUtfall.UAVKLART
         else -> throw IllegalStateException("Ugyldig utfall")
     }
 
-    override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
-
-    // TODO kew: Dette er bare frem til vi splitter livsoppholdytelser til å inneholde alle delvilkårene.
-    val totalePeriode: Periode = this.periode
-
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilLivsoppholdSaksopplysningCommand): LivsoppholdVilkår {
-        val livsoppholdSaksopplysning = LivsoppholdSaksopplysning.Saksbehandler(
-            deltar = Periodisering(
-                command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-            ).utvid(Deltagelse.DELTAR_IKKE, totalePeriode),
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val deltar = when (command.deltakelseForPeriode.all { it.deltar }) {
+            true -> true
+            false -> false
+        }
+        val livsoppholdSaksopplysning =
+            LivsoppholdSaksopplysning.Saksbehandler(
+                harLivsoppholdYtelser = deltar,
+                årsakTilEndring = command.årsakTilEndring,
+                tidsstempel = LocalDateTime.now(),
+                saksbehandler = command.saksbehandler,
+                periode = vurderingsPeriode
+            )
         return this.copy(
-            saksbehandlerUtfall = saksbehandlerUtfall,
+            saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
         )
     }
 
@@ -54,13 +53,12 @@ data class LivsoppholdVilkår private constructor(
 
     companion object {
         fun opprett(
-            harEnEllerFlereYtelserFraSøknaden: Boolean,
-            periode: Periode,
+            livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
         ): LivsoppholdVilkår {
             return LivsoppholdVilkår(
-                harEnEllerFlereYtelserFraSøknaden = harEnEllerFlereYtelserFraSøknaden,
-                saksbehandlerUtfall = Utfall2.UAVKLART,
-                periode = periode,
+                søknadssaksopplysning = livsoppholdSaksopplysning.harLivsoppholdYtelser,
+                saksbehandlerSaksopplysning = null,
+                vurderingsPeriode = livsoppholdSaksopplysning.periode,
             )
         }
 
@@ -69,15 +67,15 @@ data class LivsoppholdVilkår private constructor(
          */
         fun fromDb(
             harEnEllerFlereYtelserFraSøknaden: Boolean,
-            saksbehandlerUtfall: Utfall2,
-            periode: Periode,
+            livsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
+            vurderingsPeriode: Periode,
         ): LivsoppholdVilkår {
             return LivsoppholdVilkår(
-                harEnEllerFlereYtelserFraSøknaden = harEnEllerFlereYtelserFraSøknaden,
-                saksbehandlerUtfall = saksbehandlerUtfall,
-                periode = periode
+                søknadssaksopplysning = harEnEllerFlereYtelserFraSøknaden,
+                saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
+                vurderingsPeriode = vurderingsPeriode,
 
-            )
+                )
         }
     }
 }

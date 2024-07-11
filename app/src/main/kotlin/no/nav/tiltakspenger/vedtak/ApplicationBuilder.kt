@@ -5,6 +5,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
@@ -55,6 +56,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 innsendingAdminService = innsendingAdminService,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
+                livsoppholdVilkårService = livsoppholdVilkårService,
             )
         }
         .build()
@@ -108,6 +110,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             søkerMediator = søkerMediator,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
+        behandlingService = behandlingService,
+        behandlingRepo = behandlingRepo,
+    )
+    private val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
         behandlingService = behandlingService,
         behandlingRepo = behandlingRepo,
     )

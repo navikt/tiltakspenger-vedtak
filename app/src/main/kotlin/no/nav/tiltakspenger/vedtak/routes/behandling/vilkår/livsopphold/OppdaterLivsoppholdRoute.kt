@@ -9,8 +9,8 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
-import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -21,7 +21,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 fun Route.oppdaterLivsoppholdRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-    kvpVilkårService: KvpVilkårService,
+    livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
     data class DeltarForPeriode(
         val periode: PeriodeDTO,
@@ -31,12 +31,12 @@ fun Route.oppdaterLivsoppholdRoute(
     data class Body(
         val ytelseForPeriode: List<DeltarForPeriode>,
         /** Drop-down i frontend. */
-        val årsakTilEndring: ÅrsakTilEndringDTO,
+        val årsakTilEndring: ÅrsakTilEndringLivsoppholdDTO,
     ) {
-        fun toCommand(behandlingId: BehandlingId, saksbehandler: Saksbehandler): LeggTilKvpSaksopplysningCommand {
-            return LeggTilKvpSaksopplysningCommand(
+        fun toCommand(behandlingId: BehandlingId, saksbehandler: Saksbehandler): LeggTilLivsoppholdSaksopplysningCommand {
+            return LeggTilLivsoppholdSaksopplysningCommand(
                 deltakelseForPeriode = this.ytelseForPeriode.map {
-                    LeggTilKvpSaksopplysningCommand.DeltakelseForPeriode(
+                    LeggTilLivsoppholdSaksopplysningCommand.DeltakelseForPeriode(
                         periode = it.periode.toDomain(),
                         deltar = it.deltar,
                     )
@@ -47,21 +47,21 @@ fun Route.oppdaterLivsoppholdRoute(
             )
         }
     }
-    post("$behandlingPath/{behandlingId}/vilkar/kvp") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kvp")
+    post("$behandlingPath/{behandlingId}/vilkar/livsopphold") {
+        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/livsopphold")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val body = call.receive<Body>()
         if (body.ytelseForPeriode.isEmpty()) {
-            throw IllegalArgumentException("Dersom saksbehandler ønsker å legge til en kvp-saksopplysning må hen spesifisere minst én periode")
+            throw IllegalArgumentException("Dersom saksbehandler ønsker å legge til livsopphold-saksopplysning må hen spesifisere minst én periode")
         }
-        kvpVilkårService.leggTilSaksopplysning(
+        livsoppholdVilkårService.leggTilSaksopplysning(
             body.toCommand(behandlingId, saksbehandler),
         ).let {
             call.respond(
                 status = HttpStatusCode.Created,
-                message = it.vilkårssett.kvpVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.livsoppholdVilkår.toDTO(),
             )
         }
     }

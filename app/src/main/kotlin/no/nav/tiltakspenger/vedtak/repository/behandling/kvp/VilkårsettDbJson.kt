@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.db.serialize
+import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.toDbJson
 import java.security.InvalidParameterException
 
 /**
@@ -14,6 +16,7 @@ import java.security.InvalidParameterException
  */
 private class VilkårssettJson(
     val kvpVilkår: KVPVilkårDbJson,
+    val livsoppholdVilkår: LivsoppholdVilkårDbJson,
 )
 
 internal fun String.toVilkårssett(
@@ -26,6 +29,7 @@ internal fun String.toVilkårssett(
         val vilkårssettJson = deserialize<VilkårssettJson>(this)
         return Vilkårssett(
             kvpVilkår = vilkårssettJson.kvpVilkår.toDomain(),
+            livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             kravdatoSaksopplysninger = kravdatoSaksopplysninger,
@@ -37,5 +41,5 @@ internal fun String.toVilkårssett(
 }
 
 internal fun Vilkårssett.toDbJson(): String {
-    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson()))
+    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson(), livsoppholdVilkår = livsoppholdVilkår.toDbJson()))
 }
