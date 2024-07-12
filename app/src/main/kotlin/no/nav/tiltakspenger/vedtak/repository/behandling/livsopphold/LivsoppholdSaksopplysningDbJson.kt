@@ -47,7 +47,6 @@ internal data class LivsoppholdSaksopplysningDbJson(
             }
         }
     }
-
 }
 
 internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJson {
@@ -69,4 +68,3 @@ internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJs
         tidsstempel = tidsstempel.toString(),
     )
 }
-

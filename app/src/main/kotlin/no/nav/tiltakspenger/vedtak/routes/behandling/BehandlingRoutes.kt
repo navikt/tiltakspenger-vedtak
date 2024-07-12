@@ -48,7 +48,7 @@ fun Route.behandlingRoutes(
     innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
-    livsoppholdVilkårService: LivsoppholdVilkårService
+    livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
     get("$behandlingPath/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")

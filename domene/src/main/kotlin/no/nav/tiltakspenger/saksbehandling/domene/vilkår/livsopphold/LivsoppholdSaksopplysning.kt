@@ -28,11 +28,11 @@ sealed interface LivsoppholdSaksopplysning {
             return when (harLivsoppholdYtelser) {
                 true -> Periodisering(
                     Utfall2.IKKE_OPPFYLT,
-                    periode
+                    periode,
                 )
                 false -> Periodisering(
                     Utfall2.OPPFYLT,
-                    periode
+                    periode,
                 )
             }
         }
@@ -56,7 +56,7 @@ sealed interface LivsoppholdSaksopplysning {
                 true -> throw IkkeImplementertException("Støtter ikke avslag enda.")
                 false -> Periodisering(
                     Utfall2.OPPFYLT,
-                    periode
+                    periode,
                 )
             }
         }

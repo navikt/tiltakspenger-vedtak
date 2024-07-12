@@ -12,21 +12,20 @@ import java.time.LocalDateTime
 
 fun Søknad.livsoppholdSaksopplysning(vurderingsPeriode: Periode): LivsoppholdSaksopplysning {
     val harLivsoppholdYtelserISøknad =
-    fraPeriodeSpm(sykepenger) ||
-        fraPeriodeSpm(trygdOgPensjon) ||
-        fraPeriodeSpm(gjenlevendepensjon) ||
-        fraPeriodeSpm(supplerendeStønadAlder) ||
-        fraPeriodeSpm(supplerendeStønadFlyktning) ||
-        fraOgMedDatoSpm(alderspensjon) ||
-        fraPeriodeSpm(jobbsjansen) ||
-        fraPeriodeSpm(trygdOgPensjon)
+        fraPeriodeSpm(sykepenger) ||
+            fraPeriodeSpm(trygdOgPensjon) ||
+            fraPeriodeSpm(gjenlevendepensjon) ||
+            fraPeriodeSpm(supplerendeStønadAlder) ||
+            fraPeriodeSpm(supplerendeStønadFlyktning) ||
+            fraOgMedDatoSpm(alderspensjon) ||
+            fraPeriodeSpm(jobbsjansen) ||
+            fraPeriodeSpm(trygdOgPensjon)
 
     return LivsoppholdSaksopplysning.Søknad(
         harLivsoppholdYtelser = harLivsoppholdYtelserISøknad,
         tidsstempel = LocalDateTime.now(),
-        periode = vurderingsPeriode
+        periode = vurderingsPeriode,
     )
-
 }
 
 private fun fraPeriodeSpm(spm: Søknad.PeriodeSpm): Boolean {
