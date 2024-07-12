@@ -5,15 +5,14 @@ import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal data class LivsoppholdVilkårDTO(
-    val søknadssaksopplysning: LivsoppholdSaksopplysningDTO,
-    val saksbehandlerSaksopplysning: LivsoppholdSaksopplysningDTO?,
+    val avklartSaksopplysning: LivsoppholdSaksopplysningDTO,
     val vurderingsPeriode: PeriodeDTO,
 )
 
 internal fun LivsoppholdVilkår.toDTO(): LivsoppholdVilkårDTO {
+    val avklartSaksopplysning = if (saksbehandlerSaksopplysning == null) søknadssaksopplysning else saksbehandlerSaksopplysning
     return LivsoppholdVilkårDTO(
-        søknadssaksopplysning = søknadssaksopplysning.toDTO(),
-        saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDTO(),
+        avklartSaksopplysning = avklartSaksopplysning!!.toDTO(),
         vurderingsPeriode = vurderingsPeriode.toDTO(),
     )
 }

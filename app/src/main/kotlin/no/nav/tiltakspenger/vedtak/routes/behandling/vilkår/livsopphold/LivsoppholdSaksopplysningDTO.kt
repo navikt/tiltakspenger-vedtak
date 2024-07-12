@@ -12,9 +12,9 @@ import java.time.LocalDateTime
  * Har ansvar for å serialisere Vilkårssett til json. Kontrakt mot frontend.
  */
 internal data class LivsoppholdSaksopplysningDTO(
-    val avklartHarLivsoppholdYtelser: PeriodeMedDeltagelseDTO,
-    val saksbehandlerDTO: SaksbehandlerDTO?,
-    val årsakTilEndringLivsoppholdDTO: ÅrsakTilEndringDTO?,
+    val periodeMedDeltagelse: PeriodeMedDeltagelseDTO,
+    val saksbehandler: SaksbehandlerDTO?,
+    val årsakTilEndringLivsopphold: ÅrsakTilEndringDTO?,
     val tidspunkt: LocalDateTime,
 ) {
     enum class ÅrsakTilEndringDTO {
@@ -29,9 +29,9 @@ internal fun LivsoppholdSaksopplysning.toDTO(): LivsoppholdSaksopplysningDTO {
         false -> DeltagelseDTO.DELTAR_IKKE
     }
     return LivsoppholdSaksopplysningDTO(
-        avklartHarLivsoppholdYtelser = PeriodeMedDeltagelseDTO(periode = this.periode.toDTO(), deltagelseDTO),
-        saksbehandlerDTO = this.saksbehandler?.toDTO(),
-        årsakTilEndringLivsoppholdDTO = when (årsakTilEndring) {
+        periodeMedDeltagelse = PeriodeMedDeltagelseDTO(periode = this.periode.toDTO(), deltagelseDTO),
+        saksbehandler = this.saksbehandler?.toDTO(),
+        årsakTilEndringLivsopphold = when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null

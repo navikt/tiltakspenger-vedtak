@@ -21,9 +21,11 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
@@ -280,7 +282,11 @@ fun Application.jacksonSerialization() {
 fun Application.configureExceptions() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            ExceptionHandler.handle(call, cause)
+            if (cause is IkkeImplementertException) {
+                call.respondText(text = "Støtter ikke utfall: $cause", status = HttpStatusCode.NotImplemented)
+            } else {
+                ExceptionHandler.handle(call, cause)
+            }
         }
     }
 }

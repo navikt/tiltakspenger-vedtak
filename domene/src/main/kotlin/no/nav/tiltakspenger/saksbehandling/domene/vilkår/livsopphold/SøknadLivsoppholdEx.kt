@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 fun Søknad.livsoppholdSaksopplysning(vurderingsPeriode: Periode): LivsoppholdSaksopplysning {
     val harLivsoppholdYtelserISøknad =
         fraPeriodeSpm(sykepenger) ||
+            fraJaNeiSpm(etterlønn) ||
             fraPeriodeSpm(trygdOgPensjon) ||
             fraPeriodeSpm(gjenlevendepensjon) ||
             fraPeriodeSpm(supplerendeStønadAlder) ||
