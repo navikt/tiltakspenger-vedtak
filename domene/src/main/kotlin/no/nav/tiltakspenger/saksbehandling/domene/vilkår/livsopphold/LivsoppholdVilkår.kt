@@ -42,7 +42,7 @@ data class LivsoppholdVilkår private constructor(
                 årsakTilEndring = command.årsakTilEndring,
                 tidsstempel = LocalDateTime.now(),
                 saksbehandler = command.saksbehandler,
-                periode = vurderingsPeriode
+                periode = vurderingsPeriode,
             )
         return this.copy(
             saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
@@ -56,7 +56,7 @@ data class LivsoppholdVilkår private constructor(
             livsoppholdSaksopplysning: LivsoppholdSaksopplysning,
         ): LivsoppholdVilkår {
             return LivsoppholdVilkår(
-                søknadssaksopplysning = livsoppholdSaksopplysning.harLivsoppholdYtelser,
+                søknadssaksopplysning = livsoppholdSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 vurderingsPeriode = livsoppholdSaksopplysning.periode,
             )
@@ -66,7 +66,7 @@ data class LivsoppholdVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            harEnEllerFlereYtelserFraSøknaden: Boolean,
+            harEnEllerFlereYtelserFraSøknaden: LivsoppholdSaksopplysning,
             livsoppholdSaksopplysning: LivsoppholdSaksopplysning?,
             vurderingsPeriode: Periode,
         ): LivsoppholdVilkår {
@@ -75,7 +75,7 @@ data class LivsoppholdVilkår private constructor(
                 saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
                 vurderingsPeriode = vurderingsPeriode,
 
-                )
+            )
         }
     }
 }
