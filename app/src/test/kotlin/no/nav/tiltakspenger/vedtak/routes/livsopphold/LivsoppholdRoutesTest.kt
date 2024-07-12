@@ -53,6 +53,7 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
@@ -263,6 +264,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger)
         livsoppholdVilkårSykepenger.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedEtterlønn = nySøknad(
             etterlønn = ja(),
@@ -270,6 +272,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn)
         livsoppholdVilkårEtterlønn.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedGjenlevendepensjon = nySøknad(
             gjenlevendepensjon = periodeJa(),
@@ -277,6 +280,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårGjenlevendepensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuAlder = nySøknad(
             supplerendeStønadAlder = periodeJa(),
@@ -284,6 +288,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder)
         livsoppholdVilkårSuAlder.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuflykning = nySøknad(
             supplerendeStønadFlyktning = periodeJa(),
@@ -291,6 +296,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning)
         livsoppholdVilkårSuflykning.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedJobbsjansen = nySøknad(
             jobbsjansen = periodeJa(),
@@ -298,6 +304,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen)
         livsoppholdVilkårJobbsjansen.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedPensjonsinntekt = nySøknad(
             trygdOgPensjon = periodeJa(),
@@ -305,6 +312,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt)
         livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedAlderpensjon = nySøknad(
             alderspensjon = fraOgMedDatoJa(),
@@ -312,6 +320,7 @@ class LivsoppholdRoutesTest {
         val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon)
         livsoppholdVilkårAlderpensjon.avklartSaksopplysning.periodeMedDeltagelse
             .deltagelse shouldBe DeltagelseDTO.DELTAR
+        livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
     }
 
     private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad): LivsoppholdVilkårDTO {
