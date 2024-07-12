@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -25,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -39,6 +41,7 @@ class BehandlingServiceImpl(
     private val utbetalingService: UtbetalingService,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
+    private val tiltakGateway: TiltakGateway,
     private val multiRepo: MultiRepo,
     private val sakRepo: SakRepo,
 ) : BehandlingService {
@@ -171,7 +174,13 @@ class BehandlingServiceImpl(
         if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
         } else {
-            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+            val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
+            val oppdatertBehandling = behandling.oppdaterTiltak(
+                tiltak.filter {
+                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+                },
+            )
+            behandlingRepo.lagre(oppdatertBehandling.startBehandling(utøvendeSaksbehandler))
         }
     }
 

@@ -24,7 +24,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
@@ -63,20 +65,22 @@ class SøknadRoutesTest {
     private val utbetalingService = mockk<UtbetalingService>(relaxed = true)
     private val brevPublisherGateway = mockk<BrevPublisherGateway>(relaxed = true)
     private val meldekortGrunnlagGateway = mockk<MeldekortGrunnlagGateway>(relaxed = true)
+    private val tiltakGateway = mockk<TiltakGateway>(relaxed = true)
     private val multiRepo = mockk<MultiRepo>(relaxed = true)
     private val personGateway = mockk<PersonGateway>(relaxed = true)
     private val skjermingGateway = mockk<SkjermingGateway>(relaxed = true)
 
     private val behandlingService =
-        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
-            behandlingRepo,
-            vedtakRepo,
-            personopplysningRepo,
-            utbetalingService,
-            brevPublisherGateway,
-            meldekortGrunnlagGateway,
-            multiRepo,
-            sakRepo,
+        BehandlingServiceImpl(
+            behandlingRepo = behandlingRepo,
+            vedtakRepo = vedtakRepo,
+            personopplysningRepo = personopplysningRepo,
+            utbetalingService = utbetalingService,
+            brevPublisherGateway = brevPublisherGateway,
+            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+            tiltakGateway = tiltakGateway,
+            multiRepo = multiRepo,
+            sakRepo = sakRepo,
         )
     private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator, skjermingGateway)
 
