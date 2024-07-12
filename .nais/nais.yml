@@ -54,8 +54,11 @@ spec:
               - name: tpts_ds
   accessPolicy:
     outbound:
+      rules:
+        - application: tiltakspenger-tiltak
       external:
         - host: {{ urlPdl }}
+        - host: {{ urlSkjerming }}
     inbound:
       rules:
         - application: tiltakspenger-admin

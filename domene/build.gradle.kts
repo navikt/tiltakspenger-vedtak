@@ -1,7 +1,7 @@
-val jacksonVersion = "2.17.1"
+val jacksonVersion = "2.17.2"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.11"
-val felleslibVersion = "0.0.139"
+val felleslibVersion = "0.0.140"
 val kotlinxCoroutinesVersion = "1.8.1"
 
 dependencies {
@@ -14,7 +14,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("io.micrometer:micrometer-core:1.13.1")
+    implementation("io.micrometer:micrometer-core:1.13.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinxCoroutinesVersion")
 
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")

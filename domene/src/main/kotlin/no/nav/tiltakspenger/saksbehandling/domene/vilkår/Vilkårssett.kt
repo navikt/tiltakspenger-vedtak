@@ -35,9 +35,9 @@ data class Vilkårssett(
 //            }
 //        }
         // TODO jah: Brekker for mange tester ved å legge inn den sjekken her. Bør legges inn når vi er ferdig med vilkår 2.0
-//        require(kvpVilkår.totalePeriode.inneholderHele(saksopplysninger.totalePeriode())) {
-//            "KVPVilkår (${kvpVilkår.totalePeriode}) og saksopplysninger (${saksopplysninger.totalePeriode()}) sine perioder må være like."
-//        }
+        require(kvpVilkår.totalePeriode.inneholderHele(saksopplysninger.totalePeriode())) {
+            "KVPVilkår (${kvpVilkår.totalePeriode}) og saksopplysninger (${saksopplysninger.totalePeriode()}) sine perioder må være like."
+        }
     }
 
     fun oppdaterSaksopplysninger(saksopplysninger: List<Saksopplysning>): Vilkårssett {

@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceI
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -85,6 +86,7 @@ class LivsoppholdRoutesTest {
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
+    private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
     private val saksopplysningRepo = SaksopplysningRepo()
     private val behandlingRepo = PostgresBehandlingRepo(
@@ -127,9 +129,9 @@ class LivsoppholdRoutesTest {
         utbetalingService = mockedUtbetalingServiceImpl,
         brevPublisherGateway = mockBrevPublisherGateway,
         meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+        tiltakGateway = mockTiltakGateway,
         multiRepo = multiRepo,
         sakRepo = sakRepo,
-
     )
     private val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(behandlingRepo, behandlingService)
 

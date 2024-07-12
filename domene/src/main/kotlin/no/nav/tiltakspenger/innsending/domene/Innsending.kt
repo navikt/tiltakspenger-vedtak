@@ -8,16 +8,12 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.innsending.domene.helper.DirtyCheckingAktivitetslogg
 import no.nav.tiltakspenger.innsending.domene.meldinger.FeilMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.ForeldrepengerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.OvergangsstønadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.ResetInnsendingHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.SøknadMottattHendelse
 import no.nav.tiltakspenger.innsending.domene.meldinger.TiltakMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.UføreMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.YtelserMottattHendelse
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
@@ -43,10 +39,6 @@ class Innsending private constructor(
     tilstand: Tilstand,
     sistEndret: LocalDateTime?,
     personopplysninger: InnhentedePersonopplysninger?,
-    ytelser: InnhentedeArenaYtelser?,
-    foreldrepengerVedtak: InnhentedeForeldrepengerVedtak?,
-    overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak?,
-    uføreVedtak: InnhentetUføre?,
     aktivitetslogg: Aktivitetslogg,
 ) : KontekstLogable {
     private val dirtyChecker: DirtyChecker = DirtyChecker()
@@ -59,10 +51,6 @@ class Innsending private constructor(
     fun endringsHash(): String =
         listOfNotNull(
             personopplysninger?.tidsstempelInnhentet,
-            ytelser?.tidsstempelInnhentet,
-            foreldrepengerVedtak?.tidsstempelInnhentet,
-            uføreVedtak?.tidsstempelInnhentet,
-            overgangsstønadVedtak?.tidsstempelInnhentet,
         ).fold(journalpostId.hashCode()) { hash, tidsstempel -> 31 * hash + tidsstempel.hashCode() }.toString()
 
     var tilstand: Tilstand = tilstand
@@ -75,30 +63,6 @@ class Innsending private constructor(
         private set(value) {
             field = value
             dirtyChecker.set("personopplysninger")
-        }
-
-    var ytelser: InnhentedeArenaYtelser? = ytelser
-        private set(value) {
-            field = value
-            dirtyChecker.set("ytelser")
-        }
-
-    var foreldrepengerVedtak: InnhentedeForeldrepengerVedtak? = foreldrepengerVedtak
-        private set(value) {
-            field = value
-            dirtyChecker.set("foreldrepenger")
-        }
-
-    var overgangsstønadVedtak: InnhentedeOvergangsstønadVedtak? = overgangsstønadVedtak
-        private set(value) {
-            field = value
-            dirtyChecker.set("overgangsstønad")
-        }
-
-    var uføreVedtak: InnhentetUføre? = uføreVedtak
-        private set(value) {
-            field = value
-            dirtyChecker.set("uføre")
         }
 
     var sistEndret: LocalDateTime? = sistEndret
@@ -139,10 +103,6 @@ class Innsending private constructor(
         tilstand = InnsendingRegistrert,
         sistEndret = null,
         personopplysninger = null,
-        ytelser = null,
-        foreldrepengerVedtak = null,
-        overgangsstønadVedtak = null,
-        uføreVedtak = null,
         aktivitetslogg = Aktivitetslogg(),
     )
 
@@ -158,16 +118,8 @@ class Innsending private constructor(
             tom: LocalDate,
             tilstand: String,
             sistEndret: LocalDateTime,
-            foreldrepengerVedtak: List<ForeldrepengerVedtak>,
-            overgangsstønadVedtak: List<OvergangsstønadVedtak>,
-            uføreVedtak: UføreVedtak?,
             personopplysningerliste: List<Personopplysninger>,
-            ytelserliste: List<YtelseSak>,
-            tidsstempelYtelserInnhentet: LocalDateTime?,
             tidsstempelPersonopplysningerInnhentet: LocalDateTime?,
-            tidsstempelForeldrepengerVedtakInnhentet: LocalDateTime?,
-            tidsstempelOvergangsstønadVedtakInnhentet: LocalDateTime?,
-            tidsstempelUføreInnhentet: LocalDateTime?,
             tidsstempelSkjermingInnhentet: LocalDateTime?,
             aktivitetslogg: Aktivitetslogg,
         ): Innsending {
@@ -186,25 +138,6 @@ class Innsending private constructor(
                         tidsstempelSkjermingInnhentet = tidsstempelSkjermingInnhentet,
                     )
                 },
-                ytelser = tidsstempelYtelserInnhentet?.let { InnhentedeArenaYtelser(ytelserliste, it) },
-                foreldrepengerVedtak = tidsstempelForeldrepengerVedtakInnhentet?.let {
-                    InnhentedeForeldrepengerVedtak(
-                        foreldrepengerVedtak,
-                        it,
-                    )
-                },
-                overgangsstønadVedtak = tidsstempelOvergangsstønadVedtakInnhentet?.let {
-                    InnhentedeOvergangsstønadVedtak(
-                        overgangsstønadVedtak,
-                        it,
-                    )
-                },
-                uføreVedtak = tidsstempelUføreInnhentet?.let {
-                    InnhentetUføre(
-                        uføreVedtak,
-                        tidsstempelUføreInnhentet,
-                    )
-                },
                 aktivitetslogg = aktivitetslogg,
             )
         }
@@ -212,12 +145,9 @@ class Innsending private constructor(
         private fun convertTilstand(tilstand: String): Tilstand {
             return when (InnsendingTilstandType.valueOf(tilstand)) {
                 InnsendingTilstandType.InnsendingRegistrert -> InnsendingRegistrert
+                InnsendingTilstandType.AvventerPersonopplysninger -> AvventerPersonopplysninger
                 InnsendingTilstandType.AvventerSkjermingdata -> AvventerSkjermingdata
                 InnsendingTilstandType.AvventerTiltak -> AvventerTiltak
-                InnsendingTilstandType.AvventerYtelser -> AvventerYtelser
-                InnsendingTilstandType.AvventerForeldrepenger -> AvventerForeldrepenger
-                InnsendingTilstandType.AvventerOvergangsstønad -> AvventerOvergangsstønad
-                InnsendingTilstandType.AvventerUføre -> AvventerUføre
                 InnsendingTilstandType.InnsendingFerdigstilt -> InnsendingFerdigstilt
                 InnsendingTilstandType.FaktainnhentingFeilet -> FaktainnhentingFeilet
             }
@@ -262,42 +192,6 @@ class Innsending private constructor(
         // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
         kontekst(tiltakMottattHendelse, "Registrert TiltakMottattHendelse")
         tilstand.håndter(this, tiltakMottattHendelse)
-    }
-
-    fun håndter(ytelserMottattHendelse: YtelserMottattHendelse) {
-        if (journalpostId != ytelserMottattHendelse.journalpostId()) return
-        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
-        // til Søker sin aktivitetslogg (Søker sin blir forelder)
-        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(ytelserMottattHendelse, "Registrert YtelserMottattHendelse")
-        tilstand.håndter(this, ytelserMottattHendelse)
-    }
-
-    fun håndter(foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
-        if (journalpostId != foreldrepengerMottattHendelse.journalpostId()) return
-        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
-        // til Søker sin aktivitetslogg (Søker sin blir forelder)
-        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(foreldrepengerMottattHendelse, "Registrert ForeldrepengerMottattHendelse")
-        tilstand.håndter(this, foreldrepengerMottattHendelse)
-    }
-
-    fun håndter(overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
-        if (journalpostId != overgangsstønadMottattHendelse.journalpostId()) return
-        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
-        // til Søker sin aktivitetslogg (Søker sin blir forelder)
-        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(overgangsstønadMottattHendelse, "Registrert OvergangsstønadMottattHendelse")
-        tilstand.håndter(this, overgangsstønadMottattHendelse)
-    }
-
-    fun håndter(uføreMottattHendelse: UføreMottattHendelse) {
-        if (journalpostId != uføreMottattHendelse.journalpostId()) return
-        // Den påfølgende linja er viktig, fordi den blant annet kobler hendelsen sin aktivitetslogg
-        // til Søker sin aktivitetslogg (Søker sin blir forelder)
-        // Det gjør at alt som sendes inn i hendelsen sin aktivitetslogg ender opp i Søker sin også.
-        kontekst(uføreMottattHendelse, "Registrert UføreMottattHendelse")
-        tilstand.håndter(this, uføreMottattHendelse)
     }
 
     fun håndter(resetInnsendingHendelse: ResetInnsendingHendelse) {
@@ -365,25 +259,9 @@ class Innsending private constructor(
         fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
         }
 
-        fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
-            innsending.mottaYtelser(ytelserMottattHendelse)
-        }
-
-        fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
-            innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
-        }
-
-        fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
-            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
-        }
-
-        fun håndter(innsending: Innsending, uføreMottattHendelse: UføreMottattHendelse) {
-            innsending.mottaUføreVedtak(uføreMottattHendelse)
-        }
-
         fun håndter(innsending: Innsending, resetInnsendingHendelse: ResetInnsendingHendelse) {
-            innsending.trengerSkjermingdata(resetInnsendingHendelse)
-            innsending.tilstand(resetInnsendingHendelse, AvventerSkjermingdata)
+            innsending.trengerPersonopplysninger(resetInnsendingHendelse)
+            innsending.tilstand(resetInnsendingHendelse, AvventerPersonopplysninger)
             resetInnsendingHendelse.info("Innsending resatt, faktainnhenting begynner på nytt")
         }
 
@@ -417,8 +295,24 @@ class Innsending private constructor(
 
         override fun håndter(innsending: Innsending, søknadMottattHendelse: SøknadMottattHendelse) {
             DomeneMetrikker.søknadMottattCounter().increment()
-            innsending.trengerSkjermingdata(søknadMottattHendelse)
-            innsending.tilstand(søknadMottattHendelse, AvventerSkjermingdata)
+            innsending.trengerPersonopplysninger(søknadMottattHendelse)
+            innsending.tilstand(søknadMottattHendelse, AvventerPersonopplysninger)
+        }
+    }
+
+    internal object AvventerPersonopplysninger : Tilstand {
+        override val type: InnsendingTilstandType
+            get() = InnsendingTilstandType.AvventerPersonopplysninger
+        override val timeout: Duration
+            get() = Duration.ofDays(1)
+
+        override fun håndter(
+            innsending: Innsending,
+            personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
+        ) {
+            innsending.mottaPersonopplysninger(personopplysningerMottattHendelse)
+            innsending.trengerSkjermingdata(personopplysningerMottattHendelse)
+            innsending.tilstand(personopplysningerMottattHendelse, AvventerSkjermingdata)
         }
     }
 
@@ -442,65 +336,8 @@ class Innsending private constructor(
             get() = Duration.ofDays(1)
 
         override fun håndter(innsending: Innsending, tiltakMottattHendelse: TiltakMottattHendelse) {
-            innsending.trengerArenaYtelse(tiltakMottattHendelse)
-            innsending.tilstand(tiltakMottattHendelse, AvventerYtelser)
-        }
-    }
-
-    internal object AvventerYtelser : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.AvventerYtelser
-        override val timeout: Duration
-            get() = Duration.ofDays(1)
-
-        override fun håndter(innsending: Innsending, ytelserMottattHendelse: YtelserMottattHendelse) {
-            innsending.mottaYtelser(ytelserMottattHendelse)
-            innsending.trengerForeldrepenger(ytelserMottattHendelse)
-            innsending.tilstand(ytelserMottattHendelse, AvventerForeldrepenger)
-        }
-    }
-
-    internal object AvventerForeldrepenger : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.AvventerForeldrepenger
-        override val timeout: Duration
-            get() = Duration.ofDays(1)
-
-        override fun håndter(innsending: Innsending, foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse) {
-            foreldrepengerMottattHendelse.info("Fikk info om foreldrepenger: ${foreldrepengerMottattHendelse.foreldrepengerVedtakListe()}")
-            innsending.mottaForeldrepengerVedtak(foreldrepengerMottattHendelse)
-            innsending.trengerOvergangsstønad(foreldrepengerMottattHendelse)
-            innsending.tilstand(foreldrepengerMottattHendelse, AvventerOvergangsstønad)
-        }
-    }
-
-    internal object AvventerOvergangsstønad : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.AvventerOvergangsstønad
-        override val timeout: Duration
-            get() = Duration.ofDays(1)
-
-        override fun håndter(innsending: Innsending, overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse) {
-            overgangsstønadMottattHendelse.info("Fikk info om overgangsstønad: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
-            innsending.mottaOvergangsstønadVedtak(overgangsstønadMottattHendelse)
-            innsending.trengerUføre(overgangsstønadMottattHendelse)
-            innsending.tilstand(overgangsstønadMottattHendelse, AvventerUføre)
-        }
-    }
-
-    internal object AvventerUføre : Tilstand {
-        override val type: InnsendingTilstandType
-            get() = InnsendingTilstandType.AvventerUføre
-        override val timeout: Duration
-            get() = Duration.ofDays(1)
-
-        override fun håndter(innsending: Innsending, uføreMottattHendelse: UføreMottattHendelse) {
-            uføreMottattHendelse.info("Fikk info om uføreVedtak: ${uføreMottattHendelse.uføreVedtak()}")
-            innsending.mottaUføreVedtak(uføreMottattHendelse)
-            innsending.tilstand(uføreMottattHendelse, InnsendingFerdigstilt)
-
-            // TODO her kan vi trigge vilkårsvurdering av en behandling
-            //      eller vi kan gjøre det fortløpende etter hver fakta innhenting
+            tiltakMottattHendelse.info("Fikk info om tiltak: ${tiltakMottattHendelse.tiltaksaktivitet()}")
+            innsending.tilstand(tiltakMottattHendelse, InnsendingFerdigstilt)
         }
     }
 
@@ -514,12 +351,9 @@ class Innsending private constructor(
             innsendingUtdatertHendelse.info(
                 "Mottatt InnsendingUtdatertHendelse, trenger å oppdatere faktaene vi har hentet inn",
             )
+            innsending.trengerPersonopplysninger(innsendingUtdatertHendelse)
             innsending.trengerSkjermingdata(innsendingUtdatertHendelse)
-            innsending.trengerArenaYtelse(innsendingUtdatertHendelse)
             innsending.trengerTiltak(innsendingUtdatertHendelse)
-            innsending.trengerForeldrepenger(innsendingUtdatertHendelse)
-            innsending.trengerOvergangsstønad(innsendingUtdatertHendelse)
-            innsending.trengerUføre(innsendingUtdatertHendelse)
         }
     }
 
@@ -528,6 +362,14 @@ class Innsending private constructor(
             get() = InnsendingTilstandType.FaktainnhentingFeilet
         override val timeout: Duration
             get() = Duration.ofDays(1)
+    }
+
+    private fun trengerPersonopplysninger(hendelse: InnsendingHendelse) {
+        hendelse.behov(
+            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.personopplysninger,
+            melding = "Trenger personopplysninger",
+            detaljer = mapOf("ident" to this.ident),
+        )
     }
 
     private fun trengerSkjermingdata(hendelse: InnsendingHendelse) {
@@ -546,50 +388,6 @@ class Innsending private constructor(
             type = Aktivitetslogg.Aktivitet.Behov.Behovtype.tiltak,
             melding = "Trenger tiltak",
             detaljer = mapOf("ident" to this.ident),
-        )
-    }
-
-    private fun trengerArenaYtelse(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.arenaytelser,
-            melding = "Trenger arenaytelser",
-            detaljer = mapOf("ident" to this.ident),
-        )
-    }
-
-    private fun trengerForeldrepenger(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.fpytelser,
-            melding = "Trenger fpytelser",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
-        )
-    }
-
-    private fun trengerOvergangsstønad(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.overgangsstønad,
-            melding = "Trenger overgangsstønad",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
-        )
-    }
-
-    private fun trengerUføre(hendelse: InnsendingHendelse) {
-        hendelse.behov(
-            type = Aktivitetslogg.Aktivitet.Behov.Behovtype.uføre,
-            melding = "Trenger uføre",
-            detaljer = mapOf(
-                "ident" to this.ident,
-                "fom" to this.filtreringsperiode().fraOgMed,
-                "tom" to this.filtreringsperiode().tilOgMed,
-            ),
         )
     }
 
@@ -719,36 +517,6 @@ class Innsending private constructor(
         }
     }
 
-    private fun mottaYtelser(ytelserMottattHendelse: YtelserMottattHendelse) {
-        if (this.ytelser != null &&
-            !ytelserMottattHendelse.tidsstempelYtelserInnhentet()
-                .isAfter(this.ytelser!!.tidsstempelInnhentet)
-        ) {
-            ytelserMottattHendelse
-                .info("Fikk utdatert info om arenaYtelser, lagrer ikke")
-            return
-        }
-
-        ytelserMottattHendelse.info("Fikk info om arenaYtelser: ${ytelserMottattHendelse.ytelseSak()}")
-        this.ytelser = InnhentedeArenaYtelser(
-            tidsstempelInnhentet = ytelserMottattHendelse.tidsstempelYtelserInnhentet(),
-            ytelserliste = ytelserMottattHendelse.ytelseSak().filter {
-                val tomDato = it.tomGyldighetsperiode?.toLocalDate() ?: LocalDate.MAX
-                this.filtreringsperiode().overlapperMed(
-                    Periode(
-                        it.fomGyldighetsperiode.toLocalDate(),
-                        tomDato.let { tom ->
-                            if (tom < it.fomGyldighetsperiode.toLocalDate()) LocalDate.MAX else tom
-                        },
-                    ),
-                )
-            }.also {
-                val antall = ytelserMottattHendelse.ytelseSak().size - it.size
-                LOG.info { "Filtrerte bort $antall gamle ytelser" }
-            },
-        )
-    }
-
     private fun mottaPersonopplysninger(
         personopplysningerMottattHendelse: PersonopplysningerMottattHendelse,
     ) {
@@ -766,78 +534,6 @@ class Innsending private constructor(
         this.personopplysninger = InnhentedePersonopplysninger(
             tidsstempelInnhentet = personopplysningerMottattHendelse.tidsstempelPersonopplysningerInnhentet(),
             personopplysningerliste = personopplysningerMottattHendelse.personopplysninger(),
-        )
-    }
-
-    private fun mottaForeldrepengerVedtak(
-        foreldrepengerMottattHendelse: ForeldrepengerMottattHendelse,
-    ) {
-        if (this.foreldrepengerVedtak != null &&
-            !foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet()
-                .isAfter(this.foreldrepengerVedtak!!.tidsstempelInnhentet)
-        ) {
-            foreldrepengerMottattHendelse.info("Fikk utdatert info om foreldrepengervedtak, lagrer ikke")
-            return
-        }
-
-        foreldrepengerMottattHendelse
-            .info("Fikk info om foreldrepengerVedtak: ${foreldrepengerMottattHendelse.foreldrepengerVedtakListe()}")
-
-        this.foreldrepengerVedtak = InnhentedeForeldrepengerVedtak(
-            foreldrepengerVedtakliste = foreldrepengerMottattHendelse.foreldrepengerVedtakListe(),
-            tidsstempelInnhentet = foreldrepengerMottattHendelse.tidsstempelForeldrepengerVedtakInnhentet(),
-        )
-    }
-
-    private fun mottaOvergangsstønadVedtak(
-        overgangsstønadMottattHendelse: OvergangsstønadMottattHendelse,
-    ) {
-        if (this.overgangsstønadVedtak != null &&
-            !overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet()
-                .isAfter(this.overgangsstønadVedtak!!.tidsstempelInnhentet)
-        ) {
-            overgangsstønadMottattHendelse.info("Fikk utdatert info om overgangsstønadvedtak, lagrer ikke")
-            return
-        }
-
-        overgangsstønadMottattHendelse
-            .info("Fikk info om overgangsstønadVedtak: ${overgangsstønadMottattHendelse.overgangsstønadVedtakListe()}")
-
-        this.overgangsstønadVedtak = InnhentedeOvergangsstønadVedtak(
-            overgangsstønadVedtak = overgangsstønadMottattHendelse.overgangsstønadVedtakListe(),
-            tidsstempelInnhentet = overgangsstønadMottattHendelse.tidsstempelOvergangsstønadVedtakInnhentet(),
-        )
-    }
-
-    private fun mottaUføreVedtak(
-        uføreMottattHendelse: UføreMottattHendelse,
-    ) {
-        if (this.uføreVedtak != null &&
-            !uføreMottattHendelse.tidsstempelUføreVedtakInnhentet()
-                .isAfter(this.uføreVedtak!!.tidsstempelInnhentet)
-        ) {
-            uføreMottattHendelse.info("Fikk utdatert info om uføreVedtak, lagrer ikke")
-            return
-        }
-
-        uføreMottattHendelse
-            .info("Fikk info om uføreMottattHendelse: ${uføreMottattHendelse.uføreVedtak()}")
-
-        if (uføreMottattHendelse.uføreVedtak().virkDato != null) {
-            if (!this.filtreringsperiode().inneholder(uføreMottattHendelse.uføreVedtak().virkDato!!)) {
-                uføreMottattHendelse
-                    .info("Filtrer bort vedtak da virkDato ikke er i vurderingsperioden ${this.filtreringsperiode()}")
-                this.uføreVedtak = InnhentetUføre(
-                    uføreVedtak = null,
-                    tidsstempelInnhentet = uføreMottattHendelse.tidsstempelUføreVedtakInnhentet(),
-                )
-                return
-            }
-        }
-
-        this.uføreVedtak = InnhentetUføre(
-            uføreVedtak = uføreMottattHendelse.uføreVedtak(),
-            tidsstempelInnhentet = uføreMottattHendelse.tidsstempelUføreVedtakInnhentet(),
         )
     }
 

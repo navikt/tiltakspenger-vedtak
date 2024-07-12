@@ -43,16 +43,12 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.foreldrepengerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.overgangsstønadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.uføreRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.ytelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
@@ -126,11 +122,13 @@ internal fun Application.vedtakApi(
             søknadRoutes(innsendingMediator, søkerMediator, sakService)
             skjermingRoutes(innsendingMediator, sakService)
             tiltakRoutes(innsendingMediator, behandlingService)
-            ytelseRoutes(innsendingMediator, behandlingService)
-            foreldrepengerRoutes(innsendingMediator, behandlingService)
-            overgangsstønadRoutes(innsendingMediator)
-            uføreRoutes(innsendingMediator, behandlingService)
-            personopplysningerRoutes()
+            personopplysningerRoutes(
+                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
+                innsendingMediator = innsendingMediator,
+                søkerMediator = søkerMediator,
+                sakService = sakService,
+
+            )
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 sakService = sakService,

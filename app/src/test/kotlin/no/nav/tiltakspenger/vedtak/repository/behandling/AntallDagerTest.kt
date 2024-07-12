@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -40,6 +41,7 @@ class AntallDagerTest {
     private lateinit var utbetalingService: UtbetalingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var tiltakGateway: TiltakGateway
     private lateinit var multiRepo: MultiRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
@@ -93,16 +95,18 @@ class AntallDagerTest {
         meldekortGrunnlagGateway = mockk()
         multiRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
+        tiltakGateway = mockk(relaxed = true)
 
         behandlingService = BehandlingServiceImpl(
-            behandlingRepo,
-            vedtakRepo,
-            personopplysningRepo,
-            utbetalingService,
-            brevPublisherGateway,
-            meldekortGrunnlagGateway,
-            multiRepo,
-            sakRepo,
+            behandlingRepo = behandlingRepo,
+            vedtakRepo = vedtakRepo,
+            personopplysningRepo = personopplysningRepo,
+            utbetalingService = utbetalingService,
+            brevPublisherGateway = brevPublisherGateway,
+            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+            tiltakGateway = tiltakGateway,
+            multiRepo = multiRepo,
+            sakRepo = sakRepo,
         )
     }
 
