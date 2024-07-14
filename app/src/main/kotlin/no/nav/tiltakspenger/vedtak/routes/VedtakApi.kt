@@ -24,8 +24,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
-import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
-import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -33,19 +31,13 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
-import no.nav.tiltakspenger.vedtak.routes.admin.resettInnsendingerRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.innsendingUtdatertRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.personopplysningerRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.skjermingRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.tiltakRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
@@ -64,9 +56,6 @@ internal fun Application.vedtakApi(
     søkerService: SøkerService,
     sakService: SakService,
     behandlingService: BehandlingService,
-    innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediatorImpl,
-    innsendingAdminService: InnsendingAdminService,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
 ) {
@@ -90,7 +79,6 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 sakService = sakService,
-                innsendingMediator = innsendingMediator,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
             )
@@ -111,26 +99,12 @@ internal fun Application.vedtakApi(
             meldekortRoutes()
         }
         authenticate("admin") {
-            resettInnsendingerRoute(innsendingAdminService)
         }
         authenticate("systemtoken") {
-            søknadRoutes(innsendingMediator, søkerMediator, sakService)
-            skjermingRoutes(innsendingMediator, sakService)
-            tiltakRoutes(innsendingMediator, behandlingService)
-            personopplysningerRoutes(
-                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                sakService = sakService,
-
-            )
+            søknadRoutes(sakService)
             passageOfTimeRoutes(
                 innloggetSystembrukerProvider = innloggetSystembrukerProvider,
                 sakService = sakService,
-            )
-            innsendingUtdatertRoutes(
-                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
-                innsendingMediator = innsendingMediator,
             )
         }
         staticResources(

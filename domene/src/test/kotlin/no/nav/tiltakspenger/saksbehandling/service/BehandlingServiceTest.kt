@@ -4,6 +4,7 @@ import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -282,14 +283,16 @@ internal class BehandlingServiceTest {
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
+        coEvery { tiltakGateway.hentTiltak(any()) } answers {
+            listOf(
+                tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
+                tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
+                tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
+                tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
+            )
+        }
 
-        val tiltak = listOf(
-            tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
-            tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
-            tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
-            tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
-        )
-        behandlingService.oppdaterTiltak(behandling.id, tiltak)
+        behandlingService.oppdaterTiltak(behandling.id)
 
         lagretBehandling.captured.tiltak.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"

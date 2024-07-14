@@ -9,14 +9,10 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.innsending.domene.Aktivitetslogg
-import no.nav.tiltakspenger.innsending.domene.meldinger.InnsendingUtdatertHendelse
-import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
@@ -43,7 +39,6 @@ fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
-    innsendingMediator: InnsendingMediator,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
 ) {
@@ -112,18 +107,11 @@ fun Route.behandlingRoutes(
 
         SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
 
-        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
-            val innsendingUtdatertHendelse = InnsendingUtdatertHendelse(
-                aktivitetslogg = Aktivitetslogg(),
-                journalpostId = it.søknad().journalpostId,
-            )
-            // TODO jah: I forbindelse med å skrive oss bort fra RnR vil vi ikke lenger oppdatere personopplysninger når saksbehandler trykker på oppdater personopplysninger-knappen.
-            //  Vi gjør en ny vurdering når RnR er borte
-            innsendingMediator.håndter(innsendingUtdatertHendelse)
-        }
+        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler)
 
-        // TODO: Skriv denne om til en sjekk på om det faktisk er oppdatert
-        delay(3000)
+        behandlingService.oppdaterTiltak(behandlingId)
+        sakService.oppdaterPersonopplysninger(behandling.sakId)
+
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 

@@ -1,12 +1,10 @@
-package no.nav.tiltakspenger.innsending.domene.tolkere
+package no.nav.tiltakspenger.saksbehandling.domene.saksopplysning
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
+// Vet ikke om dette er riktig plassering av denne klassen, men den skal vel uansett dø?
 class AlderTolker {
     companion object {
         fun tolkeData(fdato: LocalDate, periode: Periode): List<Saksopplysning> =

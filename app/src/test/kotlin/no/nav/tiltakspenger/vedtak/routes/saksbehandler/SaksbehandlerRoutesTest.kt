@@ -35,7 +35,7 @@ class SaksbehandlerRoutesTest {
     """.trimIndent()
 
     @Test
-    fun `test`() {
+    fun test() {
         every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns saksbehandler()
 
         testApplication {

@@ -9,36 +9,23 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tiltakspenger.innsending.ports.InnsendingRepository
-import no.nav.tiltakspenger.objectmothers.ObjectMother.innsendingRegistrert
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
-import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
-import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
-import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
-import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
+import io.mockk.slot
+import no.nav.tiltakspenger.felles.april
+import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
-import no.nav.tiltakspenger.vedtak.InnsendingMediatorImpl
-import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadpath
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class SøknadRoutesTest {
     private companion object {
@@ -46,64 +33,12 @@ class SøknadRoutesTest {
         const val JOURNALPOSTID = "foobar2"
     }
 
-    private val innsendingRepository = mockk<InnsendingRepository>(relaxed = true)
-    private val søkerRepository = mockk<SøkerRepositoryImpl>(relaxed = true)
-    private val sakRepo = mockk<SakRepo>(relaxed = true)
-    private val behandlingRepo = mockk<BehandlingRepo>(relaxed = true)
-    private val vedtakRepo = mockk<VedtakRepo>(relaxed = true)
-    private val testRapid = TestRapid()
-    private val innsendingMediator = InnsendingMediatorImpl(
-        innsendingRepository = innsendingRepository,
-        rapidsConnection = testRapid,
-        observatører = listOf(),
-    )
-    private val søkerMediator = SøkerMediatorImpl(
-        søkerRepository = søkerRepository,
-        rapidsConnection = testRapid,
-    )
-    private val personopplysningRepo = mockk<PersonopplysningerRepo>(relaxed = true)
-    private val utbetalingService = mockk<UtbetalingService>(relaxed = true)
-    private val brevPublisherGateway = mockk<BrevPublisherGateway>(relaxed = true)
-    private val meldekortGrunnlagGateway = mockk<MeldekortGrunnlagGateway>(relaxed = true)
-    private val tiltakGateway = mockk<TiltakGateway>(relaxed = true)
-    private val multiRepo = mockk<MultiRepo>(relaxed = true)
-    private val personGateway = mockk<PersonGateway>(relaxed = true)
-    private val skjermingGateway = mockk<SkjermingGateway>(relaxed = true)
-
-    private val behandlingService =
-        BehandlingServiceImpl(
-            behandlingRepo = behandlingRepo,
-            vedtakRepo = vedtakRepo,
-            personopplysningRepo = personopplysningRepo,
-            utbetalingService = utbetalingService,
-            brevPublisherGateway = brevPublisherGateway,
-            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-            tiltakGateway = tiltakGateway,
-            multiRepo = multiRepo,
-            sakRepo = sakRepo,
-        )
-    private val sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator, skjermingGateway)
-
-    @AfterEach
-    fun reset() {
-        testRapid.reset()
-    }
+    private val mockSakService = mockk<SakServiceImpl>(relaxed = true)
 
     @Test
-    fun `sjekk at kall til river søknad route sender ut et behov`() {
-        every { innsendingRepository.hent(JOURNALPOSTID) } returns innsendingRegistrert(
-            ident = IDENT,
-            journalpostId = JOURNALPOSTID,
-        )
-
-        val nySøker = nySøker(
-            ident = IDENT,
-        )
-        every { søkerRepository.findByIdent(IDENT) } returns nySøker
-
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.lagre(any()) } returnsArgument 0
-        coEvery { personGateway.hentPerson(any()) } returns listOf(nySøker.personopplysninger!!)
+    fun `sjekk at kall til river søknad route mapper søknad riktig og kaller mottak`() {
+        val søknad = slot<Søknad>()
+        every { mockSakService.motta(capture(søknad)) } returns ObjectMother.tomSak()
 
         testApplication {
             application {
@@ -111,9 +46,7 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        innsendingMediator = innsendingMediator,
-                        søkerMediator = søkerMediator,
-                        sakService = sakService,
+                        sakService = mockSakService,
                     )
                 }
             }
@@ -130,11 +63,58 @@ class SøknadRoutesTest {
                     status shouldBe HttpStatusCode.OK
                 }
         }
-        with(testRapid.inspektør) {
-            Assertions.assertEquals(1, size)
-            Assertions.assertEquals("behov", field(0, "@event_name").asText())
-            Assertions.assertEquals(IDENT, field(0, "ident").asText())
-        }
+
+        søknad.captured shouldBe Søknad(
+            versjon = "3",
+            id = søknad.captured.id,
+            søknadId = "735ac33a-bf3b-43c0-a331-e9ac99bdd6f8",
+            journalpostId = JOURNALPOSTID,
+            dokumentInfoId = "987",
+            filnavn = "tiltakspengersoknad.json",
+            personopplysninger = Søknad.Personopplysninger(
+                ident = IDENT,
+                fornavn = "NØDVENDIG",
+                etternavn = "HOFTE",
+            ),
+            tiltak = SøknadsTiltak(
+                id = "123",
+                deltakelseFom = 1.april(2025),
+                deltakelseTom = 10.april(2025),
+                arrangør = "Testarrangør",
+                typeKode = "Annen utdanning",
+                typeNavn = "Annen utdanning",
+            ),
+            barnetillegg = listOf(
+                Barnetillegg.FraPdl(
+                    oppholderSegIEØS = Søknad.JaNeiSpm.Ja,
+                    fornavn = "INKLUDERENDE",
+                    mellomnavn = null,
+                    etternavn = "DIVA",
+                    fødselsdato = LocalDate.parse("2010-02-13"),
+                ),
+            ),
+            opprettet = søknad.captured.opprettet,
+            tidsstempelHosOss = LocalDateTime.parse("2023-06-14T21:12:08.447993177"),
+            vedlegg = listOf(
+                Vedlegg(
+                    journalpostId = "123",
+                    dokumentInfoId = "456",
+                    filnavn = "tiltakspengersoknad.json",
+
+                ),
+            ),
+            kvp = Søknad.PeriodeSpm.Nei,
+            intro = Søknad.PeriodeSpm.Nei,
+            institusjon = Søknad.PeriodeSpm.Nei,
+            etterlønn = Søknad.JaNeiSpm.Nei,
+            gjenlevendepensjon = Søknad.PeriodeSpm.Nei,
+            alderspensjon = Søknad.FraOgMedDatoSpm.Nei,
+            sykepenger = Søknad.PeriodeSpm.Nei,
+            supplerendeStønadAlder = Søknad.PeriodeSpm.Nei,
+            supplerendeStønadFlyktning = Søknad.PeriodeSpm.Nei,
+            jobbsjansen = Søknad.PeriodeSpm.Nei,
+            trygdOgPensjon = Søknad.PeriodeSpm.Nei,
+        )
     }
 
     private val søknadBodyV3 = """

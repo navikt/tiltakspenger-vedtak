@@ -58,54 +58,6 @@ CREATE INDEX sakPersonopplysningerBarnUtenIdent
          sakId
             );
 
-CREATE INDEX aktivitet_innsending
-    ON aktivitet
-        (
-         innsending_id
-            );
-
-CREATE INDEX innsending_ident
-    ON innsending
-        (
-         ident
-            );
-
-CREATE INDEX innsending_tilstand
-    ON innsending
-        (
-         tilstand
-            );
-
-CREATE INDEX innsending_sistendret
-    ON innsending
-        (
-         sist_endret
-            );
-
-CREATE INDEX personopplysninger_søkerid
-    ON personopplysninger
-        (
-         søker_id
-            );
-
-CREATE INDEX personopplysningerBarnMedIdent_innsending
-    ON personopplysninger_barn_med_ident
-        (
-         innsending_id
-            );
-
-CREATE INDEX personopplysningerBarnUtenIdent_innsending
-    ON personopplysninger_barn_uten_ident
-        (
-         innsending_id
-            );
-
-CREATE INDEX personopplysningerSøker_innsending
-    ON personopplysninger_søker
-        (
-         innsending_id
-            );
-
 CREATE INDEX søker_ident
     ON søker
         (
@@ -146,12 +98,6 @@ CREATE INDEX tiltak_behandling
     ON tiltak
         (
          behandling_id
-            );
-
-CREATE INDEX innsending_journalpost_id
-    ON innsending
-        (
-         journalpost_id
             );
 
 CREATE INDEX søknad_søknad_id

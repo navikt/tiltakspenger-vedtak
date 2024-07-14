@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
@@ -78,8 +77,9 @@ class BehandlingServiceImpl(
         return behandlingRespons.behandling
     }
 
-    override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
+    override fun oppdaterTiltak(behandlingId: BehandlingId) {
         val behandling = hentBehandling(behandlingId)
+        val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
         val oppdatertBehandling = behandling.oppdaterTiltak(
             tiltak.filter {
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)

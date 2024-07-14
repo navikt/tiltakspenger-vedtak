@@ -7,17 +7,13 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.SøkerMediatorImpl
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 const val søknadpath = "/rivers/soknad"
 
 fun Route.søknadRoutes(
-    innsendingMediator: InnsendingMediator,
-    søkerMediator: SøkerMediatorImpl,
     sakService: SakService,
 ) {
     post(søknadpath) {
