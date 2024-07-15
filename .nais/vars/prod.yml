@@ -7,6 +7,8 @@ ingress:
   url: https://tiltakspenger-vedtak.intern.nav.no
 cluster: prod-gcp
 tenant: nav.no
+urlPdl: pdl-api.prod-fss-pub.nais.io
+urlSkjerming: skjermede-personer-pip.intern.nav.no
 azure:
   groups:
     - name: ROLE_SAKSBEHANDLER

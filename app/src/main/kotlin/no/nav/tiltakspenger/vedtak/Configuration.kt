@@ -52,6 +52,12 @@ object Configuration {
         "logback.configurationFile" to "logback.xml",
         "SCOPE_UTBETALING" to System.getenv("SCOPE_UTBETALING"),
         "UTBETALING_URL" to System.getenv("UTBETALING_URL"),
+        "SKJERMING_SCOPE" to System.getenv("SCOPE_SKJERMING"),
+        "SKJERMING_URL" to System.getenv("SKJERMING_URL"),
+        "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
+        "PDL_SCOPE" to System.getenv("PDL_ENDPOINT_URL"),
+        "TILTAK_SCOPE" to System.getenv("TILTAK_SKJERMING"),
+        "TILTAK_URL" to System.getenv("TILTAK_URL"),
     )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
@@ -69,6 +75,12 @@ object Configuration {
             "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
             "SCOPE_UTBETALING" to "localhost",
             "UTBETALING_URL" to "http://host.docker.internal:8083",
+            "PDL_SCOPE" to "api://localhost:8091/.default",
+            "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
+            "SKJERMING_SCOPE" to "localhost",
+            "SKJERMING_URL" to "http://host.docker.internal:8091",
+            "TILTAK_SCOPE" to "localhost",
+            "TILTAK_URL" to "http://host.docker.internal:8091",
         ),
     )
     private val devProperties = ConfigurationMap(
@@ -76,6 +88,12 @@ object Configuration {
             "application.profile" to Profile.DEV.toString(),
             "SCOPE_UTBETALING" to "api://dev-gcp.tpts.tiltakspenger-utbetaling/.default",
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.dev.nav.no",
+            "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
+            "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
+            "SKJERMING_SCOPE" to "api://dev-gcp.nom.skjermede-personer-pip/.default",
+            "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
+            "TILTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-tiltak/.default",
+            "TILTAK_URL" to "http://tiltakspenger-tiltak",
         ),
     )
     private val prodProperties = ConfigurationMap(
@@ -83,6 +101,12 @@ object Configuration {
             "application.profile" to Profile.PROD.toString(),
             "SCOPE_UTBETALING" to "api://prod-gcp.tpts.tiltakspenger-utbetaling/.default",
             "UTBETALING_URL" to "https://tiltakspenger-utbetaling.intern.nav.no",
+            "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
+            "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
+            "SKJERMING_SCOPE" to "api://prod-gcp.nom.skjermede-personer-pip/.default",
+            "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
+            "TILTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-tiltak/.default",
+            "TILTAK_URL" to "http://tiltakspenger-tiltak",
         ),
     )
 
@@ -149,6 +173,51 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
+
+    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun ouathConfigPdl(
+        scope: String = config()[Key("PDL_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigSkjerming(
+        scope: String = config()[Key("SKJERMING_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigTiltak(
+        scope: String = config()[Key("TILTAK_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
     fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
 }

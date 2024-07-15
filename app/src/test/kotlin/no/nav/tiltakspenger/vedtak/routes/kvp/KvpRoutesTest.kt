@@ -28,6 +28,7 @@ import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceI
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
@@ -49,6 +50,7 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KVPVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KildeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KvpSaksopplysningDTO
@@ -79,6 +81,7 @@ class KvpRoutesTest {
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
+    private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
     private val mockStatistikkService = mockk<StatistikkServiceImpl>()
 
     private val saksopplysningRepo = SaksopplysningRepo()
@@ -122,6 +125,7 @@ class KvpRoutesTest {
         utbetalingService = mockedUtbetalingServiceImpl,
         brevPublisherGateway = mockBrevPublisherGateway,
         meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+        tiltakGateway = mockTiltakGateway,
         multiRepo = multiRepo,
         sakRepo = sakRepo,
         statistikkService = mockStatistikkService,
@@ -182,7 +186,7 @@ class KvpRoutesTest {
                     path("$behandlingPath/$behandlingId/vilkar/kvp")
                 },
             ) {
-                setBody(bodyEndreKvpInfo)
+                setBody(bodyEndreKvp(periodeBrukerHarKvpEtterEndring, true))
             }.apply {
                 status shouldBe HttpStatusCode.Created
             }
@@ -251,7 +255,7 @@ class KvpRoutesTest {
                     path("$behandlingPath/$behandlingId/vilkar/kvp")
                 },
             ) {
-                setBody(bodyEndreKvpInfo)
+                setBody(bodyEndreKvp(periodeBrukerHarKvpEtterEndring, true))
             }.apply {
                 status shouldBe HttpStatusCode.Created
             }
@@ -274,18 +278,90 @@ class KvpRoutesTest {
         }
     }
 
-    private val bodyEndreKvpInfo = """
+    @Test
+    fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() {
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+
+        lateinit var vurderingsPeriode: PeriodeDTO
+
+        sessionOf(DataSource.hikariDataSource).use {
+            sakRepo.lagre(objectMotherSak)
+        }
+
+        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
+
+        testApplication {
+            application {
+                jacksonSerialization()
+                routing {
+                    kvpRoutes(
+                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                        kvpVilkårService = kvpVilkårService,
+                        behandlingService = behandlingService,
+                    )
+                }
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+                val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
+
+                vurderingsPeriode = kvpVilkår.vurderingsperiode
+            }
+
+            val bodyKvpDeltarIHelePerioden = bodyEndreKvp(vurderingsPeriode, deltar = true)
+
+            defaultRequest(
+                HttpMethod.Post,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ) {
+                setBody(bodyKvpDeltarIHelePerioden)
+            }.apply {
+                status shouldBe HttpStatusCode.Created
+            }
+
+            defaultRequest(
+                HttpMethod.Get,
+                url {
+                    protocol = URLProtocol.HTTPS
+                    path("$behandlingPath/$behandlingId/vilkar/kvp")
+                },
+            ).apply {
+                status shouldBe HttpStatusCode.OK
+                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+
+                val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
+                kvpVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+            }
+        }
+    }
+
+    private fun bodyEndreKvp(periodeDTO: PeriodeDTO, deltar: Boolean): String {
+        val deltarString = if (deltar) "true" else "false"
+        return """
         {
           "ytelseForPeriode": [
             {
               "periode": {
-                "fraOgMed": "${periodeBrukerHarKvpEtterEndring.fraOgMed}",
-                "tilOgMed": "${periodeBrukerHarKvpEtterEndring.tilOgMed}"
+                "fraOgMed": "${periodeDTO.fraOgMed}",
+                "tilOgMed": "${periodeDTO.tilOgMed}"
               },
-              "deltar": true
+              "deltar": $deltarString
             }
           ],
           "årsakTilEndring": "FEIL_I_INNHENTET_DATA"
         }
-    """.trimIndent()
+        """.trimIndent()
+    }
 }

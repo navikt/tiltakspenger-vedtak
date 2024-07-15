@@ -3,12 +3,14 @@ package no.nav.tiltakspenger.vedtak.clients.person
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND
+import no.nav.tiltakspenger.libs.person.BarnIFolkeregisteret
+import no.nav.tiltakspenger.libs.person.BarnUtenFolkeregisteridentifikator
 import no.nav.tiltakspenger.libs.person.Person
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.vedtak.routes.rivers.kanGiRettPåBarnetillegg
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -57,3 +59,11 @@ internal fun mapPersonopplysninger(
         tidsstempelHosOss = innhentet,
     )
 }
+
+private const val ALDER_BARNETILLEGG = 16L
+private const val SIKKERHETSMARGIN_ÅR = 2L // søknaden sender med barn opp til 18 år. Vi lagrer det samme just in case
+private fun BarnIFolkeregisteret.kanGiRettPåBarnetillegg() =
+    fødselsdato.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR))
+
+private fun BarnUtenFolkeregisteridentifikator.kanGiRettPåBarnetillegg() =
+    fødselsdato?.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR)) ?: true

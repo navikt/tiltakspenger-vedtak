@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
@@ -14,10 +14,14 @@ import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
+import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingClientImpl
+import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
+import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
@@ -50,22 +54,28 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 søkerService = søkerService,
                 sakService = sakService,
                 behandlingService = behandlingService,
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                innsendingAdminService = innsendingAdminService,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
             )
         }
         .build()
 
-    val innsendingRepository = InnsendingRepositoryBuilder.build()
     private val tokenProviderUtbetaling: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
+    private val tokenProviderPdl: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.ouathConfigPdl())
+    private val tokenProviderSkjerming: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigSkjerming())
+    private val tokenProviderTiltak: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigTiltak())
 
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
+    private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
+    private val tiltakClient = TiltakClientImpl(getToken = tokenProviderTiltak::getToken)
+    private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
     private val utbetalingGateway = UtbetalingGatewayImpl(utbetalingClient)
+    private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
@@ -81,52 +91,36 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val statistikkService = StatistikkServiceImpl()
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-    private val behandlingService =
-        no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl(
-            behandlingRepo,
-            vedtakRepo,
-            personopplysningRepo,
-            utbetalingService,
-            statistikkService,
-            brevPublisherGateway,
-            meldekortGrunnlagGateway,
-            multiRepo,
-            sakRepo,
-        )
+    private val personGateway =
+        PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
+    private val behandlingService = BehandlingServiceImpl(
+        behandlingRepo = behandlingRepo,
+        vedtakRepo = vedtakRepo,
+        personopplysningRepo = personopplysningRepo,
+        utbetalingService = utbetalingService,
+        statistikkService = statistikkService,
+        brevPublisherGateway = brevPublisherGateway,
+        meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+        tiltakGateway = tiltakGateway,
+        multiRepo = multiRepo,
+        sakRepo = sakRepo,
+    )
     private val sakService =
         SakServiceImpl(
             sakRepo = sakRepo,
             behandlingRepo = behandlingRepo,
             behandlingService = behandlingService,
+            personGateway = personGateway,
+            skjermingGateway = skjermingGateway,
             statistikkService = statistikkService,
+            søkerRepository = søkerRepository,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
         behandlingRepo = behandlingRepo,
     )
-    val innsendingMediator = InnsendingMediatorImpl(
-        innsendingRepository = innsendingRepository,
-        rapidsConnection = rapidsConnection,
-        observatører = listOf(),
-    )
-    private val søkerMediator = SøkerMediator(
-        søkerRepository = søkerRepository,
-        rapidsConnection = rapidsConnection,
-    )
-    private val innsendingAdminService = InnsendingAdminService(
-        innsendingRepository = innsendingRepository,
-        innsendingMediator = innsendingMediator,
-    )
-    private val eventMediator = EventMediator(
-        rapidsConnection = rapidsConnection,
-        innsendingAdminService = innsendingAdminService,
-    )
 
     init {
-        AppMetrikker.antallInnsendingerLagret(innsendingRepository)
-        AppMetrikker.antallInnsendingerFeilet(innsendingRepository)
-        AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
-
         rapidsConnection.register(this)
     }
 

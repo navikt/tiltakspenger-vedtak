@@ -4,6 +4,7 @@ import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -39,6 +40,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -56,6 +58,7 @@ internal class BehandlingServiceTest {
     private lateinit var utbetalingService: UtbetalingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var tiltakGateway: TiltakGateway
     private lateinit var multiRepo: MultiRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
@@ -69,21 +72,23 @@ internal class BehandlingServiceTest {
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
+        tiltakGateway = mockk()
         multiRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
         statistikkService = mockk(relaxed = true)
 
         behandlingService =
             BehandlingServiceImpl(
-                behandlingRepo,
-                vedtakRepo,
-                personopplysningRepo,
-                utbetalingService,
-                statistikkService,
-                brevPublisherGateway,
-                meldekortGrunnlagGateway,
-                multiRepo,
-                sakRepo,
+                behandlingRepo = behandlingRepo,
+                vedtakRepo = vedtakRepo,
+                personopplysningRepo = personopplysningRepo,
+                utbetalingService = utbetalingService,
+                statistikkService = statistikkService,
+                brevPublisherGateway = brevPublisherGateway,
+                meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+                tiltakGateway = tiltakGateway,
+                multiRepo = multiRepo,
+                sakRepo = sakRepo,
             )
     }
 
@@ -282,14 +287,16 @@ internal class BehandlingServiceTest {
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
+        coEvery { tiltakGateway.hentTiltak(any()) } answers {
+            listOf(
+                tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
+                tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
+                tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
+                tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
+            )
+        }
 
-        val tiltak = listOf(
-            tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
-            tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
-            tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
-            tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
-        )
-        behandlingService.oppdaterTiltak(behandling.id, tiltak)
+        behandlingService.oppdaterTiltak(behandling.id)
 
         lagretBehandling.captured.tiltak.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"

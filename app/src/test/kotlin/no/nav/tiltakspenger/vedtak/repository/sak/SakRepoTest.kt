@@ -24,6 +24,8 @@ internal class SakRepoTest {
     private val sakRepo: SakRepo = PostgresSakRepo()
 
     companion object {
+        val random = Random()
+
         @Container
         val postgresContainer = PostgresTestcontainer
     }
@@ -35,7 +37,7 @@ internal class SakRepoTest {
 
     @Test
     fun `lagre og hente en sak med en søknad`() {
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val startdato = 1.januar(2023)
         val sluttdato = 31.mars(2023)
 

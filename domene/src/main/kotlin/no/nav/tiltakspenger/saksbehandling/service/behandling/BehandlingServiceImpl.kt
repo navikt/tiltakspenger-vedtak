@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -15,7 +16,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
@@ -25,6 +25,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
@@ -41,6 +42,7 @@ class BehandlingServiceImpl(
     private val statistikkService: StatistikkService,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
+    private val tiltakGateway: TiltakGateway,
     private val multiRepo: MultiRepo,
     private val sakRepo: SakRepo,
 ) : BehandlingService {
@@ -68,13 +70,18 @@ class BehandlingServiceImpl(
     }
 
     override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        val behandlingRespons = hentBehandling(behandlingId)
-            .leggTilSaksopplysning(saksopplysning)
-        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning)
     }
 
-    override fun oppdaterTiltak(behandlingId: BehandlingId, tiltak: List<Tiltak>) {
+    override fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning): Behandling {
+        val behandlingRespons = behandling.leggTilSaksopplysning(saksopplysning)
+        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+        return behandlingRespons.behandling
+    }
+
+    override fun oppdaterTiltak(behandlingId: BehandlingId) {
         val behandling = hentBehandling(behandlingId)
+        val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
         val oppdatertBehandling = behandling.oppdaterTiltak(
             tiltak.filter {
                 Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
@@ -170,7 +177,13 @@ class BehandlingServiceImpl(
         if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
         } else {
-            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+            val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
+            val oppdatertBehandling = behandling.oppdaterTiltak(
+                tiltak.filter {
+                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+                },
+            )
+            behandlingRepo.lagre(oppdatertBehandling.startBehandling(utøvendeSaksbehandler))
         }
     }
 

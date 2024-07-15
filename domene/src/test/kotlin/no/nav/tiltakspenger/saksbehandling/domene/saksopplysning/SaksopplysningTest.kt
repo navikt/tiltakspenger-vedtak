@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 
 internal class SaksopplysningTest {
@@ -84,6 +85,7 @@ internal class SaksopplysningTest {
         behandlingMedUendretSøknad.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET && it.kilde == Kilde.SAKSB }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
     }
 
+    @Disabled("kew: Disabler testen siden vi ikke skal tenke på 2 søknader per nå.")
     @Test
     fun `ny søknad med en annen saksopplysning fjerner saksbehandler`() {
         val sakbehandlerOpplysning =

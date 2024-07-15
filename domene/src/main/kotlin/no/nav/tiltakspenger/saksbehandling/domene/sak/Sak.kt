@@ -64,7 +64,11 @@ data class Sak(
                 vedtak = vedtak,
             )
 
-        fun lagSak(søknad: Søknad, saksnummer: Saksnummer): Sak {
+        fun lagSak(
+            søknad: Søknad,
+            saksnummer: Saksnummer,
+            sakPersonopplysninger: SakPersonopplysninger,
+        ): Sak {
             return Sak(
                 sakDetaljer = TynnSak(
                     id = SakId.random(),
@@ -73,7 +77,7 @@ data class Sak(
                     periode = søknad.vurderingsperiode(),
                 ),
                 behandlinger = emptyList(),
-                personopplysninger = SakPersonopplysninger(),
+                personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),
             )
         }

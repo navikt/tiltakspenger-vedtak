@@ -14,6 +14,8 @@ import java.util.Random
 internal class SøkerRepoTest {
 
     companion object {
+        val random = Random()
+
         @Container
         val testcontainer = PostgresTestcontainer
     }
@@ -27,7 +29,7 @@ internal class SøkerRepoTest {
 
     @Test
     fun `lagre og hent`() {
-        val ident = Random().nextInt().toString()
+        val ident = random.nextInt().toString()
         val søker = nySøker(ident = ident)
         repo.lagre(søker)
 

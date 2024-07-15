@@ -40,17 +40,6 @@ data class UlidBase(private val stringValue: String) : Ulid {
     override fun compareTo(other: Ulid) = this.toString().compareTo(other.toString())
 }
 
-data class InnsendingId private constructor(private val ulid: UlidBase) : Ulid by ulid {
-    companion object {
-        private const val PREFIX = "ins"
-        fun random() = InnsendingId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
-
-        fun fromDb(stringValue: String) = InnsendingId(ulid = UlidBase(stringValue))
-
-        fun fromUUID(uuid: UUID) = InnsendingId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
-    }
-}
-
 data class SakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
     companion object {
         private const val PREFIX = "sak"
@@ -92,39 +81,6 @@ data class SøkerId private constructor(private val ulid: UlidBase) : Ulid by ul
         fun fromString(stringValue: String) = SøkerId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = SøkerId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
-    }
-}
-
-data class ForeldrepengerVedtakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
-    companion object {
-        private const val PREFIX = "fpve"
-        fun random() = ForeldrepengerVedtakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
-
-        fun fromDb(stringValue: String) = ForeldrepengerVedtakId(ulid = UlidBase(stringValue))
-
-        fun fromUUID(uuid: UUID) = ForeldrepengerVedtakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
-    }
-}
-
-data class OvergangsstønadVedtakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
-    companion object {
-        private const val PREFIX = "overgangst"
-        fun random() = OvergangsstønadVedtakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
-
-        fun fromDb(stringValue: String) = OvergangsstønadVedtakId(ulid = UlidBase(stringValue))
-
-        fun fromUUID(uuid: UUID) = OvergangsstønadVedtakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
-    }
-}
-
-data class UføreVedtakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
-    companion object {
-        private const val PREFIX = "ufore"
-        fun random() = UføreVedtakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
-
-        fun fromDb(stringValue: String) = UføreVedtakId(ulid = UlidBase(stringValue))
-
-        fun fromUUID(uuid: UUID) = UføreVedtakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }
 }
 

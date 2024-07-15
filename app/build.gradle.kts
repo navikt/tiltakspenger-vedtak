@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.11"
 val testContainersVersion = "1.19.8"
-val felleslibVersion = "0.0.135"
+val felleslibVersion = "0.0.140"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -20,13 +20,9 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:arenaytelser-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:skjerming-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:fp-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:ufore-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:overgangsstonad-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient:$felleslibVersion")
 
@@ -94,6 +90,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.12.1")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.12.2")
     testImplementation(project(":common"))
 }
