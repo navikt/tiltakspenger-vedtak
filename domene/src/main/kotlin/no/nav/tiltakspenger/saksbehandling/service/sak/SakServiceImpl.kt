@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.AlderTolker
@@ -54,17 +55,17 @@ class SakServiceImpl(
                 ).håndter(søknad = søknad)
 
         return sakRepo.lagre(sak).also {
-            utførLegacyInnsendingFørViSletterRnR(sak, søknad)
+            utførLegacyInnsendingFørViSletterRnR(sak)
         }
     }
 
     /** TODO jah: Skal slettes når vi tar ned RnR. */
-    private fun utførLegacyInnsendingFørViSletterRnR(sak: Sak, søknad: Søknad) {
+    private fun utførLegacyInnsendingFørViSletterRnR(sak: Sak) {
         // Opprett eller oppdater Søker. Denne brukes for å sjekke tilgang og for å veksle inn ident i søkerId
         // slik at vi slipper å bruke ident i url'er
-        if (søkerRepository.findByIdent(sak.ident) == null) {
-            søkerRepository.lagre(Søker(sak.ident))
-        }
+        val søker = søkerRepository.findByIdent(sak.ident) ?: Søker(sak.ident)
+        søker.personopplysninger = runBlocking { personGateway.hentPerson(sak.ident).søker() }
+        søkerRepository.lagre(søker)
 
         // Lage saksopplysninger for alder. Dette skal vel sikkert endres...
         // saksopplysningen blir lagret i basen i behandlingservicen
