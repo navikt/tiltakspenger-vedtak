@@ -39,6 +39,10 @@ class SakServiceImpl(
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
+        val sakPersonopplysninger = SakPersonopplysninger(
+            // TODO jah: Bare for å verifisere at vi får hentet personopplysninger synkront fra PDL. De vil overskrives av Innsending i motta personopplysninger steget.
+            liste = runBlocking { personGateway.hentPerson(ident) },
+        ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
         val sak: Sak =
             (
                 sakRepo.hentForIdentMedPeriode(
@@ -47,24 +51,21 @@ class SakServiceImpl(
                 ).singleOrNull() ?: Sak.lagSak(
                     søknad = søknad,
                     saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
-                    sakPersonopplysninger = SakPersonopplysninger(
-                        // TODO jah: Bare for å verifisere at vi får hentet personopplysninger synkront fra PDL. De vil overskrives av Innsending i motta personopplysninger steget.
-                        liste = runBlocking { personGateway.hentPerson(ident) },
-                    ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } },
+                    sakPersonopplysninger = sakPersonopplysninger,
                 )
                 ).håndter(søknad = søknad)
 
         return sakRepo.lagre(sak).also {
-            utførLegacyInnsendingFørViSletterRnR(sak)
+            utførLegacyInnsendingFørViSletterRnR(sak, sakPersonopplysninger)
         }
     }
 
     /** TODO jah: Skal slettes når vi tar ned RnR. */
-    private fun utførLegacyInnsendingFørViSletterRnR(sak: Sak) {
+    private fun utførLegacyInnsendingFørViSletterRnR(sak: Sak, sakPersonopplysninger: SakPersonopplysninger) {
         // Opprett eller oppdater Søker. Denne brukes for å sjekke tilgang og for å veksle inn ident i søkerId
         // slik at vi slipper å bruke ident i url'er
         val søker = søkerRepository.findByIdent(sak.ident) ?: Søker(sak.ident)
-        søker.personopplysninger = runBlocking { personGateway.hentPerson(sak.ident).søker() }
+        søker.personopplysninger = sakPersonopplysninger.liste.søker()
         søkerRepository.lagre(søker)
 
         // Lage saksopplysninger for alder. Dette skal vel sikkert endres...
