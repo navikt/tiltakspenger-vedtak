@@ -40,7 +40,6 @@ class SakServiceImpl(
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
         val sakPersonopplysninger = SakPersonopplysninger(
-            // TODO jah: Bare for å verifisere at vi får hentet personopplysninger synkront fra PDL. De vil overskrives av Innsending i motta personopplysninger steget.
             liste = runBlocking { personGateway.hentPerson(ident) },
         ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
         val sak: Sak =
