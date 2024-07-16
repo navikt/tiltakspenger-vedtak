@@ -24,6 +24,8 @@ fun Søknad.livsoppholdSaksopplysning(vurderingsPeriode: Periode): LivsoppholdSa
 
     return LivsoppholdSaksopplysning.Søknad(
         harLivsoppholdYtelser = harLivsoppholdYtelserISøknad,
+        // TODO kew: Setter denne til null siden det ikke skal med i første omgang
+        årsakTilEndring = null,
         tidsstempel = LocalDateTime.now(),
         periode = vurderingsPeriode,
     )

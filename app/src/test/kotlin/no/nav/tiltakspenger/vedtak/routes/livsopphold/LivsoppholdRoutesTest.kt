@@ -19,6 +19,8 @@ import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ja
@@ -260,7 +262,7 @@ class LivsoppholdRoutesTest {
 
         val sakId = SakId.random()
         val søknadMedSykepenger = nySøknad(
-            sykepenger = periodeJa(),
+            sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
 
         val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger)
@@ -277,7 +279,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedGjenlevendepensjon = nySøknad(
-            gjenlevendepensjon = periodeJa(),
+            gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårGjenlevendepensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.periodeMedDeltagelse
@@ -285,7 +287,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuAlder = nySøknad(
-            supplerendeStønadAlder = periodeJa(),
+            supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder)
         livsoppholdVilkårSuAlder.avklartSaksopplysning.periodeMedDeltagelse
@@ -293,7 +295,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuflykning = nySøknad(
-            supplerendeStønadFlyktning = periodeJa(),
+            supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning)
         livsoppholdVilkårSuflykning.avklartSaksopplysning.periodeMedDeltagelse
@@ -301,7 +303,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedJobbsjansen = nySøknad(
-            jobbsjansen = periodeJa(),
+            jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen)
         livsoppholdVilkårJobbsjansen.avklartSaksopplysning.periodeMedDeltagelse
@@ -309,7 +311,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedPensjonsinntekt = nySøknad(
-            trygdOgPensjon = periodeJa(),
+            trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt)
         livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.periodeMedDeltagelse
@@ -317,7 +319,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedAlderpensjon = nySøknad(
-            alderspensjon = fraOgMedDatoJa(),
+            alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
         )
         val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon)
         livsoppholdVilkårAlderpensjon.avklartSaksopplysning.periodeMedDeltagelse
@@ -375,8 +377,7 @@ class LivsoppholdRoutesTest {
               },
               "deltar": $deltarString
             }
-          ],
-          "årsakTilEndring": "FEIL_I_INNHENTET_DATA"
+          ]
         }
         """.trimIndent()
     }

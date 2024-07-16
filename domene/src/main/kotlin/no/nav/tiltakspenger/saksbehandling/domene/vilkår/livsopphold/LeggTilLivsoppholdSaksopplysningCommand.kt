@@ -10,7 +10,7 @@ data class LeggTilLivsoppholdSaksopplysningCommand(
     val behandlingId: BehandlingId,
     val saksbehandler: Saksbehandler,
     val deltakelseForPeriode: List<DeltakelseForPeriode>,
-    val årsakTilEndring: ÅrsakTilEndring,
+    val årsakTilEndring: ÅrsakTilEndring?,
 ) {
     data class DeltakelseForPeriode(
         val periode: Periode,

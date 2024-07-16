@@ -19,9 +19,9 @@ sealed interface LivsoppholdSaksopplysning {
     data class Søknad(
         override val harLivsoppholdYtelser: Boolean,
         override val tidsstempel: LocalDateTime,
+        override val årsakTilEndring: ÅrsakTilEndring?,
         override val periode: Periode,
     ) : LivsoppholdSaksopplysning {
-        override val årsakTilEndring = null
         override val saksbehandler = null
 
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
@@ -40,7 +40,7 @@ sealed interface LivsoppholdSaksopplysning {
 
     data class Saksbehandler(
         override val harLivsoppholdYtelser: Boolean,
-        override val årsakTilEndring: ÅrsakTilEndring,
+        override val årsakTilEndring: ÅrsakTilEndring?,
         override val tidsstempel: LocalDateTime,
         override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
         override val periode: Periode,

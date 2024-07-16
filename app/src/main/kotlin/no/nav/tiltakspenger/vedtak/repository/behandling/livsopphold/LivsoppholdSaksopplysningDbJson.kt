@@ -17,18 +17,20 @@ internal data class LivsoppholdSaksopplysningDbJson(
 ) {
     fun toDomain(): LivsoppholdSaksopplysning {
         return when {
-            saksbehandler != null -> LivsoppholdSaksopplysning.Saksbehandler(
-                harLivsoppholdYtelser = harLivsoppholdYtelser,
-                årsakTilEndring = årsakTilEndring!!.toDomain(),
-                tidsstempel = LocalDateTime.parse(tidsstempel),
-                saksbehandler = saksbehandler.toDomain(),
-                periode = periode.toDomain(),
-            )
-
+            saksbehandler != null -> {
+                LivsoppholdSaksopplysning.Saksbehandler(
+                    harLivsoppholdYtelser = harLivsoppholdYtelser,
+                    årsakTilEndring = årsakTilEndring?.toDomain(),
+                    tidsstempel = LocalDateTime.parse(tidsstempel),
+                    saksbehandler = saksbehandler.toDomain(),
+                    periode = periode.toDomain(),
+                )
+            }
             else -> {
                 LivsoppholdSaksopplysning.Søknad(
                     harLivsoppholdYtelser = harLivsoppholdYtelser,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
+                    årsakTilEndring = null,
                     periode = periode.toDomain(),
                 )
             }

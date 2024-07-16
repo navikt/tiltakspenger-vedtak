@@ -31,7 +31,7 @@ fun Route.oppdaterLivsoppholdRoute(
     data class Body(
         val ytelseForPeriode: List<DeltarForPeriode>,
         /** Drop-down i frontend. */
-        val årsakTilEndring: ÅrsakTilEndringLivsoppholdDTO,
+        // TODO kew: Her skal vi ta inn ÅrsakTilEndring når det er på plass. Setter til null enn så lenge..
     ) {
         fun toCommand(behandlingId: BehandlingId, saksbehandler: Saksbehandler): LeggTilLivsoppholdSaksopplysningCommand {
             return LeggTilLivsoppholdSaksopplysningCommand(
@@ -41,7 +41,8 @@ fun Route.oppdaterLivsoppholdRoute(
                         deltar = it.deltar,
                     )
                 },
-                årsakTilEndring = this.årsakTilEndring.toDomain(),
+                // TODO kew: Setter denne til null siden det ikke skal med i første omgang
+                årsakTilEndring = null,
                 behandlingId = behandlingId,
                 saksbehandler = saksbehandler,
             )
