@@ -99,22 +99,6 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    post("$behandlingPath/oppdater/{behandlingId}") {
-        SECURELOG.debug { "Vi har mottatt melding om oppfriskning av fakta" }
-
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-
-        SECURELOG.info { "Saksbehandler $saksbehandler ba om oppdatering av saksopplysninger for behandling $behandlingId" }
-
-        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler)
-
-        behandlingService.oppdaterTiltak(behandlingId)
-        sakService.oppdaterPersonopplysninger(behandling.sakId)
-
-        call.respond(message = "{}", status = HttpStatusCode.OK)
-    }
-
     put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

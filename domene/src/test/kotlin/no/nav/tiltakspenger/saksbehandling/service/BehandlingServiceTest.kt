@@ -291,8 +291,9 @@ internal class BehandlingServiceTest {
                 tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
             )
         }
+        val saksbehandler = saksbehandler123()
 
-        behandlingService.oppdaterTiltak(behandling.id)
+        behandlingService.taBehandling(behandling.id, saksbehandler)
 
         lagretBehandling.captured.tiltak.tiltak.size shouldBe 2
         lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"

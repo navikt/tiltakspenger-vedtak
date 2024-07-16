@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.service.sak
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
@@ -112,17 +111,6 @@ class SakServiceImpl(
 
     override fun resettLøpenr() {
         sakRepo.resetLøpenummer()
-    }
-
-    override fun oppdaterPersonopplysninger(sakId: SakId): Sak {
-        val sak = sakRepo.hent(sakId) ?: throw IkkeFunnetException("Fant ikke sak med id $sakId")
-
-        val oppdatertSak = sak.copy(
-            personopplysninger = SakPersonopplysninger(
-                liste = runBlocking { personGateway.hentPerson(sak.ident) },
-            ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } },
-        )
-        return sakRepo.lagre(oppdatertSak)
     }
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<String, Boolean> {
