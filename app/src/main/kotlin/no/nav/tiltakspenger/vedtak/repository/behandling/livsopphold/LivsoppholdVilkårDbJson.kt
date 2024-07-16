@@ -8,14 +8,16 @@ import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
  * Har ansvar for å serialisere/deserialisere KvpVilkår til og fra json for lagring i database.
  */
 internal data class LivsoppholdVilkårDbJson(
-    val harEnEllerFlereYtelserFraSøknaden: LivsoppholdSaksopplysningDbJson,
-    val livsoppholdSaksopplysning: LivsoppholdSaksopplysningDbJson?,
+    val søknadSaksopplysning: LivsoppholdSaksopplysningDbJson,
+    val saksbehandlerSaksopplysning: LivsoppholdSaksopplysningDbJson?,
+    val avklartSaksopplysning: LivsoppholdSaksopplysningDbJson,
     val vurderingsPeriode: PeriodeDbJson,
 ) {
     fun toDomain(): LivsoppholdVilkår {
         return LivsoppholdVilkår.fromDb(
-            harEnEllerFlereYtelserFraSøknaden = harEnEllerFlereYtelserFraSøknaden.toDomain(),
-            livsoppholdSaksopplysning = livsoppholdSaksopplysning?.toDomain(),
+            søknadSaksopplysning = søknadSaksopplysning.toDomain(),
+            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
+            avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             vurderingsPeriode = vurderingsPeriode.toDomain(),
         )
     }
@@ -23,8 +25,9 @@ internal data class LivsoppholdVilkårDbJson(
 
 internal fun LivsoppholdVilkår.toDbJson(): LivsoppholdVilkårDbJson {
     return LivsoppholdVilkårDbJson(
-        harEnEllerFlereYtelserFraSøknaden = søknadssaksopplysning.toDbJson(),
-        livsoppholdSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
+        søknadSaksopplysning = søknadssaksopplysning.toDbJson(),
+        saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
+        avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsPeriode = vurderingsPeriode.toDbJson(),
     )
 }

@@ -2,8 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.PeriodeMedDeltagelseDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.SaksbehandlerDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import java.time.LocalDateTime
@@ -12,7 +11,8 @@ import java.time.LocalDateTime
  * Har ansvar for å serialisere Vilkårssett til json. Kontrakt mot frontend.
  */
 internal data class LivsoppholdSaksopplysningDTO(
-    val periodeMedDeltagelse: PeriodeMedDeltagelseDTO,
+    val harLivsoppholdYtelser: Boolean,
+    val vurderingsPeriode: PeriodeDTO?,
     val saksbehandler: SaksbehandlerDTO?,
     val årsakTilEndringLivsopphold: ÅrsakTilEndringDTO?,
     val tidspunkt: LocalDateTime,
@@ -23,13 +23,10 @@ internal data class LivsoppholdSaksopplysningDTO(
     }
 }
 
-internal fun LivsoppholdSaksopplysning.toDTO(): LivsoppholdSaksopplysningDTO {
-    val deltagelseDTO = when (this.harLivsoppholdYtelser) {
-        true -> DeltagelseDTO.DELTAR
-        false -> DeltagelseDTO.DELTAR_IKKE
-    }
+internal fun LivsoppholdSaksopplysning.toDTO(vurderingsPeriode: PeriodeDTO?): LivsoppholdSaksopplysningDTO {
     return LivsoppholdSaksopplysningDTO(
-        periodeMedDeltagelse = PeriodeMedDeltagelseDTO(periode = this.periode.toDTO(), deltagelseDTO),
+        harLivsoppholdYtelser = this.harLivsoppholdYtelser,
+        vurderingsPeriode = vurderingsPeriode,
         saksbehandler = this.saksbehandler?.toDTO(),
         årsakTilEndringLivsopphold = when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA

@@ -11,43 +11,10 @@ import java.time.LocalDateTime
 */
 
 fun Søknad.livsoppholdSaksopplysning(vurderingsPeriode: Periode): LivsoppholdSaksopplysning {
-    val harLivsoppholdYtelserISøknad =
-        fraPeriodeSpm(sykepenger) ||
-            fraJaNeiSpm(etterlønn) ||
-            fraPeriodeSpm(trygdOgPensjon) ||
-            fraPeriodeSpm(gjenlevendepensjon) ||
-            fraPeriodeSpm(supplerendeStønadAlder) ||
-            fraPeriodeSpm(supplerendeStønadFlyktning) ||
-            fraOgMedDatoSpm(alderspensjon) ||
-            fraPeriodeSpm(jobbsjansen) ||
-            fraPeriodeSpm(trygdOgPensjon)
-
     return LivsoppholdSaksopplysning.Søknad(
-        harLivsoppholdYtelser = harLivsoppholdYtelserISøknad,
-        // TODO kew: Setter denne til null siden det ikke skal med i første omgang
+        harLivsoppholdYtelser = harLivsoppholdYtelser(),
         årsakTilEndring = null,
         tidsstempel = LocalDateTime.now(),
         periode = vurderingsPeriode,
     )
-}
-
-private fun fraPeriodeSpm(spm: Søknad.PeriodeSpm): Boolean {
-    return when (spm) {
-        is Søknad.PeriodeSpm.Ja -> true
-        Søknad.PeriodeSpm.Nei -> false
-    }
-}
-
-private fun fraJaNeiSpm(spm: Søknad.JaNeiSpm): Boolean {
-    return when (spm) {
-        Søknad.JaNeiSpm.Ja -> true
-        Søknad.JaNeiSpm.Nei -> false
-    }
-}
-
-private fun fraOgMedDatoSpm(spm: Søknad.FraOgMedDatoSpm): Boolean {
-    return when (spm) {
-        is Søknad.FraOgMedDatoSpm.Ja -> true
-        Søknad.FraOgMedDatoSpm.Nei -> false
-    }
 }
