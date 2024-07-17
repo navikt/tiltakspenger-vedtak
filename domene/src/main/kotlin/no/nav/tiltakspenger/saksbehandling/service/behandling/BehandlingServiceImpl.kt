@@ -78,17 +78,6 @@ class BehandlingServiceImpl(
         return behandlingRespons.behandling
     }
 
-    override fun oppdaterTiltak(behandlingId: BehandlingId) {
-        val behandling = hentBehandling(behandlingId)
-        val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
-        val oppdatertBehandling = behandling.oppdaterTiltak(
-            tiltak.filter {
-                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
-            },
-        )
-        behandlingRepo.lagre(oppdatertBehandling)
-    }
-
     override fun sendTilBeslutter(
         behandlingId: BehandlingId,
         utøvendeSaksbehandler: Saksbehandler,

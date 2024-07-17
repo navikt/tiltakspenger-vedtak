@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
+import arrow.core.Either
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
@@ -8,6 +9,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninge
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden
 
 /**
  * Ref til begrepskatalogen.
@@ -21,6 +25,7 @@ data class Vilkårssett(
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val utfallsperioder: List<Utfallsperiode>,
     val kvpVilkår: KVPVilkår,
+    val livsoppholdVilkår: LivsoppholdVilkår,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode
 
@@ -64,5 +69,9 @@ data class Vilkårssett(
         return this.copy(
             kvpVilkår = kvpVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
+
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, Vilkårssett> {
+        return livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map { this.copy(livsoppholdVilkår = it) }
     }
 }
