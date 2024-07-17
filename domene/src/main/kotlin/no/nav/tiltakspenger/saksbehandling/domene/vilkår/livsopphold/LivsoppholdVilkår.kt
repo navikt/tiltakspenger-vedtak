@@ -14,7 +14,9 @@ import java.time.LocalDateTime
  *
  *
  * @param søknadssaksopplysning Sier noe om bruker har svart at hen mottar livsoppholdytelser i søknaden.
- * @param saksbehandlerUtfall Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
+ * @param saksbehandlerSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
+ * @param avklartSaksopplysning Sier noe om hvilken saksopplysning som er gjeldende.
+ * @param vurderingsPeriode Vurderingsperioden faktumene må si noe om.
  *
  */
 data class LivsoppholdVilkår private constructor(

@@ -15,10 +15,6 @@ internal data class LivsoppholdVilkårDTO(
 )
 
 internal fun LivsoppholdVilkår.toDTO(): LivsoppholdVilkårDTO {
-    val avklartSaksopplysning = if (saksbehandlerSaksopplysning == null) søknadssaksopplysning else saksbehandlerSaksopplysning
-
-    require(avklartSaksopplysning != null) { "Man må ha en avklartSaksopplysning for dette vilkåret" }
-
     val samletUtfall = when (avklartSaksopplysning.harLivsoppholdYtelser) {
         true -> SamletUtfallDTO.IKKE_OPPFYLT
         false -> SamletUtfallDTO.OPPFYLT
