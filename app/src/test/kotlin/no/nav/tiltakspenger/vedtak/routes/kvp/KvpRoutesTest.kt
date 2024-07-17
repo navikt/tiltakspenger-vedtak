@@ -102,7 +102,12 @@ class KvpRoutesTest {
     private val attesteringDAO = AttesteringRepoImpl()
     private val vedtakRepoImpl = VedtakRepoImpl()
     private val multiRepo =
-        MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl, statistikkRepo = mockSakStatistikkRepoIntern)
+        MultiRepoImpl(
+            behandlingDao = behandlingRepo,
+            attesteringDao = attesteringDAO,
+            vedtakDao = vedtakRepoImpl,
+            statistikkRepo = mockSakStatistikkRepoIntern,
+        )
 
     private val personopplysningerRepo = PostgresPersonopplysningerRepo(
         barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
