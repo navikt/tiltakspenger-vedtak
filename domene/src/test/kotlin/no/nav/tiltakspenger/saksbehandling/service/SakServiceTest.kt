@@ -78,7 +78,6 @@ internal class SakServiceTest {
                 vedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
                 utbetalingService = utbetalingService,
-                statistikkService = statistikkService,
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,

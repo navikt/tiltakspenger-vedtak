@@ -10,11 +10,11 @@ create table statistikk_sak
     registrertTidspunkt    TIMESTAMP                NULL, -- tidspunkt for registrering av sak
     ferdigBehandletTidspunkt TIMESTAMP              NULL, -- tidspunkt for ferdigbehandling av sak
     vedtakTidspunkt        TIMESTAMP                NOT NULL, -- tidspunkt for vedtak   (hva er forskjellen på ferdigBehandletTidspunkt og vedtakTidspunkt?)
-    utbetaltTidspunkt      TIMESTAMP                NOT NULL, -- tidspunkt for første utbetaling
+    utbetaltTidspunkt      TIMESTAMP                NULL, -- tidspunkt for første utbetaling
     endretTidspunkt        TIMESTAMP                NOT NULL, -- tidspunkt for siste endring av behandlingen
     søknadsformat          VARCHAR                  NOT NULL, -- papir, digital
     forventetOppstartTidspunkt TIMESTAMP            NOT NULL, -- forventet oppstart av tiltak
-    tekniskTidspunkt       TIMESTAMP                NOT NULL, -- tidspunkt for denne raden
+    tekniskTidspunkt       TIMESTAMP                NULL, -- tidspunkt for denne raden i bigquery
     sakYtelse              VARCHAR                  NOT NULL, -- hva slags ytelse (TILTAKSPENGER)
     sakUtland              BOOLEAN                  NOT NULL, -- om saken gjelder utland (står som varchar uppercase i dokumentasjonen?)
     behandlingType         VARCHAR                  NOT NULL, -- SØKNAD, REVURDERING, GJENOPPTAK, NY_RETTIGHET, KLAGE, ANKE
@@ -28,9 +28,11 @@ create table statistikk_sak
     ansvarligBeslutter     VARCHAR                  NOT NULL, -- hvem som har besluttet saken
     ansvarligEnhet         VARCHAR                  NOT NULL, -- hvilken enhet som har ansvar for saken
 
-    tilbakekrevingsbeløp    DECIMAL                 NOT NULL, -- beløp som skal tilbakekreves
-    funksjonellPeriodeFom  DATE                     NOT NULL, -- funksjonell periode for tilbakekreving
-    funksjonellPeriodeTom  DATE                     NOT NULL, -- funksjonell periode for tilbakekreving
+    -- felter som har med tilbakekreving å gjøre
+    tilbakekrevingsbeløp   DECIMAL                  NULL, -- beløp som skal tilbakekreves
+    funksjonellPeriodeFom  DATE                     NULL, -- funksjonell periode for tilbakekreving
+    funksjonellPeriodeTom  DATE                     NULL, -- funksjonell periode for tilbakekreving
+
     avsender               VARCHAR                  NOT NULL, -- tpts
     versjon                VARCHAR                  NOT NULL  -- commit hash
 );

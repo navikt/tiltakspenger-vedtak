@@ -23,7 +23,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
@@ -44,6 +43,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.SakStatistikkRepoIntern
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
@@ -82,7 +82,7 @@ class KvpRoutesTest {
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
-    private val mockStatistikkService = mockk<StatistikkServiceImpl>()
+    private val mockSakStatistikkRepoIntern = mockk<SakStatistikkRepoIntern>()
 
     private val saksopplysningRepo = SaksopplysningRepo()
     private val behandlingRepo = PostgresBehandlingRepo(
@@ -102,7 +102,7 @@ class KvpRoutesTest {
     private val attesteringDAO = AttesteringRepoImpl()
     private val vedtakRepoImpl = VedtakRepoImpl()
     private val multiRepo =
-        MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
+        MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl, statistikkRepo = mockSakStatistikkRepoIntern)
 
     private val personopplysningerRepo = PostgresPersonopplysningerRepo(
         barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
@@ -128,7 +128,6 @@ class KvpRoutesTest {
         tiltakGateway = mockTiltakGateway,
         multiRepo = multiRepo,
         sakRepo = sakRepo,
-        statistikkService = mockStatistikkService,
     )
     private val kvpVilkårService = KvpVilkårServiceImpl(behandlingRepo, behandlingService)
 

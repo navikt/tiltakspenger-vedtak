@@ -57,14 +57,14 @@ class SakServiceImpl(
                 )
                 ).håndter(søknad = søknad)
 
-        statistikkService.opprettBehandlingTilDvh(
-            sak = sak.sakDetaljer,
-            behandling = sak.behandlinger.single {
-                it.søknad().id == søknad.id
-            } as Førstegangsbehandling,
-        )
-
         return sakRepo.lagre(sak).also {
+            statistikkService.lagreOpprettBehandling(
+                sak = sak.sakDetaljer,
+                behandling = sak.behandlinger.single {
+                    it.søknad().id == søknad.id
+                } as Førstegangsbehandling,
+            )
+
             utførLegacyInnsendingFørViSletterRnR(sak, sakPersonopplysninger)
         }
     }
