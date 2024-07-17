@@ -1,18 +1,17 @@
-package no.nav.tiltakspenger.innsending.domene
+package no.nav.tiltakspenger.saksbehandling.domene.søker
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
-import no.nav.tiltakspenger.innsending.domene.meldinger.IdentMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.PersonopplysningerMottattHendelse
-import no.nav.tiltakspenger.innsending.domene.meldinger.SkjermingMottattHendelse
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 
+private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
+// Denne klassen brukes for å koble en ident sammen med en søkerId slik at vi kan bruke søkerId i stedet for ident
+// Det er også her vi sjekker om saksbehandler har tilgang til personopplysningene til søkeren.
 class Søker private constructor(
     val søkerId: SøkerId,
     val ident: String, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
@@ -25,20 +24,6 @@ class Søker private constructor(
         ident = ident,
         personopplysninger = null,
     )
-
-    fun håndter(hendelse: IdentMottattHendelse) {
-        SECURELOG.info { "Søker fikk en identMottattHendelse med iden ${hendelse.ident()} som vi ignorerer" }
-    }
-
-    fun håndter(hendelse: PersonopplysningerMottattHendelse) {
-        personopplysninger = hendelse.personopplysninger().søker()
-    }
-
-    fun håndter(hendelse: SkjermingMottattHendelse) {
-        personopplysninger = personopplysninger?.copy(
-            skjermet = hendelse.skjerming().søker.skjerming,
-        )
-    }
 
     fun sjekkOmSaksbehandlerHarTilgang(saksbehandler: Saksbehandler) {
         fun sjekkBeskyttelsesbehovStrengtFortrolig(harBeskyttelsesbehovStrengtFortrolig: Boolean) {

@@ -155,21 +155,6 @@ CREATE TABLE sak_personopplysninger_barn_uten_ident
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE innsending
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    journalpost_id          VARCHAR                  NOT NULL UNIQUE,
-    ident                   VARCHAR                  NOT NULL,
-    tiltak_fom              DATE                     NOT NULL,
-    tiltak_tom              DATE                     NOT NULL,
-    tilstand                VARCHAR                  NOT NULL,
-    tidsstempel_tiltak_innhentet TIMESTAMP WITH TIME ZONE NULL,
-    tidsstempel_personopplysninger_innhentet TIMESTAMP WITH TIME ZONE NULL,
-    tidsstempel_skjerming_innhentet TIMESTAMP WITH TIME ZONE NULL,
-    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
 CREATE TABLE søker
 (
     id                      VARCHAR                  PRIMARY KEY,
@@ -285,52 +270,6 @@ CREATE TABLE søknad_vedlegg
     filnavn         VARCHAR NULL
 );
 
-CREATE TABLE personopplysninger_søker
-(
-    id                       VARCHAR PRIMARY KEY,
-    innsending_id            VARCHAR                  NOT NULL REFERENCES innsending (id),
-    ident                    VARCHAR                  NOT NULL,
-    fødselsdato              DATE                     NOT NULL,
-    fornavn                  VARCHAR                  NOT NULL,
-    mellomnavn               VARCHAR                  NULL,
-    etternavn                VARCHAR                  NOT NULL,
-    fortrolig                BOOLEAN                  NOT NULL,
-    strengt_fortrolig        BOOLEAN                  NOT NULL,
-    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
-    skjermet                 BOOLEAN                  NULL,
-    kommune                  VARCHAR                  NULL,
-    bydel                    VARCHAR                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE personopplysninger_barn_med_ident
-(
-    id                       VARCHAR PRIMARY KEY,
-    innsending_id            VARCHAR                  NOT NULL REFERENCES innsending (id),
-    ident                    VARCHAR                  NOT NULL,
-    fødselsdato              DATE                     NOT NULL,
-    fornavn                  VARCHAR                  NOT NULL,
-    mellomnavn               VARCHAR                  NULL,
-    etternavn                VARCHAR                  NOT NULL,
-    fortrolig                BOOLEAN                  NOT NULL,
-    strengt_fortrolig        BOOLEAN                  NOT NULL,
-    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
-    oppholdsland             VARCHAR                  NULL,
-    skjermet                 BOOLEAN                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE personopplysninger_barn_uten_ident
-(
-    id                  VARCHAR PRIMARY KEY,
-    innsending_id       VARCHAR                  NOT NULL REFERENCES innsending (id),
-    fødselsdato         DATE                     NULL,
-    fornavn             VARCHAR                  NULL,
-    mellomnavn          VARCHAR                  NULL,
-    etternavn           VARCHAR                  NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
 CREATE TABLE tiltak
 (
     id                     VARCHAR PRIMARY KEY,
@@ -349,19 +288,6 @@ CREATE TABLE tiltak
     kilde                  VARCHAR                  NOT NULL,
     tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-create table aktivitet
-(
-    id               VARCHAR PRIMARY KEY,
-    innsending_id    VARCHAR                  NOT NULL REFERENCES innsending (id),
-    type             VARCHAR                  NULL,
-    alvorlighetsgrad INT                      NOT NULL,
-    label            CHAR(1)                  NOT NULL,
-    melding          VARCHAR                  NOT NULL,
-    tidsstempel      TIMESTAMP WITH TIME ZONE NOT NULL,
-    detaljer         JSONB                    NULL,
-    kontekster       JSONB                    NOT NULL
 );
 
 CREATE TABLE stønadsdager_tiltak

@@ -35,7 +35,7 @@ internal class PostgresPersonopplysningerRepo(
         sakId: SakId,
         txSession: TransactionalSession,
     ): SakPersonopplysninger {
-        val søker = hentPersonopplysningerForInnsending(sakId, txSession) ?: return SakPersonopplysninger()
+        val søker = hentPersonopplysningerForSak(sakId, txSession) ?: return SakPersonopplysninger()
         val barnMedIdent = barnMedIdentDAO.hent(sakId, txSession)
         val barnUtenIdent = barnUtenIdentDAO.hent(sakId, txSession)
 
@@ -58,7 +58,7 @@ internal class PostgresPersonopplysningerRepo(
         personopplysninger.barnUtenIdent().forEach { barnUtenIdentDAO.lagre(sakId, it, txSession) }
     }
 
-    private fun hentPersonopplysningerForInnsending(sakId: SakId, txSession: TransactionalSession) =
+    private fun hentPersonopplysningerForSak(sakId: SakId, txSession: TransactionalSession) =
         txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(

@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.innsending.service.InnsendingAdminService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
@@ -23,7 +22,6 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.InnsendingRepositoryBuilder
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
@@ -56,9 +54,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 søkerService = søkerService,
                 sakService = sakService,
                 behandlingService = behandlingService,
-                innsendingMediator = innsendingMediator,
-                søkerMediator = søkerMediator,
-                innsendingAdminService = innsendingAdminService,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
                 livsoppholdVilkårService = livsoppholdVilkårService,
@@ -66,7 +61,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         }
         .build()
 
-    val innsendingRepository = InnsendingRepositoryBuilder.build()
     private val tokenProviderUtbetaling: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
     private val tokenProviderPdl: AzureTokenProvider =
@@ -110,24 +104,14 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         multiRepo = multiRepo,
         sakRepo = sakRepo,
     )
-    private val søkerMediator = SøkerMediatorImpl(
-        søkerRepository = søkerRepository,
-        rapidsConnection = rapidsConnection,
-    )
-    val innsendingMediator = InnsendingMediatorImpl(
-        innsendingRepository = innsendingRepository,
-        rapidsConnection = rapidsConnection,
-        observatører = listOf(),
-    )
     private val sakService =
         SakServiceImpl(
             sakRepo = sakRepo,
             behandlingRepo = behandlingRepo,
             behandlingService = behandlingService,
             personGateway = personGateway,
-            søkerMediator = søkerMediator,
-            innsendingMediator = innsendingMediator,
             skjermingGateway = skjermingGateway,
+            søkerRepository = søkerRepository,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
@@ -138,20 +122,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         behandlingRepo = behandlingRepo,
     )
 
-    private val innsendingAdminService = InnsendingAdminService(
-        innsendingRepository = innsendingRepository,
-        innsendingMediator = innsendingMediator,
-    )
-    private val eventMediator = EventMediator(
-        rapidsConnection = rapidsConnection,
-        innsendingAdminService = innsendingAdminService,
-    )
-
     init {
-        AppMetrikker.antallInnsendingerLagret(innsendingRepository)
-        AppMetrikker.antallInnsendingerFeilet(innsendingRepository)
-        AppMetrikker.antallInnsendingerStoppetUnderBehandling(innsendingRepository)
-
         rapidsConnection.register(this)
     }
 

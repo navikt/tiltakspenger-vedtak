@@ -8,9 +8,9 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.innsending.ports.InnsendingMediator
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
@@ -23,13 +23,13 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerMediator
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
@@ -52,8 +52,7 @@ internal class SakServiceTest {
     private lateinit var sakService: SakService
     private lateinit var personGateway: PersonGateway
     private lateinit var skjermingGateway: SkjermingGateway
-    private lateinit var søkerMediator: SøkerMediator
-    private lateinit var innsendingMediator: InnsendingMediator
+    private lateinit var søkerRepository: SøkerRepository
 
     @BeforeEach
     fun setup() {
@@ -69,8 +68,7 @@ internal class SakServiceTest {
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
         skjermingGateway = mockk(relaxed = true)
-        søkerMediator = mockk(relaxed = true)
-        innsendingMediator = mockk(relaxed = true)
+        søkerRepository = mockk(relaxed = true)
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo = behandlingRepo,
@@ -83,7 +81,14 @@ internal class SakServiceTest {
                 multiRepo = multiRepo,
                 sakRepo = sakRepo,
             )
-        sakService = SakServiceImpl(sakRepo, behandlingRepo, behandlingService, personGateway, søkerMediator, innsendingMediator, skjermingGateway)
+        sakService = SakServiceImpl(
+            sakRepo = sakRepo,
+            behandlingRepo = behandlingRepo,
+            søkerRepository = søkerRepository,
+            behandlingService = behandlingService,
+            personGateway = personGateway,
+            skjermingGateway = skjermingGateway,
+        )
     }
 
     @AfterEach
@@ -105,6 +110,7 @@ internal class SakServiceTest {
         )
         val ident = søknad.personopplysninger.ident
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
+        every { behandlingRepo.hent(any()) } returns behandling()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
 
         val sak = sakService.motta(søknad)
@@ -118,7 +124,7 @@ internal class SakServiceTest {
     }
 
     @Test
-    fun `sjekk at skjerming blir satt riktit`() {
+    fun `sjekk at skjerming blir satt riktig`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
         every { sakRepo.hentNesteLøpenr() } returns "1"
@@ -135,6 +141,7 @@ internal class SakServiceTest {
         coEvery { skjermingGateway.erSkjermetPerson(barnIdent) } returns false
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident), barn(ident = barnIdent))
         every { behandlingRepo.lagre(any()) } returnsArgument 0
+        every { behandlingRepo.hent(any()) } returns behandling()
 
         val sak = sakService.motta(søknad)
 

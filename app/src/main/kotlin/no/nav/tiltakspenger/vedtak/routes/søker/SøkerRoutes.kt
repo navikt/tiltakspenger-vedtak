@@ -14,20 +14,10 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
 
-internal const val innsendingHashPath = "/innsending/hash"
 internal const val søkerPath = "/soker"
 
 data class PersonIdent(
     val ident: String,
-)
-
-data class SøknadId(
-    val søknadId: String,
-)
-
-data class InnsendingHash(
-    val søknadId: String,
-    val hash: String,
 )
 
 fun Route.søkerRoutes(
