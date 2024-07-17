@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDateTime
 
 sealed interface KvpSaksopplysning {

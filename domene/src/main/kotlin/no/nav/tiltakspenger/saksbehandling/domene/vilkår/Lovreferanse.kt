@@ -28,4 +28,5 @@ enum class Lovreferanse(val lovverk: String, val paragraf: String, val ledd: Str
     ETTERLØNNRUNDSKRIV("Rundskriv om tiltakspenger", "§8", "1", "Forholdet til lønn"),
     TILTAKSDELTAGELSE("Tiltakspengeforskriften", "§2", "1", "Hvem som kan få tiltakspenger"),
     FRIST_FOR_FRAMSETTING_AV_KRAV("Tiltakspengeforskriften", "§11", "1", "Utbetaling, frist for framsetting av krav og rett til etterbetaling"),
+    LIVSOPPHOLDYTELSER("Tiltakspengeforskriften", "§7", "1", "Forholdet til andre ytelser"),
 }

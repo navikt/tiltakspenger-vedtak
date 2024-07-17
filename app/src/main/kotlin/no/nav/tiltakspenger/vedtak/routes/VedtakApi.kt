@@ -21,12 +21,15 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -58,6 +61,7 @@ internal fun Application.vedtakApi(
     behandlingService: BehandlingService,
     attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
+    livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -81,6 +85,7 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
+                livsoppholdVilkårService = livsoppholdVilkårService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
@@ -249,7 +254,11 @@ fun Application.jacksonSerialization() {
 fun Application.configureExceptions() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            ExceptionHandler.handle(call, cause)
+            if (cause is IkkeImplementertException) {
+                call.respondText(text = "Støtter ikke utfall: $cause", status = HttpStatusCode.NotImplemented)
+            } else {
+                ExceptionHandler.handle(call, cause)
+            }
         }
     }
 }

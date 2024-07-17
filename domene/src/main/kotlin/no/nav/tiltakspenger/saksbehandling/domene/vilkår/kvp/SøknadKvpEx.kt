@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import java.time.LocalDateTime
 
 fun Søknad.kvpSaksopplysning(vurderingsperiode: Periode): KvpSaksopplysning {
