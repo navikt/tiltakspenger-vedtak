@@ -1,11 +1,11 @@
-package no.nav.tiltakspenger.saksbehandling.service.statistikk
+package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
 // https://confluence.adeo.no/display/navdvh/Teknisk+beskrivelse+av+behov+til+felles+saksbehandlingsstatistikk
-data class SakStatistikkDTO(
+data class StatistikkSakDTO(
     val id: UUID,
     val sakId: String,
     val saksnummer: String,

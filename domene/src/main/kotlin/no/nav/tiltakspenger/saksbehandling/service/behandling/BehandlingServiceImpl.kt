@@ -27,7 +27,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.iverksettBehandlingMapper
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
 

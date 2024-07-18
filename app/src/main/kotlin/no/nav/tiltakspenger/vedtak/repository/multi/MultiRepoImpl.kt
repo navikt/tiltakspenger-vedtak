@@ -5,24 +5,24 @@ import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.SakStatistikkDTO
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.StatistikkSakDTO
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
-import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.SakStatistikkRepoIntern
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoIntern
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakDAO
 
 class MultiRepoImpl(
     private val behandlingDao: BehandlingDAO,
     private val attesteringDao: AttesteringDAO,
     private val vedtakDao: VedtakDAO,
-    private val statistikkRepo: SakStatistikkRepoIntern,
+    private val statistikkRepo: StatistikkSakRepoIntern,
 ) : MultiRepo {
     override suspend fun lagreOgKjør(
         iverksattBehandling: Behandling,
         attestering: Attestering,
         vedtak: Vedtak,
-        statistikk: SakStatistikkDTO,
+        statistikk: StatistikkSakDTO,
         operasjon: suspend () -> String,
     ): String {
         return sessionOf(DataSource.hikariDataSource).use {

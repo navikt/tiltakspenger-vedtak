@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.service.statistikk
+package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
-    SakStatistikkDTO(
+    StatistikkSakDTO(
         id = UUID.randomUUID(),
         sakId = sak.id.toString(),
         saksnummer = sak.saknummer.toString(),
@@ -44,7 +44,7 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
         versjon = "versjon",
     )
 
-fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Vedtak): SakStatistikkDTO {
+fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Vedtak): StatistikkSakDTO {
     val resultat = if (vedtak.utfallsperioder.all { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
         BehandlingResultat.INNVILGET
     } else if (vedtak.utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
@@ -53,7 +53,7 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         BehandlingResultat.AVSLAG
     }
 
-    return SakStatistikkDTO(
+    return StatistikkSakDTO(
         id = UUID.randomUUID(),
         sakId = sak.id.toString(),
         saksnummer = sak.saknummer.toString(),

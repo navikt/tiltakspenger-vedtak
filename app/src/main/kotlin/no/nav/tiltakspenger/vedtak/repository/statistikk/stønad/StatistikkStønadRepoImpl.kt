@@ -1,15 +1,15 @@
-package no.nav.tiltakspenger.vedtak.repository.statistikk.sak
+package no.nav.tiltakspenger.vedtak.repository.statistikk.stønad
 
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import kotliquery.sessionOf
-import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.SakStatistikkDTO
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkStønadDTO
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
-internal class SakStatistikkSakRepoImpl() : StatistikkSakRepo, SakStatistikkRepoIntern {
-    override fun lagre(dto: SakStatistikkDTO) {
+internal class StatistikkStønadRepoImpl() : StatistikkStønadRepo, StatistikkStønadRepoIntern {
+    override fun lagre(dto: StatistikkStønadDTO) {
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 lagre(dto, txSession)
@@ -17,42 +17,17 @@ internal class SakStatistikkSakRepoImpl() : StatistikkSakRepo, SakStatistikkRepo
         }
     }
 
-    override fun lagre(dto: SakStatistikkDTO, tx: TransactionalSession) {
+    override fun lagre(dto: StatistikkStønadDTO, tx: TransactionalSession) {
         tx.run(
             queryOf(
                 lagreSql,
                 mapOf(
                     "id" to dto.id,
                     "sakId" to dto.sakId,
-                    "saksnummer" to dto.saksnummer,
-                    "behandlingId" to dto.behandlingId,
-                    "relatertBehandlingId" to dto.relatertBehandlingId,
-                    "ident" to dto.ident,
-                    "mottattTidspunkt" to dto.mottattTidspunkt,
-                    "registrertTidspunkt" to dto.registrertTidspunkt,
-                    "ferdigBehandletTidspunkt" to dto.ferdigBehandletTidspunkt,
-                    "vedtakTidspunkt" to dto.vedtakTidspunkt,
-                    "utbetaltTidspunkt" to dto.utbetaltTidspunkt,
-                    "endretTidspunkt" to dto.endretTidspunkt,
-                    "søknadsformat" to dto.søknadsformat,
-                    "forventetOppstartTidspunkt" to dto.forventetOppstartTidspunkt,
-                    "tekniskTidspunkt" to dto.tekniskTidspunkt, // dette er tidspunkt for når raden lages i bigQuery og må settes der
-                    "sakYtelse" to dto.sakYtelse,
-                    "sakUtland" to dto.sakUtland,
-                    "behandlingType" to dto.behandlingType,
-                    "behandlingStatus" to dto.behandlingStatus,
-                    "behandlingResultat" to dto.behandlingResultat,
-                    "resultatBegrunnelse" to dto.resultatBegrunnelse,
-                    "behandlingMetode" to dto.behandlingMetode,
-                    "opprettetAv" to dto.opprettetAv,
-                    "saksbehandler" to dto.saksbehandler,
-                    "ansvarligBeslutter" to dto.ansvarligBeslutter,
-                    "ansvarligEnhet" to dto.ansvarligEnhet,
-                    "tilbakekrevingsbeløp" to dto.tilbakekrevingsbeløp,
-                    "funksjonellPeriodeFom" to dto.funksjonellPeriodeFom,
-                    "funksjonellPeriodeTom" to dto.funksjonellPeriodeTom,
-                    "avsender" to dto.avsender,
-                    "versjon" to dto.versjon,
+                    "brukerId" to dto.brukerId,
+                    "sakDato" to dto.sakDato,
+                    "gyldigFraDato" to dto.sakFraDato,
+                    "gyldigTilDato" to dto.sakTilDato,
                 ),
             ).asUpdate,
         )
@@ -60,7 +35,7 @@ internal class SakStatistikkSakRepoImpl() : StatistikkSakRepo, SakStatistikkRepo
 
     @Language("SQL")
     private val lagreSql = """
-        insert into statistikk_sak (
+        insert into statistikk_stønad (
             id,
             sak_id,
             saksnummer,

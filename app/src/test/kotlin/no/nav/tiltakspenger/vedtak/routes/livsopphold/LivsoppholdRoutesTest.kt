@@ -52,7 +52,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.SakStatistikkRepoIntern
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoIntern
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
@@ -91,7 +91,7 @@ class LivsoppholdRoutesTest {
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
-    private val mockStatistikkRepo = mockk<SakStatistikkRepoIntern>()
+    private val mockStatistikkRepo = mockk<StatistikkSakRepoIntern>()
 
     private val saksopplysningRepo = SaksopplysningRepo()
     private val behandlingRepo = PostgresBehandlingRepo(

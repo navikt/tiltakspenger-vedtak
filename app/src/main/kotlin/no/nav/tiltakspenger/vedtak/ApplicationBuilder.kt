@@ -30,7 +30,8 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.SakStatistikkSakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStønadRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
@@ -72,6 +73,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val tokenProviderTiltak: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
 
+    // factory
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
     private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
@@ -88,12 +90,13 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val vurderingRepo = VurderingRepo()
     private val attesteringRepo = AttesteringRepoImpl()
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo)
-    private val statistikkSakRepo = SakStatistikkSakRepoImpl()
+    private val statistikkSakRepo = StatistikkSakRepoImpl()
+    private val statistikkStønadRepo = StatistikkStønadRepoImpl()
     private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo, statistikkSakRepo)
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
-    private val statistikkService = StatistikkServiceImpl(statistikkSakRepo)
+    private val statistikkService = StatistikkServiceImpl(statistikkSakRepo, statistikkStønadRepo)
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
