@@ -21,7 +21,7 @@ data class Vilkårssett(
     val vilkårsvurderinger: List<Vurdering>,
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val utfallsperioder: List<Utfallsperiode>,
-    val institusjonoppholdVilkår: InstitusjonsoppholdVilkår,
+    val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode

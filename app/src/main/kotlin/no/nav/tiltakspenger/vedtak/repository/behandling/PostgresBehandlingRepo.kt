@@ -18,8 +18,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toVilkårssett
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime

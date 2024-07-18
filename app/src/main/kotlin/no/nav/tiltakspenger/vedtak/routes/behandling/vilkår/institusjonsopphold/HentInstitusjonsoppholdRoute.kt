@@ -29,7 +29,7 @@ fun Route.hentInstitusjonsoppholdRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.institusjonoppholdVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(it.vurderingsperiode.toDTO()),
             )
         }
     }

@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 
-
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse

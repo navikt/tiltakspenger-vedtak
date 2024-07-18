@@ -2,5 +2,5 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphol
 
 enum class KildeDTO {
     SØKNAD,
-    SAKSBEHANDLER
+    SAKSBEHANDLER,
 }

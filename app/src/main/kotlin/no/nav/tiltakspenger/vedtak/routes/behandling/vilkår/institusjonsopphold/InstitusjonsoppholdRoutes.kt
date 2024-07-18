@@ -4,7 +4,7 @@ import io.ktor.server.routing.Route
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
-fun Route.institusjonsoppholdRoutes (
+fun Route.institusjonsoppholdRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
 ) {

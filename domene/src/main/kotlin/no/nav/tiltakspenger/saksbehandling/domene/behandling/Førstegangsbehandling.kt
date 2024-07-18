@@ -65,7 +65,7 @@ data class Førstegangsbehandling(
                         ),
                     ).avklar(),
                     utfallsperioder = emptyList(),
-                    institusjonoppholdVilkår = InstitusjonsoppholdVilkår.opprett(søknad.institusjonsoppholdSaksopplysning(vurderingsperiode)),
+                    institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(søknad.institusjonsoppholdSaksopplysning(vurderingsperiode)),
                     kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
                 ),
                 tiltak = TiltakVilkår(),
