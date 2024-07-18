@@ -11,6 +11,10 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.Ins
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.IntroVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.toDbJson
 import java.security.InvalidParameterException
 
 /**
@@ -19,6 +23,8 @@ import java.security.InvalidParameterException
 private class VilkårssettJson(
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkårDbJson,
     val kvpVilkår: KVPVilkårDbJson,
+    val introVilkår: IntroVilkårDbJson,
+    val livsoppholdVilkår: LivsoppholdVilkårDbJson,
 )
 
 internal fun String.toVilkårssett(
@@ -32,6 +38,8 @@ internal fun String.toVilkårssett(
         return Vilkårssett(
             institusjonsoppholdVilkår = vilkårssettJson.institusjonsoppholdVilkår.toDomain(),
             kvpVilkår = vilkårssettJson.kvpVilkår.toDomain(),
+            introVilkår = vilkårssettJson.introVilkår.toDomain(),
+            livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             kravdatoSaksopplysninger = kravdatoSaksopplysninger,
@@ -43,5 +51,5 @@ internal fun String.toVilkårssett(
 }
 
 internal fun Vilkårssett.toDbJson(): String {
-    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson(), institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson()))
+    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson(), introVilkår = introVilkår.toDbJson(), livsoppholdVilkår = livsoppholdVilkår.toDbJson(), institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson()))
 }

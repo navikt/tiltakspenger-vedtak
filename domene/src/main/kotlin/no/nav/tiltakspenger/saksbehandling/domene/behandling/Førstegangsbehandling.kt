@@ -23,8 +23,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.institusjonsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -67,6 +71,11 @@ data class Førstegangsbehandling(
                     utfallsperioder = emptyList(),
                     institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(søknad.institusjonsoppholdSaksopplysning(vurderingsperiode)),
                     kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
+                    introVilkår = IntroVilkår.opprett(søknad.introSaksopplysning(vurderingsperiode)),
+                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
+                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
+                        vurderingsperiode,
+                    ),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,

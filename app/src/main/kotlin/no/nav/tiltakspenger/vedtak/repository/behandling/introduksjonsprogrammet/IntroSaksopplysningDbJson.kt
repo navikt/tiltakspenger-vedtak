@@ -1,24 +1,24 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
+package no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KvpSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroSaksopplysning
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDateTime
 
-internal data class KvpSaksopplysningDbJson(
+internal data class IntroSaksopplysningDbJson(
     val deltakelseForPeriode: List<PeriodiseringAvDeltagelseDbJson>,
     val årsakTilEndring: ÅrsakTilEndringDbJson?,
     val saksbehandler: SaksbehandlerDbJson?,
     val tidsstempel: String,
 ) {
-    fun toDomain(): KvpSaksopplysning {
+    fun toDomain(): IntroSaksopplysning {
         return when {
-            saksbehandler != null -> KvpSaksopplysning.Saksbehandler(
+            saksbehandler != null -> IntroSaksopplysning.Saksbehandler(
                 deltar = Periodisering(
                     deltakelseForPeriode.map {
                         PeriodeMedVerdi(
@@ -33,8 +33,8 @@ internal data class KvpSaksopplysningDbJson(
             )
 
             else -> {
-                require(årsakTilEndring == null) { "Støtter ikke årsak til endring for KvpSaksopplysning.Søknad." }
-                KvpSaksopplysning.Søknad(
+                require(årsakTilEndring == null) { "Støtter ikke årsak til endring for IntroSaksopplysning.Søknad." }
+                IntroSaksopplysning.Søknad(
                     deltar = Periodisering(
                         deltakelseForPeriode.map {
                             PeriodeMedVerdi(
@@ -81,20 +81,20 @@ internal data class KvpSaksopplysningDbJson(
     }
 }
 
-internal fun KvpSaksopplysning.toDbJson(): KvpSaksopplysningDbJson {
-    return KvpSaksopplysningDbJson(
+internal fun IntroSaksopplysning.toDbJson(): IntroSaksopplysningDbJson {
+    return IntroSaksopplysningDbJson(
         deltakelseForPeriode = this.deltar.perioder().map {
-            KvpSaksopplysningDbJson.PeriodiseringAvDeltagelseDbJson(
+            IntroSaksopplysningDbJson.PeriodiseringAvDeltagelseDbJson(
                 periode = it.periode.toDbJson(),
                 deltar = when (it.verdi) {
-                    Deltagelse.DELTAR -> KvpSaksopplysningDbJson.DeltagelseDbJson.DELTAR
-                    Deltagelse.DELTAR_IKKE -> KvpSaksopplysningDbJson.DeltagelseDbJson.DELTAR_IKKE
+                    Deltagelse.DELTAR -> IntroSaksopplysningDbJson.DeltagelseDbJson.DELTAR
+                    Deltagelse.DELTAR_IKKE -> IntroSaksopplysningDbJson.DeltagelseDbJson.DELTAR_IKKE
                 },
             )
         },
         årsakTilEndring = when (årsakTilEndring) {
-            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> KvpSaksopplysningDbJson.ÅrsakTilEndringDbJson.FEIL_I_INNHENTET_DATA
-            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> KvpSaksopplysningDbJson.ÅrsakTilEndringDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
+            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> IntroSaksopplysningDbJson.ÅrsakTilEndringDbJson.FEIL_I_INNHENTET_DATA
+            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> IntroSaksopplysningDbJson.ÅrsakTilEndringDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         saksbehandler = saksbehandler?.toDbJson(),

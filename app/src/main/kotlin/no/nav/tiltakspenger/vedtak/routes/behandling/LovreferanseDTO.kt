@@ -6,7 +6,6 @@ data class LovreferanseDTO(
     val lovverk: String,
     val paragraf: String,
     val beskrivelse: String,
-
 )
 
 internal fun Lovreferanse.toDTO() = LovreferanseDTO(

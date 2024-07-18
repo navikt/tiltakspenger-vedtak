@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
+import arrow.core.Either
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
@@ -7,8 +8,13 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.LeggTilIntroSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden
 
 /**
  * Ref til begrepskatalogen.
@@ -23,6 +29,8 @@ data class Vilkårssett(
     val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
+    val introVilkår: IntroVilkår,
+    val livsoppholdVilkår: LivsoppholdVilkår,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode
 
@@ -66,5 +74,15 @@ data class Vilkårssett(
         return this.copy(
             kvpVilkår = kvpVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
+
+    fun oppdaterIntro(command: LeggTilIntroSaksopplysningCommand): Vilkårssett {
+        return this.copy(
+            introVilkår = introVilkår.leggTilSaksbehandlerSaksopplysning(command),
+        )
+    }
+
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, Vilkårssett> {
+        return livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map { this.copy(livsoppholdVilkår = it) }
     }
 }

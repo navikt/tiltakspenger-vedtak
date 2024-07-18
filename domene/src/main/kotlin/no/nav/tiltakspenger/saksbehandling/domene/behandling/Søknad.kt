@@ -41,6 +41,17 @@ data class Søknad(
         return Periode(tiltak.deltakelseFom, tiltak.deltakelseTom)
     }
 
+    fun harLivsoppholdYtelser(): Boolean =
+        sykepenger.erJa() ||
+            etterlønn.erJa() ||
+            trygdOgPensjon.erJa() ||
+            gjenlevendepensjon.erJa() ||
+            supplerendeStønadAlder.erJa() ||
+            supplerendeStønadFlyktning.erJa() ||
+            alderspensjon.erJa() ||
+            jobbsjansen.erJa() ||
+            trygdOgPensjon.erJa()
+
     data class Personopplysninger(
         val ident: String,
         val fornavn: String,
@@ -52,11 +63,23 @@ data class Søknad(
         data class Ja(
             val periode: Periode,
         ) : PeriodeSpm
+
+        /** ignorerer perioden */
+        fun erJa(): Boolean = when (this) {
+            is Ja -> true
+            is Nei -> false
+        }
     }
 
     sealed interface JaNeiSpm {
         data object Ja : JaNeiSpm
         data object Nei : JaNeiSpm
+
+        /** ignorerer perioden */
+        fun erJa(): Boolean = when (this) {
+            is Ja -> true
+            Nei -> false
+        }
     }
 
     sealed interface FraOgMedDatoSpm {
@@ -64,6 +87,11 @@ data class Søknad(
         data class Ja(
             val fra: LocalDate,
         ) : FraOgMedDatoSpm
+
+        fun erJa(): Boolean = when (this) {
+            is Ja -> true
+            is Nei -> false
+        }
     }
 }
 

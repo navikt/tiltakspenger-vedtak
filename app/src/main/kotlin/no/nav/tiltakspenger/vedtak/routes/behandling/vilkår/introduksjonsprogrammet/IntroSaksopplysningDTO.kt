@@ -1,14 +1,16 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp
+package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KvpSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroSaksopplysning
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.PeriodeMedDeltagelseDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.toDTO
 
-internal data class KvpSaksopplysningDTO(
+internal data class IntroSaksopplysningDTO(
     val periodeMedDeltagelse: PeriodeMedDeltagelseDTO,
     val årsakTilEndring: ÅrsakTilEndringDTO?,
-    val kilde: KildeDTO,
+    val kilde: IntroKildeDTO,
 ) {
     enum class ÅrsakTilEndringDTO {
         FEIL_I_INNHENTET_DATA,
@@ -16,12 +18,12 @@ internal data class KvpSaksopplysningDTO(
     }
 }
 
-internal fun KvpSaksopplysning.toDTO(kilde: KildeDTO): KvpSaksopplysningDTO {
-    return KvpSaksopplysningDTO(
+internal fun IntroSaksopplysning.toDTO(kilde: IntroKildeDTO): IntroSaksopplysningDTO {
+    return IntroSaksopplysningDTO(
         periodeMedDeltagelse = this.deltar.perioder().tilEnkelPeriode().toDTO(),
         årsakTilEndring = when (årsakTilEndring) {
-            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> KvpSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
-            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> KvpSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
+            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> IntroSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
+            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> IntroSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         kilde = kilde,

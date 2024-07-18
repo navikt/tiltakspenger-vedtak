@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDateTime
 
-sealed interface KvpSaksopplysning {
+sealed interface IntroSaksopplysning {
 
     val deltar: Periodisering<Deltagelse>
     val tidsstempel: LocalDateTime
@@ -20,12 +20,12 @@ sealed interface KvpSaksopplysning {
     data class Søknad(
         override val deltar: Periodisering<Deltagelse>,
         override val tidsstempel: LocalDateTime,
-    ) : KvpSaksopplysning {
+    ) : IntroSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
 
         init {
-            require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.perioder().isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode
@@ -40,9 +40,9 @@ sealed interface KvpSaksopplysning {
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
         override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
-    ) : KvpSaksopplysning {
+    ) : IntroSaksopplysning {
         init {
-            require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.perioder().isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode

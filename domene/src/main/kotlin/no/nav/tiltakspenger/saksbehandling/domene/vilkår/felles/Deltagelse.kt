@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 

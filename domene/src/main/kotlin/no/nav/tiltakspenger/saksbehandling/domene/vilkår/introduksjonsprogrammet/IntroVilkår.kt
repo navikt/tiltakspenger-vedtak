@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
@@ -11,17 +11,17 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import java.time.LocalDateTime
 
 /**
- * Kvalifiseringsprogrammet (KVP): https://www.nav.no/kvalifiseringsprogrammet
+ * Introduksjonsprogrammet: https://www.regjeringen.no/no/tema/innvandring-og-integrering/asd/Verkemiddel-i-integreringsarbeidet/introduksjonsprogram/id2343472/
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
  * @param utfall Selvom om utfallet er
  *
  */
-data class KVPVilkår private constructor(
-    val søknadSaksopplysning: KvpSaksopplysning,
-    val saksbehandlerSaksopplysning: KvpSaksopplysning?,
-    val avklartSaksopplysning: KvpSaksopplysning,
+data class IntroVilkår private constructor(
+    val søknadSaksopplysning: IntroSaksopplysning,
+    val saksbehandlerSaksopplysning: IntroSaksopplysning?,
+    val avklartSaksopplysning: IntroSaksopplysning,
     val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
@@ -33,12 +33,12 @@ data class KVPVilkår private constructor(
         else -> throw IllegalStateException("Ugyldig utfall")
     }
 
-    override val lovreferanse = Lovreferanse.KVP
+    override val lovreferanse = Lovreferanse.INTROPROGRAMMET
 
     val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
 
-    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKvpSaksopplysningCommand): KVPVilkår {
-        val kvpSaksopplysning = KvpSaksopplysning.Saksbehandler(
+    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilIntroSaksopplysningCommand): IntroVilkår {
+        val introSaksopplysning = IntroSaksopplysning.Saksbehandler(
             deltar = Periodisering(
                 command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
             ).utvid(Deltagelse.DELTAR_IKKE, totalePeriode),
@@ -47,9 +47,9 @@ data class KVPVilkår private constructor(
             tidsstempel = LocalDateTime.now(),
         )
         return this.copy(
-            saksbehandlerSaksopplysning = kvpSaksopplysning,
-            avklartSaksopplysning = kvpSaksopplysning,
-            utfall = kvpSaksopplysning.vurderMaskinelt(),
+            saksbehandlerSaksopplysning = introSaksopplysning,
+            avklartSaksopplysning = introSaksopplysning,
+            utfall = introSaksopplysning.vurderMaskinelt(),
         )
     }
 
@@ -69,9 +69,9 @@ data class KVPVilkår private constructor(
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: KvpSaksopplysning,
-        ): KVPVilkår {
-            return KVPVilkår(
+            søknadSaksopplysning: IntroSaksopplysning,
+        ): IntroVilkår {
+            return IntroVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
@@ -83,12 +83,12 @@ data class KVPVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: KvpSaksopplysning,
-            saksbehandlerSaksopplysning: KvpSaksopplysning?,
-            avklartSaksopplysning: KvpSaksopplysning,
+            søknadSaksopplysning: IntroSaksopplysning,
+            saksbehandlerSaksopplysning: IntroSaksopplysning?,
+            avklartSaksopplysning: IntroSaksopplysning,
             utfall: Periodisering<Utfall2>,
-        ): KVPVilkår {
-            return KVPVilkår(
+        ): IntroVilkår {
+            return IntroVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
