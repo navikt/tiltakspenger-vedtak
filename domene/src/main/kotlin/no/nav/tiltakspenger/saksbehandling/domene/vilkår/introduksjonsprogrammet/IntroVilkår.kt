@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import java.time.LocalDateTime
 
 /**
- * Kvalifiseringsprogrammet (Intro): https://www.nav.no/kvalifiseringsprogrammet
+ * Introduksjonsprogrammet: https://www.regjeringen.no/no/tema/innvandring-og-integrering/asd/Verkemiddel-i-integreringsarbeidet/introduksjonsprogram/id2343472/
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
