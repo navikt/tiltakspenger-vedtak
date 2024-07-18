@@ -9,10 +9,10 @@ import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.InstitusjonsoppholdVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.IntroVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.toDbJson
 import java.security.InvalidParameterException
