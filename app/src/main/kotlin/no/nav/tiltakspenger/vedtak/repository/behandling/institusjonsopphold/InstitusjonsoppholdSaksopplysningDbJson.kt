@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDateTime
 
 internal data class InstitusjonsoppholdSaksopplysningDbJson(
-    val deltakelseForPeriode: List<PeriodiseringAvOppholdDbJson>,
+    val oppholdForPeriode: List<PeriodiseringAvOppholdDbJson>,
     val årsakTilEndring: ÅrsakTilEndringDbJson?,
     val saksbehandler: SaksbehandlerDbJson?,
     val tidsstempel: String,
@@ -20,7 +20,7 @@ internal data class InstitusjonsoppholdSaksopplysningDbJson(
         return when {
             saksbehandler != null -> InstitusjonsoppholdSaksopplysning.Saksbehandler(
                 opphold = Periodisering(
-                    deltakelseForPeriode.map {
+                    oppholdForPeriode.map {
                         PeriodeMedVerdi(
                             periode = it.periode.toDomain(),
                             verdi = it.opphold.toDomain(),
@@ -36,7 +36,7 @@ internal data class InstitusjonsoppholdSaksopplysningDbJson(
                 require(årsakTilEndring == null) { "Støtter ikke årsak til endring for InstitusjonsoppholdSaksopplysning.Søknad." }
                 InstitusjonsoppholdSaksopplysning.Søknad(
                     opphold = Periodisering(
-                        deltakelseForPeriode.map {
+                        oppholdForPeriode.map {
                             PeriodeMedVerdi(
                                 periode = it.periode.toDomain(),
                                 verdi = it.opphold.toDomain(),
@@ -83,7 +83,7 @@ internal data class InstitusjonsoppholdSaksopplysningDbJson(
 
 internal fun InstitusjonsoppholdSaksopplysning.toDbJson(): InstitusjonsoppholdSaksopplysningDbJson {
     return InstitusjonsoppholdSaksopplysningDbJson(
-        deltakelseForPeriode = this.opphold.perioder().map {
+        oppholdForPeriode = this.opphold.perioder().map {
             InstitusjonsoppholdSaksopplysningDbJson.PeriodiseringAvOppholdDbJson(
                 periode = it.periode.toDbJson(),
                 opphold = when (it.verdi) {
