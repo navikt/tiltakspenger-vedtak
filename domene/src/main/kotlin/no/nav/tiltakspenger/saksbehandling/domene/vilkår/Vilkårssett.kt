@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSa
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.LeggTilIntroSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
@@ -26,6 +27,7 @@ data class Vilkårssett(
     val vilkårsvurderinger: List<Vurdering>,
     val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val utfallsperioder: List<Utfallsperiode>,
+    val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
