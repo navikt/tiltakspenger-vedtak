@@ -143,7 +143,9 @@ class KvpRoutesTest {
     fun `test at endepunkt for henting og lagring av kvp fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            løpenummer = 1004,
+        )
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -212,7 +214,9 @@ class KvpRoutesTest {
     fun `test at endring av kvp ikke endrer søknadsdata`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            løpenummer = 1003,
+        )
 
         lateinit var originalDatoForKvpFraSøknaden: KvpSaksopplysningDTO
 
@@ -280,7 +284,9 @@ class KvpRoutesTest {
     fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            løpenummer = 1010,
+        )
 
         lateinit var vurderingsPeriode: PeriodeDTO
 

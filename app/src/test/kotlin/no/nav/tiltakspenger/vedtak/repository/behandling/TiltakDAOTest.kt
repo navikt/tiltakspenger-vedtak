@@ -81,7 +81,7 @@ internal class TiltakDAOTest {
             ),
         )
 
-        val behandling = lagreSakOgBehandling()
+        val behandling = lagreSakOgBehandling(saksnummer = Saksnummer("202301011010"))
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
                 tiltakDAO.lagre(behandling.id, listOf(tiltak), txSession)
@@ -130,7 +130,7 @@ internal class TiltakDAOTest {
             ),
         )
 
-        val behandling = lagreSakOgBehandling()
+        val behandling = lagreSakOgBehandling(saksnummer = Saksnummer("202301011002"))
 
         sessionOf(DataSource.hikariDataSource).use {
             it.transaction { txSession ->
@@ -148,7 +148,9 @@ internal class TiltakDAOTest {
         hentet.first() shouldBe tiltak
     }
 
-    private fun lagreSakOgBehandling(): Behandling {
+    private fun lagreSakOgBehandling(
+        saksnummer: Saksnummer = Saksnummer("202301011001"),
+    ): Behandling {
         val behandlingRepo = PostgresBehandlingRepo()
         val sakRepo = PostgresSakRepo()
 
@@ -160,7 +162,7 @@ internal class TiltakDAOTest {
         val sak = Sak(
             id = sakId,
             ident = ident,
-            saknummer = Saksnummer(verdi = "123"),
+            saknummer = saksnummer,
             periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = SakPersonopplysninger(),

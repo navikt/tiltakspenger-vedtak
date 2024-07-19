@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 
 interface SakRepo {
     fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak>
@@ -13,6 +14,5 @@ interface SakRepo {
     fun hent(sakId: SakId): Sak?
     fun hentSakDetaljer(sakId: SakId): SakDetaljer?
     fun hentForJournalpostId(journalpostId: String): Sak?
-    fun hentNesteLøpenr(): String
-    fun resetLøpenummer()
+    fun hentNesteSaksnummer(): Saksnummer
 }

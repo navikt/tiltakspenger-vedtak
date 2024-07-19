@@ -11,5 +11,4 @@ interface SakService {
     fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak
     fun hentForIdent(ident: String, saksbehandler: Saksbehandler): List<Sak>
     fun hentForSaksnummer(saksnummer: String, saksbehandler: Saksbehandler): Sak
-    fun resettLøpenr()
 }

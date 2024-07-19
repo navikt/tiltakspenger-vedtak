@@ -137,7 +137,7 @@ class AlderRoutesTest {
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1021)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -182,6 +182,7 @@ class AlderRoutesTest {
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(sakId, søknad, LocalDate.now().minusYears(10)),
             ),
+            løpenummer = 1023,
         )
 
         sessionOf(DataSource.hikariDataSource).use {
