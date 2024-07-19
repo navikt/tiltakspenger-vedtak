@@ -21,6 +21,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
@@ -68,7 +70,11 @@ data class Førstegangsbehandling(
                     ).avklar(),
                     utfallsperioder = emptyList(),
                     kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
-                    livsoppholdVilkår = LivsoppholdVilkår.opprett(søknad.livsoppholdSaksopplysning(vurderingsperiode), vurderingsperiode),
+                    introVilkår = IntroVilkår.opprett(søknad.introSaksopplysning(vurderingsperiode)),
+                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
+                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
+                        vurderingsperiode,
+                    ),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,

@@ -6,36 +6,34 @@ import kotliquery.queryOf
 import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.persistering.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
 class SøkerRepositoryImpl(
+    private val sessionFactory: PostgresSessionFactory,
     private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
 ) : SøkerRepository {
 
     override fun findByIdent(ident: String): Søker? {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                return txSession.run(
-                    queryOf(findByIdent, ident).map { row ->
-                        row.toSøker(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(findByIdent, ident).map { row ->
+                    row.toSøker(tx)
+                }.asSingle,
+            )
         }
     }
 
     override fun hent(søkerId: SøkerId): Søker? {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                return txSession.run(
-                    queryOf(hent, søkerId.toString()).map { row ->
-                        row.toSøker(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(hent, søkerId.toString()).map { row ->
+                    row.toSøker(tx)
+                }.asSingle,
+            )
         }
     }
 
