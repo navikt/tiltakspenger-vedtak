@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -43,7 +44,7 @@ internal class SaksopplysningTest {
             )
 
         val behandling =
-            Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+            Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad(), personopplysningFødselsdato()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.FORELDREPENGER }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.FORELDREPENGER }.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
 
@@ -70,7 +71,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad(), personopplysningFødselsdato()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 
@@ -99,7 +100,7 @@ internal class SaksopplysningTest {
                 saksbehandler = null,
             )
 
-        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad()).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(SakId.random(), nySøknad(), personopplysningFødselsdato()).vilkårsvurder()
         behandling.saksopplysninger.filter { it.vilkår == Vilkår.INTROPROGRAMMET }.size shouldBe 1
         behandling.saksopplysninger.first { it.vilkår == Vilkår.INTROPROGRAMMET }.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_IKKE_YTELSE
 

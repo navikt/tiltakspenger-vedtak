@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.introduksjonsprogrammet
+package no.nav.tiltakspenger.vedtak.routes.alder
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -17,12 +17,8 @@ import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
@@ -51,10 +47,9 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR_IKKE
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -62,9 +57,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDate
 
 @Testcontainers
-class IntroRoutesTest {
+class AlderRoutesTest {
 
     companion object {
         @Container
@@ -138,7 +134,7 @@ class IntroRoutesTest {
     )
 
     @Test
-    fun `test at endepunkt for henting og lagring av intro fungerer`() {
+    fun `test at endepunkt for henting og lagring av alder fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
@@ -153,7 +149,7 @@ class IntroRoutesTest {
             application {
                 jacksonSerialization()
                 routing {
-                    introRoutes(
+                    alderRoutes(
                         innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                         behandlingService = behandlingService,
                     )
@@ -165,42 +161,40 @@ class IntroRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/introduksjonsprogrammet")
+                    path("$behandlingPath/$behandlingId/vilkar/alder")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK
-                val introVilkår = objectMapper.readValue<IntroVilkårDTO>(bodyAsText())
-                introVilkår.avklartSaksopplysning.periodeMedDeltagelse.deltagelse shouldBe DELTAR_IKKE
+                val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
+                alderVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
             }
         }
     }
 
     @Test
-    fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() {
+    fun `test at søknaden blir gjenspeilet i alder vilkåret`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val sakId = SakId.random()
-        val søknadMedIntro = nySøknad(
-            intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+        val søknad = nySøknad()
+        val objectMotherSakUnder18 = ObjectMother.sakMedOpprettetBehandling(
             id = sakId,
             behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, personopplysningFødselsdato()),
+                Førstegangsbehandling.opprettBehandling(sakId, søknad, LocalDate.now().minusYears(10)),
             ),
         )
 
         sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSak)
+            sakRepo.lagre(objectMotherSakUnder18)
         }
 
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
+        val behandlingId = objectMotherSakUnder18.behandlinger.first().id.toString()
 
         testApplication {
             application {
                 jacksonSerialization()
                 routing {
-                    introRoutes(
+                    alderRoutes(
                         innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                         behandlingService = behandlingService,
                     )
@@ -212,12 +206,12 @@ class IntroRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/introduksjonsprogrammet")
+                    path("$behandlingPath/$behandlingId/vilkar/alder")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK
-                val introVilkår = objectMapper.readValue<IntroVilkårDTO>(bodyAsText())
-                introVilkår.avklartSaksopplysning.periodeMedDeltagelse.deltagelse shouldBe DELTAR
+                val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
+                alderVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
             }
         }
     }

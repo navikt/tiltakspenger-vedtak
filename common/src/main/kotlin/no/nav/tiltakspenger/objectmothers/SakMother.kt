@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
+import java.time.LocalDate
 import java.util.Random
 
 interface SakMother {
@@ -26,6 +27,7 @@ interface SakMother {
         ident: String = random.nextInt().toString(),
         saksnummer: Saksnummer = Saksnummer("saksnr"),
         periode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
+        personopplysningFødselsdato: LocalDate = 1.januar(2000),
         behandlinger: List<Førstegangsbehandling> = listOf(
             Førstegangsbehandling.opprettBehandling(
                 id,
@@ -36,6 +38,7 @@ interface SakMother {
                         deltakelseTom = periode.tilOgMed,
                     ),
                 ),
+                fødselsdato = personopplysningFødselsdato,
             ),
         ),
         personopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident))),

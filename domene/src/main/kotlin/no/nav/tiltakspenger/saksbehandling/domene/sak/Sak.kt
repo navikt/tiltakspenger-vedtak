@@ -34,7 +34,13 @@ data class Sak(
                     }
                 }
             }.ifEmpty {
-                listOf(Førstegangsbehandling.opprettBehandling(sakId = id, søknad = søknad).vilkårsvurder())
+                listOf(
+                    Førstegangsbehandling.opprettBehandling(
+                        sakId = id,
+                        søknad = søknad,
+                        fødselsdato = personopplysninger.søker().fødselsdato,
+                    ).vilkårsvurder(),
+                )
             }
 
         return this.copy(
