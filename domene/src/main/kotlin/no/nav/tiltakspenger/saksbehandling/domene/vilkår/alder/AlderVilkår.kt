@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
 
 /**
- * Alder: FINN URL!
+ * Alder
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
