@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
+import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
@@ -75,9 +76,8 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     private val dataSource = DataSource.hikariDataSource
     private val sessionCounter = SessionCounter(log)
-    private val dbFactory = PostgresSessionFactory(dataSource, sessionCounter)
+    private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
     private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
     private val tiltakClient = TiltakClientImpl(getToken = tokenProviderTiltak::getToken)
@@ -86,8 +86,12 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
-    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
-    private val søkerRepository = SøkerRepositoryImpl(dbFactory)
+    private val personGateway =
+        PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
+
+    private val personopplysningerDAO = PersonopplysningerDAO()
+    private val søkerRepository = SøkerRepositoryImpl(sessionFactory, personopplysningerDAO)
+    private val sakRepo = PostgresSakRepo()
     private val behandlingRepo = PostgresBehandlingRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
@@ -95,11 +99,12 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo)
     private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo)
     private val personopplysningRepo = PostgresPersonopplysningerRepo()
+
+    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-    private val personGateway =
-        PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
+
     private val behandlingService = BehandlingServiceImpl(
         behandlingRepo = behandlingRepo,
         vedtakRepo = vedtakRepo,
