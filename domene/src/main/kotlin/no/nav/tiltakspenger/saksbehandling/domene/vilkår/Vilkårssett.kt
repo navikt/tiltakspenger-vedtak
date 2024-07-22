@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 import arrow.core.Either
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
@@ -12,6 +11,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.LeggTilAlderSaks
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.LeggTilIntroSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.KravdatoVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.LeggTilKravdatoSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
@@ -27,13 +28,13 @@ data class Vilkårssett(
     // TODO jah: saksopplysninger, vilkårsvurderinger og kravdatoSaksopplysninger, utfallsperioder flyttes gradvis til hvert sitt vilkår. Og slettes når vilkår 2.0 er ferdig.
     val saksopplysninger: List<Saksopplysning>,
     val vilkårsvurderinger: List<Vurdering>,
-    val kravdatoSaksopplysninger: KravdatoSaksopplysninger,
     val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
     val alderVilkår: AlderVilkår,
+    val kravdatoVilkår: KravdatoVilkår,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode
 
@@ -88,6 +89,12 @@ data class Vilkårssett(
     fun oppdaterAlder(command: LeggTilAlderSaksopplysningCommand): Vilkårssett {
         return this.copy(
             alderVilkår = alderVilkår.leggTilSaksbehandlerSaksopplysning(command),
+        )
+    }
+
+    fun oppdaterKravdato(command: LeggTilKravdatoSaksopplysningCommand): Vilkårssett {
+        return this.copy(
+            kravdatoVilkår = kravdatoVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
     }
 

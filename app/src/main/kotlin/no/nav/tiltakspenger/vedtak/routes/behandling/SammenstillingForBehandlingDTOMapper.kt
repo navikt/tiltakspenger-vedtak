@@ -9,8 +9,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
@@ -101,55 +99,9 @@ internal object SammenstillingForBehandlingDTOMapper {
             samletUtfall = settSamletUtfallForUtfallsperioder(
                 utfallsperioder = behandling.utfallsperioder,
             ),
-            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(
-                kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger,
-                vilkårsvurderinger = behandling.vilkårsvurderinger,
-            ),
             vilkårsett = behandling.vilkårssett.toDTO(behandling.vurderingsperiode.toDTO()),
         )
     }
-
-    private fun mapKravdatoSaksopplysningerDTO(
-        kravdatoSaksopplysninger: KravdatoSaksopplysninger,
-        vilkårsvurderinger: List<Vurdering>,
-    ): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
-        val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
-        val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
-        return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
-            samletUtfall = hentUtfallForVilkår(
-                Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                vilkårsvurderinger
-                    .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV },
-            ).toString(),
-            opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
-            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) {
-                mapKravdatoSaksopplysningDTO(
-                    søknadstidspunktFraSaksbehandler,
-                )
-            } else {
-                null
-            },
-            vurderinger = vilkårsvurderinger
-                .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
-                .map { it.toVurderingDTO() },
-            lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV.toDTO(),
-        )
-    }
-
-    private fun mapKravdatoSaksopplysningDTO(kravdatoSaksopplysning: KravdatoSaksopplysning): SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO =
-        SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO(
-            kravdato = kravdatoSaksopplysning.kravdato,
-            kilde = kravdatoSaksopplysning.kilde.toString(),
-        )
-
-    private fun Vurdering.toVurderingDTO(): SammenstillingForBehandlingDTO.VurderingDTO =
-        SammenstillingForBehandlingDTO.VurderingDTO(
-            periode = PeriodeDTO(
-                fraOgMed = this.fom!!.toString(),
-                tilOgMed = this.tom!!.toString(),
-            ),
-            utfall = this.utfall.toString(),
-        )
 
     private fun utledVurdertUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
         return when (behandling.tilstand) {

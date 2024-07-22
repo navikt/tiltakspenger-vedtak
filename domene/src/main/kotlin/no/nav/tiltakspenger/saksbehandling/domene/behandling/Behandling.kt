@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
@@ -33,8 +32,6 @@ interface Behandling {
 
     val saksopplysninger: List<Saksopplysning> get() = vilkårssett.saksopplysninger
     val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
-
-    val kravdatoSaksopplysninger: KravdatoSaksopplysninger get() = vilkårssett.kravdatoSaksopplysninger
 
     val utfallsperioder: List<Utfallsperiode> get() = vilkårssett.utfallsperioder
 

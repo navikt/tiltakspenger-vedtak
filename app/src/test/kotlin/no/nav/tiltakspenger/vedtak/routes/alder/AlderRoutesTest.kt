@@ -30,7 +30,6 @@ import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.behandling.KravdatoSaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
@@ -89,7 +88,6 @@ class AlderRoutesTest {
         ),
         tiltakDAO = TiltakDAO(),
         utfallsperiodeDAO = UtfallsperiodeDAO(),
-        kravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
     )
 
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())

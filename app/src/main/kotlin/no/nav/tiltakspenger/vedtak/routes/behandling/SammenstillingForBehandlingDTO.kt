@@ -17,7 +17,6 @@ internal data class SammenstillingForBehandlingDTO(
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
     val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
-    val kravdatoSaksopplysninger: KravdatoSaksopplysningerDTO,
     val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
     val vilkårsett: VilkårssettDTO,
 ) {
