@@ -39,7 +39,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.passageOfTimeRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
@@ -107,7 +106,6 @@ internal fun Application.vedtakApi(
         }
         authenticate("systemtoken") {
             søknadRoutes(sakService)
-            passageOfTimeRoutes()
         }
         staticResources(
             remotePath = "/",
