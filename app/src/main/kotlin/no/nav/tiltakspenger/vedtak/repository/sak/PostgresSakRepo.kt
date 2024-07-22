@@ -212,9 +212,8 @@ internal class PostgresSakRepo(
                         sqlHentNesteLøpenummer,
                         mapOf("saksnummerprefiks" to "$saksnummerPrefiks%"),
                     ).map { row ->
-                        row.stringOrNull("saksnummer")
-                            ?.let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
-                            ?: Saksnummer.genererSaknummer(dato = iDag)
+                        row.string("saksnummer")
+                            .let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
                     }.asSingle,
                 )
             }
