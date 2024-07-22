@@ -32,7 +32,7 @@ data class AlderVilkår private constructor(
         else -> throw IllegalStateException("Ugyldig utfall")
     }
 
-    override val lovreferanse = Lovreferanse.INTROPROGRAMMET
+    override val lovreferanse = Lovreferanse.ALDER
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
         val introSaksopplysning = AlderSaksopplysning.Saksbehandler(
