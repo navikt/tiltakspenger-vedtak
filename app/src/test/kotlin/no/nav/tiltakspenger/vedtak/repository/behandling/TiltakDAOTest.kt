@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
@@ -179,7 +180,7 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad)
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad, fødselsdato = personopplysningFødselsdato())
 
         return behandlingRepo.lagre(behandling)
     }

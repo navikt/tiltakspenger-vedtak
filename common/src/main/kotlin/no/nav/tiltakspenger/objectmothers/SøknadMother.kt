@@ -71,6 +71,8 @@ interface SøknadMother {
         )
     }
 
+    fun personopplysningFødselsdato() = 1.januar(2000)
+
     fun nySøknad(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         versjon: String = "1",

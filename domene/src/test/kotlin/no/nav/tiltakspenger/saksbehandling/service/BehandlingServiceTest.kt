@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
@@ -130,7 +131,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato()).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
@@ -167,7 +168,7 @@ internal class BehandlingServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad).vilkårsvurder()
+        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato()).vilkårsvurder()
         val lagretBehandling = slot<Førstegangsbehandling>()
         every { behandlingRepo.hent(any()) } returns behandling
         every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0

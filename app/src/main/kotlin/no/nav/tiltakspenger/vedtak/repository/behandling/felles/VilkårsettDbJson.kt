@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.db.serialize
+import no.nav.tiltakspenger.vedtak.repository.behandling.alder.AlderVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.alder.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.InstitusjonsoppholdVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.IntroVilkårDbJson
@@ -25,6 +27,7 @@ private class VilkårssettJson(
     val kvpVilkår: KVPVilkårDbJson,
     val introVilkår: IntroVilkårDbJson,
     val livsoppholdVilkår: LivsoppholdVilkårDbJson,
+    val alderVilkår: AlderVilkårDbJson,
 )
 
 internal fun String.toVilkårssett(
@@ -40,6 +43,7 @@ internal fun String.toVilkårssett(
             kvpVilkår = vilkårssettJson.kvpVilkår.toDomain(),
             introVilkår = vilkårssettJson.introVilkår.toDomain(),
             livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
+            alderVilkår = vilkårssettJson.alderVilkår.toDomain(),
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             kravdatoSaksopplysninger = kravdatoSaksopplysninger,
@@ -51,5 +55,5 @@ internal fun String.toVilkårssett(
 }
 
 internal fun Vilkårssett.toDbJson(): String {
-    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson(), introVilkår = introVilkår.toDbJson(), livsoppholdVilkår = livsoppholdVilkår.toDbJson(), institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson()))
+    return serialize(VilkårssettJson(kvpVilkår = kvpVilkår.toDbJson(), introVilkår = introVilkår.toDbJson(), livsoppholdVilkår = livsoppholdVilkår.toDbJson(), institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson(), alderVilkår = alderVilkår.toDbJson()))
 }
