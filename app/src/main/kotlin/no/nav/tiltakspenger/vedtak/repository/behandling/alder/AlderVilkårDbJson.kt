@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.alder
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.PeriodisertUtfallDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDomain
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDomain
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 

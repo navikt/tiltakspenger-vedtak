@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
+package no.nav.tiltakspenger.vedtak.repository.behandling.felles
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering

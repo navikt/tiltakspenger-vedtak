@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
@@ -21,6 +23,7 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
+import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -70,6 +73,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val tokenProviderTiltak: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
 
+    private val dataSource = DataSource.hikariDataSource
+    private val sessionCounter = SessionCounter(log)
+    private val dbFactory = PostgresSessionFactory(dataSource, sessionCounter)
+
     private val sakRepo = PostgresSakRepo()
     private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
     private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
@@ -80,7 +87,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
-    private val søkerRepository = SøkerRepositoryImpl()
+    private val søkerRepository = SøkerRepositoryImpl(dbFactory)
     private val behandlingRepo = PostgresBehandlingRepo()
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()

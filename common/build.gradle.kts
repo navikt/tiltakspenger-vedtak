@@ -1,4 +1,4 @@
-val felleslibVersion = "0.0.140"
+val felleslibVersion = "0.0.154"
 
 dependencies {
     implementation(project(":domene"))

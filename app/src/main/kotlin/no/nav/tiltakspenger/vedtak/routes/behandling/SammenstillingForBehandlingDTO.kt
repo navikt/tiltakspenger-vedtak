@@ -1,29 +1,25 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
-import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class SammenstillingForBehandlingDTO(
+internal data class SammenstillingForBehandlingDTO(
     val behandlingId: String,
     val saksbehandler: String?,
     val beslutter: String?,
     val vurderingsperiode: PeriodeDTO,
-    val søknadsdato: LocalDate,
-    val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
-    val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
-    val alderssaksopplysning: AlderssaksopplysningDTO,
-    val ytelsessaksopplysninger: YtelsessaksopplysningerDTO,
     val personopplysninger: PersonopplysningerDTO,
-    val behandlingsteg: String,
+    val behandlingTilstand: String,
     val status: String,
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
-    val utfallsperioder: List<UtfallsperiodeDTO>,
+    val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
     val kravdatoSaksopplysninger: KravdatoSaksopplysningerDTO,
+    val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
+    val vilkårsett: VilkårssettDTO,
 ) {
     data class EndringDTO(
         val type: String,
@@ -46,7 +42,6 @@ data class SammenstillingForBehandlingDTO(
         val fortrolig: Boolean,
     )
 
-    // Bør sende med samletUtfall her også
     data class TiltaksdeltagelsesaksopplysningDTO(
         val vilkår: String,
         val vilkårLovreferanse: LovreferanseDTO,
@@ -72,33 +67,6 @@ data class SammenstillingForBehandlingDTO(
         val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
         val begrunnelse: String,
-    )
-
-    data class AlderssaksopplysningDTO(
-        val periode: PeriodeDTO,
-        val kilde: String,
-        val detaljer: String,
-        val vilkår: String,
-        val vilkårTittel: String,
-        val utfall: String,
-        val vilkårLovreferanse: List<LovreferanseDTO>,
-        val grunnlag: LocalDate,
-    )
-
-    data class YtelsessaksopplysningerDTO(
-        val vilkår: String,
-        val saksopplysninger: List<SaksopplysningUtDTO>,
-        val samletUtfall: String,
-        val vilkårLovreferanse: LovreferanseDTO,
-    )
-
-    data class SaksopplysningUtDTO(
-        val periode: PeriodeDTO,
-        val kilde: String,
-        val detaljer: String,
-        val saksopplysning: String,
-        val saksopplysningTittel: String,
-        val utfall: String,
     )
 
     data class KravdatoSaksopplysningerDTO(
