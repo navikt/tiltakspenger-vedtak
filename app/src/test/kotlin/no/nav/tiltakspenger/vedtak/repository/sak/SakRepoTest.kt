@@ -52,7 +52,7 @@ internal class SakRepoTest {
 
     @Test
     fun `hentForSaksnummer skal hente sak med matchende saksnummer`() {
-        val saksnummerMock = Saksnummer(verdi = "123456789")
+        val saksnummerMock = Saksnummer("202301011001")
         val sak = tomSak(saksnummer = saksnummerMock)
         sakRepo.lagre(sak)
         val sakHentetUtifraSaksnummer = sakRepo.hentForSaksnummer(saksnummer = saksnummerMock.verdi)
@@ -62,9 +62,9 @@ internal class SakRepoTest {
     @Test
     fun `hentForIdent skal hente saker med matchende ident`() {
         val ident = "123"
-        val sak1 = tomSak(ident = ident).also { sakRepo.lagre(it) }
-        val sak2 = tomSak(ident = ident).also { sakRepo.lagre(it) }
-        val sak3 = tomSak(ident = "456").also { sakRepo.lagre(it) }
+        val sak1 = tomSak(ident = ident, løpenummer = 1001).also { sakRepo.lagre(it) }
+        val sak2 = tomSak(ident = ident, løpenummer = 1002).also { sakRepo.lagre(it) }
+        val sak3 = tomSak(ident = "456", løpenummer = 1003).also { sakRepo.lagre(it) }
 
         val sakerMedIdent = sakRepo.hentForIdent(ident)
         sakerMedIdent.size shouldBe 2

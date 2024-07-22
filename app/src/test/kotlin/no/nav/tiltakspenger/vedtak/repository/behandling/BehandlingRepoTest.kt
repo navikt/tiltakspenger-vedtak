@@ -52,7 +52,7 @@ internal class BehandlingRepoTest {
         val sak = Sak(
             id = sakId,
             ident = ident,
-            saknummer = Saksnummer(verdi = "123"),
+            saknummer = Saksnummer("202301011001"),
             periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = SakPersonopplysninger(),
@@ -91,7 +91,7 @@ internal class BehandlingRepoTest {
         val sak = Sak(
             id = sakId,
             ident = ident,
-            saknummer = Saksnummer(verdi = "123"),
+            saknummer = Saksnummer("202301011001"),
             periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = SakPersonopplysninger(),
@@ -131,7 +131,7 @@ internal class BehandlingRepoTest {
         val vårSakId = SakId.random()
         val enAnnenSakId = SakId.random()
         val sakForVårIdent = sakMedOpprettetBehandling(id = vårSakId, ident = ident)
-        val enAnnenSak = sakMedOpprettetBehandling(id = enAnnenSakId, ident = "random")
+        val enAnnenSak = sakMedOpprettetBehandling(id = enAnnenSakId, ident = "random", løpenummer = 1002)
 
         sakRepo.lagre(sakForVårIdent)
         sakRepo.lagre(enAnnenSak)

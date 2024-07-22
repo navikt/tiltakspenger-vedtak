@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.intellij.lang.annotations.Language
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
@@ -201,30 +202,22 @@ internal class PostgresSakRepo(
         return sak
     }
 
-    override fun hentNesteLøpenr(): String {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
+    override fun hentNesteSaksnummer(): Saksnummer {
+        val iDag = LocalDate.now()
+        val saksnummerPrefiks = Saksnummer.genererSaksnummerPrefiks(iDag)
+        return sessionOf(DataSource.hikariDataSource).use { session ->
+            session.transaction { txSession ->
                 txSession.run(
                     queryOf(
                         sqlHentNesteLøpenummer,
+                        mapOf("saksnummerprefiks" to "$saksnummerPrefiks%"),
                     ).map { row ->
-                        row.int("løpenr").toString()
+                        row.string("saksnummer")
+                            .let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
                     }.asSingle,
                 )
             }
-        } ?: throw IllegalStateException("Kunne ikke hente neste løpenummer")
-    }
-
-    override fun resetLøpenummer() {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlResetLøpenummer,
-                    ).asExecute,
-                )
-            }
-        }
+        } ?: Saksnummer.genererSaknummer(dato = iDag)
     }
 
     private fun Row.toSak(txSession: TransactionalSession): Sak {
@@ -310,9 +303,11 @@ internal class PostgresSakRepo(
 
     @Language("SQL")
     private val sqlHentNesteLøpenummer =
-        """select nextval('sak_løpenr') as løpenr""".trimIndent()
-
-    @Language("SQL")
-    private val sqlResetLøpenummer =
-        """alter sequence sak_løpenr restart""".trimIndent()
+        """
+            SELECT saksnummer 
+            FROM sak 
+            WHERE saksnummer LIKE :saksnummerprefiks 
+            ORDER BY saksnummer DESC 
+            LIMIT 1
+        """.trimIndent()
 }

@@ -141,7 +141,7 @@ class IntroRoutesTest {
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1019)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -188,6 +188,7 @@ class IntroRoutesTest {
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, personopplysningFødselsdato()),
             ),
+            løpenummer = 1002,
         )
 
         sessionOf(DataSource.hikariDataSource).use {

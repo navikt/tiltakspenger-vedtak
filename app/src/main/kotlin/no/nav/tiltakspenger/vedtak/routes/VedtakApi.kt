@@ -107,10 +107,7 @@ internal fun Application.vedtakApi(
         }
         authenticate("systemtoken") {
             søknadRoutes(sakService)
-            passageOfTimeRoutes(
-                innloggetSystembrukerProvider = innloggetSystembrukerProvider,
-                sakService = sakService,
-            )
+            passageOfTimeRoutes()
         }
         staticResources(
             remotePath = "/",

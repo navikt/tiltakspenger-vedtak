@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.AlderTolker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -48,7 +47,7 @@ class SakServiceImpl(
                     periode = søknad.vurderingsperiode(),
                 ).singleOrNull() ?: Sak.lagSak(
                     søknad = søknad,
-                    saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
+                    saksnummer = sakRepo.hentNesteSaksnummer(),
                     sakPersonopplysninger = sakPersonopplysninger,
                 )
                 ).håndter(søknad = søknad)
@@ -107,10 +106,6 @@ class SakServiceImpl(
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
         return sak
-    }
-
-    override fun resettLøpenr() {
-        sakRepo.resetLøpenummer()
     }
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<String, Boolean> {

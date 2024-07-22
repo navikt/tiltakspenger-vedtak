@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -100,7 +101,7 @@ internal class SakServiceTest {
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
 
         val søknad = nySøknad(
             tiltak = søknadTiltak(
@@ -127,7 +128,7 @@ internal class SakServiceTest {
     fun `sjekk at skjerming blir satt riktig`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
 
         val søknad = nySøknad(
             tiltak = søknadTiltak(
@@ -155,7 +156,7 @@ internal class SakServiceTest {
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
         every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
         every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
 
         val søknad = nySøknad(
             journalpostId = "søknad1",
