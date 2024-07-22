@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.InstitusjonsoppholdVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
@@ -19,6 +21,7 @@ internal data class VilkårssettDTO(
     val introVilkår: IntroVilkårDTO,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkårDTO,
     val livsoppholdVilkår: LivsoppholdVilkårDTO,
+    val alderVilkår: AlderVilkårDTO,
 )
 
 internal fun Vilkårssett.toDTO(vurderingsperiode: PeriodeDTO): VilkårssettDTO {
@@ -26,6 +29,7 @@ internal fun Vilkårssett.toDTO(vurderingsperiode: PeriodeDTO): VilkårssettDTO 
         kvpVilkår = kvpVilkår.toDTO(vurderingsperiode),
         introVilkår = introVilkår.toDTO(vurderingsperiode),
         institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDTO(vurderingsperiode),
+        alderVilkår = alderVilkår.toDTO(vurderingsperiode),
         livsoppholdVilkår = livsoppholdVilkår.toDTO(),
     )
 }
