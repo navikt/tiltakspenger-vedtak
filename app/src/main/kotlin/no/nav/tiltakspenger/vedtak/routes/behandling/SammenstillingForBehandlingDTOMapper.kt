@@ -80,12 +80,7 @@ internal object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             }.first(),
-            behandlingTilstand = when (behandling.tilstand) {
-                BehandlingTilstand.IVERKSATT -> "iverksatt"
-                BehandlingTilstand.TIL_BESLUTTER -> "tilBeslutter"
-                BehandlingTilstand.VILKÅRSVURDERT -> "vilkårsvurdert"
-                BehandlingTilstand.OPPRETTET -> "opprettet"
-            },
+            behandlingTilstand = behandling.tilstand,
             status = finnStatus(behandling),
             endringslogg = attesteringer.map { att ->
                 EndringDTO(
