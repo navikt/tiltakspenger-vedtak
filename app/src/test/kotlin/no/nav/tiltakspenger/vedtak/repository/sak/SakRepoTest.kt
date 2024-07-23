@@ -32,8 +32,7 @@ internal class SakRepoTest {
 
             val sak = tomSak(ident = ident, periode = Periode(fraOgMed = startdato, tilOgMed = sluttdato))
 
-            sakRepo.lagre(sak)
-shouldBe sak
+            sakRepo.lagre(sak) shouldBe sak
             sakRepo.hentForIdent(ident) shouldBe listOf(sak)
         }
     }
@@ -61,15 +60,15 @@ shouldBe sak
             val ident = "123"
             val sak1 = tomSak(ident = ident, løpenummer = 1001).also { sakRepo.lagre(it) }
             val sak2 = tomSak(
-            ident = ident,
-            løpenummer = 1002,
-            periode = Periode(fraOgMed = 2.februar(2022), tilOgMed = 3.februar(2022)),
-        ).also { sakRepo.lagre(it) }
+                ident = ident,
+                løpenummer = 1002,
+                periode = Periode(fraOgMed = 2.februar(2022), tilOgMed = 3.februar(2022)),
+            ).also { sakRepo.lagre(it) }
             val sak3 = tomSak(
-            ident = "456",
-            løpenummer = 1003,
-            periode = Periode(fraOgMed = 5.februar(2022), tilOgMed = 5.februar(2022)),
-        ).also { sakRepo.lagre(it) }
+                ident = "456",
+                løpenummer = 1003,
+                periode = Periode(fraOgMed = 5.februar(2022), tilOgMed = 5.februar(2022)),
+            ).also { sakRepo.lagre(it) }
 
             val sakerMedIdent = sakRepo.hentForIdent(ident)
             sakerMedIdent.size shouldBe 2

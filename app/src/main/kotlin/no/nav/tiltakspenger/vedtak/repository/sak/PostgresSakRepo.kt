@@ -32,45 +32,17 @@ internal class PostgresSakRepo(
     override fun hentForIdent(fnr: String): Saker {
         return Saker(
             ident = fnr,
-            saker = sessionOf(DataSource.hikariDataSource).use {
-                it.transaction { txSession ->
-                    txSession.run(
-                        queryOf(
-                            sqlHentSakerForIdent,
-                            mapOf("ident" to fnr),
-                        ).map { row ->
-                            row.toSak(txSession)
-                        }.asList,
-                    )
-                }
+            saker = sessionFactory.withTransaction { txSession ->
+                txSession.run(
+                    queryOf(
+                        sqlHentSakerForIdent,
+                        mapOf("ident" to fnr),
+                    ).map { row ->
+                        row.toSak(txSession)
+                    }.asList,
+                )
             },
         )
-    override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
-                queryOf(
-                    sqlHentSakerForIdent,
-                    mapOf("ident" to fnr),
-                ).map { row ->
-                    row.toSak(txSession)
-                }.asList,
-            )
-        }.filter {
-            it.periode.overlapperMed(periode)
-        }
-    }
-
-    override fun hentForIdent(fnr: String): List<Sak> {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
-                queryOf(
-                    sqlHentSakerForIdent,
-                    mapOf("ident" to fnr),
-                ).map { row ->
-                    row.toSak(txSession)
-                }.asList,
-            )
-        }
     }
 
     override fun hentForSaksnummer(saksnummer: String): Sak? {
