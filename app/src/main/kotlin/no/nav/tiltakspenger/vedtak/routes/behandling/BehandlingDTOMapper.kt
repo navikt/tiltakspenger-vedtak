@@ -14,6 +14,7 @@ internal object BehandlingDTOMapper {
                 saksbehandler = it.saksbehandler,
                 beslutter = it.beslutter,
                 status = finnStatus(it),
+                tilstand = it.tilstand,
                 typeBehandling = "Førstegangsbehandling",
                 fom = it.vurderingsperiode.fraOgMed,
                 tom = it.vurderingsperiode.tilOgMed,
