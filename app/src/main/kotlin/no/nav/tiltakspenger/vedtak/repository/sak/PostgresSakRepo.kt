@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -30,36 +31,22 @@ internal class PostgresSakRepo(
     private val personopplysningerRepo: PostgresPersonopplysningerRepo = PostgresPersonopplysningerRepo(),
     private val vedtakRepo: VedtakRepo = VedtakRepoImpl(),
 ) : SakRepo {
-    override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentSakerForIdent,
-                        mapOf("ident" to fnr),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asList,
-                )
-            }
-        }.filter {
-            it.periode.overlapperMed(periode)
-        }
-    }
-
-    override fun hentForIdent(fnr: String): List<Sak> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentSakerForIdent,
-                        mapOf("ident" to fnr),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asList,
-                )
-            }
-        }
+    override fun hentForIdent(fnr: String): Saker {
+        return Saker(
+            ident = fnr,
+            saker = sessionOf(DataSource.hikariDataSource).use {
+                it.transaction { txSession ->
+                    txSession.run(
+                        queryOf(
+                            sqlHentSakerForIdent,
+                            mapOf("ident" to fnr),
+                        ).map { row ->
+                            row.toSak(txSession)
+                        }.asList,
+                    )
+                }
+            },
+        )
     }
 
     override fun hentForSaksnummer(saksnummer: String): Sak? {

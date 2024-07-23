@@ -3,12 +3,11 @@ package no.nav.tiltakspenger.vedtak.repository.sak
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
+import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
@@ -43,11 +42,8 @@ internal class SakRepoTest {
 
         val sak = tomSak(ident = ident, periode = Periode(fraOgMed = startdato, tilOgMed = sluttdato))
 
-        sakRepo.lagre(sak)
-
-        val hentSak = sakRepo.hentForIdentMedPeriode(ident, Periode(fraOgMed = startdato, tilOgMed = sluttdato))
-
-        hentSak shouldNotBe emptyList<Sak>()
+        sakRepo.lagre(sak) shouldBe sak
+        sakRepo.hentForIdent(ident) shouldBe listOf(sak)
     }
 
     @Test
@@ -63,8 +59,16 @@ internal class SakRepoTest {
     fun `hentForIdent skal hente saker med matchende ident`() {
         val ident = "123"
         val sak1 = tomSak(ident = ident, løpenummer = 1001).also { sakRepo.lagre(it) }
-        val sak2 = tomSak(ident = ident, løpenummer = 1002).also { sakRepo.lagre(it) }
-        val sak3 = tomSak(ident = "456", løpenummer = 1003).also { sakRepo.lagre(it) }
+        val sak2 = tomSak(
+            ident = ident,
+            løpenummer = 1002,
+            periode = Periode(fraOgMed = 2.februar(2022), tilOgMed = 3.februar(2022)),
+        ).also { sakRepo.lagre(it) }
+        val sak3 = tomSak(
+            ident = "456",
+            løpenummer = 1003,
+            periode = Periode(fraOgMed = 5.februar(2022), tilOgMed = 5.februar(2022)),
+        ).also { sakRepo.lagre(it) }
 
         val sakerMedIdent = sakRepo.hentForIdent(ident)
         sakerMedIdent.size shouldBe 2
