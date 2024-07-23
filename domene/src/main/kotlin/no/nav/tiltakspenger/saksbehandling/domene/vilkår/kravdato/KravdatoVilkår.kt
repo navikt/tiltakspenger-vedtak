@@ -40,11 +40,12 @@ data class KravdatoVilkår private constructor(
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
+            vurderingsperiode = vurderingsperiode,
         )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
+            utfall = introSaksopplysning.vurderMaskinelt(),
         )
     }
 
@@ -58,7 +59,7 @@ data class KravdatoVilkår private constructor(
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
+                utfall = søknadSaksopplysning.vurderMaskinelt(),
             )
         }
 
