@@ -1,11 +1,13 @@
 package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -22,23 +24,27 @@ interface SakMother {
     }
 
     fun sakMedOpprettetBehandling(
-        id: SakId = SakId.random(),
+        sakId: SakId = SakId.random(),
         ident: String = random.nextInt().toString(),
         iDag: LocalDate = LocalDate.of(2023, 1, 1),
         løpenummer: Int = 1001,
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         periode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
+        saksbehandler: Saksbehandler = saksbehandler(),
+        søknad: Søknad = nySøknad(
+            personopplysninger = personSøknad(ident = ident),
+            tiltak = søknadTiltak(
+                deltakelseFom = periode.fraOgMed,
+                deltakelseTom = periode.tilOgMed,
+            ),
+        ),
         behandlinger: List<Førstegangsbehandling> = listOf(
             Førstegangsbehandling.opprettBehandling(
-                id,
-                nySøknad(
-                    personopplysninger = personSøknad(ident = ident),
-                    tiltak = søknadTiltak(
-                        deltakelseFom = periode.fraOgMed,
-                        deltakelseTom = periode.tilOgMed,
-                    ),
-                ),
+                sakId = sakId,
+                saksnummer = saksnummer,
+                ident = ident,
+                søknad = søknad,
                 fødselsdato = personopplysningFødselsdato,
                 registrerteTiltak = listOf(
                     ObjectMother.tiltak(
@@ -53,12 +59,13 @@ interface SakMother {
                         deltakelseTom = periode.tilOgMed,
                     ),
                 ),
+                saksbehandler = saksbehandler,
             ),
         ),
         personopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident))),
     ): Sak =
         Sak(
-            id = id,
+            id = sakId,
             ident = ident,
             saknummer = saksnummer,
             periode = periode,

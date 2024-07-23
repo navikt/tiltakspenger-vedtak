@@ -1,10 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
@@ -15,11 +18,11 @@ class SøkerRepositoryImpl(
     private val personopplysningerDAO: PersonopplysningerDAO,
 ) : SøkerRepository {
 
-    override fun findByIdent(ident: String): Søker? {
-        return sessionFactory.withTransaction { tx ->
-            tx.run(
+    override fun findByIdent(ident: String, sessionContext: SessionContext?): Søker? {
+        return sessionFactory.withSession(sessionContext) { session ->
+            session.run(
                 queryOf(findByIdent, ident).map { row ->
-                    row.toSøker(tx)
+                    row.toSøker(session)
                 }.asSingle,
             )
         }
@@ -35,17 +38,17 @@ class SøkerRepositoryImpl(
         }
     }
 
-    override fun lagre(søker: Søker) {
-        sessionFactory.withTransaction { txSession ->
-            if (søkerFinnes(søker.søkerId, txSession)) {
-                oppdaterSøker(søker, txSession)
+    override fun lagre(søker: Søker, transactionContext: TransactionContext?) {
+        sessionFactory.withTransaction(transactionContext) { tx ->
+            if (søkerFinnes(søker.søkerId, tx)) {
+                oppdaterSøker(søker, tx)
             } else {
-                lagreSøker(søker, txSession)
+                lagreSøker(søker, tx)
             }
             personopplysningerDAO.lagre(
                 søkerId = søker.søkerId,
                 personopplysninger = søker.personopplysninger,
-                txSession = txSession,
+                txSession = tx,
             )
         }
     }
@@ -81,10 +84,10 @@ class SøkerRepositoryImpl(
         )
     }
 
-    private fun Row.toSøker(txSession: TransactionalSession): Søker {
+    private fun Row.toSøker(session: Session): Søker {
         val id = SøkerId.fromString(string("id"))
         val ident = string("ident")
-        val personopplysninger = personopplysningerDAO.hent(id, txSession)
+        val personopplysninger = personopplysningerDAO.hent(id, session)
         return Søker.fromDb(
             søkerId = id,
             ident = ident,

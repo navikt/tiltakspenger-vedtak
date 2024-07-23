@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
@@ -31,6 +32,8 @@ import java.time.LocalDate
 data class Førstegangsbehandling(
     override val id: BehandlingId,
     override val sakId: SakId,
+    override val saksnummer: Saksnummer,
+    override val ident: String,
     override val vurderingsperiode: Periode,
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
@@ -48,9 +51,12 @@ data class Førstegangsbehandling(
 
         fun opprettBehandling(
             sakId: SakId,
+            saksnummer: Saksnummer,
+            ident: String,
             søknad: Søknad,
-            registrerteTiltak: List<Tiltak>,
             fødselsdato: LocalDate,
+            saksbehandler: Saksbehandler,
+            registrerteTiltak: List<Tiltak>,
         ): Førstegangsbehandling {
             val vurderingsperiode = søknad.vurderingsperiode()
             val tiltak = registrerteTiltak.find {
@@ -62,7 +68,9 @@ data class Førstegangsbehandling(
 
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
+                saksnummer = saksnummer,
                 sakId = sakId,
+                ident = ident,
                 søknader = listOf(søknad),
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(
@@ -89,7 +97,7 @@ data class Førstegangsbehandling(
                     kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                     tiltakDeltagelseVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
                 ),
-                saksbehandler = null,
+                saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = BehandlingStatus.Manuell,
                 tilstand = BehandlingTilstand.OPPRETTET,
@@ -165,22 +173,27 @@ data class Førstegangsbehandling(
         }
     }
 
-    override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    override fun taBehandling(saksbehandler: Saksbehandler): Behandling {
+        return if (this.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
+            this.beslutterTarBehandling(saksbehandler)
+        } else {
+            this.saksbehandlerTarBehandling(saksbehandler)
+        }
+    }
+
+    private fun saksbehandlerTarBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
             this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
-        ) { "Kan ikke starte behandling, feil tilstand $tilstand" }
-
-        check(this.saksbehandler == null) { "Denne behandlingen er allerede tatt" }
+        ) { "Vanlig saksbehandler kan ikke ta behandlingen, feil tilstand $tilstand" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent)
     }
 
-    override fun startGodkjenning(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    private fun beslutterTarBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
             this.tilstand in listOf(BehandlingTilstand.TIL_BESLUTTER),
         ) { "Kan ikke godkjenne behandling, feil tilstand $tilstand" }
 
-        check(this.beslutter == null) { "Denne behandlingen er allerede tatt" }
         check(saksbehandler.isBeslutter()) { "Saksbehandler må være beslutter" }
         return this.copy(beslutter = saksbehandler.navIdent)
     }

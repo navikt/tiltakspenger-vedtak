@@ -67,7 +67,7 @@ data class SøknadId private constructor(private val ulid: UlidBase) : Ulid by u
         private const val PREFIX = "soknad"
         fun random() = SøknadId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
-        fun fromDb(stringValue: String) = SøknadId(ulid = UlidBase(stringValue))
+        fun fromString(stringValue: String) = SøknadId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = SøknadId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }

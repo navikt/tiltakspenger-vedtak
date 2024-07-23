@@ -12,13 +12,13 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.april
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
@@ -33,12 +33,12 @@ class SøknadRoutesTest {
         const val JOURNALPOSTID = "foobar2"
     }
 
-    private val mockSakService = mockk<SakServiceImpl>(relaxed = true)
-
     @Test
     fun `sjekk at kall til river søknad route mapper søknad riktig og kaller mottak`() {
+        val søknadId = SøknadId.random()
+        val mockSøknadService = mockk<SøknadServiceImpl>(relaxed = true)
         val søknad = slot<Søknad>()
-        every { mockSakService.motta(capture(søknad)) } returns ObjectMother.tomSak()
+        every { mockSøknadService.nySøknad(capture(søknad)) } returns Unit
 
         testApplication {
             application {
@@ -46,7 +46,7 @@ class SøknadRoutesTest {
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
-                        sakService = mockSakService,
+                        søknadService = mockSøknadService,
                     )
                 }
             }
@@ -57,7 +57,7 @@ class SøknadRoutesTest {
                     path(søknadpath)
                 },
             ) {
-                setBody(søknadBodyV3)
+                setBody(søknadBodyV3(søknadId))
             }
                 .apply {
                     status shouldBe HttpStatusCode.OK
@@ -67,7 +67,6 @@ class SøknadRoutesTest {
         søknad.captured shouldBe Søknad(
             versjon = "3",
             id = søknad.captured.id,
-            søknadId = "735ac33a-bf3b-43c0-a331-e9ac99bdd6f8",
             journalpostId = JOURNALPOSTID,
             dokumentInfoId = "987",
             filnavn = "tiltakspengersoknad.json",
@@ -117,10 +116,10 @@ class SøknadRoutesTest {
         )
     }
 
-    private val søknadBodyV3 = """
+    private fun søknadBodyV3(søknadId: SøknadId) = """
         {
             "versjon": "3",
-            "søknadId": "735ac33a-bf3b-43c0-a331-e9ac99bdd6f8",
+            "søknadId": "$søknadId",
             "dokInfo": {
               "journalpostId": "$JOURNALPOSTID",
               "dokumentInfoId": "987",

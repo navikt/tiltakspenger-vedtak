@@ -21,15 +21,14 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
-import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -38,26 +37,12 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfrist
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Random
 
-@Testcontainers
-class KravfristRoutesTest {
-
-    companion object {
-        @Container
-        val postgresContainer = PostgresTestcontainer
-    }
-
-    @BeforeEach
-    fun setup() {
-        flywayMigrate()
-    }
-
+internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
@@ -80,22 +65,30 @@ class KravfristRoutesTest {
         val periodeTilOgMed = LocalDate.now().minusMonths(1)
 
         val sakId = SakId.random()
+        val saksnummer = Saksnummer("202301011001")
+        val ident = Random().nextInt().toString()
         val søknad = nySøknad(
             periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
             tidsstempelHosOss = LocalDateTime.now(),
         )
+        val saksbehandler = ObjectMother.saksbehandler()
 
         val registrerteTiltak = listOf(
             ObjectMother.tiltak(deltakelseTom = periodeTilOgMed, deltakelseFom = periodeFraOgMed),
         )
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            id = sakId,
+            sakId = sakId,
+            saksnummer = saksnummer,
+            ident = ident,
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(
-                    sakId,
-                    søknad,
-                    registrerteTiltak,
-                    personopplysningFødselsdato(),
+                    sakId = sakId,
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    søknad = søknad,
+                    fødselsdato = personopplysningFødselsdato(),
+                    saksbehandler = saksbehandler,
+                    registrerteTiltak = registrerteTiltak,
                 ),
             ),
         )
@@ -119,6 +112,7 @@ class KravfristRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {
@@ -156,6 +150,8 @@ class KravfristRoutesTest {
         val periodeTilOgMed = LocalDate.now().minusMonths(1)
 
         val sakId = SakId.random()
+        val saksnummer = Saksnummer("202301011001")
+        val ident = Random().nextInt().toString()
         val søknad = nySøknad(
             periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
             tidsstempelHosOss = LocalDateTime.now().plusMonths(4),
@@ -166,13 +162,18 @@ class KravfristRoutesTest {
         )
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            id = sakId,
+            sakId = sakId,
+            saksnummer = saksnummer,
+            ident = ident,
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(
-                    sakId,
-                    søknad,
-                    registrerteTiltak,
-                    personopplysningFødselsdato(),
+                    sakId = sakId,
+                    søknad = søknad,
+                    fødselsdato = personopplysningFødselsdato(),
+                    saksbehandler = ObjectMother.saksbehandler(),
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    registrerteTiltak = registrerteTiltak,
                 ),
             ),
         )
@@ -194,6 +195,7 @@ class KravfristRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {

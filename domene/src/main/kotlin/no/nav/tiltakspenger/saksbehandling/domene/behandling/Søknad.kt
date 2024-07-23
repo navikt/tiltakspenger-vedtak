@@ -9,8 +9,7 @@ import java.time.LocalDateTime
 
 data class Søknad(
     val versjon: String = "1",
-    val id: SøknadId = randomId(),
-    val søknadId: String, // TODO: Bør denne ha et annet navn? Hvor kommer den fra?
+    val id: SøknadId,
     val journalpostId: String, // TODO: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
     val dokumentInfoId: String,
     val filnavn: String,

@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -40,6 +41,7 @@ import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
+import java.util.Random
 
 class IntroRoutesTest {
 
@@ -81,6 +83,7 @@ class IntroRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {
@@ -115,18 +118,32 @@ class IntroRoutesTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val sakId = SakId.random()
+        val saksnummer = Saksnummer("202301011001")
+        val ident = Random().nextInt().toString()
         val søknadMedIntro = nySøknad(
             intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            ident = ident,
         )
 
         val registrerteTiltak = listOf(
             ObjectMother.tiltak(),
         )
 
+        val saksbehandler = ObjectMother.saksbehandler(navIdent = ident)
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            id = sakId,
+            sakId = sakId,
+            ident = ident,
+            saksnummer = saksnummer,
             behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, registrerteTiltak, personopplysningFødselsdato()),
+                Førstegangsbehandling.opprettBehandling(
+                    sakId = sakId,
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    registrerteTiltak = registrerteTiltak,
+                    søknad = søknadMedIntro,
+                    fødselsdato = personopplysningFødselsdato(),
+                    saksbehandler = saksbehandler,
+                ),
             ),
             løpenummer = 1002,
         )
@@ -149,6 +166,7 @@ class IntroRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {

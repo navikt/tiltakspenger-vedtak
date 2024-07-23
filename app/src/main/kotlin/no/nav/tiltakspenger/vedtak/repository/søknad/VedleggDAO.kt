@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
@@ -17,8 +18,8 @@ internal class VedleggDAO {
         }
     }
 
-    fun hentVedleggListe(søknadId: SøknadId, txSession: TransactionalSession): List<Vedlegg> {
-        return txSession.run(
+    fun hentVedleggListe(søknadId: SøknadId, session: Session): List<Vedlegg> {
+        return session.run(
             queryOf(hentVedlegg, søknadId.toString())
                 .map { row -> row.toVedlegg() }
                 .asList,

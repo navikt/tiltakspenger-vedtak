@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -99,8 +100,8 @@ internal class PostgresSakRepo(
         }
     }
 
-    override fun lagre(sak: Sak): Sak {
-        return sessionFactory.withTransaction { txSession ->
+    override fun lagre(sak: Sak, transactionContext: TransactionContext?): Sak {
+        return sessionFactory.withTransaction(transactionContext) { txSession ->
             val sistEndret = hentSistEndret(sak.id, txSession)
             val opprettetSak = if (sistEndret == null) {
                 opprettSak(sak, txSession)
@@ -163,7 +164,7 @@ internal class PostgresSakRepo(
                 mapOf(
                     "id" to sak.id.toString(),
                     "ident" to sak.ident,
-                    "saksnummer" to sak.saknummer.verdi,
+                    "saksnummer" to sak.saksnummer.verdi,
                     "fom" to sak.periode.fraOgMed,
                     "tom" to sak.periode.tilOgMed,
                     "sistEndret" to nå,
@@ -205,7 +206,7 @@ internal class PostgresSakRepo(
         return TynnSak(
             id = id,
             ident = string("ident"),
-            saknummer = Saksnummer(verdi = string("saksnummer")),
+            saksnummer = Saksnummer(verdi = string("saksnummer")),
             periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
         )
     }

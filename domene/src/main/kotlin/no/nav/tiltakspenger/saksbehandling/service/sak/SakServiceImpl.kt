@@ -1,13 +1,17 @@
 package no.nav.tiltakspenger.saksbehandling.service.sak
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
@@ -16,67 +20,105 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.AlderTolker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class SakServiceImpl(
-    val sakRepo: SakRepo,
-    val behandlingRepo: BehandlingRepo,
-    val søkerRepository: SøkerRepository,
-    val behandlingService: BehandlingService,
-    val personGateway: PersonGateway,
-    val skjermingGateway: SkjermingGateway,
-    val tiltakGateway: TiltakGateway,
+    private val sakRepo: SakRepo,
+    private val søknadRepo: SøknadRepo,
+    private val behandlingRepo: BehandlingRepo,
+    private val søkerRepository: SøkerRepository,
+    private val behandlingService: BehandlingService,
+    private val personGateway: PersonGateway,
+    private val skjermingGateway: SkjermingGateway,
+    private val sessionFactory: SessionFactory,
+    private val tiltakGateway: TiltakGateway,
 ) : SakService {
-    override fun motta(søknad: Søknad): Sak {
+
+    sealed interface KanIkkeStarteFørstegangsbehandling {
+        data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
+        data object HarAlleredeStartetBehandlingen : KanIkkeStarteFørstegangsbehandling
+    }
+
+    override fun startFørstegangsbehandling(
+        søknadId: SøknadId,
+        saksbehandler: Saksbehandler,
+    ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
+        val søknad = søknadRepo.hentSøknad(søknadId)
+        if (behandlingService.hentBehandlingForSøknadId(søknadId) != null) {
+            return HarAlleredeStartetBehandlingen.left()
+        }
         val ident = søknad.personopplysninger.ident
+        if (sakRepo.hentForIdent(ident).isNotEmpty()) {
+            throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
+        }
         val sakPersonopplysninger = SakPersonopplysninger(
             liste = runBlocking { personGateway.hentPerson(ident) },
-        ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+        ).also {
+            // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
+            if (!it.harTilgang(saksbehandler)) return HarIkkeTilgangTilPerson.left()
+        }.let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(ident) }
         require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
-        val sak: Sak =
-            (
-                sakRepo.hentForIdent(
-                    fnr = ident,
-                ).singleOrNull() ?: Sak.lagSak(
-                    søknad = søknad,
-                    saksnummer = sakRepo.hentNesteSaksnummer(),
-                    sakPersonopplysninger = sakPersonopplysninger,
-                )
-                ).håndter(søknad = søknad, registrerteTiltak)
 
-        return sakRepo.lagre(sak).also {
-            utførLegacyInnsendingFørViSletterRnR(sak, sakPersonopplysninger)
+        val sak = Sak.lagSak(
+            søknad = søknad,
+            saksnummer = sakRepo.hentNesteSaksnummer(),
+            sakPersonopplysninger = sakPersonopplysninger,
+        ).nyFørstegangsbehandling(søknad, saksbehandler, registrerteTiltak)
+        // .oppdaterLegacySaksopplysninger()
+
+        sessionFactory.withTransactionContext { tx ->
+            sakRepo.lagre(sak, tx)
+            lagEllerOppdaterSøker(sak, sakPersonopplysninger, tx)
         }
+
+        return sak.right()
     }
 
-    /** TODO jah: Skal slettes når vi tar ned RnR. */
-    private fun utførLegacyInnsendingFørViSletterRnR(sak: Sak, sakPersonopplysninger: SakPersonopplysninger) {
-        // Opprett eller oppdater Søker. Denne brukes for å sjekke tilgang og for å veksle inn ident i søkerId
-        // slik at vi slipper å bruke ident i url'er
-        val søker = søkerRepository.findByIdent(sak.ident) ?: Søker(sak.ident)
+    /** TODO jah: Skal slettes etter vi har fjernet Søker-tabellen */
+    private fun lagEllerOppdaterSøker(
+        sak: Sak,
+        sakPersonopplysninger: SakPersonopplysninger,
+        tx: TransactionContext,
+    ) {
+        val søker = søkerRepository.findByIdent(sak.ident, tx) ?: Søker(sak.ident)
         søker.personopplysninger = sakPersonopplysninger.liste.søker()
-        søkerRepository.lagre(søker)
-
-        // Lage saksopplysninger for alder. Dette skal vel sikkert endres...
-        // saksopplysningen blir lagret i basen i behandlingservicen
-        sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach { behandling ->
-            AlderTolker.tolkeData(sak.personopplysninger.søker().fødselsdato, sak.periode).forEach {
-                behandlingService.leggTilSaksopplysning(behandling.id, it)
-            }
-        }
+        søkerRepository.lagre(søker, tx)
     }
+
+    /** TODO jah: Skal slettes etter alle vilkårene er over på ny modell */
+//    private fun Sak.oppdaterLegacySaksopplysninger(): Sak {
+//        val sak = this
+//        return sak.copy(
+//            behandlinger = sak.behandlinger.map { behandling ->
+//                val tiltak = runBlocking { tiltakGateway.hentTiltak(sak.ident) }
+//                behandling.oppdaterTiltak(
+//                    tiltak.filter {
+//                        Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
+//                    },
+//                ).let { behandlingMedTiltak ->
+//                    AlderTolker.tolkeData(sak.personopplysninger.søker().fødselsdato, sak.periode)
+//                        .fold(behandlingMedTiltak) { b, s ->
+//                            b.leggTilSaksopplysning(s).behandling
+//                        }
+//                }
+//            },
+//        )
+//    }
 
     override fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak? {
         val behandling = behandlingRepo.hentOrNull(behandlingId) ?: return null

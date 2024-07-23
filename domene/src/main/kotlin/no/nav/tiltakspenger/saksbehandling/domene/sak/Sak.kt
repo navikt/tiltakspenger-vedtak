@@ -2,9 +2,9 @@ package no.nav.tiltakspenger.saksbehandling.domene.sak
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
@@ -20,34 +20,48 @@ data class Sak(
     val personopplysninger: SakPersonopplysninger,
     val vedtak: List<Vedtak>,
 ) : SakDetaljer by sakDetaljer {
-    fun håndter(søknad: Søknad, registrerteTiltak: List<Tiltak>): Sak {
-        val iverksatteBehandlinger = behandlinger.filter { it.tilstand == BehandlingTilstand.IVERKSATT }
-        val behandlinger = behandlinger
-            .filterNot { it.tilstand == BehandlingTilstand.IVERKSATT }
-            .map {
-                try {
-                    it.leggTilSøknad(søknad)
-                } catch (e: IllegalStateException) {
-                    if (e.message?.contains("Kan ikke legge til søknad på denne behandlingen") == true) {
-                        it
-                    } else {
-                        throw e
-                    }
-                }
-            }.ifEmpty {
-                listOf(
-                    Førstegangsbehandling.opprettBehandling(
-                        sakId = id,
-                        søknad = søknad,
-                        registrerteTiltak = registrerteTiltak,
-                        fødselsdato = personopplysninger.søker().fødselsdato,
-                    ).vilkårsvurder(),
-                )
-            }
 
+    init {
+        if (behandlinger.isNotEmpty()) {
+            require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
+        }
+        require(behandlinger.filterIsInstance<Førstegangsbehandling>().size <= 1) { "Kan ikke ha flere enn en førstegangsbehandling" }
+    }
+
+    val førstegangsbehandling: Førstegangsbehandling? =
+        behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull()
+
+    /**
+     * Saksbehandler vil også ta behandlingen
+     */
+    fun nyFørstegangsbehandling(
+        søknad: Søknad,
+        saksbehandler: Saksbehandler,
+        registrerteTiltak: List<Tiltak>,
+    ): Sak {
+        require(behandlinger.isEmpty()) { "Sak har allerede en behandling" }
+        require(saksbehandler.isSaksbehandler())
+        require(personopplysninger.harTilgang(saksbehandler))
         return this.copy(
-            behandlinger = behandlinger + iverksatteBehandlinger,
+            behandlinger = listOf(
+                Førstegangsbehandling.opprettBehandling(
+                    sakId = id,
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    søknad = søknad,
+                    fødselsdato = personopplysninger.søker().fødselsdato,
+                    saksbehandler = saksbehandler,
+                    registrerteTiltak = registrerteTiltak,
+                ),
+            ),
         )
+    }
+
+    /**
+     * Sjekker kode 6, 7 og skjermet
+     */
+    fun harTilgang(saksbehandler: Saksbehandler): Boolean {
+        return personopplysninger.harTilgang(saksbehandler)
     }
 
     companion object {
@@ -64,7 +78,7 @@ data class Sak(
                 sakDetaljer = TynnSak(
                     id = id,
                     ident = ident,
-                    saknummer = saknummer,
+                    saksnummer = saknummer,
                     periode = periode,
                 ),
                 behandlinger = behandlinger,
@@ -81,7 +95,7 @@ data class Sak(
                 sakDetaljer = TynnSak(
                     id = SakId.random(),
                     ident = søknad.personopplysninger.ident,
-                    saknummer = saksnummer,
+                    saksnummer = saksnummer,
                     periode = søknad.vurderingsperiode(),
                 ),
                 behandlinger = emptyList(),

@@ -12,7 +12,7 @@ data class Saker(
 ) : List<Sak> by saker {
 
     init {
-        saker.map { it.saknummer }.also {
+        saker.map { it.saksnummer }.also {
             require(it.size == it.toSet().size) { "Saker inneholder duplikate saksnummer: $it" }
         }
         saker.map { it.id }.also {
@@ -32,5 +32,5 @@ data class Saker(
         }
     }
 
-    fun hentForSaksnummer(saksnummer: Saksnummer): Sak? = saker.find { it.saknummer == saksnummer }
+    fun hentForSaksnummer(saksnummer: Saksnummer): Sak? = saker.find { it.saksnummer == saksnummer }
 }

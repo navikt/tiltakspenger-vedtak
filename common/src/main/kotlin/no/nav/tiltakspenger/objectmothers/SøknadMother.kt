@@ -81,7 +81,8 @@ interface SøknadMother {
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
         filnavn: String = "filnavn",
-        personopplysninger: Søknad.Personopplysninger = personSøknad(),
+        ident: String = random.nextInt().toString(),
+        personopplysninger: Søknad.Personopplysninger = personSøknad(ident = ident),
         kvp: Søknad.PeriodeSpm = periodeNei(),
         intro: Søknad.PeriodeSpm = periodeNei(),
         institusjon: Søknad.PeriodeSpm = periodeNei(),
@@ -102,7 +103,6 @@ interface SøknadMother {
         return Søknad(
             versjon = versjon,
             id = id,
-            søknadId = søknadId,
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
             filnavn = filnavn,

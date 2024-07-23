@@ -4,11 +4,17 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface SaksbehandlerMother {
-    fun saksbehandler() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
-        roller = listOf(Rolle.SAKSBEHANDLER),
+
+    fun saksbehandler(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+        roller: List<Rolle> = listOf(Rolle.SAKSBEHANDLER),
+    ) = Saksbehandler(
+        navIdent = navIdent,
+        brukernavn = brukernavn,
+        epost = epost,
+        roller = roller,
     )
 
     fun saksbehandlerUtenTilgang() = Saksbehandler(

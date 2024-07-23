@@ -9,7 +9,7 @@ object MeldekortGrunnlagDTOMapper {
     fun mapMeldekortGrunnlagDTO(sak: SakDetaljer, vedtak: Vedtak) =
         MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
-            sakId = sak.saknummer.verdi,
+            sakId = sak.saksnummer.verdi,
             behandlingId = vedtak.behandling.id.toString(),
             status = when (vedtak.vedtaksType) {
                 VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV

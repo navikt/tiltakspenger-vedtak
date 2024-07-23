@@ -25,7 +25,7 @@ internal class SøknadDTOTest {
         val søknadDTO = søknadDTO()
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
-        assertEquals(søknadDTO.søknadId, søknad.søknadId)
+        assertEquals(søknadDTO.søknadId, søknad.id.toString())
         assertEquals(søknadDTO.dokInfo.journalpostId, søknad.journalpostId)
         assertEquals(søknadDTO.dokInfo.dokumentInfoId, søknad.dokumentInfoId)
         assertEquals(søknadDTO.dokInfo.filnavn, søknad.filnavn)
@@ -86,7 +86,7 @@ internal class SøknadDTOTest {
         fra: LocalDate = LocalDate.of(2023, 1, 1),
         til: LocalDate = LocalDate.of(2023, 12, 31),
         versjon: String = "1",
-        søknadId: String = "42",
+        søknadId: String = Søknad.randomId().toString(),
         dokInfo: DokumentInfoDTO = DokumentInfoDTO(
             journalpostId = "43",
             dokumentInfoId = "44",

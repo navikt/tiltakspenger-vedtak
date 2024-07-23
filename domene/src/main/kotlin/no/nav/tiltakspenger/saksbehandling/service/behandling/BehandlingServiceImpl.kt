@@ -4,14 +4,18 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingerForBenk
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -22,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -39,33 +44,57 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
     private val attesteringRepo: AttesteringRepo,
     private val sessionFactory: SessionFactory,
+    private val søknadRepo: SøknadRepo,
 ) : BehandlingService {
 
-    override fun hentBehandling(behandlingId: BehandlingId): Behandling {
-        return behandlingRepo.hent(behandlingId)
+    override fun hentBehandling(behandlingId: BehandlingId, sessionContext: SessionContext?): Behandling {
+        return behandlingRepo.hent(behandlingId, sessionContext)
     }
 
-    override fun hentBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Behandling {
-        val behandling = hentBehandling(behandlingId)
+    override fun hentBehandling(
+        behandlingId: BehandlingId,
+        saksbehandler: Saksbehandler,
+        sessionContext: SessionContext?,
+    ): Behandling {
+        val behandling = hentBehandling(behandlingId, sessionContext)
         if (!personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler har ikke tilgang til behandling")
         }
         return behandling
     }
 
-    override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling> {
+    override fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling? {
+        return behandlingRepo.hentForSøknadId(søknadId)
+    }
+
+    override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
+        return behandlingRepo.hentForJournalpostId(journalpostId)
+    }
+
+    override fun hentBehandlingerForBenk(saksbehandler: Saksbehandler): BehandlingerForBenk {
         require(saksbehandler.isSaksbehandler())
-        return behandlingRepo.hentAlle()
-            .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) }
+        return BehandlingerForBenk(
+            behandlinger = behandlingRepo.hentAlle()
+                .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) },
+            søknader = søknadRepo.hentAlleSøknader(), // TODO jah: Her må vi gjøre et bulkkall til pdl sin egen rettigheter funksjon for å sjekke tilgang.
+        )
     }
 
-    override fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning) {
-        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning)
+    override fun leggTilSaksopplysning(
+        behandlingId: BehandlingId,
+        saksopplysning: Saksopplysning,
+        transactionContext: TransactionContext?,
+    ) {
+        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning, transactionContext)
     }
 
-    override fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning): Behandling {
+    override fun leggTilSaksopplysning(
+        behandling: Behandling,
+        saksopplysning: Saksopplysning,
+        transactionContext: TransactionContext?,
+    ): Behandling {
         val behandlingRespons = behandling.leggTilSaksopplysning(saksopplysning)
-        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling)
+        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling, transactionContext)
         return behandlingRespons.behandling
     }
 
@@ -135,7 +164,7 @@ class BehandlingServiceImpl(
         meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)
 
         val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
-        brevPublisherGateway.sendBrev(sak.saknummer, vedtak, personopplysninger)
+        brevPublisherGateway.sendBrev(sak.saksnummer, vedtak, personopplysninger)
     }
 
     private fun lagVedtakForBehandling(behandling: Behandling): Vedtak {
@@ -155,12 +184,25 @@ class BehandlingServiceImpl(
         )
     }
 
-    override fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
-        val behandling = hentBehandling(behandlingId)
-        if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
-            behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
-        } else {
-            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
+    override fun taBehandling(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    ): Behandling {
+        return sessionFactory.withTransactionContext { tx ->
+            val behandling = hentBehandling(behandlingId, tx)
+            taBehandling(behandling, utøvendeSaksbehandler, tx)
+        }
+    }
+
+    override fun taBehandling(
+        behandling: Behandling,
+        utøvendeSaksbehandler: Saksbehandler,
+        transactionContext: TransactionContext,
+    ): Behandling {
+        return sessionFactory.withTransactionContext(transactionContext) { tx ->
+            behandling.taBehandling(utøvendeSaksbehandler).also {
+                behandlingRepo.lagre(it, tx)
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
@@ -17,8 +18,8 @@ internal class BarnetilleggDAO {
         }
     }
 
-    fun hentBarnetilleggListe(søknadId: SøknadId, txSession: TransactionalSession): List<Barnetillegg> {
-        return txSession.run(
+    fun hentBarnetilleggListe(søknadId: SøknadId, session: Session): List<Barnetillegg> {
+        return session.run(
             queryOf(hentBarnetillegg, søknadId.toString())
                 .map { row -> row.toBarnetillegg() }
                 .asList,

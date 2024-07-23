@@ -5,7 +5,7 @@ import mu.KotlinLogging
 
 private val LOG = KotlinLogging.logger {}
 
-object DataSource {
+object DataSourceSetup {
     private const val MAX_POOLS = 5
     const val DB_USERNAME_KEY = "DB_USERNAME"
     const val DB_PASSWORD_KEY = "DB_PASSWORD"
@@ -15,7 +15,7 @@ object DataSource {
 
     private fun getEnvOrProp(key: String) = System.getenv(key) ?: System.getProperty(key)
 
-    private fun init(): HikariDataSource {
+    fun createDatasource(): HikariDataSource {
         LOG.info {
             "Kobler til Postgres '${getEnvOrProp(DB_USERNAME_KEY)}:xxx@" +
                 "${getEnvOrProp(DB_HOST_KEY)}:${getEnvOrProp(DB_PORT_KEY)}/${getEnvOrProp(DB_DATABASE_KEY)}'"
@@ -31,9 +31,5 @@ object DataSource {
             initializationFailTimeout = 5000
             maximumPoolSize = MAX_POOLS
         }
-    }
-
-    val hikariDataSource: HikariDataSource by lazy {
-        init()
     }
 }

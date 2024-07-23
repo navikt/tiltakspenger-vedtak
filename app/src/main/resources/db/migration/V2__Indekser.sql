@@ -99,9 +99,3 @@ CREATE INDEX tiltak_behandling
         (
          behandling_id
             );
-
-CREATE INDEX søknad_søknad_id
-    ON søknad
-        (
-         søknad_id
-            );

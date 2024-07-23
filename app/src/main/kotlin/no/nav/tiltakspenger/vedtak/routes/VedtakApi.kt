@@ -27,6 +27,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
+import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
@@ -34,9 +35,9 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
@@ -56,6 +57,7 @@ internal fun Application.vedtakApi(
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søkerService: SøkerService,
+    søknadService: SøknadService,
     sakService: SakService,
     behandlingService: BehandlingService,
     attesteringRepo: AttesteringRepo,
@@ -90,6 +92,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 søkerService = søkerService,
+                sakService = sakService,
             )
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
@@ -105,7 +108,7 @@ internal fun Application.vedtakApi(
         authenticate("admin") {
         }
         authenticate("systemtoken") {
-            søknadRoutes(sakService)
+            søknadRoutes(søknadService)
         }
         staticResources(
             remotePath = "/",

@@ -1,14 +1,17 @@
 package no.nav.tiltakspenger.saksbehandling.service
 
+import arrow.core.getOrElse
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.TestSessionFactory
+import no.nav.tiltakspenger.felles.Rolle.SAKSBEHANDLER
+import no.nav.tiltakspenger.felles.Rolle.SKJERMING
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandling
@@ -27,6 +30,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -56,6 +60,7 @@ internal class SakServiceTest {
     private lateinit var personGateway: PersonGateway
     private lateinit var skjermingGateway: SkjermingGateway
     private lateinit var søkerRepository: SøkerRepository
+    private lateinit var søknadRepo: SøknadRepo
 
     @BeforeEach
     fun setup() {
@@ -72,6 +77,8 @@ internal class SakServiceTest {
         personGateway = mockk(relaxed = true)
         skjermingGateway = mockk(relaxed = true)
         søkerRepository = mockk(relaxed = true)
+        søknadRepo = mockk(relaxed = true)
+        val sessionFactory = TestSessionFactory()
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo = behandlingRepo,
@@ -82,7 +89,8 @@ internal class SakServiceTest {
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
-                sessionFactory = mockk(),
+                sessionFactory = sessionFactory,
+                søknadRepo = søknadRepo,
             )
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
@@ -91,6 +99,8 @@ internal class SakServiceTest {
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
+            sessionFactory = sessionFactory,
+            søknadRepo = søknadRepo,
             tiltakGateway = tiltakGateway,
         )
     }
@@ -100,34 +110,42 @@ internal class SakServiceTest {
         clearAllMocks()
     }
 
-    @Test
-    fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
-        val søknad = nySøknad(
-            tiltak = søknadTiltak(
-                deltakelseFom = 1.januar(2023),
-                deltakelseTom = 31.mars(2023),
-            ),
-        )
-        val ident = søknad.personopplysninger.ident
-        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
-        every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+    // TODO jah: Vi skal ikke støtte mer enn en sak i første omgang. Dessuten hadde det vært bedre å gjøre den om til en integrasjonstest ved å teste på route-nivå
+//    @Test
+//    fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
+//        val søknad = nySøknad(
+//            tiltak = søknadTiltak(
+//                deltakelseFom = 1.januar(2023),
+//                deltakelseTom = 31.mars(2023),
+//            ),
+//        )
+//        val saksbehandler = ObjectMother.saksbehandler()
+//        val ident = søknad.personopplysninger.ident
+//        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+//        every { sakRepo.lagre(any(), any()) } returnsArgument 0
+//        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+//        every { søknadRepo.hentSøknad(any()) } returns søknad
+//
+//        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
 
-        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
-
-        coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
-        every { behandlingRepo.hent(any()) } returns behandling()
-        every { behandlingRepo.lagre(any()) } returnsArgument 0
-
-        val sak = sakService.motta(søknad)
-
-        sak.behandlinger.size shouldBe 1
-        sak.behandlinger.first().tilstand shouldBe BehandlingTilstand.VILKÅRSVURDERT
-
-        val behandling = sak.behandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
-        behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
-        behandling.søknader.first() shouldBe søknad
-    }
+    // coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
+//        every { behandlingRepo.hent(any(),any()) } returns behandling()
+//        every { behandlingRepo.hentForSøknadId(any()) } returns behandling()
+//        every { behandlingRepo.lagre(any()) } returnsArgument 0
+//
+//        val sak =
+//            sakService.startFørstegangsbehandling(søknadId = søknad.id, saksbehandler = saksbehandler).getOrElse {
+//                throw IllegalStateException("Kunne ikke starte førstegangsbehandling + $it")
+//
+//            }
+//
+//        sak.behandlinger.size shouldBe 1
+//        sak.behandlinger.first().tilstand shouldBe BehandlingTilstand.OPPRETTET
+//
+//        val behandling = sak.behandlinger.first { it.tilstand == BehandlingTilstand.OPPRETTET }
+//        behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
+//        behandling.søknader.first() shouldBe søknad
+//    }
 
     @Test
     fun `sjekk at skjerming blir satt riktig`() {
@@ -137,23 +155,31 @@ internal class SakServiceTest {
                 deltakelseTom = 31.mars(2023),
             ),
         )
+        val tiltak = ObjectMother.tiltak()
+        val saksbehandler = ObjectMother.saksbehandler(roller = listOf(SAKSBEHANDLER, SKJERMING))
         val ident = søknad.personopplysninger.ident
+        val barnIdent = "barnIdent"
+
         every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
-        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.lagre(any(), any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
         coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
+        every { søknadRepo.hentSøknad(any()) } returns søknad
 
-        val barnIdent = "barnIdent"
         coEvery { skjermingGateway.erSkjermetPerson(ident) } returns true
         coEvery { skjermingGateway.erSkjermetPerson(barnIdent) } returns false
         coEvery { personGateway.hentPerson(any()) } returns listOf(
             personopplysningKjedeligFyr(ident = ident),
             barn(ident = barnIdent),
         )
-        every { behandlingRepo.lagre(any()) } returnsArgument 0
-        every { behandlingRepo.hent(any()) } returns behandling()
+        every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
+        every { behandlingRepo.hent(any(), any()) } returns behandling()
+        every { behandlingRepo.hentForSøknadId(any()) } returns null
+        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(tiltak)
 
-        val sak = sakService.motta(søknad)
+        val sak = sakService.startFørstegangsbehandling(søknad.id, saksbehandler).getOrElse {
+            throw IllegalStateException("Kunne ikke starte førstegangsbehandling + $it")
+        }
 
         sak.personopplysninger.søker().skjermet shouldBe true
         sak.personopplysninger.barnMedIdent(barnIdent)?.skjermet shouldBe false
@@ -173,12 +199,12 @@ internal class SakServiceTest {
         )
         val ident = søknad.personopplysninger.ident
         every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
-        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.lagre(any(), any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
-
+        every { søknadRepo.hentSøknad(any()) } returns søknad
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
         every { behandlingRepo.lagre(any()) } returnsArgument 0
-        val sak = sakService.motta(søknad)
+        val sak = sakService.startFørstegangsbehandling(søknad.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
 
         every { sakRepo.hentForIdent(any()) } returns Saker(ident, listOf(sak))
 
@@ -191,7 +217,7 @@ internal class SakServiceTest {
             ),
             opprettet = 2.januarDateTime(2023),
         )
-        val sak2 = sakService.motta(søknad2)
+        val sak2 = sakService.startFørstegangsbehandling(søknad2.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id

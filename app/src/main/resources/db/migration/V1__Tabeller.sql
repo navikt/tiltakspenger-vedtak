@@ -183,10 +183,10 @@ CREATE TABLE personopplysninger
 
 CREATE TABLE søknad
 (
-    id                  VARCHAR PRIMARY KEY,
+    id                  VARCHAR                  PRIMARY KEY,
     versjon             VARCHAR                  NOT NULL,
+    sak_id              VARCHAR                  NULL REFERENCES sak (id),
     behandling_id       VARCHAR                  NULL REFERENCES behandling (id),
-    søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
     etternavn           VARCHAR                  NOT NULL,
