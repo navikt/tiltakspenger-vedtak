@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -24,7 +23,7 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
-    private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
+    private val behandlingRepo: BehandlingRepo,
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
 ) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {

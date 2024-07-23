@@ -5,9 +5,17 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.log
+import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
+import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
+import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
+import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
@@ -19,16 +27,37 @@ internal class TestDataHelper(
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-//    val behandlingRepo = PostgresBehandlingRepo(
-//        sessionFactory = sessionFactory
-//    )
-
     val personopplysningerDAO = PersonopplysningerDAO()
     val søkerRepo = SøkerRepositoryImpl(
         sessionFactory = sessionFactory,
         personopplysningerDAO = personopplysningerDAO,
     )
     val tiltakDAO = TiltakDAO()
+    val personopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo()
+    val personopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo()
+    val personopplysningerRepo = PostgresPersonopplysningerRepo(
+        sessionFactory = sessionFactory,
+        barnMedIdentDAO = personopplysningerBarnMedIdentRepo,
+        barnUtenIdentDAO = personopplysningerBarnUtenIdentRepo,
+    )
+
+    val behandlingRepo = PostgresBehandlingRepo(
+        sessionFactory = sessionFactory,
+    )
+
+    val utfallsperiodeDAO = UtfallsperiodeDAO()
+    val vedtakRepo = VedtakRepoImpl(
+        behandlingRepo = behandlingRepo,
+        utfallsperiodeDAO = utfallsperiodeDAO,
+    )
+    val sakRepo = PostgresSakRepo(
+        behandlingRepo = behandlingRepo,
+        personopplysningerRepo = personopplysningerRepo,
+        vedtakRepo = vedtakRepo,
+        sessionFactory = sessionFactory,
+    )
+
+    val vedleggDAO = VedleggDAO()
 }
 
 private fun migrateDatabase(dataSource: DataSource) = Flyway

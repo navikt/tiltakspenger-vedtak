@@ -30,6 +30,8 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
+import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
@@ -91,14 +93,28 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     private val personopplysningerDAO = PersonopplysningerDAO()
     private val søkerRepository = SøkerRepositoryImpl(sessionFactory, personopplysningerDAO)
-    private val sakRepo = PostgresSakRepo()
-    private val behandlingRepo = PostgresBehandlingRepo()
+
+    private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
+    private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
+    private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
+
+    private val behandlingRepo = PostgresBehandlingRepo(
+        sessionFactory = sessionFactory,
+    )
+
+    private val vedtakRepo = VedtakRepoImpl(behandlingRepo)
+
+    private val sakRepo = PostgresSakRepo(
+        personopplysningerRepo = personopplysningRepo,
+        behandlingRepo = behandlingRepo,
+        vedtakRepo = vedtakRepo,
+        sessionFactory = sessionFactory,
+    )
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
     private val attesteringRepo = AttesteringRepoImpl()
-    private val vedtakRepo = VedtakRepoImpl(behandlingRepo)
+
     private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo)
-    private val personopplysningRepo = PostgresPersonopplysningerRepo()
 
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val vedtakService = VedtakServiceImpl(vedtakRepo)

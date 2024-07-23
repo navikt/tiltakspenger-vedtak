@@ -3,20 +3,20 @@ package no.nav.tiltakspenger.vedtak.repository.sak
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
 internal class PostgresPersonopplysningerRepo(
-    private val barnMedIdentDAO: PersonopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo(),
-    private val barnUtenIdentDAO: PersonopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo(),
+    private val sessionFactory: PostgresSessionFactory,
+    private val barnMedIdentDAO: PersonopplysningerBarnMedIdentRepo,
+    private val barnUtenIdentDAO: PersonopplysningerBarnUtenIdentRepo,
 ) : PersonopplysningerRepo {
     private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
@@ -24,10 +24,8 @@ internal class PostgresPersonopplysningerRepo(
     override fun hent(
         sakId: SakId,
     ): SakPersonopplysninger {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                hent(sakId, txSession)
-            }
+        return sessionFactory.withTransaction { txSession ->
+            hent(sakId, txSession)
         }
     }
 

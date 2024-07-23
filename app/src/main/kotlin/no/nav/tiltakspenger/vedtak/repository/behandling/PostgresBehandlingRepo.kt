@@ -3,13 +3,13 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
@@ -17,7 +17,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -36,21 +35,20 @@ internal class PostgresBehandlingRepo(
     private val tiltakDAO: TiltakDAO = TiltakDAO(),
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
     private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
+    private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandling,
-                        mapOf(
-                            "id" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentBehandling,
+                    mapOf(
+                        "id" to behandlingId.toString(),
+                    ),
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asSingle,
+            )
         }
     }
 
@@ -59,75 +57,50 @@ internal class PostgresBehandlingRepo(
     }
 
     override fun hentAlle(): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentAlleBehandlinger,
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentAlleBehandlinger,
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asList,
+            )
         }
     }
 
     override fun hentAlleForIdent(ident: String): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForIdent,
-                        mapOf(
-                            "ident" to ident,
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentBehandlingForIdent,
+                    mapOf(
+                        "ident" to ident,
+                    ),
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asList,
+            )
         }
     }
 
     override fun hentForSak(sakId: SakId): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForSak,
-                        mapOf(
-                            "sakId" to sakId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
-        }
-    }
-
-    override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForJournalpostId,
-                        mapOf(
-                            "journalpostId" to journalpostId,
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentBehandlingForSak,
+                    mapOf(
+                        "sakId" to sakId.toString(),
+                    ),
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asList,
+            )
         }
     }
 
     override fun lagre(behandling: Behandling): Behandling {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                lagre(behandling, txSession)
-            }
+        return sessionFactory.withTransaction { txSession ->
+            lagre(behandling, txSession)
         }
     }
 

@@ -27,8 +27,7 @@ import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.KravdatoSaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -53,24 +52,10 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.time.LocalDate
 
-@Testcontainers
 class AlderRoutesTest {
-
-    companion object {
-        @Container
-        val postgresContainer = PostgresTestcontainer
-    }
-
-    @BeforeEach
-    fun setup() {
-        flywayMigrate()
-    }
 
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
@@ -90,26 +75,27 @@ class AlderRoutesTest {
         tiltakDAO = TiltakDAO(),
         utfallsperiodeDAO = UtfallsperiodeDAO(),
         kravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
+        sessionFactory = TestDataHelper(DataSource.hikariDataSource).sessionFactory,
     )
 
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())
     private val attesteringDAO = AttesteringRepoImpl()
-    private val vedtakRepoImpl = VedtakRepoImpl()
+    private val vedtakRepoImpl = VedtakRepoImpl(behandlingRepo)
     private val multiRepo =
         MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
 
+    private val testDataHelper = TestDataHelper(DataSource.hikariDataSource)
     private val personopplysningerRepo = PostgresPersonopplysningerRepo(
         barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
         barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,
-        personopplysningerRepo = PostgresPersonopplysningerRepo(
-            barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
-            barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
-        ),
+        personopplysningerRepo = personopplysningerRepo,
         vedtakRepo = vedtakRepo,
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val behandlingService = BehandlingServiceImpl(
@@ -122,7 +108,6 @@ class AlderRoutesTest {
         tiltakGateway = mockTiltakGateway,
         multiRepo = multiRepo,
         sakRepo = sakRepo,
-
     )
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
