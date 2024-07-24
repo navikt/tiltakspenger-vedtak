@@ -15,13 +15,18 @@ sealed interface AlderSaksopplysning {
     val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
     fun vurderMaskinelt(vurderingsperiode: Periode): Periodisering<Utfall2>
 
-    data class Søknad(
+    data class Personopplysning(
         override val fødselsdato: LocalDate,
         override val tidsstempel: LocalDateTime,
     ) : AlderSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
 
+        companion object {
+            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning {
+                return Personopplysning(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
+            }
+        }
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }
         }

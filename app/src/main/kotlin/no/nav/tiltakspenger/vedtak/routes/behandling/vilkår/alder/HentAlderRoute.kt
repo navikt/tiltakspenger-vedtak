@@ -29,7 +29,7 @@ fun Route.hentAlderRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.alderVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.alderVilkår.toDTO(),
             )
         }
     }

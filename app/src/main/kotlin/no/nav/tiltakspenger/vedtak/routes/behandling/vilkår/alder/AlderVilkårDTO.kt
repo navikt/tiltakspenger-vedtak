@@ -6,24 +6,25 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 /**
- * Har ansvar for å serialisere Vilkårssett til json. Kontrakt mot frontend.
+ * Har ansvar for å serialisere Aldervilkår til json. Kontrakt mot frontend.
  */
 internal data class AlderVilkårDTO(
-    val søknadSaksopplysning: AlderSaksopplysningDTO,
+    val registerSaksopplysning: AlderSaksopplysningDTO,
     val avklartSaksopplysning: AlderSaksopplysningDTO,
     val vilkårLovreferanse: LovreferanseDTO,
-    val vurderingsperiode: PeriodeDTO,
+    val utfallperiode: PeriodeDTO,
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun AlderVilkår.toDTO(vurderingsperiode: PeriodeDTO): AlderVilkårDTO {
+internal fun AlderVilkår.toDTO(): AlderVilkårDTO {
     return AlderVilkårDTO(
-        søknadSaksopplysning = søknadSaksopplysning.toDTO(AlderKildeDTO.SØKNAD),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) AlderKildeDTO.SØKNAD else AlderKildeDTO.SAKSBEHANDLER), // TODO Kew her må vi gå opp kilde
+        registerSaksopplysning = registerSaksopplysning.toDTO(AlderKildeDTO.PDL),
+        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == registerSaksopplysning) AlderKildeDTO.PDL else AlderKildeDTO.SAKSBEHANDLER),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        vurderingsperiode = vurderingsperiode,
+        utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall.toDTO(),
     )
 }

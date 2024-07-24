@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KVPVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.toDTO
-import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 
 /**
  * Har ansvar for å serialisere Vilkårssett til json. Kontrakt mot frontend.
@@ -24,12 +23,12 @@ internal data class VilkårssettDTO(
     val alderVilkår: AlderVilkårDTO,
 )
 
-internal fun Vilkårssett.toDTO(vurderingsperiode: PeriodeDTO): VilkårssettDTO {
+internal fun Vilkårssett.toDTO(): VilkårssettDTO {
     return VilkårssettDTO(
-        kvpVilkår = kvpVilkår.toDTO(vurderingsperiode),
-        introVilkår = introVilkår.toDTO(vurderingsperiode),
-        institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDTO(vurderingsperiode),
-        alderVilkår = alderVilkår.toDTO(vurderingsperiode),
+        kvpVilkår = kvpVilkår.toDTO(),
+        introVilkår = introVilkår.toDTO(),
+        institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDTO(),
+        alderVilkår = alderVilkår.toDTO(),
         livsoppholdVilkår = livsoppholdVilkår.toDTO(),
     )
 }

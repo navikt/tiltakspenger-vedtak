@@ -1,9 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.alder
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
-import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDate
@@ -25,19 +23,14 @@ internal data class AlderSaksopplysningDbJson(
             )
 
             else -> {
-                require(årsakTilEndring == null) { "Støtter ikke årsak til endring for AlderSaksopplysning.Søknad." }
-                AlderSaksopplysning.Søknad(
+                require(årsakTilEndring == null) { "Støtter ikke årsak til endring for AlderSaksopplysning.Personopplysning." }
+                AlderSaksopplysning.Personopplysning(
                     fødselsdato = fødselsdato,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
             }
         }
     }
-
-    data class PeriodiseringAvDeltagelseDbJson(
-        val periode: PeriodeDbJson,
-        val deltar: DeltagelseDbJson,
-    )
 
     enum class ÅrsakTilEndringDbJson {
         FEIL_I_INNHENTET_DATA,
@@ -48,19 +41,6 @@ internal data class AlderSaksopplysningDbJson(
             return when (this) {
                 FEIL_I_INNHENTET_DATA -> ÅrsakTilEndring.FEIL_I_INNHENTET_DATA
                 ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT
-            }
-        }
-    }
-
-    enum class DeltagelseDbJson {
-        ALDER_OK,
-        FOR_UNG,
-        ;
-
-        fun toDomain(): Deltagelse {
-            return when (this) {
-                ALDER_OK -> Deltagelse.DELTAR
-                FOR_UNG -> Deltagelse.DELTAR_IKKE
             }
         }
     }

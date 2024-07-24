@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.kravdato
+package no.nav.tiltakspenger.vedtak.routes.kravfrist
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -33,8 +33,8 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravdato.KravdatoVilkårDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravdato.kravdatoRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.KravfristVilkårDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -46,7 +46,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Testcontainers
-class KravdatoRoutesTest {
+class KravfristRoutesTest {
 
     companion object {
         @Container
@@ -73,7 +73,7 @@ class KravdatoRoutesTest {
     )
 
     @Test
-    fun `test at endepunkt for henting av kravdato fungerer og blir OPPFYLT`() {
+    fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val sakId = SakId.random()
@@ -119,7 +119,7 @@ class KravdatoRoutesTest {
                 application {
                     jacksonSerialization()
                     routing {
-                        kravdatoRoutes(
+                        kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
                         )
@@ -131,12 +131,12 @@ class KravdatoRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kravdato")
+                        path("$behandlingPath/$behandlingId/vilkar/kravfrist")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
-                    val kravdatoVilkår = objectMapper.readValue<KravdatoVilkårDTO>(bodyAsText())
-                    kravdatoVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
+                    val kravfristVilkår = objectMapper.readValue<KravfristVilkårDTO>(bodyAsText())
+                    kravfristVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
                 }
             }
         }
@@ -187,7 +187,7 @@ class KravdatoRoutesTest {
                 application {
                     jacksonSerialization()
                     routing {
-                        kravdatoRoutes(
+                        kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
                         )
@@ -199,12 +199,12 @@ class KravdatoRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kravdato")
+                        path("$behandlingPath/$behandlingId/vilkar/kravfrist")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
-                    val kravdatoVilkår = objectMapper.readValue<KravdatoVilkårDTO>(bodyAsText())
-                    kravdatoVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+                    val kravfristVilkår = objectMapper.readValue<KravfristVilkårDTO>(bodyAsText())
+                    kravfristVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
                 }
             }
         }

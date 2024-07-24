@@ -1,9 +1,9 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 
-fun Førstegangsbehandling.leggTilAlderSaksopplysning(
-    command: LeggTilKravdatoSaksopplysningCommand,
+fun Førstegangsbehandling.leggTilKravfristSaksopplysning(
+    command: LeggTilKravfristSaksopplysningCommand,
 ): Førstegangsbehandling {
     val oppdatertFørstegangsbehandling = this.copy(
         vilkårssett = vilkårssett.oppdaterKravdato(command),

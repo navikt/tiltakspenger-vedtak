@@ -12,8 +12,8 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.Ins
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.IntroVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.introduksjonsprogrammet.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kravdato.KravdatoVilkårDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kravdato.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist.KravfristVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
@@ -29,7 +29,7 @@ private class VilkårssettJson(
     val introVilkår: IntroVilkårDbJson,
     val livsoppholdVilkår: LivsoppholdVilkårDbJson,
     val alderVilkår: AlderVilkårDbJson,
-    val kravdatoVilkår: KravdatoVilkårDbJson,
+    val kravfristVilkår: KravfristVilkårDbJson,
 )
 
 internal fun String.toVilkårssett(
@@ -45,7 +45,7 @@ internal fun String.toVilkårssett(
             introVilkår = vilkårssettJson.introVilkår.toDomain(),
             livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
             alderVilkår = vilkårssettJson.alderVilkår.toDomain(),
-            kravdatoVilkår = vilkårssettJson.kravdatoVilkår.toDomain(),
+            kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(),
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
@@ -63,7 +63,7 @@ internal fun Vilkårssett.toDbJson(): String {
             livsoppholdVilkår = livsoppholdVilkår.toDbJson(),
             institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson(),
             alderVilkår = alderVilkår.toDbJson(),
-            kravdatoVilkår = kravdatoVilkår.toDbJson(),
+            kravfristVilkår = kravfristVilkår.toDbJson(),
         ),
     )
 }

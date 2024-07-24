@@ -304,13 +304,3 @@ CREATE TABLE stønadsdager_tiltak
     avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
     saksbehandler       VARCHAR                  NULL
 );
-
-CREATE TABLE kravdato_saksopplysning
-(
-    id                  VARCHAR PRIMARY KEY,
-    kravdato            DATE                     NOT NULL,
-    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
-    saksbehandler       VARCHAR                  NULL,
-    datakilde           VARCHAR                  NOT NULL
-);

@@ -19,14 +19,14 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.alderSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.institusjonsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.KravdatoVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.kravdatoSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.kravfristSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
@@ -73,8 +73,8 @@ data class Førstegangsbehandling(
                         søknad.livsoppholdSaksopplysning(vurderingsperiode),
                         vurderingsperiode,
                     ),
-                    alderVilkår = AlderVilkår.opprett(søknad.alderSaksopplysning(fødselsdato = fødselsdato), vurderingsperiode),
-                    kravdatoVilkår = KravdatoVilkår.opprett(søknad.kravdatoSaksopplysning(vurderingsperiode), vurderingsperiode),
+                    alderVilkår = AlderVilkår.opprett(AlderSaksopplysning.Personopplysning.opprett(fødselsdato = fødselsdato), vurderingsperiode),
+                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(vurderingsperiode), vurderingsperiode),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,

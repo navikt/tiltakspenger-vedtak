@@ -30,7 +30,7 @@ internal data class AlderVilkårDbJson(
 
 internal fun AlderVilkår.toDbJson(): AlderVilkårDbJson {
     return AlderVilkårDbJson(
-        søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
+        søknadSaksopplysning = registerSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),

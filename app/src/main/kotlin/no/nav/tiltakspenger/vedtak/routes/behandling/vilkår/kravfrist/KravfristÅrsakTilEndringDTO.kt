@@ -1,8 +1,8 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravdato
+package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 
-internal enum class KravdatoÅrsakTilEndringDTO {
+internal enum class KravfristÅrsakTilEndringDTO {
     FEIL_I_INNHENTET_DATA,
     ENDRING_ETTER_SØKNADSTIDSPUNKT,
     ;

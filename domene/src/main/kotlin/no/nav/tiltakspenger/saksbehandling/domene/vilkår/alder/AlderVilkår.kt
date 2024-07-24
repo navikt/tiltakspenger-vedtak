@@ -11,13 +11,13 @@ import java.time.LocalDateTime
 /**
  * Alder
  *
- * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
+ * @param registerSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
  * @param utfall Selvom om utfallet er
  *
  */
 data class AlderVilkår private constructor(
-    val søknadSaksopplysning: AlderSaksopplysning,
+    val registerSaksopplysning: AlderSaksopplysning,
     val saksbehandlerSaksopplysning: AlderSaksopplysning?,
     val avklartSaksopplysning: AlderSaksopplysning,
     val vurderingsperiode: Periode,
@@ -54,7 +54,7 @@ data class AlderVilkår private constructor(
             vurderingsperiode: Periode,
         ): AlderVilkår {
             return AlderVilkår(
-                søknadSaksopplysning = søknadSaksopplysning,
+                registerSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
@@ -73,7 +73,7 @@ data class AlderVilkår private constructor(
             utfall: Periodisering<Utfall2>,
         ): AlderVilkår {
             return AlderVilkår(
-                søknadSaksopplysning = søknadSaksopplysning,
+                registerSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,

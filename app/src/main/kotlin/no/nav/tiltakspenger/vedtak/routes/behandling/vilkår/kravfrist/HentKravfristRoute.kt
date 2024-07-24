@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravdato
+package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -9,18 +9,17 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-fun Route.hentKravdatoRoute(
+fun Route.hentKravfristRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
 ) {
-    get("$behandlingPath/{behandlingId}/vilkar/kravdato") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kravdato")
+    get("$behandlingPath/{behandlingId}/vilkar/kravfrist") {
+        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kravfrist")
 
         innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -28,7 +27,7 @@ fun Route.hentKravdatoRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.kravdatoVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.kravfristVilkår.toDTO(),
             )
         }
     }

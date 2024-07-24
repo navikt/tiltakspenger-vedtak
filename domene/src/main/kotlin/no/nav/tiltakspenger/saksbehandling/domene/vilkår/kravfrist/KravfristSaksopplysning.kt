@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDateTime
 
-sealed interface KravdatoSaksopplysning {
+sealed interface KravfristSaksopplysning {
     val kravdato: LocalDateTime
     val vurderingsperiode: Periode
     val tidsstempel: LocalDateTime
@@ -20,13 +20,9 @@ sealed interface KravdatoSaksopplysning {
         override val kravdato: LocalDateTime,
         override val tidsstempel: LocalDateTime,
         override val vurderingsperiode: Periode,
-    ) : KravdatoSaksopplysning {
+    ) : KravfristSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
-
-        init {
-            // TODO kew passende init
-        }
 
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
             val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()
@@ -45,10 +41,7 @@ sealed interface KravdatoSaksopplysning {
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
         override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
-    ) : KravdatoSaksopplysning {
-        init {
-            // TODO kew passende init
-        }
+    ) : KravfristSaksopplysning {
 
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
             val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()

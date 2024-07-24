@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -9,17 +9,17 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
 
 /**
- * Kravdato
+ * Kravfrist
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
  * @param utfall Selvom om utfallet er
  *
  */
-data class KravdatoVilkår private constructor(
-    val søknadSaksopplysning: KravdatoSaksopplysning,
-    val saksbehandlerSaksopplysning: KravdatoSaksopplysning?,
-    val avklartSaksopplysning: KravdatoSaksopplysning,
+data class KravfristVilkår private constructor(
+    val søknadSaksopplysning: KravfristSaksopplysning,
+    val saksbehandlerSaksopplysning: KravfristSaksopplysning?,
+    val avklartSaksopplysning: KravfristSaksopplysning,
     val vurderingsperiode: Periode,
     val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
@@ -34,8 +34,8 @@ data class KravdatoVilkår private constructor(
 
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
-    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravdatoSaksopplysningCommand): KravdatoVilkår {
-        val introSaksopplysning = KravdatoSaksopplysning.Saksbehandler(
+    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
+        val introSaksopplysning = KravfristSaksopplysning.Saksbehandler(
             kravdato = command.kravdato,
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
@@ -51,10 +51,10 @@ data class KravdatoVilkår private constructor(
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: KravdatoSaksopplysning,
+            søknadSaksopplysning: KravfristSaksopplysning,
             vurderingsperiode: Periode,
-        ): KravdatoVilkår {
-            return KravdatoVilkår(
+        ): KravfristVilkår {
+            return KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
@@ -67,13 +67,13 @@ data class KravdatoVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: KravdatoSaksopplysning,
-            saksbehandlerSaksopplysning: KravdatoSaksopplysning?,
-            avklartSaksopplysning: KravdatoSaksopplysning,
+            søknadSaksopplysning: KravfristSaksopplysning,
+            saksbehandlerSaksopplysning: KravfristSaksopplysning?,
+            avklartSaksopplysning: KravfristSaksopplysning,
             vurderingsperiode: Periode,
             utfall: Periodisering<Utfall2>,
-        ): KravdatoVilkår {
-            return KravdatoVilkår(
+        ): KravfristVilkår {
+            return KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,

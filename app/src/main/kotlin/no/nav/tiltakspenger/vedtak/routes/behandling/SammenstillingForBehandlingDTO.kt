@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 internal data class SammenstillingForBehandlingDTO(
@@ -67,23 +66,5 @@ internal data class SammenstillingForBehandlingDTO(
         val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
         val begrunnelse: String,
-    )
-
-    data class KravdatoSaksopplysningerDTO(
-        val opprinneligKravdato: KravdatoSaksopplysningDTO,
-        val kravdatoFraSaksbehandler: KravdatoSaksopplysningDTO? = null,
-        val vurderinger: List<VurderingDTO>,
-        val samletUtfall: String,
-        val lovreferanse: LovreferanseDTO,
-    )
-
-    data class KravdatoSaksopplysningDTO(
-        val kravdato: LocalDate,
-        val kilde: String,
-    )
-
-    data class VurderingDTO(
-        val periode: PeriodeDTO,
-        val utfall: String,
     )
 }

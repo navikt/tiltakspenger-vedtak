@@ -11,8 +11,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.LeggTilAlderSaks
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.LeggTilIntroSaksopplysningCommand
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.KravdatoVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.LeggTilKravdatoSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.LeggTilKravfristSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
@@ -34,7 +34,7 @@ data class Vilkårssett(
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
     val alderVilkår: AlderVilkår,
-    val kravdatoVilkår: KravdatoVilkår,
+    val kravfristVilkår: KravfristVilkår,
 ) {
     val totalePeriode = kvpVilkår.totalePeriode
 
@@ -92,9 +92,9 @@ data class Vilkårssett(
         )
     }
 
-    fun oppdaterKravdato(command: LeggTilKravdatoSaksopplysningCommand): Vilkårssett {
+    fun oppdaterKravdato(command: LeggTilKravfristSaksopplysningCommand): Vilkårssett {
         return this.copy(
-            kravdatoVilkår = kravdatoVilkår.leggTilSaksbehandlerSaksopplysning(command),
+            kravfristVilkår = kravfristVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
     }
 

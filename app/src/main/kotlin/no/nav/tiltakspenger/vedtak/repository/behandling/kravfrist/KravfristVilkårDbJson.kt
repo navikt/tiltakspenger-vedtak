@@ -1,6 +1,6 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling.kravdato
+package no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.KravdatoVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDomain
@@ -8,17 +8,17 @@ import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 
 /**
- * Har ansvar for å serialisere/deserialisere KravdatoVilkår til og fra json for lagring i database.
+ * Har ansvar for å serialisere/deserialisere KravfristVilkår til og fra json for lagring i database.
  */
-internal data class KravdatoVilkårDbJson(
-    val søknadSaksopplysning: KravdatoSaksopplysningDbJson,
-    val saksbehandlerSaksopplysning: KravdatoSaksopplysningDbJson?,
-    val avklartSaksopplysning: KravdatoSaksopplysningDbJson,
+internal data class KravfristVilkårDbJson(
+    val søknadSaksopplysning: KravfristSaksopplysningDbJson,
+    val saksbehandlerSaksopplysning: KravfristSaksopplysningDbJson?,
+    val avklartSaksopplysning: KravfristSaksopplysningDbJson,
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): KravdatoVilkår {
-        return KravdatoVilkår.fromDb(
+    fun toDomain(): KravfristVilkår {
+        return KravfristVilkår.fromDb(
             søknadSaksopplysning = søknadSaksopplysning.toDomain(),
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
@@ -28,8 +28,8 @@ internal data class KravdatoVilkårDbJson(
     }
 }
 
-internal fun KravdatoVilkår.toDbJson(): KravdatoVilkårDbJson {
-    return KravdatoVilkårDbJson(
+internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson {
+    return KravfristVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
