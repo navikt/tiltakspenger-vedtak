@@ -30,12 +30,12 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingRepo: VurderingRepo = VurderingRepo(),
-    private val søknadDAO: SøknadDAO = SøknadDAO(),
-    private val tiltakDAO: TiltakDAO = TiltakDAO(),
-    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
-    private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
+    private val saksopplysningRepo: SaksopplysningRepo,
+    private val vurderingRepo: VurderingRepo,
+    private val søknadDAO: SøknadDAO,
+    private val tiltakDAO: TiltakDAO,
+    private val utfallsperiodeDAO: UtfallsperiodeDAO,
+    private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo,
     private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {

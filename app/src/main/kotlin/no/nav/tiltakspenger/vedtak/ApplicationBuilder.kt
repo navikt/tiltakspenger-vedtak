@@ -26,8 +26,11 @@ import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.behandling.KravdatoSaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
+import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
@@ -35,6 +38,10 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
+import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
@@ -92,17 +99,35 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     private val personopplysningerDAO = PersonopplysningerDAO()
     private val søkerRepository = SøkerRepositoryImpl(sessionFactory, personopplysningerDAO)
-
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
-
+    private val saksopplysningRepo = SaksopplysningRepo()
+    private val vurderingRepo = VurderingRepo()
+    private val barnetilleggDAO = BarnetilleggDAO()
+    private val søknadTiltakDAO = SøknadTiltakDAO()
+    private val vedleggDAO = VedleggDAO()
+    private val tiltakDAO = TiltakDAO()
+    private val utfallsperiodeDAO = UtfallsperiodeDAO()
+    private val kravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo()
+    private val søknadDAO = SøknadDAO(
+        barnetilleggDAO = barnetilleggDAO,
+        tiltakDAO = søknadTiltakDAO,
+        vedleggDAO = vedleggDAO,
+    )
     private val behandlingRepo = PostgresBehandlingRepo(
         sessionFactory = sessionFactory,
+        saksopplysningRepo = saksopplysningRepo,
+        vurderingRepo = vurderingRepo,
+        søknadDAO = søknadDAO,
+        tiltakDAO = tiltakDAO,
+        utfallsperiodeDAO = utfallsperiodeDAO,
+        kravdatoSaksopplysningRepo = kravdatoSaksopplysningRepo,
     )
 
     private val vedtakRepo = VedtakRepoImpl(
         behandlingRepo = behandlingRepo,
+        utfallsperiodeDAO = utfallsperiodeDAO,
         sessionFactory = sessionFactory,
     )
 
@@ -112,8 +137,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         vedtakRepo = vedtakRepo,
         sessionFactory = sessionFactory,
     )
-    private val saksopplysningRepo = SaksopplysningRepo()
-    private val vurderingRepo = VurderingRepo()
+
     private val attesteringRepo = AttesteringRepoImpl(
         sessionFactory = sessionFactory,
     )

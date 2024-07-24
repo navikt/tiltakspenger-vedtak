@@ -24,7 +24,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
-    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {
