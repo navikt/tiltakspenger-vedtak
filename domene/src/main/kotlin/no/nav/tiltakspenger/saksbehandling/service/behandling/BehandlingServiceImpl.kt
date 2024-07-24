@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
+import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -19,10 +20,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
@@ -41,8 +42,9 @@ class BehandlingServiceImpl(
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val tiltakGateway: TiltakGateway,
-    private val multiRepo: MultiRepo,
     private val sakRepo: SakRepo,
+    private val attesteringRepo: AttesteringRepo,
+    private val sessionFactory: SessionFactory,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Behandling {
@@ -101,7 +103,10 @@ class BehandlingServiceImpl(
 
         when (behandling.tilstand) {
             BehandlingTilstand.TIL_BESLUTTER -> {
-                multiRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), attestering)
+                sessionFactory.withTransactionContext { tx ->
+                    behandlingRepo.lagre(behandling.sendTilbake(utøvendeBeslutter), tx)
+                    attesteringRepo.lagre(attestering, tx)
+                }
             }
 
             else -> throw IllegalStateException("Behandlingen har feil tilstand og kan ikke sendes tilbake til saksbehandler. BehandlingId: $behandlingId")
@@ -125,10 +130,12 @@ class BehandlingServiceImpl(
         )
 
         val vedtak = lagVedtakForBehandling(iverksattBehandling)
-        multiRepo.lagreOgKjør(iverksattBehandling, attestering, vedtak) {
-            // Hvis kallet til utbetalingService feiler, kastes det en exception slik at vi ikke lagrer vedtaket og
-            // sender melding til brev og meldekortgrunnlag. Dette er med vilje.
-            utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak)
+        sessionFactory.withTransactionContext { tx ->
+            behandlingRepo.lagre(iverksattBehandling, tx)
+            attesteringRepo.lagre(attestering, tx)
+            vedtakRepo.lagreVedtak(vedtak, tx)
+
+            runBlocking { utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak) }
         }
 
         meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)

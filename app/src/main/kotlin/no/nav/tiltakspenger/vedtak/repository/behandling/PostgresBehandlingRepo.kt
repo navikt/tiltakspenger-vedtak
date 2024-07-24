@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
@@ -98,9 +99,9 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Behandling): Behandling {
-        return sessionFactory.withTransaction { txSession ->
-            lagre(behandling, txSession)
+    override fun lagre(behandling: Behandling, context: TransactionContext?): Behandling {
+        return sessionFactory.withTransaction(context) { tx ->
+            lagre(behandling, tx)
         }
     }
 

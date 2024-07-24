@@ -8,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import no.nav.tiltakspenger.TestSessionFactory
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.april
@@ -35,10 +36,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
@@ -59,9 +60,10 @@ internal class BehandlingServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
+    private lateinit var sessionFactory: TestSessionFactory
 
     @BeforeEach
     fun setup() {
@@ -72,8 +74,9 @@ internal class BehandlingServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        multiRepo = mockk(relaxed = true)
+        attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
+        sessionFactory = TestSessionFactory()
 
         behandlingService =
             BehandlingServiceImpl(
@@ -84,8 +87,9 @@ internal class BehandlingServiceTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,
-                multiRepo = multiRepo,
                 sakRepo = sakRepo,
+                attesteringRepo = attesteringRepo,
+                sessionFactory = sessionFactory,
             )
     }
 
@@ -323,6 +327,7 @@ internal class BehandlingServiceTest {
         val behandling = behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent)
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
+        every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
 
         shouldThrow<IllegalStateException> {
             behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler123(), "begrunnelse")

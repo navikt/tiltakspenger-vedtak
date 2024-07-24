@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.log
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
@@ -33,6 +34,9 @@ internal class TestDataHelper(
         personopplysningerDAO = personopplysningerDAO,
     )
     val tiltakDAO = TiltakDAO()
+    val attesteringRepo = AttesteringRepoImpl(
+        sessionFactory = sessionFactory,
+    )
     val personopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo()
     val personopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo()
     val personopplysningerRepo = PostgresPersonopplysningerRepo(
@@ -49,6 +53,7 @@ internal class TestDataHelper(
     val vedtakRepo = VedtakRepoImpl(
         behandlingRepo = behandlingRepo,
         utfallsperiodeDAO = utfallsperiodeDAO,
+        sessionFactory = sessionFactory,
     )
     val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,

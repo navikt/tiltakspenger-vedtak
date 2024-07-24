@@ -3,24 +3,23 @@ package no.nav.tiltakspenger.vedtak.repository.attestering
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
-internal class AttesteringRepoImpl : AttesteringRepo, AttesteringDAO {
+internal class AttesteringRepoImpl(
+    private val sessionFactory: PostgresSessionFactory,
+) : AttesteringRepo, AttesteringDAO {
 
-    // TODO: Denne kalles aldri. Dette er mao ikke et repo, det er en DAO.
     // Attestering lagres alltid sammen med Behandling.
-    override fun lagre(attestering: Attestering): Attestering {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                lagre(attestering, txSession)
-            }
+    override fun lagre(attestering: Attestering, context: TransactionContext?): Attestering {
+        return sessionFactory.withTransaction(context) { tx ->
+            lagre(attestering, tx)
         }
     }
 
@@ -42,19 +41,17 @@ internal class AttesteringRepoImpl : AttesteringRepo, AttesteringDAO {
     }
 
     override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentForBehandling,
-                        mapOf(
-                            "behandlingId" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toAttestering()
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(
+                    sqlHentForBehandling,
+                    mapOf(
+                        "behandlingId" to behandlingId.toString(),
+                    ),
+                ).map { row ->
+                    row.toAttestering()
+                }.asList,
+            )
         }
     }
 

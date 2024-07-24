@@ -24,10 +24,10 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
@@ -48,7 +48,7 @@ class FørstegangsbehandlingTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
 
@@ -64,7 +64,7 @@ class FørstegangsbehandlingTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        multiRepo = mockk(relaxed = true)
+        attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
 
         behandlingService =
@@ -76,8 +76,9 @@ class FørstegangsbehandlingTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,
-                multiRepo = multiRepo,
                 sakRepo = sakRepo,
+                attesteringRepo = attesteringRepo,
+                sessionFactory = mockk(),
             )
     }
 

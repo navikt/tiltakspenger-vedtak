@@ -29,7 +29,6 @@ import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
-import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
@@ -102,7 +101,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sessionFactory = sessionFactory,
     )
 
-    private val vedtakRepo = VedtakRepoImpl(behandlingRepo)
+    private val vedtakRepo = VedtakRepoImpl(
+        behandlingRepo = behandlingRepo,
+        sessionFactory = sessionFactory,
+    )
 
     private val sakRepo = PostgresSakRepo(
         personopplysningerRepo = personopplysningRepo,
@@ -112,9 +114,9 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     )
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
-    private val attesteringRepo = AttesteringRepoImpl()
-
-    private val multiRepo = MultiRepoImpl(behandlingRepo, attesteringRepo, vedtakRepo)
+    private val attesteringRepo = AttesteringRepoImpl(
+        sessionFactory = sessionFactory,
+    )
 
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
@@ -129,8 +131,9 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         brevPublisherGateway = brevPublisherGateway,
         meldekortGrunnlagGateway = meldekortGrunnlagGateway,
         tiltakGateway = tiltakGateway,
-        multiRepo = multiRepo,
         sakRepo = sakRepo,
+        attesteringRepo = attesteringRepo,
+        sessionFactory = sessionFactory,
     )
     private val sakService =
         SakServiceImpl(

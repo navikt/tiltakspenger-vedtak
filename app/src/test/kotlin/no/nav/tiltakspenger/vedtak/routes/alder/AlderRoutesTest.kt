@@ -13,7 +13,6 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -26,25 +25,8 @@ import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImp
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.behandling.KravdatoSaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
-import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
-import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
-import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
@@ -63,53 +45,6 @@ class AlderRoutesTest {
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
-    private val saksopplysningRepo = SaksopplysningRepo()
-    private val behandlingRepo = PostgresBehandlingRepo(
-        saksopplysningRepo = saksopplysningRepo,
-        vurderingRepo = VurderingRepo(),
-        søknadDAO = SøknadDAO(
-            barnetilleggDAO = BarnetilleggDAO(),
-            tiltakDAO = SøknadTiltakDAO(),
-            vedleggDAO = VedleggDAO(),
-        ),
-        tiltakDAO = TiltakDAO(),
-        utfallsperiodeDAO = UtfallsperiodeDAO(),
-        kravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
-        sessionFactory = TestDataHelper(DataSource.hikariDataSource).sessionFactory,
-    )
-
-    private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())
-    private val attesteringDAO = AttesteringRepoImpl()
-    private val vedtakRepoImpl = VedtakRepoImpl(behandlingRepo)
-    private val multiRepo =
-        MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
-
-    private val testDataHelper = TestDataHelper(DataSource.hikariDataSource)
-    private val personopplysningerRepo = PostgresPersonopplysningerRepo(
-        barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
-        barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
-        sessionFactory = testDataHelper.sessionFactory,
-    )
-
-    private val sakRepo = PostgresSakRepo(
-        behandlingRepo = behandlingRepo,
-        personopplysningerRepo = personopplysningerRepo,
-        vedtakRepo = vedtakRepo,
-        sessionFactory = testDataHelper.sessionFactory,
-    )
-
-    private val behandlingService = BehandlingServiceImpl(
-        behandlingRepo = behandlingRepo,
-        vedtakRepo = vedtakRepo,
-        personopplysningRepo = personopplysningerRepo,
-        utbetalingService = mockedUtbetalingServiceImpl,
-        brevPublisherGateway = mockBrevPublisherGateway,
-        meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-        tiltakGateway = mockTiltakGateway,
-        multiRepo = multiRepo,
-        sakRepo = sakRepo,
-    )
-
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val mockSaksbehandler = Saksbehandler(
         "Q123456",
@@ -123,35 +58,51 @@ class AlderRoutesTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1021)
-
-        sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSak)
-        }
-
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    alderRoutes(
-                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                        behandlingService = behandlingService,
-                    )
-                }
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            testDataHelper.sessionFactory.withTransaction {
+                testDataHelper.sakRepo.lagre(objectMotherSak)
             }
 
-            // Sjekk at man kan kjøre Get
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/alder")
-                },
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-                val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
-                alderVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                tiltakGateway = mockTiltakGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+            )
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        alderRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            behandlingService = behandlingService,
+                        )
+                    }
+                }
+
+                // Sjekk at man kan kjøre Get
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/alder")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
+                    alderVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
+                }
             }
         }
     }
@@ -170,34 +121,51 @@ class AlderRoutesTest {
             løpenummer = 1023,
         )
 
-        sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSakUnder18)
-        }
-
         val behandlingId = objectMotherSakUnder18.behandlinger.first().id.toString()
 
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    alderRoutes(
-                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                        behandlingService = behandlingService,
-                    )
-                }
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            testDataHelper.sessionFactory.withTransaction {
+                testDataHelper.sakRepo.lagre(objectMotherSakUnder18)
             }
 
-            // Sjekk at man kan kjøre Get
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/alder")
-                },
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-                val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
-                alderVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                tiltakGateway = mockTiltakGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+            )
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        alderRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            behandlingService = behandlingService,
+                        )
+                    }
+                }
+
+                // Sjekk at man kan kjøre Get
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/alder")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
+                    alderVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+                }
             }
         }
     }

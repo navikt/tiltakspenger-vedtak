@@ -4,17 +4,17 @@ import io.ktor.server.plugins.NotFoundException
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -25,63 +25,56 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
     private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val sessionFactory: PostgresSessionFactory,
 ) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHent,
-                        mapOf(
-                            "id" to vedtakId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVedtak(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(
+                    sqlHent,
+                    mapOf(
+                        "id" to vedtakId.toString(),
+                    ),
+                ).map { row ->
+                    row.toVedtak(tx)
+                }.asSingle,
+            )
         }
     }
 
     override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentForBehandling,
-                        mapOf(
-                            "behandlingId" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVedtak(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(
+                    sqlHentForBehandling,
+                    mapOf(
+                        "behandlingId" to behandlingId.toString(),
+                    ),
+                ).map { row ->
+                    row.toVedtak(tx)
+                }.asSingle,
+            )
         } ?: throw NotFoundException("Ikke funnet")
     }
 
     override fun hentVedtakForSak(sakId: SakId): List<Vedtak> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentForSak,
-                        mapOf(
-                            "sakId" to sakId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVedtak(txSession)
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { tx ->
+            tx.run(
+                queryOf(
+                    sqlHentForSak,
+                    mapOf(
+                        "sakId" to sakId.toString(),
+                    ),
+                ).map { row ->
+                    row.toVedtak(tx)
+                }.asList,
+            )
         }
     }
 
-    override fun lagreVedtak(vedtak: Vedtak): Vedtak {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                lagreVedtak(vedtak, txSession)
-            }
+    override fun lagreVedtak(vedtak: Vedtak, context: TransactionContext?): Vedtak {
+        return sessionFactory.withTransaction(context) { tx ->
+            lagreVedtak(vedtak, tx)
         }
     }
 
