@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
@@ -20,138 +19,79 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 import java.util.Random
 
-@Testcontainers
 internal class TiltakDAOTest {
 
     companion object {
         val random = Random()
-
-        @Container
-        val postgresContainer = PostgresTestcontainer
-    }
-
-    @BeforeEach
-    fun setup() {
-        flywayMigrate()
     }
 
     @Test
     fun `lagre og hente med null felter`() {
-        val tiltakDAO = TiltakDAO()
+        val tiltak = tiltak(null)
 
-        val tiltak = Tiltak(
-            id = TiltakId.random(),
-            eksternId = "1234",
-            gjennomføring = Tiltak.Gjennomføring(
-                id = "",
-                arrangørnavn = "arrangør",
-                typeNavn = "Jobbkurs",
-                typeKode = "JOBBK",
-                rettPåTiltakspenger = true,
-            ),
-            deltakelseFom = 1.januar(2023),
-            deltakelseTom = 31.januar(2023),
-            deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
-            deltakelseProsent = null,
-            kilde = "Komet",
-            registrertDato = 1.januarDateTime(2023),
-            innhentet = 1.januarDateTime(2023),
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
-                antallDager = listOf(
-                    PeriodeMedVerdi(
-                        verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA, saksbehandlerIdent = null),
-                        periode =
-                        no.nav.tiltakspenger.libs.periodisering.Periode(
-                            fraOgMed = 1.januar(2023),
-                            tilOgMed = 31.januar(2023),
-                        ),
-                    ),
-                ),
-                avklarteAntallDager = emptyList(),
-            ),
-        )
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+            val tiltakDAO = testDataHelper.tiltakDAO
+            val behandlingRepo = testDataHelper.behandlingRepo
+            val sakRepo = testDataHelper.sakRepo
 
-        val behandling = lagreSakOgBehandling()
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
+            val behandling = lagreSakOgBehandling(
+                saksnummer = Saksnummer("202301011003"),
+                behandlingRepo = behandlingRepo,
+                sakRepo = sakRepo,
+            )
+
+            testDataHelper.sessionFactory.withTransaction { txSession ->
                 tiltakDAO.lagre(behandling.id, listOf(tiltak), txSession)
             }
-        }
 
-        val hentet = sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                tiltakDAO.hent(behandling.id, txSession)
+            testDataHelper.sessionFactory.withTransaction { txSession ->
+                val hentet = tiltakDAO.hent(behandling.id, txSession)
+                hentet.size shouldBe 1
+                hentet.first() shouldBe tiltak
             }
         }
-
-        hentet.size shouldBe 1
-        hentet.first() shouldBe tiltak
     }
 
     @Test
     fun `lagre og hente med non-null felter`() {
-        val tiltakDAO = TiltakDAO()
-        val tiltak = Tiltak(
-            id = TiltakId.random(),
-            eksternId = "123",
-            gjennomføring = Tiltak.Gjennomføring(
-                id = "123",
-                arrangørnavn = "arrangør",
-                typeNavn = "Jobbkurs",
-                typeKode = "JOBBK",
-                rettPåTiltakspenger = true,
-            ),
-            deltakelseFom = 1.januar(2023),
-            deltakelseTom = 31.mars(2023),
-            deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
-            deltakelseProsent = 100.0F,
-            kilde = "Komet",
-            registrertDato = 1.januarDateTime(2023),
-            innhentet = 1.januarDateTime(2023),
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
-                antallDager = listOf(
-                    PeriodeMedVerdi(
-                        verdi = AntallDager(antallDager = 2, kilde = Kilde.ARENA, saksbehandlerIdent = null),
-                        periode =
-                        Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.mars(2023)),
-                    ),
-                ),
-                avklarteAntallDager = emptyList(),
-            ),
-        )
+        val tiltak = tiltak(100.0F)
 
-        val behandling = lagreSakOgBehandling()
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+            val tiltakDAO = testDataHelper.tiltakDAO
+            val behandlingRepo = testDataHelper.behandlingRepo
+            val sakRepo = testDataHelper.sakRepo
 
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
+            val behandling = lagreSakOgBehandling(
+                saksnummer = Saksnummer("202301011003"),
+                behandlingRepo = behandlingRepo,
+                sakRepo = sakRepo,
+            )
+
+            testDataHelper.sessionFactory.withTransaction { txSession ->
                 tiltakDAO.lagre(behandling.id, listOf(tiltak), txSession)
             }
-        }
 
-        val hentet = sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                tiltakDAO.hent(behandling.id, txSession)
+            testDataHelper.sessionFactory.withTransaction { txSession ->
+                val hentet = tiltakDAO.hent(behandling.id, txSession)
+                hentet.size shouldBe 1
+                hentet.first() shouldBe tiltak
             }
         }
-
-        hentet.size shouldBe 1
-        hentet.first() shouldBe tiltak
     }
 
-    private fun lagreSakOgBehandling(): Behandling {
-        val behandlingRepo = PostgresBehandlingRepo()
-        val sakRepo = PostgresSakRepo()
-
+    private fun lagreSakOgBehandling(
+        saksnummer: Saksnummer = Saksnummer("202301011001"),
+        behandlingRepo: PostgresBehandlingRepo,
+        sakRepo: PostgresSakRepo,
+    ): Behandling {
         val journalpostId = random.nextInt().toString()
         val ident = random.nextInt().toString()
         val deltakelseFom = 1.januar(2023)
@@ -160,7 +100,7 @@ internal class TiltakDAOTest {
         val sak = Sak(
             id = sakId,
             ident = ident,
-            saknummer = Saksnummer(verdi = "123"),
+            saknummer = saksnummer,
             periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
             behandlinger = listOf(),
             personopplysninger = SakPersonopplysninger(),
@@ -184,4 +124,36 @@ internal class TiltakDAOTest {
 
         return behandlingRepo.lagre(behandling)
     }
+
+    private fun tiltak(prosent: Float?) = Tiltak(
+        id = TiltakId.random(),
+        eksternId = "1234",
+        gjennomføring = Tiltak.Gjennomføring(
+            id = "",
+            arrangørnavn = "arrangør",
+            typeNavn = "Jobbkurs",
+            typeKode = "JOBBK",
+            rettPåTiltakspenger = true,
+        ),
+        deltakelseFom = 1.januar(2023),
+        deltakelseTom = 31.januar(2023),
+        deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
+        deltakelseProsent = prosent,
+        kilde = "Komet",
+        registrertDato = 1.januarDateTime(2023),
+        innhentet = 1.januarDateTime(2023),
+        antallDagerSaksopplysninger = AntallDagerSaksopplysninger.initAntallDagerSaksopplysning(
+            antallDager = listOf(
+                PeriodeMedVerdi(
+                    verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA, saksbehandlerIdent = null),
+                    periode =
+                    no.nav.tiltakspenger.libs.periodisering.Periode(
+                        fraOgMed = 1.januar(2023),
+                        tilOgMed = 31.januar(2023),
+                    ),
+                ),
+            ),
+            avklarteAntallDager = emptyList(),
+        ),
+    )
 }

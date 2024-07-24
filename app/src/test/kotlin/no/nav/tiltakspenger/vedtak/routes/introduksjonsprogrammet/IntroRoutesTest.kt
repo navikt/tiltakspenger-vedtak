@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImp
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
+import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -92,26 +93,27 @@ class IntroRoutesTest {
         ),
         tiltakDAO = TiltakDAO(),
         utfallsperiodeDAO = UtfallsperiodeDAO(),
+        sessionFactory = TestDataHelper(DataSource.hikariDataSource).sessionFactory,
     )
 
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())
     private val attesteringDAO = AttesteringRepoImpl()
-    private val vedtakRepoImpl = VedtakRepoImpl()
+    private val vedtakRepoImpl = VedtakRepoImpl(behandlingRepo)
     private val multiRepo =
         MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
 
+    private val testDataHelper = TestDataHelper(DataSource.hikariDataSource)
     private val personopplysningerRepo = PostgresPersonopplysningerRepo(
         barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
         barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,
-        personopplysningerRepo = PostgresPersonopplysningerRepo(
-            barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
-            barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
-        ),
+        personopplysningerRepo = personopplysningerRepo,
         vedtakRepo = vedtakRepo,
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val behandlingService = BehandlingServiceImpl(
@@ -139,7 +141,7 @@ class IntroRoutesTest {
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1019)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -186,6 +188,7 @@ class IntroRoutesTest {
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, personopplysningFødselsdato()),
             ),
+            løpenummer = 1002,
         )
 
         sessionOf(DataSource.hikariDataSource).use {

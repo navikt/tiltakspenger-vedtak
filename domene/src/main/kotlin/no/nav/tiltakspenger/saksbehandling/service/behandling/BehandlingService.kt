@@ -23,7 +23,6 @@ interface BehandlingService {
      * Vi gjør ikke tilgangskontroll utover dette. Det må gjøres i kallene som bruker denne metoden.
      */
     fun hentBehandling(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Behandling
-    fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling>
     fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning)
     fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning): Behandling

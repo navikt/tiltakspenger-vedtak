@@ -57,10 +57,6 @@ class BehandlingServiceImpl(
         return behandling
     }
 
-    override fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling? {
-        return behandlingRepo.hentForJournalpostId(journalpostId)
-    }
-
     override fun hentAlleBehandlinger(saksbehandler: Saksbehandler): List<Førstegangsbehandling> {
         require(saksbehandler.isSaksbehandler())
         return behandlingRepo.hentAlle()

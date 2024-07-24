@@ -40,6 +40,7 @@ import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImp
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSource
 import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
+import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -102,26 +103,27 @@ class LivsoppholdRoutesTest {
         ),
         tiltakDAO = TiltakDAO(),
         utfallsperiodeDAO = UtfallsperiodeDAO(),
+        sessionFactory = TestDataHelper(DataSource.hikariDataSource).sessionFactory,
     )
 
     private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())
     private val attesteringDAO = AttesteringRepoImpl()
-    private val vedtakRepoImpl = VedtakRepoImpl()
+    private val vedtakRepoImpl = VedtakRepoImpl(behandlingRepo)
     private val multiRepo =
         MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
 
+    private val testDataHelper = TestDataHelper(DataSource.hikariDataSource)
     private val personopplysningerRepo = PostgresPersonopplysningerRepo(
         barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
         barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,
-        personopplysningerRepo = PostgresPersonopplysningerRepo(
-            barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
-            barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
-        ),
+        personopplysningerRepo = personopplysningerRepo,
         vedtakRepo = vedtakRepo,
+        sessionFactory = testDataHelper.sessionFactory,
     )
 
     private val behandlingService = BehandlingServiceImpl(
@@ -151,7 +153,7 @@ class LivsoppholdRoutesTest {
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1012)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -219,7 +221,7 @@ class LivsoppholdRoutesTest {
     fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1015)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)
@@ -265,62 +267,62 @@ class LivsoppholdRoutesTest {
             sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
 
-        val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger)
+        val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger, 1011)
         livsoppholdVilkårSykepenger.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedEtterlønn = nySøknad(
             etterlønn = ja(),
         )
-        val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn)
+        val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn, 1005)
         livsoppholdVilkårEtterlønn.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedGjenlevendepensjon = nySøknad(
             gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårGjenlevendepensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon)
+        val livsoppholdVilkårGjenlevendepensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuAlder = nySøknad(
             supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder)
+        val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder, 1007)
         livsoppholdVilkårSuAlder.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedSuflykning = nySøknad(
             supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning)
+        val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning, 1008)
         livsoppholdVilkårSuflykning.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedJobbsjansen = nySøknad(
             jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen)
+        val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen, 1009)
         livsoppholdVilkårJobbsjansen.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedPensjonsinntekt = nySøknad(
             trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt)
+        val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt, 1010)
         livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
         val søknadMedAlderpensjon = nySøknad(
             alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
         )
-        val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon)
+        val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon, 1011)
         livsoppholdVilkårAlderpensjon.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
     }
 
-    private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad): LivsoppholdVilkårDTO {
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato())))
+    private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad, løpenummer: Int): LivsoppholdVilkårDTO {
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato())), løpenummer = løpenummer)
 
         sessionOf(DataSource.hikariDataSource).use {
             sakRepo.lagre(objectMotherSak)

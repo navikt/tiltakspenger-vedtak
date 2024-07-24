@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.AlderTolker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -43,12 +43,11 @@ class SakServiceImpl(
         ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
         val sak: Sak =
             (
-                sakRepo.hentForIdentMedPeriode(
+                sakRepo.hentForIdent(
                     fnr = ident,
-                    periode = søknad.vurderingsperiode(),
                 ).singleOrNull() ?: Sak.lagSak(
                     søknad = søknad,
-                    saksnummer = SaksnummerGenerator().genererSaknummer(sakRepo.hentNesteLøpenr()),
+                    saksnummer = sakRepo.hentNesteSaksnummer(),
                     sakPersonopplysninger = sakPersonopplysninger,
                 )
                 ).håndter(søknad = søknad)
@@ -89,7 +88,7 @@ class SakServiceImpl(
         return sak
     }
 
-    override fun hentForIdent(ident: String, saksbehandler: Saksbehandler): List<Sak> {
+    override fun hentForIdent(ident: String, saksbehandler: Saksbehandler): Saker {
         val saker = sakRepo.hentForIdent(ident)
         saker.forEach { sak ->
             if (!sak.personopplysninger.harTilgang(saksbehandler)) {
@@ -107,10 +106,6 @@ class SakServiceImpl(
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
         return sak
-    }
-
-    override fun resettLøpenr() {
-        sakRepo.resetLøpenummer()
     }
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<String, Boolean> {
