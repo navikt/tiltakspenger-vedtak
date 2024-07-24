@@ -284,7 +284,7 @@ class SammenstillingForBehandlingDTOTest {
             tiltak = tiltak,
         )
 
-        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister
+        val saksopplysningElement = resultat.antallDagerSaksopplysningFraRegister
         assertNotNull(saksopplysningElement)
         assertEquals(saksopplysningElement.antallDager, antallDagerMock.antallDager)
         assertEquals(saksopplysningElement.periode.fraOgMed, antallDagerMock.periode.fraOgMed)

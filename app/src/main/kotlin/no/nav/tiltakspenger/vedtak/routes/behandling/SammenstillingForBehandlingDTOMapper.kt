@@ -43,13 +43,12 @@ internal object SammenstillingForBehandlingDTOMapper {
                 fraOgMed = behandling.vurderingsperiode.fraOgMed.toString(),
                 tilOgMed = behandling.vurderingsperiode.tilOgMed.toString(),
             ),
-            tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
+            tiltaksdeltagelsesaksopplysning = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
                 vilkårLovreferanse = Lovreferanse.TILTAKSDELTAGELSE.toDTO(),
                 saksopplysninger = behandling.tiltak.tiltak.map {
                     RegistrertTiltakDTO(
                         id = it.id.toString(),
-                        arrangør = it.gjennomføring.arrangørnavn,
                         navn = it.gjennomføring.typeNavn,
                         periode = PeriodeDTO(
                             fraOgMed = it.deltakelseFom.toString(),
@@ -58,13 +57,10 @@ internal object SammenstillingForBehandlingDTOMapper {
                         status = it.deltakelseStatus.status,
                         kilde = it.kilde,
                         girRett = it.gjennomføring.rettPåTiltakspenger,
-                        harSøkt = true,
                         deltagelseUtfall = utledVurdertUtfall(behandling, it.id)?.utfall
                             ?: Utfall.KREVER_MANUELL_VURDERING,
-                        begrunnelse = utledVurdertUtfall(behandling, it.id)?.detaljer
-                            ?: "Fant ikke noe utfall for tiltaksdeltagelse",
                     )
-                },
+                }.first(),
             ),
             stønadsdager = behandling.tiltak.tiltak.map { settAntallDagerSaksopplysninger(it) },
             personopplysninger = personopplysninger.søkere().map {
@@ -128,14 +124,12 @@ internal object SammenstillingForBehandlingDTOMapper {
         val antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger
 
         return AntallDagerSaksopplysningerDTO(
-            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
-            antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
+            antallDagerSaksopplysningFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
                 settAntallDagerSaksopplysning(
                     it,
                 )
             }.first(),
             tiltak = tiltak.gjennomføring.typeNavn,
-            arrangør = tiltak.gjennomføring.arrangørnavn,
             tiltakId = tiltak.id.toString(),
         )
     }

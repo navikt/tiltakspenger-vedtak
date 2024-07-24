@@ -16,7 +16,7 @@ internal data class SammenstillingForBehandlingDTO(
     val status: String,
     val endringslogg: List<EndringDTO>,
     val samletUtfall: String,
-    val tiltaksdeltagelsesaksopplysninger: TiltaksdeltagelsesaksopplysningDTO,
+    val tiltaksdeltagelsesaksopplysning: TiltaksdeltagelsesaksopplysningDTO,
     val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
     val vilkårsett: VilkårssettDTO,
 ) {
@@ -44,27 +44,22 @@ internal data class SammenstillingForBehandlingDTO(
     data class TiltaksdeltagelsesaksopplysningDTO(
         val vilkår: String,
         val vilkårLovreferanse: LovreferanseDTO,
-        val saksopplysninger: List<RegistrertTiltakDTO>,
+        val saksopplysninger: RegistrertTiltakDTO,
     )
 
     data class AntallDagerSaksopplysningerDTO(
         val tiltakId: String,
         val tiltak: String,
-        val arrangør: String,
-        val avklartAntallDager: List<AntallDagerDTO>,
-        val antallDagerSaksopplysningerFraRegister: AntallDagerDTO,
+        val antallDagerSaksopplysningFraRegister: AntallDagerDTO,
     )
 
     data class RegistrertTiltakDTO(
         val id: String,
-        val arrangør: String,
         val navn: String,
         val periode: PeriodeDTO,
         val status: String,
         val kilde: String,
         val girRett: Boolean,
-        val harSøkt: Boolean,
         val deltagelseUtfall: Utfall,
-        val begrunnelse: String,
     )
 }
