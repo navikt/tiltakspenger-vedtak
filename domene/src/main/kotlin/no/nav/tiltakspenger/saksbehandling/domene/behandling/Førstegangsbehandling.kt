@@ -7,8 +7,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
@@ -27,6 +25,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.In
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.institusjonsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.KravdatoVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravdato.kravdatoSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
@@ -65,12 +65,6 @@ data class Førstegangsbehandling(
                         søknad,
                     ),
                     vilkårsvurderinger = emptyList(),
-                    kravdatoSaksopplysninger = KravdatoSaksopplysninger(
-                        kravdatoSaksopplysningFraSøknad = KravdatoSaksopplysning(
-                            kravdato = søknad.opprettet.toLocalDate(),
-                            kilde = Kilde.SØKNAD,
-                        ),
-                    ).avklar(),
                     utfallsperioder = emptyList(),
                     institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(søknad.institusjonsoppholdSaksopplysning(vurderingsperiode)),
                     kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
@@ -80,6 +74,7 @@ data class Førstegangsbehandling(
                         vurderingsperiode,
                     ),
                     alderVilkår = AlderVilkår.opprett(søknad.alderSaksopplysning(fødselsdato = fødselsdato), vurderingsperiode),
+                    kravdatoVilkår = KravdatoVilkår.opprett(søknad.kravdatoSaksopplysning(vurderingsperiode), vurderingsperiode),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,
@@ -315,7 +310,7 @@ data class Førstegangsbehandling(
 
         val vurderinger = saksopplysninger().flatMap {
             it.lagVurdering(vurderingsperiode)
-        } + deltagelseVurderinger + vilkårsvurderFristForFramsettingAvKrav()
+        } + deltagelseVurderinger
 
         val utfallsperioder =
             vurderingsperiode.fraOgMed.datesUntil(vurderingsperiode.tilOgMed.plusDays(1)).toList().map { dag ->
@@ -380,51 +375,6 @@ data class Førstegangsbehandling(
             detaljer = "",
             grunnlagId = null,
         )
-
-    fun vilkårsvurderFristForFramsettingAvKrav(): List<Vurdering> {
-        // Sjekker av behandlingstilstand gjøres på et tidligere tidspunkt
-        val kravdatoSaksopplysning = kravdatoSaksopplysninger.avklartKravdatoSaksopplysning
-        val kravdato = kravdatoSaksopplysning?.kravdato
-        check(kravdato != null) { "Man kan ikke vilkårsvurdere frist for krav til framsatt dato uten at søknadsdato er avklart" }
-
-        val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3)
-        if (datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed) {
-            return listOf(
-                lagFristForFramsettingAvKravVurdering(
-                    utfall = Utfall.OPPFYLT,
-                    kilde = kravdatoSaksopplysning.kilde,
-                    periode = vurderingsperiode,
-                ),
-            )
-        } else if (datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed) {
-            return listOf(
-                lagFristForFramsettingAvKravVurdering(
-                    utfall = Utfall.IKKE_OPPFYLT,
-                    kilde = kravdatoSaksopplysning.kilde,
-                    periode = vurderingsperiode,
-                ),
-            )
-        } else {
-            return listOf(
-                lagFristForFramsettingAvKravVurdering(
-                    utfall = Utfall.IKKE_OPPFYLT,
-                    periode = Periode(
-                        fraOgMed = vurderingsperiode.fraOgMed,
-                        tilOgMed = datoDetKanInnvilgesFra.minusDays(1),
-                    ),
-                    kilde = kravdatoSaksopplysning.kilde,
-                ),
-                lagFristForFramsettingAvKravVurdering(
-                    utfall = Utfall.OPPFYLT,
-                    periode = Periode(
-                        fraOgMed = datoDetKanInnvilgesFra,
-                        tilOgMed = vurderingsperiode.tilOgMed,
-                    ),
-                    kilde = kravdatoSaksopplysning.kilde,
-                ),
-            )
-        }
-    }
 
     private fun vurderingsperiodeRommerPeriodeFraTiltak(periode: Periode?): Boolean =
         periode?.let { vurderingsperiode.inneholderHele(it) } ?: true

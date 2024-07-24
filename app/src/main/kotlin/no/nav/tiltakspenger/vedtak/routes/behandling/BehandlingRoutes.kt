@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravdato.kravdatoRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
@@ -147,4 +148,5 @@ fun Route.behandlingRoutes(
     livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService)
     introRoutes(innloggetSaksbehandlerProvider, behandlingService)
     alderRoutes(innloggetSaksbehandlerProvider, behandlingService)
+    kravdatoRoutes(innloggetSaksbehandlerProvider, behandlingService)
 }

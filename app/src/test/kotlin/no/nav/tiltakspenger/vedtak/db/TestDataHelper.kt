@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.log
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.behandling.KravdatoSaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
@@ -57,7 +56,6 @@ internal class TestDataHelper(
     val søknadTiltakDAO = SøknadTiltakDAO()
     val vedleggDAO = VedleggDAO()
     val utfallsperiodeDAO = UtfallsperiodeDAO()
-    val kravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo()
     val søknadDAO = SøknadDAO(
         barnetilleggDAO = barnetilleggDAO,
         tiltakDAO = søknadTiltakDAO,
@@ -71,7 +69,6 @@ internal class TestDataHelper(
         søknadDAO = søknadDAO,
         tiltakDAO = tiltakDAO,
         utfallsperiodeDAO = utfallsperiodeDAO,
-        kravdatoSaksopplysningRepo = kravdatoSaksopplysningRepo,
     )
 
     val vedtakRepo = VedtakRepoImpl(
