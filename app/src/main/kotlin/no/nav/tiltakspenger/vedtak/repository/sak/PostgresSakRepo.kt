@@ -14,8 +14,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -26,7 +26,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class PostgresSakRepo(
     private val behandlingRepo: BehandlingDAO,
     private val personopplysningerRepo: PostgresPersonopplysningerRepo,
-    private val vedtakRepo: VedtakRepo,
+    private val vedtakDAO: VedtakDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : SakRepo {
     override fun hentForIdent(fnr: String): Saker {
@@ -190,13 +190,13 @@ internal class PostgresSakRepo(
         } ?: Saksnummer.genererSaknummer(dato = iDag)
     }
 
-    private fun Row.toSak(txSession: TransactionalSession): Sak {
+    private fun Row.toSak(tx: TransactionalSession): Sak {
         val id = SakId.fromDb(string("id"))
         return Sak(
             sakDetaljer = toSakDetaljer(),
-            behandlinger = behandlingRepo.hentForSak(id),
-            personopplysninger = personopplysningerRepo.hent(id, txSession),
-            vedtak = vedtakRepo.hentVedtakForSak(id),
+            behandlinger = behandlingRepo.hentForSak(id, tx),
+            personopplysninger = personopplysningerRepo.hent(id, tx),
+            vedtak = vedtakDAO.hentVedtakForSak(id, tx),
         )
     }
 

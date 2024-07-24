@@ -7,5 +7,5 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 
 interface BehandlingDAO {
     fun lagre(behandling: Behandling, tx: TransactionalSession): Behandling
-    fun hentForSak(sakId: SakId): List<Førstegangsbehandling>
+    fun hentForSak(sakId: SakId, tx: TransactionalSession): List<Førstegangsbehandling>
 }

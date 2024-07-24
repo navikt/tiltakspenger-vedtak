@@ -57,19 +57,17 @@ internal class VedtakRepoImpl(
         } ?: throw NotFoundException("Ikke funnet")
     }
 
-    override fun hentVedtakForSak(sakId: SakId): List<Vedtak> {
-        return sessionFactory.withTransaction { tx ->
-            tx.run(
-                queryOf(
-                    sqlHentForSak,
-                    mapOf(
-                        "sakId" to sakId.toString(),
-                    ),
-                ).map { row ->
-                    row.toVedtak(tx)
-                }.asList,
-            )
-        }
+    override fun hentVedtakForSak(sakId: SakId, tx: TransactionalSession): List<Vedtak> {
+        return tx.run(
+            queryOf(
+                sqlHentForSak,
+                mapOf(
+                    "sakId" to sakId.toString(),
+                ),
+            ).map { row ->
+                row.toVedtak(tx)
+            }.asList,
+        )
     }
 
     override fun lagreVedtak(vedtak: Vedtak, context: TransactionContext?): Vedtak {

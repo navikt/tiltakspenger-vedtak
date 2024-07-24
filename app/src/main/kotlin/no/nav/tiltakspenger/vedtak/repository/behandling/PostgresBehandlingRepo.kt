@@ -84,19 +84,17 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentForSak(sakId: SakId): List<Førstegangsbehandling> {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
-                queryOf(
-                    sqlHentBehandlingForSak,
-                    mapOf(
-                        "sakId" to sakId.toString(),
-                    ),
-                ).map { row ->
-                    row.toBehandling(txSession)
-                }.asList,
-            )
-        }
+    override fun hentForSak(sakId: SakId, tx: TransactionalSession): List<Førstegangsbehandling> {
+        return tx.run(
+            queryOf(
+                sqlHentBehandlingForSak,
+                mapOf(
+                    "sakId" to sakId.toString(),
+                ),
+            ).map { row ->
+                row.toBehandling(tx)
+            }.asList,
+        )
     }
 
     override fun lagre(behandling: Behandling, context: TransactionContext?): Behandling {

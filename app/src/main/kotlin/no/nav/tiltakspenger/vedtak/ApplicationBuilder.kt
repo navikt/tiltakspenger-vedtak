@@ -134,7 +134,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sakRepo = PostgresSakRepo(
         personopplysningerRepo = personopplysningRepo,
         behandlingRepo = behandlingRepo,
-        vedtakRepo = vedtakRepo,
+        vedtakDAO = vedtakRepo,
         sessionFactory = sessionFactory,
     )
 

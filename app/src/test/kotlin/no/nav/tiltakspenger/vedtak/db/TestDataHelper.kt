@@ -82,7 +82,7 @@ internal class TestDataHelper(
     val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,
         personopplysningerRepo = personopplysningerRepo,
-        vedtakRepo = vedtakRepo,
+        vedtakDAO = vedtakRepo,
         sessionFactory = sessionFactory,
     )
 }
