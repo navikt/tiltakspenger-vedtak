@@ -9,7 +9,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -29,7 +28,7 @@ fun Route.hentInstitusjonsoppholdRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(),
             )
         }
     }

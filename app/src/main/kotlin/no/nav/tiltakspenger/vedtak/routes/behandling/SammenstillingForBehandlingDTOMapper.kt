@@ -27,7 +27,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal object SammenstillingForBehandlingDTOMapper {
 
@@ -94,7 +93,7 @@ internal object SammenstillingForBehandlingDTOMapper {
             samletUtfall = settSamletUtfallForUtfallsperioder(
                 utfallsperioder = behandling.utfallsperioder,
             ),
-            vilkårsett = behandling.vilkårssett.toDTO(behandling.vurderingsperiode.toDTO()),
+            vilkårsett = behandling.vilkårssett.toDTO(),
         )
     }
 
