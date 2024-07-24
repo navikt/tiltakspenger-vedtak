@@ -74,7 +74,7 @@ data class Førstegangsbehandling(
                         vurderingsperiode,
                     ),
                     alderVilkår = AlderVilkår.opprett(AlderSaksopplysning.Personopplysning.opprett(fødselsdato = fødselsdato), vurderingsperiode),
-                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(vurderingsperiode), vurderingsperiode),
+                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                 ),
                 tiltak = TiltakVilkår(),
                 saksbehandler = null,

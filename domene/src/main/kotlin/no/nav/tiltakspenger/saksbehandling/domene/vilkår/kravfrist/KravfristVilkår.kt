@@ -40,12 +40,11 @@ data class KravfristVilkår private constructor(
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
-            vurderingsperiode = vurderingsperiode,
         )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(),
+            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
         )
     }
 
@@ -59,7 +58,7 @@ data class KravfristVilkår private constructor(
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(),
+                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
             )
         }
 

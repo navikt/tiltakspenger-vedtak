@@ -9,22 +9,20 @@ import java.time.LocalDateTime
 
 sealed interface KravfristSaksopplysning {
     val kravdato: LocalDateTime
-    val vurderingsperiode: Periode
     val tidsstempel: LocalDateTime
 
     val årsakTilEndring: ÅrsakTilEndring?
     val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
-    fun vurderMaskinelt(): Periodisering<Utfall2>
+    fun vurderMaskinelt(vurderingsperiode: Periode): Periodisering<Utfall2>
 
     data class Søknad(
         override val kravdato: LocalDateTime,
         override val tidsstempel: LocalDateTime,
-        override val vurderingsperiode: Periode,
     ) : KravfristSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
 
-        override fun vurderMaskinelt(): Periodisering<Utfall2> {
+        override fun vurderMaskinelt(vurderingsperiode: Periode): Periodisering<Utfall2> {
             val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()
 
             return when {
@@ -37,13 +35,12 @@ sealed interface KravfristSaksopplysning {
 
     data class Saksbehandler(
         override val kravdato: LocalDateTime,
-        override val vurderingsperiode: Periode,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
         override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
     ) : KravfristSaksopplysning {
 
-        override fun vurderMaskinelt(): Periodisering<Utfall2> {
+        override fun vurderMaskinelt(vurderingsperiode: Periode): Periodisering<Utfall2> {
             val datoDetKanInnvilgesFra = kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()
 
             return when {
