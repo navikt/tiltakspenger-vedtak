@@ -17,7 +17,6 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -38,26 +37,8 @@ import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImp
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
-import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.db.PostgresTestcontainer
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
-import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
-import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
-import no.nav.tiltakspenger.vedtak.repository.multi.MultiRepoImpl
-import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
-import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
@@ -68,76 +49,15 @@ import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 
-@Testcontainers
 class LivsoppholdRoutesTest {
-
-    companion object {
-        @Container
-        val postgresContainer = PostgresTestcontainer
-    }
-
-    @BeforeEach
-    fun setup() {
-        flywayMigrate()
-    }
 
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
-
-    private val saksopplysningRepo = SaksopplysningRepo()
-    private val behandlingRepo = PostgresBehandlingRepo(
-        saksopplysningRepo = saksopplysningRepo,
-        vurderingRepo = VurderingRepo(),
-        søknadDAO = SøknadDAO(
-            barnetilleggDAO = BarnetilleggDAO(),
-            tiltakDAO = SøknadTiltakDAO(),
-            vedleggDAO = VedleggDAO(),
-        ),
-        tiltakDAO = TiltakDAO(),
-        utfallsperiodeDAO = UtfallsperiodeDAO(),
-        sessionFactory = TestDataHelper(DataSource.hikariDataSource).sessionFactory,
-    )
-
-    private val vedtakRepo = VedtakRepoImpl(behandlingRepo = behandlingRepo, utfallsperiodeDAO = UtfallsperiodeDAO())
-    private val attesteringDAO = AttesteringRepoImpl()
-    private val vedtakRepoImpl = VedtakRepoImpl(behandlingRepo)
-    private val multiRepo =
-        MultiRepoImpl(behandlingDao = behandlingRepo, attesteringDao = attesteringDAO, vedtakDao = vedtakRepoImpl)
-
-    private val testDataHelper = TestDataHelper(DataSource.hikariDataSource)
-    private val personopplysningerRepo = PostgresPersonopplysningerRepo(
-        barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo(),
-        barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo(),
-        sessionFactory = testDataHelper.sessionFactory,
-    )
-
-    private val sakRepo = PostgresSakRepo(
-        behandlingRepo = behandlingRepo,
-        personopplysningerRepo = personopplysningerRepo,
-        vedtakRepo = vedtakRepo,
-        sessionFactory = testDataHelper.sessionFactory,
-    )
-
-    private val behandlingService = BehandlingServiceImpl(
-        behandlingRepo = behandlingRepo,
-        vedtakRepo = vedtakRepo,
-        personopplysningRepo = personopplysningerRepo,
-        utbetalingService = mockedUtbetalingServiceImpl,
-        brevPublisherGateway = mockBrevPublisherGateway,
-        meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-        tiltakGateway = mockTiltakGateway,
-        multiRepo = multiRepo,
-        sakRepo = sakRepo,
-    )
-    private val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(behandlingRepo, behandlingService)
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -154,65 +74,85 @@ class LivsoppholdRoutesTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1012)
-
-        sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSak)
-        }
-
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
         val vurderingsPeriode = objectMotherSak.behandlinger.first().vurderingsperiode
 
-        testApplication {
-            application {
-                jacksonSerialization()
-                routing {
-                    livsoppholdRoutes(
-                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                        livsoppholdVilkårService = livsoppholdVilkårService,
-                        behandlingService = behandlingService,
-                    )
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            testDataHelper.sessionFactory.withTransaction {
+                testDataHelper.sakRepo.lagre(objectMotherSak)
+            }
+
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                tiltakGateway = mockTiltakGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+            )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        livsoppholdRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            livsoppholdVilkårService = livsoppholdVilkårService,
+                            behandlingService = behandlingService,
+                        )
+                    }
                 }
-            }
 
-            // Sjekk at man kan kjøre Get
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/livsopphold")
-                },
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-                val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
-                livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
-                livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldBe null
-            }
+                // Sjekk at man kan kjøre Get
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+                    livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
+                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldBe null
+                }
 
-            // Sjekk at man kan si at bruker ikke har livsoppholdytelser
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/livsopphold")
-                },
-            ) {
-                setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), false))
-            }.apply {
-                status shouldBe HttpStatusCode.Created
-            }
+                // Sjekk at man kan si at bruker ikke har livsoppholdytelser
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ) {
+                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), false))
+                }.apply {
+                    status shouldBe HttpStatusCode.Created
+                }
 
-            // Sjekk at dataene har blitt oppdatert
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/livsopphold")
-                },
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-                val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
-                livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
-                livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldNotBeNull { this.navIdent shouldBe saksbehandlerIdent }
+                // Sjekk at dataene har blitt oppdatert
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+                    livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
+                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldNotBeNull { this.navIdent shouldBe saksbehandlerIdent }
+                }
             }
         }
     }
@@ -222,38 +162,58 @@ class LivsoppholdRoutesTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1015)
-
-        sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSak)
-        }
-
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
         val vurderingsPeriode = objectMotherSak.behandlinger.first().vurderingsperiode
 
-        testApplication {
-            application {
-                configureExceptions()
-                jacksonSerialization()
-                routing {
-                    livsoppholdRoutes(
-                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                        livsoppholdVilkårService = livsoppholdVilkårService,
-                        behandlingService = behandlingService,
-                    )
-                }
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            testDataHelper.sessionFactory.withTransaction {
+                testDataHelper.sakRepo.lagre(objectMotherSak)
             }
 
-            // Sjekk at man ikke kan si at bruker har livsoppholdytelser
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/livsopphold")
-                },
-            ) {
-                setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), true))
-            }.apply {
-                status shouldBe HttpStatusCode.NotImplemented
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                tiltakGateway = mockTiltakGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+            )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
+
+            testApplication {
+                application {
+                    configureExceptions()
+                    jacksonSerialization()
+                    routing {
+                        livsoppholdRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            livsoppholdVilkårService = livsoppholdVilkårService,
+                            behandlingService = behandlingService,
+                        )
+                    }
+                }
+
+                // Sjekk at man ikke kan si at bruker har livsoppholdytelser
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ) {
+                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), true))
+                }.apply {
+                    status shouldBe HttpStatusCode.NotImplemented
+                }
             }
         }
     }
@@ -323,39 +283,60 @@ class LivsoppholdRoutesTest {
 
     private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad, løpenummer: Int): LivsoppholdVilkårDTO {
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato())), løpenummer = løpenummer)
-
-        sessionOf(DataSource.hikariDataSource).use {
-            sakRepo.lagre(objectMotherSak)
-        }
-
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO
 
-        testApplication {
-            application {
-                configureExceptions()
-                jacksonSerialization()
-                routing {
-                    livsoppholdRoutes(
-                        innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                        livsoppholdVilkårService = livsoppholdVilkårService,
-                        behandlingService = behandlingService,
-                    )
-                }
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            testDataHelper.sessionFactory.withTransaction {
+                testDataHelper.sakRepo.lagre(objectMotherSak)
             }
 
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/$behandlingId/vilkar/livsopphold")
-                },
-            ).apply {
-                status shouldBe HttpStatusCode.OK
-                livsoppholdVilkårDTO = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                tiltakGateway = mockTiltakGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+            )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
+
+            testApplication {
+                application {
+                    configureExceptions()
+                    jacksonSerialization()
+                    routing {
+                        livsoppholdRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            livsoppholdVilkårService = livsoppholdVilkårService,
+                            behandlingService = behandlingService,
+                        )
+                    }
+                }
+
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    livsoppholdVilkårDTO = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+                }
             }
         }
+
         return livsoppholdVilkårDTO
     }
 

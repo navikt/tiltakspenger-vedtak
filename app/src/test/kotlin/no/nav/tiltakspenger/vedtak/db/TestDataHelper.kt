@@ -5,15 +5,21 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.log
+import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
+import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
+import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import org.flywaydb.core.Flyway
@@ -33,6 +39,9 @@ internal class TestDataHelper(
         personopplysningerDAO = personopplysningerDAO,
     )
     val tiltakDAO = TiltakDAO()
+    val attesteringRepo = AttesteringRepoImpl(
+        sessionFactory = sessionFactory,
+    )
     val personopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo()
     val personopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo()
     val personopplysningerRepo = PostgresPersonopplysningerRepo(
@@ -41,14 +50,31 @@ internal class TestDataHelper(
         barnUtenIdentDAO = personopplysningerBarnUtenIdentRepo,
     )
 
-    val behandlingRepo = PostgresBehandlingRepo(
-        sessionFactory = sessionFactory,
+    val saksopplysningRepo = SaksopplysningRepo()
+    val vurderingRepo = VurderingRepo()
+    val barnetilleggDAO = BarnetilleggDAO()
+    val søknadTiltakDAO = SøknadTiltakDAO()
+    val vedleggDAO = VedleggDAO()
+    val utfallsperiodeDAO = UtfallsperiodeDAO()
+    val søknadDAO = SøknadDAO(
+        barnetilleggDAO = barnetilleggDAO,
+        tiltakDAO = søknadTiltakDAO,
+        vedleggDAO = vedleggDAO,
     )
 
-    val utfallsperiodeDAO = UtfallsperiodeDAO()
+    val behandlingRepo = PostgresBehandlingRepo(
+        sessionFactory = sessionFactory,
+        saksopplysningRepo = saksopplysningRepo,
+        vurderingRepo = vurderingRepo,
+        søknadDAO = søknadDAO,
+        tiltakDAO = tiltakDAO,
+        utfallsperiodeDAO = utfallsperiodeDAO,
+    )
+
     val vedtakRepo = VedtakRepoImpl(
         behandlingRepo = behandlingRepo,
         utfallsperiodeDAO = utfallsperiodeDAO,
+        sessionFactory = sessionFactory,
     )
     val sakRepo = PostgresSakRepo(
         behandlingRepo = behandlingRepo,
@@ -56,8 +82,6 @@ internal class TestDataHelper(
         vedtakRepo = vedtakRepo,
         sessionFactory = sessionFactory,
     )
-
-    val vedleggDAO = VedleggDAO()
 }
 
 private fun migrateDatabase(dataSource: DataSource) = Flyway

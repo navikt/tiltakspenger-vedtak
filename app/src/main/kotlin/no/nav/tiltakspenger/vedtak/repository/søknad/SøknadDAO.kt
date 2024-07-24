@@ -21,9 +21,9 @@ private const val TRYGD_OG_PENSJON_FELT = "trygd_og_pensjon"
 private const val ETTERLØNN_FELT = "etterlonn"
 
 internal class SøknadDAO(
-    private val barnetilleggDAO: BarnetilleggDAO = BarnetilleggDAO(),
-    private val tiltakDAO: SøknadTiltakDAO = SøknadTiltakDAO(),
-    private val vedleggDAO: VedleggDAO = VedleggDAO(),
+    private val barnetilleggDAO: BarnetilleggDAO,
+    private val tiltakDAO: SøknadTiltakDAO,
+    private val vedleggDAO: VedleggDAO,
 ) {
 
     fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {

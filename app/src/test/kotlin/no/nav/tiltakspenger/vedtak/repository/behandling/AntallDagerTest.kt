@@ -18,10 +18,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
@@ -42,7 +42,7 @@ class AntallDagerTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
 
@@ -93,7 +93,7 @@ class AntallDagerTest {
         utbetalingService = mockk()
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
-        multiRepo = mockk(relaxed = true)
+        attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
         tiltakGateway = mockk(relaxed = true)
 
@@ -105,8 +105,9 @@ class AntallDagerTest {
             brevPublisherGateway = brevPublisherGateway,
             meldekortGrunnlagGateway = meldekortGrunnlagGateway,
             tiltakGateway = tiltakGateway,
-            multiRepo = multiRepo,
             sakRepo = sakRepo,
+            attesteringRepo = attesteringRepo,
+            sessionFactory = mockk(),
         )
     }
 

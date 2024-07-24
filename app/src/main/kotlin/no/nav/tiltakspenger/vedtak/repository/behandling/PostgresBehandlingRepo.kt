@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
@@ -28,11 +29,11 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingRepo: VurderingRepo = VurderingRepo(),
-    private val søknadDAO: SøknadDAO = SøknadDAO(),
-    private val tiltakDAO: TiltakDAO = TiltakDAO(),
-    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
+    private val saksopplysningRepo: SaksopplysningRepo,
+    private val vurderingRepo: VurderingRepo,
+    private val søknadDAO: SøknadDAO,
+    private val tiltakDAO: TiltakDAO,
+    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
@@ -96,9 +97,9 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun lagre(behandling: Behandling): Behandling {
-        return sessionFactory.withTransaction { txSession ->
-            lagre(behandling, txSession)
+    override fun lagre(behandling: Behandling, context: TransactionContext?): Behandling {
+        return sessionFactory.withTransaction(context) { tx ->
+            lagre(behandling, tx)
         }
     }
 

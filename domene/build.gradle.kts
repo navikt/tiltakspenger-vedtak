@@ -18,6 +18,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinxCoroutinesVersion")
 
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 

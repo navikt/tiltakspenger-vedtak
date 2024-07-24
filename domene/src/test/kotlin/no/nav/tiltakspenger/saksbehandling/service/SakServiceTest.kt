@@ -17,10 +17,10 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -48,7 +48,7 @@ internal class SakServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
@@ -65,7 +65,7 @@ internal class SakServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        multiRepo = mockk()
+        attesteringRepo = mockk()
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
@@ -80,8 +80,9 @@ internal class SakServiceTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,
-                multiRepo = multiRepo,
                 sakRepo = sakRepo,
+                attesteringRepo = attesteringRepo,
+                sessionFactory = mockk(),
             )
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
