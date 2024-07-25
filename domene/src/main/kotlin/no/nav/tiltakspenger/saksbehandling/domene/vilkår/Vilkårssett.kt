@@ -19,7 +19,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLiv
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.LeggTilTiltakSaksopplysningCommand
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakVilkårNy
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakVilkår
 
 /**
  * Ref til begrepskatalogen.
@@ -33,7 +33,7 @@ data class Vilkårssett(
     val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
-    val tiltakVilkår: TiltakVilkårNy,
+    val tiltakVilkår: TiltakVilkår,
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
     val alderVilkår: AlderVilkår,

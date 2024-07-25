@@ -35,16 +35,16 @@ data class KravfristVilkår private constructor(
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
-        val introSaksopplysning = KravfristSaksopplysning.Saksbehandler(
+        val kravfristSaksopplysning = KravfristSaksopplysning.Saksbehandler(
             kravdato = command.kravdato,
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
         )
         return this.copy(
-            saksbehandlerSaksopplysning = introSaksopplysning,
-            avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
+            saksbehandlerSaksopplysning = kravfristSaksopplysning,
+            avklartSaksopplysning = kravfristSaksopplysning,
+            utfall = kravfristSaksopplysning.vurderMaskinelt(vurderingsperiode),
         )
     }
 

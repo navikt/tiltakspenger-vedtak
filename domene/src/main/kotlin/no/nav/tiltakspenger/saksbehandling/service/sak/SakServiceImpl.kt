@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
+import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 
 private val LOG = KotlinLogging.logger {}
@@ -35,12 +36,14 @@ class SakServiceImpl(
     val behandlingService: BehandlingService,
     val personGateway: PersonGateway,
     val skjermingGateway: SkjermingGateway,
+    val tiltakGateway: TiltakGateway,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
         val sakPersonopplysninger = SakPersonopplysninger(
             liste = runBlocking { personGateway.hentPerson(ident) },
         ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+        val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(ident) }
         val sak: Sak =
             (
                 sakRepo.hentForIdent(
@@ -50,7 +53,7 @@ class SakServiceImpl(
                     saksnummer = sakRepo.hentNesteSaksnummer(),
                     sakPersonopplysninger = sakPersonopplysninger,
                 )
-                ).håndter(søknad = søknad)
+                ).håndter(søknad = søknad, registrerteTiltak)
 
         return sakRepo.lagre(sak).also {
             utførLegacyInnsendingFørViSletterRnR(sak, sakPersonopplysninger)

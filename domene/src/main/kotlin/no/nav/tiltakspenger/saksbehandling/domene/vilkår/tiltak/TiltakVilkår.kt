@@ -16,7 +16,7 @@ import java.time.LocalDateTime
  * @param utfall Selvom om utfallet er
  *
  */
-data class TiltakVilkårNy private constructor(
+data class TiltakVilkår private constructor(
     val registerSaksopplysning: TiltakSaksopplysning,
     val saksbehandlerSaksopplysning: TiltakSaksopplysning?,
     val avklartSaksopplysning: TiltakSaksopplysning,
@@ -32,19 +32,19 @@ data class TiltakVilkårNy private constructor(
         else -> throw IllegalStateException("Ugyldig utfall")
     }
 
-    override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
+    override val lovreferanse = Lovreferanse.TILTAKSDELTAGELSE
 
-    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilTiltakSaksopplysningCommand): TiltakVilkårNy {
-        val introSaksopplysning = TiltakSaksopplysning.Saksbehandler(
+    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilTiltakSaksopplysningCommand): TiltakVilkår {
+        val tiltakSaksopplysning = TiltakSaksopplysning.Saksbehandler(
             tiltak = command.tiltak,
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
         )
         return this.copy(
-            saksbehandlerSaksopplysning = introSaksopplysning,
-            avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(),
+            saksbehandlerSaksopplysning = tiltakSaksopplysning,
+            avklartSaksopplysning = tiltakSaksopplysning,
+            utfall = tiltakSaksopplysning.vurderMaskinelt(),
         )
     }
 
@@ -52,8 +52,8 @@ data class TiltakVilkårNy private constructor(
         fun opprett(
             søknadSaksopplysning: TiltakSaksopplysning,
             vurderingsperiode: Periode,
-        ): TiltakVilkårNy {
-            return TiltakVilkårNy(
+        ): TiltakVilkår {
+            return TiltakVilkår(
                 registerSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
@@ -71,8 +71,8 @@ data class TiltakVilkårNy private constructor(
             avklartSaksopplysning: TiltakSaksopplysning,
             vurderingsperiode: Periode,
             utfall: Periodisering<Utfall2>,
-        ): TiltakVilkårNy {
-            return TiltakVilkårNy(
+        ): TiltakVilkår {
+            return TiltakVilkår(
                 registerSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,

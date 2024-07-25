@@ -17,7 +17,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 fun Route.hentTiltakRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-
     behandlingService: BehandlingService,
 ) {
     get("$behandlingPath/{behandlingId}/vilkar/tiltak") {

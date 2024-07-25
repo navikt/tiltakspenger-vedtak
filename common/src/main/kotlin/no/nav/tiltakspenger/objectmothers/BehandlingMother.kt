@@ -12,13 +12,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -120,7 +120,7 @@ interface BehandlingMother {
         tom: LocalDate = 31.mars(2023),
         status: Tiltak.DeltakerStatus = Tiltak.DeltakerStatus(
             status = "DELTAR",
-            rettTilÅASøke = true,
+            rettTilÅSøke = true,
         ),
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,

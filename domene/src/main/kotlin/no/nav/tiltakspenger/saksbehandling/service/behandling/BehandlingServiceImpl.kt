@@ -4,11 +4,8 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
-import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -16,7 +13,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
@@ -26,7 +22,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -41,7 +36,6 @@ class BehandlingServiceImpl(
     private val utbetalingService: UtbetalingService,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
-    private val tiltakGateway: TiltakGateway,
     private val sakRepo: SakRepo,
     private val attesteringRepo: AttesteringRepo,
     private val sessionFactory: SessionFactory,
@@ -166,13 +160,7 @@ class BehandlingServiceImpl(
         if (behandling.tilstand == BehandlingTilstand.TIL_BESLUTTER) {
             behandlingRepo.lagre(behandling.startGodkjenning(utøvendeSaksbehandler))
         } else {
-            val tiltak = runBlocking { tiltakGateway.hentTiltak(behandling.søknad().personopplysninger.ident) }
-            val oppdatertBehandling = behandling.oppdaterTiltak(
-                tiltak.filter {
-                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
-                },
-            )
-            behandlingRepo.lagre(oppdatertBehandling.startBehandling(utøvendeSaksbehandler))
+            behandlingRepo.lagre(behandling.startBehandling(utøvendeSaksbehandler))
         }
     }
 
@@ -187,33 +175,5 @@ class BehandlingServiceImpl(
     ): List<Førstegangsbehandling> {
         return behandlingRepo.hentAlleForIdent(ident)
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
-    }
-
-    override fun oppdaterAntallDagerPåTiltak(
-        behandlingId: BehandlingId,
-        tiltakId: TiltakId,
-        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
-        saksbehandler: Saksbehandler,
-    ) {
-        val behandling = hentBehandling(behandlingId)
-        val oppdatertBehandling = behandling.oppdaterAntallDager(
-            tiltakId = tiltakId,
-            nyPeriodeMedAntallDager = periodeMedAntallDager,
-            saksbehandler = saksbehandler,
-        )
-        behandlingRepo.lagre(oppdatertBehandling)
-    }
-
-    override fun tilbakestillAntallDagerPåTiltak(
-        behandlingId: BehandlingId,
-        tiltakId: TiltakId,
-        saksbehandler: Saksbehandler,
-    ) {
-        val behandling = hentBehandling(behandlingId)
-        val oppdatertBehandling = behandling.tilbakestillAntallDager(
-            tiltakId = tiltakId,
-            saksbehandler = saksbehandler,
-        )
-        behandlingRepo.lagre(oppdatertBehandling)
     }
 }

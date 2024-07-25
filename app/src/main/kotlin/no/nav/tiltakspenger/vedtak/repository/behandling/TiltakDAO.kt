@@ -8,10 +8,10 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -102,7 +102,7 @@ class TiltakDAO {
                     "deltakelseTom" to tiltak.deltakelseTom,
                     "deltakelseProsent" to tiltak.deltakelseProsent,
                     "deltakerStatus" to tiltak.deltakelseStatus.status,
-                    "rettTilASoke" to tiltak.deltakelseStatus.rettTilÅASøke,
+                    "rettTilASoke" to tiltak.deltakelseStatus.rettTilÅSøke,
                     "kilde" to tiltak.kilde,
                     "tidsstempelKilde" to tiltak.registrertDato,
                     "tidsstempelHosOss" to tiltak.innhentet,
@@ -163,7 +163,7 @@ class TiltakDAO {
             deltakelseTom = localDate("deltakelse_tom"),
             deltakelseStatus = Tiltak.DeltakerStatus(
                 status = string("deltakelse_status"),
-                rettTilÅASøke = boolean("rett_til_å_søke"),
+                rettTilÅSøke = boolean("rett_til_å_søke"),
             ),
             deltakelseProsent = floatOrNull("deltakelse_prosent"),
             kilde = string("kilde"),

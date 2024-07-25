@@ -28,7 +28,6 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -106,7 +105,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val barnetilleggDAO = BarnetilleggDAO()
     private val søknadTiltakDAO = SøknadTiltakDAO()
     private val vedleggDAO = VedleggDAO()
-    private val tiltakDAO = TiltakDAO()
     private val utfallsperiodeDAO = UtfallsperiodeDAO()
     private val søknadDAO = SøknadDAO(
         barnetilleggDAO = barnetilleggDAO,
@@ -118,7 +116,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         saksopplysningRepo = saksopplysningRepo,
         vurderingRepo = vurderingRepo,
         søknadDAO = søknadDAO,
-        tiltakDAO = tiltakDAO,
         utfallsperiodeDAO = utfallsperiodeDAO,
     )
 
