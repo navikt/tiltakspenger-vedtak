@@ -95,6 +95,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                statistikkSakRepo = testDataHelper.statistikkSakRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -183,6 +184,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                statistikkSakRepo = testDataHelper.statistikkSakRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -305,6 +307,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                statistikkSakRepo = testDataHelper.statistikkSakRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

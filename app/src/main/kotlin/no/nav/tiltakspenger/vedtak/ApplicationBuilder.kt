@@ -105,8 +105,8 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
     private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
-    private val statistikkSakRepo = StatistikkSakRepoImpl()
-    private val statistikkStønadRepo = StatistikkStønadRepoImpl()
+    private val statistikkSakRepo = StatistikkSakRepoImpl(sessionFactory)
+    private val statistikkStønadRepo = StatistikkStønadRepoImpl(sessionFactory)
     private val barnetilleggDAO = BarnetilleggDAO()
     private val søknadTiltakDAO = SøknadTiltakDAO()
     private val vedleggDAO = VedleggDAO()
@@ -146,7 +146,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
-    private val statistikkService = StatistikkServiceImpl(statistikkSakRepo, statistikkStønadRepo)
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
 
     private val behandlingService = BehandlingServiceImpl(
@@ -160,6 +159,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sakRepo = sakRepo,
         attesteringRepo = attesteringRepo,
         sessionFactory = sessionFactory,
+        statistikkSakRepo = statistikkSakRepo,
     )
     private val sakService =
         SakServiceImpl(
@@ -168,7 +168,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
-            statistikkService = statistikkService,
+            statistikkSakRepo = statistikkSakRepo,
             søkerRepository = søkerRepository,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(

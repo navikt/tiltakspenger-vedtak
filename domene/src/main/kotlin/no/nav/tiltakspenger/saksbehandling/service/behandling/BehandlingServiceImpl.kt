@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
@@ -46,7 +47,7 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
     private val attesteringRepo: AttesteringRepo,
     private val sessionFactory: SessionFactory,
-//    private val statistikkSakRepo: StatistikkSakRepo,
+    private val statistikkSakRepo: StatistikkSakRepo,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId): Behandling {
@@ -138,7 +139,7 @@ class BehandlingServiceImpl(
             behandlingRepo.lagre(iverksattBehandling, tx)
             attesteringRepo.lagre(attestering, tx)
             vedtakRepo.lagreVedtak(vedtak, tx)
-//            statistikkSakRepo.lagre(statistikk, tx)
+            statistikkSakRepo.lagre(statistikk, tx)
 
             runBlocking { utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak) }
         }

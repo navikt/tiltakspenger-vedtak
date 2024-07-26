@@ -2,18 +2,18 @@ package no.nav.tiltakspenger.vedtak.repository.statistikk.stønad
 
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkStønadDTO
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
-internal class StatistikkStønadRepoImpl() : StatistikkStønadRepo, StatistikkStønadRepoIntern {
-    override fun lagre(dto: StatistikkStønadDTO) {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                lagre(dto, txSession)
-            }
+internal class StatistikkStønadRepoImpl(
+    private val sessionFactory: PostgresSessionFactory,
+) : StatistikkStønadRepo, StatistikkStønadDAO {
+    override fun lagre(dto: StatistikkStønadDTO, context: TransactionContext?) {
+        sessionFactory.withTransaction(context) { tx ->
+            lagre(dto, tx)
         }
     }
 

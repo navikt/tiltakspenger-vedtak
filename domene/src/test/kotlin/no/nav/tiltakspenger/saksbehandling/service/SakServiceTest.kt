@@ -25,6 +25,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
@@ -55,7 +56,7 @@ internal class SakServiceTest {
     private lateinit var personGateway: PersonGateway
     private lateinit var skjermingGateway: SkjermingGateway
     private lateinit var søkerRepository: SøkerRepository
-    private lateinit var statistikkService: StatistikkService
+    private lateinit var statistikkSakRepo: StatistikkSakRepo
 
     @BeforeEach
     fun setup() {
@@ -72,7 +73,7 @@ internal class SakServiceTest {
         personGateway = mockk(relaxed = true)
         skjermingGateway = mockk(relaxed = true)
         søkerRepository = mockk(relaxed = true)
-        statistikkService = mockk(relaxed = true)
+        statistikkSakRepo = mockk(relaxed = true)
         behandlingService =
             BehandlingServiceImpl(
                 behandlingRepo = behandlingRepo,
@@ -85,6 +86,7 @@ internal class SakServiceTest {
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
                 sessionFactory = mockk(),
+                statistikkSakRepo = statistikkSakRepo,
             )
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
@@ -93,7 +95,7 @@ internal class SakServiceTest {
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
-            statistikkService = statistikkService,
+            statistikkSakRepo = statistikkSakRepo,
         )
     }
 

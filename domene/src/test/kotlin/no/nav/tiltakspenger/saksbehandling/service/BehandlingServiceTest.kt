@@ -42,6 +42,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -64,6 +65,7 @@ internal class BehandlingServiceTest {
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sessionFactory: TestSessionFactory
+    private lateinit var statistikkSakRepo: StatistikkSakRepo
 
     @BeforeEach
     fun setup() {
@@ -77,6 +79,7 @@ internal class BehandlingServiceTest {
         attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
         sessionFactory = TestSessionFactory()
+        statistikkSakRepo = mockk(relaxed = true)
 
         behandlingService =
             BehandlingServiceImpl(
@@ -90,6 +93,7 @@ internal class BehandlingServiceTest {
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
                 sessionFactory = sessionFactory,
+                statistikkSakRepo = statistikkSakRepo,
             )
     }
 

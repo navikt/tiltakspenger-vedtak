@@ -113,6 +113,7 @@ class KravfristRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                statistikkSakRepo = testDataHelper.statistikkSakRepo,
             )
 
             testApplication {
@@ -181,6 +182,7 @@ class KravfristRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                statistikkSakRepo = testDataHelper.statistikkSakRepo,
             )
 
             testApplication {

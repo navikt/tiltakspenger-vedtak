@@ -22,8 +22,10 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -35,7 +37,7 @@ class SakServiceImpl(
     val behandlingService: BehandlingService,
     val personGateway: PersonGateway,
     val skjermingGateway: SkjermingGateway,
-    val statistikkService: StatistikkService,
+    val statistikkSakRepo: StatistikkSakRepo,
 ) : SakService {
     override fun motta(søknad: Søknad): Sak {
         val ident = søknad.personopplysninger.ident
@@ -53,15 +55,15 @@ class SakServiceImpl(
                 )
                 ).håndter(søknad = søknad)
 
-        return sakRepo.lagre(sak).also {
-            statistikkService.lagreOpprettBehandling(
-                sak = sak.sakDetaljer,
-                behandling = sak.behandlinger.single {
-                    it.søknad().id == søknad.id
+        return sakRepo.lagre(sak).also { lagretSak ->
+            val statistikk = opprettBehandlingMapper(
+                sak = lagretSak.sakDetaljer,
+                behandling = lagretSak.behandlinger.single { behandling ->
+                    behandling.søknad().id == søknad.id
                 } as Førstegangsbehandling,
             )
-
-            utførLegacyInnsendingFørViSletterRnR(sak, sakPersonopplysninger)
+            statistikkSakRepo.lagre(statistikk)
+            utførLegacyInnsendingFørViSletterRnR(lagretSak, sakPersonopplysninger)
         }
     }
 

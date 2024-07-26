@@ -24,6 +24,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -45,6 +46,7 @@ class AntallDagerTest {
     private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
+    private lateinit var statistikkSakRepo: StatistikkSakRepo
 
     private val saksbehandlerMedTilgang = ObjectMother.saksbehandler()
 
@@ -96,6 +98,7 @@ class AntallDagerTest {
         attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
         tiltakGateway = mockk(relaxed = true)
+        statistikkSakRepo = mockk(relaxed = true)
 
         behandlingService = BehandlingServiceImpl(
             behandlingRepo = behandlingRepo,
@@ -108,6 +111,7 @@ class AntallDagerTest {
             sakRepo = sakRepo,
             attesteringRepo = attesteringRepo,
             sessionFactory = mockk(),
+            statistikkSakRepo = statistikkSakRepo,
         )
     }
 
