@@ -29,7 +29,7 @@ fun Route.hentKvpRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.kvpVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.kvpVilkår.toDTO(),
             )
         }
     }

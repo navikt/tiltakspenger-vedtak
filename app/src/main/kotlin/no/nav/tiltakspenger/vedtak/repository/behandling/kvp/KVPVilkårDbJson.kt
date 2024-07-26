@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.kvp
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDomain
 
 /**
  * Har ansvar for å serialisere/deserialisere KvpVilkår til og fra json for lagring i database.

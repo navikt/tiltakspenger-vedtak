@@ -18,15 +18,19 @@ fun Route.søknadRoutes(
 ) {
     post(søknadpath) {
         LOG.info { "Vi har mottatt søknad fra river" }
-        val søknadDTO = call.receive<SøknadDTO>()
+        try {
+            val søknadDTO = call.receive<SøknadDTO>()
 
-        // Oppretter sak med søknad og lagrer den
-        sakService.motta(
-            søknad = SøknadDTOMapper.mapSøknad(
-                dto = søknadDTO,
-                innhentet = søknadDTO.opprettet,
-            ),
-        )
+            // Oppretter sak med søknad og lagrer den
+            sakService.motta(
+                søknad = SøknadDTOMapper.mapSøknad(
+                    dto = søknadDTO,
+                    innhentet = søknadDTO.opprettet,
+                ),
+            )
+        } catch (exception: Exception) {
+            SECURELOG.error { "Feil ved mottak av søknad fra rivers. $exception" }
+        }
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
     }

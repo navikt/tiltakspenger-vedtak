@@ -21,7 +21,7 @@ create TABLE sak
 (
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,
-    saksnummer              VARCHAR                  NOT NULL,
+    saksnummer              VARCHAR                  NOT NULL UNIQUE,
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -304,15 +304,3 @@ CREATE TABLE stønadsdager_tiltak
     avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
     saksbehandler       VARCHAR                  NULL
 );
-
-CREATE TABLE kravdato_saksopplysning
-(
-    id                  VARCHAR PRIMARY KEY,
-    kravdato            DATE                     NOT NULL,
-    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
-    saksbehandler       VARCHAR                  NULL,
-    datakilde           VARCHAR                  NOT NULL
-);
-
-create sequence sak_løpenr start 1001;

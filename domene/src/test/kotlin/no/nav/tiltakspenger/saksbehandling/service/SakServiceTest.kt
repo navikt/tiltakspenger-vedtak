@@ -15,10 +15,12 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -30,7 +32,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.StatistikkService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakService
 import org.junit.jupiter.api.AfterEach
@@ -47,7 +48,7 @@ internal class SakServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
@@ -65,7 +66,7 @@ internal class SakServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        multiRepo = mockk()
+        attesteringRepo = mockk()
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
@@ -81,8 +82,9 @@ internal class SakServiceTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,
-                multiRepo = multiRepo,
                 sakRepo = sakRepo,
+                attesteringRepo = attesteringRepo,
+                sessionFactory = mockk(),
             )
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
@@ -102,10 +104,6 @@ internal class SakServiceTest {
 
     @Test
     fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
-
         val søknad = nySøknad(
             tiltak = søknadTiltak(
                 deltakelseFom = 1.januar(2023),
@@ -113,6 +111,10 @@ internal class SakServiceTest {
             ),
         )
         val ident = søknad.personopplysninger.ident
+        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
         every { behandlingRepo.hent(any()) } returns behandling()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
@@ -129,10 +131,6 @@ internal class SakServiceTest {
 
     @Test
     fun `sjekk at skjerming blir satt riktig`() {
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
-
         val søknad = nySøknad(
             tiltak = søknadTiltak(
                 deltakelseFom = 1.januar(2023),
@@ -140,10 +138,17 @@ internal class SakServiceTest {
             ),
         )
         val ident = søknad.personopplysninger.ident
+        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+
         val barnIdent = "barnIdent"
         coEvery { skjermingGateway.erSkjermetPerson(ident) } returns true
         coEvery { skjermingGateway.erSkjermetPerson(barnIdent) } returns false
-        coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident), barn(ident = barnIdent))
+        coEvery { personGateway.hentPerson(any()) } returns listOf(
+            personopplysningKjedeligFyr(ident = ident),
+            barn(ident = barnIdent),
+        )
         every { behandlingRepo.lagre(any()) } returnsArgument 0
         every { behandlingRepo.hent(any()) } returns behandling()
 
@@ -157,10 +162,6 @@ internal class SakServiceTest {
     @Disabled("kew: Disabler testen siden vi ikke skal tenke på 2 søknader per nå.")
     @Test
     fun `søknad som overlapper med eksisterende sak, legger søknaden til i behandlingen`() {
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns emptyList()
-        every { sakRepo.lagre(any()) } returnsArgument 0
-        every { sakRepo.hentNesteLøpenr() } returns "1"
-
         val søknad = nySøknad(
             journalpostId = "søknad1",
             tiltak = søknadTiltak(
@@ -170,11 +171,15 @@ internal class SakServiceTest {
             opprettet = 1.januarDateTime(2023),
         )
         val ident = søknad.personopplysninger.ident
+        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+        every { sakRepo.lagre(any()) } returnsArgument 0
+        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
         every { behandlingRepo.lagre(any()) } returnsArgument 0
         val sak = sakService.motta(søknad)
 
-        every { sakRepo.hentForIdentMedPeriode(any(), any()) } returns listOf(sak)
+        every { sakRepo.hentForIdent(any()) } returns Saker(ident, listOf(sak))
 
         val søknad2 = nySøknad(
             journalpostId = "søknad2",

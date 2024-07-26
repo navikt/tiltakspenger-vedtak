@@ -3,23 +3,22 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toVilkårssett
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -30,27 +29,25 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo = SaksopplysningRepo(),
-    private val vurderingRepo: VurderingRepo = VurderingRepo(),
-    private val søknadDAO: SøknadDAO = SøknadDAO(),
-    private val tiltakDAO: TiltakDAO = TiltakDAO(),
-    private val utfallsperiodeDAO: UtfallsperiodeDAO = UtfallsperiodeDAO(),
-    private val kravdatoSaksopplysningRepo: KravdatoSaksopplysningRepo = KravdatoSaksopplysningRepo(),
+    private val saksopplysningRepo: SaksopplysningRepo,
+    private val vurderingRepo: VurderingRepo,
+    private val søknadDAO: SøknadDAO,
+    private val tiltakDAO: TiltakDAO,
+    private val utfallsperiodeDAO: UtfallsperiodeDAO,
+    private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandling,
-                        mapOf(
-                            "id" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentBehandling,
+                    mapOf(
+                        "id" to behandlingId.toString(),
+                    ),
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asSingle,
+            )
         }
     }
 
@@ -59,75 +56,48 @@ internal class PostgresBehandlingRepo(
     }
 
     override fun hentAlle(): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentAlleBehandlinger,
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentAlleBehandlinger,
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asList,
+            )
         }
     }
 
     override fun hentAlleForIdent(ident: String): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForIdent,
-                        mapOf(
-                            "ident" to ident,
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentBehandlingForIdent,
+                    mapOf(
+                        "ident" to ident,
+                    ),
+                ).map { row ->
+                    row.toBehandling(txSession)
+                }.asList,
+            )
         }
     }
 
-    override fun hentForSak(sakId: SakId): List<Førstegangsbehandling> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForSak,
-                        mapOf(
-                            "sakId" to sakId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asList,
-                )
-            }
-        }
+    override fun hentForSak(sakId: SakId, tx: TransactionalSession): List<Førstegangsbehandling> {
+        return tx.run(
+            queryOf(
+                sqlHentBehandlingForSak,
+                mapOf(
+                    "sakId" to sakId.toString(),
+                ),
+            ).map { row ->
+                row.toBehandling(tx)
+            }.asList,
+        )
     }
 
-    override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentBehandlingForJournalpostId,
-                        mapOf(
-                            "journalpostId" to journalpostId,
-                        ),
-                    ).map { row ->
-                        row.toBehandling(txSession)
-                    }.asSingle,
-                )
-            }
-        }
-    }
-
-    override fun lagre(behandling: Behandling): Behandling {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                lagre(behandling, txSession)
-            }
+    override fun lagre(behandling: Behandling, context: TransactionContext?): Behandling {
+        return sessionFactory.withTransaction(context) { tx ->
+            lagre(behandling, tx)
         }
     }
 
@@ -145,7 +115,6 @@ internal class PostgresBehandlingRepo(
             tiltakDAO.lagre(behandling.id, behandling.tiltak.tiltak, tx)
             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
             utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
-            kravdatoSaksopplysningRepo.lagre(behandling.id, behandling.kravdatoSaksopplysninger, tx)
         }
     }
 
@@ -241,14 +210,6 @@ internal class PostgresBehandlingRepo(
         val vilkårssett = string("vilkårssett").toVilkårssett(
             saksopplysninger = saksopplysningRepo.hent(id, txSession),
             vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-            kravdatoSaksopplysninger = KravdatoSaksopplysninger(
-                kravdatoSaksopplysningFraSøknad = kravdatoSaksopplysningRepo.hentKravdatoFraSøknad(id, txSession),
-                kravdatoSaksopplysningFraSaksbehandler = kravdatoSaksopplysningRepo.hentKravdatoFraSaksbehandler(
-                    behandlingId = id,
-                    txSession = txSession,
-                ),
-                avklartKravdatoSaksopplysning = kravdatoSaksopplysningRepo.hentAvklartKravdato(id, txSession),
-            ),
             utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
         )
         return Førstegangsbehandling(

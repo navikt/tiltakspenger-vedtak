@@ -26,10 +26,12 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
+        personopplysningFødselsdato: LocalDate = 1.januar(2000),
     ): Førstegangsbehandling =
         Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
+            fødselsdato = personopplysningFødselsdato,
         )
 
     fun saksopplysning(

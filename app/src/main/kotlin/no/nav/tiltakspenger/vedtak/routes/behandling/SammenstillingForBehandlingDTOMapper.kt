@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -10,10 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.kravdato.KravdatoSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
@@ -22,21 +18,17 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallForPeriodeDTO
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtfallsperiodeDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AlderssaksopplysningDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.RegistrertTiltakDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.SaksopplysningUtDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.TiltaksdeltagelsesaksopplysningDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.YtelsessaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 
-object SammenstillingForBehandlingDTOMapper {
+internal object SammenstillingForBehandlingDTOMapper {
 
     fun mapSammenstillingDTO(
         behandling: Førstegangsbehandling,
@@ -48,78 +40,29 @@ object SammenstillingForBehandlingDTOMapper {
             saksbehandler = behandling.saksbehandler,
             beslutter = settBeslutter(behandling),
             vurderingsperiode = PeriodeDTO(
-                fra = behandling.vurderingsperiode.fraOgMed,
-                til = behandling.vurderingsperiode.tilOgMed,
+                fraOgMed = behandling.vurderingsperiode.fraOgMed.toString(),
+                tilOgMed = behandling.vurderingsperiode.tilOgMed.toString(),
             ),
-            søknadsdato = behandling.søknad().opprettet.toLocalDate(),
-            tiltaksdeltagelsesaksopplysninger = TiltaksdeltagelsesaksopplysningDTO(
+            tiltaksdeltagelsesaksopplysning = TiltaksdeltagelsesaksopplysningDTO(
                 vilkår = Vilkår.TILTAKSDELTAGELSE.tittel,
                 vilkårLovreferanse = Lovreferanse.TILTAKSDELTAGELSE.toDTO(),
                 saksopplysninger = behandling.tiltak.tiltak.map {
                     RegistrertTiltakDTO(
                         id = it.id.toString(),
-                        arrangør = it.gjennomføring.arrangørnavn,
                         navn = it.gjennomføring.typeNavn,
                         periode = PeriodeDTO(
-                            fra = it.deltakelseFom,
-                            til = it.deltakelseTom,
+                            fraOgMed = it.deltakelseFom.toString(),
+                            tilOgMed = it.deltakelseTom.toString(),
                         ),
                         status = it.deltakelseStatus.status,
                         kilde = it.kilde,
                         girRett = it.gjennomføring.rettPåTiltakspenger,
-                        harSøkt = true,
                         deltagelseUtfall = utledVurdertUtfall(behandling, it.id)?.utfall
                             ?: Utfall.KREVER_MANUELL_VURDERING,
-                        begrunnelse = utledVurdertUtfall(behandling, it.id)?.detaljer
-                            ?: "Fant ikke noe utfall for tiltaksdeltagelse",
-                    )
-                },
-            ),
-            stønadsdager = behandling.tiltak.tiltak.map { settAntallDagerSaksopplysninger(it) },
-            alderssaksopplysning = behandling.saksopplysninger()
-                .filter { saksopplysning -> saksopplysning.vilkår == Vilkår.ALDER }.map { it ->
-                    AlderssaksopplysningDTO(
-                        periode = PeriodeDTO(fra = it.fom, til = it.tom),
-                        kilde = it.kilde.navn,
-                        detaljer = it.detaljer,
-                        vilkår = it.vilkår.tittel,
-                        vilkårTittel = it.vilkår.flateTittel,
-                        utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                        vilkårLovreferanse = it.vilkår.lovReferanse.map {
-                            LovreferanseDTO(
-                                lovverk = it.lovverk,
-                                paragraf = it.paragraf,
-                                beskrivelse = it.beskrivelse,
-                            )
-                        },
-                        grunnlag = 1.januar(2000), // Dette må vi hente fra noe sted. Kommer senere
                     )
                 }.first(),
-            ytelsessaksopplysninger = YtelsessaksopplysningerDTO(
-                vilkår = "ANDRE_YTELSER",
-                vilkårLovreferanse = LovreferanseDTO(
-                    lovverk = Lovreferanse.AAP.lovverk,
-                    paragraf = Lovreferanse.AAP.paragraf,
-                    beskrivelse = Lovreferanse.AAP.beskrivelse,
-                ),
-                saksopplysninger = behandling.saksopplysninger()
-                    .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER }
-                    .map {
-                        SaksopplysningUtDTO(
-                            periode = PeriodeDTO(fra = it.fom, til = it.tom),
-                            kilde = it.kilde.navn,
-                            detaljer = it.detaljer,
-                            saksopplysning = it.vilkår.tittel,
-                            saksopplysningTittel = it.vilkår.flateTittel,
-                            utfall = settUtfall(behandling = behandling, saksopplysning = it),
-                        )
-                    },
-                samletUtfall = settSamletUtfallForSaksopplysninger(
-                    behandling = behandling,
-                    saksopplysninger = behandling.saksopplysninger()
-                        .filter { saksopplysning -> saksopplysning.vilkår != Vilkår.ALDER },
-                ),
             ),
+            stønadsdager = behandling.tiltak.tiltak.map { settAntallDagerSaksopplysninger(it) },
             personopplysninger = personopplysninger.søkere().map {
                 PersonopplysningerDTO(
                     ident = it.ident,
@@ -130,12 +73,7 @@ object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             }.first(),
-            behandlingsteg = when (behandling.tilstand) {
-                BehandlingTilstand.IVERKSATT -> "iverksatt"
-                BehandlingTilstand.TIL_BESLUTTER -> "tilBeslutter"
-                BehandlingTilstand.VILKÅRSVURDERT -> "vilkårsvurdert"
-                BehandlingTilstand.OPPRETTET -> "opprettet"
-            },
+            behandlingTilstand = behandling.tilstand,
             status = finnStatus(behandling),
             endringslogg = attesteringer.map { att ->
                 EndringDTO(
@@ -151,66 +89,9 @@ object SammenstillingForBehandlingDTOMapper {
             samletUtfall = settSamletUtfallForUtfallsperioder(
                 utfallsperioder = behandling.utfallsperioder,
             ),
-            utfallsperioder = behandling.utfallsperioder.map {
-                UtfallsperiodeDTO(
-                    fom = it.fom,
-                    tom = it.tom,
-                    antallBarn = it.antallBarn,
-                    utfall = when (it.utfall) {
-                        UtfallForPeriode.GIR_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
-                        UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER -> UtfallForPeriodeDTO.GIR_IKKE_RETT_TILTAKSPENGER
-                        UtfallForPeriode.KREVER_MANUELL_VURDERING -> UtfallForPeriodeDTO.KREVER_MANUELL_VURDERING
-                    },
-                )
-            },
-            kravdatoSaksopplysninger = mapKravdatoSaksopplysningerDTO(
-                kravdatoSaksopplysninger = behandling.kravdatoSaksopplysninger,
-                vilkårsvurderinger = behandling.vilkårsvurderinger,
-            ),
+            vilkårsett = behandling.vilkårssett.toDTO(),
         )
     }
-
-    private fun mapKravdatoSaksopplysningerDTO(
-        kravdatoSaksopplysninger: KravdatoSaksopplysninger,
-        vilkårsvurderinger: List<Vurdering>,
-    ): SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO {
-        val opprinneligSøknadstidspunkt = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSøknad
-        val søknadstidspunktFraSaksbehandler = kravdatoSaksopplysninger.kravdatoSaksopplysningFraSaksbehandler
-        return SammenstillingForBehandlingDTO.KravdatoSaksopplysningerDTO(
-            samletUtfall = hentUtfallForVilkår(
-                Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV,
-                vilkårsvurderinger
-                    .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV },
-            ).toString(),
-            opprinneligKravdato = mapKravdatoSaksopplysningDTO(opprinneligSøknadstidspunkt!!),
-            kravdatoFraSaksbehandler = if (søknadstidspunktFraSaksbehandler != null) {
-                mapKravdatoSaksopplysningDTO(
-                    søknadstidspunktFraSaksbehandler,
-                )
-            } else {
-                null
-            },
-            vurderinger = vilkårsvurderinger
-                .filter { it.vilkår === Vilkår.FRIST_FOR_FRAMSETTING_AV_KRAV }
-                .map { it.toVurderingDTO() },
-            lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV.toDTO(),
-        )
-    }
-
-    private fun mapKravdatoSaksopplysningDTO(kravdatoSaksopplysning: KravdatoSaksopplysning): SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO =
-        SammenstillingForBehandlingDTO.KravdatoSaksopplysningDTO(
-            kravdato = kravdatoSaksopplysning.kravdato,
-            kilde = kravdatoSaksopplysning.kilde.toString(),
-        )
-
-    private fun Vurdering.toVurderingDTO(): SammenstillingForBehandlingDTO.VurderingDTO =
-        SammenstillingForBehandlingDTO.VurderingDTO(
-            periode = PeriodeDTO(
-                fra = this.fom!!,
-                til = this.tom!!,
-            ),
-            utfall = this.utfall.toString(),
-        )
 
     private fun utledVurdertUtfall(behandling: Behandling, tiltakId: TiltakId): Vurdering? {
         return when (behandling.tilstand) {
@@ -243,14 +124,12 @@ object SammenstillingForBehandlingDTOMapper {
         val antallDagerSaksopplysninger = tiltak.antallDagerSaksopplysninger
 
         return AntallDagerSaksopplysningerDTO(
-            avklartAntallDager = antallDagerSaksopplysninger.avklartAntallDager.map { settAntallDagerSaksopplysning(it) },
-            antallDagerSaksopplysningerFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
+            antallDagerSaksopplysningFraRegister = antallDagerSaksopplysninger.antallDagerSaksopplysningerFraRegister.map {
                 settAntallDagerSaksopplysning(
                     it,
                 )
             }.first(),
             tiltak = tiltak.gjennomføring.typeNavn,
-            arrangør = tiltak.gjennomføring.arrangørnavn,
             tiltakId = tiltak.id.toString(),
         )
     }
@@ -260,8 +139,8 @@ object SammenstillingForBehandlingDTOMapper {
             antallDager = saksopplysning.verdi.antallDager,
             kilde = saksopplysning.verdi.kilde.toString(),
             periode = PeriodeDTO(
-                fra = saksopplysning.periode.fraOgMed,
-                til = saksopplysning.periode.tilOgMed,
+                fraOgMed = saksopplysning.periode.fraOgMed.toString(),
+                tilOgMed = saksopplysning.periode.tilOgMed.toString(),
             ),
         )
 

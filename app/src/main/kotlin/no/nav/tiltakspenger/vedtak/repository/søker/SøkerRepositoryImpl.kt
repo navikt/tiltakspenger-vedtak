@@ -3,18 +3,16 @@ package no.nav.tiltakspenger.vedtak.repository.søker
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.nå
-import no.nav.tiltakspenger.libs.persistering.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
-import no.nav.tiltakspenger.vedtak.db.DataSource
 import org.intellij.lang.annotations.Language
 
 class SøkerRepositoryImpl(
     private val sessionFactory: PostgresSessionFactory,
-    private val personopplysningerDAO: PersonopplysningerDAO = PersonopplysningerDAO(),
+    private val personopplysningerDAO: PersonopplysningerDAO,
 ) : SøkerRepository {
 
     override fun findByIdent(ident: String): Søker? {
@@ -38,19 +36,17 @@ class SøkerRepositoryImpl(
     }
 
     override fun lagre(søker: Søker) {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                if (søkerFinnes(søker.søkerId, txSession)) {
-                    oppdaterSøker(søker, txSession)
-                } else {
-                    lagreSøker(søker, txSession)
-                }
-                personopplysningerDAO.lagre(
-                    søkerId = søker.søkerId,
-                    personopplysninger = søker.personopplysninger,
-                    txSession = txSession,
-                )
+        sessionFactory.withTransaction { txSession ->
+            if (søkerFinnes(søker.søkerId, txSession)) {
+                oppdaterSøker(søker, txSession)
+            } else {
+                lagreSøker(søker, txSession)
             }
+            personopplysningerDAO.lagre(
+                søkerId = søker.søkerId,
+                personopplysninger = søker.personopplysninger,
+                txSession = txSession,
+            )
         }
     }
 

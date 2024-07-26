@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksoppl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -61,7 +60,7 @@ fun Route.oppdaterKvpRoute(
         ).let {
             call.respond(
                 status = HttpStatusCode.Created,
-                message = it.vilkårssett.kvpVilkår.toDTO(it.vurderingsperiode.toDTO()),
+                message = it.vilkårssett.kvpVilkår.toDTO(),
             )
         }
     }

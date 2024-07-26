@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.0"
-val felleslibVersion = "0.0.146"
+val felleslibVersion = "0.0.159"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -25,7 +25,9 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
 
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
@@ -70,7 +72,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.15.2")
+    implementation("org.flywaydb:flyway-database-postgresql:10.16.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -92,6 +94,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.12.3")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.13.0")
     testImplementation(project(":common"))
 }

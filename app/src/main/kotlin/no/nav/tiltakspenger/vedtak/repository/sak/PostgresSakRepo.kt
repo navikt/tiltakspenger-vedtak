@@ -3,35 +3,36 @@ package no.nav.tiltakspenger.vedtak.repository.sak
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import kotliquery.sessionOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
-import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.vedtak.db.DataSource
-import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingDAO
+import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakDAO
 import org.intellij.lang.annotations.Language
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class PostgresSakRepo(
-    private val behandlingRepo: BehandlingRepo = PostgresBehandlingRepo(),
-    private val personopplysningerRepo: PostgresPersonopplysningerRepo = PostgresPersonopplysningerRepo(),
-    private val vedtakRepo: VedtakRepo = VedtakRepoImpl(),
+    private val behandlingRepo: BehandlingDAO,
+    private val personopplysningerRepo: PostgresPersonopplysningerRepo,
+    private val vedtakDAO: VedtakDAO,
+    private val sessionFactory: PostgresSessionFactory,
 ) : SakRepo {
-    override fun hentForIdentMedPeriode(fnr: String, periode: Periode): List<Sak> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
+    override fun hentForIdent(fnr: String): Saker {
+        return Saker(
+            ident = fnr,
+            saker = sessionFactory.withTransaction { txSession ->
                 txSession.run(
                     queryOf(
                         sqlHentSakerForIdent,
@@ -40,109 +41,81 @@ internal class PostgresSakRepo(
                         row.toSak(txSession)
                     }.asList,
                 )
-            }
-        }.filter {
-            it.periode.overlapperMed(periode)
-        }
-    }
-
-    override fun hentForIdent(fnr: String): List<Sak> {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentSakerForIdent,
-                        mapOf("ident" to fnr),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asList,
-                )
-            }
-        }
+            },
+        )
     }
 
     override fun hentForSaksnummer(saksnummer: String): Sak? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentSakForSaksnummer,
-                        mapOf("saksnummer" to saksnummer),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentSakForSaksnummer,
+                    mapOf("saksnummer" to saksnummer),
+                ).map { row ->
+                    row.toSak(txSession)
+                }.asSingle,
+            )
         }
     }
 
     override fun hentForJournalpostId(journalpostId: String): Sak? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentForJournalpost,
-                        mapOf(
-                            "journalpostId" to journalpostId,
-                        ),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentForJournalpost,
+                    mapOf(
+                        "journalpostId" to journalpostId,
+                    ),
+                ).map { row ->
+                    row.toSak(txSession)
+                }.asSingle,
+            )
         }
     }
 
     override fun hent(sakId: SakId): Sak? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHent,
-                        mapOf("id" to sakId.toString()),
-                    ).map { row ->
-                        row.toSak(txSession)
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHent,
+                    mapOf("id" to sakId.toString()),
+                ).map { row ->
+                    row.toSak(txSession)
+                }.asSingle,
+            )
         }
     }
 
     override fun hentSakDetaljer(sakId: SakId): TynnSak? {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHent,
-                        mapOf("id" to sakId.toString()),
-                    ).map { row ->
-                        row.toSakDetaljer()
-                    }.asSingle,
-                )
-            }
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHent,
+                    mapOf("id" to sakId.toString()),
+                ).map { row ->
+                    row.toSakDetaljer()
+                }.asSingle,
+            )
         }
     }
 
     override fun lagre(sak: Sak): Sak {
-        return sessionOf(DataSource.hikariDataSource).use { session ->
-            session.transaction { txSession ->
-                val sistEndret = hentSistEndret(sak.id, txSession)
-                val opprettetSak = if (sistEndret == null) {
-                    opprettSak(sak, txSession)
-                } else {
-                    oppdaterSak(sistEndret, sak, txSession)
-                }
-                personopplysningerRepo.lagre(
-                    sakId = sak.id,
-                    personopplysninger = sak.personopplysninger,
-                    txSession = txSession,
-                )
-                opprettetSak
-            }.also { sak ->
-                sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {
-                    behandlingRepo.lagre(it)
-                }
+        return sessionFactory.withTransaction { txSession ->
+            val sistEndret = hentSistEndret(sak.id, txSession)
+            val opprettetSak = if (sistEndret == null) {
+                opprettSak(sak, txSession)
+            } else {
+                oppdaterSak(sistEndret, sak, txSession)
             }
+            personopplysningerRepo.lagre(
+                sakId = sak.id,
+                personopplysninger = sak.personopplysninger,
+                txSession = txSession,
+            )
+            sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {
+                behandlingRepo.lagre(it, txSession)
+            }
+            opprettetSak
         }
     }
 
@@ -201,39 +174,29 @@ internal class PostgresSakRepo(
         return sak
     }
 
-    override fun hentNesteLøpenr(): String {
-        return sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlHentNesteLøpenummer,
-                    ).map { row ->
-                        row.int("løpenr").toString()
-                    }.asSingle,
-                )
-            }
-        } ?: throw IllegalStateException("Kunne ikke hente neste løpenummer")
+    override fun hentNesteSaksnummer(): Saksnummer {
+        val iDag = LocalDate.now()
+        val saksnummerPrefiks = Saksnummer.genererSaksnummerPrefiks(iDag)
+        return sessionFactory.withTransaction { txSession ->
+            txSession.run(
+                queryOf(
+                    sqlHentNesteLøpenummer,
+                    mapOf("saksnummerprefiks" to "$saksnummerPrefiks%"),
+                ).map { row ->
+                    row.string("saksnummer")
+                        .let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
+                }.asSingle,
+            )
+        } ?: Saksnummer.genererSaknummer(dato = iDag)
     }
 
-    override fun resetLøpenummer() {
-        sessionOf(DataSource.hikariDataSource).use {
-            it.transaction { txSession ->
-                txSession.run(
-                    queryOf(
-                        sqlResetLøpenummer,
-                    ).asExecute,
-                )
-            }
-        }
-    }
-
-    private fun Row.toSak(txSession: TransactionalSession): Sak {
+    private fun Row.toSak(tx: TransactionalSession): Sak {
         val id = SakId.fromDb(string("id"))
         return Sak(
             sakDetaljer = toSakDetaljer(),
-            behandlinger = behandlingRepo.hentForSak(id),
-            personopplysninger = personopplysningerRepo.hent(id, txSession),
-            vedtak = vedtakRepo.hentVedtakForSak(id),
+            behandlinger = behandlingRepo.hentForSak(id, tx),
+            personopplysninger = personopplysningerRepo.hent(id, tx),
+            vedtak = vedtakDAO.hentVedtakForSak(id, tx),
         )
     }
 
@@ -310,9 +273,11 @@ internal class PostgresSakRepo(
 
     @Language("SQL")
     private val sqlHentNesteLøpenummer =
-        """select nextval('sak_løpenr') as løpenr""".trimIndent()
-
-    @Language("SQL")
-    private val sqlResetLøpenummer =
-        """alter sequence sak_løpenr restart""".trimIndent()
+        """
+            SELECT saksnummer 
+            FROM sak 
+            WHERE saksnummer LIKE :saksnummerprefiks 
+            ORDER BY saksnummer DESC 
+            LIMIT 1
+        """.trimIndent()
 }

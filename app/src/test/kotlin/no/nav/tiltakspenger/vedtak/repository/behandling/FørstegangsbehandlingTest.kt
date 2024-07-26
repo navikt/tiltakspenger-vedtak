@@ -11,23 +11,18 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.felles.april
-import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.antallDagerFraSaksbehandler
-import no.nav.tiltakspenger.objectmothers.ObjectMother.fristForFramsettingAvKravVurdering
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
+import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MultiRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
@@ -48,7 +43,7 @@ class FørstegangsbehandlingTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var multiRepo: MultiRepo
+    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
 
@@ -64,7 +59,7 @@ class FørstegangsbehandlingTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        multiRepo = mockk(relaxed = true)
+        attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
 
         behandlingService =
@@ -76,8 +71,9 @@ class FørstegangsbehandlingTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 tiltakGateway = tiltakGateway,
-                multiRepo = multiRepo,
                 sakRepo = sakRepo,
+                attesteringRepo = attesteringRepo,
+                sessionFactory = mockk(),
             )
     }
 
@@ -271,61 +267,5 @@ class FørstegangsbehandlingTest {
                 saksbehandler = saksbehandlerUtenTilgang,
             )
         }
-    }
-
-    @Test
-    fun `når man vilkårsvurderer frist om krav til framsatt dato skal man, innenfor vurderingsperioden, innvilge vilkåret fra søknadsdato og måneden den inngår i, pluss 3 måneder tilbake i tid`() {
-        val behandlingMock = ObjectMother.behandling(
-            søknad = nySøknad(
-                opprettet = 30.april(2026).atStartOfDay(),
-                periode = Periode(fraOgMed = 1.januar(2026), tilOgMed = 25.april(2026)),
-            ),
-        )
-        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
-        vurderinger.size shouldBe 1
-        vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fraOgMed,
-            tom = behandlingMock.vurderingsperiode.tilOgMed,
-            utfall = Utfall.OPPFYLT,
-        )
-    }
-
-    @Test
-    fun `når man vilkårsvurderer frist om krav til framsatt dato skal hele vurderingsperioden avslås dersom den, fra søknadsdato, slutter tidligere enn 3 måneder tilbake i tid + søknadsdatoens inneværende måned`() {
-        val behandlingMock = ObjectMother.behandling(
-            søknad = nySøknad(
-                opprettet = 1.april(2026).atStartOfDay(),
-                periode = Periode(fraOgMed = 1.desember(2025), tilOgMed = 31.desember(2025)),
-            ),
-        )
-        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
-        vurderinger.size shouldBe 1
-        vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fraOgMed,
-            tom = behandlingMock.vurderingsperiode.tilOgMed,
-            utfall = Utfall.IKKE_OPPFYLT,
-        )
-    }
-
-    @Test
-    fun `når man vilkårsvurderer frist om krav til framsatt dato skal man avslå i de delene av vurderingsperioden som går lengre tilbake i tid enn 3 måneder + søknadsdatoens inneværende måned`() {
-        val behandlingMock = ObjectMother.behandling(
-            søknad = nySøknad(
-                opprettet = 30.april(2026).atStartOfDay(),
-                periode = Periode(fraOgMed = 25.desember(2025), tilOgMed = 25.april(2026)),
-            ),
-        )
-        val vurderinger = behandlingMock.vilkårsvurderFristForFramsettingAvKrav()
-        vurderinger.size shouldBe 2
-        vurderinger[0] shouldBe fristForFramsettingAvKravVurdering(
-            fom = behandlingMock.vurderingsperiode.fraOgMed,
-            tom = 31.desember(2025),
-            utfall = Utfall.IKKE_OPPFYLT,
-        )
-        vurderinger[1] shouldBe fristForFramsettingAvKravVurdering(
-            fom = 1.januar(2026),
-            tom = behandlingMock.vurderingsperiode.tilOgMed,
-            utfall = Utfall.OPPFYLT,
-        )
     }
 }

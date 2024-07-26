@@ -1,7 +1,7 @@
 val jacksonVersion = "2.17.2"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.146"
+val felleslibVersion = "0.0.159"
 val kotlinxCoroutinesVersion = "1.8.1"
 
 dependencies {
@@ -18,6 +18,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinxCoroutinesVersion")
 
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 

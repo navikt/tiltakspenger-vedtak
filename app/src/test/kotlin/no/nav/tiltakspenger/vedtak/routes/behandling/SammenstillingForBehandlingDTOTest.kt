@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak.Gjennomføring
@@ -19,13 +18,13 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysn
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.service.søker.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.hentUtfallForVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settAntallDagerSaksopplysninger
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settBeslutter
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settSamletUtfallForSaksopplysninger
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.settUtfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -247,8 +246,8 @@ class SammenstillingForBehandlingDTOTest {
         val antallDagerMock = AntallDagerDTO(
             antallDager = 2,
             periode = PeriodeDTO(
-                fra = LocalDate.MIN,
-                til = LocalDate.MAX,
+                fraOgMed = LocalDate.MIN.toString(),
+                tilOgMed = LocalDate.MAX.toString(),
             ),
             kilde = Kilde.ARENA.toString(),
         )
@@ -264,8 +263,8 @@ class SammenstillingForBehandlingDTOTest {
                         saksbehandlerIdent = null,
                     ),
                     periode = Periode(
-                        fraOgMed = antallDagerMock.periode.fra,
-                        tilOgMed = antallDagerMock.periode.til,
+                        fraOgMed = LocalDate.parse(antallDagerMock.periode.fraOgMed),
+                        tilOgMed = LocalDate.parse(antallDagerMock.periode.tilOgMed),
                     ),
                 ),
             ),
@@ -285,11 +284,11 @@ class SammenstillingForBehandlingDTOTest {
             tiltak = tiltak,
         )
 
-        val saksopplysningElement = resultat.antallDagerSaksopplysningerFraRegister
+        val saksopplysningElement = resultat.antallDagerSaksopplysningFraRegister
         assertNotNull(saksopplysningElement)
         assertEquals(saksopplysningElement.antallDager, antallDagerMock.antallDager)
-        assertEquals(saksopplysningElement.periode.fra, antallDagerMock.periode.fra)
-        assertEquals(saksopplysningElement.periode.til, antallDagerMock.periode.til)
+        assertEquals(saksopplysningElement.periode.fraOgMed, antallDagerMock.periode.fraOgMed)
+        assertEquals(saksopplysningElement.periode.tilOgMed, antallDagerMock.periode.tilOgMed)
         assertEquals(saksopplysningElement.kilde, antallDagerMock.kilde)
     }
 }
