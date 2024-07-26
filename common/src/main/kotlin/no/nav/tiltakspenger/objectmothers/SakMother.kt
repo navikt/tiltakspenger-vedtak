@@ -40,6 +40,19 @@ interface SakMother {
                     ),
                 ),
                 fødselsdato = personopplysningFødselsdato,
+                registrerteTiltak = listOf(
+                    ObjectMother.tiltak(
+                        eksternId = nySøknad(
+                            personopplysninger = personSøknad(ident = ident),
+                            tiltak = søknadTiltak(
+                                deltakelseFom = periode.fraOgMed,
+                                deltakelseTom = periode.tilOgMed,
+                            ),
+                        ).tiltak.id,
+                        deltakelseFom = periode.fraOgMed,
+                        deltakelseTom = periode.tilOgMed,
+                    ),
+                ),
             ),
         ),
         personopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident))),

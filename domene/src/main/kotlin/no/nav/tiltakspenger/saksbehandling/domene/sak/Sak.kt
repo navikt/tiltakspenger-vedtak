@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -19,7 +20,7 @@ data class Sak(
     val personopplysninger: SakPersonopplysninger,
     val vedtak: List<Vedtak>,
 ) : SakDetaljer by sakDetaljer {
-    fun håndter(søknad: Søknad): Sak {
+    fun håndter(søknad: Søknad, registrerteTiltak: List<Tiltak>): Sak {
         val iverksatteBehandlinger = behandlinger.filter { it.tilstand == BehandlingTilstand.IVERKSATT }
         val behandlinger = behandlinger
             .filterNot { it.tilstand == BehandlingTilstand.IVERKSATT }
@@ -38,6 +39,7 @@ data class Sak(
                     Førstegangsbehandling.opprettBehandling(
                         sakId = id,
                         søknad = søknad,
+                        registrerteTiltak = registrerteTiltak,
                         fødselsdato = personopplysninger.søker().fødselsdato,
                     ).vilkårsvurder(),
                 )

@@ -2,11 +2,8 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 
 interface BehandlingService {
@@ -32,12 +29,4 @@ interface BehandlingService {
     fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
-    fun oppdaterAntallDagerPåTiltak(
-        behandlingId: BehandlingId,
-        tiltakId: TiltakId,
-        periodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
-        saksbehandler: Saksbehandler,
-    )
-
-    fun tilbakestillAntallDagerPåTiltak(behandlingId: BehandlingId, tiltakId: TiltakId, saksbehandler: Saksbehandler)
 }

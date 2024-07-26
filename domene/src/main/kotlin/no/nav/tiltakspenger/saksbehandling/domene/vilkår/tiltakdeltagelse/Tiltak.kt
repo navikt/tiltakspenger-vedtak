@@ -1,9 +1,9 @@
-package no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -26,7 +26,7 @@ data class Tiltak(
 ) {
     data class Gjennomføring(
         val id: String,
-        val arrangørnavn: String,
+        val arrangørnavn: String, // kan vi slette denne?
         val typeNavn: String,
         val typeKode: String,
         val rettPåTiltakspenger: Boolean,
@@ -34,7 +34,7 @@ data class Tiltak(
 
     data class DeltakerStatus(
         val status: String,
-        val rettTilÅASøke: Boolean,
+        val rettTilÅSøke: Boolean,
     )
 
     fun brukerDeltarPåTiltak(status: String): Boolean {
@@ -49,25 +49,6 @@ data class Tiltak(
             status.equals("Deltakelse avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avbrutt", ignoreCase = true) ||
             status.equals("Gjennomføring avlyst", ignoreCase = true)
-    }
-
-    fun leggTilAntallDagerFraSaksbehandler(nyVerdi: PeriodeMedVerdi<AntallDager>): Tiltak {
-        val tiltaksPeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom)
-
-        val oppdatertAntallDager =
-            antallDagerSaksopplysninger.leggTilAntallDagerFraSaksbehandler(tiltaksPeriode, nyVerdi)
-
-        return this.copy(
-            antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
-        )
-    }
-
-    fun tilbakestillAntallDagerFraSaksbehandler(): Tiltak {
-        val oppdatertAntallDager = antallDagerSaksopplysninger.tilbakestillAntallDagerFraSaksbehandler()
-
-        return this.copy(
-            antallDagerSaksopplysninger = oppdatertAntallDager.avklar(),
-        )
     }
 
     fun lagVurderingAvTiltakdeltagelse(utfall: Utfall, detaljer: String = ""): Vurdering {

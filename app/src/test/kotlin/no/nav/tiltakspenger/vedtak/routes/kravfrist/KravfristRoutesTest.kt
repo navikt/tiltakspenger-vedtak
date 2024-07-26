@@ -76,18 +76,25 @@ class KravfristRoutesTest {
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
+        val periodeFraOgMed = LocalDate.now().minusMonths(2)
+        val periodeTilOgMed = LocalDate.now().minusMonths(1)
+
         val sakId = SakId.random()
         val søknad = nySøknad(
-            periode = Periode(fraOgMed = LocalDate.now().minusMonths(2), tilOgMed = LocalDate.now().minusMonths(1)),
+            periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
             tidsstempelHosOss = LocalDateTime.now(),
         )
 
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(deltakelseTom = periodeTilOgMed, deltakelseFom = periodeFraOgMed),
+        )
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
             id = sakId,
             behandlinger = listOf(
                 Førstegangsbehandling.opprettBehandling(
                     sakId,
                     søknad,
+                    registrerteTiltak,
                     personopplysningFødselsdato(),
                 ),
             ),
@@ -109,7 +116,6 @@ class KravfristRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
@@ -146,10 +152,17 @@ class KravfristRoutesTest {
     fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
+        val periodeFraOgMed = LocalDate.now().minusMonths(2)
+        val periodeTilOgMed = LocalDate.now().minusMonths(1)
+
         val sakId = SakId.random()
         val søknad = nySøknad(
-            periode = Periode(fraOgMed = LocalDate.now().minusMonths(2), tilOgMed = LocalDate.now().minusMonths(1)),
+            periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
             tidsstempelHosOss = LocalDateTime.now().plusMonths(4),
+        )
+
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(deltakelseTom = periodeTilOgMed, deltakelseFom = periodeFraOgMed),
         )
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
@@ -158,6 +171,7 @@ class KravfristRoutesTest {
                 Førstegangsbehandling.opprettBehandling(
                     sakId,
                     søknad,
+                    registrerteTiltak,
                     personopplysningFødselsdato(),
                 ),
             ),
@@ -177,7 +191,6 @@ class KravfristRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,

@@ -12,13 +12,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -27,11 +27,13 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
+        registrerteTiltak: List<Tiltak> = listOf(ObjectMother.tiltak(eksternId = søknad.tiltak.id, deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed)),
     ): Førstegangsbehandling =
         Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
             fødselsdato = personopplysningFødselsdato,
+            registrerteTiltak = registrerteTiltak,
         )
 
     fun saksopplysning(
@@ -114,13 +116,13 @@ interface BehandlingMother {
 
     fun tiltak(
         id: TiltakId = TiltakId.random(),
-        eksternId: String = "TiltakId",
+        eksternId: String = "arenaId",
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
         status: Tiltak.DeltakerStatus = Tiltak.DeltakerStatus(
             status = "DELTAR",
-            rettTilÅASøke = true,
+            rettTilÅSøke = true,
         ),
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,

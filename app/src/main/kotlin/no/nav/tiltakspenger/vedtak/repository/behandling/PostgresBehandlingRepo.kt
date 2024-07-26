@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
@@ -32,7 +31,6 @@ internal class PostgresBehandlingRepo(
     private val saksopplysningRepo: SaksopplysningRepo,
     private val vurderingRepo: VurderingRepo,
     private val søknadDAO: SøknadDAO,
-    private val tiltakDAO: TiltakDAO,
     private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
@@ -112,7 +110,6 @@ internal class PostgresBehandlingRepo(
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.lagre(behandling.id, behandling.søknader, tx)
             }
-            tiltakDAO.lagre(behandling.id, behandling.tiltak.tiltak, tx)
             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
             utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
         }
@@ -218,7 +215,6 @@ internal class PostgresBehandlingRepo(
             søknader = søknadDAO.hent(id, txSession),
             vurderingsperiode = Periode(fom, tom),
             vilkårssett = vilkårssett,
-            tiltak = TiltakVilkår(tiltakDAO.hent(id, txSession)),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
             status = behandlingStatus,

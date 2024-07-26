@@ -21,7 +21,18 @@ object MeldekortGrunnlagDTOMapper {
                 fra = vedtak.periode.fraOgMed,
                 til = vedtak.periode.tilOgMed,
             ),
-            tiltak = mapTiltakDTO(vedtak),
+            // TODO KEB Her må vi fylle på riktig verdi.
+            tiltak = listOf(
+                TiltakDTO(
+                    periodeDTO = PeriodeDTO(
+                        fra = vedtak.periode.fraOgMed,
+                        til = vedtak.periode.tilOgMed,
+                    ),
+                    typeBeskrivelse = "suavitate",
+                    typeKode = "expetenda",
+                    antDagerIUken = 2f,
+                ),
+            ),
             personopplysninger = PersonopplysningerDTO(
                 fornavn = vedtak.behandling.søknad().personopplysninger.fornavn,
                 etternavn = vedtak.behandling.søknad().personopplysninger.etternavn,
@@ -41,23 +52,4 @@ object MeldekortGrunnlagDTOMapper {
                 )
             },
         )
-
-    // TODO: Denne tar bare med informasjon om tiltaket fra søknaden, her må vi ta med alle tiltakene som er OPPFYLT.
-    // TODO: Og antall dager i uken må fylles ut korrekt.
-    // TODO: Egentlig er ikke List<TiltakDTO> en god nok struktur for å fange informasjonen vi er ute etter
-    // TODO: Det vil ikke håndtere to tiltak som begge er på tre dager i uka og hvor tiltakene er på de samme tre dagene
-    fun mapTiltakDTO(vedtak: Vedtak): List<TiltakDTO> =
-        vedtak.behandling.tiltak.tiltak
-            .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
-            .map {
-                TiltakDTO(
-                    periodeDTO = PeriodeDTO(
-                        fra = it.deltakelseFom,
-                        til = it.deltakelseTom,
-                    ),
-                    typeBeskrivelse = it.gjennomføring.typeNavn,
-                    typeKode = it.gjennomføring.typeKode,
-                    antDagerIUken = 5f,
-                )
-            }
 }

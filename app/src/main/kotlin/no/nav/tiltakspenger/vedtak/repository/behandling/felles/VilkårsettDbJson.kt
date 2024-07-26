@@ -18,6 +18,8 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.tiltak.TiltakVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.tiltak.toDbJson
 import java.security.InvalidParameterException
 
 /**
@@ -29,6 +31,7 @@ private class VilkårssettJson(
     val introVilkår: IntroVilkårDbJson,
     val livsoppholdVilkår: LivsoppholdVilkårDbJson,
     val alderVilkår: AlderVilkårDbJson,
+    val tiltakVilkår: TiltakVilkårDbJson,
     val kravfristVilkår: KravfristVilkårDbJson,
 )
 
@@ -45,6 +48,7 @@ internal fun String.toVilkårssett(
             introVilkår = vilkårssettJson.introVilkår.toDomain(),
             livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
             alderVilkår = vilkårssettJson.alderVilkår.toDomain(),
+            tiltakVilkår = vilkårssettJson.tiltakVilkår.toDomain(),
             kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(),
             saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
@@ -64,6 +68,7 @@ internal fun Vilkårssett.toDbJson(): String {
             institusjonsoppholdVilkår = institusjonsoppholdVilkår.toDbJson(),
             alderVilkår = alderVilkår.toDbJson(),
             kravfristVilkår = kravfristVilkår.toDbJson(),
+            tiltakVilkår = tiltakVilkår.toDbJson(),
         ),
     )
 }

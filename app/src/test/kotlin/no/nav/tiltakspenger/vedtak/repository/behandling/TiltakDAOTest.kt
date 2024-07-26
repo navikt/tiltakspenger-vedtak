@@ -12,13 +12,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
@@ -120,7 +120,19 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad, fødselsdato = personopplysningFødselsdato())
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
+            ),
+        )
+
+        val behandling = Førstegangsbehandling.opprettBehandling(
+            sakId = sakId,
+            søknad = søknad,
+            fødselsdato = personopplysningFødselsdato(),
+            registrerteTiltak = registrerteTiltak,
+        )
 
         return behandlingRepo.lagre(behandling)
     }
@@ -137,7 +149,7 @@ internal class TiltakDAOTest {
         ),
         deltakelseFom = 1.januar(2023),
         deltakelseTom = 31.januar(2023),
-        deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅASøke = true),
+        deltakelseStatus = Tiltak.DeltakerStatus(status = "DELTAR", rettTilÅSøke = true),
         deltakelseProsent = prosent,
         kilde = "Komet",
         registrertDato = 1.januarDateTime(2023),
@@ -147,7 +159,7 @@ internal class TiltakDAOTest {
                 PeriodeMedVerdi(
                     verdi = AntallDager(antallDager = 1, kilde = Kilde.ARENA, saksbehandlerIdent = null),
                     periode =
-                    no.nav.tiltakspenger.libs.periodisering.Periode(
+                    Periode(
                         fraOgMed = 1.januar(2023),
                         tilOgMed = 31.januar(2023),
                     ),

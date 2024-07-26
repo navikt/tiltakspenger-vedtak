@@ -5,14 +5,11 @@ import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -27,6 +24,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogra
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -105,33 +103,6 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
-        val antallDagerDto = call.receive<AntallDagerDTO>()
-        behandlingService.oppdaterAntallDagerPåTiltak(
-            behandlingId = behandlingId,
-            tiltakId = tiltakId,
-            periodeMedAntallDager = antallDagerDto.toPeriodeMedAntallDager(saksbehandler.navIdent),
-            saksbehandler = saksbehandler,
-        )
-        call.respond(message = "{}", status = HttpStatusCode.OK)
-    }
-
-    delete("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
-
-        behandlingService.tilbakestillAntallDagerPåTiltak(
-            behandlingId = behandlingId,
-            tiltakId = tiltakId,
-            saksbehandler = saksbehandler,
-        )
-        call.respond(message = "{}", status = HttpStatusCode.OK)
-    }
-
     post("$behandlingPath/avbrytbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
 
@@ -143,6 +114,7 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
+    tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
     livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService)

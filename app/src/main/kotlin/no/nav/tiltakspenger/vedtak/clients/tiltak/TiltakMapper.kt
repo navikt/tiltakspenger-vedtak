@@ -4,10 +4,10 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
@@ -56,7 +56,7 @@ internal fun mapTiltak(
                 deltakelseTom = it.deltakelseTom!!,
                 deltakelseStatus = Tiltak.DeltakerStatus(
                     status = it.deltakelseStatus.name,
-                    rettTilÅASøke = it.deltakelseStatus.rettTilÅSøke,
+                    rettTilÅSøke = it.deltakelseStatus.rettTilÅSøke,
                 ),
                 deltakelseProsent = it.deltakelseProsent,
                 kilde = it.kilde,

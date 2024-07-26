@@ -60,7 +60,16 @@ internal class BehandlingRepoTest {
                 barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
             )
 
-            val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad, fødselsdato = personopplysningFødselsdato())
+            val registrerteTiltak = listOf(
+                ObjectMother.tiltak(),
+            )
+
+            val behandling = Førstegangsbehandling.opprettBehandling(
+                sakId = sakId,
+                søknad = søknad,
+                fødselsdato = personopplysningFødselsdato(),
+                registrerteTiltak = registrerteTiltak,
+            )
 
             behandlingRepo.lagre(behandling)
 
@@ -105,7 +114,16 @@ internal class BehandlingRepoTest {
                 barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
             )
 
-            val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad, fødselsdato = personopplysningFødselsdato())
+            val registrerteTiltak = listOf(
+                ObjectMother.tiltak(),
+            )
+
+            val behandling = Førstegangsbehandling.opprettBehandling(
+                sakId = sakId,
+                søknad = søknad,
+                fødselsdato = personopplysningFødselsdato(),
+                registrerteTiltak = registrerteTiltak,
+            )
 
             behandlingRepo.lagre(behandling)
 

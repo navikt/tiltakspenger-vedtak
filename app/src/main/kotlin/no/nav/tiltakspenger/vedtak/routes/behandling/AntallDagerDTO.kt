@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import java.time.LocalDate

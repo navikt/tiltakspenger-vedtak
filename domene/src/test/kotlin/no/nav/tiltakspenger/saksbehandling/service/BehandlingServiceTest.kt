@@ -4,38 +4,22 @@ import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import no.nav.tiltakspenger.TestSessionFactory
 import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.april
-import no.nav.tiltakspenger.felles.desember
-import no.nav.tiltakspenger.felles.februar
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.juli
-import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
-import no.nav.tiltakspenger.objectmothers.ObjectMother.tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
@@ -86,7 +70,6 @@ internal class BehandlingServiceTest {
                 utbetalingService = utbetalingService,
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-                tiltakGateway = tiltakGateway,
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
                 sessionFactory = sessionFactory,
@@ -124,185 +107,6 @@ internal class BehandlingServiceTest {
         shouldThrow<IllegalStateException> {
             avslag.iverksett(saksbehandler123())
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
-    }
-
-    @Test
-    fun `legg til saksopplysning fra saksbehandler legger seg til i tillegg`() {
-        val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknad(
-            tiltak = ObjectMother.søknadTiltak(
-                deltakelseFom = 1.januar(2023),
-                deltakelseTom = 31.mars(2023),
-            ),
-        )
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato()).vilkårsvurder()
-        val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
-        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
-
-        val saksopplysning = Saksopplysning(
-            fom = 1.februar(2023),
-            tom = 28.februar(2023),
-            kilde = Kilde.SAKSB,
-            vilkår = Vilkår.AAP,
-            detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-            saksbehandler = "Z999999",
-        )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
-
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
-            it.fom shouldBe 1.januar(2023)
-            it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
-        }
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
-            it.fom shouldBe 1.februar(2023)
-            it.tom shouldBe 28.februar(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
-        }
-    }
-
-    @Test
-    fun `legg til saksopplysning som ikke er saksbehandler erstatter den gamle`() {
-        val sakId = SakId.random()
-        val søknad = ObjectMother.nySøknad(
-            tiltak = ObjectMother.søknadTiltak(
-                deltakelseFom = 1.januar(2023),
-                deltakelseTom = 31.mars(2023),
-            ),
-        )
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato()).vilkårsvurder()
-        val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
-        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
-
-        val saksopplysning = Saksopplysning(
-            fom = 1.januar(2023),
-            tom = 31.mars(2023),
-            kilde = Kilde.ARENA,
-            vilkår = Vilkår.AAP,
-            detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-            saksbehandler = "Z999999",
-        )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
-
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
-            it.fom shouldBe 1.januar(2023)
-            it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
-        }
-    }
-
-    @Test
-    fun `hvis saksopplysning har en annen verdi enn den orginale skal saksbehandler fjernes`() {
-        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
-            periode = Periode(1.januar(2023), 31.mars(2023)),
-        ).leggTilSaksopplysning(
-            Saksopplysning(
-                fom = 1.januar(2023),
-                tom = 31.mars(2023),
-                kilde = Kilde.SAKSB,
-                vilkår = Vilkår.AAP,
-                detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-                saksbehandler = "Z999999",
-            ),
-        ).behandling
-
-        val lagretBehandling = slot<Behandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
-        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
-
-        val saksopplysning = Saksopplysning(
-            fom = 1.februar(2023),
-            tom = 28.februar(2023),
-            kilde = Kilde.ARENA,
-            vilkår = Vilkår.AAP,
-            detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-            saksbehandler = "Z999999",
-        )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
-
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 1
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
-            it.fom shouldBe 1.februar(2023)
-            it.tom shouldBe 28.februar(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
-        }
-    }
-
-    @Test
-    fun `hvis saksopplysning har samme verdi som den orginale skal saksbehandler ikke fjernes`() {
-        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
-            periode = Periode(1.januar(2023), 31.mars(2023)),
-        ).leggTilSaksopplysning(
-            Saksopplysning(
-                fom = 1.januar(2023),
-                tom = 31.mars(2023),
-                kilde = Kilde.SAKSB,
-                vilkår = Vilkår.AAP,
-                detaljer = "",
-                typeSaksopplysning = TypeSaksopplysning.HAR_YTELSE,
-                saksbehandler = "Z999999",
-            ),
-        ).behandling
-
-        val lagretBehandling = slot<Behandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
-        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
-
-        val saksopplysning = Saksopplysning(
-            fom = 1.januar(2023),
-            tom = 31.mars(2023),
-            kilde = Kilde.ARENA,
-            vilkår = Vilkår.AAP,
-            detaljer = "",
-            typeSaksopplysning = TypeSaksopplysning.IKKE_INNHENTET_ENDA,
-            saksbehandler = null,
-        )
-        behandlingService.leggTilSaksopplysning(behandling.id, saksopplysning)
-
-        lagretBehandling.captured.saksopplysninger.filter { it.vilkår == Vilkår.AAP }.size shouldBe 2
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.ARENA }.let {
-            it.fom shouldBe 1.januar(2023)
-            it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.IKKE_INNHENTET_ENDA
-        }
-        lagretBehandling.captured.saksopplysninger.single { it.vilkår == Vilkår.AAP && it.kilde == Kilde.SAKSB }.let {
-            it.fom shouldBe 1.januar(2023)
-            it.tom shouldBe 31.mars(2023)
-            it.typeSaksopplysning shouldBe TypeSaksopplysning.HAR_YTELSE
-        }
-    }
-
-    @Test
-    fun `tiltak utenfor vurderingsperioden skal filtreres bort`() {
-        val behandling = ObjectMother.behandlingVilkårsvurdertInnvilget(
-            periode = Periode(1.januar(2023), 31.mars(2023)),
-        )
-
-        val lagretBehandling = slot<Førstegangsbehandling>()
-        every { behandlingRepo.hent(any()) } returns behandling
-        every { behandlingRepo.lagre(capture(lagretBehandling)) } returnsArgument 0
-        coEvery { tiltakGateway.hentTiltak(any()) } answers {
-            listOf(
-                tiltak(eksternId = "før", fom = 1.januar(2022), tom = 31.desember(2022)),
-                tiltak(eksternId = "slutterInni", fom = 1.januar(2022), tom = 31.januar(2023)),
-                tiltak(eksternId = "starterInni", fom = 1.januar(2023), tom = 31.juli(2023)),
-                tiltak(eksternId = "etter", fom = 1.april(2023), tom = 31.juli(2023)),
-            )
-        }
-        val saksbehandler = saksbehandler123()
-
-        behandlingService.taBehandling(behandling.id, saksbehandler)
-
-        lagretBehandling.captured.tiltak.tiltak.size shouldBe 2
-        lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "slutterInni" }.eksternId shouldBe "slutterInni"
-        lagretBehandling.captured.tiltak.tiltak.first { it.eksternId == "starterInni" }.eksternId shouldBe "starterInni"
     }
 
     @Test

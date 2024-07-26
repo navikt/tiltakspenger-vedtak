@@ -24,7 +24,6 @@ import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceI
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
-import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
@@ -43,7 +42,6 @@ class AlderRoutesTest {
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
-    private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val mockSaksbehandler = Saksbehandler(
@@ -74,7 +72,6 @@ class AlderRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
@@ -111,12 +108,16 @@ class AlderRoutesTest {
     fun `test at søknaden blir gjenspeilet i alder vilkåret`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(),
+        )
+
         val sakId = SakId.random()
         val søknad = nySøknad()
         val objectMotherSakUnder18 = ObjectMother.sakMedOpprettetBehandling(
             id = sakId,
             behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(sakId, søknad, LocalDate.now().minusYears(10)),
+                Førstegangsbehandling.opprettBehandling(sakId, søknad, registrerteTiltak, LocalDate.now().minusYears(10)),
             ),
             løpenummer = 1023,
         )
@@ -137,7 +138,6 @@ class AlderRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,

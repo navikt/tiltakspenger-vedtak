@@ -78,7 +78,6 @@ class IntroRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
@@ -119,10 +118,15 @@ class IntroRoutesTest {
         val søknadMedIntro = nySøknad(
             intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
+
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(),
+        )
+
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
             id = sakId,
             behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, personopplysningFødselsdato()),
+                Førstegangsbehandling.opprettBehandling(sakId, søknadMedIntro, registrerteTiltak, personopplysningFødselsdato()),
             ),
             løpenummer = 1002,
         )
@@ -142,7 +146,6 @@ class IntroRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
