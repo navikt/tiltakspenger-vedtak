@@ -27,11 +27,13 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
+        registrerteTiltak: List<Tiltak> = listOf(ObjectMother.tiltak(eksternId = søknad.tiltak.id, deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed)),
     ): Førstegangsbehandling =
         Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             søknad = søknad,
             fødselsdato = personopplysningFødselsdato,
+            registrerteTiltak = registrerteTiltak,
         )
 
     fun saksopplysning(
@@ -114,7 +116,7 @@ interface BehandlingMother {
 
     fun tiltak(
         id: TiltakId = TiltakId.random(),
-        eksternId: String = "TiltakId",
+        eksternId: String = "arenaId",
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),

@@ -91,7 +91,6 @@ class LivsoppholdRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
@@ -179,7 +178,6 @@ class LivsoppholdRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
@@ -282,7 +280,11 @@ class LivsoppholdRoutesTest {
     }
 
     private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad, løpenummer: Int): LivsoppholdVilkårDTO {
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, personopplysningFødselsdato())), løpenummer = løpenummer)
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(),
+        )
+
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, registrerteTiltak, personopplysningFødselsdato())), løpenummer = løpenummer)
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO
@@ -301,7 +303,6 @@ class LivsoppholdRoutesTest {
                 utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                tiltakGateway = mockTiltakGateway,
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,

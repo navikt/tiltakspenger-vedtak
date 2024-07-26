@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface TiltakDeltagelseSaksopplysning {
-    val tiltak: String
+    val tiltakNavn: String
     val kilde: String
     val deltagelsePeriode: Periode
     val girRett: Boolean
@@ -19,7 +19,7 @@ sealed interface TiltakDeltagelseSaksopplysning {
     fun vurderMaskinelt(): Periodisering<Utfall2>
 
     data class Tiltak(
-        override val tiltak: String,
+        override val tiltakNavn: String,
         override val tidsstempel: LocalDateTime,
         override val deltagelsePeriode: Periode,
         override val girRett: Boolean,
@@ -29,27 +29,6 @@ sealed interface TiltakDeltagelseSaksopplysning {
         override val årsakTilEndring = null
         override val saksbehandler = null
 
-        override fun vurderMaskinelt(): Periodisering<Utfall2> {
-            return when {
-                girRett -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
-                !girRett -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
-                else -> {
-                    Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
-                }
-            }
-        }
-    }
-
-    data class Saksbehandler(
-        override val tiltak: String,
-        override val kilde: String,
-        override val deltagelsePeriode: Periode,
-        override val girRett: Boolean,
-        override val status: String,
-        override val tidsstempel: LocalDateTime,
-        override val årsakTilEndring: ÅrsakTilEndring,
-        override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
-    ) : TiltakDeltagelseSaksopplysning {
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
             return when {
                 girRett -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)

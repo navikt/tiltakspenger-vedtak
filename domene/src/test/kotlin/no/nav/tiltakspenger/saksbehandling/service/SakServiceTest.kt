@@ -79,7 +79,6 @@ internal class SakServiceTest {
                 utbetalingService = utbetalingService,
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-                tiltakGateway = tiltakGateway,
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
                 sessionFactory = mockk(),
@@ -91,6 +90,7 @@ internal class SakServiceTest {
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
+            tiltakGateway = tiltakGateway,
         )
     }
 

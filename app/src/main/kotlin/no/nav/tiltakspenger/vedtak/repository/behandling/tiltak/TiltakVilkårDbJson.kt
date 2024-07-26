@@ -12,16 +12,12 @@ import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
  */
 internal data class TiltakVilkårDbJson(
     val søknadSaksopplysning: TiltakSaksopplysningDbJson,
-    val saksbehandlerSaksopplysning: TiltakSaksopplysningDbJson?,
-    val avklartSaksopplysning: TiltakSaksopplysningDbJson,
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
     fun toDomain(): TiltakDeltagelseVilkår {
         return TiltakDeltagelseVilkår.fromDb(
             søknadSaksopplysning = søknadSaksopplysning.toDomain(),
-            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
-            avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             vurderingsperiode = vurderingsperiode.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
@@ -31,8 +27,6 @@ internal data class TiltakVilkårDbJson(
 internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakVilkårDbJson {
     return TiltakVilkårDbJson(
         søknadSaksopplysning = registerSaksopplysning.toDbJson(),
-        saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
-        avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
         utfallsperioder = utfall.toDbJson(),
     )

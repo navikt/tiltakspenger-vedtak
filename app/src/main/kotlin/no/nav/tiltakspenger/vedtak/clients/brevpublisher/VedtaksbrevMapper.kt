@@ -18,7 +18,12 @@ object VedtaksbrevMapper {
     fun mapVedtaksBrevDTO(saksnummer: Saksnummer, vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
         BrevDTO(
             personalia = mapPersonaliaDTO(vedtak, personopplysninger),
-            tiltaksinfo = mapTiltaksinfo(vedtak),
+            tiltaksinfo = TiltaksinfoDTO( // TODO() KEBH Denne må fikses, men ikke nå. Tar en runde på brev
+                tiltak = "MåkK",
+                tiltaksnavn = "mÅKk",
+                tiltaksnummer = "MÅkk",
+                arrangør = "måKK",
+            ),
             fraDato = vedtak.periode.fraOgMed.format(norskDatoFormatter),
             tilDato = vedtak.periode.tilOgMed.format(norskDatoFormatter),
             saksnummer = saksnummer.verdi,
@@ -39,16 +44,4 @@ object VedtaksbrevMapper {
             // TODO Grøss:
             antallBarn = vedtak.behandling.søknad().barnetillegg.count { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja },
         )
-
-    private fun mapTiltaksinfo(vedtak: Vedtak) =
-        vedtak.behandling.tiltak.tiltak
-            .filter { it.eksternId == vedtak.behandling.søknad().tiltak.id }
-            .map {
-                TiltaksinfoDTO(
-                    tiltak = it.gjennomføring.typeNavn,
-                    tiltaksnavn = it.gjennomføring.typeNavn,
-                    tiltaksnummer = it.gjennomføring.typeKode,
-                    arrangør = it.gjennomføring.arrangørnavn,
-                )
-            }.first()
 }

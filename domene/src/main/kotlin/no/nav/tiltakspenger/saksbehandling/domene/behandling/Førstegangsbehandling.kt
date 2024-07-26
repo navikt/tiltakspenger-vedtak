@@ -46,41 +46,54 @@ data class Førstegangsbehandling(
 
     companion object {
 
-        fun opprettBehandling(sakId: SakId, søknad: Søknad, registrerteTiltak: List<Tiltak>, fødselsdato: LocalDate): Førstegangsbehandling {
+        fun opprettBehandling(
+            sakId: SakId,
+            søknad: Søknad,
+            registrerteTiltak: List<Tiltak>,
+            fødselsdato: LocalDate,
+        ): Førstegangsbehandling {
             val vurderingsperiode = søknad.vurderingsperiode()
             val tiltak = registrerteTiltak.find {
-                Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(vurderingsperiode)
+                it.eksternId == søknad.tiltak.id &&
+                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(vurderingsperiode)
             }
-            // Benny: Bør heller legge inn håndtering av at det ikke finnes tiltak der vi init-er tiltakVilkåret
-            if (tiltak != null) {
-                return Førstegangsbehandling(
-                    id = BehandlingId.random(),
-                    sakId = sakId,
-                    søknader = listOf(søknad),
-                    vurderingsperiode = vurderingsperiode,
-                    vilkårssett = Vilkårssett(
-                        saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                            søknad,
-                        ),
-                        vilkårsvurderinger = emptyList(),
-                        utfallsperioder = emptyList(),
-                        institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(søknad.institusjonsoppholdSaksopplysning(vurderingsperiode)),
-                        kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
-                        introVilkår = IntroVilkår.opprett(søknad.introSaksopplysning(vurderingsperiode)),
-                        livsoppholdVilkår = LivsoppholdVilkår.opprett(
-                            søknad.livsoppholdSaksopplysning(vurderingsperiode),
+
+            require(tiltak != null) { "Ingen tiltak samsvarer med det tiltaket bruker søkte på i søknaden" }
+
+            return Førstegangsbehandling(
+                id = BehandlingId.random(),
+                sakId = sakId,
+                søknader = listOf(søknad),
+                vurderingsperiode = vurderingsperiode,
+                vilkårssett = Vilkårssett(
+                    saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
+                        søknad,
+                    ),
+                    vilkårsvurderinger = emptyList(),
+                    utfallsperioder = emptyList(),
+                    institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
+                        søknad.institusjonsoppholdSaksopplysning(
                             vurderingsperiode,
                         ),
-                        alderVilkår = AlderVilkår.opprett(AlderSaksopplysning.Personopplysning.opprett(fødselsdato = fødselsdato), vurderingsperiode),
-                        kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                        tiltakVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
                     ),
-                    saksbehandler = null,
-                    beslutter = null,
-                    status = BehandlingStatus.Manuell,
-                    tilstand = BehandlingTilstand.OPPRETTET,
-                )
-            }
+                    kvpVilkår = KVPVilkår.opprett(søknad.kvpSaksopplysning(vurderingsperiode)),
+                    introVilkår = IntroVilkår.opprett(søknad.introSaksopplysning(vurderingsperiode)),
+                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
+                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
+                        vurderingsperiode,
+                    ),
+                    alderVilkår = AlderVilkår.opprett(
+                        AlderSaksopplysning.Personopplysning.opprett(fødselsdato = fødselsdato),
+                        vurderingsperiode,
+                    ),
+                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
+                    tiltakVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
+                ),
+                saksbehandler = null,
+                beslutter = null,
+                status = BehandlingStatus.Manuell,
+                tilstand = BehandlingTilstand.OPPRETTET,
+            )
         }
     }
 
@@ -151,6 +164,7 @@ data class Førstegangsbehandling(
             )
         }
     }
+
     override fun startBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
             this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),

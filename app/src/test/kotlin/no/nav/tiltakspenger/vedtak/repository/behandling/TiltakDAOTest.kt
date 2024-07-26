@@ -120,7 +120,19 @@ internal class TiltakDAOTest {
             barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
         )
 
-        val behandling = Førstegangsbehandling.opprettBehandling(sakId = sakId, søknad = søknad, fødselsdato = personopplysningFødselsdato())
+        val registrerteTiltak = listOf(
+            ObjectMother.tiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
+            ),
+        )
+
+        val behandling = Førstegangsbehandling.opprettBehandling(
+            sakId = sakId,
+            søknad = søknad,
+            fødselsdato = personopplysningFødselsdato(),
+            registrerteTiltak = registrerteTiltak,
+        )
 
         return behandlingRepo.lagre(behandling)
     }

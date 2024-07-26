@@ -44,6 +44,7 @@ class SakServiceImpl(
             liste = runBlocking { personGateway.hentPerson(ident) },
         ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(ident) }
+        require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
         val sak: Sak =
             (
                 sakRepo.hentForIdent(

@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltak
+package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -9,18 +9,17 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-fun Route.hentTiltakRoute(
+fun Route.hentTiltakDeltagelseRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
 ) {
-    get("$behandlingPath/{behandlingId}/vilkar/tiltak") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/tiltak")
+    get("$behandlingPath/{behandlingId}/vilkar/tiltakdeltagelse") {
+        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/tiltakdeltagelse")
 
         innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

@@ -67,7 +67,6 @@ internal class TestDataHelper(
         saksopplysningRepo = saksopplysningRepo,
         vurderingRepo = vurderingRepo,
         søknadDAO = søknadDAO,
-        tiltakDAO = tiltakDAO,
         utfallsperiodeDAO = utfallsperiodeDAO,
     )
 

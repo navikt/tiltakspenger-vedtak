@@ -4,5 +4,5 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDateTime
 
 fun Tiltak.tiltakSaksopplysning(): TiltakDeltagelseSaksopplysning {
-    return TiltakDeltagelseSaksopplysning.Tiltak(tiltak = gjennomføring.typeNavn, deltagelsePeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom), kilde = kilde, status = deltakelseStatus.status, girRett = deltakelseStatus.rettTilÅSøke, tidsstempel = LocalDateTime.now())
+    return TiltakDeltagelseSaksopplysning.Tiltak(tiltakNavn = gjennomføring.typeNavn, deltagelsePeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom), kilde = kilde, status = deltakelseStatus.status, girRett = deltakelseStatus.rettTilÅSøke, tidsstempel = LocalDateTime.now())
 }

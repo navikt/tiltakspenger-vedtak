@@ -120,7 +120,7 @@ interface PersonMother {
     }
 
     fun tiltak(
-        eksternId: String = "123",
+        eksternId: String = "arenaId",
         gjennomføring: Tiltak.Gjennomføring = Tiltak.Gjennomføring(
             id = "123",
             arrangørnavn = "arrangør",

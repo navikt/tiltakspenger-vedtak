@@ -15,9 +15,6 @@ internal data class SammenstillingForBehandlingDTO(
     val behandlingTilstand: BehandlingTilstand,
     val status: String,
     val endringslogg: List<EndringDTO>,
-    val samletUtfall: String,
-    val tiltaksdeltagelsesaksopplysning: TiltaksdeltagelsesaksopplysningDTO,
-    val stønadsdager: List<AntallDagerSaksopplysningerDTO>,
     val vilkårsett: VilkårssettDTO,
 ) {
     data class EndringDTO(

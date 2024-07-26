@@ -148,7 +148,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         utbetalingService = utbetalingService,
         brevPublisherGateway = brevPublisherGateway,
         meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-        tiltakGateway = tiltakGateway,
         sakRepo = sakRepo,
         attesteringRepo = attesteringRepo,
         sessionFactory = sessionFactory,
@@ -161,6 +160,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
             søkerRepository = søkerRepository,
+            tiltakGateway = tiltakGateway,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
