@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandling
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
@@ -112,6 +113,8 @@ internal class SakServiceTest {
         every { sakRepo.lagre(any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
 
+        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
+
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
         every { behandlingRepo.hent(any()) } returns behandling()
         every { behandlingRepo.lagre(any()) } returnsArgument 0
@@ -138,6 +141,7 @@ internal class SakServiceTest {
         every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
         every { sakRepo.lagre(any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
+        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
 
         val barnIdent = "barnIdent"
         coEvery { skjermingGateway.erSkjermetPerson(ident) } returns true
