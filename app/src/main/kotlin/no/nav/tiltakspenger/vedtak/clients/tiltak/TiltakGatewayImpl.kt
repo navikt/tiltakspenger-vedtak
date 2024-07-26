@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.tiltak
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import java.time.LocalDateTime
 

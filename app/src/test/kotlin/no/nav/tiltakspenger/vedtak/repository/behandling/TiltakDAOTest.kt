@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo

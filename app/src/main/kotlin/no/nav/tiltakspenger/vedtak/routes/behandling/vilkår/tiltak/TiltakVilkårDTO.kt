@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltak
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.LovreferanseDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -18,7 +18,7 @@ internal data class TiltakVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun TiltakVilkår.toDTO(): TiltakVilkårDTO {
+internal fun TiltakDeltagelseVilkår.toDTO(): TiltakVilkårDTO {
     return TiltakVilkårDTO(
         registerSaksopplysning = registerSaksopplysning.toDTO(),
         vilkårLovreferanse = lovreferanse.toDTO(),

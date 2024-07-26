@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
 

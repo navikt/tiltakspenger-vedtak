@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.tiltak
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDateTime
@@ -12,9 +12,9 @@ internal data class TiltakSaksopplysningDbJson(
     val saksbehandler: SaksbehandlerDbJson?,
     val tidsstempel: String,
 ) {
-    fun toDomain(): TiltakSaksopplysning {
+    fun toDomain(): TiltakDeltagelseSaksopplysning {
         return when {
-            saksbehandler != null -> TiltakSaksopplysning.Saksbehandler(
+            saksbehandler != null -> TiltakDeltagelseSaksopplysning.Saksbehandler(
                 tiltak = tiltak,
                 årsakTilEndring = årsakTilEndring!!.toDomain(),
                 saksbehandler = saksbehandler.toDomain(),
@@ -23,7 +23,7 @@ internal data class TiltakSaksopplysningDbJson(
 
             else -> {
                 require(årsakTilEndring == null) { "Støtter ikke årsak til endring for TiltakSaksopplysning.Personopplysning." }
-                TiltakSaksopplysning.Søknad(
+                TiltakDeltagelseSaksopplysning.Søknad(
                     tiltak = tiltak,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
@@ -45,7 +45,7 @@ internal data class TiltakSaksopplysningDbJson(
     }
 }
 
-internal fun TiltakSaksopplysning.toDbJson(): TiltakSaksopplysningDbJson {
+internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakSaksopplysningDbJson {
     return TiltakSaksopplysningDbJson(
         tiltak = tiltak,
         årsakTilEndring = when (årsakTilEndring) {

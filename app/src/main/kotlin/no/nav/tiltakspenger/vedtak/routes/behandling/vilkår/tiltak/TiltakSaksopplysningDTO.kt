@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltak
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.felles.ÅrsakTilEndringDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -15,7 +15,7 @@ internal data class TiltakSaksopplysningDTO(
     val kilde: TiltakKildeDTO,
 )
 
-internal fun TiltakSaksopplysning.toDTO(): TiltakSaksopplysningDTO {
+internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakSaksopplysningDTO {
     return TiltakSaksopplysningDTO(
         tiltak = tiltak,
         årsakTilEndring = when (årsakTilEndring) {

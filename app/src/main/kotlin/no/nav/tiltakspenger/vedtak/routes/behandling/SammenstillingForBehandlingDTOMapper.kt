@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.AntallDagerSaksopplysningerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType

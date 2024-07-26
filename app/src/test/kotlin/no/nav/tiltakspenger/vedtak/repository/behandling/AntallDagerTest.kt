@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway

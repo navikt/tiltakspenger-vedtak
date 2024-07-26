@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 

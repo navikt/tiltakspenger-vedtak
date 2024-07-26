@@ -23,9 +23,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.tiltakSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tiltakSaksopplysning
 import java.time.LocalDate
 
 data class Førstegangsbehandling(
@@ -73,7 +73,7 @@ data class Førstegangsbehandling(
                         ),
                         alderVilkår = AlderVilkår.opprett(AlderSaksopplysning.Personopplysning.opprett(fødselsdato = fødselsdato), vurderingsperiode),
                         kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                        tiltakVilkår = TiltakVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
+                        tiltakVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
                     ),
                     saksbehandler = null,
                     beslutter = null,

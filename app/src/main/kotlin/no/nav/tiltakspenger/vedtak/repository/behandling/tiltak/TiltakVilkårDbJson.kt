@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.tiltak
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDomain
@@ -17,8 +17,8 @@ internal data class TiltakVilkårDbJson(
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): TiltakVilkår {
-        return TiltakVilkår.fromDb(
+    fun toDomain(): TiltakDeltagelseVilkår {
+        return TiltakDeltagelseVilkår.fromDb(
             søknadSaksopplysning = søknadSaksopplysning.toDomain(),
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
@@ -28,7 +28,7 @@ internal data class TiltakVilkårDbJson(
     }
 }
 
-internal fun TiltakVilkår.toDbJson(): TiltakVilkårDbJson {
+internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakVilkårDbJson {
     return TiltakVilkårDbJson(
         søknadSaksopplysning = registerSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),

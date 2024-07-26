@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode

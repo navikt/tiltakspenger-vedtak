@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.TypeSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 
 interface BehandlingMother {

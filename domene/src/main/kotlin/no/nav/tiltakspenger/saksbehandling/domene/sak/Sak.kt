@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")

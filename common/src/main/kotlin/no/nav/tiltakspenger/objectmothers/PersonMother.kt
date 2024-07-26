@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.Antal
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Random
