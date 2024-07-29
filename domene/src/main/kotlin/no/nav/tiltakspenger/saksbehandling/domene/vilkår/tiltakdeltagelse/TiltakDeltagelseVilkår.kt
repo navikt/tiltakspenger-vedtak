@@ -46,12 +46,12 @@ data class TiltakDeltagelseVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: TiltakDeltagelseSaksopplysning,
+            registerSaksopplysning: TiltakDeltagelseSaksopplysning,
             vurderingsperiode: Periode,
             utfall: Periodisering<Utfall2>,
         ): TiltakDeltagelseVilkår {
             return TiltakDeltagelseVilkår(
-                registerSaksopplysning = søknadSaksopplysning,
+                registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
                 utfall = utfall,
             )

@@ -18,8 +18,8 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.KVPVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.kvp.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.tiltak.TiltakDeltagelseVilkårDbJson
-import no.nav.tiltakspenger.vedtak.repository.behandling.tiltak.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.tiltakDeltagelse.TiltakDeltagelseVilkårDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.tiltakDeltagelse.toDbJson
 import java.security.InvalidParameterException
 
 /**

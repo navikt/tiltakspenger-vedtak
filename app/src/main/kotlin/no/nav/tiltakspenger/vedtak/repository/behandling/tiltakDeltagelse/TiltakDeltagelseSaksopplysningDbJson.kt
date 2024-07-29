@@ -1,11 +1,11 @@
-package no.nav.tiltakspenger.vedtak.repository.behandling.tiltak
+package no.nav.tiltakspenger.vedtak.repository.behandling.tiltakDeltagelse
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDateTime
 
-internal data class TiltakSaksopplysningDbJson(
+internal data class TiltakDeltagelseSaksopplysningDbJson(
     val tiltakNavn: String,
     val tidsstempel: String,
     val deltagelsePeriode: PeriodeDbJson,
@@ -25,8 +25,8 @@ internal data class TiltakSaksopplysningDbJson(
     }
 }
 
-internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakSaksopplysningDbJson {
-    return TiltakSaksopplysningDbJson(
+internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson {
+    return TiltakDeltagelseSaksopplysningDbJson(
         tiltakNavn = tiltakNavn,
         tidsstempel = tidsstempel.toString(),
         deltagelsePeriode = deltagelsePeriode.toDbJson(),

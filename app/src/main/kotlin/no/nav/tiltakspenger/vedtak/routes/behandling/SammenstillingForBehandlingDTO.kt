@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import java.time.LocalDateTime
@@ -36,27 +35,5 @@ internal data class SammenstillingForBehandlingDTO(
         val skjerming: Boolean,
         val strengtFortrolig: Boolean,
         val fortrolig: Boolean,
-    )
-
-    data class TiltaksdeltagelsesaksopplysningDTO(
-        val vilkår: String,
-        val vilkårLovreferanse: LovreferanseDTO,
-        val saksopplysninger: RegistrertTiltakDTO,
-    )
-
-    data class AntallDagerSaksopplysningerDTO(
-        val tiltakId: String,
-        val tiltak: String,
-        val antallDagerSaksopplysningFraRegister: AntallDagerDTO,
-    )
-
-    data class RegistrertTiltakDTO(
-        val id: String,
-        val navn: String,
-        val periode: PeriodeDTO,
-        val status: String,
-        val kilde: String,
-        val girRett: Boolean,
-        val deltagelseUtfall: Utfall,
     )
 }
