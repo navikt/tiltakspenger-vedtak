@@ -27,11 +27,11 @@ sealed interface LivsoppholdSaksopplysning {
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
             return when (harLivsoppholdYtelser) {
                 true -> Periodisering(
-                    Utfall2.IKKE_OPPFYLT,
+                    Utfall2.UAVKLART,
                     periode,
                 )
                 false -> Periodisering(
-                    Utfall2.OPPFYLT,
+                    Utfall2.UAVKLART,
                     periode,
                 )
             }
