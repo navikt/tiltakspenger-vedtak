@@ -1,20 +1,19 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 object SøknadDTOMapper {
 
     fun mapSøknad(dto: SøknadDTO, innhentet: LocalDateTime): Søknad {
         return Søknad(
+            id = SøknadId.fromString(dto.søknadId),
             versjon = dto.versjon,
-            søknadId = dto.søknadId,
             journalpostId = dto.dokInfo.journalpostId,
             dokumentInfoId = dto.dokInfo.dokumentInfoId,
             filnavn = dto.dokInfo.filnavn,
@@ -111,7 +110,4 @@ object SøknadDTOMapper {
             SpmSvarDTO.Ja -> Søknad.JaNeiSpm.Ja
         }
     }
-
-    private fun toFødselsdato(ident: String): LocalDate =
-        LocalDate.parse(ident.subSequence(0, 6), DateTimeFormatter.ofPattern("ddMMuu"))
 }

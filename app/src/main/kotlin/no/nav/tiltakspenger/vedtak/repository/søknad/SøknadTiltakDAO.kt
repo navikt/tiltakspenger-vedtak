@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøknadId
@@ -10,11 +11,11 @@ import org.intellij.lang.annotations.Language
 
 internal class SøknadTiltakDAO {
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak =
-        hentTiltak(søknadId, txSession)!!
+    fun hent(søknadId: SøknadId, session: Session): SøknadsTiltak =
+        hentTiltak(søknadId, session)!!
 
-    private fun hentTiltak(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak? {
-        return txSession.run(
+    private fun hentTiltak(søknadId: SøknadId, session: Session): SøknadsTiltak? {
+        return session.run(
             queryOf(hentTiltak, søknadId.toString()).map { row -> row.toTiltak() }.asSingle,
         )
     }

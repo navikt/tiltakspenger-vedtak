@@ -47,7 +47,7 @@ internal class SakRepoTest {
             val sak = tomSak(saksnummer = saksnummerMock)
             sakRepo.lagre(sak)
             val sakHentetUtifraSaksnummer = sakRepo.hentForSaksnummer(saksnummer = saksnummerMock.verdi)
-            sakHentetUtifraSaksnummer?.saknummer shouldBe sak.saknummer
+            sakHentetUtifraSaksnummer?.saksnummer shouldBe sak.saksnummer
         }
     }
 

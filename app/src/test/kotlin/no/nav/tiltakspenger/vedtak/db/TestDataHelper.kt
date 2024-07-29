@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.vedtak.log
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.TiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -18,6 +17,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
@@ -38,7 +38,6 @@ internal class TestDataHelper(
         sessionFactory = sessionFactory,
         personopplysningerDAO = personopplysningerDAO,
     )
-    val tiltakDAO = TiltakDAO()
     val attesteringRepo = AttesteringRepoImpl(
         sessionFactory = sessionFactory,
     )
@@ -60,6 +59,10 @@ internal class TestDataHelper(
         barnetilleggDAO = barnetilleggDAO,
         tiltakDAO = søknadTiltakDAO,
         vedleggDAO = vedleggDAO,
+    )
+    val søknadRepo = PostgresSøknadRepo(
+        sessionFactory = sessionFactory,
+        søknadDAO = søknadDAO,
     )
 
     val behandlingRepo = PostgresBehandlingRepo(

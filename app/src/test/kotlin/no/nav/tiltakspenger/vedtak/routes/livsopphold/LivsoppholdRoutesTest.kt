@@ -30,13 +30,13 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
-import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
@@ -50,6 +50,7 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
+import java.util.Random
 
 class LivsoppholdRoutesTest {
 
@@ -57,7 +58,6 @@ class LivsoppholdRoutesTest {
     private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
-    private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -94,6 +94,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -181,6 +182,8 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
+
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -239,7 +242,8 @@ class LivsoppholdRoutesTest {
         val søknadMedGjenlevendepensjon = nySøknad(
             gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
-        val livsoppholdVilkårGjenlevendepensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
+        val livsoppholdVilkårGjenlevendepensjon =
+            opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
         livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
 
@@ -279,12 +283,34 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
     }
 
-    private fun opprettSakOgKjørGetPåLivsopphold(sakId: SakId, søknad: Søknad, løpenummer: Int): LivsoppholdVilkårDTO {
+    private fun opprettSakOgKjørGetPåLivsopphold(
+        sakId: SakId,
+        søknad: Søknad,
+        løpenummer: Int,
+        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+    ): LivsoppholdVilkårDTO {
         val registrerteTiltak = listOf(
             ObjectMother.tiltak(),
         )
-
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(id = sakId, behandlinger = listOf(Førstegangsbehandling.opprettBehandling(sakId, søknad, registrerteTiltak, personopplysningFødselsdato())), løpenummer = løpenummer)
+        val saksnummer = Saksnummer("202301011001")
+        val ident = Random().nextInt().toString()
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            sakId = sakId,
+            saksnummer = saksnummer,
+            ident = ident,
+            behandlinger = listOf(
+                Førstegangsbehandling.opprettBehandling(
+                    sakId = sakId,
+                    søknad = søknad,
+                    fødselsdato = personopplysningFødselsdato(),
+                    saksbehandler = saksbehandler,
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    registrerteTiltak = registrerteTiltak,
+                ),
+            ),
+            løpenummer = løpenummer,
+        )
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO
@@ -306,6 +332,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

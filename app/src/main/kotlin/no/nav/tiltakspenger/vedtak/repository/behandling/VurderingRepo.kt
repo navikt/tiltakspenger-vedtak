@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
@@ -13,8 +14,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import org.intellij.lang.annotations.Language
 
 internal class VurderingRepo {
-    fun hent(behandlingId: BehandlingId, txSession: TransactionalSession): List<Vurdering> {
-        return txSession.run(
+    fun hent(behandlingId: BehandlingId, session: Session): List<Vurdering> {
+        return session.run(
             queryOf(
                 sqlHentForBehandling,
                 mapOf(

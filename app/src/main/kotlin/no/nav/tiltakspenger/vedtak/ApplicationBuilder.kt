@@ -5,6 +5,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
@@ -23,7 +24,7 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
-import no.nav.tiltakspenger.vedtak.db.DataSource
+import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
@@ -37,6 +38,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
 import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
+import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
@@ -55,7 +57,8 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     } else {
         RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
     }
-    val rapidsConnection: RapidsConnection = RapidApplication.Builder(rapidConfig)
+
+    private val rapidsConnection: RapidsConnection = RapidApplication.Builder(rapidConfig)
         .withKtorModule {
             vedtakApi(
                 config = Configuration.TokenVerificationConfig(),
@@ -67,6 +70,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
                 livsoppholdVilkårService = livsoppholdVilkårService,
+                søknadService = søknadService,
             )
         }
         .build()
@@ -80,7 +84,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val tokenProviderTiltak: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
 
-    private val dataSource = DataSource.hikariDataSource
+    private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
@@ -100,8 +104,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
-    private val saksopplysningRepo = SaksopplysningRepo()
-    private val vurderingRepo = VurderingRepo()
     private val barnetilleggDAO = BarnetilleggDAO()
     private val søknadTiltakDAO = SøknadTiltakDAO()
     private val vedleggDAO = VedleggDAO()
@@ -111,6 +113,11 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         tiltakDAO = søknadTiltakDAO,
         vedleggDAO = vedleggDAO,
     )
+    private val søknadRepo = PostgresSøknadRepo(sessionFactory = sessionFactory, søknadDAO = søknadDAO)
+
+    private val saksopplysningRepo = SaksopplysningRepo()
+    private val vurderingRepo = VurderingRepo()
+
     private val behandlingRepo = PostgresBehandlingRepo(
         sessionFactory = sessionFactory,
         saksopplysningRepo = saksopplysningRepo,
@@ -137,9 +144,14 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     )
 
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
+
+    @Suppress("unused")
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
+
+    @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
+    private val søknadService = SøknadServiceImpl(søknadRepo)
 
     private val behandlingService = BehandlingServiceImpl(
         behandlingRepo = behandlingRepo,
@@ -151,16 +163,19 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sakRepo = sakRepo,
         attesteringRepo = attesteringRepo,
         sessionFactory = sessionFactory,
+        søknadRepo = søknadRepo,
     )
     private val sakService =
         SakServiceImpl(
             sakRepo = sakRepo,
+            søknadRepo = søknadRepo,
             behandlingRepo = behandlingRepo,
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
             søkerRepository = søkerRepository,
             tiltakGateway = tiltakGateway,
+            sessionFactory = sessionFactory,
         )
     private val kvpVilkårService = KvpVilkårServiceImpl(
         behandlingService = behandlingService,
@@ -185,7 +200,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     override fun onStartup(rapidsConnection: RapidsConnection) {
         log.info("Skal kjøre flyway migrering")
-        flywayMigrate()
+        flywayMigrate(dataSource)
         log.info("Har kjørt flyway migrering")
     }
 }

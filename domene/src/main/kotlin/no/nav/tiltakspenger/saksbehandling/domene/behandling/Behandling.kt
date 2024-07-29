@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
@@ -16,6 +17,8 @@ data class LeggTilSaksopplysningRespons(
 interface Behandling {
     val id: BehandlingId
     val sakId: SakId
+    val ident: String
+    val saksnummer: Saksnummer
     val vurderingsperiode: Periode
     val søknader: List<Søknad>
     val saksbehandler: String?
@@ -31,8 +34,7 @@ interface Behandling {
 
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
-    fun startBehandling(saksbehandler: Saksbehandler): Behandling
-    fun startGodkjenning(saksbehandler: Saksbehandler): Behandling
+    fun taBehandling(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
     fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling

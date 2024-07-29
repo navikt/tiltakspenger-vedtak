@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
 import java.util.Random
@@ -37,10 +38,11 @@ internal class BehandlingRepoTest {
             val deltakelseFom = 1.januar(2023)
             val deltakelseTom = 31.mars(2023)
             val sakId = SakId.random()
+            val saksnummer = Saksnummer("202301011001")
             val sak = Sak(
                 id = sakId,
                 ident = ident,
-                saknummer = Saksnummer("202301011001"),
+                saknummer = saksnummer,
                 periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
                 behandlinger = listOf(),
                 personopplysninger = SakPersonopplysninger(),
@@ -66,9 +68,12 @@ internal class BehandlingRepoTest {
 
             val behandling = Førstegangsbehandling.opprettBehandling(
                 sakId = sakId,
+                saksnummer = saksnummer,
+                ident = ident,
                 søknad = søknad,
                 fødselsdato = personopplysningFødselsdato(),
                 registrerteTiltak = registrerteTiltak,
+                saksbehandler = ObjectMother.saksbehandler(),
             )
 
             behandlingRepo.lagre(behandling)
@@ -83,58 +88,13 @@ internal class BehandlingRepoTest {
     fun `lagre og hente en behandling som er vilkårsvurdert`() {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
+            val (_, _, behandling) = testDataHelper.persisterOpprettetFørstegangsbehandling()
             val behandlingRepo = testDataHelper.behandlingRepo
-            val sakRepo = testDataHelper.sakRepo
 
-            val journalpostId = random.nextInt().toString()
-            val ident = random.nextInt().toString()
-            val deltakelseFom = 1.januar(2023)
-            val deltakelseTom = 31.mars(2023)
-            val sakId = SakId.random()
-            val sak = Sak(
-                id = sakId,
-                ident = ident,
-                saknummer = Saksnummer("202301011001"),
-                periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-                behandlinger = listOf(),
-                personopplysninger = SakPersonopplysninger(),
-                vedtak = listOf(),
-            )
-            sakRepo.lagre(sak)
-
-            val søknad = ObjectMother.nySøknad(
-                journalpostId = journalpostId,
-                personopplysninger = ObjectMother.personSøknad(
-                    ident = ident,
-                ),
-                tiltak = ObjectMother.søknadTiltak(
-                    deltakelseFom = deltakelseFom,
-                    deltakelseTom = deltakelseTom,
-                ),
-                barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
-            )
-
-            val registrerteTiltak = listOf(
-                ObjectMother.tiltak(),
-            )
-
-            val behandling = Førstegangsbehandling.opprettBehandling(
-                sakId = sakId,
-                søknad = søknad,
-                fødselsdato = personopplysningFødselsdato(),
-                registrerteTiltak = registrerteTiltak,
-            )
-
-            behandlingRepo.lagre(behandling)
-
-            val hentBehandling = behandlingRepo.hent(behandling.id)
-            if (hentBehandling.tilstand == BehandlingTilstand.OPPRETTET) {
-                val behandlingVilkårsvurdert = hentBehandling.vilkårsvurder()
-                behandlingRepo.lagre(behandlingVilkårsvurdert)
-                behandlingVilkårsvurdert shouldNotBe null
-            }
-
-            hentBehandling shouldNotBe null
+            behandling.tilstand shouldBe BehandlingTilstand.OPPRETTET
+            val behandlingVilkårsvurdert = behandling.vilkårsvurder()
+            behandlingRepo.lagre(behandlingVilkårsvurdert)
+            behandlingRepo.hentOrNull(behandling.id) shouldBe behandlingVilkårsvurdert
         }
     }
 
@@ -148,8 +108,8 @@ internal class BehandlingRepoTest {
             val ident = random.nextInt().toString()
             val vårSakId = SakId.random()
             val enAnnenSakId = SakId.random()
-            val sakForVårIdent = sakMedOpprettetBehandling(id = vårSakId, ident = ident)
-            val enAnnenSak = sakMedOpprettetBehandling(id = enAnnenSakId, ident = "random", løpenummer = 1002)
+            val sakForVårIdent = sakMedOpprettetBehandling(sakId = vårSakId, ident = ident)
+            val enAnnenSak = sakMedOpprettetBehandling(sakId = enAnnenSakId, ident = "random", løpenummer = 1002)
 
             sakRepo.lagre(sakForVårIdent)
             sakRepo.lagre(enAnnenSak)

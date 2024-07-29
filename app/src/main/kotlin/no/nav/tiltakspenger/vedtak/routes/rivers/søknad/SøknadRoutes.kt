@@ -7,14 +7,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 const val søknadpath = "/rivers/soknad"
 
 fun Route.søknadRoutes(
-    sakService: SakService,
+    søknadService: SøknadService,
 ) {
     post(søknadpath) {
         LOG.info { "Vi har mottatt søknad fra river" }
@@ -22,7 +22,7 @@ fun Route.søknadRoutes(
             val søknadDTO = call.receive<SøknadDTO>()
 
             // Oppretter sak med søknad og lagrer den
-            sakService.motta(
+            søknadService.nySøknad(
                 søknad = SøknadDTOMapper.mapSøknad(
                     dto = søknadDTO,
                     innhentet = søknadDTO.opprettet,

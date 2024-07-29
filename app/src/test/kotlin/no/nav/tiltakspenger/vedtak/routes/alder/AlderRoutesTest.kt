@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -35,6 +36,7 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.util.Random
 
 class AlderRoutesTest {
 
@@ -75,6 +77,7 @@ class AlderRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {
@@ -113,11 +116,24 @@ class AlderRoutesTest {
         )
 
         val sakId = SakId.random()
+        val saksnummer = Saksnummer("202301011001")
+        val ident = Random().nextInt().toString()
         val søknad = nySøknad()
+        val saksbehandler = ObjectMother.saksbehandler()
         val objectMotherSakUnder18 = ObjectMother.sakMedOpprettetBehandling(
-            id = sakId,
+            sakId = sakId,
+            saksnummer = saksnummer,
+            ident = ident,
             behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(sakId, søknad, registrerteTiltak, LocalDate.now().minusYears(10)),
+                Førstegangsbehandling.opprettBehandling(
+                    sakId = sakId,
+                    søknad = søknad,
+                    fødselsdato = LocalDate.now().minusYears(10),
+                    saksbehandler = saksbehandler,
+                    saksnummer = saksnummer,
+                    ident = ident,
+                    registrerteTiltak = registrerteTiltak,
+                ),
             ),
             løpenummer = 1023,
         )
@@ -141,6 +157,7 @@ class AlderRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
             )
 
             testApplication {

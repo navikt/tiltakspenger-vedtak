@@ -18,7 +18,7 @@ private val LOG = KotlinLogging.logger {}
 internal const val sakPath = "/sak"
 
 fun Sak.toDTO() = SakDTO(
-    saksnummer = this.saknummer.verdi,
+    saksnummer = this.saksnummer.verdi,
     ident = this.ident,
 )
 

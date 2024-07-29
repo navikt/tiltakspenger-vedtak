@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
@@ -16,9 +17,9 @@ class PersonopplysningerDAO() {
 
     fun hent(
         søkerId: SøkerId,
-        txSession: TransactionalSession,
+        session: Session,
     ): PersonopplysningerSøker? {
-        return txSession.run(
+        return session.run(
             queryOf(hentSql, søkerId.toString())
                 .map { row -> row.toPersonopplysninger() }
                 .asSingle,
