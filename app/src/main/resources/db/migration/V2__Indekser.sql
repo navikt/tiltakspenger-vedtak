@@ -4,18 +4,6 @@ CREATE INDEX sak_behandling
          sakId
             );
 
-CREATE INDEX saksopplysning_behandling
-    ON saksopplysning
-        (
-         behandlingId
-            );
-
-CREATE INDEX saksopplysning_vedtak
-    ON saksopplysning
-        (
-         vedtakId
-            );
-
 CREATE INDEX vurdering_behandling
     ON vurdering
         (

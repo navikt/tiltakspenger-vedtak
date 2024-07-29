@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingerForBenk
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 
 interface BehandlingService {
 
@@ -27,8 +26,6 @@ interface BehandlingService {
     fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
     fun hentBehandlingForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentBehandlingerForBenk(saksbehandler: Saksbehandler): BehandlingerForBenk
-    fun leggTilSaksopplysning(behandlingId: BehandlingId, saksopplysning: Saksopplysning, transactionContext: TransactionContext? = null)
-    fun leggTilSaksopplysning(behandling: Behandling, saksopplysning: Saksopplysning, transactionContext: TransactionContext? = null): Behandling
     fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
     fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String?)
     suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler)

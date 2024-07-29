@@ -69,21 +69,6 @@ CREATE TABLE utfallsperiode
     utfall              VARCHAR                  NOT NULL
 );
 
-CREATE TABLE saksopplysning
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  REFERENCES behandling (id),
-    vedtakId                VARCHAR                  REFERENCES vedtak (id),
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
-    kilde                   VARCHAR                  NOT NULL,
-    vilkår                  VARCHAR                  NOT NULL,
-    detaljer                VARCHAR                  NOT NULL,
-    typeSaksopplysning      VARCHAR                  NOT NULL,
-    saksbehandler           VARCHAR                  NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
 CREATE TABLE vurdering
 (
     id                      VARCHAR                  PRIMARY KEY,

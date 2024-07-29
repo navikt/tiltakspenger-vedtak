@@ -6,11 +6,6 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
@@ -74,9 +69,6 @@ data class Førstegangsbehandling(
                 søknader = listOf(søknad),
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(
-                    saksopplysninger = Saksopplysninger.initSaksopplysningerFraSøknad(søknad) + Saksopplysninger.lagSaksopplysningerAvSøknad(
-                        søknad,
-                    ),
                     vilkårsvurderinger = emptyList(),
                     utfallsperioder = emptyList(),
                     institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
@@ -110,14 +102,6 @@ data class Førstegangsbehandling(
     private fun sisteSøknadMedOpprettetFraFørste(): Søknad =
         søknader.maxBy { it.opprettet }.copy(opprettet = søknader.minBy { it.opprettet }.opprettet)
 
-    override fun saksopplysninger(): List<Saksopplysning> {
-        return saksopplysninger.groupBy { it.vilkår }.map { entry ->
-            entry.value.reduce { acc, saksopplysning ->
-                if (saksopplysning.kilde == Kilde.SAKSB) saksopplysning else acc
-            }
-        }
-    }
-
     override fun leggTilSøknad(søknad: Søknad): Førstegangsbehandling {
         require(
             this.tilstand in listOf(
@@ -127,15 +111,6 @@ data class Førstegangsbehandling(
             ),
         ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
 
-        val fakta = if (søknad.vurderingsperiode() != this.vurderingsperiode) {
-            Saksopplysninger.initSaksopplysningerFraSøknad(søknad) +
-                Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-        } else {
-            Saksopplysninger.lagSaksopplysningerAvSøknad(søknad)
-                .fold(saksopplysninger) { acc, saksopplysning ->
-                    acc.oppdaterSaksopplysninger(saksopplysning)
-                }
-        }
         // Avgjørelse jah: Vi skal ikke oppdatere vilkårsettet her mens vi skriver om til vilkår 2.0.
         // TODO jah: Fjern mulighet for samtidige søknader.
         //  Dersom avklaringen er basert på saksopplysning fra søknaden, bør vi nullstille avklaringen i påvente av en saksbehandler-opplysning.
@@ -143,34 +118,9 @@ data class Førstegangsbehandling(
         return this.copy(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
-            vilkårssett = vilkårssett.copy(
-                saksopplysninger = fakta,
-            ),
+            vilkårssett = vilkårssett,
             tilstand = BehandlingTilstand.OPPRETTET,
-        ).vilkårsvurder()
-    }
-
-    override fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons {
-        require(
-            this.tilstand in listOf(
-                BehandlingTilstand.OPPRETTET,
-                BehandlingTilstand.VILKÅRSVURDERT,
-                BehandlingTilstand.TIL_BESLUTTER,
-            ),
-        ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
-
-        val oppdatertVilkårssett = vilkårssett.oppdaterSaksopplysning(saksopplysning)
-        return if (oppdatertVilkårssett == vilkårssett) {
-            LeggTilSaksopplysningRespons(
-                behandling = this,
-                erEndret = false,
-            )
-        } else {
-            LeggTilSaksopplysningRespons(
-                behandling = this.copy(vilkårssett = oppdatertVilkårssett).vilkårsvurder(),
-                erEndret = true,
-            )
-        }
+        )
     }
 
     override fun taBehandling(saksbehandler: Saksbehandler): Behandling {
@@ -236,55 +186,6 @@ data class Førstegangsbehandling(
         check(utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin()) { "Saksbehandler må være beslutter eller administrator" }
         check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
         return this.copy(
-            tilstand = BehandlingTilstand.VILKÅRSVURDERT,
-        )
-    }
-
-    /**
-     * Endrer tilstand til VILKÅRSVURDERT
-     */
-    override fun vilkårsvurder(): Førstegangsbehandling {
-        val vurderinger = saksopplysninger().flatMap {
-            it.lagVurdering(vurderingsperiode)
-        }
-
-        val utfallsperioder =
-            vurderingsperiode.fraOgMed.datesUntil(vurderingsperiode.tilOgMed.plusDays(1)).toList().map { dag ->
-                val idag = vurderinger.filter { dag >= it.fom && dag <= it.tom }
-                val utfallYtelser = when {
-                    idag.any { it.utfall == Utfall.KREVER_MANUELL_VURDERING } -> UtfallForPeriode.KREVER_MANUELL_VURDERING
-                    idag.all { it.utfall == Utfall.OPPFYLT } -> UtfallForPeriode.GIR_RETT_TILTAKSPENGER
-                    else -> UtfallForPeriode.GIR_IKKE_RETT_TILTAKSPENGER
-                }
-
-                val harManuelleBarnUnder16 = this.søknad().barnetillegg.filterIsInstance<Barnetillegg.Manuell>()
-                    .filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }.count { it.under16ForDato(dag) } > 0
-
-                val utfall =
-                    if (utfallYtelser == UtfallForPeriode.GIR_RETT_TILTAKSPENGER && harManuelleBarnUnder16) UtfallForPeriode.KREVER_MANUELL_VURDERING else utfallYtelser
-
-                Utfallsperiode(
-                    fom = dag,
-                    tom = dag,
-                    antallBarn = this.søknad().barnetillegg.filter { it.oppholderSegIEØS == Søknad.JaNeiSpm.Ja }
-                        .count { it.under16ForDato(dag) },
-                    utfall = utfall,
-                )
-            }.fold(emptyList<Utfallsperiode>()) { periodisertliste, nesteDag ->
-                periodisertliste.slåSammen(nesteDag)
-            }
-
-        val status = if (utfallsperioder.any { it.utfall == UtfallForPeriode.KREVER_MANUELL_VURDERING }) {
-            BehandlingStatus.Manuell
-        } else if (utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-            BehandlingStatus.Innvilget
-        } else {
-            BehandlingStatus.Avslag
-        }
-
-        return this.copy(
-            vilkårssett = vilkårssett.oppdaterVilkårsvurderinger(vurderinger, utfallsperioder),
-            status = status,
             tilstand = BehandlingTilstand.VILKÅRSVURDERT,
         )
     }

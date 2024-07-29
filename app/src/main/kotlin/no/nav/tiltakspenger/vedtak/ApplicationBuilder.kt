@@ -28,7 +28,6 @@ import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.SaksopplysningRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -115,12 +114,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     )
     private val søknadRepo = PostgresSøknadRepo(sessionFactory = sessionFactory, søknadDAO = søknadDAO)
 
-    private val saksopplysningRepo = SaksopplysningRepo()
     private val vurderingRepo = VurderingRepo()
 
     private val behandlingRepo = PostgresBehandlingRepo(
         sessionFactory = sessionFactory,
-        saksopplysningRepo = saksopplysningRepo,
         vurderingRepo = vurderingRepo,
         søknadDAO = søknadDAO,
         utfallsperiodeDAO = utfallsperiodeDAO,

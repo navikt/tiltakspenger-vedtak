@@ -17,7 +17,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingerForBenk
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
@@ -78,24 +77,6 @@ class BehandlingServiceImpl(
                 .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) },
             søknader = søknadRepo.hentAlleSøknader(), // TODO jah: Her må vi gjøre et bulkkall til pdl sin egen rettigheter funksjon for å sjekke tilgang.
         )
-    }
-
-    override fun leggTilSaksopplysning(
-        behandlingId: BehandlingId,
-        saksopplysning: Saksopplysning,
-        transactionContext: TransactionContext?,
-    ) {
-        leggTilSaksopplysning(hentBehandling(behandlingId), saksopplysning, transactionContext)
-    }
-
-    override fun leggTilSaksopplysning(
-        behandling: Behandling,
-        saksopplysning: Saksopplysning,
-        transactionContext: TransactionContext?,
-    ): Behandling {
-        val behandlingRespons = behandling.leggTilSaksopplysning(saksopplysning)
-        if (behandlingRespons.erEndret) behandlingRepo.lagre(behandlingRespons.behandling, transactionContext)
-        return behandlingRespons.behandling
     }
 
     override fun sendTilBeslutter(

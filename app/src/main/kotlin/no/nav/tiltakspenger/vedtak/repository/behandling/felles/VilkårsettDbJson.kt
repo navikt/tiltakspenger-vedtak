@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.felles
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.db.deserialize
@@ -36,7 +35,6 @@ private class VilkårssettJson(
 )
 
 internal fun String.toVilkårssett(
-    saksopplysninger: List<Saksopplysning>,
     vilkårsvurderinger: List<Vurdering>,
     utfallsperioder: List<Utfallsperiode>,
 ): Vilkårssett {
@@ -50,7 +48,6 @@ internal fun String.toVilkårssett(
             alderVilkår = vilkårssettJson.alderVilkår.toDomain(),
             tiltakDeltagelseVilkår = vilkårssettJson.tiltakDeltagelseVilkår.toDomain(),
             kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(),
-            saksopplysninger = saksopplysninger,
             vilkårsvurderinger = vilkårsvurderinger,
             utfallsperioder = utfallsperioder,
         )

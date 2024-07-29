@@ -3,9 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 import arrow.core.Either
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysninger.oppdaterSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.totalePeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.LeggTilAlderSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
@@ -27,7 +24,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tilta
  */
 data class Vilkårssett(
     // TODO jah: saksopplysninger, vilkårsvurderinger og kravdatoSaksopplysninger, utfallsperioder flyttes gradvis til hvert sitt vilkår. Og slettes når vilkår 2.0 er ferdig.
-    val saksopplysninger: List<Saksopplysning>,
     val vilkårsvurderinger: List<Vurdering>,
     val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
@@ -48,17 +44,9 @@ data class Vilkårssett(
 //            }
 //        }
         // TODO jah: Brekker for mange tester ved å legge inn den sjekken her. Bør legges inn når vi er ferdig med vilkår 2.0
-        require(kvpVilkår.totalePeriode.inneholderHele(saksopplysninger.totalePeriode())) {
-            "KVPVilkår (${kvpVilkår.totalePeriode}) og saksopplysninger (${saksopplysninger.totalePeriode()}) sine perioder må være like."
-        }
-    }
-
-    fun oppdaterSaksopplysninger(saksopplysninger: List<Saksopplysning>): Vilkårssett {
-        return this.copy(saksopplysninger = saksopplysninger)
-    }
-
-    fun oppdaterSaksopplysning(saksopplysning: Saksopplysning): Vilkårssett {
-        return this.copy(saksopplysninger = saksopplysninger.oppdaterSaksopplysninger(saksopplysning))
+//        require(kvpVilkår.totalePeriode.inneholderHele(saksopplysninger.totalePeriode())) {
+//            "KVPVilkår (${kvpVilkår.totalePeriode}) og saksopplysninger (${saksopplysninger.totalePeriode()}) sine perioder må være like."
+//        }
     }
 
     fun oppdaterVilkårsvurderinger(

@@ -92,9 +92,8 @@ internal class BehandlingRepoTest {
             val behandlingRepo = testDataHelper.behandlingRepo
 
             behandling.tilstand shouldBe BehandlingTilstand.OPPRETTET
-            val behandlingVilkårsvurdert = behandling.vilkårsvurder()
-            behandlingRepo.lagre(behandlingVilkårsvurdert)
-            behandlingRepo.hentOrNull(behandling.id) shouldBe behandlingVilkårsvurdert
+            behandlingRepo.lagre(behandling)
+            behandlingRepo.hentOrNull(behandling.id) shouldBe behandling
         }
     }
 

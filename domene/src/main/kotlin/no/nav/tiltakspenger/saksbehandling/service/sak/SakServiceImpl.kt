@@ -100,26 +100,6 @@ class SakServiceImpl(
         søkerRepository.lagre(søker, tx)
     }
 
-    /** TODO jah: Skal slettes etter alle vilkårene er over på ny modell */
-//    private fun Sak.oppdaterLegacySaksopplysninger(): Sak {
-//        val sak = this
-//        return sak.copy(
-//            behandlinger = sak.behandlinger.map { behandling ->
-//                val tiltak = runBlocking { tiltakGateway.hentTiltak(sak.ident) }
-//                behandling.oppdaterTiltak(
-//                    tiltak.filter {
-//                        Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(behandling.vurderingsperiode)
-//                    },
-//                ).let { behandlingMedTiltak ->
-//                    AlderTolker.tolkeData(sak.personopplysninger.søker().fødselsdato, sak.periode)
-//                        .fold(behandlingMedTiltak) { b, s ->
-//                            b.leggTilSaksopplysning(s).behandling
-//                        }
-//                }
-//            },
-//        )
-//    }
-
     override fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak? {
         val behandling = behandlingRepo.hentOrNull(behandlingId) ?: return null
         return sakRepo.hent(behandling.sakId)

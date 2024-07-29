@@ -32,7 +32,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
 //      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo,
     private val vurderingRepo: VurderingRepo,
     private val søknadDAO: SøknadDAO,
     private val utfallsperiodeDAO: UtfallsperiodeDAO,
@@ -153,7 +152,6 @@ internal class PostgresBehandlingRepo(
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
             if (behandling is Førstegangsbehandling) {
                 søknadDAO.knyttSøknaderTilBehandling(behandling.id, behandling.søknader.map { it.id }, tx)
             }
@@ -249,15 +247,11 @@ internal class PostgresBehandlingRepo(
             "Iverksatt" -> BehandlingTilstand.IVERKSATT
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
-        val saksopplysninger = saksopplysningRepo.hent(id, session)
-        val vilkårsvurderinger = vurderingRepo.hent(id, session)
-        val utfallsperioder = utfallsperiodeDAO.hent(id, session)
         val søknader = søknadDAO.hentForBehandlingId(id, session)
 
         val vilkårssett = string("vilkårssett").toVilkårssett(
-            saksopplysninger = saksopplysninger,
-            vilkårsvurderinger = vilkårsvurderinger,
-            utfallsperioder = utfallsperioder,
+            vilkårsvurderinger = vurderingRepo.hent(id, session),
+            utfallsperioder = utfallsperiodeDAO.hent(id, session),
         )
         val ident = string("ident")
         val saksnummer = Saksnummer(string("saksnummer"))

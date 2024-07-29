@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -16,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
@@ -75,21 +73,6 @@ fun Route.behandlingRoutes(
             attesteringer = attesteringer,
         )
         call.respond(status = HttpStatusCode.OK, dto)
-    }
-
-    post("$behandlingPath/{behandlingId}") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/")
-
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val nySaksopplysning = call.receive<SaksopplysningDTO>()
-
-        behandlingService.leggTilSaksopplysning(
-            behandlingId,
-            lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
-        )
-
-        call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
     post("$behandlingPath/beslutter/{behandlingId}") {
