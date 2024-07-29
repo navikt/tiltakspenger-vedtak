@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 /**
  * Har ansvar for å serialisere/deserialisere TiltakVilkår til og fra json for lagring i database.
  */
-internal data class TiltakVilkårDbJson(
+internal data class TiltakDeltagelseVilkårDbJson(
     val søknadSaksopplysning: TiltakSaksopplysningDbJson,
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
@@ -24,8 +24,8 @@ internal data class TiltakVilkårDbJson(
     }
 }
 
-internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakVilkårDbJson {
-    return TiltakVilkårDbJson(
+internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakDeltagelseVilkårDbJson {
+    return TiltakDeltagelseVilkårDbJson(
         søknadSaksopplysning = registerSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
         utfallsperioder = utfall.toDbJson(),

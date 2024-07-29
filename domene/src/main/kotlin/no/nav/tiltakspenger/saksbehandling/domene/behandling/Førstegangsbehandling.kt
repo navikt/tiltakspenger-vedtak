@@ -87,7 +87,7 @@ data class Førstegangsbehandling(
                         vurderingsperiode,
                     ),
                     kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                    tiltakVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
+                    tiltakDeltagelseVilkår = TiltakDeltagelseVilkår.opprett(tiltak.tiltakSaksopplysning(), vurderingsperiode),
                 ),
                 saksbehandler = null,
                 beslutter = null,

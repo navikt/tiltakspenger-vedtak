@@ -27,7 +27,7 @@ fun Route.hentTiltakDeltagelseRoute(
         behandlingService.hentBehandling(behandlingId).let {
             call.respond(
                 status = HttpStatusCode.OK,
-                message = it.vilkårssett.tiltakVilkår.toDTO(),
+                message = it.vilkårssett.tiltakDeltagelseVilkår.toDTO(),
             )
         }
     }

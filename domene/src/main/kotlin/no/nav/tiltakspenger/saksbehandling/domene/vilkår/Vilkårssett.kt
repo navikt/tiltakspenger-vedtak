@@ -32,7 +32,7 @@ data class Vilkårssett(
     val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
-    val tiltakVilkår: TiltakDeltagelseVilkår,
+    val tiltakDeltagelseVilkår: TiltakDeltagelseVilkår,
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
     val alderVilkår: AlderVilkår,
