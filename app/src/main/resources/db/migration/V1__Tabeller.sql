@@ -269,7 +269,6 @@ CREATE TABLE tiltak
     deltakelse_tom         DATE                     NULL,
     deltakelse_prosent     FLOAT                    NULL,
     deltakelse_status      VARCHAR                  NOT NULL,
-    rett_til_å_søke        BOOLEAN                  NOT NULL,
     kilde                  VARCHAR                  NOT NULL,
     tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL

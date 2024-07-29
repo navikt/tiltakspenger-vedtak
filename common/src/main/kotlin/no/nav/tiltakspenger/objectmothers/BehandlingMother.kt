@@ -80,10 +80,7 @@ interface BehandlingMother {
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
-        status: Tiltak.DeltakerStatus = Tiltak.DeltakerStatus(
-            status = "DELTAR",
-            rettTilÅSøke = true,
-        ),
+        status: String = "DELTAR",
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,
         kilde: String = "Komet",
@@ -126,7 +123,6 @@ interface BehandlingMother {
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)
-    fun enkeltAmo() = gjennomføring(typeNavn = "Enkeltplass AMO", typeKode = "ENKELAMO", rettPåTiltakspenger = true)
 
     fun gjennomføring(
         id: String = "id",
