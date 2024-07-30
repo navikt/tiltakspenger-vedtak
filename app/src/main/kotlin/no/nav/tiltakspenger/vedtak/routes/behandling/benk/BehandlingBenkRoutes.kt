@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -32,21 +33,25 @@ fun Route.behandlingBenkRoutes(
 
         val behandlinger = behandlingService.hentBehandlingerForBenk(saksbehandler)
             .let {
-                listOf(it.behandlinger.fraBehandlingToBehandlingBenkDto(), it.søknader.fraSøknadToBehandlingBenkDto())
+                listOf(it.søknader.fraSøknadToBehandlingBenkDto(), it.behandlinger.fraBehandlingToBehandlingBenkDto()).flatten()
             }
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }
 
-    post("$behandlingPath/startbehandling/{soknadId}") {
+    post("$behandlingPath/startbehandling") {
         SECURELOG.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val søknadId = SøknadId.fromString(call.parameter("soknadId"))
+        val søknadId = SøknadId.fromString(call.receive())
 
         sakService.startFørstegangsbehandling(søknadId, saksbehandler)
 
-        call.respond(message = "{}", status = HttpStatusCode.OK)
+        val behandling = behandlingService.hentBehandlingForSøknadId(søknadId)
+        require(behandling != null) { "Behandling ble ikke opprettet" }
+        val behandlingId = behandling.id
+
+        call.respond(status = HttpStatusCode.OK, behandlingId)
     }
 
     post("$behandlingPath/tabehandling/{behandlingId}") {
