@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
@@ -29,14 +30,14 @@ internal class PostgresSakRepo(
     private val vedtakDAO: VedtakDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : SakRepo {
-    override fun hentForIdent(fnr: String): Saker {
+    override fun hentForIdent(fnr: Fnr): Saker {
         return Saker(
-            ident = fnr,
+            fnr = fnr,
             saker = sessionFactory.withTransaction { txSession ->
                 txSession.run(
                     queryOf(
                         sqlHentSakerForIdent,
-                        mapOf("ident" to fnr),
+                        mapOf("ident" to fnr.verdi),
                     ).map { row ->
                         row.toSak(txSession)
                     }.asList,
@@ -138,7 +139,7 @@ internal class PostgresSakRepo(
                 sqlOppdaterSak,
                 mapOf(
                     "id" to sak.id.toString(),
-                    "ident" to sak.fnr,
+                    "ident" to sak.fnr.verdi,
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                 ),
@@ -160,7 +161,7 @@ internal class PostgresSakRepo(
                 sqlOpprettSak,
                 mapOf(
                     "id" to sak.id.toString(),
-                    "ident" to sak.fnr,
+                    "ident" to sak.fnr.verdi,
                     "saksnummer" to sak.saksnummer.verdi,
                     "sistEndret" to nå,
                     "opprettet" to nå,
@@ -200,7 +201,7 @@ internal class PostgresSakRepo(
         val id = SakId.fromDb(string("id"))
         return TynnSak(
             id = id,
-            fnr = string("ident"),
+            fnr = Fnr.fromString(string("ident")),
             saksnummer = Saksnummer(verdi = string("saksnummer")),
         )
     }

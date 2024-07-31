@@ -64,7 +64,7 @@ internal fun Behandling.toBehandlingBenkDto(): BehandlingBenkDto {
         // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
         // underkjent = this.be,
         typeBehandling = Førstegangsbehandling,
-        ident = ident,
+        ident = fnr.verdi,
         saksnummer = saksnummer.toString(),
         id = id.toString(),
         saksbehandler = saksbehandler,
@@ -74,7 +74,7 @@ internal fun Behandling.toBehandlingBenkDto(): BehandlingBenkDto {
 }
 
 private fun Behandling.toBehandlingBenkDtoStatus(): BehandlingBenkDto.Status {
-    return when (val t = tilstand) {
+    return when (tilstand) {
         OPPRETTET, VILKÅRSVURDERT -> {
             if (saksbehandler == null) {
                 BehandlingBenkDto.Status.KLAR_TIL_BEHANDLING
@@ -103,7 +103,7 @@ internal fun Søknad.toBehandlingBenkDto(): BehandlingBenkDto {
         periode = null,
         status = BehandlingBenkDto.Status.SØKNAD,
         typeBehandling = BehandlingBenkDto.TypeBehandling.Søknad,
-        ident = this.personopplysninger.ident,
+        ident = this.personopplysninger.fnr.verdi,
         saksnummer = null,
         id = id.toString(),
         saksbehandler = null,

@@ -5,6 +5,8 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.juni
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -12,13 +14,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Random
 
 interface SøknadMother {
-
-    companion object {
-        private val random = Random()
-    }
 
     fun søknadTiltak(
         id: String = "arenaId",
@@ -81,8 +78,8 @@ interface SøknadMother {
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
         filnavn: String = "filnavn",
-        ident: String = random.nextInt().toString(),
-        personopplysninger: Søknad.Personopplysninger = personSøknad(ident = ident),
+        fnr: Fnr = Fnr.random(),
+        personopplysninger: Søknad.Personopplysninger = personSøknad(fnr = fnr),
         kvp: Søknad.PeriodeSpm = periodeNei(),
         intro: Søknad.PeriodeSpm = periodeNei(),
         institusjon: Søknad.PeriodeSpm = periodeNei(),
@@ -129,11 +126,11 @@ interface SøknadMother {
     fun personSøknad(
         fornavn: String = "Fornavn",
         etternavn: String = "Etternavn",
-        ident: String = random.nextInt().toString(),
+        fnr: Fnr = Fnr.random(),
     ) = Søknad.Personopplysninger(
         fornavn = fornavn,
         etternavn = etternavn,
-        ident = ident,
+        fnr = fnr,
     )
 
     fun nei() = Søknad.JaNeiSpm.Nei

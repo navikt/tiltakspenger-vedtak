@@ -7,6 +7,7 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
@@ -53,7 +54,7 @@ class PersonopplysningerDAO() {
                 mapOf(
                     "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGERSØKER).toString(),
                     "sokerId" to søkerId.toString(),
-                    "ident" to personopplysninger.ident,
+                    "ident" to personopplysninger.fnr.verdi,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
                     "mellomnavn" to personopplysninger.mellomnavn,
@@ -75,7 +76,7 @@ class PersonopplysningerDAO() {
 
     private fun Row.toPersonopplysninger(): PersonopplysningerSøker {
         return PersonopplysningerSøker(
-            ident = string("ident"),
+            fnr = Fnr.fromString(string("ident")),
             fødselsdato = localDate("fødselsdato"),
             fornavn = string("fornavn"),
             mellomnavn = stringOrNull("mellomnavn"),

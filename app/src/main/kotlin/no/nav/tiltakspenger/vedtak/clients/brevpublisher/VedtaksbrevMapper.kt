@@ -38,7 +38,7 @@ object VedtaksbrevMapper {
 
     private fun mapPersonaliaDTO(vedtak: Vedtak, personopplysninger: PersonopplysningerSøker) =
         PersonaliaDTO(
-            ident = personopplysninger.ident,
+            ident = personopplysninger.fnr.verdi,
             fornavn = personopplysninger.fornavn,
             etternavn = personopplysninger.etternavn,
             // TODO Grøss:

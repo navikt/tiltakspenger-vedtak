@@ -6,6 +6,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import org.intellij.lang.annotations.Language
 
@@ -138,7 +139,7 @@ internal class SøknadDAO(
                         "behandlingId" to null,
                         "fornavn" to søknad.personopplysninger.fornavn,
                         "etternavn" to søknad.personopplysninger.etternavn,
-                        "ident" to søknad.personopplysninger.ident,
+                        "ident" to søknad.personopplysninger.fnr.verdi,
                         "journalpostId" to søknad.journalpostId,
                         "dokumentinfoId" to søknad.dokumentInfoId,
                         "filnavn" to søknad.filnavn,
@@ -158,7 +159,7 @@ internal class SøknadDAO(
         val versjon = string("versjon")
         val fornavn = string("fornavn")
         val etternavn = string("etternavn")
-        val ident = string("ident")
+        val fnr = Fnr.fromString(string("ident"))
         val opprettet = localDateTime("opprettet")
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")
@@ -185,7 +186,7 @@ internal class SøknadDAO(
             dokumentInfoId = dokumentInfoId,
             filnavn = filnavn,
             personopplysninger = Søknad.Personopplysninger(
-                ident = ident,
+                fnr = fnr,
                 fornavn = fornavn,
                 etternavn = etternavn,
             ),

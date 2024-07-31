@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
@@ -28,7 +29,7 @@ internal class PersonopplysningerBarnMedIdentRepo {
                 mapOf(
                     "id" to random(ULID_PREFIX_BARN_MED_IDENT).toString(),
                     "sakId" to sakId.toString(),
-                    "ident" to personopplysninger.ident,
+                    "ident" to personopplysninger.fnr.verdi,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
                     "mellomnavn" to personopplysninger.mellomnavn,
@@ -49,7 +50,7 @@ internal class PersonopplysningerBarnMedIdentRepo {
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerBarnMedIdent = { row ->
         PersonopplysningerBarnMedIdent(
-            ident = row.string("ident"),
+            fnr = Fnr.fromString(row.string("ident")),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),
             mellomnavn = row.stringOrNull("mellomnavn"),

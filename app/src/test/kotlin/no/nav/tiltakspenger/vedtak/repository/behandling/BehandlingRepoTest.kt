@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
@@ -35,16 +37,16 @@ internal class BehandlingRepoTest {
             val behandlingRepo = testDataHelper.behandlingRepo
             val sakRepo = testDataHelper.sakRepo
 
-            val ident = random.nextInt().toString()
+            val fnr = Fnr.random()
             val vårSakId = SakId.random()
             val enAnnenSakId = SakId.random()
-            val sakForVårIdent = sakMedOpprettetBehandling(sakId = vårSakId, ident = ident)
-            val enAnnenSak = sakMedOpprettetBehandling(sakId = enAnnenSakId, ident = "random", løpenummer = 1002)
+            val sakForVårIdent = sakMedOpprettetBehandling(sakId = vårSakId, fnr = fnr)
+            val enAnnenSak = sakMedOpprettetBehandling(sakId = enAnnenSakId, løpenummer = 1002)
 
             sakRepo.lagre(sakForVårIdent)
             sakRepo.lagre(enAnnenSak)
 
-            val hentBehandling = behandlingRepo.hentAlleForIdent(ident)
+            val hentBehandling = behandlingRepo.hentAlleForIdent(fnr)
 
             hentBehandling.size shouldBe 1
         }

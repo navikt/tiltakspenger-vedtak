@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
@@ -11,7 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 interface Behandling {
     val id: BehandlingId
     val sakId: SakId
-    val ident: String
+    val fnr: Fnr
     val saksnummer: Saksnummer
     val vurderingsperiode: Periode
     val søknader: List<Søknad>

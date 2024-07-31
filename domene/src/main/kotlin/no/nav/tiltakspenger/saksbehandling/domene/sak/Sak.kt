@@ -52,7 +52,7 @@ data class Sak(
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
         ): Sak {
-            val fnr = søknad.personopplysninger.ident
+            val fnr = søknad.personopplysninger.fnr
             val førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
                 sakId = sakId,
                 saksnummer = saksnummer,

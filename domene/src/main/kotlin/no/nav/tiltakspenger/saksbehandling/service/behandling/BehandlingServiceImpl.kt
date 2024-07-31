@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.VedtakId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
@@ -193,10 +194,10 @@ class BehandlingServiceImpl(
     }
 
     override fun hentBehandlingForIdent(
-        ident: String,
+        fnr: Fnr,
         utøvendeSaksbehandler: Saksbehandler,
     ): List<Førstegangsbehandling> {
-        return behandlingRepo.hentAlleForIdent(ident)
+        return behandlingRepo.hentAlleForIdent(fnr)
             .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(utøvendeSaksbehandler) }
     }
 }

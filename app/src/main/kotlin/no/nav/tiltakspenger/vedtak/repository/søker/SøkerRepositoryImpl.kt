@@ -6,6 +6,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -18,10 +19,10 @@ class SøkerRepositoryImpl(
     private val personopplysningerDAO: PersonopplysningerDAO,
 ) : SøkerRepository {
 
-    override fun findByIdent(ident: String, sessionContext: SessionContext?): Søker? {
+    override fun findByIdent(fnr: Fnr, sessionContext: SessionContext?): Søker? {
         return sessionFactory.withSession(sessionContext) { session ->
             session.run(
-                queryOf(findByIdent, ident).map { row ->
+                queryOf(findByIdent, fnr).map { row ->
                     row.toSøker(session)
                 }.asSingle,
             )
@@ -62,7 +63,7 @@ class SøkerRepositoryImpl(
             queryOf(
                 oppdaterSøker,
                 mapOf(
-                    "ident" to søker.ident,
+                    "ident" to søker.fnr.verdi,
                     "sistEndret" to nå(),
                 ),
             ).asUpdate,
@@ -76,7 +77,7 @@ class SøkerRepositoryImpl(
                 lagreSøker,
                 mapOf(
                     "id" to søker.søkerId.toString(),
-                    "ident" to søker.ident,
+                    "ident" to søker.fnr.verdi,
                     "opprettet" to nå,
                     "sistEndret" to nå,
                 ),
@@ -86,11 +87,11 @@ class SøkerRepositoryImpl(
 
     private fun Row.toSøker(session: Session): Søker {
         val id = SøkerId.fromString(string("id"))
-        val ident = string("ident")
+        val fnr = Fnr.fromString(string("ident"))
         val personopplysninger = personopplysningerDAO.hent(id, session)
         return Søker.fromDb(
             søkerId = id,
-            ident = ident,
+            fnr = fnr,
             personopplysninger = personopplysninger,
         )
     }
