@@ -52,6 +52,7 @@ data class Søknad(
             trygdOgPensjon.erJa()
 
     data class Personopplysninger(
+        // TODO jah: Ønsker å endre denne til fnr: Fnr
         val ident: String,
         val fornavn: String,
         val etternavn: String,

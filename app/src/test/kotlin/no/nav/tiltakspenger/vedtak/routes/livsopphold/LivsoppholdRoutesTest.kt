@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.livsopphold
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.setBody
@@ -27,10 +27,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ja
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
@@ -38,6 +35,7 @@ import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImp
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -50,7 +48,6 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
-import java.util.Random
 
 class LivsoppholdRoutesTest {
 
@@ -73,16 +70,12 @@ class LivsoppholdRoutesTest {
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1012)
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-        val vurderingsPeriode = objectMotherSak.behandlinger.first().vurderingsperiode
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+            val behandlingId = sak.førstegangsbehandling.id
+            val vurderingsPeriode = sak.førstegangsbehandling.vurderingsperiode
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -100,7 +93,6 @@ class LivsoppholdRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 behandlingService = behandlingService,
             )
-
             testApplication {
                 application {
                     jacksonSerialization()
@@ -112,7 +104,6 @@ class LivsoppholdRoutesTest {
                         )
                     }
                 }
-
                 // Sjekk at man kan kjøre Get
                 defaultRequest(
                     HttpMethod.Get,
@@ -123,8 +114,7 @@ class LivsoppholdRoutesTest {
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
-                    livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
-                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldBe null
+                    livsoppholdVilkår.avklartSaksopplysning.shouldBeNull()
                 }
 
                 // Sjekk at man kan si at bruker ikke har livsoppholdytelser
@@ -150,7 +140,7 @@ class LivsoppholdRoutesTest {
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
-                    livsoppholdVilkår.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeFalse()
+                    livsoppholdVilkår.avklartSaksopplysning!!.harLivsoppholdYtelser.shouldBeFalse()
                     livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldNotBeNull { this.navIdent shouldBe saksbehandlerIdent }
                 }
             }
@@ -219,6 +209,7 @@ class LivsoppholdRoutesTest {
         }
     }
 
+    // TODO jah + kew: Siden livsopphold alltid nå er uavklart dersom saksbehandler ikke har postet, må vi endre denne testen.
     @Test
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
@@ -229,58 +220,58 @@ class LivsoppholdRoutesTest {
         )
 
         val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger, 1011)
-        livsoppholdVilkårSykepenger.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårSykepenger.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedEtterlønn = nySøknad(
             etterlønn = ja(),
         )
         val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn, 1005)
-        livsoppholdVilkårEtterlønn.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårEtterlønn.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedGjenlevendepensjon = nySøknad(
             gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårGjenlevendepensjon =
             opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
-        livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedSuAlder = nySøknad(
             supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder, 1007)
-        livsoppholdVilkårSuAlder.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårSuAlder.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedSuflykning = nySøknad(
             supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning, 1008)
-        livsoppholdVilkårSuflykning.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårSuflykning.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedJobbsjansen = nySøknad(
             jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen, 1009)
-        livsoppholdVilkårJobbsjansen.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårJobbsjansen.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedPensjonsinntekt = nySøknad(
             trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
         )
         val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt, 1010)
-        livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
         val søknadMedAlderpensjon = nySøknad(
             alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
         )
         val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon, 1011)
-        livsoppholdVilkårAlderpensjon.avklartSaksopplysning.harLivsoppholdYtelser.shouldBeTrue()
-        livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+        livsoppholdVilkårAlderpensjon.avklartSaksopplysning.shouldBeNull()
+        livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
     }
 
     private fun opprettSakOgKjørGetPåLivsopphold(
@@ -289,38 +280,18 @@ class LivsoppholdRoutesTest {
         løpenummer: Int,
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     ): LivsoppholdVilkårDTO {
-        val registrerteTiltak = listOf(
-            ObjectMother.tiltak(),
-        )
-        val saksnummer = Saksnummer("202301011001")
-        val ident = Random().nextInt().toString()
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            sakId = sakId,
-            saksnummer = saksnummer,
-            ident = ident,
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = sakId,
-                    søknad = søknad,
-                    fødselsdato = personopplysningFødselsdato(),
-                    saksbehandler = saksbehandler,
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    registrerteTiltak = registrerteTiltak,
-                ),
-            ),
-            løpenummer = løpenummer,
-        )
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                sakId = sakId,
+                søknad = søknad,
+                løpenummer = løpenummer,
+                saksbehandler = saksbehandler,
+            )
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

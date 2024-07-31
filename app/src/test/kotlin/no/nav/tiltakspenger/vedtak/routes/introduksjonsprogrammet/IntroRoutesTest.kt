@@ -22,7 +22,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
@@ -134,17 +133,11 @@ class IntroRoutesTest {
             sakId = sakId,
             ident = ident,
             saksnummer = saksnummer,
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = sakId,
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    registrerteTiltak = registrerteTiltak,
-                    søknad = søknadMedIntro,
-                    fødselsdato = personopplysningFødselsdato(),
-                    saksbehandler = saksbehandler,
-                ),
-            ),
+            registrerteTiltak = registrerteTiltak,
+            søknad = søknadMedIntro,
+            fødselsdato = personopplysningFødselsdato(),
+            saksbehandler = saksbehandler,
+
             løpenummer = 1002,
         )
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()

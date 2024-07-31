@@ -10,7 +10,7 @@ object UtbetalingReqMapper {
         return UtbetalingDTO(
             sakId = sak.saksnummer.verdi,
             utløsendeId = vedtak.behandling.id.toString(),
-            ident = sak.ident,
+            ident = sak.fnr,
             utfallsperioder = vedtak.utfallsperioder.map {
                 UtfallsperiodeDTO(
                     fom = it.fom,

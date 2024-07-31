@@ -6,7 +6,6 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.nå
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
@@ -46,12 +45,12 @@ internal class PostgresSakRepo(
         )
     }
 
-    override fun hentForSaksnummer(saksnummer: String): Sak? {
+    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? {
         return sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHentSakForSaksnummer,
-                    mapOf("saksnummer" to saksnummer),
+                    mapOf("saksnummer" to saksnummer.toString()),
                 ).map { row ->
                     row.toSak(txSession)
                 }.asSingle,
@@ -139,9 +138,7 @@ internal class PostgresSakRepo(
                 sqlOppdaterSak,
                 mapOf(
                     "id" to sak.id.toString(),
-                    "fom" to sak.periode.fraOgMed,
-                    "tom" to sak.periode.tilOgMed,
-                    "ident" to sak.ident,
+                    "ident" to sak.fnr,
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                 ),
@@ -163,10 +160,8 @@ internal class PostgresSakRepo(
                 sqlOpprettSak,
                 mapOf(
                     "id" to sak.id.toString(),
-                    "ident" to sak.ident,
+                    "ident" to sak.fnr,
                     "saksnummer" to sak.saksnummer.verdi,
-                    "fom" to sak.periode.fraOgMed,
-                    "tom" to sak.periode.tilOgMed,
                     "sistEndret" to nå,
                     "opprettet" to nå,
                 ),
@@ -205,9 +200,8 @@ internal class PostgresSakRepo(
         val id = SakId.fromDb(string("id"))
         return TynnSak(
             id = id,
-            ident = string("ident"),
+            fnr = string("ident"),
             saksnummer = Saksnummer(verdi = string("saksnummer")),
-            periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
         )
     }
 
@@ -217,16 +211,12 @@ internal class PostgresSakRepo(
             id,
             ident,
             saksnummer,
-            fom,
-            tom,
             sist_endret,
             opprettet
         ) values (
             :id,
             :ident,
             :saksnummer,
-            :fom,
-            :tom,
             :sistEndret,
             :opprettet
         )
@@ -236,8 +226,6 @@ internal class PostgresSakRepo(
     private val sqlOppdaterSak =
         """update sak set 
               ident = :ident,
-              fom   = :fom,
-              tom   = :tom,
               sist_endret = :sistEndret
            where id = :id
              and sist_endret = :sistEndretOld

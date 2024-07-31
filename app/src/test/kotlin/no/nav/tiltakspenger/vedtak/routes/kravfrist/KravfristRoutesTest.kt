@@ -16,11 +16,11 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
@@ -29,6 +29,7 @@ import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -50,7 +51,7 @@ internal class KravfristRoutesTest {
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val mockSaksbehandler = Saksbehandler(
+    private val saksbehandler = Saksbehandler(
         "Q123456",
         "Superman",
         "a@b.c",
@@ -59,7 +60,7 @@ internal class KravfristRoutesTest {
 
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val periodeFraOgMed = LocalDate.now().minusMonths(2)
         val periodeTilOgMed = LocalDate.now().minusMonths(1)
@@ -80,17 +81,10 @@ internal class KravfristRoutesTest {
             sakId = sakId,
             saksnummer = saksnummer,
             ident = ident,
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = sakId,
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    søknad = søknad,
-                    fødselsdato = personopplysningFødselsdato(),
-                    saksbehandler = saksbehandler,
-                    registrerteTiltak = registrerteTiltak,
-                ),
-            ),
+            søknad = søknad,
+            fødselsdato = personopplysningFødselsdato(),
+            saksbehandler = saksbehandler,
+            registrerteTiltak = registrerteTiltak,
         )
 
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
@@ -144,46 +138,16 @@ internal class KravfristRoutesTest {
 
     @Test
     fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val periodeFraOgMed = LocalDate.now().minusMonths(2)
-        val periodeTilOgMed = LocalDate.now().minusMonths(1)
-
-        val sakId = SakId.random()
-        val saksnummer = Saksnummer("202301011001")
-        val ident = Random().nextInt().toString()
-        val søknad = nySøknad(
-            periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
-            tidsstempelHosOss = LocalDateTime.now().plusMonths(4),
-        )
-
-        val registrerteTiltak = listOf(
-            ObjectMother.tiltak(deltakelseTom = periodeTilOgMed, deltakelseFom = periodeFraOgMed),
-        )
-
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            sakId = sakId,
-            saksnummer = saksnummer,
-            ident = ident,
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = sakId,
-                    søknad = søknad,
-                    fødselsdato = personopplysningFødselsdato(),
-                    saksbehandler = ObjectMother.saksbehandler(),
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    registrerteTiltak = registrerteTiltak,
-                ),
-            ),
-        )
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                deltakelseFom = 1.januar(2021),
+                deltakelseTom = 31.januar(2021),
+            )
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

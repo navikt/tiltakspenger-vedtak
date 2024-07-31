@@ -33,7 +33,7 @@ interface BehandlingMother {
         Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             saksnummer = saksnummer,
-            ident = ident,
+            fnr = ident,
             søknad = søknad,
             fødselsdato = personopplysningFødselsdato,
             saksbehandler = saksbehandler,

@@ -13,8 +13,7 @@ internal fun TestDataHelper.persisterSøknad(
     deltakelseFom: LocalDate = 1.januar(2023),
     deltakelseTom: LocalDate = 31.mars(2023),
     journalpostId: String = random.nextInt().toString(),
-): Søknad {
-    val søknad = ObjectMother.nySøknad(
+    søknad: Søknad = ObjectMother.nySøknad(
         journalpostId = journalpostId,
         personopplysninger = ObjectMother.personSøknad(
             ident = ident,
@@ -24,7 +23,9 @@ internal fun TestDataHelper.persisterSøknad(
             deltakelseTom = deltakelseTom,
         ),
         barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
-    )
+    ),
+
+): Søknad {
     this.søknadRepo.lagre(søknad)
     return søknadRepo.hentSøknad(søknad.id).also {
         it shouldBe søknad

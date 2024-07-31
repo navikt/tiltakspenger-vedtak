@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter
 
 data class Saksnummer(
     val verdi: String,
+
 ) {
     constructor(dato: LocalDate, løpenr: Int) : this(genererSaksnummerPrefiks(dato) + løpenr)
 
@@ -33,4 +34,6 @@ data class Saksnummer(
             return Saksnummer(prefiks + nesteLøpenummer)
         }
     }
+
+    override fun toString() = verdi
 }

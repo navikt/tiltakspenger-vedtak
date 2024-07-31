@@ -47,7 +47,7 @@ data class Førstegangsbehandling(
         fun opprettBehandling(
             sakId: SakId,
             saksnummer: Saksnummer,
-            ident: String,
+            fnr: String,
             søknad: Søknad,
             fødselsdato: LocalDate,
             saksbehandler: Saksbehandler,
@@ -65,7 +65,7 @@ data class Førstegangsbehandling(
                 id = BehandlingId.random(),
                 saksnummer = saksnummer,
                 sakId = sakId,
-                ident = ident,
+                ident = fnr,
                 søknader = listOf(søknad),
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(

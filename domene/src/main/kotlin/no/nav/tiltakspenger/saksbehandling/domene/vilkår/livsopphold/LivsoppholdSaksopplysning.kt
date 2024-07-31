@@ -25,16 +25,10 @@ sealed interface LivsoppholdSaksopplysning {
         override val saksbehandler = null
 
         override fun vurderMaskinelt(): Periodisering<Utfall2> {
-            return when (harLivsoppholdYtelser) {
-                true -> Periodisering(
-                    Utfall2.UAVKLART,
-                    periode,
-                )
-                false -> Periodisering(
-                    Utfall2.UAVKLART,
-                    periode,
-                )
-            }
+            return Periodisering(
+                Utfall2.UAVKLART,
+                periode,
+            )
         }
     }
 

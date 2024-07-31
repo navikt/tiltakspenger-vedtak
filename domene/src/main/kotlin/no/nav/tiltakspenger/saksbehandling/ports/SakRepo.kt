@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 
 interface SakRepo {
     fun hentForIdent(fnr: String): Saker
-    fun hentForSaksnummer(saksnummer: String): Sak?
+    fun hentForSaksnummer(saksnummer: Saksnummer): Sak?
     fun lagre(sak: Sak, transactionContext: TransactionContext? = null): Sak
     fun hent(sakId: SakId): Sak?
     fun hentSakDetaljer(sakId: SakId): SakDetaljer?
