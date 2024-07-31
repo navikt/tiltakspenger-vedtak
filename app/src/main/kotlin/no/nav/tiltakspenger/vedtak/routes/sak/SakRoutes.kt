@@ -8,6 +8,7 @@ import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.routes.parameter
@@ -19,7 +20,7 @@ internal const val sakPath = "/sak"
 
 fun Sak.toDTO() = SakDTO(
     saksnummer = this.saksnummer.verdi,
-    ident = this.ident,
+    ident = this.fnr,
 )
 
 fun Route.sakRoutes(
@@ -45,7 +46,7 @@ fun Route.sakRoutes(
         val saksnummer = call.parameter("saksnummer")
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
-        val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler).toDTO()
+        val sakDTO = sakService.hentForSaksnummer(Saksnummer(saksnummer), saksbehandler).toDTO()
         call.respond(message = sakDTO, status = HttpStatusCode.OK)
     }
 }

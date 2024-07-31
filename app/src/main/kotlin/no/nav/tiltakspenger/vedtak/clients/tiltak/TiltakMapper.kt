@@ -54,10 +54,7 @@ internal fun mapTiltak(
                 ),
                 deltakelseFom = it.deltakelseFom!!,
                 deltakelseTom = it.deltakelseTom!!,
-                deltakelseStatus = Tiltak.DeltakerStatus(
-                    status = it.deltakelseStatus.name,
-                    rettTilÅSøke = it.deltakelseStatus.rettTilÅSøke,
-                ),
+                deltakelseStatus = it.deltakelseStatus.name,
                 deltakelseProsent = it.deltakelseProsent,
                 kilde = it.kilde,
                 registrertDato = it.registrertDato,

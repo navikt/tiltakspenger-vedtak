@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.ports
 
+import arrow.core.NonEmptyList
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.SøknadId
@@ -14,7 +15,7 @@ interface BehandlingRepo {
     fun hent(behandlingId: BehandlingId, sessionContext: SessionContext? = null): Behandling
     fun hentAlle(): List<Førstegangsbehandling>
     fun hentAlleForIdent(ident: String): List<Førstegangsbehandling>
-    fun hentForSak(sakId: SakId): List<Førstegangsbehandling>
+    fun hentForSak(sakId: SakId): NonEmptyList<Førstegangsbehandling>
     fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling?
     fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
 }

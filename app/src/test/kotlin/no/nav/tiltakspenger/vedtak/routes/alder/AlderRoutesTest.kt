@@ -14,18 +14,15 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -36,7 +33,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.util.Random
 
 class AlderRoutesTest {
 
@@ -46,7 +42,7 @@ class AlderRoutesTest {
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val mockSaksbehandler = Saksbehandler(
+    private val saksbehandler = Saksbehandler(
         "Q123456",
         "Superman",
         "a@b.c",
@@ -55,7 +51,7 @@ class AlderRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1021)
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
@@ -109,43 +105,14 @@ class AlderRoutesTest {
 
     @Test
     fun `test at søknaden blir gjenspeilet i alder vilkåret`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
-
-        val registrerteTiltak = listOf(
-            ObjectMother.tiltak(),
-        )
-
-        val sakId = SakId.random()
-        val saksnummer = Saksnummer("202301011001")
-        val ident = Random().nextInt().toString()
-        val søknad = nySøknad()
-        val saksbehandler = ObjectMother.saksbehandler()
-        val objectMotherSakUnder18 = ObjectMother.sakMedOpprettetBehandling(
-            sakId = sakId,
-            saksnummer = saksnummer,
-            ident = ident,
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = sakId,
-                    søknad = søknad,
-                    fødselsdato = LocalDate.now().minusYears(10),
-                    saksbehandler = saksbehandler,
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    registrerteTiltak = registrerteTiltak,
-                ),
-            ),
-            løpenummer = 1023,
-        )
-
-        val behandlingId = objectMotherSakUnder18.behandlinger.first().id.toString()
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
-
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSakUnder18)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                fødselsdato = LocalDate.now().minusYears(10),
+            )
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

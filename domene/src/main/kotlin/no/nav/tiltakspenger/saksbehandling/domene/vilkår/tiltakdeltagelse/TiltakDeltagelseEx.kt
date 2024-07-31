@@ -8,8 +8,8 @@ fun Tiltak.tiltakSaksopplysning(): TiltakDeltagelseSaksopplysning {
         tiltakNavn = gjennomføring.typeNavn,
         deltagelsePeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
         kilde = kilde,
-        status = deltakelseStatus.status,
-        girRett = deltakelseStatus.rettTilÅSøke,
+        status = deltakelseStatus,
+        girRett = gjennomføring.rettPåTiltakspenger,
         tidsstempel = LocalDateTime.now(),
     )
 }

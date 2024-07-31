@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.0"
-val felleslibVersion = "0.0.159"
+val felleslibVersion = "0.0.164"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -72,7 +72,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.16.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")

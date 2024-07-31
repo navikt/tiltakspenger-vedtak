@@ -22,8 +22,6 @@ create TABLE sak
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,
     saksnummer              VARCHAR                  NOT NULL UNIQUE,
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -269,7 +267,6 @@ CREATE TABLE tiltak
     deltakelse_tom         DATE                     NULL,
     deltakelse_prosent     FLOAT                    NULL,
     deltakelse_status      VARCHAR                  NOT NULL,
-    rett_til_å_søke        BOOLEAN                  NOT NULL,
     kilde                  VARCHAR                  NOT NULL,
     tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL

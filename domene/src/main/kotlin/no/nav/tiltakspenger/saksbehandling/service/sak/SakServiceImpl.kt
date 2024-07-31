@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonop
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
@@ -75,11 +76,12 @@ class SakServiceImpl(
         require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
 
         val sak = Sak.lagSak(
-            søknad = søknad,
             saksnummer = sakRepo.hentNesteSaksnummer(),
             sakPersonopplysninger = sakPersonopplysninger,
-        ).nyFørstegangsbehandling(søknad, saksbehandler, registrerteTiltak)
-        // .oppdaterLegacySaksopplysninger()
+            søknad = søknad,
+            saksbehandler = saksbehandler,
+            registrerteTiltak = registrerteTiltak,
+        )
 
         sessionFactory.withTransactionContext { tx ->
             sakRepo.lagre(sak, tx)
@@ -95,7 +97,7 @@ class SakServiceImpl(
         sakPersonopplysninger: SakPersonopplysninger,
         tx: TransactionContext,
     ) {
-        val søker = søkerRepository.findByIdent(sak.ident, tx) ?: Søker(sak.ident)
+        val søker = søkerRepository.findByIdent(sak.fnr, tx) ?: Søker(sak.fnr)
         søker.personopplysninger = sakPersonopplysninger.liste.søker()
         søkerRepository.lagre(søker, tx)
     }
@@ -125,7 +127,7 @@ class SakServiceImpl(
         return saker
     }
 
-    override fun hentForSaksnummer(saksnummer: String, saksbehandler: Saksbehandler): Sak {
+    override fun hentForSaksnummer(saksnummer: Saksnummer, saksbehandler: Saksbehandler): Sak {
         val sak = sakRepo.hentForSaksnummer(saksnummer)
             ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {

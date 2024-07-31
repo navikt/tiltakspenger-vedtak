@@ -132,7 +132,7 @@ interface PersonMother {
         deltakelseTom: LocalDate = 31.januar(2022),
         kilde: String = "Komet",
         deltakelseProsent: Float? = 100F,
-        deltakerStatus: Tiltak.DeltakerStatus = Tiltak.DeltakerStatus("DELTAR", true),
+        deltakerStatus: String = "DELTAR",
         antallDagerPerUke: Float? = 1F,
         registrertDato: LocalDateTime = 1.januarDateTime(2022),
         innhentet: LocalDateTime = 1.januarDateTime(2022),
