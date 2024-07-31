@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.rivers
 
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.BarnetilleggDTO
@@ -31,7 +33,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.dokInfo.filnavn, søknad.filnavn)
         assertEquals(søknadDTO.personopplysninger.fornavn, søknad.personopplysninger.fornavn)
         assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
-        assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.ident)
+        assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.fnr.verdi)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.vedlegg.first().journalpostId, søknad.vedlegg.first().journalpostId)
         assertEquals(søknadDTO.vedlegg.first().dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
@@ -95,7 +97,7 @@ internal class SøknadDTOTest {
         personopplysninger: PersonopplysningerDTO = PersonopplysningerDTO(
             fornavn = "Ola",
             etternavn = "Nordmann",
-            ident = "123",
+            ident = Fnr.random().verdi,
         ),
         kvp: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         intro: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),

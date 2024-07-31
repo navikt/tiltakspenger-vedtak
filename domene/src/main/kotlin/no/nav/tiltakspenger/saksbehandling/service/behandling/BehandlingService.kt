@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -32,5 +33,5 @@ interface BehandlingService {
     fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Behandling
     fun taBehandling(behandling: Behandling, utøvendeSaksbehandler: Saksbehandler, transactionContext: TransactionContext): Behandling
     fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
-    fun hentBehandlingForIdent(ident: String, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
+    fun hentBehandlingForIdent(fnr: Fnr, utøvendeSaksbehandler: Saksbehandler): List<Førstegangsbehandling>
 }

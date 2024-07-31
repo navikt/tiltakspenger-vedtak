@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
@@ -29,7 +30,7 @@ data class Førstegangsbehandling(
     override val id: BehandlingId,
     override val sakId: SakId,
     override val saksnummer: Saksnummer,
-    override val ident: String,
+    override val fnr: Fnr,
     override val vurderingsperiode: Periode,
     override val søknader: List<Søknad>,
     override val saksbehandler: String?,
@@ -50,7 +51,7 @@ data class Førstegangsbehandling(
         fun opprettBehandling(
             sakId: SakId,
             saksnummer: Saksnummer,
-            fnr: String,
+            fnr: Fnr,
             søknad: Søknad,
             fødselsdato: LocalDate,
             saksbehandler: Saksbehandler,
@@ -68,7 +69,7 @@ data class Førstegangsbehandling(
                 id = BehandlingId.random(),
                 saksnummer = saksnummer,
                 sakId = sakId,
-                ident = fnr,
+                fnr = fnr,
                 søknader = listOf(søknad),
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(

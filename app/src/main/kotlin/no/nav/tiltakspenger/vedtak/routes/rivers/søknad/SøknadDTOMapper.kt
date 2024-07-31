@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -20,7 +21,7 @@ object SøknadDTOMapper {
             personopplysninger = Søknad.Personopplysninger(
                 fornavn = dto.personopplysninger.fornavn,
                 etternavn = dto.personopplysninger.etternavn,
-                ident = dto.personopplysninger.ident,
+                fnr = Fnr.fromString(dto.personopplysninger.ident),
             ),
             tiltak = mapTiltak(dto.tiltak),
             barnetillegg = dto.barnetilleggPdl.map { mapBarnetilleggPDL(it) } +

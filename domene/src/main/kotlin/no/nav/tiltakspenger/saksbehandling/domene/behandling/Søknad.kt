@@ -3,6 +3,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -52,8 +53,7 @@ data class Søknad(
             trygdOgPensjon.erJa()
 
     data class Personopplysninger(
-        // TODO jah: Ønsker å endre denne til fnr: Fnr
-        val ident: String,
+        val fnr: Fnr,
         val fornavn: String,
         val etternavn: String,
     )

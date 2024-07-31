@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
@@ -30,13 +31,13 @@ class SkjermingClientImpl(
         const val navCallIdHeader = "Nav-Call-Id"
     }
 
-    override suspend fun erSkjermetPerson(fødselsnummer: String): Boolean {
+    override suspend fun erSkjermetPerson(fnr: Fnr): Boolean {
         val httpResponse = httpClient.preparePost("${skjermingConfig.baseUrl}/skjermet") {
             header(navCallIdHeader, navCallIdHeader)
             bearerAuth(getToken())
             accept(ContentType.Application.Json)
             contentType(ContentType.Application.Json)
-            setBody(SkjermetDataRequestDTO(fødselsnummer))
+            setBody(SkjermetDataRequestDTO(fnr.verdi))
         }.execute()
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()

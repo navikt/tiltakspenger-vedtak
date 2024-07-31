@@ -29,7 +29,7 @@ internal object SammenstillingForBehandlingDTOMapper {
             ),
             personopplysninger = personopplysninger.søkere().map {
                 PersonopplysningerDTO(
-                    ident = it.ident,
+                    ident = it.fnr.verdi,
                     fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     skjerming = it.avklartSkjerming(),

@@ -5,6 +5,8 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -17,7 +19,7 @@ import java.time.LocalDate
 
 internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     sakId: SakId = SakId.random(),
-    ident: String = random.nextInt().toString(),
+    fnr: Fnr = Fnr.random(),
     deltakelseFom: LocalDate = 1.januar(2023),
     deltakelseTom: LocalDate = 31.mars(2023),
     journalpostId: String = random.nextInt().toString(),
@@ -27,13 +29,13 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
     fødselsdato: LocalDate = 1.januar(2001),
-    sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident, fødselsdato = fødselsdato))),
+    sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato))),
     id: SøknadId = Søknad.randomId(),
     søknad: Søknad = ObjectMother.nySøknad(
         periode = tiltaksOgVurderingsperiode,
         journalpostId = journalpostId,
         personopplysninger = ObjectMother.personSøknad(
-            ident = ident,
+            fnr = fnr,
         ),
         id = id,
         tiltak = ObjectMother.søknadTiltak(
@@ -48,7 +50,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     )
     val sak = ObjectMother.sakMedOpprettetBehandling(
         søknad = søknad,
-        ident = ident,
+        fnr = fnr,
         vurderingsperiode = tiltaksOgVurderingsperiode,
         saksnummer = saksnummer,
         sakPersonopplysninger = sakPersonopplysninger,

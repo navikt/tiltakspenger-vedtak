@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
@@ -27,7 +29,7 @@ interface BehandlingMother {
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         saksnummer: Saksnummer = Saksnummer("202301011001"),
-        ident: String = "12345678910",
+        fnr: Fnr = Fnr.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
         registrerteTiltak: List<Tiltak> = listOf(
@@ -42,7 +44,7 @@ interface BehandlingMother {
         Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             saksnummer = saksnummer,
-            fnr = ident,
+            fnr = fnr,
             søknad = søknad,
             fødselsdato = personopplysningFødselsdato,
             saksbehandler = saksbehandler,

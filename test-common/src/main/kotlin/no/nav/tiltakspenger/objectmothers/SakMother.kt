@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.objectmothers
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
@@ -14,25 +16,27 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
-import java.util.Random
 
 interface SakMother {
 
-    companion object {
-        private val random = Random()
-    }
-
     fun sakMedOpprettetBehandling(
         sakId: SakId = SakId.random(),
-        ident: String = random.nextInt().toString(),
+        fnr: Fnr = Fnr.random(),
         iDag: LocalDate = LocalDate.of(2023, 1, 1),
         løpenummer: Int = 1001,
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         vurderingsperiode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
         fødselsdato: LocalDate = 1.januar(2001),
-        sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident, fødselsdato = fødselsdato))),
+        sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(
+            listOf(
+                personopplysningKjedeligFyr(
+                    fnr = fnr,
+                    fødselsdato = fødselsdato,
+                ),
+            ),
+        ),
         søknadPersonopplysninger: Søknad.Personopplysninger = Søknad.Personopplysninger(
-            ident = ident,
+            fnr = fnr,
             fornavn = sakPersonopplysninger.søker().fornavn,
             etternavn = sakPersonopplysninger.søker().etternavn,
         ),

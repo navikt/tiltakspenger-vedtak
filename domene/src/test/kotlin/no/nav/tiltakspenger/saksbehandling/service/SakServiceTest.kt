@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.felles.Rolle.SKJERMING
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandling
@@ -157,20 +159,20 @@ internal class SakServiceTest {
         )
         val tiltak = ObjectMother.tiltak()
         val saksbehandler = ObjectMother.saksbehandler(roller = listOf(SAKSBEHANDLER, SKJERMING))
-        val ident = søknad.personopplysninger.ident
-        val barnIdent = "barnIdent"
+        val fnr = søknad.personopplysninger.fnr
+        val barnFnr = Fnr.random()
 
-        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+        every { sakRepo.hentForIdent(any()) } returns Saker(fnr, emptyList())
         every { sakRepo.lagre(any(), any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
         coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
         every { søknadRepo.hentSøknad(any()) } returns søknad
 
-        coEvery { skjermingGateway.erSkjermetPerson(ident) } returns true
-        coEvery { skjermingGateway.erSkjermetPerson(barnIdent) } returns false
+        coEvery { skjermingGateway.erSkjermetPerson(fnr) } returns true
+        coEvery { skjermingGateway.erSkjermetPerson(barnFnr) } returns false
         coEvery { personGateway.hentPerson(any()) } returns listOf(
-            personopplysningKjedeligFyr(ident = ident),
-            barn(ident = barnIdent),
+            personopplysningKjedeligFyr(fnr = fnr),
+            barn(fnr = barnFnr),
         )
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
         every { behandlingRepo.hent(any(), any()) } returns behandling()
@@ -182,7 +184,7 @@ internal class SakServiceTest {
         }
 
         sak.personopplysninger.søker().skjermet shouldBe true
-        sak.personopplysninger.barnMedIdent(barnIdent)?.skjermet shouldBe false
+        sak.personopplysninger.barnMedIdent(barnFnr)?.skjermet shouldBe false
     }
 
     // TODO jah: Ser ikke ut som vi oppdaterer vurderingsperioden når vi legger til en overlappende søknad? Og dersom vi ikke har overlappene søknader, så får vi ikke forskjellige behandlinger? Ser på dette etter vilkår2
@@ -197,16 +199,16 @@ internal class SakServiceTest {
             ),
             opprettet = 1.januarDateTime(2023),
         )
-        val ident = søknad.personopplysninger.ident
-        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
+        val fnr = søknad.personopplysninger.fnr
+        every { sakRepo.hentForIdent(any()) } returns Saker(fnr, emptyList())
         every { sakRepo.lagre(any(), any()) } returnsArgument 0
         every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
         every { søknadRepo.hentSøknad(any()) } returns søknad
-        coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
+        coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(fnr = fnr))
         every { behandlingRepo.lagre(any()) } returnsArgument 0
         val sak = sakService.startFørstegangsbehandling(søknad.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
 
-        every { sakRepo.hentForIdent(any()) } returns Saker(ident, listOf(sak))
+        every { sakRepo.hentForIdent(any()) } returns Saker(fnr, listOf(sak))
 
         val søknad2 = nySøknad(
             journalpostId = "søknad2",

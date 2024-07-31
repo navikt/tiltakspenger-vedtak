@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.søker
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøker
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -19,13 +21,13 @@ internal class SøkerRepoTest {
             val testDataHelper = TestDataHelper(dataSource)
             val repo = testDataHelper.søkerRepo
 
-            val ident = random.nextInt().toString()
-            val søker = nySøker(ident = ident)
+            val fnr = Fnr.random()
+            val søker = nySøker(fnr = fnr)
             repo.lagre(søker)
 
             val hentet = repo.hent(søker.søkerId)
 
-            hentet?.ident shouldBe søker.ident
+            hentet?.fnr shouldBe søker.fnr
             hentet?.personopplysninger shouldBe søker.personopplysninger
             hentet?.søkerId shouldBe søker.søkerId
         }

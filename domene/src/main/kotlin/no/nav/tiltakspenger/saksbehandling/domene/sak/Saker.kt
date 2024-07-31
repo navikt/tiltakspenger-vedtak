@@ -1,11 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
+import no.nav.tiltakspenger.libs.common.Fnr
+
 /**
  * Inneholder en liste over alle saker som er tilgjengelig for en bruker/ident.
  * Garanterer at sakid og  saksnummer er unikt i listen.
  */
 data class Saker(
-    val ident: String,
+    val fnr: Fnr,
     val saker: List<Sak>,
 ) : List<Sak> by saker {
 

@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
@@ -23,7 +25,7 @@ internal class SakRepoTest {
             val sak1 = testDataHelper.persisterOpprettetFørstegangsbehandling(
                 løpenummer = 1001,
             ).first
-            val sak2 = testDataHelper.persisterOpprettetFørstegangsbehandling(
+            testDataHelper.persisterOpprettetFørstegangsbehandling(
                 løpenummer = 1002,
             ).first
 
@@ -41,21 +43,21 @@ internal class SakRepoTest {
             val sakRepo = testDataHelper.sakRepo
             val søknadRepo = testDataHelper.søknadRepo
 
-            val ident = random.nextInt().toString()
+            val fnr = Fnr.random()
 
             val sak1 = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                ident = ident,
+                fnr = fnr,
                 løpenummer = 1001,
             ).first
             val sak2 = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                ident = ident,
+                fnr = fnr,
                 løpenummer = 1002,
             ).first
             testDataHelper.persisterOpprettetFørstegangsbehandling(
                 løpenummer = 1003,
             )
 
-            sakRepo.hentForIdent(ident) shouldBe Saker(ident, listOf(sak1, sak2))
+            sakRepo.hentForIdent(fnr) shouldBe Saker(fnr, listOf(sak1, sak2))
         }
     }
 }

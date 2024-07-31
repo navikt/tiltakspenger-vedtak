@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
@@ -74,13 +75,13 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentAlleForIdent(ident: String): List<Førstegangsbehandling> {
+    override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> {
         return sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHentBehandlingForIdent,
                     mapOf(
-                        "ident" to ident,
+                        "ident" to fnr.verdi,
                     ),
                 ).map { row ->
                     row.toBehandling(txSession)
@@ -257,13 +258,13 @@ internal class PostgresBehandlingRepo(
             vilkårsvurderinger = vurderingRepo.hent(id, session),
             utfallsperioder = utfallsperiodeDAO.hent(id, session),
         )
-        val ident = string("ident")
+        val fnr = Fnr.fromString(string("ident"))
         val saksnummer = Saksnummer(string("saksnummer"))
         return Førstegangsbehandling(
             id = id,
             sakId = sakId,
             saksnummer = saksnummer,
-            ident = ident,
+            fnr = fnr,
             søknader = søknader,
             vurderingsperiode = Periode(fom, tom),
             vilkårssett = vilkårssett,

@@ -36,7 +36,7 @@ object MeldekortGrunnlagDTOMapper {
             personopplysninger = PersonopplysningerDTO(
                 fornavn = vedtak.behandling.søknad().personopplysninger.fornavn,
                 etternavn = vedtak.behandling.søknad().personopplysninger.etternavn,
-                ident = vedtak.behandling.søknad().personopplysninger.ident,
+                ident = vedtak.behandling.søknad().personopplysninger.fnr.verdi,
             ),
             utfallsperioder = vedtak.utfallsperioder.map {
                 UtfallsperiodeDTO(

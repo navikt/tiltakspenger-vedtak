@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerIdDTO
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.audit.auditHvisInnlogget
@@ -16,7 +17,7 @@ private val LOG = KotlinLogging.logger {}
 
 internal const val søkerPath = "/soker"
 
-data class PersonIdent(
+data class PersonIdentDTO(
     val ident: String,
 )
 
@@ -26,13 +27,13 @@ fun Route.søkerRoutes(
 ) {
     post(søkerPath) {
         LOG.debug("Mottatt request på $søkerPath")
-        val personIdent = call.receive<PersonIdent>()
+        val personIdent = call.receive<PersonIdentDTO>()
         call.auditHvisInnlogget(berørtBruker = personIdent.ident)
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
         val response: SøkerIdDTO =
-            søkerService.hentSøkerIdOrNull(personIdent.ident, saksbehandler)
+            søkerService.hentSøkerIdOrNull(Fnr.fromString(personIdent.ident), saksbehandler)
                 ?: return@post call.respond(message = "Søker ikke funnet", status = HttpStatusCode.NotFound)
 
         call.respond(message = response, status = HttpStatusCode.OK)

@@ -9,7 +9,7 @@ internal object BehandlingDTOMapper {
         this.map {
             BehandlingDTO(
                 id = it.id.toString(),
-                ident = it.søknad().personopplysninger.ident,
+                ident = it.søknad().personopplysninger.fnr.verdi,
                 saksbehandler = it.saksbehandler,
                 beslutter = it.beslutter,
                 status = finnStatus(it),
