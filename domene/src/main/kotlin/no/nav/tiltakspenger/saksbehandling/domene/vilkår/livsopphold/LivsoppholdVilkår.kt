@@ -37,13 +37,13 @@ data class LivsoppholdVilkår private constructor(
                     vurderingsPeriode,
                 )
             }
-            avklartSaksopplysning.harLivsoppholdYtelser -> {
+            !avklartSaksopplysning.harLivsoppholdYtelser -> {
                 Periodisering(
                     Utfall2.OPPFYLT,
                     vurderingsPeriode,
                 )
             }
-            !avklartSaksopplysning.harLivsoppholdYtelser -> {
+            avklartSaksopplysning.harLivsoppholdYtelser -> {
                 Periodisering(
                     Utfall2.IKKE_OPPFYLT,
                     vurderingsPeriode,
