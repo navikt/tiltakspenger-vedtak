@@ -15,34 +15,35 @@ import java.time.LocalDateTime
  *
  * @param søknadssaksopplysning Sier noe om bruker har svart at hen mottar livsoppholdytelser i søknaden.
  * @param saksbehandlerSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param avklartSaksopplysning Sier noe om hvilken saksopplysning som er gjeldende.
+ * @param avklartSaksopplysning Sier noe om hvilken saksopplysning som er gjeldende; subsumsjonen. For livsoppholdytelser er dette til og begynne med alltid saksbehandler.
  * @param vurderingsPeriode Vurderingsperioden faktumene må si noe om.
  *
  */
 data class LivsoppholdVilkår private constructor(
     val søknadssaksopplysning: LivsoppholdSaksopplysning,
     val saksbehandlerSaksopplysning: LivsoppholdSaksopplysning?,
-    val avklartSaksopplysning: LivsoppholdSaksopplysning,
+    val avklartSaksopplysning: LivsoppholdSaksopplysning?,
     val vurderingsPeriode: Periode,
 ) : SkalErstatteVilkår {
     override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
 
     init {
-        require(avklartSaksopplysning.periode.inneholderHele(vurderingsPeriode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
+        if (avklartSaksopplysning != null) require(avklartSaksopplysning.periode.inneholderHele(vurderingsPeriode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
         require(søknadssaksopplysning.periode.inneholderHele(vurderingsPeriode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
         if (saksbehandlerSaksopplysning != null) {
             require(saksbehandlerSaksopplysning.periode.inneholderHele(vurderingsPeriode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
 
             require(avklartSaksopplysning == saksbehandlerSaksopplysning) { "Om vi har saksopplysning fra saksbehandler må den avklarte saksopplysningen være fra saksbehandler" }
         } else {
-            require(avklartSaksopplysning == søknadssaksopplysning) { "Om vi ikke har saksopplysning fra saksbehandler må den avklarte saksopplysningen være fra søknaden" }
+            require(avklartSaksopplysning == null) { "Dersom vi ikke har saksbehandlerSaksopplysning, skal avklartSaksopplysning være null" }
         }
     }
 
     val samletUtfall: SamletUtfall = when {
+        avklartSaksopplysning == null -> SamletUtfall.UAVKLART
         avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.IKKE_OPPFYLT
         !avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
+        else -> throw IllegalStateException("Livoppholdvilkår: Ugyldig utfall. harLivsoppholdYtelser: ${avklartSaksopplysning.harLivsoppholdYtelser}")
     }
 
     data object PeriodenMåVæreLikVurderingsperioden
@@ -73,7 +74,7 @@ data class LivsoppholdVilkår private constructor(
             return LivsoppholdVilkår(
                 søknadssaksopplysning = livsoppholdSaksopplysning,
                 saksbehandlerSaksopplysning = null,
-                avklartSaksopplysning = livsoppholdSaksopplysning,
+                avklartSaksopplysning = null,
                 vurderingsPeriode = vurderingsPeriode,
             )
         }
@@ -84,7 +85,7 @@ data class LivsoppholdVilkår private constructor(
         fun fromDb(
             søknadSaksopplysning: LivsoppholdSaksopplysning,
             saksbehandlerSaksopplysning: LivsoppholdSaksopplysning?,
-            avklartSaksopplysning: LivsoppholdSaksopplysning,
+            avklartSaksopplysning: LivsoppholdSaksopplysning?,
             vurderingsPeriode: Periode,
         ): LivsoppholdVilkår {
             return LivsoppholdVilkår(

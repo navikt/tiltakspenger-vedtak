@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.TransactionalSession
@@ -87,7 +89,7 @@ internal class PostgresBehandlingRepo(
         }
     }
 
-    override fun hentForSak(sakId: SakId, session: Session): List<Førstegangsbehandling> {
+    override fun hentForSak(sakId: SakId, session: Session): NonEmptyList<Førstegangsbehandling> {
         return session.run(
             queryOf(
                 sqlHentBehandlingForSak,
@@ -97,10 +99,11 @@ internal class PostgresBehandlingRepo(
             ).map { row ->
                 row.toBehandling(session)
             }.asList,
-        )
+        ).toNonEmptyListOrNull()
+            ?: throw IkkeFunnetException("sak med id $sakId ikke funnet")
     }
 
-    override fun hentForSak(sakId: SakId): List<Førstegangsbehandling> {
+    override fun hentForSak(sakId: SakId): NonEmptyList<Førstegangsbehandling> {
         return sessionFactory.withSession { session ->
             hentForSak(sakId, session)
         }
@@ -211,6 +214,8 @@ internal class PostgresBehandlingRepo(
                     "sistEndret" to nå,
                     "opprettet" to nå,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
+                    "saksbehandler" to behandling.saksbehandler,
+                    "beslutter" to behandling.beslutter,
                 ),
             ).asUpdate,
         )
@@ -300,7 +305,9 @@ internal class PostgresBehandlingRepo(
             status,
             sist_endret,
             opprettet,
-            vilkårssett
+            vilkårssett,
+            saksbehandler,
+            beslutter
         ) values (
             :id,
             :sakId,
@@ -310,7 +317,9 @@ internal class PostgresBehandlingRepo(
             :status,
             :sistEndret,
             :opprettet,
-            to_jsonb(:vilkaarssett::jsonb)
+            to_jsonb(:vilkaarssett::jsonb),
+            :saksbehandler,
+            :beslutter
         )
     """.trimIndent()
 

@@ -2,11 +2,12 @@ package no.nav.tiltakspenger.vedtak.db
 
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -21,37 +22,44 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     deltakelseTom: LocalDate = 31.mars(2023),
     journalpostId: String = random.nextInt().toString(),
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
-    saksnummer: Saksnummer = Saksnummer("202301011001"),
-    sakensPeriode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-    sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(),
-): Triple<Sak, Søknad, Førstegangsbehandling> {
-    val søknad = this.persisterSøknad(
-        ident = ident,
-        deltakelseFom = deltakelseFom,
-        deltakelseTom = deltakelseTom,
+    iDag: LocalDate = LocalDate.of(2023, 1, 1),
+    løpenummer: Int = 1001,
+    saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
+    tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
+    fødselsdato: LocalDate = 1.januar(2001),
+    sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(ident = ident, fødselsdato = fødselsdato))),
+    id: SøknadId = Søknad.randomId(),
+    søknad: Søknad = ObjectMother.nySøknad(
+        periode = tiltaksOgVurderingsperiode,
         journalpostId = journalpostId,
+        personopplysninger = ObjectMother.personSøknad(
+            ident = ident,
+        ),
+        id = id,
+        tiltak = ObjectMother.søknadTiltak(
+            deltakelseFom = deltakelseFom,
+            deltakelseTom = deltakelseTom,
+        ),
+        barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
+    ),
+): Pair<Sak, Søknad> {
+    this.persisterSøknad(
+        søknad = søknad,
     )
-    val sak = Sak(
-        id = sakId,
+    val sak = ObjectMother.sakMedOpprettetBehandling(
+        søknad = søknad,
         ident = ident,
-        saknummer = saksnummer,
-        periode = sakensPeriode,
-        behandlinger = listOf(),
-        personopplysninger = sakPersonopplysninger,
-        vedtak = listOf(),
+        vurderingsperiode = tiltaksOgVurderingsperiode,
+        saksnummer = saksnummer,
+        sakPersonopplysninger = sakPersonopplysninger,
+        saksbehandler = saksbehandler,
+        sakId = sakId,
     )
+    søknadRepo.lagre(søknad)
     sakRepo.lagre(sak)
 
-    val behandling = ObjectMother.sakMedOpprettetBehandling(
-        sakId = sakId,
-        saksbehandler = saksbehandler,
-        søknad = søknad,
-    ).førstegangsbehandling!!
-
-    behandlingRepo.lagre(behandling)
-    return Triple(
+    return Pair(
         sakRepo.hent(sakId)!!,
         søknadRepo.hentSøknad(søknad.id),
-        behandlingRepo.hent(behandling.id),
     )
 }

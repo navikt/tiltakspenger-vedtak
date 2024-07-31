@@ -1,9 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -16,7 +17,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 data class Sak(
     val sakDetaljer: SakDetaljer,
-    val behandlinger: List<Behandling>,
+    val behandlinger: NonEmptyList<Behandling>,
     val personopplysninger: SakPersonopplysninger,
     val vedtak: List<Vedtak>,
 ) : SakDetaljer by sakDetaljer {
@@ -28,34 +29,12 @@ data class Sak(
         require(behandlinger.filterIsInstance<Førstegangsbehandling>().size <= 1) { "Kan ikke ha flere enn en førstegangsbehandling" }
     }
 
-    val førstegangsbehandling: Førstegangsbehandling? =
-        behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull()
-
     /**
-     * Saksbehandler vil også ta behandlingen
+     * En sak kan kun ha en førstegangsbehandling, dersom perioden til den vedtatte førstegangsbehandlingen skal utvides eller minskes (den må fortsatt være sammenhengende) må vi revurdere/omgjøre, ikke førstegangsbehandle på nytt.
+     * Dersom den nye søknaden ikke overlapper eller tilstøter den gamle perioden, må vi opprette en ny sak som får en ny førstegangsbehandling.
      */
-    fun nyFørstegangsbehandling(
-        søknad: Søknad,
-        saksbehandler: Saksbehandler,
-        registrerteTiltak: List<Tiltak>,
-    ): Sak {
-        require(behandlinger.isEmpty()) { "Sak har allerede en behandling" }
-        require(saksbehandler.isSaksbehandler())
-        require(personopplysninger.harTilgang(saksbehandler))
-        return this.copy(
-            behandlinger = listOf(
-                Førstegangsbehandling.opprettBehandling(
-                    sakId = id,
-                    saksnummer = saksnummer,
-                    ident = ident,
-                    søknad = søknad,
-                    fødselsdato = personopplysninger.søker().fødselsdato,
-                    saksbehandler = saksbehandler,
-                    registrerteTiltak = registrerteTiltak,
-                ),
-            ),
-        )
-    }
+    val førstegangsbehandling: Førstegangsbehandling =
+        behandlinger.filterIsInstance<Førstegangsbehandling>().single()
 
     /**
      * Sjekker kode 6, 7 og skjermet
@@ -65,40 +44,31 @@ data class Sak(
     }
 
     companion object {
-        operator fun invoke(
-            id: SakId,
-            ident: String,
-            saknummer: Saksnummer,
-            periode: Periode,
-            behandlinger: List<Behandling>,
-            personopplysninger: SakPersonopplysninger,
-            vedtak: List<Vedtak>,
-        ): Sak =
-            Sak(
-                sakDetaljer = TynnSak(
-                    id = id,
-                    ident = ident,
-                    saksnummer = saknummer,
-                    periode = periode,
-                ),
-                behandlinger = behandlinger,
-                personopplysninger = personopplysninger,
-                vedtak = vedtak,
-            )
-
         fun lagSak(
-            søknad: Søknad,
+            sakId: SakId = SakId.random(),
             saksnummer: Saksnummer,
             sakPersonopplysninger: SakPersonopplysninger,
+            søknad: Søknad,
+            saksbehandler: Saksbehandler,
+            registrerteTiltak: List<Tiltak>,
         ): Sak {
+            val fnr = søknad.personopplysninger.ident
+            val førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
+                sakId = sakId,
+                saksnummer = saksnummer,
+                fnr = fnr,
+                søknad = søknad,
+                fødselsdato = sakPersonopplysninger.søker().fødselsdato,
+                saksbehandler = saksbehandler,
+                registrerteTiltak = registrerteTiltak,
+            )
             return Sak(
                 sakDetaljer = TynnSak(
-                    id = SakId.random(),
-                    ident = søknad.personopplysninger.ident,
+                    id = sakId,
+                    fnr = fnr,
                     saksnummer = saksnummer,
-                    periode = søknad.vurderingsperiode(),
                 ),
-                behandlinger = emptyList(),
+                behandlinger = nonEmptyListOf(førstegangsbehandling),
                 personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),
             )

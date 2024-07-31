@@ -22,8 +22,6 @@ create TABLE sak
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,
     saksnummer              VARCHAR                  NOT NULL UNIQUE,
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
