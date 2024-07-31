@@ -34,6 +34,6 @@ internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson {
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
-        utfallsperioder = utfall.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
 }

@@ -28,6 +28,6 @@ internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakDeltagelseVilkårDbJson {
     return TiltakDeltagelseVilkårDbJson(
         registerSaksopplysning = registerSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
-        utfallsperioder = utfall.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
 }

@@ -34,6 +34,6 @@ internal fun AlderVilkår.toDbJson(): AlderVilkårDbJson {
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
-        utfallsperioder = utfall.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
 }

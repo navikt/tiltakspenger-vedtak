@@ -21,7 +21,7 @@ object MeldekortGrunnlagDTOMapper {
                 fra = vedtak.periode.fraOgMed,
                 til = vedtak.periode.tilOgMed,
             ),
-            // TODO KEB Her må vi fylle på riktig verdi.
+            // TODO KEW Her må vi fylle på riktig verdi.
             tiltak = listOf(
                 TiltakDTO(
                     periodeDTO = PeriodeDTO(

@@ -21,6 +21,6 @@ internal fun IntroVilkår.toDTO(): IntroVilkårDTO {
         søknadSaksopplysning = søknadSaksopplysning.toDTO(IntroKildeDTO.SØKNAD),
         avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) IntroKildeDTO.SØKNAD else IntroKildeDTO.SAKSBEHANDLER),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        samletUtfall = this.samletUtfall.toDTO(),
+        samletUtfall = this.samletUtfall().toDTO(),
     )
 }
