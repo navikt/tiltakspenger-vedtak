@@ -7,5 +7,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.Livsopphol
 fun Førstegangsbehandling.leggTilLivsoppholdSaksopplysning(
     command: LeggTilLivsoppholdSaksopplysningCommand,
 ): Either<PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling> {
-    return vilkårssett.oppdaterLivsopphold(command).map { this.copy(vilkårssett = it) }
+    require(saksbehandler == command.saksbehandler.navIdent) { "Kan bare legge til saksopplysninger på egen sak" }
+
+    return vilkårssett.oppdaterLivsopphold(command)
+        .map { this.copy(vilkårssett = it) }
 }
