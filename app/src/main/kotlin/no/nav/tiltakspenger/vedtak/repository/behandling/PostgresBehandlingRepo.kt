@@ -129,7 +129,7 @@ internal class PostgresBehandlingRepo(
         return sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
-                    "select * from behandling b join søknad s on b.id = s.behandling_id where s.id = :id",
+                    "select b.*,sak.saksnummer,sak.ident from behandling b join søknad s on b.id = s.behandling_id join sak on sak.id = b.sakId where s.id = :id",
                     mapOf(
                         "id" to søknadId.toString(),
                     ),

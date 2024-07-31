@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingerPath
-import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -41,28 +40,27 @@ fun Route.behandlingBenkRoutes(
 
     post("$behandlingPath/startbehandling") {
         SECURELOG.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
-
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val søknadId = SøknadId.fromString(call.receive())
+        val søknadId = SøknadId.fromString(call.receive<BehandlingIdDTO>().id)
 
         sakService.startFørstegangsbehandling(søknadId, saksbehandler)
 
         val behandling = behandlingService.hentBehandlingForSøknadId(søknadId)
         require(behandling != null) { "Behandling ble ikke opprettet" }
-        val behandlingId = behandling.id
-
-        call.respond(status = HttpStatusCode.OK, behandlingId)
+        val response = BehandlingIdDTO(behandling.id.toString())
+        call.respond(status = HttpStatusCode.OK, response)
     }
 
-    post("$behandlingPath/tabehandling/{behandlingId}") {
+    post("$behandlingPath/tabehandling") {
         SECURELOG.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
+        val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
 
         behandlingService.taBehandling(behandlingId, saksbehandler)
 
-        call.respond(message = "{}", status = HttpStatusCode.OK)
+        val response = BehandlingIdDTO(behandlingId.toString())
+        call.respond(status = HttpStatusCode.OK, response)
     }
 
     // TODO jah: Kommenterer ut denne inntil videre. Søk på fnr vil ikke lengre fungere for frontend
