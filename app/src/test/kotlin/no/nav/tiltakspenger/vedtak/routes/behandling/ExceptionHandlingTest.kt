@@ -15,7 +15,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions
@@ -30,7 +29,6 @@ class ExceptionHandlingTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
     private val behandlingService =
         mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
-    private val søkerService = mockk<SøkerService>()
     private val sakService = mockk<SakService>()
 
     @Test
@@ -56,7 +54,6 @@ class ExceptionHandlingTest {
                     behandlingBenkRoutes(
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
-                        søkerService,
                         sakService,
                     )
                 }
@@ -65,7 +62,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath")
+                    path(behandlingerPath)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode
@@ -102,7 +99,6 @@ class ExceptionHandlingTest {
                     behandlingBenkRoutes(
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
-                        søkerService,
                         sakService,
                     )
                 }
@@ -111,7 +107,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath")
+                    path(behandlingerPath)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode

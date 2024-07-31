@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingerPath
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -22,7 +22,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
-    søkerService: SøkerService,
     sakService: SakService,
 ) {
     get(behandlingerPath) {
@@ -32,7 +31,10 @@ fun Route.behandlingBenkRoutes(
 
         val behandlinger = behandlingService.hentBehandlingerForBenk(saksbehandler)
             .let {
-                listOf(it.søknader.fraSøknadToBehandlingBenkDto(), it.behandlinger.fraBehandlingToBehandlingBenkDto()).flatten()
+                listOf(
+                    it.søknader.fraSøknadToBehandlingBenkDto(),
+                    it.behandlinger.fraBehandlingToBehandlingBenkDto(),
+                ).flatten()
             }
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
@@ -43,12 +45,22 @@ fun Route.behandlingBenkRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val søknadId = SøknadId.fromString(call.receive<BehandlingIdDTO>().id)
 
-        sakService.startFørstegangsbehandling(søknadId, saksbehandler)
+        sakService.startFørstegangsbehandling(søknadId, saksbehandler).fold(
+            {
+                when (it) {
+                    is KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson -> {
+                        call.respond(HttpStatusCode.Forbidden, "Saksbehandler har ikke tilgang til person")
+                    }
 
-        val behandling = behandlingService.hentBehandlingForSøknadId(søknadId)
-        require(behandling != null) { "Behandling ble ikke opprettet" }
-        val response = BehandlingIdDTO(behandling.id.toString())
-        call.respond(status = HttpStatusCode.OK, response)
+                    is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> {
+                        call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.behandlingId.toString()))
+                    }
+                }
+            },
+            {
+                call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.førstegangsbehandling.id.toString()))
+            },
+        )
     }
 
     post("$behandlingPath/tabehandling") {
