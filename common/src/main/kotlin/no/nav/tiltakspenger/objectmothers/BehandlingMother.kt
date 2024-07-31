@@ -16,7 +16,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.Antal
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 
@@ -90,16 +92,33 @@ interface BehandlingMother {
         return behandling
     }
 
-    fun behandlingTilBeslutterInnvilget(): Førstegangsbehandling =
-        behandlingPåbegyntInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
-            .tilBeslutting(saksbehandler123())
+    fun behandlingKlarTilAttestering(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        val behandling = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler)
+
+        return behandling.leggTilLivsoppholdSaksopplysning(
+            command = LeggTilLivsoppholdSaksopplysningCommand(
+                behandlingId = behandling.id,
+                saksbehandler = saksbehandler,
+                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = behandling.vurderingsperiode,
+                    harYtelse = false,
+                ),
+                årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
+            ),
+        ).getOrNull()!!
+    }
+
+    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        val behandling = behandlingKlarTilAttestering(saksbehandler = saksbehandler)
+        return behandling.tilBesluting(saksbehandler)
+    }
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
         behandlingPåbegyntAvslag().copy(saksbehandler = saksbehandler123().navIdent)
-            .tilBeslutting(saksbehandler123())
+            .tilBesluting(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
-        behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent).iverksett(beslutter())
+        behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent).iverksett(beslutter())
 
     fun tiltak(
         id: TiltakId = TiltakId.random(),

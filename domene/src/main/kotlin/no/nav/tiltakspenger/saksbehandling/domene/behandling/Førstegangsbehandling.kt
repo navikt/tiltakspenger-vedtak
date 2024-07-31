@@ -159,7 +159,7 @@ data class Førstegangsbehandling(
         return this.copy(saksbehandler = null)
     }
 
-    override fun tilBeslutting(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    override fun tilBesluting(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(this.tilstand == BehandlingTilstand.UNDER_BEHANDLING) { "Kan ikke sende behandling til beslutning, feil tilstand $tilstand" }
 
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }

@@ -26,7 +26,7 @@ interface Behandling {
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun taBehandling(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
-    fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
+    fun tilBesluting(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
     fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
     fun søknad(): Søknad

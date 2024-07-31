@@ -36,10 +36,8 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-@Disabled
 internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
@@ -97,18 +95,18 @@ internal class BehandlingServiceTest {
         val innvilget = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
 
         shouldThrow<IllegalStateException> {
-            innvilget.tilBeslutting(saksbehandler123())
+            innvilget.tilBesluting(saksbehandler123())
         }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
 
         shouldThrow<IkkeImplementertException> {
             val avslag = behandlingPåbegyntAvslag(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
-            avslag.tilBeslutting(saksbehandler123())
+            avslag.tilBesluting(saksbehandler123())
         }.message shouldBe "Støtter ikke avslag enda."
     }
 
     @Test
     fun `ikke lov å iverksette en behandling uten beslutter`() {
-        val innvilget = behandlingTilBeslutterInnvilget()
+        val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123())
 
         shouldThrow<IllegalStateException> {
             innvilget.iverksett(saksbehandler123())
@@ -139,7 +137,7 @@ internal class BehandlingServiceTest {
     @Test
     fun `sjekk at man ikke kan sende tilbake uten beslutter rolle`() {
         val behandlingId = BehandlingId.random()
-        val behandling = behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent)
+        val behandling = behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0

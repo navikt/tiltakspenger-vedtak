@@ -86,7 +86,7 @@ class BehandlingServiceImpl(
         require(utøvendeSaksbehandler.isSaksbehandler()) { "Saksbehandler må har rollen SAKSBEHANDLEr" }
         val behandling = hentBehandling(behandlingId)
         if (behandling.tilstand == BehandlingTilstand.UNDER_BEHANDLING) {
-            behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))
+            behandlingRepo.lagre(behandling.tilBesluting(utøvendeSaksbehandler))
         }
     }
 

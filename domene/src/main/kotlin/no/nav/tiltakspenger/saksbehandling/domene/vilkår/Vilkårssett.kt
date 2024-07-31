@@ -39,7 +39,7 @@ data class Vilkårssett(
         vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
         vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
         vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
+        else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
     }
 
     // TODO kew: Implementer! Hent utfall fra vilkårlista. Skal brukes i vedtaket.
