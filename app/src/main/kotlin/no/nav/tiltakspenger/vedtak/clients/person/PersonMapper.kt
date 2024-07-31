@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND
@@ -20,11 +21,11 @@ import java.time.LocalDateTime
 internal fun mapPersonopplysninger(
     dto: Person,
     innhentet: LocalDateTime,
-    ident: String,
+    fnr: Fnr,
 ): List<Personopplysninger> {
     return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
         PersonopplysningerBarnMedIdent(
-            ident = it.ident,
+            fnr = Fnr.fromString(it.ident),
             fødselsdato = it.fødselsdato,
             fornavn = it.fornavn,
             mellomnavn = it.mellomnavn,
@@ -45,7 +46,7 @@ internal fun mapPersonopplysninger(
             tidsstempelHosOss = innhentet,
         )
     } + PersonopplysningerSøker(
-        ident = ident,
+        fnr = fnr,
         fødselsdato = dto.fødselsdato,
         fornavn = dto.fornavn,
         mellomnavn = dto.mellomnavn,

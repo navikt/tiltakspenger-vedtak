@@ -14,6 +14,8 @@ import io.mockk.mockk
 import io.mockk.slot
 import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.april
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
@@ -29,12 +31,12 @@ import java.time.LocalDateTime
 
 class SøknadRoutesTest {
     private companion object {
-        const val IDENT = "04927799109"
+        val IDENT = Fnr.random()
         const val JOURNALPOSTID = "foobar2"
     }
 
     @Test
-    fun `sjekk at kall til river søknad route mapper søknad riktig og kaller mottak`() {
+    fun `søknad route + service`() {
         val søknadId = SøknadId.random()
         val mockSøknadService = mockk<SøknadServiceImpl>(relaxed = true)
         val søknad = slot<Søknad>()
@@ -42,7 +44,6 @@ class SøknadRoutesTest {
 
         testApplication {
             application {
-                // vedtakTestApi()
                 jacksonSerialization()
                 routing {
                     søknadRoutes(
@@ -71,7 +72,7 @@ class SøknadRoutesTest {
             dokumentInfoId = "987",
             filnavn = "tiltakspengersoknad.json",
             personopplysninger = Søknad.Personopplysninger(
-                ident = IDENT,
+                fnr = IDENT,
                 fornavn = "NØDVENDIG",
                 etternavn = "HOFTE",
             ),
@@ -126,7 +127,7 @@ class SøknadRoutesTest {
               "filnavn": "tiltakspengersoknad.json"
             },
             "personopplysninger": {
-              "ident": "$IDENT",
+              "ident": "${IDENT.verdi}",
               "fornavn": "NØDVENDIG",
               "etternavn": "HOFTE"
             },

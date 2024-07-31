@@ -8,6 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.TestSessionFactory
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
@@ -129,10 +131,10 @@ internal class BehandlingServiceTest {
         every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Førstegangsbehandling)
         every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(person)
 
-        behandlingService.hentBehandlingForIdent("whatever", saksbehandler123()).size shouldBe 0
-        behandlingService.hentBehandlingForIdent("whatever", saksbehandlerMedKode7()).size shouldBe 1
+        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandler123()).size shouldBe 0
+        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandlerMedKode7()).size shouldBe 1
         // TODO : Er ikke dette galt?
-        behandlingService.hentBehandlingForIdent("whatever", saksbehandlerMedKode6()).size shouldBe 0
+        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandlerMedKode6()).size shouldBe 0
     }
 
     @Test

@@ -17,6 +17,8 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
@@ -41,7 +43,6 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Random
 
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
@@ -67,7 +68,7 @@ internal class KravfristRoutesTest {
 
         val sakId = SakId.random()
         val saksnummer = Saksnummer("202301011001")
-        val ident = Random().nextInt().toString()
+        val fnr = Fnr.random()
         val søknad = nySøknad(
             periode = Periode(fraOgMed = periodeFraOgMed, tilOgMed = periodeTilOgMed),
             tidsstempelHosOss = LocalDateTime.now(),
@@ -80,7 +81,7 @@ internal class KravfristRoutesTest {
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
             sakId = sakId,
             saksnummer = saksnummer,
-            ident = ident,
+            fnr = fnr,
             søknad = søknad,
             fødselsdato = personopplysningFødselsdato(),
             saksbehandler = saksbehandler,

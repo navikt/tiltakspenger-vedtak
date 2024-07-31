@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
 
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Fnr
 
 data class SakPersonopplysninger(
     // TODO jah: Midlertidig public, mens vi skriver oss bort fra RnR.
@@ -14,8 +15,8 @@ data class SakPersonopplysninger(
     fun søkerOrNull(): PersonopplysningerSøker? =
         liste.filterIsInstance<PersonopplysningerSøker>().firstOrNull()
 
-    fun søkerMedIdent(ident: String): PersonopplysningerSøker? =
-        liste.filterIsInstance<PersonopplysningerSøker>().firstOrNull { it.ident == ident }
+    fun søkerMedIdent(fnr: Fnr): PersonopplysningerSøker? =
+        liste.filterIsInstance<PersonopplysningerSøker>().firstOrNull { it.fnr == fnr }
 
     fun søker(): PersonopplysningerSøker =
         liste.filterIsInstance<PersonopplysningerSøker>().first()
@@ -23,8 +24,8 @@ data class SakPersonopplysninger(
     fun barnMedIdent(): List<PersonopplysningerBarnMedIdent> =
         liste.filterIsInstance<PersonopplysningerBarnMedIdent>()
 
-    fun barnMedIdent(ident: String): PersonopplysningerBarnMedIdent? =
-        liste.filterIsInstance<PersonopplysningerBarnMedIdent>().firstOrNull { it.ident == ident }
+    fun barnMedIdent(fnr: Fnr): PersonopplysningerBarnMedIdent? =
+        liste.filterIsInstance<PersonopplysningerBarnMedIdent>().firstOrNull { it.fnr == fnr }
 
     fun barnUtenIdent(): List<PersonopplysningerBarnUtenIdent> =
         liste.filterIsInstance<PersonopplysningerBarnUtenIdent>()
@@ -41,29 +42,29 @@ data class SakPersonopplysninger(
         return true
     }
 
-    fun identerOgSkjerming(): Map<String, Boolean?> =
+    fun identerOgSkjerming(): Map<Fnr, Boolean?> =
         personerMedIdent().associate {
-            it.ident() to try {
+            it.fnr() to try {
                 it.avklartSkjerming()
             } catch (e: IllegalStateException) {
                 null
             }
         }
 
-    fun personopplysningerMedSkjermingForIdent(ident: String, erSkjermet: Boolean?): SakPersonopplysninger {
+    fun personopplysningerMedSkjermingForIdent(fnr: Fnr, erSkjermet: Boolean?): SakPersonopplysninger {
         return SakPersonopplysninger(
             liste.map { personopplysninger ->
                 when (personopplysninger) {
                     is PersonopplysningerBarnUtenIdent -> personopplysninger
                     is PersonopplysningerBarnMedIdent ->
-                        if (personopplysninger.ident == ident) {
+                        if (personopplysninger.fnr == fnr) {
                             personopplysninger.copy(skjermet = erSkjermet)
                         } else {
                             personopplysninger
                         }
 
                     is PersonopplysningerSøker ->
-                        if (personopplysninger.ident == ident) {
+                        if (personopplysninger.fnr == fnr) {
                             personopplysninger.copy(skjermet = erSkjermet)
                         } else {
                             personopplysninger
@@ -73,10 +74,10 @@ data class SakPersonopplysninger(
         )
     }
 
-    fun medSkjermingFra(identerOgSkjerming: Map<String, Boolean?>): SakPersonopplysninger =
+    fun medSkjermingFra(identerOgSkjerming: Map<Fnr, Boolean?>): SakPersonopplysninger =
         identerOgSkjerming
             .toList()
-            .fold(this) { personopplysninger: SakPersonopplysninger, personMedIdent: Pair<String, Boolean?> ->
+            .fold(this) { personopplysninger: SakPersonopplysninger, personMedIdent: Pair<Fnr, Boolean?> ->
                 personopplysninger.personopplysningerMedSkjermingForIdent(personMedIdent.first, personMedIdent.second)
             }
 

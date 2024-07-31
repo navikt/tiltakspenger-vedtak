@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.AdressebeskyttelseKunneIkkeAvklares
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.DeserializationException
@@ -28,9 +29,9 @@ internal class PersonHttpklient(
      * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
      * TODO jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
-    override suspend fun hentPerson(ident: String): List<Personopplysninger> {
+    override suspend fun hentPerson(fnr: Fnr): List<Personopplysninger> {
         val token = azureTokenProvider.getToken()
-        return personklient.hentPerson(ident, token).fold(
+        return personklient.hentPerson(fnr, token).fold(
             // TODO jah: Her har vi mulighet til å returnere Either.left istedet for å kaste.
             ifLeft = {
                 when (it) {
@@ -54,7 +55,7 @@ internal class PersonHttpklient(
                     is UkjentFeil -> throw RuntimeException("Feil ved henting av personopplysninger: $it")
                 }
             },
-            ifRight = { (person, _) -> mapPersonopplysninger(person, LocalDateTime.now(), ident) },
+            ifRight = { (person, _) -> mapPersonopplysninger(person, LocalDateTime.now(), fnr) },
         )
     }
 }

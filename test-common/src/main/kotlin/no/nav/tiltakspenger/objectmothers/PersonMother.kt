@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
@@ -15,28 +17,23 @@ import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Random
 
 interface PersonMother {
 
-    companion object {
-        private val random = Random()
-    }
-
     fun nySøker(
         søkerId: SøkerId = SøkerId.random(),
-        ident: String = random.nextInt().toString(),
-        personopplysninger: PersonopplysningerSøker = personopplysningKjedeligFyr(ident = ident),
+        fnr: Fnr = Fnr.random(),
+        personopplysninger: PersonopplysningerSøker = personopplysningKjedeligFyr(fnr = fnr),
     ): Søker {
         return Søker.fromDb(
             søkerId = søkerId,
-            ident = ident,
+            fnr = fnr,
             personopplysninger = personopplysninger,
         )
     }
 
     fun personopplysningKjedeligFyr(
-        ident: String = random.nextInt().toString(),
+        fnr: Fnr = Fnr.random(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
@@ -49,7 +46,7 @@ interface PersonMother {
         skjermet: Boolean? = null,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerSøker = PersonopplysningerSøker(
-        ident = ident,
+        fnr = fnr,
         fødselsdato = fødselsdato,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
@@ -64,7 +61,7 @@ interface PersonMother {
     )
 
     fun personopplysningMaxFyr(
-        ident: String = random.nextInt().toString(),
+        fnr: Fnr = Fnr.random(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Kjell",
         mellomnavn: String? = "T.",
@@ -77,7 +74,7 @@ interface PersonMother {
         skjermet: Boolean? = true,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerSøker = PersonopplysningerSøker(
-        ident = ident,
+        fnr = fnr,
         fødselsdato = fødselsdato,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
@@ -92,7 +89,7 @@ interface PersonMother {
     )
 
     fun barn(
-        ident: String = random.nextInt().toString(),
+        fnr: Fnr = Fnr.random(),
         fødselsdato: LocalDate = 1.januar(2001),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
@@ -105,7 +102,7 @@ interface PersonMother {
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerBarnMedIdent {
         return PersonopplysningerBarnMedIdent(
-            ident = ident,
+            fnr = fnr,
             fødselsdato = fødselsdato,
             fornavn = fornavn,
             mellomnavn = mellomnavn,

@@ -14,15 +14,12 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -30,6 +27,7 @@ import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
@@ -40,7 +38,6 @@ import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
-import java.util.Random
 
 class IntroRoutesTest {
 
@@ -116,38 +113,16 @@ class IntroRoutesTest {
     fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val sakId = SakId.random()
-        val saksnummer = Saksnummer("202301011001")
-        val ident = Random().nextInt().toString()
-        val søknadMedIntro = nySøknad(
-            intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-            ident = ident,
-        )
-
-        val registrerteTiltak = listOf(
-            ObjectMother.tiltak(),
-        )
-
-        val saksbehandler = ObjectMother.saksbehandler(navIdent = ident)
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            sakId = sakId,
-            ident = ident,
-            saksnummer = saksnummer,
-            registrerteTiltak = registrerteTiltak,
-            søknad = søknadMedIntro,
-            fødselsdato = personopplysningFødselsdato(),
-            saksbehandler = saksbehandler,
-
-            løpenummer = 1002,
-        )
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
+            val søknadMedIntro = nySøknad(
+                intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                søknad = søknadMedIntro,
+            )
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

@@ -6,6 +6,7 @@ import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.UlidBase
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
@@ -71,7 +72,7 @@ internal class PostgresPersonopplysningerRepo(
                 mapOf(
                     "id" to UlidBase.random(ULID_PREFIX_PERSONOPPLYSNINGER).toString(),
                     "sakId" to sakId.toString(),
-                    "ident" to personopplysninger.ident,
+                    "ident" to personopplysninger.fnr.verdi,
                     "fodselsdato" to personopplysninger.fødselsdato,
                     "fornavn" to personopplysninger.fornavn,
                     "mellomnavn" to personopplysninger.mellomnavn,
@@ -93,7 +94,7 @@ internal class PostgresPersonopplysningerRepo(
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
         PersonopplysningerSøker(
-            ident = row.string("ident"),
+            fnr = Fnr.fromString(row.string("ident")),
             fødselsdato = row.localDate("fødselsdato"),
             fornavn = row.string("fornavn"),
             mellomnavn = row.stringOrNull("mellomnavn"),

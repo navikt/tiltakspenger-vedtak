@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.SøkerId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 
 private val LOG = KotlinLogging.logger {}
@@ -14,14 +15,14 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 // Det er også her vi sjekker om saksbehandler har tilgang til personopplysningene til søkeren.
 class Søker private constructor(
     val søkerId: SøkerId,
-    val ident: String, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
+    val fnr: Fnr, // TODO skal denne ligge her, eller holder det at den ligger i personopplysninger?
     var personopplysninger: PersonopplysningerSøker?, // TODO her trenger vi kanskje en liste hvis vi vil ha med barn
 ) {
     constructor(
-        ident: String,
+        fnr: Fnr,
     ) : this(
         søkerId = randomId(),
-        ident = ident,
+        fnr = fnr,
         personopplysninger = null,
     )
 
@@ -31,9 +32,9 @@ class Søker private constructor(
                 SECURELOG.info("erStrengtFortrolig")
                 // Merk at vi ikke sjekker egenAnsatt her, strengt fortrolig trumfer det
                 if (Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller) {
-                    SECURELOG.info("Access granted to strengt fortrolig for $ident")
+                    SECURELOG.info("Access granted to strengt fortrolig for ${fnr.verdi}")
                 } else {
-                    SECURELOG.info("Access denied to strengt fortrolig for $ident")
+                    SECURELOG.info("Access denied to strengt fortrolig for ${fnr.verdi}")
                     throw TilgangException("Saksbehandler har ikke tilgang")
                 }
             }
@@ -44,9 +45,9 @@ class Søker private constructor(
                 SECURELOG.info("erFortrolig")
                 // Merk at vi ikke sjekker egenAnsatt her, fortrolig trumfer det
                 if (Rolle.FORTROLIG_ADRESSE in saksbehandler.roller) {
-                    SECURELOG.info("Access granted to fortrolig for $ident")
+                    SECURELOG.info("Access granted to fortrolig for ${fnr.verdi}")
                 } else {
-                    SECURELOG.info("Access denied to fortrolig for $ident")
+                    SECURELOG.info("Access denied to fortrolig for ${fnr.verdi}")
                     throw TilgangException("Saksbehandler har ikke tilgang")
                 }
             }
@@ -61,9 +62,9 @@ class Søker private constructor(
                 SECURELOG.info("erEgenAnsatt")
                 // Er kun egenAnsatt, har ikke et beskyttelsesbehov i tillegg
                 if (Rolle.SKJERMING in saksbehandler.roller) {
-                    SECURELOG.info("Access granted to egen ansatt for $ident")
+                    SECURELOG.info("Access granted to egen ansatt for ${fnr.verdi}")
                 } else {
-                    SECURELOG.info("Access denied to egen ansatt for $ident")
+                    SECURELOG.info("Access denied to egen ansatt for ${fnr.verdi}")
                     throw TilgangException("Saksbehandler har ikke tilgang")
                 }
             }
@@ -93,11 +94,11 @@ class Søker private constructor(
 
         fun fromDb(
             søkerId: SøkerId,
-            ident: String,
+            fnr: Fnr,
             personopplysninger: PersonopplysningerSøker?,
         ) = Søker(
             søkerId = søkerId,
-            ident = ident,
+            fnr = fnr,
             personopplysninger = personopplysninger,
         )
     }
