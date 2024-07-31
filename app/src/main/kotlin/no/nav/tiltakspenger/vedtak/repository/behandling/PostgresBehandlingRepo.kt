@@ -156,7 +156,6 @@ internal class PostgresBehandlingRepo(
                 søknadDAO.knyttSøknaderTilBehandling(behandling.id, behandling.søknader.map { it.id }, tx)
             }
             vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-            utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
         }
     }
 
@@ -242,7 +241,7 @@ internal class PostgresBehandlingRepo(
         }
         val tilstand = when (val type = string("tilstand")) {
             "søknadsbehandling" -> BehandlingTilstand.OPPRETTET
-            "Vilkårsvurdert" -> BehandlingTilstand.VILKÅRSVURDERT
+            "UnderBehandling" -> BehandlingTilstand.UNDER_BEHANDLING
             "TilBeslutting" -> BehandlingTilstand.TIL_BESLUTTER
             "Iverksatt" -> BehandlingTilstand.IVERKSATT
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
@@ -273,7 +272,7 @@ internal class PostgresBehandlingRepo(
     private fun finnTilstand(behandling: Behandling): String =
         when (behandling.tilstand) {
             BehandlingTilstand.OPPRETTET -> "søknadsbehandling"
-            BehandlingTilstand.VILKÅRSVURDERT -> "Vilkårsvurdert"
+            BehandlingTilstand.UNDER_BEHANDLING -> "UnderBehandling"
             BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutting"
             BehandlingTilstand.IVERKSATT -> "Iverksatt"
         }

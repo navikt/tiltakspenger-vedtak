@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.Antal
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 
@@ -27,7 +28,13 @@ interface BehandlingMother {
         ident: String = "12345678910",
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
-        registrerteTiltak: List<Tiltak> = listOf(ObjectMother.tiltak(eksternId = søknad.tiltak.id, deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed)),
+        registrerteTiltak: List<Tiltak> = listOf(
+            ObjectMother.tiltak(
+                eksternId = søknad.tiltak.id,
+                deltakelseFom = periode.fraOgMed,
+                deltakelseTom = periode.tilOgMed,
+            ),
+        ),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     ): Førstegangsbehandling =
         Førstegangsbehandling.opprettBehandling(
@@ -40,7 +47,7 @@ interface BehandlingMother {
             registrerteTiltak = registrerteTiltak,
         )
 
-    fun behandlingVilkårsvurdertInnvilget(
+    fun behandlingPåbegyntInnvilget(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
@@ -54,21 +61,41 @@ interface BehandlingMother {
         )
     }
 
-    fun behandlingVilkårsvurdertAvslag(
+    fun behandlingPåbegyntAvslag(
         periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     ): Førstegangsbehandling {
-        return behandlingVilkårsvurdertInnvilget(saksbehandler = saksbehandler)
+        val behandling =
+            behandling(
+                periode = periode,
+                sakId = sakId,
+                søknad = søknad,
+                saksbehandler = saksbehandler,
+            )
+
+        behandling.vilkårssett.oppdaterLivsopphold(
+            LeggTilLivsoppholdSaksopplysningCommand(
+                behandlingId = behandling.id,
+                saksbehandler = saksbehandler,
+                årsakTilEndring = null,
+                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = behandling.vurderingsperiode,
+                    harYtelse = true,
+                ),
+            ),
+        )
+
+        return behandling
     }
 
     fun behandlingTilBeslutterInnvilget(): Førstegangsbehandling =
-        behandlingVilkårsvurdertInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
+        behandlingPåbegyntInnvilget().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutting(saksbehandler123())
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
-        behandlingVilkårsvurdertAvslag().copy(saksbehandler = saksbehandler123().navIdent)
+        behandlingPåbegyntAvslag().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutting(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =

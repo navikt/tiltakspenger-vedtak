@@ -9,7 +9,7 @@ object StatusMapper {
         when (behandling.tilstand) {
             BehandlingTilstand.IVERKSATT -> if (behandling.status == BehandlingStatus.Avslag) "Iverksatt Avslag" else "Iverksatt Innvilget"
             BehandlingTilstand.TIL_BESLUTTER -> if (behandling.beslutter == null) "Klar til beslutning" else "Under beslutning"
-            BehandlingTilstand.VILKÅRSVURDERT -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
+            BehandlingTilstand.UNDER_BEHANDLING -> if (behandling.saksbehandler == null) "Klar til behandling" else "Under behandling"
             BehandlingTilstand.OPPRETTET -> "Klar til behandling"
         }
 }

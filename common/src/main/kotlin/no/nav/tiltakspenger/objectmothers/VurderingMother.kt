@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import java.time.LocalDate
 
 interface VurderingMother {
-    fun fristForFramsettingAvKravVurdering(
+    fun fristForFramsettingAvKravVurdering( // TODO Slett
         utfall: Utfall = Utfall.OPPFYLT,
         fom: LocalDate = 1.januar(2026),
         tom: LocalDate = 31.januar(2026),

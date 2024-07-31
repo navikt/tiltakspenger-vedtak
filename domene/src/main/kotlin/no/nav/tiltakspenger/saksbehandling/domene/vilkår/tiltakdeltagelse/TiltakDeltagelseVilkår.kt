@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 
@@ -17,15 +16,22 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 data class TiltakDeltagelseVilkår private constructor(
     val registerSaksopplysning: TiltakDeltagelseSaksopplysning,
     val vurderingsperiode: Periode,
-    val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
+    init {
+        check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden må være lik deltagelsesperioden" }
+    }
+
+    override fun utfall(): Periodisering<Utfall2> {
+        val girRett = registerSaksopplysning.girRett
+        val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
+        return when {
+            girRett -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
+            !girRett -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
+            else -> {
+                Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
+            }
+        }
     }
 
     override val lovreferanse = Lovreferanse.TILTAKSDELTAGELSE
@@ -38,7 +44,6 @@ data class TiltakDeltagelseVilkår private constructor(
             return TiltakDeltagelseVilkår(
                 registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = registerSaksopplysning.vurderMaskinelt(),
             )
         }
 
@@ -53,8 +58,9 @@ data class TiltakDeltagelseVilkår private constructor(
             return TiltakDeltagelseVilkår(
                 registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }
