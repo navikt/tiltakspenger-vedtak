@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import java.time.LocalDate
 
+// TODO KEW: Denne skal slettes
 data class Utfallsperiode(
     val fom: LocalDate,
     val tom: LocalDate,

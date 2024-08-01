@@ -16,7 +16,7 @@ data class Tiltak(
     val kilde: String,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
-    val antallDagerSaksopplysninger: AntallDagerSaksopplysninger,
+    val antallDagerSaksopplysninger: AntallDagerSaksopplysninger, // TODO Kew slett
 ) {
     data class Gjennomføring(
         val id: String,

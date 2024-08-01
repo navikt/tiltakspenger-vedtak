@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
@@ -43,6 +44,8 @@ data class Førstegangsbehandling(
         // require(vilkårssett.totalePeriode == vurderingsperiode) { "Vilkårssettets periode (${vilkårssett.totalePeriode} må være lik vurderingsperioden $vurderingsperiode" }
     }
 
+    val samletUtfall = vilkårssett.samletUtfall
+
     companion object {
 
         fun opprettBehandling(
@@ -71,7 +74,6 @@ data class Førstegangsbehandling(
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = Vilkårssett(
                     vilkårsvurderinger = emptyList(),
-                    utfallsperioder = emptyList(),
                     institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
                         søknad.institusjonsoppholdSaksopplysning(
                             vurderingsperiode,
@@ -93,7 +95,7 @@ data class Førstegangsbehandling(
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = BehandlingStatus.Manuell,
-                tilstand = BehandlingTilstand.OPPRETTET,
+                tilstand = BehandlingTilstand.UNDER_BEHANDLING,
             )
         }
     }
@@ -106,8 +108,7 @@ data class Førstegangsbehandling(
     override fun leggTilSøknad(søknad: Søknad): Førstegangsbehandling {
         require(
             this.tilstand in listOf(
-                BehandlingTilstand.OPPRETTET,
-                BehandlingTilstand.VILKÅRSVURDERT,
+                BehandlingTilstand.UNDER_BEHANDLING,
                 BehandlingTilstand.TIL_BESLUTTER,
             ),
         ) { "Kan ikke oppdatere tiltak, feil tilstand $tilstand" }
@@ -120,7 +121,7 @@ data class Førstegangsbehandling(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
             vilkårssett = vilkårssett,
-            tilstand = BehandlingTilstand.OPPRETTET,
+            tilstand = BehandlingTilstand.UNDER_BEHANDLING,
         )
     }
 
@@ -134,10 +135,10 @@ data class Førstegangsbehandling(
 
     private fun saksbehandlerTarBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
-            this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
+            this.tilstand == BehandlingTilstand.UNDER_BEHANDLING,
         ) { "Vanlig saksbehandler kan ikke ta behandlingen, feil tilstand $tilstand" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
-        return this.copy(saksbehandler = saksbehandler.navIdent)
+        return this.copy(saksbehandler = saksbehandler.navIdent, tilstand = BehandlingTilstand.UNDER_BEHANDLING)
     }
 
     private fun beslutterTarBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
@@ -151,19 +152,19 @@ data class Førstegangsbehandling(
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
-            this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.VILKÅRSVURDERT),
+            this.tilstand == BehandlingTilstand.UNDER_BEHANDLING,
         ) { "Kan ikke avbryte behandling, feil tilstand $tilstand" }
 
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
         return this.copy(saksbehandler = null)
     }
 
-    override fun tilBeslutting(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        require(this.tilstand == BehandlingTilstand.VILKÅRSVURDERT) { "Kan ikke sende behandling til beslutning, feil tilstand $tilstand" }
+    override fun tilBeslutning(saksbehandler: Saksbehandler): Førstegangsbehandling {
+        require(this.tilstand == BehandlingTilstand.UNDER_BEHANDLING) { "Kan ikke sende behandling til beslutning, feil tilstand $tilstand" }
 
         checkNotNull(this.saksbehandler) { "Ikke lov å sende Behandling til Beslutter uten saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
-        check(status != BehandlingStatus.Manuell) { "Kan ikke sende denne behandlingen til beslutter" }
+        check(samletUtfall != SamletUtfall.UAVKLART) { "Kan ikke sende denne behandlingen til beslutter" }
         return this.copy(tilstand = BehandlingTilstand.TIL_BESLUTTER)
     }
 
@@ -187,7 +188,7 @@ data class Førstegangsbehandling(
         check(utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin()) { "Saksbehandler må være beslutter eller administrator" }
         check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) { "Det er ikke lov å sende en annen sin behandling tilbake til saksbehandler" }
         return this.copy(
-            tilstand = BehandlingTilstand.VILKÅRSVURDERT,
+            tilstand = BehandlingTilstand.UNDER_BEHANDLING,
         )
     }
 

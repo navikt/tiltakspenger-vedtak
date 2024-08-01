@@ -4,10 +4,10 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR_IKKE
 import java.time.LocalDateTime
 
 /**
@@ -22,18 +22,13 @@ data class KVPVilkår private constructor(
     val søknadSaksopplysning: KvpSaksopplysning,
     val saksbehandlerSaksopplysning: KvpSaksopplysning?,
     val avklartSaksopplysning: KvpSaksopplysning,
-    val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
     override val lovreferanse = Lovreferanse.KVP
+
+    override fun utfall(): Periodisering<Utfall2> {
+        return avklartSaksopplysning.deltar.map { it.vurderMaskinelt() }
+    }
 
     val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
 
@@ -49,7 +44,6 @@ data class KVPVilkår private constructor(
         return this.copy(
             saksbehandlerSaksopplysning = kvpSaksopplysning,
             avklartSaksopplysning = kvpSaksopplysning,
-            utfall = kvpSaksopplysning.vurderMaskinelt(),
         )
     }
 
@@ -75,7 +69,6 @@ data class KVPVilkår private constructor(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
-                utfall = søknadSaksopplysning.vurderMaskinelt(),
             )
         }
 
@@ -92,8 +85,9 @@ data class KVPVilkår private constructor(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
-                utfall = utfall,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i KVPVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }

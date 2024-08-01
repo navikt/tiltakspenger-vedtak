@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 
@@ -19,18 +18,13 @@ data class InstitusjonsoppholdVilkår private constructor(
     val søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
     val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
-    val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
+
+    override fun utfall(): Periodisering<Utfall2> {
+        return avklartSaksopplysning.opphold.map { it.vurderMaskinelt() }
+    }
 
     val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
 
@@ -56,7 +50,6 @@ data class InstitusjonsoppholdVilkår private constructor(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
-                utfall = søknadSaksopplysning.vurderMaskinelt(),
             )
         }
 
@@ -73,8 +66,9 @@ data class InstitusjonsoppholdVilkår private constructor(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
-                utfall = utfall,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i InstitusjonsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }

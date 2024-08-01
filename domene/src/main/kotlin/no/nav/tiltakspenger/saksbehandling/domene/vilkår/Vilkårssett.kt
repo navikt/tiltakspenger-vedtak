@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tilta
 data class Vilkårssett(
     // TODO jah: saksopplysninger, vilkårsvurderinger og kravdatoSaksopplysninger, utfallsperioder flyttes gradvis til hvert sitt vilkår. Og slettes når vilkår 2.0 er ferdig.
     val vilkårsvurderinger: List<Vurdering>,
-    val utfallsperioder: List<Utfallsperiode>,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
     val tiltakDeltagelseVilkår: TiltakDeltagelseVilkår,
@@ -34,6 +33,18 @@ data class Vilkårssett(
     val alderVilkår: AlderVilkår,
     val kravfristVilkår: KravfristVilkår,
 ) {
+    private val vilkårliste: List<SkalErstatteVilkår> = listOf(institusjonsoppholdVilkår, kvpVilkår, tiltakDeltagelseVilkår, introVilkår, livsoppholdVilkår, alderVilkår, kravfristVilkår)
+
+    val samletUtfall: SamletUtfall = when {
+        vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
+        vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
+        vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
+        else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
+    }
+
+    // TODO kew: Implementer! Hent utfall fra vilkårlista. Skal brukes i vedtaket.
+    fun utfallsperioder() = emptyList<Utfallsperiode>()
+
     val totalePeriode = kvpVilkår.totalePeriode
 
     init {
@@ -47,16 +58,6 @@ data class Vilkårssett(
 //        require(kvpVilkår.totalePeriode.inneholderHele(saksopplysninger.totalePeriode())) {
 //            "KVPVilkår (${kvpVilkår.totalePeriode}) og saksopplysninger (${saksopplysninger.totalePeriode()}) sine perioder må være like."
 //        }
-    }
-
-    fun oppdaterVilkårsvurderinger(
-        vilkårsvurderinger: List<Vurdering>,
-        utfallsperioder: List<Utfallsperiode>,
-    ): Vilkårssett {
-        return this.copy(
-            vilkårsvurderinger = vilkårsvurderinger,
-            utfallsperioder = utfallsperioder,
-        )
     }
 
     fun vurderingsperiodeEndret(nyVurderingsperiode: Periode): Vilkårssett {

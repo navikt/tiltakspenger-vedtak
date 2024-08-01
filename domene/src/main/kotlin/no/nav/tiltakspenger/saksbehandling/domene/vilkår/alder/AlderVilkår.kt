@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
@@ -21,18 +20,22 @@ data class AlderVilkår private constructor(
     val saksbehandlerSaksopplysning: AlderSaksopplysning?,
     val avklartSaksopplysning: AlderSaksopplysning,
     val vurderingsperiode: Periode,
-    val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
     override val lovreferanse = Lovreferanse.ALDER
+
+    override fun utfall(): Periodisering<Utfall2> {
+        // Om noen har bursdag 29. mars (skuddår) og de akuratt har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
+        // Dette er så cornercase at vi per nå ikke bruker tid på å skrive en egen håndtering av 'plusYears()' for å støtte dette caset.
+        val dagenBrukerFyller18År = avklartSaksopplysning.fødselsdato.plusYears(18)
+        return when {
+            dagenBrukerFyller18År.isBefore(vurderingsperiode.fraOgMed) -> Periodisering(Utfall2.OPPFYLT, vurderingsperiode)
+            dagenBrukerFyller18År.isAfter(vurderingsperiode.tilOgMed) -> Periodisering(Utfall2.IKKE_OPPFYLT, vurderingsperiode)
+            else -> {
+                Periodisering(Utfall2.IKKE_OPPFYLT, vurderingsperiode)
+            }
+        }
+    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
         val introSaksopplysning = AlderSaksopplysning.Saksbehandler(
@@ -44,7 +47,6 @@ data class AlderVilkår private constructor(
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
         )
     }
 
@@ -58,7 +60,6 @@ data class AlderVilkår private constructor(
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
             )
         }
 
@@ -77,8 +78,9 @@ data class AlderVilkår private constructor(
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }

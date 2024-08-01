@@ -8,13 +8,14 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.TestSessionFactory
 import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingPåbegyntAvslag
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingPåbegyntInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
-import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertAvslag
-import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingVilkårsvurdertInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
@@ -37,10 +38,8 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-@Disabled
 internal class BehandlingServiceTest {
 
     private lateinit var behandlingRepo: BehandlingRepo
@@ -95,30 +94,30 @@ internal class BehandlingServiceTest {
     @Test
     fun `ikke lov å sende en behandling til beslutter uten saksbehandler`() {
         val saksbehandler = ObjectMother.saksbehandler()
-        val innvilget = behandlingVilkårsvurdertInnvilget(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
-        val avslag = behandlingVilkårsvurdertAvslag(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
+        val innvilget = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
 
         shouldThrow<IllegalStateException> {
-            innvilget.tilBeslutting(saksbehandler123())
+            innvilget.tilBeslutning(saksbehandler123())
         }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
 
-        shouldThrow<IllegalStateException> {
-            avslag.tilBeslutting(saksbehandler123())
-        }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
+        shouldThrow<IkkeImplementertException> {
+            val avslag = behandlingPåbegyntAvslag(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
+            avslag.tilBeslutning(saksbehandler123())
+        }.message shouldBe "Støtter ikke avslag enda."
     }
 
     @Test
     fun `ikke lov å iverksette en behandling uten beslutter`() {
-        val innvilget = behandlingTilBeslutterInnvilget()
-        val avslag = behandlingTilBeslutterAvslag()
+        val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123())
 
         shouldThrow<IllegalStateException> {
             innvilget.iverksett(saksbehandler123())
         }.message shouldBe "Ikke lov å iverksette uten beslutter"
 
-        shouldThrow<IllegalStateException> {
+        shouldThrow<IkkeImplementertException> {
+            val avslag = behandlingTilBeslutterAvslag()
             avslag.iverksett(saksbehandler123())
-        }.message shouldBe "Ikke lov å iverksette uten beslutter"
+        }.message shouldBe "Støtter ikke avslag enda."
     }
 
     @Test
@@ -140,7 +139,7 @@ internal class BehandlingServiceTest {
     @Test
     fun `sjekk at man ikke kan sende tilbake uten beslutter rolle`() {
         val behandlingId = BehandlingId.random()
-        val behandling = behandlingTilBeslutterInnvilget().copy(beslutter = beslutter().navIdent)
+        val behandling = behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0

@@ -4,9 +4,11 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
 
 /**
@@ -26,6 +28,30 @@ data class LivsoppholdVilkår private constructor(
     val vurderingsPeriode: Periode,
 ) : SkalErstatteVilkår {
     override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
+
+    override fun utfall(): Periodisering<Utfall2> {
+        return when {
+            avklartSaksopplysning == null -> {
+                Periodisering(
+                    Utfall2.UAVKLART,
+                    vurderingsPeriode,
+                )
+            }
+            !avklartSaksopplysning.harLivsoppholdYtelser -> {
+                Periodisering(
+                    Utfall2.OPPFYLT,
+                    vurderingsPeriode,
+                )
+            }
+            avklartSaksopplysning.harLivsoppholdYtelser -> {
+                Periodisering(
+                    Utfall2.IKKE_OPPFYLT,
+                    vurderingsPeriode,
+                )
+            }
+            else -> throw IllegalStateException("Ugyldig utfall")
+        }
+    }
 
     init {
         if (avklartSaksopplysning != null) require(avklartSaksopplysning.periode.inneholderHele(vurderingsPeriode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
@@ -87,13 +113,16 @@ data class LivsoppholdVilkår private constructor(
             saksbehandlerSaksopplysning: LivsoppholdSaksopplysning?,
             avklartSaksopplysning: LivsoppholdSaksopplysning?,
             vurderingsPeriode: Periode,
+            utfall: Periodisering<Utfall2>,
         ): LivsoppholdVilkår {
             return LivsoppholdVilkår(
                 søknadssaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsPeriode = vurderingsPeriode,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }

@@ -49,7 +49,6 @@ internal fun String.toVilkårssett(
             tiltakDeltagelseVilkår = vilkårssettJson.tiltakDeltagelseVilkår.toDomain(),
             kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(),
             vilkårsvurderinger = vilkårsvurderinger,
-            utfallsperioder = utfallsperioder,
         )
     } catch (exception: Exception) {
         throw InvalidParameterException("Det oppstod en feil ved parsing av json: " + exception.message)

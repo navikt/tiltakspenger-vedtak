@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import java.time.LocalDateTime
@@ -21,18 +21,19 @@ data class KravfristVilkår private constructor(
     val saksbehandlerSaksopplysning: KravfristSaksopplysning?,
     val avklartSaksopplysning: KravfristSaksopplysning,
     val vurderingsperiode: Periode,
-    val utfall: Periodisering<Utfall2>,
 ) : SkalErstatteVilkår {
 
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
+
+    override fun utfall(): Periodisering<Utfall2> {
+        val datoDetKanInnvilgesFra = avklartSaksopplysning.kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()
+
+        return when {
+            datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(Utfall2.OPPFYLT, vurderingsperiode)
+            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(Utfall2.IKKE_OPPFYLT, vurderingsperiode)
+            else -> throw IkkeImplementertException("Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)")
+        }
+    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
         val kravfristSaksopplysning = KravfristSaksopplysning.Saksbehandler(
@@ -44,7 +45,6 @@ data class KravfristVilkår private constructor(
         return this.copy(
             saksbehandlerSaksopplysning = kravfristSaksopplysning,
             avklartSaksopplysning = kravfristSaksopplysning,
-            utfall = kravfristSaksopplysning.vurderMaskinelt(vurderingsperiode),
         )
     }
 
@@ -58,7 +58,6 @@ data class KravfristVilkår private constructor(
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
             )
         }
 
@@ -77,8 +76,9 @@ data class KravfristVilkår private constructor(
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
-            )
+            ).also {
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+            }
         }
     }
 }

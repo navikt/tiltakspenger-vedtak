@@ -24,7 +24,7 @@ internal fun AlderVilkår.toDTO(): AlderVilkårDTO {
         registerSaksopplysning = registerSaksopplysning.toDTO(AlderKildeDTO.PDL),
         avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == registerSaksopplysning) AlderKildeDTO.PDL else AlderKildeDTO.SAKSBEHANDLER),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        utfallperiode = this.utfall.totalePeriode.toDTO(),
-        samletUtfall = this.samletUtfall.toDTO(),
+        utfallperiode = this.utfall().totalePeriode.toDTO(),
+        samletUtfall = this.samletUtfall().toDTO(),
     )
 }

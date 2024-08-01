@@ -86,8 +86,8 @@ class BehandlingServiceImpl(
     ) {
         require(utøvendeSaksbehandler.isSaksbehandler()) { "Saksbehandler må har rollen SAKSBEHANDLEr" }
         val behandling = hentBehandling(behandlingId)
-        if (behandling.tilstand == BehandlingTilstand.VILKÅRSVURDERT) {
-            behandlingRepo.lagre(behandling.tilBeslutting(utøvendeSaksbehandler))
+        if (behandling.tilstand == BehandlingTilstand.UNDER_BEHANDLING) {
+            behandlingRepo.lagre(behandling.tilBeslutning(utøvendeSaksbehandler))
         }
     }
 
@@ -159,7 +159,7 @@ class BehandlingServiceImpl(
             behandling = behandling,
             vedtaksdato = LocalDateTime.now(),
             vedtaksType = if (behandling.status == BehandlingStatus.Innvilget) VedtaksType.INNVILGELSE else VedtaksType.AVSLAG,
-            utfallsperioder = behandling.utfallsperioder,
+            utfallsperioder = behandling.vilkårssett.utfallsperioder(),
             periode = behandling.vurderingsperiode,
             saksbehandler = behandling.saksbehandler!!,
             beslutter = behandling.beslutter!!,

@@ -2,8 +2,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDateTime
 
@@ -14,7 +12,6 @@ sealed interface LivsoppholdSaksopplysning {
 
     val årsakTilEndring: ÅrsakTilEndring?
     val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
-    fun vurderMaskinelt(): Periodisering<Utfall2>
 
     data class Søknad(
         override val harLivsoppholdYtelser: Boolean,
@@ -23,13 +20,6 @@ sealed interface LivsoppholdSaksopplysning {
         override val periode: Periode,
     ) : LivsoppholdSaksopplysning {
         override val saksbehandler = null
-
-        override fun vurderMaskinelt(): Periodisering<Utfall2> {
-            return Periodisering(
-                Utfall2.UAVKLART,
-                periode,
-            )
-        }
     }
 
     data class Saksbehandler(
@@ -42,16 +32,6 @@ sealed interface LivsoppholdSaksopplysning {
         init {
             if (harLivsoppholdYtelser) {
                 throw IkkeImplementertException("Støtter ikke avslag enda.")
-            }
-        }
-
-        override fun vurderMaskinelt(): Periodisering<Utfall2> {
-            return when (harLivsoppholdYtelser) {
-                true -> throw IkkeImplementertException("Støtter ikke avslag enda.")
-                false -> Periodisering(
-                    Utfall2.OPPFYLT,
-                    periode,
-                )
             }
         }
     }

@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDomain
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 
@@ -12,6 +15,7 @@ internal data class LivsoppholdVilkårDbJson(
     val saksbehandlerSaksopplysning: LivsoppholdSaksopplysningDbJson?,
     val avklartSaksopplysning: LivsoppholdSaksopplysningDbJson?,
     val vurderingsPeriode: PeriodeDbJson,
+    val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
     fun toDomain(): LivsoppholdVilkår {
         return LivsoppholdVilkår.fromDb(
@@ -19,6 +23,7 @@ internal data class LivsoppholdVilkårDbJson(
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
             avklartSaksopplysning = avklartSaksopplysning?.toDomain(),
             vurderingsPeriode = vurderingsPeriode.toDomain(),
+            utfall = utfallsperioder.toDomain(),
         )
     }
 }
@@ -29,5 +34,6 @@ internal fun LivsoppholdVilkår.toDbJson(): LivsoppholdVilkårDbJson {
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning?.toDbJson(),
         vurderingsPeriode = vurderingsPeriode.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
 }

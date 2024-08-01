@@ -21,6 +21,6 @@ internal fun InstitusjonsoppholdVilkår.toDTO(): InstitusjonsoppholdVilkårDTO {
         søknadSaksopplysning = søknadSaksopplysning.toDTO(KildeDTO.SØKNAD),
         avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) KildeDTO.SØKNAD else KildeDTO.SAKSBEHANDLER),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        samletUtfall = this.samletUtfall.toDTO(),
+        samletUtfall = this.samletUtfall().toDTO(),
     )
 }

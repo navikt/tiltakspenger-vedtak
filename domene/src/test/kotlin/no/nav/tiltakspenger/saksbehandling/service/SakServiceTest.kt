@@ -223,7 +223,7 @@ internal class SakServiceTest {
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id
-        sak2.behandlinger.first { it.tilstand == BehandlingTilstand.VILKÅRSVURDERT }
+        sak2.behandlinger.first { it.tilstand == BehandlingTilstand.UNDER_BEHANDLING }
             .søknad() shouldBe søknad2.copy(opprettet = søknad.opprettet)
     }
 

@@ -24,12 +24,10 @@ interface Behandling {
 
     val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
 
-    val utfallsperioder: List<Utfallsperiode> get() = vilkårssett.utfallsperioder
-
     fun leggTilSøknad(søknad: Søknad): Behandling
     fun taBehandling(saksbehandler: Saksbehandler): Behandling
     fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
-    fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
+    fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
     fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
     fun søknad(): Søknad
