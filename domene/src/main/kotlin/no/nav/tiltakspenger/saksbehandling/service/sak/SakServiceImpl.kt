@@ -51,7 +51,7 @@ class SakServiceImpl(
 
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
-        data object HarAlleredeStartetBehandlingen : KanIkkeStarteFørstegangsbehandling
+        data class HarAlleredeStartetBehandlingen(val behandlingId: BehandlingId) : KanIkkeStarteFørstegangsbehandling
     }
 
     override fun startFørstegangsbehandling(
@@ -59,8 +59,8 @@ class SakServiceImpl(
         saksbehandler: Saksbehandler,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
         val søknad = søknadRepo.hentSøknad(søknadId)
-        if (behandlingService.hentBehandlingForSøknadId(søknadId) != null) {
-            return HarAlleredeStartetBehandlingen.left()
+        behandlingService.hentBehandlingForSøknadId(søknadId)?.also {
+            return HarAlleredeStartetBehandlingen(it.id).left()
         }
         val fnr = søknad.personopplysninger.fnr
         if (sakRepo.hentForIdent(fnr).isNotEmpty()) {
