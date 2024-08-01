@@ -246,7 +246,6 @@ internal class PostgresBehandlingRepo(
             else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
         }
         val tilstand = when (val type = string("tilstand")) {
-            "søknadsbehandling" -> BehandlingTilstand.OPPRETTET
             "UnderBehandling" -> BehandlingTilstand.UNDER_BEHANDLING
             "TilBeslutning" -> BehandlingTilstand.TIL_BESLUTTER
             "Iverksatt" -> BehandlingTilstand.IVERKSATT
@@ -277,7 +276,6 @@ internal class PostgresBehandlingRepo(
 
     private fun finnTilstand(behandling: Behandling): String =
         when (behandling.tilstand) {
-            BehandlingTilstand.OPPRETTET -> "søknadsbehandling"
             BehandlingTilstand.UNDER_BEHANDLING -> "UnderBehandling"
             BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutning"
             BehandlingTilstand.IVERKSATT -> "Iverksatt"

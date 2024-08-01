@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.IVERKSATT
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.OPPRETTET
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.TIL_BESLUTTER
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.UNDER_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -75,7 +74,7 @@ internal fun Behandling.toBehandlingBenkDto(): BehandlingBenkDto {
 
 private fun Behandling.toBehandlingBenkDtoStatus(): BehandlingBenkDto.Status {
     return when (tilstand) {
-        OPPRETTET, UNDER_BEHANDLING -> {
+        UNDER_BEHANDLING -> {
             if (saksbehandler == null) {
                 BehandlingBenkDto.Status.KLAR_TIL_BEHANDLING
             } else {

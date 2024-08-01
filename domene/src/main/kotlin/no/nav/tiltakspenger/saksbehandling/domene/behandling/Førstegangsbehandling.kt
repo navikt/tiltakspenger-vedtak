@@ -108,7 +108,6 @@ data class Førstegangsbehandling(
     override fun leggTilSøknad(søknad: Søknad): Førstegangsbehandling {
         require(
             this.tilstand in listOf(
-                BehandlingTilstand.OPPRETTET,
                 BehandlingTilstand.UNDER_BEHANDLING,
                 BehandlingTilstand.TIL_BESLUTTER,
             ),
@@ -122,7 +121,7 @@ data class Førstegangsbehandling(
             søknader = this.søknader + søknad,
             vurderingsperiode = søknad.vurderingsperiode(),
             vilkårssett = vilkårssett,
-            tilstand = BehandlingTilstand.OPPRETTET,
+            tilstand = BehandlingTilstand.UNDER_BEHANDLING,
         )
     }
 
@@ -136,7 +135,7 @@ data class Førstegangsbehandling(
 
     private fun saksbehandlerTarBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
-            this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.UNDER_BEHANDLING),
+            this.tilstand == BehandlingTilstand.UNDER_BEHANDLING,
         ) { "Vanlig saksbehandler kan ikke ta behandlingen, feil tilstand $tilstand" }
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må være saksbehandler" }
         return this.copy(saksbehandler = saksbehandler.navIdent, tilstand = BehandlingTilstand.UNDER_BEHANDLING)
@@ -153,7 +152,7 @@ data class Førstegangsbehandling(
 
     override fun avbrytBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
         require(
-            this.tilstand in listOf(BehandlingTilstand.OPPRETTET, BehandlingTilstand.UNDER_BEHANDLING),
+            this.tilstand == BehandlingTilstand.UNDER_BEHANDLING,
         ) { "Kan ikke avbryte behandling, feil tilstand $tilstand" }
 
         check(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin()) { "Kan ikke avbryte en behandling som ikke er din" }
