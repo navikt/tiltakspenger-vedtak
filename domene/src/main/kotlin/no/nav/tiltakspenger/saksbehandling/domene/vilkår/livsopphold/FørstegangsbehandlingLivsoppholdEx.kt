@@ -10,5 +10,10 @@ fun Førstegangsbehandling.leggTilLivsoppholdSaksopplysning(
     require(saksbehandler == command.saksbehandler.navIdent) { "Kan bare legge til saksopplysninger på egen sak" }
 
     return vilkårssett.oppdaterLivsopphold(command)
-        .map { this.copy(vilkårssett = it) }
+        .map {
+            this.copy(
+                vilkårssett = it,
+                saksbehandler = command.saksbehandler.navIdent,
+            )
+        }
 }

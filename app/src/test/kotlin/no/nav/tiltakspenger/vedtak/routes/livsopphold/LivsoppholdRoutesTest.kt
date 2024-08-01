@@ -59,7 +59,7 @@ class LivsoppholdRoutesTest {
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
     private val saksbehandlerIdent = "Q123456"
-    private val mockSaksbehandler = Saksbehandler(
+    private val saksbehandler = Saksbehandler(
         saksbehandlerIdent,
         "Superman",
         "a@b.c",
@@ -68,12 +68,12 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
             val vurderingsPeriode = sak.førstegangsbehandling.vurderingsperiode
 
@@ -149,9 +149,9 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1015)
+        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1015, saksbehandler = saksbehandler)
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
         val vurderingsPeriode = objectMotherSak.behandlinger.first().vurderingsperiode
 
@@ -212,7 +212,7 @@ class LivsoppholdRoutesTest {
     // TODO jah + kew: Siden livsopphold alltid nå er uavklart dersom saksbehandler ikke har postet, må vi endre denne testen.
     @Test
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val sakId = SakId.random()
         val søknadMedSykepenger = nySøknad(

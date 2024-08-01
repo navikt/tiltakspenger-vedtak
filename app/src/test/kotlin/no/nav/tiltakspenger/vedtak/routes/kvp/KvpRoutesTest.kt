@@ -37,9 +37,9 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KvpSaksopplysni
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class KvpRoutesTest {
@@ -52,7 +52,7 @@ class KvpRoutesTest {
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
-    private val mockSaksbehandler = Saksbehandler(
+    private val saksbehandler = Saksbehandler(
         "Q123456",
         "Superman",
         "a@b.c",
@@ -61,9 +61,10 @@ class KvpRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av kvp fungerer`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            saksbehandler = saksbehandler,
             løpenummer = 1004,
         )
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
@@ -152,9 +153,10 @@ class KvpRoutesTest {
 
     @Test
     fun `test at endring av kvp ikke endrer søknadsdata`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            saksbehandler = saksbehandler,
             løpenummer = 1003,
         )
 
@@ -240,17 +242,15 @@ class KvpRoutesTest {
         }
     }
 
-    // Todo(Fiks denne kiwi)
-    @Disabled
     @Test
     fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
+            saksbehandler = saksbehandler,
             løpenummer = 1010,
         )
 
-        lateinit var vurderingsPeriode: PeriodeDTO
         val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
         withMigratedDb { dataSource ->
@@ -289,6 +289,8 @@ class KvpRoutesTest {
                     }
                 }
 
+                val vurderingsPeriodeDTO = objectMotherSak.behandlinger.first().vurderingsperiode.toDTO()
+
                 defaultRequest(
                     HttpMethod.Get,
                     url {
@@ -298,11 +300,9 @@ class KvpRoutesTest {
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
-
-                    // vurderingsPeriode = kvpVilkår.vurderingsperiode
                 }
 
-                val bodyKvpDeltarIHelePerioden = bodyEndreKvp(vurderingsPeriode, deltar = true)
+                val bodyKvpDeltarIHelePerioden = bodyEndreKvp(vurderingsPeriodeDTO, deltar = true)
 
                 defaultRequest(
                     HttpMethod.Post,
