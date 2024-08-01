@@ -2,7 +2,9 @@ package no.nav.tiltakspenger.vedtak.routes.alder
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -15,7 +17,17 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -33,6 +45,7 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class AlderRoutesTest {
 
@@ -152,5 +165,37 @@ class AlderRoutesTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `test at behandlingen ikke kan opprettes om bruker fyller 18 år midt i vurderingsperioden`() {
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
+
+        val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
+        val fødselsdato = 5.januar(2000)
+
+        val søknad = nySøknad(
+            periode = vurderingsperiode,
+            tidsstempelHosOss = LocalDateTime.now(),
+        )
+
+        val behandling = ObjectMother.sakMedOpprettetBehandling(
+            saksbehandler = saksbehandler,
+            vurderingsperiode = vurderingsperiode,
+            søknad = søknad,
+            løpenummer = 1003,
+            sakPersonopplysninger = SakPersonopplysninger(
+                listOf(
+                    personopplysningKjedeligFyr(
+                        fnr = Fnr.random(),
+                        fødselsdato = fødselsdato,
+                    ),
+                ),
+            ),
+        ).behandlinger.first() as Førstegangsbehandling
+
+        shouldThrow<IkkeImplementertException> {
+            behandling.vilkårssett.alderVilkår.utfall()
+        }.shouldHaveMessage("Støtter ikke delvis innvilgelse av alder enda")
     }
 }
