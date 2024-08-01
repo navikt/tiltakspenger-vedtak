@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR_IKKE
 import java.time.LocalDateTime
 
 /**
@@ -27,7 +26,12 @@ data class KVPVilkår private constructor(
     override val lovreferanse = Lovreferanse.KVP
 
     override fun utfall(): Periodisering<Utfall2> {
-        return avklartSaksopplysning.deltar.map { it.vurderMaskinelt() }
+        return avklartSaksopplysning.deltar.map {
+            when (it) {
+                Deltagelse.DELTAR -> Utfall2.IKKE_OPPFYLT
+                Deltagelse.DELTAR_IKKE -> Utfall2.OPPFYLT
+            }
+        }
     }
 
     val totalePeriode: Periode = avklartSaksopplysning.totalePeriode

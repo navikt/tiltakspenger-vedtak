@@ -26,7 +26,7 @@ data class AlderVilkår private constructor(
     override val lovreferanse = Lovreferanse.ALDER
 
     override fun utfall(): Periodisering<Utfall2> {
-        // Om noen har bursdag 29. mars (skuddår) og de akuratt har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
+        // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
         // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
         val dagenBrukerFyller18År = avklartSaksopplysning.fødselsdato.plusYears(18)
         return when {
