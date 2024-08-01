@@ -24,13 +24,13 @@ data class UlidBase(private val stringValue: String) : Ulid {
     }
 
     init {
-        require(stringValue.contains("_")) { "Ikke gyldig Id, skal bestå av to deler skilt med _" }
-        require(stringValue.split("_").size == 2) { "Ikke gyldig Id, skal bestå av prefiks + ulid" }
-        require(stringValue.split("_").first().isNotEmpty()) { "Ikke gyldig Id, prefiks er tom" }
+        require(stringValue.contains("_")) { "Ikke gyldig Id ($stringValue), skal bestå av to deler skilt med _" }
+        require(stringValue.split("_").size == 2) { "Ikke gyldig Id ($stringValue), skal bestå av prefiks + ulid" }
+        require(stringValue.split("_").first().isNotEmpty()) { "Ikke gyldig Id ($stringValue), prefiks er tom" }
         try {
             ULID.parseULID(stringValue.split("_").last())
         } catch (e: Exception) {
-            throw IllegalArgumentException("Ikke gyldig Id, ulid er ugyldig")
+            throw IllegalArgumentException("Ikke gyldig Id ($stringValue), ulid er ugyldig")
         }
     }
 
@@ -45,7 +45,7 @@ data class SakId private constructor(private val ulid: UlidBase) : Ulid by ulid 
         private const val PREFIX = "sak"
         fun random() = SakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
-        fun fromDb(stringValue: String) = SakId(ulid = UlidBase(stringValue))
+        fun fromString(stringValue: String) = SakId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = SakId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }

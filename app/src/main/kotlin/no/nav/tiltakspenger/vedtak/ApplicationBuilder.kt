@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
+import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
@@ -140,6 +141,10 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sessionFactory = sessionFactory,
     )
 
+    private val saksoversiktRepo = SaksoversiktPostgresRepo(
+        sessionFactory = sessionFactory,
+    )
+
     private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
 
     @Suppress("unused")
@@ -160,7 +165,7 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sakRepo = sakRepo,
         attesteringRepo = attesteringRepo,
         sessionFactory = sessionFactory,
-        søknadRepo = søknadRepo,
+        saksoversiktRepo = saksoversiktRepo,
     )
     private val sakService =
         SakServiceImpl(

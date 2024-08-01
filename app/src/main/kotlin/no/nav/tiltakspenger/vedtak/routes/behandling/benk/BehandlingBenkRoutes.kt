@@ -29,13 +29,7 @@ fun Route.behandlingBenkRoutes(
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
-        val behandlinger = behandlingService.hentBehandlingerForBenk(saksbehandler)
-            .let {
-                listOf(
-                    it.søknader.fraSøknadToBehandlingBenkDto(),
-                    it.behandlinger.fraBehandlingToBehandlingBenkDto(),
-                ).flatten()
-            }
+        val behandlinger = behandlingService.hentSaksoversikt(saksbehandler).fraBehandlingToBehandlingBenkDto()
 
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }

@@ -102,7 +102,7 @@ internal class VedtakRepoImpl(
         val id = VedtakId.fromDb(string("id"))
         return Vedtak(
             id = id,
-            sakId = SakId.fromDb(string("sak_id")),
+            sakId = SakId.fromString(string("sak_id")),
             behandling = behandlingRepo.hent(BehandlingId.fromString(string("behandling_id"))),
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),

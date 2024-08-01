@@ -188,7 +188,7 @@ internal class PostgresSakRepo(
     }
 
     private fun Row.toSak(tx: TransactionalSession): Sak {
-        val id = SakId.fromDb(string("id"))
+        val id = SakId.fromString(string("id"))
         return Sak(
             sakDetaljer = toSakDetaljer(),
             behandlinger = behandlingRepo.hentForSak(id, tx),
@@ -198,7 +198,7 @@ internal class PostgresSakRepo(
     }
 
     private fun Row.toSakDetaljer(): TynnSak {
-        val id = SakId.fromDb(string("id"))
+        val id = SakId.fromString(string("id"))
         return TynnSak(
             id = id,
             fnr = Fnr.fromString(string("ident")),

@@ -34,7 +34,7 @@ class ExceptionHandlingTest {
     @Test
     fun `Manglende token skal bli til 401`() {
         every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } throws ManglendeJWTTokenException()
-        every { behandlingService.hentBehandlingerForBenk(any()) } throws IllegalStateException("Wuzza")
+        every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.Unauthorized
         val expectedBody = """
@@ -79,7 +79,7 @@ class ExceptionHandlingTest {
     @Test
     fun `IllegalStateException skal bli til 500`() {
         every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns ObjectMother.beslutter()
-        every { behandlingService.hentBehandlingerForBenk(any()) } throws IllegalStateException("Wuzza")
+        every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.InternalServerError
         val expectedBody = """

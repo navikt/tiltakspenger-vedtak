@@ -86,7 +86,7 @@ class KvpRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val kvpVilkårService = KvpVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -180,7 +180,7 @@ class KvpRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val kvpVilkårService = KvpVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -270,7 +270,7 @@ class KvpRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val kvpVilkårService = KvpVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

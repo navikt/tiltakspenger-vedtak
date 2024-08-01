@@ -79,7 +79,7 @@ class IntroRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
 
             testApplication {
@@ -134,7 +134,7 @@ class IntroRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
 
             testApplication {

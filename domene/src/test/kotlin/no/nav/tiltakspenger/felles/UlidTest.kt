@@ -26,27 +26,27 @@ internal class UlidTest {
     @Test
     fun `test fromDb negativ test`() {
         val utenGyldigSkilletegn = "HH"
-        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, skal bestå av to deler skilt med _") {
+        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id ($utenGyldigSkilletegn), skal bestå av to deler skilt med _") {
             BehandlingId.fromString(utenGyldigSkilletegn)
         }
 
         val utenPrefiks = "_HH"
-        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, prefiks er tom") {
+        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id ($utenPrefiks), prefiks er tom") {
             BehandlingId.fromString(utenPrefiks)
         }
 
         val utenUlid = "HH_"
-        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, ulid er ugyldig") {
+        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id ($utenUlid), ulid er ugyldig") {
             BehandlingId.fromString(utenUlid)
         }
 
-        val ugyldeTegniUlid = "HH_1234567890123456789U123456"
-        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, ulid er ugyldig") {
-            BehandlingId.fromString(ugyldeTegniUlid)
+        val ugyldigTegniUlid = "HH_1234567890123456789U123456"
+        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id ($ugyldigTegniUlid), ulid er ugyldig") {
+            BehandlingId.fromString(ugyldigTegniUlid)
         }
 
         val ugyldigUlid = "HH_UU_JJ"
-        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id, skal bestå av prefiks + ulid") {
+        shouldThrowWithMessage<IllegalArgumentException>("Ikke gyldig Id ($ugyldigUlid), skal bestå av prefiks + ulid") {
             BehandlingId.fromString(ugyldigUlid)
         }
     }

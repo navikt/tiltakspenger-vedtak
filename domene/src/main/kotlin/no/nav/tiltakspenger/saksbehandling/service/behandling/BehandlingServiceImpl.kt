@@ -16,8 +16,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingerForBenk
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
@@ -26,7 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
@@ -44,7 +44,7 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
     private val attesteringRepo: AttesteringRepo,
     private val sessionFactory: SessionFactory,
-    private val søknadRepo: SøknadRepo,
+    private val saksoversiktRepo: SaksoversiktRepo,
 ) : BehandlingService {
 
     override fun hentBehandling(behandlingId: BehandlingId, sessionContext: SessionContext?): Behandling {
@@ -71,13 +71,10 @@ class BehandlingServiceImpl(
         return behandlingRepo.hentForJournalpostId(journalpostId)
     }
 
-    override fun hentBehandlingerForBenk(saksbehandler: Saksbehandler): BehandlingerForBenk {
-        require(saksbehandler.isSaksbehandler())
-        return BehandlingerForBenk(
-            behandlinger = behandlingRepo.hentAlle()
-                .filter { behandling -> personopplysningRepo.hent(behandling.sakId).harTilgang(saksbehandler) },
-            søknader = søknadRepo.hentAlleSøknader(), // TODO jah: Her må vi gjøre et bulkkall til pdl sin egen rettigheter funksjon for å sjekke tilgang.
-        )
+    override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
+        require(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin())
+        // TODO 1 jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
+        return saksoversiktRepo.hentAlle()
     }
 
     override fun sendTilBeslutter(
