@@ -121,7 +121,7 @@ data class LivsoppholdVilkår private constructor(
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsPeriode = vurderingsPeriode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
             }
         }
     }

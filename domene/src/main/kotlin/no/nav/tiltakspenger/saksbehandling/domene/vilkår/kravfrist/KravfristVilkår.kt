@@ -31,7 +31,7 @@ data class KravfristVilkår private constructor(
         return when {
             datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(Utfall2.OPPFYLT, vurderingsperiode)
             datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(Utfall2.IKKE_OPPFYLT, vurderingsperiode)
-            else -> throw IkkeImplementertException("Støtter ikke at kravdatoen er midt i vurderingsperioden.")
+            else -> throw IkkeImplementertException("Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)")
         }
     }
 
@@ -77,7 +77,7 @@ data class KravfristVilkår private constructor(
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
             }
         }
     }
