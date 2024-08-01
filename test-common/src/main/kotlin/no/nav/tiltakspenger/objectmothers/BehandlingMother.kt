@@ -112,12 +112,12 @@ interface BehandlingMother {
 
     fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler): Førstegangsbehandling {
         val behandling = behandlingKlarTilAttestering(saksbehandler = saksbehandler)
-        return behandling.tilBesluting(saksbehandler)
+        return behandling.tilBeslutning(saksbehandler)
     }
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
         behandlingPåbegyntAvslag().copy(saksbehandler = saksbehandler123().navIdent)
-            .tilBesluting(saksbehandler123())
+            .tilBeslutning(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
         behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent).iverksett(beslutter())

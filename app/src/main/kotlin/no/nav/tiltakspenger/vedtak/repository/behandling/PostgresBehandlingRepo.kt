@@ -248,7 +248,7 @@ internal class PostgresBehandlingRepo(
         val tilstand = when (val type = string("tilstand")) {
             "søknadsbehandling" -> BehandlingTilstand.OPPRETTET
             "UnderBehandling" -> BehandlingTilstand.UNDER_BEHANDLING
-            "TilBeslutting" -> BehandlingTilstand.TIL_BESLUTTER
+            "TilBeslutning" -> BehandlingTilstand.TIL_BESLUTTER
             "Iverksatt" -> BehandlingTilstand.IVERKSATT
             else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
         }
@@ -279,7 +279,7 @@ internal class PostgresBehandlingRepo(
         when (behandling.tilstand) {
             BehandlingTilstand.OPPRETTET -> "søknadsbehandling"
             BehandlingTilstand.UNDER_BEHANDLING -> "UnderBehandling"
-            BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutting"
+            BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutning"
             BehandlingTilstand.IVERKSATT -> "Iverksatt"
         }
 

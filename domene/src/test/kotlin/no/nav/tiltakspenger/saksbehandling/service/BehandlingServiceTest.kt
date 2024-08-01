@@ -97,12 +97,12 @@ internal class BehandlingServiceTest {
         val innvilget = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
 
         shouldThrow<IllegalStateException> {
-            innvilget.tilBesluting(saksbehandler123())
+            innvilget.tilBeslutning(saksbehandler123())
         }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
 
         shouldThrow<IkkeImplementertException> {
             val avslag = behandlingPåbegyntAvslag(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
-            avslag.tilBesluting(saksbehandler123())
+            avslag.tilBeslutning(saksbehandler123())
         }.message shouldBe "Støtter ikke avslag enda."
     }
 
