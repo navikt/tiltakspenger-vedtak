@@ -209,7 +209,88 @@ class LivsoppholdRoutesTest {
         }
     }
 
-    // TODO jah + kew: Siden livsopphold alltid nå er uavklart dersom saksbehandler ikke har postet, må vi endre denne testen.
+    @Test
+    fun `test at livsoppholdytelser blir uavklart om man bare har data fra søknaden`() {
+        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
+
+        withMigratedDb { dataSource ->
+            val testDataHelper = TestDataHelper(dataSource)
+
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+            val behandlingId = sak.førstegangsbehandling.id
+            val vurderingsPeriode = sak.førstegangsbehandling.vurderingsperiode
+
+            val behandlingService = BehandlingServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                vedtakRepo = testDataHelper.vedtakRepo,
+                personopplysningRepo = testDataHelper.personopplysningerRepo,
+                utbetalingService = mockedUtbetalingServiceImpl,
+                brevPublisherGateway = mockBrevPublisherGateway,
+                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                sakRepo = testDataHelper.sakRepo,
+                attesteringRepo = testDataHelper.attesteringRepo,
+                sessionFactory = testDataHelper.sessionFactory,
+                søknadRepo = testDataHelper.søknadRepo,
+            )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        livsoppholdRoutes(
+                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            livsoppholdVilkårService = livsoppholdVilkårService,
+                            behandlingService = behandlingService,
+                        )
+                    }
+                }
+                // Sjekk at man kan kjøre Get
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+                    livsoppholdVilkår.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
+                    livsoppholdVilkår.avklartSaksopplysning.shouldBeNull()
+                }
+
+                // Sjekk at man kan si at bruker ikke har livsoppholdytelser
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ) {
+                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), false))
+                }.apply {
+                    status shouldBe HttpStatusCode.Created
+                }
+
+                // Sjekk at dataene har blitt oppdatert
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                    },
+                ).apply {
+                    status shouldBe HttpStatusCode.OK
+                    val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
+                    livsoppholdVilkår.avklartSaksopplysning!!.harLivsoppholdYtelser.shouldBeFalse()
+                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldNotBeNull { this.navIdent shouldBe saksbehandlerIdent }
+                }
+            }
+        }
+    }
+
     @Test
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
