@@ -233,7 +233,7 @@ internal class PostgresBehandlingRepo(
 
     private fun Row.toBehandling(session: Session): Førstegangsbehandling {
         val id = BehandlingId.fromString(string("id"))
-        val sakId = SakId.fromDb(string("sakId"))
+        val sakId = SakId.fromString(string("sakId"))
         val fom = localDate("fom")
         val tom = localDate("tom")
         val status = string("status")

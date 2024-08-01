@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
@@ -63,6 +64,7 @@ internal class SakServiceTest {
     private lateinit var skjermingGateway: SkjermingGateway
     private lateinit var søkerRepository: SøkerRepository
     private lateinit var søknadRepo: SøknadRepo
+    private lateinit var saksoversiktRepo: SaksoversiktRepo
 
     @BeforeEach
     fun setup() {
@@ -80,6 +82,7 @@ internal class SakServiceTest {
         skjermingGateway = mockk(relaxed = true)
         søkerRepository = mockk(relaxed = true)
         søknadRepo = mockk(relaxed = true)
+        saksoversiktRepo = mockk(relaxed = true)
         val sessionFactory = TestSessionFactory()
         behandlingService =
             BehandlingServiceImpl(
@@ -92,7 +95,7 @@ internal class SakServiceTest {
                 sakRepo = sakRepo,
                 attesteringRepo = attesteringRepo,
                 sessionFactory = sessionFactory,
-                søknadRepo = søknadRepo,
+                saksoversiktRepo = saksoversiktRepo,
             )
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
@@ -206,7 +209,8 @@ internal class SakServiceTest {
         every { søknadRepo.hentSøknad(any()) } returns søknad
         coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(fnr = fnr))
         every { behandlingRepo.lagre(any()) } returnsArgument 0
-        val sak = sakService.startFørstegangsbehandling(søknad.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
+        val sak =
+            sakService.startFørstegangsbehandling(søknad.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
 
         every { sakRepo.hentForIdent(any()) } returns Saker(fnr, listOf(sak))
 
@@ -219,7 +223,8 @@ internal class SakServiceTest {
             ),
             opprettet = 2.januarDateTime(2023),
         )
-        val sak2 = sakService.startFørstegangsbehandling(søknad2.id, saksbehandler = ObjectMother.saksbehandler()).getOrNull()!!
+        val sak2 = sakService.startFørstegangsbehandling(søknad2.id, saksbehandler = ObjectMother.saksbehandler())
+            .getOrNull()!!
 
         sak2.behandlinger.size shouldBe 1
         sak.id shouldBe sak2.id

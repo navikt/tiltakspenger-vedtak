@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import no.nav.tiltakspenger.vedtak.repository.behandling.VurderingRepo
+import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
@@ -79,6 +80,9 @@ internal class TestDataHelper(
         behandlingRepo = behandlingRepo,
         personopplysningerRepo = personopplysningerRepo,
         vedtakDAO = vedtakRepo,
+        sessionFactory = sessionFactory,
+    )
+    val saksoversiktRepo = SaksoversiktPostgresRepo(
         sessionFactory = sessionFactory,
     )
 }

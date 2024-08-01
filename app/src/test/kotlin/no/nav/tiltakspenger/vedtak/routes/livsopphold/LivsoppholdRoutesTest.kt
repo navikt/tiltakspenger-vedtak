@@ -87,7 +87,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -172,8 +172,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
-
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -230,7 +229,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -384,7 +383,7 @@ class LivsoppholdRoutesTest {
                 sakRepo = testDataHelper.sakRepo,
                 attesteringRepo = testDataHelper.attesteringRepo,
                 sessionFactory = testDataHelper.sessionFactory,
-                søknadRepo = testDataHelper.søknadRepo,
+                saksoversiktRepo = testDataHelper.saksoversiktRepo,
             )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

@@ -1,10 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.IVERKSATT
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.TIL_BESLUTTER
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand.UNDER_BEHANDLING
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
+import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Førstegangsbehandling
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -52,61 +49,32 @@ internal data class BehandlingBenkDto(
     }
 }
 
-internal fun List<Behandling>.fraBehandlingToBehandlingBenkDto(): List<BehandlingBenkDto> {
+internal fun Saksoversikt.fraBehandlingToBehandlingBenkDto(): List<BehandlingBenkDto> {
     return this.map { it.toBehandlingBenkDto() }
 }
 
-internal fun Behandling.toBehandlingBenkDto(): BehandlingBenkDto {
+internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): BehandlingBenkDto {
     return BehandlingBenkDto(
-        periode = vurderingsperiode.toDTO(),
-        status = toBehandlingBenkDtoStatus(),
+        periode = periode?.toDTO(),
+        status = when (status) {
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.SØKNAD -> BehandlingBenkDto.Status.SØKNAD
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.KLAR_TIL_BEHANDLING -> BehandlingBenkDto.Status.KLAR_TIL_BEHANDLING
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.UNDER_BEHANDLING -> BehandlingBenkDto.Status.UNDER_BEHANDLING
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.KLAR_TIL_BESLUTNING -> BehandlingBenkDto.Status.KLAR_TIL_BESLUTNING
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.UNDER_BESLUTNING -> BehandlingBenkDto.Status.UNDER_BESLUTNING
+            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.INNVILGET -> BehandlingBenkDto.Status.INNVILGET
+        },
         // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
         // underkjent = this.be,
-        typeBehandling = Førstegangsbehandling,
+        typeBehandling = when (behandlingstype) {
+            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Førstegangsbehandling
+            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING -> Førstegangsbehandling
+        },
         ident = fnr.verdi,
         saksnummer = saksnummer.toString(),
         id = id.toString(),
         saksbehandler = saksbehandler,
         beslutter = beslutter,
         sakId = sakId.toString(),
-    )
-}
-
-private fun Behandling.toBehandlingBenkDtoStatus(): BehandlingBenkDto.Status {
-    return when (tilstand) {
-        UNDER_BEHANDLING -> {
-            if (saksbehandler == null) {
-                BehandlingBenkDto.Status.KLAR_TIL_BEHANDLING
-            } else {
-                BehandlingBenkDto.Status.UNDER_BEHANDLING
-            }
-        }
-
-        TIL_BESLUTTER -> {
-            if (beslutter == null) {
-                BehandlingBenkDto.Status.KLAR_TIL_BESLUTNING
-            } else {
-                BehandlingBenkDto.Status.UNDER_BESLUTNING
-            }
-        }
-
-        IVERKSATT -> BehandlingBenkDto.Status.INNVILGET
-    }
-}
-internal fun List<Søknad>.fraSøknadToBehandlingBenkDto(): List<BehandlingBenkDto> {
-    return this.map { it.toBehandlingBenkDto() }
-}
-
-internal fun Søknad.toBehandlingBenkDto(): BehandlingBenkDto {
-    return BehandlingBenkDto(
-        periode = null,
-        status = BehandlingBenkDto.Status.SØKNAD,
-        typeBehandling = BehandlingBenkDto.TypeBehandling.Søknad,
-        ident = this.personopplysninger.fnr.verdi,
-        saksnummer = null,
-        id = id.toString(),
-        saksbehandler = null,
-        beslutter = null,
-        sakId = null,
     )
 }
