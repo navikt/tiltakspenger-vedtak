@@ -43,19 +43,22 @@ data class TiltakDeltagelseVilkår private constructor(
     }
 
     override fun utfall(): Periodisering<Utfall2> {
+        // TODO Feriegave fra Kew: Hvorfor er dette en String? Hva er planen med TiltakDeltagelseSaksopplysning?
         val girRett = registerSaksopplysning.girRett
         val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
         val status = registerSaksopplysning.status
 
         return when {
-            girRett && brukerDeltarPåTiltak(status) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
-            // B&H: Har tatt utgangspunkt i at tom-dato må være før datoen SBH behandler søknaden for statusene deltatt og sluttet.
-            girRett && brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
-            girRett && brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
-            // B&H: For nå har vi tenkt at det er lurt å ikke godkjenne søknader på tiltak frem i tid, og at de som er bakover i tid med denne statusen må sjekkes opp av SBH
-            girRett && brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
-            girRett && brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
             !girRett -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
+            brukerDeltarPåTiltak(status) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
+            // B&H: Har tatt utgangspunkt i at tom-dato må være før datoen SBH behandler søknaden for statusene deltatt og sluttet.
+            // TODO Feriegave fra Kew: Foreslår at vi kommenterer ut disse som går på LocalDate.now() og heller setter de casene til UAVKLART.
+            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
+            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
+            // B&H: For nå har vi tenkt at det er lurt å ikke godkjenne søknader på tiltak frem i tid, og at de som er bakover i tid med denne statusen må sjekkes opp av SBH
+            // TODO Feriegave fra Kew: Foreslår at vi kommenterer ut disse som går på LocalDate.now() og heller setter de casene til UAVKLART.
+            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
+            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
             else -> {
                 Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
             }

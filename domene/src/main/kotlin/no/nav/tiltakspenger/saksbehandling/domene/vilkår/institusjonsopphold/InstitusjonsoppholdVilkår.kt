@@ -5,6 +5,8 @@ import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.IKKE_OPPHOLD
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.OPPHOLD
 
 /**
  * Institusjonsopphold:
@@ -23,7 +25,12 @@ data class InstitusjonsoppholdVilkår private constructor(
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
 
     override fun utfall(): Periodisering<Utfall2> {
-        return avklartSaksopplysning.opphold.map { it.vurderMaskinelt() }
+        return avklartSaksopplysning.opphold.map {
+            when (it) {
+                OPPHOLD -> Utfall2.IKKE_OPPFYLT
+                IKKE_OPPHOLD -> Utfall2.OPPFYLT
+            }
+        }
     }
 
     val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
