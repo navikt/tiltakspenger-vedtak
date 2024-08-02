@@ -30,7 +30,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
@@ -52,7 +51,6 @@ import org.junit.jupiter.api.Test
 class LivsoppholdRoutesTest {
 
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
 
@@ -81,7 +79,6 @@ class LivsoppholdRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -166,7 +163,6 @@ class LivsoppholdRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -223,7 +219,6 @@ class LivsoppholdRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -377,7 +372,6 @@ class LivsoppholdRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,

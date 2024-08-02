@@ -36,7 +36,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +45,6 @@ internal class BehandlingServiceTest {
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
-    private lateinit var utbetalingService: UtbetalingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
@@ -63,7 +61,6 @@ internal class BehandlingServiceTest {
         behandlingRepo = mockk()
         vedtakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
-        utbetalingService = mockk()
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
@@ -79,7 +76,6 @@ internal class BehandlingServiceTest {
                 behandlingRepo = behandlingRepo,
                 vedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
-                utbetalingService = utbetalingService,
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,

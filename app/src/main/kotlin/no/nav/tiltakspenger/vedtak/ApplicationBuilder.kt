@@ -12,7 +12,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphol
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -22,8 +21,6 @@ import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingClientImpl
 import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingClient
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
@@ -75,8 +72,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         }
         .build()
 
-    private val tokenProviderUtbetaling: AzureTokenProvider =
-        AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
     private val tokenProviderPdl: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.ouathConfigPdl())
     private val tokenProviderSkjerming: AzureTokenProvider =
@@ -88,11 +83,9 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    private val utbetalingClient = UtbetalingClient(getToken = tokenProviderUtbetaling::getToken)
     private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
     private val tiltakClient = TiltakClientImpl(getToken = tokenProviderTiltak::getToken)
     private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
-    private val utbetalingGateway = UtbetalingGatewayImpl(utbetalingClient)
     private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
     private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
@@ -145,8 +138,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         sessionFactory = sessionFactory,
     )
 
-    private val utbetalingService = UtbetalingServiceImpl(utbetalingGateway)
-
     @Suppress("unused")
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
     private val søkerService = SøkerServiceImpl(søkerRepository)
@@ -159,7 +150,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
         behandlingRepo = behandlingRepo,
         vedtakRepo = vedtakRepo,
         personopplysningRepo = personopplysningRepo,
-        utbetalingService = utbetalingService,
         brevPublisherGateway = brevPublisherGateway,
         meldekortGrunnlagGateway = meldekortGrunnlagGateway,
         sakRepo = sakRepo,

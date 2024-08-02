@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -28,7 +27,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingService
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
@@ -38,7 +36,6 @@ class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
-    private val utbetalingService: UtbetalingService,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val sakRepo: SakRepo,
@@ -136,8 +133,6 @@ class BehandlingServiceImpl(
             behandlingRepo.lagre(iverksattBehandling, tx)
             attesteringRepo.lagre(attestering, tx)
             vedtakRepo.lagreVedtak(vedtak, tx)
-
-            runBlocking { utbetalingService.sendBehandlingTilUtbetaling(sak, vedtak) }
         }
 
         meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)

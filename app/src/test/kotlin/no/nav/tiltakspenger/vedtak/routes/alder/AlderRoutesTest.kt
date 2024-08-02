@@ -28,7 +28,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
@@ -49,7 +48,6 @@ import java.time.LocalDateTime
 class AlderRoutesTest {
 
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
 
@@ -79,7 +77,6 @@ class AlderRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -130,7 +127,6 @@ class AlderRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,

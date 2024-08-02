@@ -22,7 +22,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
@@ -45,7 +44,6 @@ import org.junit.jupiter.api.Test
 class KvpRoutesTest {
 
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
@@ -80,7 +78,6 @@ class KvpRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -174,7 +171,6 @@ class KvpRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -264,7 +260,6 @@ class KvpRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,

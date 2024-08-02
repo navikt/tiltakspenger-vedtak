@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningFødselsdato
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.utbetaling.UtbetalingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
@@ -46,7 +45,6 @@ import java.time.LocalDateTime
 
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockedUtbetalingServiceImpl = mockk<UtbetalingServiceImpl>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
@@ -101,7 +99,6 @@ internal class KravfristRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
@@ -154,7 +151,6 @@ internal class KravfristRoutesTest {
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,
                 personopplysningRepo = testDataHelper.personopplysningerRepo,
-                utbetalingService = mockedUtbetalingServiceImpl,
                 brevPublisherGateway = mockBrevPublisherGateway,
                 meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                 sakRepo = testDataHelper.sakRepo,
