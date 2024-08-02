@@ -40,6 +40,11 @@ subprojects {
             useJUnitPlatform()
             // https://phauer.com/2018/best-practices-unit-testing-kotlin/
             systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+
+            if (javaVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
+                // https://github.com/mockito/mockito/issues/3037#issuecomment-1588199599
+                jvmArgs("-XX:+EnableDynamicAgentLoading")
+            }
         }
     }
     configurations.all {

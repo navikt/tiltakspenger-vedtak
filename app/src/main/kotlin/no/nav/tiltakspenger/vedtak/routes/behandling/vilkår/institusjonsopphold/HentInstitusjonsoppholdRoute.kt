@@ -22,10 +22,10 @@ fun Route.hentInstitusjonsoppholdRoute(
     get("$behandlingPath/{behandlingId}/vilkar/institusjonsopphold") {
         SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/institusjonsopphold")
 
-        innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             call.respond(
                 status = HttpStatusCode.OK,
                 message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(),

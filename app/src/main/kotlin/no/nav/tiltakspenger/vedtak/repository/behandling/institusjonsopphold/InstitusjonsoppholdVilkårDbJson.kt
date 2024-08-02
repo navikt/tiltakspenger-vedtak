@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
@@ -14,10 +16,11 @@ internal data class InstitusjonsoppholdVilkårDbJson(
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysningDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): InstitusjonsoppholdVilkår {
+    fun toDomain(vurderingsperiode: Periode): InstitusjonsoppholdVilkår {
         return InstitusjonsoppholdVilkår.fromDb(
-            søknadSaksopplysning = søknadSaksopplysning.toDomain(),
-            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
+            vurderingsperiode = vurderingsperiode,
+            søknadSaksopplysning = søknadSaksopplysning.toDomain() as InstitusjonsoppholdSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as InstitusjonsoppholdSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )

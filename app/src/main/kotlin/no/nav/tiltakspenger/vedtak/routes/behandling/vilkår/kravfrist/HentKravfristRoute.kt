@@ -21,10 +21,10 @@ fun Route.hentKravfristRoute(
     get("$behandlingPath/{behandlingId}/vilkar/kravfrist") {
         SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kravfrist")
 
-        innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             call.respond(
                 status = HttpStatusCode.OK,
                 message = it.vilkårssett.kravfristVilkår.toDTO(),

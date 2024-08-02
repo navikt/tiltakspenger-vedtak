@@ -4,9 +4,8 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR_IKKE
 import java.time.LocalDateTime
@@ -16,33 +15,30 @@ import java.time.LocalDateTime
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param utfall Selvom om utfallet er
- *
  */
 data class IntroVilkår private constructor(
-    val søknadSaksopplysning: IntroSaksopplysning,
-    val saksbehandlerSaksopplysning: IntroSaksopplysning?,
+    override val vurderingsperiode: Periode,
+    val søknadSaksopplysning: IntroSaksopplysning.Søknad,
+    val saksbehandlerSaksopplysning: IntroSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: IntroSaksopplysning,
-) : SkalErstatteVilkår {
+) : Vilkår {
 
     override val lovreferanse = Lovreferanse.INTROPROGRAMMET
 
-    override fun utfall(): Periodisering<Utfall2> {
+    override fun utfall(): Periodisering<UtfallForPeriode> {
         return avklartSaksopplysning.deltar.map {
             when (it) {
-                DELTAR -> Utfall2.IKKE_OPPFYLT
-                DELTAR_IKKE -> Utfall2.OPPFYLT
+                DELTAR -> UtfallForPeriode.IKKE_OPPFYLT
+                DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }
     }
-
-    val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilIntroSaksopplysningCommand): IntroVilkår {
         val introSaksopplysning = IntroSaksopplysning.Saksbehandler(
             deltar = Periodisering(
                 command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-            ).utvid(Deltagelse.DELTAR_IKKE, totalePeriode),
+            ).utvid(DELTAR_IKKE, vurderingsperiode),
             årsakTilEndring = command.årsakTilEndring,
             saksbehandler = command.saksbehandler,
             tidsstempel = LocalDateTime.now(),
@@ -69,9 +65,11 @@ data class IntroVilkår private constructor(
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: IntroSaksopplysning,
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: IntroSaksopplysning.Søknad,
         ): IntroVilkår {
             return IntroVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
@@ -82,12 +80,14 @@ data class IntroVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: IntroSaksopplysning,
-            saksbehandlerSaksopplysning: IntroSaksopplysning?,
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: IntroSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning: IntroSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: IntroSaksopplysning,
-            utfall: Periodisering<Utfall2>,
+            utfall: Periodisering<UtfallForPeriode>,
         ): IntroVilkår {
             return IntroVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,

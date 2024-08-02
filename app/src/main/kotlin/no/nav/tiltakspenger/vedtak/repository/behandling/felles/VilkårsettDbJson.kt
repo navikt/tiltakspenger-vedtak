@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.felles
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Utfallsperiode
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
 import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.behandling.alder.AlderVilkårDbJson
@@ -35,20 +34,19 @@ private class VilkårssettJson(
 )
 
 internal fun String.toVilkårssett(
-    vilkårsvurderinger: List<Vurdering>,
-    utfallsperioder: List<Utfallsperiode>,
+    vurderingsperiode: Periode,
 ): Vilkårssett {
     try {
         val vilkårssettJson = deserialize<VilkårssettJson>(this)
         return Vilkårssett(
-            institusjonsoppholdVilkår = vilkårssettJson.institusjonsoppholdVilkår.toDomain(),
-            kvpVilkår = vilkårssettJson.kvpVilkår.toDomain(),
-            introVilkår = vilkårssettJson.introVilkår.toDomain(),
-            livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(),
-            alderVilkår = vilkårssettJson.alderVilkår.toDomain(),
-            tiltakDeltagelseVilkår = vilkårssettJson.tiltakDeltagelseVilkår.toDomain(),
-            kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(),
-            vilkårsvurderinger = vilkårsvurderinger,
+            vurderingsperiode = vurderingsperiode,
+            institusjonsoppholdVilkår = vilkårssettJson.institusjonsoppholdVilkår.toDomain(vurderingsperiode),
+            kvpVilkår = vilkårssettJson.kvpVilkår.toDomain(vurderingsperiode),
+            introVilkår = vilkårssettJson.introVilkår.toDomain(vurderingsperiode),
+            livsoppholdVilkår = vilkårssettJson.livsoppholdVilkår.toDomain(vurderingsperiode),
+            alderVilkår = vilkårssettJson.alderVilkår.toDomain(vurderingsperiode),
+            tiltakDeltagelseVilkår = vilkårssettJson.tiltakDeltagelseVilkår.toDomain(vurderingsperiode),
+            kravfristVilkår = vilkårssettJson.kravfristVilkår.toDomain(vurderingsperiode),
         )
     } catch (exception: Exception) {
         throw InvalidParameterException("Det oppstod en feil ved parsing av json: " + exception.message)

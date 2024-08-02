@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 
 internal object BehandlingDTOMapper {
@@ -9,11 +8,10 @@ internal object BehandlingDTOMapper {
         this.map {
             BehandlingDTO(
                 id = it.id.toString(),
-                ident = it.søknad().personopplysninger.fnr.verdi,
+                ident = it.søknad.personopplysninger.fnr.verdi,
                 saksbehandler = it.saksbehandler,
                 beslutter = it.beslutter,
-                status = finnStatus(it),
-                tilstand = it.tilstand,
+                status = it.status.toDTO(),
                 typeBehandling = "Førstegangsbehandling",
                 fom = it.vurderingsperiode.fraOgMed,
                 tom = it.vurderingsperiode.tilOgMed,

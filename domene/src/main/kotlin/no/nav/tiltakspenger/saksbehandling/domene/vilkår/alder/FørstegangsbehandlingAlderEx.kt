@@ -5,8 +5,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 fun Førstegangsbehandling.leggTilAlderSaksopplysning(
     command: LeggTilAlderSaksopplysningCommand,
 ): Førstegangsbehandling {
-    // TODO Feriegave fra Kew: Mulig å legge ved begge saksbehandlerne her og muligens en id hvis det finnes på commanden
-    require(saksbehandler == command.saksbehandler.navIdent) { "Kan bare legge til saksopplysninger på egen sak" }
+    require(saksbehandler == command.saksbehandler.navIdent) { "Kan bare legge til saksopplysninger på egen sak. Saksbehandler på behandling: $saksbehandler, utførendeSaksbehandler: ${command.saksbehandler}, behandlingId: ${command.behandlingId}" }
 
     val oppdatertFørstegangsbehandling = this.copy(
         vilkårssett = vilkårssett.oppdaterAlder(command),

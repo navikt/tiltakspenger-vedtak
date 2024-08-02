@@ -23,10 +23,10 @@ fun Route.hentAlderRoute(
     get("$behandlingPath/{behandlingId}/vilkar/alder") {
         SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/alder")
 
-        innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             call.respond(
                 status = HttpStatusCode.OK,
                 message = it.vilkårssett.alderVilkår.toDTO(),

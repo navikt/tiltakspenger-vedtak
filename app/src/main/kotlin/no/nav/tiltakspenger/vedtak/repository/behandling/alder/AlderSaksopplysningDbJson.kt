@@ -24,7 +24,7 @@ internal data class AlderSaksopplysningDbJson(
 
             else -> {
                 require(årsakTilEndring == null) { "Støtter ikke årsak til endring for AlderSaksopplysning.Personopplysning." }
-                AlderSaksopplysning.Personopplysning(
+                AlderSaksopplysning.Register(
                     fødselsdato = fødselsdato,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )

@@ -3,25 +3,23 @@ package no.nav.tiltakspenger.saksbehandling.service
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.TestSessionFactory
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingPåbegyntAvslag
-import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingPåbegyntInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingUnderBehandlingAvslag
+import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingUnderBehandlingInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode6
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedKode7
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerUtenTilgang
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -58,7 +56,7 @@ internal class BehandlingServiceTest {
 
     @BeforeEach
     fun setup() {
-        behandlingRepo = mockk()
+        behandlingRepo = mockk(relaxed = true)
         vedtakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         brevPublisherGateway = mockk()
@@ -93,14 +91,19 @@ internal class BehandlingServiceTest {
     @Test
     fun `ikke lov å sende en behandling til beslutter uten saksbehandler`() {
         val saksbehandler = ObjectMother.saksbehandler()
-        val innvilget = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
+        val innvilget =
+            behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
+                .taSaksbehandlerAvBehandlingen(saksbehandler)
 
         shouldThrow<IllegalStateException> {
             innvilget.tilBeslutning(saksbehandler123())
-        }.message shouldBe "Ikke lov å sende Behandling til Beslutter uten saksbehandler"
+        }.message.shouldContain("Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: KLAR_TIL_BEHANDLING.")
 
         shouldThrow<IkkeImplementertException> {
-            val avslag = behandlingPåbegyntAvslag(saksbehandler = saksbehandler).avbrytBehandling(saksbehandler)
+            val avslag =
+                behandlingUnderBehandlingAvslag(saksbehandler = saksbehandler).taSaksbehandlerAvBehandlingen(
+                    saksbehandler,
+                )
             avslag.tilBeslutning(saksbehandler123())
         }.message shouldBe "Støtter ikke avslag enda."
     }
@@ -111,7 +114,7 @@ internal class BehandlingServiceTest {
 
         shouldThrow<IllegalStateException> {
             innvilget.iverksett(saksbehandler123())
-        }.message shouldBe "Ikke lov å iverksette uten beslutter"
+        }.message shouldBe "Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: KLAR_TIL_BESLUTNING"
 
         shouldThrow<IkkeImplementertException> {
             val avslag = behandlingTilBeslutterAvslag()
@@ -120,35 +123,49 @@ internal class BehandlingServiceTest {
     }
 
     @Test
-    fun `sjekk at man ikke kan se behandlinger for en person som er fortrolig uten tilgang`() {
-        val person = listOf(ObjectMother.personopplysningKjedeligFyr(fortrolig = true))
-        val behandlinger: List<Behandling> = ObjectMother.sakMedOpprettetBehandling(
-            sakPersonopplysninger = SakPersonopplysninger(person),
-        ).behandlinger
+    fun `må ha beslutterrolle for å ta behandling som er til beslutning`() {
+        val behandlingId = BehandlingId.random()
+        val saksbehandler = saksbehandler123()
+        val behandling = behandlingTilBeslutterInnvilget(saksbehandler)
 
-        every { behandlingRepo.hentAlleForIdent(any()) } returns listOf(behandlinger.first() as Førstegangsbehandling)
-        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(person)
+        every { behandlingRepo.hent(behandlingId) } returns behandling
+        every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
+        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(
+            listOf(
+                personopplysningKjedeligFyr(fnr = behandling.fnr),
+            ),
+        )
 
-        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandler123()).size shouldBe 0
-        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandlerMedKode7()).size shouldBe 1
-        // TODO : Er ikke dette galt?
-        behandlingService.hentBehandlingForIdent(Fnr.random(), saksbehandlerMedKode6()).size shouldBe 0
+        shouldThrow<IllegalStateException> {
+            behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang())
+        }.message shouldBe "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='Z12345', brukernavn='*****', epost='*****', roller=[])"
+        shouldNotThrow<IllegalStateException> {
+            behandlingService.taBehandling(behandlingId, beslutter())
+        }
     }
 
     @Test
     fun `sjekk at man ikke kan sende tilbake uten beslutter rolle`() {
         val behandlingId = BehandlingId.random()
-        val behandling = behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
+        val navIdentSaksbehandler = "A12345"
+        val saksbehandler = saksbehandler(navIdent = navIdentSaksbehandler)
+        val navIdentBeslutter = "B12345"
+        val beslutter = beslutter(navIdent = navIdentBeslutter)
+        val behandling = behandlingTilBeslutterInnvilget(saksbehandler).taBehandling(beslutter)
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
-
+        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(
+            listOf(
+                personopplysningKjedeligFyr(fnr = behandling.fnr),
+            ),
+        )
         shouldThrow<IllegalStateException> {
-            behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler123(), "begrunnelse")
-        }
+            behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang(navIdent = navIdentBeslutter))
+        }.message shouldBe "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='B12345', brukernavn='*****', epost='*****', roller=[])"
 
         shouldNotThrow<IllegalStateException> {
-            behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter(), "begrunnelse")
+            behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter(navIdent = navIdentBeslutter), "begrunnelse")
         }
     }
 }

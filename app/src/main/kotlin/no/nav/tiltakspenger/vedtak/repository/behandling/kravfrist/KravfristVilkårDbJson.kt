@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
@@ -17,12 +19,12 @@ internal data class KravfristVilkårDbJson(
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): KravfristVilkår {
+    fun toDomain(vurderingsperiode: Periode): KravfristVilkår {
         return KravfristVilkår.fromDb(
-            søknadSaksopplysning = søknadSaksopplysning.toDomain(),
-            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
+            søknadSaksopplysning = søknadSaksopplysning.toDomain()as KravfristSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as KravfristSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
-            vurderingsperiode = vurderingsperiode.toDomain(),
+            vurderingsperiode = this.vurderingsperiode.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
     }

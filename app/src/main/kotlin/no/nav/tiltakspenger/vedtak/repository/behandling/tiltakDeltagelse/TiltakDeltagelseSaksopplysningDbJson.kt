@@ -14,7 +14,7 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     val kilde: String,
 ) {
     fun toDomain(): TiltakDeltagelseSaksopplysning {
-        return TiltakDeltagelseSaksopplysning.Tiltak(
+        return TiltakDeltagelseSaksopplysning.Register(
             tiltakNavn = tiltakNavn,
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),

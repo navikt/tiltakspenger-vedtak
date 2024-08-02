@@ -26,7 +26,7 @@ interface SakMother {
         løpenummer: Int = 1001,
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         vurderingsperiode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
-        fødselsdato: LocalDate = 1.januar(2001),
+        fødselsdato: LocalDate = ObjectMother.fødselsdato(),
         sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(
             listOf(
                 personopplysningKjedeligFyr(

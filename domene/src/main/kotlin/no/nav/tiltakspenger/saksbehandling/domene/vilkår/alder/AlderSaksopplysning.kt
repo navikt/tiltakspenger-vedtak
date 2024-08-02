@@ -11,7 +11,7 @@ sealed interface AlderSaksopplysning {
     val årsakTilEndring: ÅrsakTilEndring?
     val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
 
-    data class Personopplysning(
+    data class Register(
         override val fødselsdato: LocalDate,
         override val tidsstempel: LocalDateTime,
     ) : AlderSaksopplysning {
@@ -19,8 +19,8 @@ sealed interface AlderSaksopplysning {
         override val saksbehandler = null
 
         companion object {
-            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning {
-                return Personopplysning(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
+            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register {
+                return Register(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
             }
         }
         init {

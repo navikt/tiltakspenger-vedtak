@@ -5,9 +5,12 @@ import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.toAvklartUtfallForPeriode
 
 interface Behandling {
     val id: BehandlingId
@@ -15,20 +18,18 @@ interface Behandling {
     val fnr: Fnr
     val saksnummer: Saksnummer
     val vurderingsperiode: Periode
-    val søknader: List<Søknad>
+    val søknad: Søknad
     val saksbehandler: String?
     val beslutter: String?
     val vilkårssett: Vilkårssett
-    val status: BehandlingStatus
-    val tilstand: BehandlingTilstand
+    val status: Behandlingsstatus
 
-    val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
+    val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
+    val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()
 
-    fun leggTilSøknad(søknad: Søknad): Behandling
     fun taBehandling(saksbehandler: Saksbehandler): Behandling
-    fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
+    fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Behandling
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
     fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
-    fun søknad(): Søknad
 }

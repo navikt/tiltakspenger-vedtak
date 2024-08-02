@@ -3,21 +3,17 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDate
 
 /**
- * Tiltak
- *
  * @param registerSaksopplysning Saksopplysninger som er avgjørende for vurderingen. Kan ikke ha hull. Må gå til kildesystem for å oppdatere/endre dersom vi oppdager feil i datasettet.
- * @param utfall Selvom om utfallet er
- *
  */
 data class TiltakDeltagelseVilkår private constructor(
-    val registerSaksopplysning: TiltakDeltagelseSaksopplysning,
-    val vurderingsperiode: Periode,
-) : SkalErstatteVilkår {
+    override val vurderingsperiode: Periode,
+    val registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
+) : Vilkår {
 
     init {
         check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden må være lik deltagelsesperioden" }
@@ -42,25 +38,25 @@ data class TiltakDeltagelseVilkår private constructor(
             status.equals("Venter på oppstart", ignoreCase = true)
     }
 
-    override fun utfall(): Periodisering<Utfall2> {
+    override fun utfall(): Periodisering<UtfallForPeriode> {
         // TODO Feriegave fra Kew: Hvorfor er dette en String? Hva er planen med TiltakDeltagelseSaksopplysning?
         val girRett = registerSaksopplysning.girRett
         val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
         val status = registerSaksopplysning.status
 
         return when {
-            !girRett -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
-            brukerDeltarPåTiltak(status) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
+            !girRett -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, deltagelsePeriode)
+            brukerDeltarPåTiltak(status) -> Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
             // B&H: Har tatt utgangspunkt i at tom-dato må være før datoen SBH behandler søknaden for statusene deltatt og sluttet.
             // TODO Feriegave fra Kew: Foreslår at vi kommenterer ut disse som går på LocalDate.now() og heller setter de casene til UAVKLART.
-            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.OPPFYLT, deltagelsePeriode)
-            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
+            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
+            brukerHarDeltattOgSluttet(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(UtfallForPeriode.UAVKLART, deltagelsePeriode)
             // B&H: For nå har vi tenkt at det er lurt å ikke godkjenne søknader på tiltak frem i tid, og at de som er bakover i tid med denne statusen må sjekkes opp av SBH
             // TODO Feriegave fra Kew: Foreslår at vi kommenterer ut disse som går på LocalDate.now() og heller setter de casene til UAVKLART.
-            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(Utfall2.UAVKLART, deltagelsePeriode)
-            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
+            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isBefore(LocalDate.now()) -> Periodisering(UtfallForPeriode.UAVKLART, deltagelsePeriode)
+            brukerSkalBegynnePåTiltak(status) && deltagelsePeriode.tilOgMed.isAfter(LocalDate.now()) -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, deltagelsePeriode)
             else -> {
-                Periodisering(Utfall2.IKKE_OPPFYLT, deltagelsePeriode)
+                Periodisering(UtfallForPeriode.IKKE_OPPFYLT, deltagelsePeriode)
             }
         }
     }
@@ -69,12 +65,12 @@ data class TiltakDeltagelseVilkår private constructor(
 
     companion object {
         fun opprett(
-            registerSaksopplysning: TiltakDeltagelseSaksopplysning,
             vurderingsperiode: Periode,
+            registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
         ): TiltakDeltagelseVilkår {
             return TiltakDeltagelseVilkår(
-                registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
+                registerSaksopplysning = registerSaksopplysning,
             )
         }
 
@@ -82,9 +78,9 @@ data class TiltakDeltagelseVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            registerSaksopplysning: TiltakDeltagelseSaksopplysning,
+            registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
             vurderingsperiode: Periode,
-            utfall: Periodisering<Utfall2>,
+            utfall: Periodisering<UtfallForPeriode>,
         ): TiltakDeltagelseVilkår {
             return TiltakDeltagelseVilkår(
                 registerSaksopplysning = registerSaksopplysning,

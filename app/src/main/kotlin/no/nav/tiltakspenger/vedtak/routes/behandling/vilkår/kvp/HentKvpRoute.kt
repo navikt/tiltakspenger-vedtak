@@ -23,10 +23,10 @@ fun Route.hentKvpRoute(
     get("$behandlingPath/{behandlingId}/vilkar/kvp") {
         SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kvp")
 
-        innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.hentBehandling(behandlingId).let {
+        behandlingService.hentBehandling(behandlingId, saksbehandler).let {
             call.respond(
                 status = HttpStatusCode.OK,
                 message = it.vilkårssett.kvpVilkår.toDTO(),

@@ -73,7 +73,7 @@ class LivsoppholdRoutesTest {
 
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
-            val vurderingsPeriode = sak.førstegangsbehandling.vurderingsperiode
+            val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -122,7 +122,7 @@ class LivsoppholdRoutesTest {
                         path("$behandlingPath/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
-                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), false))
+                    setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
                 }.apply {
                     status shouldBe HttpStatusCode.Created
                 }
@@ -148,16 +148,11 @@ class LivsoppholdRoutesTest {
     fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1015, saksbehandler = saksbehandler)
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-        val vurderingsPeriode = objectMotherSak.behandlinger.first().vurderingsperiode
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -196,7 +191,7 @@ class LivsoppholdRoutesTest {
                         path("$behandlingPath/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
-                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), true))
+                    setBody(bodyLivsoppholdYtelse(sak.førstegangsbehandling.vurderingsperiode.toDTO(), true))
                 }.apply {
                     status shouldBe HttpStatusCode.NotImplemented
                 }
@@ -213,7 +208,7 @@ class LivsoppholdRoutesTest {
 
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
-            val vurderingsPeriode = sak.førstegangsbehandling.vurderingsperiode
+            val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -263,7 +258,7 @@ class LivsoppholdRoutesTest {
                         path("$behandlingPath/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
-                    setBody(bodyLivsoppholdYtelse(vurderingsPeriode.toDTO(), false))
+                    setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
                 }.apply {
                     status shouldBe HttpStatusCode.Created
                 }

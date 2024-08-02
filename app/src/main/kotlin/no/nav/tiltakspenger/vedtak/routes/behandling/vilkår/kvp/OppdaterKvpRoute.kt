@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
+/** Brukes ikke i MVPen. */
 fun Route.oppdaterKvpRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     kvpVilkårService: KvpVilkårService,

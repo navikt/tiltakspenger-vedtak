@@ -25,8 +25,15 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tilta
 import java.time.LocalDate
 
 interface BehandlingMother {
-    fun behandling(
-        periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
+
+    /** Felles default vurderingsperiode for testdatatypene */
+    fun vurderingsperiode() = Periode(1.januar(2023), 31.mars(2023))
+
+    /**
+     * Dette er kun det første steget i en behandlingsprosess. Bruk andre helper-funksjoner for å starte i en senere tilstand.
+     */
+    fun behandlingUnderBehandlingUavklart(
+        periode: Periode = ObjectMother.vurderingsperiode(),
         sakId: SakId = SakId.random(),
         saksnummer: Saksnummer = Saksnummer("202301011001"),
         fnr: Fnr = Fnr.random(),
@@ -40,8 +47,8 @@ interface BehandlingMother {
             ),
         ),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
-    ): Førstegangsbehandling =
-        Førstegangsbehandling.opprettBehandling(
+    ): Førstegangsbehandling {
+        return Førstegangsbehandling.opprettBehandling(
             sakId = sakId,
             saksnummer = saksnummer,
             fnr = fnr,
@@ -50,29 +57,48 @@ interface BehandlingMother {
             saksbehandler = saksbehandler,
             registrerteTiltak = registrerteTiltak,
         )
+    }
 
-    fun behandlingPåbegyntInnvilget(
-        periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
+    fun behandlingUnderBehandlingInnvilget(
+        vurderingsperiode: Periode = ObjectMother.vurderingsperiode(),
         sakId: SakId = SakId.random(),
-        søknad: Søknad = ObjectMother.nySøknad(periode = periode),
+        søknad: Søknad = ObjectMother.nySøknad(periode = vurderingsperiode),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
-    ): Førstegangsbehandling {
-        return behandling(
-            periode = periode,
+        årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
+        behandling: Førstegangsbehandling = behandlingUnderBehandlingUavklart(
+            periode = vurderingsperiode,
             sakId = sakId,
             søknad = søknad,
             saksbehandler = saksbehandler,
-        )
+        ),
+        livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand = LeggTilLivsoppholdSaksopplysningCommand(
+            behandlingId = behandling.id,
+            saksbehandler = saksbehandler,
+            harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                periode = vurderingsperiode,
+                harYtelse = false,
+            ),
+            årsakTilEndring = årsakTilEndring,
+        ),
+    ): Førstegangsbehandling {
+        return behandlingUnderBehandlingUavklart(
+            periode = vurderingsperiode,
+            sakId = sakId,
+            søknad = søknad,
+            saksbehandler = saksbehandler,
+        ).leggTilLivsoppholdSaksopplysning(
+            command = livsoppholdCommand,
+        ).getOrNull()!!
     }
 
-    fun behandlingPåbegyntAvslag(
-        periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
+    fun behandlingUnderBehandlingAvslag(
+        periode: Periode = ObjectMother.vurderingsperiode(),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     ): Førstegangsbehandling {
         val behandling =
-            behandling(
+            behandlingUnderBehandlingUavklart(
                 periode = periode,
                 sakId = sakId,
                 søknad = søknad,
@@ -94,33 +120,18 @@ interface BehandlingMother {
         return behandling
     }
 
-    fun behandlingKlarTilAttestering(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        val behandling = behandlingPåbegyntInnvilget(saksbehandler = saksbehandler)
-
-        return behandling.leggTilLivsoppholdSaksopplysning(
-            command = LeggTilLivsoppholdSaksopplysningCommand(
-                behandlingId = behandling.id,
-                saksbehandler = saksbehandler,
-                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
-                    periode = behandling.vurderingsperiode,
-                    harYtelse = false,
-                ),
-                årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
-            ),
-        ).getOrNull()!!
-    }
-
     fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        val behandling = behandlingKlarTilAttestering(saksbehandler = saksbehandler)
+        val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
         return behandling.tilBeslutning(saksbehandler)
     }
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
-        behandlingPåbegyntAvslag().copy(saksbehandler = saksbehandler123().navIdent)
+        behandlingUnderBehandlingAvslag().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutning(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
-        behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent).iverksett(beslutter())
+        behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
+            .iverksett(beslutter())
 
     fun tiltak(
         id: TiltakId = TiltakId.random(),

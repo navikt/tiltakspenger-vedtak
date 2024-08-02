@@ -52,11 +52,11 @@ internal class SøknadDAO(
         )
     }
 
-    fun hentForBehandlingId(behandlingId: BehandlingId, session: Session): List<Søknad> {
+    fun hentForBehandlingId(behandlingId: BehandlingId, session: Session): Søknad? {
         return session.run(
             queryOf(sqlHent, behandlingId.toString())
                 .map { row -> row.toSøknad(session) }
-                .asList,
+                .asSingle,
         )
     }
 
@@ -66,16 +66,6 @@ internal class SøknadDAO(
                 .map { row -> row.toSøknad(session) }
                 .asSingle,
         )!!
-    }
-
-    fun knyttSøknaderTilBehandling(
-        behandlingId: BehandlingId,
-        søknader: List<SøknadId>,
-        txSession: TransactionalSession,
-    ) {
-        søknader.forEach {
-            knyttSøknadTilBehandling(behandlingId, it, txSession)
-        }
     }
 
     fun knyttSøknadTilBehandling(behandlingId: BehandlingId, søknadId: SøknadId, txSession: TransactionalSession) {

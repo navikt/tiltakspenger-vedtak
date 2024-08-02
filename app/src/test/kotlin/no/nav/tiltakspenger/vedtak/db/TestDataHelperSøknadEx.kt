@@ -24,7 +24,7 @@ internal fun TestDataHelper.persisterSøknad(
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
         ),
-        barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
+        barnetillegg = listOf(),
     ),
 
 ): Søknad {

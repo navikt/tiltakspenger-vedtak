@@ -4,23 +4,6 @@ CREATE INDEX sak_behandling
          sakId
             );
 
-CREATE INDEX vurdering_behandling
-    ON vurdering
-        (
-         behandlingId
-            );
-
-CREATE INDEX vurdering_vedtak
-    ON vurdering
-        (
-         vedtakId
-            );
-
-CREATE INDEX utfallsperiode_vedtak
-    ON utfallsperiode
-        (
-         vedtak_id
-            );
 
 CREATE INDEX saks_ident
     ON sak
