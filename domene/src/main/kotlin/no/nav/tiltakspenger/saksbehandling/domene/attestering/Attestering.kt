@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.attestering
 
 import no.nav.tiltakspenger.felles.AttesteringId
-import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import java.time.LocalDateTime
 
 data class Attestering(

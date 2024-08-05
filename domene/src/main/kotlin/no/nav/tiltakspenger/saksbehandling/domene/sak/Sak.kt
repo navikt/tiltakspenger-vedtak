@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.sak
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad

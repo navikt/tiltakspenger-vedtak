@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.ports
 
 import arrow.core.NonEmptyList
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling

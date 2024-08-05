@@ -12,8 +12,8 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedAdmin
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest

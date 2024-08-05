@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
-import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad

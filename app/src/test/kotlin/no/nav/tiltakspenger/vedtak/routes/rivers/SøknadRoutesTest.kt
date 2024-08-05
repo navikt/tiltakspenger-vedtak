@@ -12,9 +12,9 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad

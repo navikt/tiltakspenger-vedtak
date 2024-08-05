@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.service.vedtak
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 

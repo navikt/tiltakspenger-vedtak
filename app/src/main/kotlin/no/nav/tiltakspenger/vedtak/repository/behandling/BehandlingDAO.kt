@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling
 import arrow.core.NonEmptyList
 import kotliquery.Session
 import kotliquery.TransactionalSession
-import no.nav.tiltakspenger.felles.SakId
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 

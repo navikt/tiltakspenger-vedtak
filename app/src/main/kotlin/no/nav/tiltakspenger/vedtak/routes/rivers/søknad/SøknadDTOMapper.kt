@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 
-import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad

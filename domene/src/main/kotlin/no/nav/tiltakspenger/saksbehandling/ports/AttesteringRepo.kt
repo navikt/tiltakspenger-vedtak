@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.ports
 
-import no.nav.tiltakspenger.felles.BehandlingId
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 
