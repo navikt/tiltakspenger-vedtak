@@ -8,10 +8,13 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import java.time.LocalDate
@@ -131,7 +134,7 @@ interface PersonMother {
         deltakelseTom: LocalDate = 31.januar(2022),
         kilde: Tiltakskilde = Komet,
         deltakelseProsent: Float? = 100F,
-        deltakerStatus: String = "DELTAR",
+        status: TiltakDeltakerstatus = Deltar,
         antallDagerPerUke: Float? = 1F,
         registrertDato: LocalDateTime = 1.januarDateTime(2022),
         innhentet: LocalDateTime = 1.januarDateTime(2022),
@@ -140,13 +143,12 @@ interface PersonMother {
             id = TiltakId.random(),
             eksternId = eksternId,
             gjennomføring = gjennomføring,
-            deltakelseFom = deltakelseFom,
-            deltakelseTom = deltakelseTom,
-            deltakelseStatus = deltakerStatus,
+            deltakelsesperiode = Periode(deltakelseFom, deltakelseTom),
+            deltakelseStatus = status,
             deltakelseProsent = deltakelseProsent,
             kilde = kilde,
             registrertDato = registrertDato,
-            innhentet = innhentet,
+            innhentetTidspunkt = innhentet,
         )
     }
 }

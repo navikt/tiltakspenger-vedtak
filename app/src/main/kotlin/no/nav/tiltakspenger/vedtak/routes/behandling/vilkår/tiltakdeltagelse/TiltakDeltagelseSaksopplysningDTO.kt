@@ -21,6 +21,6 @@ internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysn
             Komet -> TiltakDeltagelseKildeDTO.KOMET
         },
         deltagelsePeriode = deltagelsePeriode.toDTO(),
-        status = status,
+        status = status.toDTO(),
     )
 }

@@ -15,6 +15,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
@@ -137,7 +139,7 @@ interface BehandlingMother {
         gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
-        status: String = "DELTAR",
+        status: TiltakDeltakerstatus = Deltar,
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,
         kilde: Tiltakskilde = Komet,
@@ -146,13 +148,12 @@ interface BehandlingMother {
             id = id,
             eksternId = eksternId,
             gjennomføring = gjennomføring,
-            deltakelseFom = fom,
-            deltakelseTom = tom,
+            deltakelsesperiode = Periode(fom, tom),
             deltakelseStatus = status,
             deltakelseProsent = prosent,
             kilde = kilde,
             registrertDato = 1.januarDateTime(2023),
-            innhentet = 1.januarDateTime(2023),
+            innhentetTidspunkt = 1.januarDateTime(2023),
         )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)
