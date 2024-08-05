@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal data class LivsoppholdVilkårDTO(
     val avklartSaksopplysning: LivsoppholdSaksopplysningDTO?,
-    val vurderingsperiode: PeriodeDTO,
     val vilkårLovreferanse: LovreferanseDTO,
     val utfallperiode: PeriodeDTO,
     val samletUtfall: SamletUtfallDTO,
@@ -25,7 +24,6 @@ internal fun LivsoppholdVilkår.toDTO(): LivsoppholdVilkårDTO {
 
     return LivsoppholdVilkårDTO(
         avklartSaksopplysning = avklartSaksopplysning?.toDTO(vurderingsperiode = vurderingsperiode.toDTO()),
-        vurderingsperiode = vurderingsperiode.toDTO(),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = samletUtfall,

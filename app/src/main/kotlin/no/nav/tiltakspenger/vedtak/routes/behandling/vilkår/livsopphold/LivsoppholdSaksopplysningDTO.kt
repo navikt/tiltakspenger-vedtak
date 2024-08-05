@@ -12,7 +12,6 @@ import java.time.LocalDateTime
  */
 internal data class LivsoppholdSaksopplysningDTO(
     val harLivsoppholdYtelser: Boolean,
-    val vurderingsperiode: PeriodeDTO?,
     val saksbehandler: SaksbehandlerDTO?,
     val årsakTilEndringLivsopphold: ÅrsakTilEndringDTO?,
     val tidspunkt: LocalDateTime,
@@ -26,7 +25,6 @@ internal data class LivsoppholdSaksopplysningDTO(
 internal fun LivsoppholdSaksopplysning.toDTO(vurderingsperiode: PeriodeDTO?): LivsoppholdSaksopplysningDTO {
     return LivsoppholdSaksopplysningDTO(
         harLivsoppholdYtelser = this.harLivsoppholdYtelser,
-        vurderingsperiode = vurderingsperiode,
         saksbehandler = this.saksbehandler?.toDTO(),
         årsakTilEndringLivsopphold = when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
