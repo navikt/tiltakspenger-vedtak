@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -16,7 +15,6 @@ data class Tiltak(
     val kilde: Tiltakskilde,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
-    val antallDagerSaksopplysninger: AntallDagerSaksopplysninger, // TODO Kew slett
 ) {
     data class Gjennomføring(
         val id: String,

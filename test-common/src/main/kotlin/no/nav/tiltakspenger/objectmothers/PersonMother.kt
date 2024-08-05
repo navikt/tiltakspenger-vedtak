@@ -8,9 +8,6 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
@@ -138,7 +135,6 @@ interface PersonMother {
         antallDagerPerUke: Float? = 1F,
         registrertDato: LocalDateTime = 1.januarDateTime(2022),
         innhentet: LocalDateTime = 1.januarDateTime(2022),
-        antallDagerFraSaksbehandler: List<PeriodeMedVerdi<AntallDager>> = emptyList(),
     ): Tiltak {
         return Tiltak(
             id = TiltakId.random(),
@@ -151,11 +147,6 @@ interface PersonMother {
             kilde = kilde,
             registrertDato = registrertDato,
             innhentet = innhentet,
-            antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
-                antallDagerSaksopplysningerFraSBH = emptyList(),
-                antallDagerSaksopplysningerFraRegister = emptyList(),
-                avklartAntallDager = emptyList(),
-            ),
         )
     }
 }

@@ -1,39 +1,11 @@
 package no.nav.tiltakspenger.vedtak.clients.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak.Gjennomføring
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import java.time.LocalDateTime
-import kotlin.math.roundToInt
-
-private fun mapAntallDager(tiltak: TiltakDTO): PeriodeMedVerdi<AntallDager> =
-    PeriodeMedVerdi(
-        verdi =
-        if (tiltak.deltakelseDagerUke != null) {
-            AntallDager(
-                antallDager = tiltak.deltakelseDagerUke!!.roundToInt(),
-                kilde = Kilde.valueOf(tiltak.kilde.uppercase()),
-                saksbehandlerIdent = null,
-            )
-        } else {
-            AntallDager(
-                antallDager = if (tiltak.deltakelseProsent == 100f) 5 else 0,
-                kilde = Kilde.valueOf(tiltak.kilde.uppercase()),
-                saksbehandlerIdent = null,
-            )
-        },
-        periode = Periode(
-            fraOgMed = tiltak.deltakelseFom!!,
-            tilOgMed = tiltak.deltakelseTom!!,
-        ),
-    )
 
 internal fun mapTiltak(
     tiltakDTO: List<TiltakDTO>,
@@ -43,7 +15,6 @@ internal fun mapTiltak(
         .filterNot { it.deltakelseFom == null }
         .filterNot { it.deltakelseTom == null }
         .map {
-            val antallDager = mapAntallDager(it)
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = it.id,
@@ -65,9 +36,6 @@ internal fun mapTiltak(
                 },
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
-                antallDagerSaksopplysninger = AntallDagerSaksopplysninger(
-                    antallDagerSaksopplysningerFraRegister = listOf(antallDager),
-                ).avklar(),
             )
         }
 }
