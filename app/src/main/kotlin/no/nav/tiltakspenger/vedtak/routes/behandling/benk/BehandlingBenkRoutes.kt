@@ -10,11 +10,16 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.OppretteBehandling
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingerPath
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -42,12 +47,32 @@ fun Route.behandlingBenkRoutes(
         sakService.startFørstegangsbehandling(søknadId, saksbehandler).fold(
             {
                 when (it) {
-                    is KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson -> {
+                    is HarIkkeTilgangTilPerson -> {
                         call.respond(HttpStatusCode.Forbidden, "Saksbehandler har ikke tilgang til person")
                     }
 
-                    is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> {
+                    is HarAlleredeStartetBehandlingen -> {
                         call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.behandlingId.toString()))
+                    }
+
+                    is OppretteBehandling -> when (it.underliggende) {
+                        FantIkkeTiltak -> call.respond(
+                            HttpStatusCode.InternalServerError,
+                            ExceptionResponse(
+                                500,
+                                "fant-ikke-tiltak",
+                                "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
+                            ),
+                        )
+
+                        StøtterIkkeBarnetillegg -> call.respond(
+                            HttpStatusCode.BadRequest,
+                            ExceptionResponse(
+                                400,
+                                "støtter-ikke-barnetillegg",
+                                "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
+                            ),
+                        )
                     }
                 }
             },

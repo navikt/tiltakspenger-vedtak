@@ -64,7 +64,6 @@ interface SakMother {
             sakPersonopplysninger = sakPersonopplysninger,
             saksbehandler = saksbehandler,
             registrerteTiltak = registrerteTiltak,
-
-        )
+        ).getOrNull()!!
     }
 }

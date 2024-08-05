@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.service.sak
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import kotlinx.coroutines.runBlocking
@@ -13,6 +14,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
@@ -52,6 +54,7 @@ class SakServiceImpl(
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
         data class HarAlleredeStartetBehandlingen(val behandlingId: BehandlingId) : KanIkkeStarteFørstegangsbehandling
+        data class OppretteBehandling(val underliggende: KanIkkeOppretteBehandling) : KanIkkeStarteFørstegangsbehandling
     }
 
     override fun startFørstegangsbehandling(
@@ -82,7 +85,7 @@ class SakServiceImpl(
             søknad = søknad,
             saksbehandler = saksbehandler,
             registrerteTiltak = registrerteTiltak,
-        )
+        ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
         sessionFactory.withTransactionContext { tx ->
             sakRepo.lagre(sak, tx)

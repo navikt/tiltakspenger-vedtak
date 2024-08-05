@@ -1,5 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -13,21 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.U
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.institusjonsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.kravfristSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tilRegisterSaksopplysning
 import java.time.LocalDate
 
 data class Førstegangsbehandling(
@@ -92,14 +81,19 @@ data class Førstegangsbehandling(
             fødselsdato: LocalDate,
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
-        ): Førstegangsbehandling {
+        ): Either<KanIkkeOppretteBehandling, Førstegangsbehandling> {
             val vurderingsperiode = søknad.vurderingsperiode()
+            if (søknad.barnetillegg.isNotEmpty()) {
+                return KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg.left()
+            }
             val tiltak = registrerteTiltak.find {
                 it.eksternId == søknad.tiltak.id &&
                     Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(vurderingsperiode)
             }
 
-            require(tiltak != null) { "Ingen tiltak samsvarer med det tiltaket bruker søkte på i søknaden" }
+            if (tiltak == null) {
+                return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
+            }
 
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
@@ -108,34 +102,16 @@ data class Førstegangsbehandling(
                 fnr = fnr,
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
-                vilkårssett = Vilkårssett(
+                vilkårssett = Vilkårssett.opprett(
+                    søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    tiltak = tiltak,
                     vurderingsperiode = vurderingsperiode,
-                    institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
-                        vurderingsperiode,
-                        søknad.institusjonsoppholdSaksopplysning(
-                            vurderingsperiode,
-                        ),
-                    ),
-                    kvpVilkår = KVPVilkår.opprett(vurderingsperiode, søknad.kvpSaksopplysning(vurderingsperiode)),
-                    introVilkår = IntroVilkår.opprett(vurderingsperiode, søknad.introSaksopplysning(vurderingsperiode)),
-                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
-                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
-                        vurderingsperiode,
-                    ),
-                    alderVilkår = AlderVilkår.opprett(
-                        AlderSaksopplysning.Register.opprett(fødselsdato = fødselsdato),
-                        vurderingsperiode,
-                    ),
-                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                    tiltakDeltagelseVilkår = TiltakDeltagelseVilkår.opprett(
-                        vurderingsperiode = vurderingsperiode,
-                        registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
-                    ),
                 ),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
-            )
+            ).right()
         }
     }
 

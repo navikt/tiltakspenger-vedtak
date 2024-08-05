@@ -1,12 +1,17 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
+import arrow.core.left
 import arrow.core.nonEmptyListOf
+import arrow.core.right
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
@@ -51,7 +56,7 @@ data class Sak(
             søknad: Søknad,
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
-        ): Sak {
+        ): Either<KanIkkeOppretteBehandling, Sak> {
             val fnr = søknad.personopplysninger.fnr
             val førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
                 sakId = sakId,
@@ -61,7 +66,7 @@ data class Sak(
                 fødselsdato = sakPersonopplysninger.søker().fødselsdato,
                 saksbehandler = saksbehandler,
                 registrerteTiltak = registrerteTiltak,
-            )
+            ).getOrElse { return it.left() }
             return Sak(
                 sakDetaljer = TynnSak(
                     id = sakId,
@@ -71,7 +76,7 @@ data class Sak(
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
                 personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),
-            )
+            ).right()
         }
     }
 }

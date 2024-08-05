@@ -56,7 +56,7 @@ interface BehandlingMother {
             fødselsdato = personopplysningFødselsdato,
             saksbehandler = saksbehandler,
             registrerteTiltak = registrerteTiltak,
-        )
+        ).getOrNull()!!
     }
 
     fun behandlingUnderBehandlingInnvilget(
