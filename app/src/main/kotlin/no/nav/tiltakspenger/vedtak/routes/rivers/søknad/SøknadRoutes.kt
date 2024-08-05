@@ -28,14 +28,14 @@ fun Route.søknadRoutes(
                     innhentet = søknadDTO.opprettet,
                 ),
             )
+            call.respond(message = "OK", status = HttpStatusCode.OK)
         } catch (exception: Exception) {
             LOG.error(
                 "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
                 RuntimeException("Trigger en exception for å få stracktrace."),
             )
             SECURELOG.error("Feil ved mottak av søknad.", exception)
+            call.respond(message = "Feil ved mottak av søknad", status = HttpStatusCode.InternalServerError)
         }
-
-        call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }
