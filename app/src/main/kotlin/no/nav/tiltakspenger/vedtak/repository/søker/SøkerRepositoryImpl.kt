@@ -22,7 +22,7 @@ class SøkerRepositoryImpl(
     override fun findByIdent(fnr: Fnr, sessionContext: SessionContext?): Søker? {
         return sessionFactory.withSession(sessionContext) { session ->
             session.run(
-                queryOf(findByIdent, fnr).map { row ->
+                queryOf(findByIdent, fnr.verdi).map { row ->
                     row.toSøker(session)
                 }.asSingle,
             )
