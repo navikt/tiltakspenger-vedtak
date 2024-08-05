@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.juni
-import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -71,7 +70,7 @@ interface SøknadMother {
     fun personopplysningFødselsdato() = 1.januar(2000)
 
     fun nySøknad(
-        periode: Periode = Periode(1.januar(2023), 31.mars(2023)),
+        periode: Periode = ObjectMother.vurderingsperiode(),
         versjon: String = "1",
         id: SøknadId = Søknad.randomId(),
         søknadId: String = "søknadId",

@@ -16,10 +16,10 @@ sealed interface LivsoppholdSaksopplysning {
     data class Søknad(
         override val harLivsoppholdYtelser: Boolean,
         override val tidsstempel: LocalDateTime,
-        override val årsakTilEndring: ÅrsakTilEndring?,
         override val periode: Periode,
     ) : LivsoppholdSaksopplysning {
         override val saksbehandler = null
+        override val årsakTilEndring = null
     }
 
     data class Saksbehandler(

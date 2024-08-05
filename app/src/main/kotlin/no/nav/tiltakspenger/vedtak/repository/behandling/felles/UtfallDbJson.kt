@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling.felles
 
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 
@@ -16,17 +16,17 @@ internal data class PeriodisertUtfallDbJson(
         UAVKLART,
         ;
 
-        fun toDomain(): Utfall2 {
+        fun toDomain(): UtfallForPeriode {
             return when (this) {
-                OPPFYLT -> Utfall2.OPPFYLT
-                IKKE_OPPFYLT -> Utfall2.IKKE_OPPFYLT
-                UAVKLART -> Utfall2.UAVKLART
+                OPPFYLT -> UtfallForPeriode.OPPFYLT
+                IKKE_OPPFYLT -> UtfallForPeriode.IKKE_OPPFYLT
+                UAVKLART -> UtfallForPeriode.UAVKLART
             }
         }
     }
 }
 
-internal fun Periodisering<Utfall2>.toDbJson(): List<PeriodisertUtfallDbJson> {
+internal fun Periodisering<UtfallForPeriode>.toDbJson(): List<PeriodisertUtfallDbJson> {
     return this.perioder().map {
         PeriodisertUtfallDbJson(
             utfall = it.verdi.toDbJson(),
@@ -35,15 +35,15 @@ internal fun Periodisering<Utfall2>.toDbJson(): List<PeriodisertUtfallDbJson> {
     }
 }
 
-internal fun Utfall2.toDbJson(): PeriodisertUtfallDbJson.UtfallDbJson {
+internal fun UtfallForPeriode.toDbJson(): PeriodisertUtfallDbJson.UtfallDbJson {
     return when (this) {
-        Utfall2.OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.OPPFYLT
-        Utfall2.IKKE_OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.IKKE_OPPFYLT
-        Utfall2.UAVKLART -> PeriodisertUtfallDbJson.UtfallDbJson.UAVKLART
+        UtfallForPeriode.OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.OPPFYLT
+        UtfallForPeriode.IKKE_OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.IKKE_OPPFYLT
+        UtfallForPeriode.UAVKLART -> PeriodisertUtfallDbJson.UtfallDbJson.UAVKLART
     }
 }
 
-internal fun List<PeriodisertUtfallDbJson>.toDomain(): Periodisering<Utfall2> {
+internal fun List<PeriodisertUtfallDbJson>.toDomain(): Periodisering<UtfallForPeriode> {
     return Periodisering(
         this.map {
             PeriodeMedVerdi(

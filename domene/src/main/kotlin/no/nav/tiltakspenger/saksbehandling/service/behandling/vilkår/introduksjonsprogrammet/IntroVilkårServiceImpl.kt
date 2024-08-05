@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogramme
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 
+/** Brukes ikke i MVPen. */
 class IntroVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,

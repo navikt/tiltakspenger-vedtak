@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import java.time.LocalDateTime
 
-fun Tiltak.tiltakSaksopplysning(): TiltakDeltagelseSaksopplysning {
-    return TiltakDeltagelseSaksopplysning.Tiltak(
+fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register {
+    return TiltakDeltagelseSaksopplysning.Register(
         tiltakNavn = gjennomføring.typeNavn,
         deltagelsePeriode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
         kilde = kilde,

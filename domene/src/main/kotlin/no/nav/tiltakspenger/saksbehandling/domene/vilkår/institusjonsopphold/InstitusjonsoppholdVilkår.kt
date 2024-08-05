@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.IKKE_OPPHOLD
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.OPPHOLD
 
@@ -13,27 +13,24 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Op
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param utfall Selvom om utfallet er
- *
  */
 data class InstitusjonsoppholdVilkår private constructor(
-    val søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
-    val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning?,
+    override val vurderingsperiode: Periode,
+    val søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
+    val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
-) : SkalErstatteVilkår {
+) : Vilkår {
 
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
 
-    override fun utfall(): Periodisering<Utfall2> {
+    override fun utfall(): Periodisering<UtfallForPeriode> {
         return avklartSaksopplysning.opphold.map {
             when (it) {
-                OPPHOLD -> Utfall2.IKKE_OPPFYLT
-                IKKE_OPPHOLD -> Utfall2.OPPFYLT
+                OPPHOLD -> UtfallForPeriode.IKKE_OPPFYLT
+                IKKE_OPPHOLD -> UtfallForPeriode.OPPFYLT
             }
         }
     }
-
-    val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
 
     init {
         if (saksbehandlerSaksopplysning != null) {
@@ -51,9 +48,11 @@ data class InstitusjonsoppholdVilkår private constructor(
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
         ): InstitusjonsoppholdVilkår {
             return InstitusjonsoppholdVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
@@ -64,12 +63,14 @@ data class InstitusjonsoppholdVilkår private constructor(
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
-            saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning?,
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
-            utfall: Periodisering<Utfall2>,
+            utfall: Periodisering<UtfallForPeriode>,
         ): InstitusjonsoppholdVilkår {
             return InstitusjonsoppholdVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,

@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
-import no.nav.tiltakspenger.vedtak.routes.behandling.StatusMapper.finnStatus
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 
@@ -37,8 +36,7 @@ internal object SammenstillingForBehandlingDTOMapper {
                     fortrolig = it.fortrolig,
                 )
             }.first(),
-            behandlingTilstand = behandling.tilstand,
-            status = finnStatus(behandling),
+            status = behandling.status.toDTO().toString(),
             endringslogg = attesteringer.map { att ->
                 EndringDTO(
                     type = when (att.svar) {

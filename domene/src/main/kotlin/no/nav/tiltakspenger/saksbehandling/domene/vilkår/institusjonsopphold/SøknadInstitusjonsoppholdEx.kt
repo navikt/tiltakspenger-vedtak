@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import java.time.LocalDateTime
 
-fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): InstitusjonsoppholdSaksopplysning {
+fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): InstitusjonsoppholdSaksopplysning.Søknad {
     return when (institusjon) {
         is Søknad.PeriodeSpm.Nei -> InstitusjonsoppholdSaksopplysning.Søknad(
             opphold = Periodisering(

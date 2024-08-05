@@ -30,7 +30,6 @@ internal data class LivsoppholdSaksopplysningDbJson(
                 LivsoppholdSaksopplysning.Søknad(
                     harLivsoppholdYtelser = harLivsoppholdYtelser,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
-                    årsakTilEndring = null,
                     periode = periode.toDomain(),
                 )
             }

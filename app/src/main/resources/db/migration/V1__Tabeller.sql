@@ -32,7 +32,6 @@ CREATE TABLE behandling
     sakId                   VARCHAR                  NOT NULL REFERENCES sak (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
-    tilstand                VARCHAR                  NOT NULL,
     status                  VARCHAR                  NOT NULL,
     saksbehandler           VARCHAR                  NULL,
     beslutter               VARCHAR                  NULL,
@@ -54,32 +53,6 @@ CREATE TABLE vedtak
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE utfallsperiode
-(
-    id                  VARCHAR PRIMARY KEY,
-    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    vedtak_id           VARCHAR                  REFERENCES vedtak (id),
-    fom                 DATE                     NOT NULL,
-    tom                 DATE                     NOT NULL,
-    antall_barn         INT                      NOT NULL,
-    utfall              VARCHAR                  NOT NULL
-);
-
-CREATE TABLE vurdering
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  NULL REFERENCES behandling (id),
-    vedtakId                VARCHAR                  NULL REFERENCES vedtak (id),
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
-    kilde                   VARCHAR                  NOT NULL,
-    vilkår                  VARCHAR                  NOT NULL,
-    detaljer                VARCHAR                  NOT NULL,
-    utfall                  VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    grunnlagId              VARCHAR                  NULL
 );
 
 create table attestering

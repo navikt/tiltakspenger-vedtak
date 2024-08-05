@@ -1,12 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.benk
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.UNDER_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
@@ -30,7 +27,7 @@ class SaksoversiktPostgresRepoTest {
                     listOf(
                         BehandlingEllerSøknadForSaksoversikt(
                             periode = null,
-                            status = Behandlingsstatus.SØKNAD,
+                            status = BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
                             behandlingstype = SØKNAD,
                             fnr = søknad1.personopplysninger.fnr,
                             saksnummer = null,
@@ -40,8 +37,8 @@ class SaksoversiktPostgresRepoTest {
                             id = søknad1.id,
                         ),
                         BehandlingEllerSøknadForSaksoversikt(
-                            periode = Periode(1.januar(2023), 31.mars(2023)),
-                            status = UNDER_BEHANDLING,
+                            periode = ObjectMother.vurderingsperiode(),
+                            status = BehandlingEllerSøknadForSaksoversikt.Status.Behandling(Behandlingsstatus.UNDER_BEHANDLING),
                             behandlingstype = FØRSTEGANGSBEHANDLING,
                             fnr = søknad2.personopplysninger.fnr,
                             saksnummer = sak.saksnummer,

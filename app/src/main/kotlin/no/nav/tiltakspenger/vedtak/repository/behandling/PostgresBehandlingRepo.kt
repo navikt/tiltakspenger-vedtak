@@ -18,8 +18,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -32,12 +30,8 @@ import java.time.LocalDateTime
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-// todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
-//      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val vurderingRepo: VurderingRepo,
     private val søknadDAO: SøknadDAO,
-    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo, BehandlingDAO {
     override fun hentOrNull(behandlingId: BehandlingId, sessionContext: SessionContext?): Førstegangsbehandling? {
@@ -157,9 +151,8 @@ internal class PostgresBehandlingRepo(
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
             if (behandling is Førstegangsbehandling) {
-                søknadDAO.knyttSøknaderTilBehandling(behandling.id, behandling.søknader.map { it.id }, tx)
+                søknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, tx)
             }
-            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
         }
     }
 
@@ -178,8 +171,7 @@ internal class PostgresBehandlingRepo(
                     "sakId" to behandling.sakId.toString(),
                     "fom" to behandling.vurderingsperiode.fraOgMed,
                     "tom" to behandling.vurderingsperiode.tilOgMed,
-                    "tilstand" to finnTilstand(behandling),
-                    "status" to finnStatus(behandling),
+                    "status" to behandling.status.toDb(),
                     "sistEndretOld" to sistEndret,
                     "sistEndret" to nå(),
                     "saksbehandler" to behandling.saksbehandler,
@@ -209,8 +201,7 @@ internal class PostgresBehandlingRepo(
                     "sakId" to behandling.sakId.toString(),
                     "fom" to behandling.vurderingsperiode.fraOgMed,
                     "tom" to behandling.vurderingsperiode.tilOgMed,
-                    "tilstand" to finnTilstand(behandling),
-                    "status" to finnStatus(behandling),
+                    "status" to behandling.status.toDb(),
                     "sistEndret" to nå,
                     "opprettet" to nå,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
@@ -234,59 +225,29 @@ internal class PostgresBehandlingRepo(
     private fun Row.toBehandling(session: Session): Førstegangsbehandling {
         val id = BehandlingId.fromString(string("id"))
         val sakId = SakId.fromString(string("sakId"))
-        val fom = localDate("fom")
-        val tom = localDate("tom")
+        val vurderingsperiode = Periode(localDate("fom"), localDate("tom"))
         val status = string("status")
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
-        val behandlingStatus = when (status) {
-            "Innvilget" -> BehandlingStatus.Innvilget
-            "Avslag" -> BehandlingStatus.Avslag
-            "Manuell" -> BehandlingStatus.Manuell
-            else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-        }
-        val tilstand = when (val type = string("tilstand")) {
-            "UnderBehandling" -> BehandlingTilstand.UNDER_BEHANDLING
-            "TilBeslutning" -> BehandlingTilstand.TIL_BESLUTTER
-            "Iverksatt" -> BehandlingTilstand.IVERKSATT
-            else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
-        }
-        val søknader = søknadDAO.hentForBehandlingId(id, session)
+        val søknad = søknadDAO.hentForBehandlingId(id, session)!!
 
-        val vilkårssett = string("vilkårssett").toVilkårssett(
-            vilkårsvurderinger = vurderingRepo.hent(id, session),
-            utfallsperioder = utfallsperiodeDAO.hent(id, session),
-        )
+        val vilkårssett = string("vilkårssett").toVilkårssett(vurderingsperiode)
         val fnr = Fnr.fromString(string("ident"))
         val saksnummer = Saksnummer(string("saksnummer"))
+
         return Førstegangsbehandling(
             id = id,
             sakId = sakId,
             saksnummer = saksnummer,
             fnr = fnr,
-            søknader = søknader,
-            vurderingsperiode = Periode(fom, tom),
+            søknad = søknad,
+            vurderingsperiode = vurderingsperiode,
             vilkårssett = vilkårssett,
             saksbehandler = saksbehandler,
             beslutter = beslutter,
-            status = behandlingStatus,
-            tilstand = tilstand,
+            status = status.toBehandlingsstatus(),
         )
     }
-
-    private fun finnTilstand(behandling: Behandling): String =
-        when (behandling.tilstand) {
-            BehandlingTilstand.UNDER_BEHANDLING -> "UnderBehandling"
-            BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutning"
-            BehandlingTilstand.IVERKSATT -> "Iverksatt"
-        }
-
-    private fun finnStatus(behandling: Behandling): String =
-        when (behandling.status) {
-            BehandlingStatus.Innvilget -> "Innvilget"
-            BehandlingStatus.Manuell -> "Manuell"
-            BehandlingStatus.Avslag -> "Avslag"
-        }
 
     private val sqlHentSistEndret = """
         select sist_endret from behandling where id = :id
@@ -299,7 +260,6 @@ internal class PostgresBehandlingRepo(
             sakId,
             fom,
             tom,
-            tilstand,
             status,
             sist_endret,
             opprettet,
@@ -311,7 +271,6 @@ internal class PostgresBehandlingRepo(
             :sakId,
             :fom,
             :tom,
-            :tilstand,
             :status,
             :sistEndret,
             :opprettet,
@@ -327,7 +286,6 @@ internal class PostgresBehandlingRepo(
             fom = :fom,
             tom = :tom,
             sakId = :sakId,
-            tilstand = :tilstand,
             status = :status,
             sist_endret = :sistEndret,
             saksbehandler = :saksbehandler,

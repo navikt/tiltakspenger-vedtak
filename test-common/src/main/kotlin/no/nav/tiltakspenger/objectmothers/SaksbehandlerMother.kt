@@ -17,38 +17,58 @@ interface SaksbehandlerMother {
         roller = roller,
     )
 
-    fun saksbehandlerUtenTilgang() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
+    fun saksbehandlerUtenTilgang(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+    ) = saksbehandler(
         roller = emptyList(),
+        navIdent = navIdent,
+        epost = epost,
+        brukernavn = brukernavn,
     )
 
-    fun beslutter() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
+    fun beslutter(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+    ) = saksbehandler(
         roller = listOf(Rolle.BESLUTTER),
+        navIdent = navIdent,
+        epost = epost,
+        brukernavn = brukernavn,
     )
 
-    fun saksbehandlerMedAdmin() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
+    fun saksbehandlerMedAdmin(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+    ) = saksbehandler(
         roller = listOf(Rolle.ADMINISTRATOR),
+        navIdent = navIdent,
+        epost = epost,
+        brukernavn = brukernavn,
     )
 
-    fun saksbehandlerMedKode6() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
+    fun saksbehandlerMedKode6(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+    ) = Saksbehandler(
+        navIdent = navIdent,
+        epost = epost,
+        brukernavn = brukernavn,
         roller = listOf(Rolle.SAKSBEHANDLER, Rolle.STRENGT_FORTROLIG_ADRESSE),
     )
 
-    fun saksbehandlerMedKode7() = Saksbehandler(
-        navIdent = "Z12345",
-        brukernavn = "Sak Behandler",
-        epost = "Sak.Behandler@nav.no",
+    fun saksbehandlerMedKode7(
+        navIdent: String = "Z12345",
+        brukernavn: String = "Sak Behandler",
+        epost: String = "Sak.Behandler@nav.no",
+    ) = Saksbehandler(
+        navIdent = navIdent,
+        epost = epost,
+        brukernavn = brukernavn,
         roller = listOf(Rolle.SAKSBEHANDLER, Rolle.FORTROLIG_ADRESSE),
     )
 

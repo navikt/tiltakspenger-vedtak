@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
 import java.time.LocalDate
 
@@ -10,8 +9,7 @@ internal data class BehandlingDTO(
     val fom: LocalDate,
     val tom: LocalDate,
     val typeBehandling: String,
-    val status: String,
-    val tilstand: BehandlingTilstand,
+    val status: BehandlingsstatusDTO,
     val saksbehandler: String?,
     val beslutter: String?,
     val vilkårssett: VilkårssettDTO,

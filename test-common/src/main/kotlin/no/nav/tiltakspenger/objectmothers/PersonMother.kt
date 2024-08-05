@@ -20,6 +20,9 @@ import java.time.LocalDateTime
 
 interface PersonMother {
 
+    /** Felles default fødselsdato for testdatatypene */
+    fun fødselsdato(): LocalDate = 1.januar(2001)
+
     fun nySøker(
         søkerId: SøkerId = SøkerId.random(),
         fnr: Fnr = Fnr.random(),
@@ -34,7 +37,7 @@ interface PersonMother {
 
     fun personopplysningKjedeligFyr(
         fnr: Fnr = Fnr.random(),
-        fødselsdato: LocalDate = 1.januar(2001),
+        fødselsdato: LocalDate = fødselsdato(),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
         etternavn: String = "Etternavn",
@@ -43,7 +46,7 @@ interface PersonMother {
         strengtFortroligUtland: Boolean = false,
         kommune: String? = null,
         bydel: String? = null,
-        skjermet: Boolean? = null,
+        skjermet: Boolean? = false,
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerSøker = PersonopplysningerSøker(
         fnr = fnr,
@@ -62,7 +65,7 @@ interface PersonMother {
 
     fun personopplysningMaxFyr(
         fnr: Fnr = Fnr.random(),
-        fødselsdato: LocalDate = 1.januar(2001),
+        fødselsdato: LocalDate = fødselsdato(),
         fornavn: String = "Kjell",
         mellomnavn: String? = "T.",
         etternavn: String = "Ring",
@@ -90,7 +93,7 @@ interface PersonMother {
 
     fun barn(
         fnr: Fnr = Fnr.random(),
-        fødselsdato: LocalDate = 1.januar(2001),
+        fødselsdato: LocalDate = fødselsdato(),
         fornavn: String = "Fornavn",
         mellomnavn: String? = null,
         etternavn: String = "Etternavn",

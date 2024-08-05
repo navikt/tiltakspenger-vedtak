@@ -1,10 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.random
-import no.nav.tiltakspenger.objectmothers.ObjectMother.sakMedOpprettetBehandling
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -35,20 +31,16 @@ internal class BehandlingRepoTest {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
             val behandlingRepo = testDataHelper.behandlingRepo
-            val sakRepo = testDataHelper.sakRepo
 
-            val fnr = Fnr.random()
-            val vårSakId = SakId.random()
-            val enAnnenSakId = SakId.random()
-            val sakForVårIdent = sakMedOpprettetBehandling(sakId = vårSakId, fnr = fnr)
-            val enAnnenSak = sakMedOpprettetBehandling(sakId = enAnnenSakId, løpenummer = 1002)
+            val (sak1, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                løpenummer = 1001,
+            )
+            val (sak2, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                løpenummer = 1002,
+            )
 
-            sakRepo.lagre(sakForVårIdent)
-            sakRepo.lagre(enAnnenSak)
-
-            val hentBehandling = behandlingRepo.hentAlleForIdent(fnr)
-
-            hentBehandling.size shouldBe 1
+            behandlingRepo.hentAlleForIdent(sak1.fnr) shouldBe listOf(sak1.førstegangsbehandling)
+            behandlingRepo.hentAlleForIdent(sak2.fnr) shouldBe listOf(sak2.førstegangsbehandling)
         }
     }
 }

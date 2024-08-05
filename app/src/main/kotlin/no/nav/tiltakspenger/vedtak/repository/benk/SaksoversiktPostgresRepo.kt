@@ -9,12 +9,12 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.toBehandlingsstatus
 
 class SaksoversiktPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -24,7 +24,7 @@ class SaksoversiktPostgresRepo(
     ): Saksoversikt {
         return sessionFactory.withSession(sessionContext) { session ->
             session.run(
-                queryOf("select s.id søknadId, s.ident, b.id behandlingId, b.fom, b.tom, b.tilstand, sak.saksnummer, b.saksbehandler, b.beslutter, b.sakId from søknad s left join behandling b on b.id = s.behandling_id left join sak on sak.id = b.sakId order by s.id, sak.saksnummer, b.id")
+                queryOf("select s.id søknadId, s.ident, b.id behandlingId, b.fom, b.tom, b.status, sak.saksnummer, b.saksbehandler, b.beslutter, b.sakId from søknad s left join behandling b on b.id = s.behandling_id left join sak on sak.id = b.sakId order by s.id, sak.saksnummer, b.id")
                     .map { row ->
                         val erFørstegangsbehandling = row.stringOrNull("behandlingId") != null
                         val id = row.stringOrNull("behandlingId")?.let { BehandlingId.fromString(it) }
@@ -39,18 +39,16 @@ class SaksoversiktPostgresRepo(
                         }
                         val beslutter = row.stringOrNull("beslutter")
                         val saksbehandler = row.stringOrNull("saksbehandler")
-                        val tilstand = if (erFørstegangsbehandling) {
-                            when (row.string("tilstand")) {
-                                "TilBeslutting" -> if (beslutter == null) Behandlingsstatus.KLAR_TIL_BESLUTNING else Behandlingsstatus.UNDER_BESLUTNING
-                                "Iverksatt" -> Behandlingsstatus.INNVILGET
-                                else -> if (saksbehandler == null) Behandlingsstatus.KLAR_TIL_BEHANDLING else Behandlingsstatus.UNDER_BEHANDLING
-                            }
+                        val status = if (erFørstegangsbehandling) {
+                            BehandlingEllerSøknadForSaksoversikt.Status.Behandling(
+                                row.string("status").toBehandlingsstatus(),
+                            )
                         } else {
                             null
                         }
                         BehandlingEllerSøknadForSaksoversikt(
                             periode = periode,
-                            status = if (erFørstegangsbehandling) tilstand!! else Behandlingsstatus.SØKNAD,
+                            status = if (erFørstegangsbehandling) status!! else BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
                             behandlingstype = if (erFørstegangsbehandling) FØRSTEGANGSBEHANDLING else SØKNAD,
                             fnr = Fnr.fromString(row.string("ident")),
                             saksnummer = row.stringOrNull("saksnummer")?.let { Saksnummer(it) },

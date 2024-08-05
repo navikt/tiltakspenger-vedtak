@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Førstegangsbehandling
+import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
@@ -14,7 +15,7 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
  */
 internal data class BehandlingBenkDto(
     val periode: PeriodeDTO?,
-    val status: Status,
+    val status: String,
     // val underkjent: Boolean,
     val typeBehandling: TypeBehandling,
     val ident: String,
@@ -24,23 +25,6 @@ internal data class BehandlingBenkDto(
     val beslutter: String?,
     val sakId: String?,
 ) {
-    enum class Status {
-        /** Vi har mottatt en ny søknad. */
-        SØKNAD,
-
-        /** Det står ikke en saksbehandler på behandlingen. Kan også være underkjent dersom en saksbehandler har meldt seg av behandlignen. */
-        KLAR_TIL_BEHANDLING,
-
-        /** En saksbehandler står på behandlingen. Kan også være underkjent. */
-        UNDER_BEHANDLING,
-
-        /** Saksbehandler har sendt til beslutning, men ingen beslutter er knyttet til behandlingen enda */
-        KLAR_TIL_BESLUTNING,
-
-        /** En beslutter har tatt behandlingen. */
-        UNDER_BESLUTNING,
-        INNVILGET,
-    }
 
     /** Skal sannsynligvis utvides med revurdering, klage og tilbakekreving. */
     enum class TypeBehandling {
@@ -56,13 +40,9 @@ internal fun Saksoversikt.fraBehandlingToBehandlingBenkDto(): List<BehandlingBen
 internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): BehandlingBenkDto {
     return BehandlingBenkDto(
         periode = periode?.toDTO(),
-        status = when (status) {
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.SØKNAD -> BehandlingBenkDto.Status.SØKNAD
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.KLAR_TIL_BEHANDLING -> BehandlingBenkDto.Status.KLAR_TIL_BEHANDLING
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.UNDER_BEHANDLING -> BehandlingBenkDto.Status.UNDER_BEHANDLING
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.KLAR_TIL_BESLUTNING -> BehandlingBenkDto.Status.KLAR_TIL_BESLUTNING
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.UNDER_BESLUTNING -> BehandlingBenkDto.Status.UNDER_BESLUTNING
-            BehandlingEllerSøknadForSaksoversikt.Behandlingsstatus.INNVILGET -> BehandlingBenkDto.Status.INNVILGET
+        status = when (val s = status) {
+            is BehandlingEllerSøknadForSaksoversikt.Status.Søknad -> "SØKNAD"
+            is BehandlingEllerSøknadForSaksoversikt.Status.Behandling -> s.behandlingsstatus.toDTO().toString()
         },
         // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
         // underkjent = this.be,

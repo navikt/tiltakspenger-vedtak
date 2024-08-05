@@ -63,16 +63,11 @@ class AlderRoutesTest {
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1021)
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
-
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+            val behandlingId = sak.førstegangsbehandling.id
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
                 vedtakRepo = testDataHelper.vedtakRepo,

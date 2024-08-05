@@ -15,11 +15,12 @@ sealed interface TiltakDeltagelseSaksopplysning {
     val årsakTilEndring: ÅrsakTilEndring?
     val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
 
-    data class Tiltak(
+    data class Register(
         override val tiltakNavn: String,
         override val tidsstempel: LocalDateTime,
         override val deltagelsePeriode: Periode,
         override val girRett: Boolean,
+        // TODO jah: Kunne ønske meg at denne var en enum. Vi sliter vel uansett med å håndtere ukjente verdier?
         override val status: String,
         override val kilde: String,
     ) : TiltakDeltagelseSaksopplysning {

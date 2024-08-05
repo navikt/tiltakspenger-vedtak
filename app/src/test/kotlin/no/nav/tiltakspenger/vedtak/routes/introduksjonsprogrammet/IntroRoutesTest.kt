@@ -17,7 +17,6 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -57,15 +56,14 @@ class IntroRoutesTest {
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(løpenummer = 1019)
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
+                deltakelseFom = 1.januar(2023),
+                deltakelseTom = 31.mars(2023),
+            )
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

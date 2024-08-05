@@ -19,7 +19,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -27,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -61,18 +61,11 @@ class KvpRoutesTest {
     fun `test at endepunkt for henting og lagring av kvp fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            saksbehandler = saksbehandler,
-            løpenummer = 1004,
-        )
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -152,20 +145,13 @@ class KvpRoutesTest {
     fun `test at endring av kvp ikke endrer søknadsdata`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            saksbehandler = saksbehandler,
-            løpenummer = 1003,
-        )
-
         lateinit var originalDatoForKvpFraSøknaden: KvpSaksopplysningDTO
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -242,19 +228,11 @@ class KvpRoutesTest {
     fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val objectMotherSak = ObjectMother.sakMedOpprettetBehandling(
-            saksbehandler = saksbehandler,
-            løpenummer = 1010,
-        )
-
-        val behandlingId = objectMotherSak.behandlinger.first().id.toString()
-
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            testDataHelper.sessionFactory.withTransaction {
-                testDataHelper.sakRepo.lagre(objectMotherSak)
-            }
+            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+            val behandlingId = sak.førstegangsbehandling.id
 
             val behandlingService = BehandlingServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -284,7 +262,7 @@ class KvpRoutesTest {
                     }
                 }
 
-                val vurderingsPeriodeDTO = objectMotherSak.behandlinger.first().vurderingsperiode.toDTO()
+                val vurderingsperiodeDTO = sak.førstegangsbehandling.vurderingsperiode.toDTO()
 
                 defaultRequest(
                     HttpMethod.Get,
@@ -297,7 +275,7 @@ class KvpRoutesTest {
                     val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
                 }
 
-                val bodyKvpDeltarIHelePerioden = bodyEndreKvp(vurderingsPeriodeDTO, deltar = true)
+                val bodyKvpDeltarIHelePerioden = bodyEndreKvp(vurderingsperiodeDTO, deltar = true)
 
                 defaultRequest(
                     HttpMethod.Post,

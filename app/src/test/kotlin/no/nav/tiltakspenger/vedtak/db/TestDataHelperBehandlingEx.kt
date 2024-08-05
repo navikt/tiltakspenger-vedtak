@@ -28,7 +28,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     løpenummer: Int = 1001,
     saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-    fødselsdato: LocalDate = 1.januar(2001),
+    fødselsdato: LocalDate = ObjectMother.fødselsdato(),
     sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato))),
     id: SøknadId = Søknad.randomId(),
     søknad: Søknad = ObjectMother.nySøknad(
@@ -42,7 +42,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
         ),
-        barnetillegg = listOf(ObjectMother.barnetilleggMedIdent()),
+        barnetillegg = listOf(),
     ),
 ): Pair<Sak, Søknad> {
     this.persisterSøknad(

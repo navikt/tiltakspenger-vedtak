@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -24,7 +23,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
-    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : VedtakRepo, VedtakDAO {
     override fun hent(vedtakId: VedtakId): Vedtak? {
@@ -94,7 +92,6 @@ internal class VedtakRepoImpl(
                 ),
             ).asUpdate,
         )
-        utfallsperiodeDAO.oppdaterVedtak(vedtak.id, vedtak.behandling.id, tx)
         return vedtak
     }
 
@@ -107,7 +104,6 @@ internal class VedtakRepoImpl(
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
-            utfallsperioder = utfallsperiodeDAO.hentForVedtak(id, txSession),
             saksbehandler = string("saksbehandler"),
             beslutter = string("beslutter"),
         )

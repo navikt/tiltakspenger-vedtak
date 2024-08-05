@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import java.time.LocalDateTime
 
-fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning {
+fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning.Søknad {
     return when (intro) {
         is Søknad.PeriodeSpm.Nei -> IntroSaksopplysning.Søknad(
             deltar = Periodisering(
