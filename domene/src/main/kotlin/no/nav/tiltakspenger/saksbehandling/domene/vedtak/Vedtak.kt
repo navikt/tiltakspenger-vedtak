@@ -31,7 +31,7 @@ enum class VedtaksType(val navn: String, val skalSendeBrev: Boolean) {
 }
 
 fun Førstegangsbehandling.opprettVedtak(): Vedtak {
-    require(this.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtakk for behandling som ikke er iverksatt" }
+    require(this.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtak for behandling som ikke er iverksatt" }
     return Vedtak(
         id = VedtakId.random(),
         sakId = this.sakId,
