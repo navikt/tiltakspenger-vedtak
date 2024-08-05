@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse
 
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Arena
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -15,9 +17,8 @@ internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysn
     return TiltakDeltagelseSaksopplysningDTO(
         tiltakNavn = tiltakNavn,
         kilde = when (kilde) {
-            "KOMET" -> TiltakDeltagelseKildeDTO.KOMET
-            "ARENA" -> TiltakDeltagelseKildeDTO.ARENA
-            else -> throw IllegalStateException("Ikke gyldig kilde for tiltaksdeltagelse")
+            Arena -> TiltakDeltagelseKildeDTO.ARENA
+            Komet -> TiltakDeltagelseKildeDTO.KOMET
         },
         deltagelsePeriode = deltagelsePeriode.toDTO(),
         status = status,

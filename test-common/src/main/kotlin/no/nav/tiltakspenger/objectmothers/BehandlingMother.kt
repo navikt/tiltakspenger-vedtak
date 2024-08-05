@@ -18,10 +18,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.Antal
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import java.time.LocalDate
 
 interface BehandlingMother {
@@ -142,7 +144,7 @@ interface BehandlingMother {
         status: String = "DELTAR",
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,
-        kilde: String = "Komet",
+        kilde: Tiltakskilde = Komet,
         antallDagerFraSaksbehandler: List<PeriodeMedVerdi<AntallDager>> = emptyList(),
     ) =
         Tiltak(

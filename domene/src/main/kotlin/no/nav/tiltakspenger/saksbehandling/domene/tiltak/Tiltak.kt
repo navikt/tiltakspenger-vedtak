@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
+package no.nav.tiltakspenger.saksbehandling.domene.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
@@ -13,7 +13,7 @@ data class Tiltak(
     val deltakelseTom: LocalDate,
     val deltakelseStatus: String,
     val deltakelseProsent: Float?,
-    val kilde: String,
+    val kilde: Tiltakskilde,
     val registrertDato: LocalDateTime,
     val innhentet: LocalDateTime,
     val antallDagerSaksopplysninger: AntallDagerSaksopplysninger, // TODO Kew slett

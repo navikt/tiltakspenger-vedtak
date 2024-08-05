@@ -20,7 +20,7 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
             deltagelsePeriode = deltagelsePeriode.toDomain(),
             girRett = girRett,
             status = status,
-            kilde = kilde,
+            kilde = kilde.toTiltakskilde(),
         )
     }
 }
@@ -32,6 +32,6 @@ internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksoppl
         deltagelsePeriode = deltagelsePeriode.toDbJson(),
         girRett = girRett,
         status = status,
-        kilde = kilde,
+        kilde = kilde.toDb(),
     )
 }

@@ -4,6 +4,7 @@ import arrow.core.Either
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning.Register
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.LeggTilAlderSaksopplysningCommand
@@ -22,7 +23,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLiv
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tilRegisterSaksopplysning
 import java.time.LocalDate

@@ -7,7 +7,9 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDager
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.stønadsdager.AntallDagerSaksopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Kilde
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak.Gjennomføring
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import java.time.LocalDateTime
 import kotlin.math.roundToInt
 
@@ -45,7 +47,7 @@ internal fun mapTiltak(
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = it.id,
-                gjennomføring = Tiltak.Gjennomføring(
+                gjennomføring = Gjennomføring(
                     id = it.gjennomforing.id,
                     arrangørnavn = it.gjennomforing.arrangørnavn,
                     typeNavn = it.gjennomforing.typeNavn,
@@ -56,7 +58,11 @@ internal fun mapTiltak(
                 deltakelseTom = it.deltakelseTom!!,
                 deltakelseStatus = it.deltakelseStatus.name,
                 deltakelseProsent = it.deltakelseProsent,
-                kilde = it.kilde,
+                kilde = when {
+                    it.kilde.lowercase().contains("komet") -> Tiltakskilde.Komet
+                    it.kilde.lowercase().contains("arena") -> Tiltakskilde.Arena
+                    else -> throw IllegalStateException("Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${it.kilde}. Forventet Arena eller Komet. Tiltaksid: ${it.id}")
+                },
                 registrertDato = it.registrertDato,
                 innhentet = innhentet,
                 antallDagerSaksopplysninger = AntallDagerSaksopplysninger(

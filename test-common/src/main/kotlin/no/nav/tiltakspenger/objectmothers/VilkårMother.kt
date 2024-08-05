@@ -5,6 +5,8 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
@@ -244,7 +246,7 @@ interface VilkårMother {
         tiltakNavn: String = "Tiltaksnavnet",
         girRett: Boolean = true,
         status: String = "Gjennomføres",
-        kilde: String = "Komet",
+        kilde: Tiltakskilde = Komet,
         registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register = tiltakDeltagelseSaksopplysning(
             vurderingsperiode = vurderingsperiode,
             fødselsdato = fødselsdato,
@@ -268,7 +270,7 @@ interface VilkårMother {
         tiltakNavn: String = "Tiltaksnavnet",
         girRett: Boolean = true,
         status: String = "Gjennomføres",
-        kilde: String = "Komet",
+        kilde: Tiltakskilde = Komet,
     ): TiltakDeltagelseSaksopplysning.Register {
         return TiltakDeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
