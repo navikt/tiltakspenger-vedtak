@@ -17,10 +17,10 @@ fun Route.søknadRoutes(
     søknadService: SøknadService,
 ) {
     post(søknadpath) {
-        LOG.info { "Vi har mottatt søknad fra river" }
+        LOG.debug { "Mottatt ny søknad. Prøver deserialisere og lagre." }
         try {
             val søknadDTO = call.receive<SøknadDTO>()
-
+            LOG.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
             // Oppretter sak med søknad og lagrer den
             søknadService.nySøknad(
                 søknad = SøknadDTOMapper.mapSøknad(
@@ -29,7 +29,11 @@ fun Route.søknadRoutes(
                 ),
             )
         } catch (exception: Exception) {
-            SECURELOG.error { "Feil ved mottak av søknad fra rivers. $exception" }
+            LOG.error(
+                "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
+                RuntimeException("Trigger en exception for å få stracktrace."),
+            )
+            SECURELOG.error("Feil ved mottak av søknad.", exception)
         }
 
         call.respond(message = "OK", status = HttpStatusCode.OK)
