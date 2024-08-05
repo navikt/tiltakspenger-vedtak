@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Førstegangsbehandling
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Søknad
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -47,7 +48,7 @@ internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): Behand
         // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
         // underkjent = this.be,
         typeBehandling = when (behandlingstype) {
-            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Førstegangsbehandling
+            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Søknad
             BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING -> Førstegangsbehandling
         },
         ident = fnr.verdi,
