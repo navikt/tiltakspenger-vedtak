@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.attestering
+package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId

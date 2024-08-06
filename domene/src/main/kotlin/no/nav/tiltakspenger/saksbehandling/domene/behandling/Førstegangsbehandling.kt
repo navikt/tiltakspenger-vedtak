@@ -41,6 +41,7 @@ data class Førstegangsbehandling(
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
     override val status: Behandlingsstatus,
+    override val attesteringer: List<Attestering>,
 ) : Behandling {
 
     init {
@@ -135,6 +136,7 @@ data class Førstegangsbehandling(
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
+                attesteringer = emptyList(),
             )
         }
     }

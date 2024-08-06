@@ -23,6 +23,7 @@ interface Behandling {
     val beslutter: String?
     val vilkårssett: Vilkårssett
     val status: Behandlingsstatus
+    val attesteringer: List<Attestering>
 
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()

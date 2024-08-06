@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt

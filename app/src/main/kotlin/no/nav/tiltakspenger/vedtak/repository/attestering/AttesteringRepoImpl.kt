@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.AttesteringStatus
 import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import org.intellij.lang.annotations.Language
 
