@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVil
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -30,8 +29,6 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -59,7 +56,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
                 config = Configuration.TokenVerificationConfig(),
                 innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                 innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
-                søkerService = søkerService,
                 sakService = sakService,
                 behandlingService = behandlingService,
                 attesteringRepo = attesteringRepo,
@@ -90,8 +86,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
-    private val personopplysningerDAO = PersonopplysningerDAO()
-    private val søkerRepository = SøkerRepositoryImpl(sessionFactory, personopplysningerDAO)
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
@@ -132,7 +126,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
 
     @Suppress("unused")
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
-    private val søkerService = SøkerServiceImpl(søkerRepository)
 
     @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
@@ -157,7 +150,6 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
-            søkerRepository = søkerRepository,
             tiltakGateway = tiltakGateway,
             sessionFactory = sessionFactory,
         )

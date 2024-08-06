@@ -12,8 +12,6 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -31,11 +29,6 @@ internal class TestDataHelper(
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val personopplysningerDAO = PersonopplysningerDAO()
-    val søkerRepo = SøkerRepositoryImpl(
-        sessionFactory = sessionFactory,
-        personopplysningerDAO = personopplysningerDAO,
-    )
     val attesteringRepo = AttesteringRepoImpl(
         sessionFactory = sessionFactory,
     )

@@ -30,7 +30,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
-import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
@@ -57,7 +56,6 @@ internal class SakServiceTest {
     private lateinit var sakService: SakService
     private lateinit var personGateway: PersonGateway
     private lateinit var skjermingGateway: SkjermingGateway
-    private lateinit var søkerRepository: SøkerRepository
     private lateinit var søknadRepo: SøknadRepo
     private lateinit var saksoversiktRepo: SaksoversiktRepo
 
@@ -74,7 +72,6 @@ internal class SakServiceTest {
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
         skjermingGateway = mockk(relaxed = true)
-        søkerRepository = mockk(relaxed = true)
         søknadRepo = mockk(relaxed = true)
         saksoversiktRepo = mockk(relaxed = true)
         val sessionFactory = TestSessionFactory()
@@ -93,7 +90,6 @@ internal class SakServiceTest {
         sakService = SakServiceImpl(
             sakRepo = sakRepo,
             behandlingRepo = behandlingRepo,
-            søkerRepository = søkerRepository,
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,

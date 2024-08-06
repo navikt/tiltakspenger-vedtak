@@ -32,7 +32,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
@@ -43,7 +42,6 @@ import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
-import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
@@ -56,7 +54,6 @@ internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
-    søkerService: SøkerService,
     søknadService: SøknadService,
     sakService: SakService,
     behandlingService: BehandlingService,
@@ -78,7 +75,6 @@ internal fun Application.vedtakApi(
     auth(config)
     routing {
         authenticate("saksbehandling") {
-            søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
             behandlingRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
@@ -99,7 +95,6 @@ internal fun Application.vedtakApi(
             )
             sakRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                søkerService = søkerService,
                 sakService = sakService,
             )
             meldekortRoutes()

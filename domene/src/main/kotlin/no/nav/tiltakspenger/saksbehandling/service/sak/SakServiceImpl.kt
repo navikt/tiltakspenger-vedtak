@@ -13,23 +13,19 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
-import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.søker.Søker
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
-import no.nav.tiltakspenger.saksbehandling.ports.SøkerRepository
 import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
@@ -43,7 +39,6 @@ class SakServiceImpl(
     private val sakRepo: SakRepo,
     private val søknadRepo: SøknadRepo,
     private val behandlingRepo: BehandlingRepo,
-    private val søkerRepository: SøkerRepository,
     private val behandlingService: BehandlingService,
     private val personGateway: PersonGateway,
     private val skjermingGateway: SkjermingGateway,
@@ -87,23 +82,9 @@ class SakServiceImpl(
             registrerteTiltak = registrerteTiltak,
         ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
-        sessionFactory.withTransactionContext { tx ->
-            sakRepo.lagre(sak, tx)
-            lagEllerOppdaterSøker(sak, sakPersonopplysninger, tx)
-        }
+        sakRepo.lagre(sak)
 
         return sak.right()
-    }
-
-    /** TODO jah: Skal slettes etter vi har fjernet Søker-tabellen */
-    private fun lagEllerOppdaterSøker(
-        sak: Sak,
-        sakPersonopplysninger: SakPersonopplysninger,
-        tx: TransactionContext,
-    ) {
-        val søker = søkerRepository.findByIdent(sak.fnr, tx) ?: Søker(sak.fnr)
-        søker.personopplysninger = sakPersonopplysninger.liste.søker()
-        søkerRepository.lagre(søker, tx)
     }
 
     override fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak? {
