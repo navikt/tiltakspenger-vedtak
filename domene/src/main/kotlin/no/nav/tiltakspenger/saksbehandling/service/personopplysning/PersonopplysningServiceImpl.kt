@@ -7,7 +7,5 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 class PersonopplysningServiceImpl(
     private val personopplysningerRepo: PersonopplysningerRepo,
 ) : PersonopplysningService {
-    override fun hent(sakId: SakId): SakPersonopplysninger {
-        return personopplysningerRepo.hent(sakId)
-    }
+    override fun hent(sakId: SakId): SakPersonopplysninger = personopplysningerRepo.hent(sakId)
 }

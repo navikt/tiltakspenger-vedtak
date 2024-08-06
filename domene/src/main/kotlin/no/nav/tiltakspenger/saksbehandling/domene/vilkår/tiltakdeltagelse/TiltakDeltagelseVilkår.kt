@@ -14,7 +14,6 @@ data class TiltakDeltagelseVilkår private constructor(
     override val vurderingsperiode: Periode,
     val registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
 ) : Vilkår {
-
     val logger = KotlinLogging.logger { }
 
     init {
@@ -30,7 +29,9 @@ data class TiltakDeltagelseVilkår private constructor(
         if (tiltakspengerGirRett != kometGirRett) {
             // TODO tiltak jah: skal tiltakspenger eller komet eie denne logikken?
             //  Se på dette sammen med Tia og Sølvi?
-            logger.error { "rettTilSøke basert på statusen ($tiltakspengerGirRett) stemmer ikke overens med tiltak.gjennomføring. Saksopplysning: $registerSaksopplysning " }
+            logger.error {
+                "rettTilSøke basert på statusen ($tiltakspengerGirRett) stemmer ikke overens med tiltak.gjennomføring. Saksopplysning: $registerSaksopplysning "
+            }
         }
 
         return when {
@@ -45,12 +46,11 @@ data class TiltakDeltagelseVilkår private constructor(
         fun opprett(
             vurderingsperiode: Periode,
             registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
-        ): TiltakDeltagelseVilkår {
-            return TiltakDeltagelseVilkår(
+        ): TiltakDeltagelseVilkår =
+            TiltakDeltagelseVilkår(
                 vurderingsperiode = vurderingsperiode,
                 registerSaksopplysning = registerSaksopplysning,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -59,13 +59,14 @@ data class TiltakDeltagelseVilkår private constructor(
             registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
             vurderingsperiode: Periode,
             utfall: Periodisering<UtfallForPeriode>,
-        ): TiltakDeltagelseVilkår {
-            return TiltakDeltagelseVilkår(
+        ): TiltakDeltagelseVilkår =
+            TiltakDeltagelseVilkår(
                 registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i TiltakDeltagelseVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i TiltakDeltagelseVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

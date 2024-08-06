@@ -29,8 +29,8 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private val LOG = KotlinLogging.logger {}
 
-internal const val behandlingPath = "/behandling"
-internal const val behandlingerPath = "/behandlinger"
+internal const val BEHANDLING_PATH = "/behandling"
+internal const val BEHANDLINGER_PATH = "/behandlinger"
 
 data class IdentDTO(
     val ident: String?,
@@ -44,8 +44,8 @@ fun Route.behandlingRoutes(
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
-    get("$behandlingPath/{behandlingId}") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
+    get("$BEHANDLING_PATH/{behandlingId}") {
+        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
@@ -58,25 +58,27 @@ fun Route.behandlingRoutes(
             )
         }
 
-        val behandling = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
-            it.id == behandlingId
-        } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
+        val behandling =
+            sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
+                it.id == behandlingId
+            } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
 
         // her burde vi nok ikke bare hente den første, men finne den riktige og evnt feilmelding hvis vi ikke finner den
         // val behandling = behandlingService.hentBehandling(behandlingId) Skal vi hente behandling direkte eller via sak?
 
         val attesteringer = attesteringRepo.hentForBehandling(behandling.id)
 
-        val dto = mapSammenstillingDTO(
-            behandling = behandling,
-            personopplysninger = sak.personopplysninger.søkere(),
-            attesteringer = attesteringer,
-        )
+        val dto =
+            mapSammenstillingDTO(
+                behandling = behandling,
+                personopplysninger = sak.personopplysninger.søkere(),
+                attesteringer = attesteringer,
+            )
         call.respond(status = HttpStatusCode.OK, dto)
     }
 
-    post("$behandlingPath/beslutter/{behandlingId}") {
-        SECURELOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
+    post("$BEHANDLING_PATH/beslutter/{behandlingId}") {
+        SECURELOG.debug("Mottatt request. $BEHANDLING_PATH/ skal sendes til beslutter")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -86,7 +88,7 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    post("$behandlingPath/avbrytbehandling/{behandlingId}") {
+    post("$BEHANDLING_PATH/avbrytbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)

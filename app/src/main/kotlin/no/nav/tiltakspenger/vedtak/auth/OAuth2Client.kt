@@ -27,11 +27,12 @@ class OAuth2Client(
     private val wellKnown: WellKnown =
         runBlocking { httpClient.get(wellKnownUrl).body() }
 
-    suspend fun tokenExchange(token: String, audience: String) =
-        accessToken(GrantRequest.tokenExchange(token, audience))
+    suspend fun tokenExchange(
+        token: String,
+        audience: String,
+    ) = accessToken(GrantRequest.tokenExchange(token, audience))
 
-    suspend fun clientCredentials(scope: String) =
-        accessToken(GrantRequest.clientCredentials(scope))
+    suspend fun clientCredentials(scope: String) = accessToken(GrantRequest.clientCredentials(scope))
 
     suspend fun accessToken(grantRequest: GrantRequest): OAuth2AccessTokenResponse =
         httpClient.tokenRequest(
@@ -51,10 +52,14 @@ data class GrantRequest(
     val params: Map<String, String> = emptyMap(),
 ) {
     companion object {
-        fun tokenExchange(token: String, audience: String): GrantRequest =
+        fun tokenExchange(
+            token: String,
+            audience: String,
+        ): GrantRequest =
             GrantRequest(
                 grantType = OAuth2GrantType.TOKEN_EXCHANGE,
-                params = mapOf(
+                params =
+                mapOf(
                     OAuth2ParameterNames.SUBJECT_TOKEN_TYPE to "urn:ietf:params:oauth:token-type:jwt",
                     OAuth2ParameterNames.SUBJECT_TOKEN to token,
                     OAuth2ParameterNames.AUDIENCE to audience,
@@ -64,7 +69,8 @@ data class GrantRequest(
         fun clientCredentials(scope: String): GrantRequest =
             GrantRequest(
                 grantType = OAuth2GrantType.CLIENT_CREDENTIALS,
-                params = mapOf(
+                params =
+                mapOf(
                     OAuth2ParameterNames.SCOPE to scope,
                 ),
             )
@@ -78,7 +84,8 @@ internal suspend fun HttpClient.tokenRequest(
 ): OAuth2AccessTokenResponse =
     submitForm(
         url = tokenEndpointUrl,
-        formParameters = Parameters.build {
+        formParameters =
+        Parameters.build {
             appendClientAuthParams(
                 tokenEndpointUrl = tokenEndpointUrl,
                 clientAuthProperties = clientAuthProperties,
@@ -115,5 +122,7 @@ private fun ParametersBuilder.appendClientAuthParams(
     }
 }
 
-private fun basicAuth(clientId: String, clientSecret: String) =
-    Base64.getEncoder().encodeToString("$clientId:$clientSecret".toByteArray(StandardCharsets.UTF_8))
+private fun basicAuth(
+    clientId: String,
+    clientSecret: String,
+) = Base64.getEncoder().encodeToString("$clientId:$clientSecret".toByteArray(StandardCharsets.UTF_8))

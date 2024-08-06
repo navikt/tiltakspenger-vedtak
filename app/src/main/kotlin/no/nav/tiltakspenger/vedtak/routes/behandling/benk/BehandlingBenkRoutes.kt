@@ -17,8 +17,8 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.OppretteBehandling
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingerPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -29,7 +29,7 @@ fun Route.behandlingBenkRoutes(
     behandlingService: BehandlingService,
     sakService: SakService,
 ) {
-    get(behandlingerPath) {
+    get(BEHANDLINGER_PATH) {
         SECURELOG.debug("Mottatt request for å hente alle behandlinger på benken")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
@@ -39,7 +39,7 @@ fun Route.behandlingBenkRoutes(
         call.respond(status = HttpStatusCode.OK, behandlinger)
     }
 
-    post("$behandlingPath/startbehandling") {
+    post("$BEHANDLING_PATH/startbehandling") {
         SECURELOG.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val søknadId = SøknadId.fromString(call.receive<BehandlingIdDTO>().id)
@@ -55,25 +55,28 @@ fun Route.behandlingBenkRoutes(
                         call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.behandlingId.toString()))
                     }
 
-                    is OppretteBehandling -> when (it.underliggende) {
-                        FantIkkeTiltak -> call.respond(
-                            HttpStatusCode.InternalServerError,
-                            ExceptionResponse(
-                                500,
-                                "fant-ikke-tiltak",
-                                "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
-                            ),
-                        )
+                    is OppretteBehandling ->
+                        when (it.underliggende) {
+                            FantIkkeTiltak ->
+                                call.respond(
+                                    HttpStatusCode.InternalServerError,
+                                    ExceptionResponse(
+                                        500,
+                                        "fant-ikke-tiltak",
+                                        "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
+                                    ),
+                                )
 
-                        StøtterIkkeBarnetillegg -> call.respond(
-                            HttpStatusCode.BadRequest,
-                            ExceptionResponse(
-                                400,
-                                "støtter-ikke-barnetillegg",
-                                "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
-                            ),
-                        )
-                    }
+                            StøtterIkkeBarnetillegg ->
+                                call.respond(
+                                    HttpStatusCode.BadRequest,
+                                    ExceptionResponse(
+                                        400,
+                                        "støtter-ikke-barnetillegg",
+                                        "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
+                                    ),
+                                )
+                        }
                 }
             },
             {
@@ -82,7 +85,7 @@ fun Route.behandlingBenkRoutes(
         )
     }
 
-    post("$behandlingPath/tabehandling") {
+    post("$BEHANDLING_PATH/tabehandling") {
         SECURELOG.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)

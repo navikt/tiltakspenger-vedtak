@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdSaksopplysning
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.SaksbehandlerDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -22,15 +23,15 @@ internal data class LivsoppholdSaksopplysningDTO(
     }
 }
 
-internal fun LivsoppholdSaksopplysning.toDTO(vurderingsperiode: PeriodeDTO?): LivsoppholdSaksopplysningDTO {
-    return LivsoppholdSaksopplysningDTO(
+internal fun LivsoppholdSaksopplysning.toDTO(vurderingsperiode: PeriodeDTO?): LivsoppholdSaksopplysningDTO =
+    LivsoppholdSaksopplysningDTO(
         harLivsoppholdYtelser = this.harLivsoppholdYtelser,
         saksbehandler = this.saksbehandler?.toDTO(),
-        årsakTilEndringLivsopphold = when (årsakTilEndring) {
-            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
-            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
+        årsakTilEndringLivsopphold =
+        when (årsakTilEndring) {
+            ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
+            ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         tidspunkt = tidsstempel,
     )
-}

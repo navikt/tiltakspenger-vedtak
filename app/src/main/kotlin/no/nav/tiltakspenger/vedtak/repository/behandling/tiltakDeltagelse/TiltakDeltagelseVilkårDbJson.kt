@@ -14,18 +14,16 @@ internal data class TiltakDeltagelseVilkårDbJson(
     val registerSaksopplysning: TiltakDeltagelseSaksopplysningDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(vurderingsperiode: Periode): TiltakDeltagelseVilkår {
-        return TiltakDeltagelseVilkår.fromDb(
+    fun toDomain(vurderingsperiode: Periode): TiltakDeltagelseVilkår =
+        TiltakDeltagelseVilkår.fromDb(
             registerSaksopplysning = registerSaksopplysning.toDomain() as TiltakDeltagelseSaksopplysning.Register,
             vurderingsperiode = vurderingsperiode,
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakDeltagelseVilkårDbJson {
-    return TiltakDeltagelseVilkårDbJson(
+internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakDeltagelseVilkårDbJson =
+    TiltakDeltagelseVilkårDbJson(
         registerSaksopplysning = registerSaksopplysning.toDbJson(),
         utfallsperioder = utfall().toDbJson(),
     )
-}

@@ -10,11 +10,7 @@ data class PeriodeDbJson(
     val fraOgMed: String,
     val tilOgMed: String,
 ) {
-    fun toDomain(): Periode {
-        return Periode(LocalDate.parse(fraOgMed), LocalDate.parse(tilOgMed))
-    }
+    fun toDomain(): Periode = Periode(LocalDate.parse(fraOgMed), LocalDate.parse(tilOgMed))
 }
 
-fun Periode.toDbJson(): PeriodeDbJson {
-    return PeriodeDbJson(fraOgMed.toString(), tilOgMed.toString())
-}
+fun Periode.toDbJson(): PeriodeDbJson = PeriodeDbJson(fraOgMed.toString(), tilOgMed.toString())

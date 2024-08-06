@@ -57,14 +57,13 @@ class BehandlingBeslutterRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/sendtilbake/$behandlingId")
+                    path("$BEHANDLING_PATH/sendtilbake/$behandlingId")
                 },
             ) {
                 setBody(begrunnelseJson)
+            }.apply {
+                status shouldBe HttpStatusCode.OK
             }
-                .apply {
-                    status shouldBe HttpStatusCode.OK
-                }
         }
         bId.captured shouldBe behandlingId
         saksbehandler.captured.navIdent shouldBe "Z12345"
@@ -102,29 +101,30 @@ class BehandlingBeslutterRoutesTest {
                 HttpMethod.Post,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingPath/sendtilbake/$behandlingId")
+                    path("$BEHANDLING_PATH/sendtilbake/$behandlingId")
                 },
             ) {
                 setBody(begrunnelseJson)
+            }.apply {
+                status shouldBe HttpStatusCode.OK
             }
-                .apply {
-                    status shouldBe HttpStatusCode.OK
-                }
         }
         bId.captured shouldBe behandlingId
         saksbehandler.captured.navIdent shouldBe "Z12345"
         begrunnelse.captured shouldBe "begrunnelse"
     }
 
-    private val identJson = """
+    private val identJson =
+        """
         {
             "ident": "01234567890"
         }
-    """.trimIndent()
+        """.trimIndent()
 
-    private val begrunnelseJson = """
+    private val begrunnelseJson =
+        """
         {
             "begrunnelse": "begrunnelse"
         }
-    """.trimIndent()
+        """.trimIndent()
 }

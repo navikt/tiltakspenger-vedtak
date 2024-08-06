@@ -11,9 +11,25 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling
 
 interface SakService {
-    fun startFørstegangsbehandling(søknadId: SøknadId, saksbehandler: Saksbehandler): Either<KanIkkeStarteFørstegangsbehandling, Sak>
+    fun startFørstegangsbehandling(
+        søknadId: SøknadId,
+        saksbehandler: Saksbehandler,
+    ): Either<KanIkkeStarteFørstegangsbehandling, Sak>
+
     fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak?
-    fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak
-    fun hentForIdent(fnr: Fnr, saksbehandler: Saksbehandler): Saker
-    fun hentForSaksnummer(saksnummer: Saksnummer, saksbehandler: Saksbehandler): Sak
+
+    fun hentMedBehandlingId(
+        behandlingId: BehandlingId,
+        saksbehandler: Saksbehandler,
+    ): Sak
+
+    fun hentForIdent(
+        fnr: Fnr,
+        saksbehandler: Saksbehandler,
+    ): Saker
+
+    fun hentForSaksnummer(
+        saksnummer: Saksnummer,
+        saksbehandler: Saksbehandler,
+    ): Sak
 }

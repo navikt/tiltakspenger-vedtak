@@ -6,7 +6,5 @@ import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 class SkjermingGatewayImpl(
     private val skjermingClient: SkjermingClient,
 ) : SkjermingGateway {
-    override suspend fun erSkjermetPerson(fnr: Fnr): Boolean {
-        return skjermingClient.erSkjermetPerson(fnr)
-    }
+    override suspend fun erSkjermetPerson(fnr: Fnr): Boolean = skjermingClient.erSkjermetPerson(fnr)
 }

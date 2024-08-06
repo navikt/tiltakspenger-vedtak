@@ -15,7 +15,6 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class BrevPublisherGatewayImpl(
     private val rapidsConnection: RapidsConnection,
 ) : BrevPublisherGateway {
-
     override fun sendBrev(
         saksnummer: Saksnummer,
         vedtak: Vedtak,

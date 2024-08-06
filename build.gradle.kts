@@ -22,7 +22,12 @@ subprojects {
 
     spotless {
         kotlin {
-            ktlint("0.48.2")
+            ktlint()
+                .editorConfigOverride(
+                    mapOf(
+                        "ktlint_standard_max-line-length" to "off",
+                    ),
+                )
         }
     }
 

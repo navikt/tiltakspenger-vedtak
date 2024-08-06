@@ -10,24 +10,26 @@ private fun flyway(dataSource: javax.sql.DataSource): Flyway =
         else -> gcpFlyway(dataSource)
     }
 
-private fun localFlyway(dataSource: javax.sql.DataSource) = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .locations("db/migration", "db/local-migration")
-    .dataSource(dataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
+private fun localFlyway(dataSource: javax.sql.DataSource) =
+    Flyway
+        .configure()
+        .loggers("slf4j")
+        .encoding("UTF-8")
+        .locations("db/migration", "db/local-migration")
+        .dataSource(dataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
+        .load()
 
-private fun gcpFlyway(dataSource: javax.sql.DataSource) = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .dataSource(dataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
+private fun gcpFlyway(dataSource: javax.sql.DataSource) =
+    Flyway
+        .configure()
+        .loggers("slf4j")
+        .encoding("UTF-8")
+        .dataSource(dataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
+        .load()
 
 fun flywayMigrate(dataSource: javax.sql.DataSource) {
     flyway(dataSource).migrate()

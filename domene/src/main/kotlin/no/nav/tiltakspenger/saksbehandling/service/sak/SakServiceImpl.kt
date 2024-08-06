@@ -45,11 +45,16 @@ class SakServiceImpl(
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
 ) : SakService {
-
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
-        data class HarAlleredeStartetBehandlingen(val behandlingId: BehandlingId) : KanIkkeStarteFørstegangsbehandling
-        data class OppretteBehandling(val underliggende: KanIkkeOppretteBehandling) : KanIkkeStarteFørstegangsbehandling
+
+        data class HarAlleredeStartetBehandlingen(
+            val behandlingId: BehandlingId,
+        ) : KanIkkeStarteFørstegangsbehandling
+
+        data class OppretteBehandling(
+            val underliggende: KanIkkeOppretteBehandling,
+        ) : KanIkkeStarteFørstegangsbehandling
     }
 
     override fun startFørstegangsbehandling(
@@ -64,23 +69,26 @@ class SakServiceImpl(
         if (sakRepo.hentForIdent(fnr).isNotEmpty()) {
             throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
         }
-        val sakPersonopplysninger = SakPersonopplysninger(
-            liste = runBlocking { personGateway.hentPerson(fnr) },
-        ).also {
-            // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
-            if (!it.harTilgang(saksbehandler)) return HarIkkeTilgangTilPerson.left()
-        }.let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+        val sakPersonopplysninger =
+            SakPersonopplysninger(
+                liste = runBlocking { personGateway.hentPerson(fnr) },
+            ).also {
+                // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
+                if (!it.harTilgang(saksbehandler)) return HarIkkeTilgangTilPerson.left()
+            }.let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
 
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
         require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
 
-        val sak = Sak.lagSak(
-            saksnummer = sakRepo.hentNesteSaksnummer(),
-            sakPersonopplysninger = sakPersonopplysninger,
-            søknad = søknad,
-            saksbehandler = saksbehandler,
-            registrerteTiltak = registrerteTiltak,
-        ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
+        val sak =
+            Sak
+                .lagSak(
+                    saksnummer = sakRepo.hentNesteSaksnummer(),
+                    sakPersonopplysninger = sakPersonopplysninger,
+                    søknad = søknad,
+                    saksbehandler = saksbehandler,
+                    registrerteTiltak = registrerteTiltak,
+                ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
         sakRepo.lagre(sak)
 
@@ -92,7 +100,10 @@ class SakServiceImpl(
         return sakRepo.hent(behandling.sakId)
     }
 
-    override fun hentMedBehandlingId(behandlingId: BehandlingId, saksbehandler: Saksbehandler): Sak {
+    override fun hentMedBehandlingId(
+        behandlingId: BehandlingId,
+        saksbehandler: Saksbehandler,
+    ): Sak {
         val behandling = behandlingRepo.hent(behandlingId)
         val sak = sakRepo.hent(behandling.sakId) ?: throw IkkeFunnetException("Sak ikke funnet")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
@@ -101,7 +112,10 @@ class SakServiceImpl(
         return sak
     }
 
-    override fun hentForIdent(fnr: Fnr, saksbehandler: Saksbehandler): Saker {
+    override fun hentForIdent(
+        fnr: Fnr,
+        saksbehandler: Saksbehandler,
+    ): Saker {
         val saker = sakRepo.hentForIdent(fnr)
         saker.forEach { sak ->
             if (!sak.personopplysninger.harTilgang(saksbehandler)) {
@@ -112,17 +126,21 @@ class SakServiceImpl(
         return saker
     }
 
-    override fun hentForSaksnummer(saksnummer: Saksnummer, saksbehandler: Saksbehandler): Sak {
-        val sak = sakRepo.hentForSaksnummer(saksnummer)
-            ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
+    override fun hentForSaksnummer(
+        saksnummer: Saksnummer,
+        saksbehandler: Saksbehandler,
+    ): Sak {
+        val sak =
+            sakRepo.hentForSaksnummer(saksnummer)
+                ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
         return sak
     }
 
-    private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<Fnr, Boolean> {
-        return liste
+    private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<Fnr, Boolean> =
+        liste
             .filterNot { it is PersonopplysningerBarnUtenIdent }
             .associate {
                 when (it) {
@@ -131,5 +149,4 @@ class SakServiceImpl(
                     is PersonopplysningerBarnUtenIdent -> throw IllegalStateException("Barn uten ident skal ikke være i listen")
                 }
             }
-    }
 }

@@ -21,7 +21,6 @@ data class KVPVilkår private constructor(
     val saksbehandlerSaksopplysning: KvpSaksopplysning?,
     val avklartSaksopplysning: KvpSaksopplysning,
 ) : Vilkår {
-
     override val lovreferanse = Lovreferanse.KVP
 
     init {
@@ -38,24 +37,25 @@ data class KVPVilkår private constructor(
         }
     }
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
-        return avklartSaksopplysning.deltar.map {
+    override fun utfall(): Periodisering<UtfallForPeriode> =
+        avklartSaksopplysning.deltar.map {
             when (it) {
                 Deltagelse.DELTAR -> UtfallForPeriode.IKKE_OPPFYLT
                 Deltagelse.DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }
-    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKvpSaksopplysningCommand): KVPVilkår {
-        val kvpSaksopplysning = KvpSaksopplysning.Saksbehandler(
-            deltar = Periodisering(
-                command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-            ).utvid(Deltagelse.DELTAR_IKKE, vurderingsperiode),
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val kvpSaksopplysning =
+            KvpSaksopplysning.Saksbehandler(
+                deltar =
+                    Periodisering(
+                        command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
+                    ).utvid(Deltagelse.DELTAR_IKKE, vurderingsperiode),
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
             saksbehandlerSaksopplysning = kvpSaksopplysning,
             avklartSaksopplysning = kvpSaksopplysning,
@@ -80,14 +80,13 @@ data class KVPVilkår private constructor(
         fun opprett(
             vurderingsperiode: Periode,
             søknadSaksopplysning: KvpSaksopplysning,
-        ): KVPVilkår {
-            return KVPVilkår(
+        ): KVPVilkår =
+            KVPVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -98,15 +97,16 @@ data class KVPVilkår private constructor(
             saksbehandlerSaksopplysning: KvpSaksopplysning?,
             avklartSaksopplysning: KvpSaksopplysning,
             utfall: Periodisering<UtfallForPeriode>,
-        ): KVPVilkår {
-            return KVPVilkår(
+        ): KVPVilkår =
+            KVPVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i KVPVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i KVPVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

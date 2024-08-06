@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import java.util.Random
 
 internal class SakRepoTest {
-
     companion object {
         val random = Random()
     }
@@ -22,12 +21,15 @@ internal class SakRepoTest {
             val testDataHelper = TestDataHelper(dataSource)
             val sakRepo = testDataHelper.sakRepo
 
-            val sak1 = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                løpenummer = 1001,
-            ).first
-            testDataHelper.persisterOpprettetFørstegangsbehandling(
-                løpenummer = 1002,
-            ).first
+            val sak1 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        løpenummer = 1001,
+                    ).first
+            testDataHelper
+                .persisterOpprettetFørstegangsbehandling(
+                    løpenummer = 1002,
+                ).first
 
             sakRepo.hentForIdent(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
             sakRepo.hentForSaksnummer(saksnummer = sak1.saksnummer)!! shouldBe sak1
@@ -45,14 +47,18 @@ internal class SakRepoTest {
 
             val fnr = Fnr.random()
 
-            val sak1 = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                fnr = fnr,
-                løpenummer = 1001,
-            ).first
-            val sak2 = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                fnr = fnr,
-                løpenummer = 1002,
-            ).first
+            val sak1 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        fnr = fnr,
+                        løpenummer = 1001,
+                    ).first
+            val sak2 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        fnr = fnr,
+                        løpenummer = 1002,
+                    ).first
             testDataHelper.persisterOpprettetFørstegangsbehandling(
                 løpenummer = 1003,
             )

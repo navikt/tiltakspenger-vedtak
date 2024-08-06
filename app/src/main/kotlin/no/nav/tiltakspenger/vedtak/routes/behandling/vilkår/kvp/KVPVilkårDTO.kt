@@ -20,12 +20,20 @@ internal data class KVPVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun KVPVilkår.toDTO(): KVPVilkårDTO {
-    return KVPVilkårDTO(
+internal fun KVPVilkår.toDTO(): KVPVilkårDTO =
+    KVPVilkårDTO(
         søknadSaksopplysning = søknadSaksopplysning.toDTO(KildeDTO.SØKNAD),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) KildeDTO.SØKNAD else KildeDTO.SAKSBEHANDLER),
+        avklartSaksopplysning =
+        avklartSaksopplysning.toDTO(
+            if (avklartSaksopplysning ==
+                søknadSaksopplysning
+            ) {
+                KildeDTO.SØKNAD
+            } else {
+                KildeDTO.SAKSBEHANDLER
+            },
+        ),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
-}

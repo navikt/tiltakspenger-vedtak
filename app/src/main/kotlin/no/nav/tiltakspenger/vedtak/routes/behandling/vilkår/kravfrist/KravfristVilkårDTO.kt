@@ -19,12 +19,20 @@ internal data class KravfristVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun KravfristVilkår.toDTO(): KravfristVilkårDTO {
-    return KravfristVilkårDTO(
+internal fun KravfristVilkår.toDTO(): KravfristVilkårDTO =
+    KravfristVilkårDTO(
         søknadSaksopplysning = søknadSaksopplysning.toDTO(KravfristKildeDTO.SØKNAD),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) KravfristKildeDTO.SØKNAD else KravfristKildeDTO.SAKSBEHANDLER),
+        avklartSaksopplysning =
+        avklartSaksopplysning.toDTO(
+            if (avklartSaksopplysning ==
+                søknadSaksopplysning
+            ) {
+                KravfristKildeDTO.SØKNAD
+            } else {
+                KravfristKildeDTO.SAKSBEHANDLER
+            },
+        ),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
-}

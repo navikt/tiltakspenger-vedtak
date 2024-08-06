@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface IntroSaksopplysning {
-
     val deltar: Periodisering<Deltagelse>
     val tidsstempel: LocalDateTime
     val totalePeriode: Periode

@@ -19,23 +19,21 @@ internal data class KravfristVilkårDbJson(
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(vurderingsperiode: Periode): KravfristVilkår {
-        return KravfristVilkår.fromDb(
+    fun toDomain(vurderingsperiode: Periode): KravfristVilkår =
+        KravfristVilkår.fromDb(
             søknadSaksopplysning = søknadSaksopplysning.toDomain()as KravfristSaksopplysning.Søknad,
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as KravfristSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             vurderingsperiode = this.vurderingsperiode.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson {
-    return KravfristVilkårDbJson(
+internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson =
+    KravfristVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
         utfallsperioder = utfall().toDbJson(),
     )
-}

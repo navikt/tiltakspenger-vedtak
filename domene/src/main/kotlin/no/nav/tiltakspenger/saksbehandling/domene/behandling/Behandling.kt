@@ -28,8 +28,12 @@ interface Behandling {
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()
 
     fun taBehandling(saksbehandler: Saksbehandler): Behandling
+
     fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Behandling
+
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
+
     fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
+
     fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
 }

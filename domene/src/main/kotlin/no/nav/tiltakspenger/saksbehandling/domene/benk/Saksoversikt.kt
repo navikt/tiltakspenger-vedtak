@@ -31,7 +31,10 @@ data class BehandlingEllerSøknadForSaksoversikt(
 ) {
     sealed interface Status {
         data object Søknad : Status
-        data class Behandling(val behandlingsstatus: Behandlingsstatus) : Status
+
+        data class Behandling(
+            val behandlingsstatus: Behandlingsstatus,
+        ) : Status
     }
 
     enum class Behandlingstype {

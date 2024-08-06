@@ -29,80 +29,88 @@ internal class TestDataHelper(
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val attesteringRepo = AttesteringRepoImpl(
-        sessionFactory = sessionFactory,
-    )
+    val attesteringRepo =
+        AttesteringRepoImpl(
+            sessionFactory = sessionFactory,
+        )
     val personopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo()
     val personopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo()
-    val personopplysningerRepo = PostgresPersonopplysningerRepo(
-        sessionFactory = sessionFactory,
-        barnMedIdentDAO = personopplysningerBarnMedIdentRepo,
-        barnUtenIdentDAO = personopplysningerBarnUtenIdentRepo,
-    )
+    val personopplysningerRepo =
+        PostgresPersonopplysningerRepo(
+            sessionFactory = sessionFactory,
+            barnMedIdentDAO = personopplysningerBarnMedIdentRepo,
+            barnUtenIdentDAO = personopplysningerBarnUtenIdentRepo,
+        )
 
     val barnetilleggDAO = BarnetilleggDAO()
     val søknadTiltakDAO = SøknadTiltakDAO()
     val vedleggDAO = VedleggDAO()
-    val søknadDAO = SøknadDAO(
-        barnetilleggDAO = barnetilleggDAO,
-        tiltakDAO = søknadTiltakDAO,
-        vedleggDAO = vedleggDAO,
-    )
-    val søknadRepo = PostgresSøknadRepo(
-        sessionFactory = sessionFactory,
-        søknadDAO = søknadDAO,
-    )
+    val søknadDAO =
+        SøknadDAO(
+            barnetilleggDAO = barnetilleggDAO,
+            tiltakDAO = søknadTiltakDAO,
+            vedleggDAO = vedleggDAO,
+        )
+    val søknadRepo =
+        PostgresSøknadRepo(
+            sessionFactory = sessionFactory,
+            søknadDAO = søknadDAO,
+        )
 
-    val behandlingRepo = PostgresBehandlingRepo(
-        sessionFactory = sessionFactory,
-        søknadDAO = søknadDAO,
-    )
+    val behandlingRepo =
+        PostgresBehandlingRepo(
+            sessionFactory = sessionFactory,
+            søknadDAO = søknadDAO,
+        )
 
-    val vedtakRepo = VedtakRepoImpl(
-        behandlingRepo = behandlingRepo,
-        sessionFactory = sessionFactory,
-    )
-    val sakRepo = PostgresSakRepo(
-        behandlingRepo = behandlingRepo,
-        personopplysningerRepo = personopplysningerRepo,
-        vedtakDAO = vedtakRepo,
-        sessionFactory = sessionFactory,
-    )
-    val saksoversiktRepo = SaksoversiktPostgresRepo(
-        sessionFactory = sessionFactory,
-    )
+    val vedtakRepo =
+        VedtakRepoImpl(
+            behandlingRepo = behandlingRepo,
+            sessionFactory = sessionFactory,
+        )
+    val sakRepo =
+        PostgresSakRepo(
+            behandlingRepo = behandlingRepo,
+            personopplysningerRepo = personopplysningerRepo,
+            vedtakDAO = vedtakRepo,
+            sessionFactory = sessionFactory,
+        )
+    val saksoversiktRepo =
+        SaksoversiktPostgresRepo(
+            sessionFactory = sessionFactory,
+        )
 }
 
-private fun migrateDatabase(dataSource: DataSource) = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .locations("db/migration")
-    .dataSource(dataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
-    .migrate()
+private fun migrateDatabase(dataSource: DataSource) =
+    Flyway
+        .configure()
+        .loggers("slf4j")
+        .encoding("UTF-8")
+        .locations("db/migration")
+        .dataSource(dataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
+        .load()
+        .migrate()
 
-fun withMigratedDb(
-    test: (dataSource: DataSource) -> Unit,
-) {
+fun withMigratedDb(test: (dataSource: DataSource) -> Unit) {
     val postgres = PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
     postgres.start()
 
-    val dataSource = HikariDataSource(
-        HikariConfig().apply {
-            this.jdbcUrl = postgres.jdbcUrl
-            this.maximumPoolSize = 3
-            this.minimumIdle = 1
-            this.idleTimeout = 10001
-            this.connectionTimeout = 1000
-            this.maxLifetime = 30001
-            this.username = postgres.username
-            this.password = postgres.password
-            initializationFailTimeout = 5000
-        },
-    )
+    val dataSource =
+        HikariDataSource(
+            HikariConfig().apply {
+                this.jdbcUrl = postgres.jdbcUrl
+                this.maximumPoolSize = 3
+                this.minimumIdle = 1
+                this.idleTimeout = 10001
+                this.connectionTimeout = 1000
+                this.maxLifetime = 30001
+                this.username = postgres.username
+                this.password = postgres.password
+                initializationFailTimeout = 5000
+            },
+        )
 
     migrateDatabase(dataSource)
     test(dataSource)

@@ -23,7 +23,7 @@ import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImp
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.KravfristVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
@@ -38,12 +38,13 @@ internal class KravfristRoutesTest {
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val saksbehandler = Saksbehandler(
-        "Q123456",
-        "Superman",
-        "a@b.c",
-        listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
-    )
+    private val saksbehandler =
+        Saksbehandler(
+            "Q123456",
+            "Superman",
+            "a@b.c",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        )
 
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
@@ -55,17 +56,18 @@ internal class KravfristRoutesTest {
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -83,7 +85,7 @@ internal class KravfristRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kravfrist")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kravfrist")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -101,23 +103,25 @@ internal class KravfristRoutesTest {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                deltakelseFom = 1.januar(2021),
-                deltakelseTom = 31.januar(2021),
-            )
+            val (sak, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    deltakelseFom = 1.januar(2021),
+                    deltakelseTom = 31.januar(2021),
+                )
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -135,7 +139,7 @@ internal class KravfristRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kravfrist")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kravfrist")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK

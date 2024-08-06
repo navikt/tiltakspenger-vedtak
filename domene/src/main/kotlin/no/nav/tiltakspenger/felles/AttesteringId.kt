@@ -6,9 +6,12 @@ import no.nav.tiltakspenger.libs.common.uuidToUlid
 import ulid.ULID
 import java.util.UUID
 
-data class AttesteringId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+data class AttesteringId private constructor(
+    private val ulid: UlidBase,
+) : Ulid by ulid {
     companion object {
         private const val PREFIX = "att"
+
         fun random() = AttesteringId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
         fun fromDb(stringValue: String) = AttesteringId(ulid = UlidBase(stringValue))

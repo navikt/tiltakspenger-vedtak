@@ -14,19 +14,20 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val LOG = KotlinLogging.logger {}
 
-internal const val sakPath = "/sak"
+internal const val SAK_PATH = "/sak"
 
-fun Sak.toDTO() = SakDTO(
-    saksnummer = this.saksnummer.verdi,
-    ident = this.fnr.verdi,
-)
+fun Sak.toDTO() =
+    SakDTO(
+        saksnummer = this.saksnummer.verdi,
+        ident = this.fnr.verdi,
+    )
 
 fun Route.sakRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     sakService: SakService,
 ) {
-    get("$sakPath/{saksnummer}") {
-        LOG.debug("Mottatt request på $sakPath/{saksnummer}")
+    get("$SAK_PATH/{saksnummer}") {
+        LOG.debug("Mottatt request på $SAK_PATH/{saksnummer}")
         val saksnummer = call.parameter("saksnummer")
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 

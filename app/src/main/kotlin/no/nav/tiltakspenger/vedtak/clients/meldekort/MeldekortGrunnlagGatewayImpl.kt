@@ -14,7 +14,10 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class MeldekortGrunnlagGatewayImpl(
     private val rapidsConnection: RapidsConnection,
 ) : MeldekortGrunnlagGateway {
-    override fun sendMeldekortGrunnlag(sak: SakDetaljer, vedtak: Vedtak) {
+    override fun sendMeldekortGrunnlag(
+        sak: SakDetaljer,
+        vedtak: Vedtak,
+    ) {
         mutableMapOf(
             "@event_name" to "meldekortGrunnlag",
             "@opprettet" to LocalDateTime.now(),

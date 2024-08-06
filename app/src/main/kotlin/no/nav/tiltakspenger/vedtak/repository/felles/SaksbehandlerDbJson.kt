@@ -20,8 +20,8 @@ internal data class SaksbehandlerDbJson(
         ADMINISTRATOR, // Saksbehandlers administrator (superbruker)
         ;
 
-        fun toDomain(): Rolle {
-            return when (this) {
+        fun toDomain(): Rolle =
+            when (this) {
                 SAKSBEHANDLER -> Rolle.SAKSBEHANDLER
                 FORTROLIG_ADRESSE -> Rolle.FORTROLIG_ADRESSE
                 STRENGT_FORTROLIG_ADRESSE -> Rolle.STRENGT_FORTROLIG_ADRESSE
@@ -31,30 +31,27 @@ internal data class SaksbehandlerDbJson(
                 BESLUTTER -> Rolle.BESLUTTER
                 ADMINISTRATOR -> Rolle.ADMINISTRATOR
             }
-        }
     }
 
-    fun toDomain(): Saksbehandler {
-        return Saksbehandler(
+    fun toDomain(): Saksbehandler =
+        Saksbehandler(
             navIdent = navIdent,
             brukernavn = brukernavn,
             epost = epost,
             roller = roller.map { it.toDomain() },
         )
-    }
 }
 
-internal fun Saksbehandler.toDbJson(): SaksbehandlerDbJson {
-    return SaksbehandlerDbJson(
+internal fun Saksbehandler.toDbJson(): SaksbehandlerDbJson =
+    SaksbehandlerDbJson(
         navIdent = navIdent,
         brukernavn = brukernavn,
         epost = epost,
         roller = roller.map { it.toDbJson() },
     )
-}
 
-internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson {
-    return when (this) {
+internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson =
+    when (this) {
         Rolle.SAKSBEHANDLER -> SaksbehandlerDbJson.RolleDbJson.SAKSBEHANDLER
         Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.FORTROLIG_ADRESSE
         Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.STRENGT_FORTROLIG_ADRESSE
@@ -64,4 +61,3 @@ internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson {
         Rolle.BESLUTTER -> SaksbehandlerDbJson.RolleDbJson.BESLUTTER
         Rolle.ADMINISTRATOR -> SaksbehandlerDbJson.RolleDbJson.ADMINISTRATOR
     }
-}

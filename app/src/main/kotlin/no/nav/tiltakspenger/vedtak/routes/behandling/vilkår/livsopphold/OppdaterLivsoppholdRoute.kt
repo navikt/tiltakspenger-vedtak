@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -29,46 +29,48 @@ fun Route.oppdaterLivsoppholdRoute(
 
     data class Body(
         val ytelseForPeriode: YtelseForPeriode,
-        /** Drop-down i frontend. */
-        // TODO kew: Her skal vi ta inn ÅrsakTilEndring når det er på plass. Setter til null enn så lenge..
     ) {
-        fun toCommand(behandlingId: BehandlingId, saksbehandler: Saksbehandler): LeggTilLivsoppholdSaksopplysningCommand {
-            return LeggTilLivsoppholdSaksopplysningCommand(
-                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+        fun toCommand(
+            behandlingId: BehandlingId,
+            saksbehandler: Saksbehandler,
+        ): LeggTilLivsoppholdSaksopplysningCommand =
+            LeggTilLivsoppholdSaksopplysningCommand(
+                harYtelseForPeriode =
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
                     periode = this.ytelseForPeriode.periode.toDomain(),
                     harYtelse = this.ytelseForPeriode.harYtelse,
                 ),
-                // TODO kew: Setter denne til null siden det ikke skal med i første omgang
                 årsakTilEndring = null,
                 behandlingId = behandlingId,
                 saksbehandler = saksbehandler,
             )
-        }
     }
 
-    post("$behandlingPath/{behandlingId}/vilkar/livsopphold") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/livsopphold")
+    post("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
+        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val body = call.receive<Body>()
 
-        livsoppholdVilkårService.leggTilSaksopplysning(
-            body.toCommand(behandlingId, saksbehandler),
-        ).fold({
-            call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = """
-                    {
-                        "feilmelding": "Perioden til saksopplysningen er forskjellig fra vurderingsperioden"
-                    }
-                """.trimIndent(),
-            )
-        }, {
-            call.respond(
-                status = HttpStatusCode.Created,
-                message = it.vilkårssett.livsoppholdVilkår.toDTO(),
-            )
-        })
+        livsoppholdVilkårService
+            .leggTilSaksopplysning(
+                body.toCommand(behandlingId, saksbehandler),
+            ).fold({
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message =
+                    """
+                        {
+                            "feilmelding": "Perioden til saksopplysningen er forskjellig fra vurderingsperioden"
+                        }
+                    """.trimIndent(),
+                )
+            }, {
+                call.respond(
+                    status = HttpStatusCode.Created,
+                    message = it.vilkårssett.livsoppholdVilkår.toDTO(),
+                )
+            })
     }
 }

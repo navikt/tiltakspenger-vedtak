@@ -10,7 +10,6 @@ class KvpVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : KvpVilkårService {
-
     override fun leggTilSaksopplysning(command: LeggTilKvpSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
             behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling

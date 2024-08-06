@@ -34,7 +34,7 @@ import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImp
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -46,18 +46,18 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 class AlderRoutesTest {
-
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val saksbehandler = Saksbehandler(
-        "Q123456",
-        "Superman",
-        "a@b.c",
-        listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
-    )
+    private val saksbehandler =
+        Saksbehandler(
+            "Q123456",
+            "Superman",
+            "a@b.c",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        )
 
     @Test
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
@@ -68,17 +68,18 @@ class AlderRoutesTest {
 
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
             val behandlingId = sak.førstegangsbehandling.id
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -96,7 +97,7 @@ class AlderRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/alder")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/alder")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -113,22 +114,24 @@ class AlderRoutesTest {
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                fødselsdato = LocalDate.now().minusYears(10),
-            )
+            val (sak, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    fødselsdato = LocalDate.now().minusYears(10),
+                )
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -146,7 +149,7 @@ class AlderRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/alder")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/alder")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -164,25 +167,30 @@ class AlderRoutesTest {
         val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
         val fødselsdato = 5.januar(2000)
 
-        val søknad = nySøknad(
-            periode = vurderingsperiode,
-            tidsstempelHosOss = LocalDateTime.now(),
-        )
+        val søknad =
+            nySøknad(
+                periode = vurderingsperiode,
+                tidsstempelHosOss = LocalDateTime.now(),
+            )
 
-        val behandling = ObjectMother.sakMedOpprettetBehandling(
-            saksbehandler = saksbehandler,
-            vurderingsperiode = vurderingsperiode,
-            søknad = søknad,
-            løpenummer = 1003,
-            sakPersonopplysninger = SakPersonopplysninger(
-                listOf(
-                    personopplysningKjedeligFyr(
-                        fnr = Fnr.random(),
-                        fødselsdato = fødselsdato,
+        val behandling =
+            ObjectMother
+                .sakMedOpprettetBehandling(
+                    saksbehandler = saksbehandler,
+                    vurderingsperiode = vurderingsperiode,
+                    søknad = søknad,
+                    løpenummer = 1003,
+                    sakPersonopplysninger =
+                    SakPersonopplysninger(
+                        listOf(
+                            personopplysningKjedeligFyr(
+                                fnr = Fnr.random(),
+                                fødselsdato = fødselsdato,
+                            ),
+                        ),
                     ),
-                ),
-            ),
-        ).behandlinger.first() as Førstegangsbehandling
+                ).behandlinger
+                .first() as Førstegangsbehandling
 
         shouldThrow<IkkeImplementertException> {
             behandling.vilkårssett.alderVilkår.utfall()

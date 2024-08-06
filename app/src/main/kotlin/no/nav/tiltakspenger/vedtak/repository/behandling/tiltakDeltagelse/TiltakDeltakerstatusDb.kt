@@ -16,8 +16,8 @@ private enum class TiltakDeltakerstatusDb {
     Vurderes,
 }
 
-internal fun TiltakDeltakerstatus.toDb(): String {
-    return when (this) {
+internal fun TiltakDeltakerstatus.toDb(): String =
+    when (this) {
         TiltakDeltakerstatus.VenterPåOppstart -> TiltakDeltakerstatusDb.VenterPåOppstart.name
         TiltakDeltakerstatus.Deltar -> TiltakDeltakerstatusDb.Deltar.name
         TiltakDeltakerstatus.HarSluttet -> TiltakDeltakerstatusDb.HarSluttet.name
@@ -30,10 +30,9 @@ internal fun TiltakDeltakerstatus.toDb(): String {
         TiltakDeltakerstatus.Venteliste -> TiltakDeltakerstatusDb.Venteliste.name
         TiltakDeltakerstatus.Vurderes -> TiltakDeltakerstatusDb.Vurderes.name
     }
-}
 
-internal fun String.toTiltakDeltakerstatus(): TiltakDeltakerstatus {
-    return when (TiltakDeltakerstatusDb.valueOf(this)) {
+internal fun String.toTiltakDeltakerstatus(): TiltakDeltakerstatus =
+    when (TiltakDeltakerstatusDb.valueOf(this)) {
         TiltakDeltakerstatusDb.VenterPåOppstart -> TiltakDeltakerstatus.VenterPåOppstart
         TiltakDeltakerstatusDb.Deltar -> TiltakDeltakerstatus.Deltar
         TiltakDeltakerstatusDb.HarSluttet -> TiltakDeltakerstatus.HarSluttet
@@ -46,4 +45,3 @@ internal fun String.toTiltakDeltakerstatus(): TiltakDeltakerstatus {
         TiltakDeltakerstatusDb.Venteliste -> TiltakDeltakerstatus.Venteliste
         TiltakDeltakerstatusDb.Vurderes -> TiltakDeltakerstatus.Vurderes
     }
-}

@@ -16,37 +16,38 @@ enum class UtfallForPeriode {
      * Kombinerer to utfall for en periode til ett utfall.
      * UAVKLART > IKKE_OPPFYLT > OPPFYLT
      */
-    fun kombiner(other: UtfallForPeriode): UtfallForPeriode {
-        return when (this) {
-            OPPFYLT -> when (other) {
-                OPPFYLT -> OPPFYLT
-                IKKE_OPPFYLT -> IKKE_OPPFYLT
-                UAVKLART -> UAVKLART
-            }
-            IKKE_OPPFYLT -> when (other) {
-                OPPFYLT -> IKKE_OPPFYLT
-                IKKE_OPPFYLT -> IKKE_OPPFYLT
-                UAVKLART -> UAVKLART
-            }
+    fun kombiner(other: UtfallForPeriode): UtfallForPeriode =
+        when (this) {
+            OPPFYLT ->
+                when (other) {
+                    OPPFYLT -> OPPFYLT
+                    IKKE_OPPFYLT -> IKKE_OPPFYLT
+                    UAVKLART -> UAVKLART
+                }
+            IKKE_OPPFYLT ->
+                when (other) {
+                    OPPFYLT -> IKKE_OPPFYLT
+                    IKKE_OPPFYLT -> IKKE_OPPFYLT
+                    UAVKLART -> UAVKLART
+                }
             UAVKLART -> UAVKLART
         }
-    }
 
     /**
      * @throws IllegalStateException dersom [UtfallForPeriode] er [UAVKLART]
      */
-    fun toAvklartUtfallForPeriode(): AvklartUtfallForPeriode {
-        return when (this) {
+    fun toAvklartUtfallForPeriode(): AvklartUtfallForPeriode =
+        when (this) {
             OPPFYLT -> AvklartUtfallForPeriode.OPPFYLT
             IKKE_OPPFYLT -> AvklartUtfallForPeriode.IKKE_OPPFYLT
             UAVKLART -> throw IllegalStateException("Kan ikke konvertere UAVKLART til AvklartUtfallForPeriode")
         }
-    }
 }
 
 /**
  * @throws IllegalStateException dersom [SamletUtfall] er [UAVKLART]
  */
-fun Periodisering<UtfallForPeriode>.toAvklartUtfallForPeriode(): Periodisering<AvklartUtfallForPeriode> {
-    return map { it.toAvklartUtfallForPeriode() }
-}
+fun Periodisering<UtfallForPeriode>.toAvklartUtfallForPeriode(): Periodisering<AvklartUtfallForPeriode> =
+    map {
+        it.toAvklartUtfallForPeriode()
+    }

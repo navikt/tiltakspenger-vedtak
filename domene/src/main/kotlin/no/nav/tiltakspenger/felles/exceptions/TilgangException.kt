@@ -1,3 +1,5 @@
 package no.nav.tiltakspenger.felles.exceptions
 
-class TilgangException(message: String) : RuntimeException(message)
+class TilgangException(
+    message: String,
+) : RuntimeException(message)

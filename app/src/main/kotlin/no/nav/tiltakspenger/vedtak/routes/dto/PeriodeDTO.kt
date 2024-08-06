@@ -10,11 +10,7 @@ data class PeriodeDTO(
     val fraOgMed: String,
     val tilOgMed: String,
 ) {
-    fun toDomain(): Periode {
-        return Periode(LocalDate.parse(fraOgMed), LocalDate.parse(tilOgMed))
-    }
+    fun toDomain(): Periode = Periode(LocalDate.parse(fraOgMed), LocalDate.parse(tilOgMed))
 }
 
-fun Periode.toDTO(): PeriodeDTO {
-    return PeriodeDTO(fraOgMed.toString(), tilOgMed.toString())
-}
+fun Periode.toDTO(): PeriodeDTO = PeriodeDTO(fraOgMed.toString(), tilOgMed.toString())

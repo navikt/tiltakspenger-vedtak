@@ -11,8 +11,11 @@ data class PersonopplysningerBarnUtenIdent(
     val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
 ) : Personopplysninger {
     override fun avklartSkjerming(): Boolean = false
+
     override fun strengtFortrolig(): Boolean = false
+
     override fun fortrolig(): Boolean = false
+
     override fun skjermet(): Boolean = false
 
     override fun equals(other: Any?): Boolean {

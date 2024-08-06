@@ -17,7 +17,8 @@ data class Tiltak(
 ) {
     data class Gjennomføring(
         val id: String,
-        val arrangørnavn: String, // kan vi slette denne?
+        // TODO ukjent: kan vi slette denne?
+        val arrangørnavn: String,
         val typeNavn: String,
         val typeKode: String,
         val rettPåTiltakspenger: Boolean,

@@ -6,9 +6,12 @@ import no.nav.tiltakspenger.libs.common.uuidToUlid
 import ulid.ULID
 import java.util.UUID
 
-data class TiltakId private constructor(private val ulid: UlidBase) : Ulid by ulid {
+data class TiltakId private constructor(
+    private val ulid: UlidBase,
+) : Ulid by ulid {
     companion object {
         private const val PREFIX = "takt"
+
         fun random() = TiltakId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
         fun fromDb(stringValue: String) = TiltakId(ulid = UlidBase(stringValue))

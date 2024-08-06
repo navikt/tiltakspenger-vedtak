@@ -5,17 +5,18 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 
 internal object BehandlingDTOMapper {
     fun List<Førstegangsbehandling>.mapBehandlinger(): List<BehandlingDTO> =
-        this.map {
-            BehandlingDTO(
-                id = it.id.toString(),
-                ident = it.søknad.personopplysninger.fnr.verdi,
-                saksbehandler = it.saksbehandler,
-                beslutter = it.beslutter,
-                status = it.status.toDTO(),
-                typeBehandling = "Førstegangsbehandling",
-                fom = it.vurderingsperiode.fraOgMed,
-                tom = it.vurderingsperiode.tilOgMed,
-                vilkårssett = it.vilkårssett.toDTO(),
-            )
-        }.sortedBy { it.id }
+        this
+            .map {
+                BehandlingDTO(
+                    id = it.id.toString(),
+                    ident = it.søknad.personopplysninger.fnr.verdi,
+                    saksbehandler = it.saksbehandler,
+                    beslutter = it.beslutter,
+                    status = it.status.toDTO(),
+                    typeBehandling = "Førstegangsbehandling",
+                    fom = it.vurderingsperiode.fraOgMed,
+                    tom = it.vurderingsperiode.tilOgMed,
+                    vilkårssett = it.vilkårssett.toDTO(),
+                )
+            }.sortedBy { it.id }
 }

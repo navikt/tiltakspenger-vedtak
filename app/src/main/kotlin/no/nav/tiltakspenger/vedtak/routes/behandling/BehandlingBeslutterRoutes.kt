@@ -22,8 +22,8 @@ fun Route.behandlingBeslutterRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
 ) {
-    post("$behandlingPath/sendtilbake/{behandlingId}") {
-        SECURELOG.debug("Mottatt request. $behandlingPath/ send tilbake til saksbehandler")
+    post("$BEHANDLING_PATH/sendtilbake/{behandlingId}") {
+        SECURELOG.debug("Mottatt request. $BEHANDLING_PATH/ send tilbake til saksbehandler")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -34,7 +34,7 @@ fun Route.behandlingBeslutterRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    post("$behandlingPath/godkjenn/{behandlingId}") {
+    post("$BEHANDLING_PATH/godkjenn/{behandlingId}") {
         SECURELOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)

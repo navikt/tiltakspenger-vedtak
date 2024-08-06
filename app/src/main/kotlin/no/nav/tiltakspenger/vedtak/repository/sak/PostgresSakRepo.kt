@@ -30,10 +30,11 @@ internal class PostgresSakRepo(
     private val vedtakDAO: VedtakDAO,
     private val sessionFactory: PostgresSessionFactory,
 ) : SakRepo {
-    override fun hentForIdent(fnr: Fnr): Saker {
-        return Saker(
+    override fun hentForIdent(fnr: Fnr): Saker =
+        Saker(
             fnr = fnr,
-            saker = sessionFactory.withTransaction { txSession ->
+            saker =
+            sessionFactory.withTransaction { txSession ->
                 txSession.run(
                     queryOf(
                         sqlHentSakerForIdent,
@@ -44,10 +45,9 @@ internal class PostgresSakRepo(
                 )
             },
         )
-    }
 
-    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? {
-        return sessionFactory.withTransaction { txSession ->
+    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? =
+        sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHentSakForSaksnummer,
@@ -57,10 +57,9 @@ internal class PostgresSakRepo(
                 }.asSingle,
             )
         }
-    }
 
-    override fun hentForJournalpostId(journalpostId: String): Sak? {
-        return sessionFactory.withTransaction { txSession ->
+    override fun hentForJournalpostId(journalpostId: String): Sak? =
+        sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHentForJournalpost,
@@ -72,10 +71,9 @@ internal class PostgresSakRepo(
                 }.asSingle,
             )
         }
-    }
 
-    override fun hent(sakId: SakId): Sak? {
-        return sessionFactory.withTransaction { txSession ->
+    override fun hent(sakId: SakId): Sak? =
+        sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHent,
@@ -85,10 +83,9 @@ internal class PostgresSakRepo(
                 }.asSingle,
             )
         }
-    }
 
-    override fun hentSakDetaljer(sakId: SakId): TynnSak? {
-        return sessionFactory.withTransaction { txSession ->
+    override fun hentSakDetaljer(sakId: SakId): TynnSak? =
+        sessionFactory.withTransaction { txSession ->
             txSession.run(
                 queryOf(
                     sqlHent,
@@ -98,16 +95,19 @@ internal class PostgresSakRepo(
                 }.asSingle,
             )
         }
-    }
 
-    override fun lagre(sak: Sak, transactionContext: TransactionContext?): Sak {
-        return sessionFactory.withTransaction(transactionContext) { txSession ->
+    override fun lagre(
+        sak: Sak,
+        transactionContext: TransactionContext?,
+    ): Sak =
+        sessionFactory.withTransaction(transactionContext) { txSession ->
             val sistEndret = hentSistEndret(sak.id, txSession)
-            val opprettetSak = if (sistEndret == null) {
-                opprettSak(sak, txSession)
-            } else {
-                oppdaterSak(sistEndret, sak, txSession)
-            }
+            val opprettetSak =
+                if (sistEndret == null) {
+                    opprettSak(sak, txSession)
+                } else {
+                    oppdaterSak(sistEndret, sak, txSession)
+                }
             personopplysningerRepo.lagre(
                 sakId = sak.id,
                 personopplysninger = sak.personopplysninger,
@@ -118,14 +118,17 @@ internal class PostgresSakRepo(
             }
             opprettetSak
         }
-    }
 
-    private fun hentSistEndret(sakId: SakId, txSession: TransactionalSession): LocalDateTime? = txSession.run(
-        queryOf(
-            sqlHentSistEndret,
-            mapOf("id" to sakId.toString()),
-        ).map { row -> row.localDateTime("sist_endret") }.asSingle,
-    )
+    private fun hentSistEndret(
+        sakId: SakId,
+        txSession: TransactionalSession,
+    ): LocalDateTime? =
+        txSession.run(
+            queryOf(
+                sqlHentSistEndret,
+                mapOf("id" to sakId.toString()),
+            ).map { row -> row.localDateTime("sist_endret") }.asSingle,
+        )
 
     private fun oppdaterSak(
         sistEndret: LocalDateTime,
@@ -134,24 +137,28 @@ internal class PostgresSakRepo(
     ): Sak {
         SECURELOG.info { "Oppdaterer sak ${sak.id}" }
 
-        val antRaderOppdatert = txSession.run(
-            queryOf(
-                sqlOppdaterSak,
-                mapOf(
-                    "id" to sak.id.toString(),
-                    "ident" to sak.fnr.verdi,
-                    "sistEndretOld" to sistEndret,
-                    "sistEndret" to nå(),
-                ),
-            ).asUpdate,
-        )
+        val antRaderOppdatert =
+            txSession.run(
+                queryOf(
+                    sqlOppdaterSak,
+                    mapOf(
+                        "id" to sak.id.toString(),
+                        "ident" to sak.fnr.verdi,
+                        "sistEndretOld" to sistEndret,
+                        "sistEndret" to nå(),
+                    ),
+                ).asUpdate,
+            )
         if (antRaderOppdatert == 0) {
             throw IllegalStateException("Noen andre har endret denne saken ${sak.id}")
         }
         return sak
     }
 
-    private fun opprettSak(sak: Sak, txSession: TransactionalSession): Sak {
+    private fun opprettSak(
+        sak: Sak,
+        txSession: TransactionalSession,
+    ): Sak {
         SECURELOG.info { "Oppretter sak ${sak.id}" }
 
         val nå = nå()
@@ -180,7 +187,8 @@ internal class PostgresSakRepo(
                     sqlHentNesteLøpenummer,
                     mapOf("saksnummerprefiks" to "$saksnummerPrefiks%"),
                 ).map { row ->
-                    row.string("saksnummer")
+                    row
+                        .string("saksnummer")
                         .let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
                 }.asSingle,
             )
@@ -207,7 +215,8 @@ internal class PostgresSakRepo(
     }
 
     @Language("SQL")
-    private val sqlOpprettSak = """
+    private val sqlOpprettSak =
+        """
         insert into sak (
             id,
             ident,
@@ -221,7 +230,7 @@ internal class PostgresSakRepo(
             :sistEndret,
             :opprettet
         )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
     private val sqlOppdaterSak =
@@ -237,7 +246,8 @@ internal class PostgresSakRepo(
         """select * from sak where id = :id""".trimIndent()
 
     @Language("SQL")
-    private val sqlHentForJournalpost = """
+    private val sqlHentForJournalpost =
+        """
         select * 
           from sak 
          where id = (select sakid 
@@ -247,7 +257,7 @@ internal class PostgresSakRepo(
                                    where journalpost_id = :journalpostId
                                     )
                        )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
     private val sqlHentSakerForIdent =
@@ -264,10 +274,10 @@ internal class PostgresSakRepo(
     @Language("SQL")
     private val sqlHentNesteLøpenummer =
         """
-            SELECT saksnummer 
-            FROM sak 
-            WHERE saksnummer LIKE :saksnummerprefiks 
-            ORDER BY saksnummer DESC 
-            LIMIT 1
+        SELECT saksnummer 
+        FROM sak 
+        WHERE saksnummer LIKE :saksnummerprefiks 
+        ORDER BY saksnummer DESC 
+        LIMIT 1
         """.trimIndent()
 }

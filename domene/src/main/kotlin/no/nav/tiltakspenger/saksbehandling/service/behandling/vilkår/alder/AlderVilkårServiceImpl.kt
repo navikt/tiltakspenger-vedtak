@@ -11,7 +11,6 @@ class AlderVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : AlderVilkårService {
-
     override fun leggTilSaksopplysning(command: LeggTilAlderSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
             behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling

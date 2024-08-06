@@ -8,6 +8,13 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 
 interface BehandlingDAO {
-    fun lagre(behandling: Behandling, tx: TransactionalSession)
-    fun hentForSak(sakId: SakId, session: Session): NonEmptyList<Førstegangsbehandling>
+    fun lagre(
+        behandling: Behandling,
+        tx: TransactionalSession,
+    )
+
+    fun hentForSak(
+        sakId: SakId,
+        session: Session,
+    ): NonEmptyList<Førstegangsbehandling>
 }

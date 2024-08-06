@@ -20,12 +20,20 @@ internal data class InstitusjonsoppholdVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun InstitusjonsoppholdVilkår.toDTO(): InstitusjonsoppholdVilkårDTO {
-    return InstitusjonsoppholdVilkårDTO(
+internal fun InstitusjonsoppholdVilkår.toDTO(): InstitusjonsoppholdVilkårDTO =
+    InstitusjonsoppholdVilkårDTO(
         søknadSaksopplysning = søknadSaksopplysning.toDTO(KildeDTO.SØKNAD),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == søknadSaksopplysning) KildeDTO.SØKNAD else KildeDTO.SAKSBEHANDLER),
+        avklartSaksopplysning =
+        avklartSaksopplysning.toDTO(
+            if (avklartSaksopplysning ==
+                søknadSaksopplysning
+            ) {
+                KildeDTO.SØKNAD
+            } else {
+                KildeDTO.SAKSBEHANDLER
+            },
+        ),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
-}

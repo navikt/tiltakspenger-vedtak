@@ -28,7 +28,7 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KVPVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KildeDTO
@@ -42,7 +42,6 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class KvpRoutesTest {
-
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
@@ -50,12 +49,13 @@ class KvpRoutesTest {
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
-    private val saksbehandler = Saksbehandler(
-        "Q123456",
-        "Superman",
-        "a@b.c",
-        listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
-    )
+    private val saksbehandler =
+        Saksbehandler(
+            "Q123456",
+            "Superman",
+            "a@b.c",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        )
 
     @Test
     fun `test at endepunkt for henting og lagring av kvp fungerer`() {
@@ -67,21 +67,23 @@ class KvpRoutesTest {
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -100,7 +102,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -113,7 +115,7 @@ class KvpRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ) {
                     setBody(bodyEndreKvp(periodeBrukerHarKvpEtterEndring, true))
@@ -126,7 +128,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -153,21 +155,23 @@ class KvpRoutesTest {
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -185,7 +189,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -197,7 +201,7 @@ class KvpRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ) {
                     setBody(bodyEndreKvp(periodeBrukerHarKvpEtterEndring, true))
@@ -209,7 +213,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -234,21 +238,23 @@ class KvpRoutesTest {
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -268,7 +274,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -281,7 +287,7 @@ class KvpRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ) {
                     setBody(bodyKvpDeltarIHelePerioden)
@@ -293,7 +299,7 @@ class KvpRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/kvp")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -306,21 +312,24 @@ class KvpRoutesTest {
         }
     }
 
-    private fun bodyEndreKvp(periodeDTO: PeriodeDTO, deltar: Boolean): String {
+    private fun bodyEndreKvp(
+        periodeDTO: PeriodeDTO,
+        deltar: Boolean,
+    ): String {
         val deltarString = if (deltar) "true" else "false"
         return """
-        {
-          "ytelseForPeriode": [
             {
-              "periode": {
-                "fraOgMed": "${periodeDTO.fraOgMed}",
-                "tilOgMed": "${periodeDTO.tilOgMed}"
-              },
-              "deltar": $deltarString
+              "ytelseForPeriode": [
+                {
+                  "periode": {
+                    "fraOgMed": "${periodeDTO.fraOgMed}",
+                    "tilOgMed": "${periodeDTO.tilOgMed}"
+                  },
+                  "deltar": $deltarString
+                }
+              ],
+              "årsakTilEndring": "FEIL_I_INNHENTET_DATA"
             }
-          ],
-          "årsakTilEndring": "FEIL_I_INNHENTET_DATA"
-        }
         """.trimIndent()
     }
 }

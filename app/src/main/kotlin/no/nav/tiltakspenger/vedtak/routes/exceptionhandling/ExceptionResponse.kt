@@ -8,7 +8,10 @@ class ExceptionResponse(
     val detail: String,
 ) {
     companion object {
-        operator fun invoke(ex: Throwable, statusCode: HttpStatusCode) = ExceptionResponse(
+        operator fun invoke(
+            ex: Throwable,
+            statusCode: HttpStatusCode,
+        ) = ExceptionResponse(
             status = statusCode.value,
             title = ex::class.simpleName ?: "Ukjent feil",
             detail = ex.message ?: ex.toString(),

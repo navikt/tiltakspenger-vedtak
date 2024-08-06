@@ -16,11 +16,12 @@ internal data class LivsoppholdVilkårDTO(
 )
 
 internal fun LivsoppholdVilkår.toDTO(): LivsoppholdVilkårDTO {
-    val samletUtfall = when (avklartSaksopplysning?.harLivsoppholdYtelser) {
-        true -> SamletUtfallDTO.IKKE_OPPFYLT
-        false -> SamletUtfallDTO.OPPFYLT
-        null -> SamletUtfallDTO.UAVKLART
-    }
+    val samletUtfall =
+        when (avklartSaksopplysning?.harLivsoppholdYtelser) {
+            true -> SamletUtfallDTO.IKKE_OPPFYLT
+            false -> SamletUtfallDTO.OPPFYLT
+            null -> SamletUtfallDTO.UAVKLART
+        }
 
     return LivsoppholdVilkårDTO(
         avklartSaksopplysning = avklartSaksopplysning?.toDTO(vurderingsperiode = vurderingsperiode.toDTO()),

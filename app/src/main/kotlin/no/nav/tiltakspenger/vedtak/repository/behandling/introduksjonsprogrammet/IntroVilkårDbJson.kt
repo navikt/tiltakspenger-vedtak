@@ -16,22 +16,20 @@ internal data class IntroVilkårDbJson(
     val avklartSaksopplysning: IntroSaksopplysningDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(vurderingsperiode: Periode): IntroVilkår {
-        return IntroVilkår.fromDb(
+    fun toDomain(vurderingsperiode: Periode): IntroVilkår =
+        IntroVilkår.fromDb(
             vurderingsperiode = vurderingsperiode,
             søknadSaksopplysning = søknadSaksopplysning.toDomain() as IntroSaksopplysning.Søknad,
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as IntroSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun IntroVilkår.toDbJson(): IntroVilkårDbJson {
-    return IntroVilkårDbJson(
+internal fun IntroVilkår.toDbJson(): IntroVilkårDbJson =
+    IntroVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         utfallsperioder = utfall().toDbJson(),
     )
-}

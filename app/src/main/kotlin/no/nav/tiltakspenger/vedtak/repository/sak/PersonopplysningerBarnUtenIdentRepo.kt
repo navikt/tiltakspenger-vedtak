@@ -12,8 +12,10 @@ import org.intellij.lang.annotations.Language
 internal class PersonopplysningerBarnUtenIdentRepo {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    internal fun hent(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
+    internal fun hent(
+        sakId: SakId,
+        txSession: TransactionalSession,
+    ) = txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
 
     internal fun lagre(
         sakId: SakId,
@@ -37,8 +39,10 @@ internal class PersonopplysningerBarnUtenIdentRepo {
         )
     }
 
-    internal fun slett(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+    internal fun slett(
+        sakId: SakId,
+        txSession: TransactionalSession,
+    ) = txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerBarnUtenIdent = { row ->
         PersonopplysningerBarnUtenIdent(
@@ -57,7 +61,8 @@ internal class PersonopplysningerBarnUtenIdentRepo {
     private val hentSql = "select * from sak_personopplysninger_barn_uten_ident where sakId = ?"
 
     @Language("SQL")
-    private val lagreSql = """
+    private val lagreSql =
+        """
         insert into sak_personopplysninger_barn_uten_ident (
             id,
             sakId,        
@@ -75,7 +80,7 @@ internal class PersonopplysningerBarnUtenIdentRepo {
             :etternavn,         
             :tidsstempelHosOss
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_BARN_UTEN_IDENT = "barnu"

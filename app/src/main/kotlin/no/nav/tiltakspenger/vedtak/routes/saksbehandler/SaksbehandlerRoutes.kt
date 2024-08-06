@@ -8,12 +8,10 @@ import io.ktor.server.routing.get
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
-internal const val saksbehandlerPath = "/saksbehandler"
+internal const val SAKSBEHANDLER_PATH = "/saksbehandler"
 
-fun Route.saksbehandlerRoutes(
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
-) {
-    get(saksbehandlerPath) {
+fun Route.saksbehandlerRoutes(innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider) {
+    get(SAKSBEHANDLER_PATH) {
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         call.respond(message = saksbehandler, status = HttpStatusCode.OK)
     }

@@ -11,19 +11,18 @@ import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
-const val søknadpath = "/rivers/soknad"
+const val SØKNAD_PATH = "/rivers/soknad"
 
-fun Route.søknadRoutes(
-    søknadService: SøknadService,
-) {
-    post(søknadpath) {
+fun Route.søknadRoutes(søknadService: SøknadService) {
+    post(SØKNAD_PATH) {
         LOG.debug { "Mottatt ny søknad. Prøver deserialisere og lagre." }
         try {
             val søknadDTO = call.receive<SøknadDTO>()
             LOG.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
             // Oppretter sak med søknad og lagrer den
             søknadService.nySøknad(
-                søknad = SøknadDTOMapper.mapSøknad(
+                søknad =
+                SøknadDTOMapper.mapSøknad(
                     dto = søknadDTO,
                     innhentet = søknadDTO.opprettet,
                 ),

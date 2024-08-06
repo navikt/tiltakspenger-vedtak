@@ -14,16 +14,21 @@ import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl(
     private val sessionFactory: PostgresSessionFactory,
-) : AttesteringRepo, AttesteringDAO {
-
+) : AttesteringRepo,
+    AttesteringDAO {
     // Attestering lagres alltid sammen med Behandling.
-    override fun lagre(attestering: Attestering, context: TransactionContext?): Attestering {
-        return sessionFactory.withTransaction(context) { tx ->
+    override fun lagre(
+        attestering: Attestering,
+        context: TransactionContext?,
+    ): Attestering =
+        sessionFactory.withTransaction(context) { tx ->
             lagre(attestering, tx)
         }
-    }
 
-    override fun lagre(attestering: Attestering, tx: TransactionalSession): Attestering {
+    override fun lagre(
+        attestering: Attestering,
+        tx: TransactionalSession,
+    ): Attestering {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -40,8 +45,8 @@ internal class AttesteringRepoImpl(
         return attestering
     }
 
-    override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> {
-        return sessionFactory.withTransaction { tx ->
+    override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> =
+        sessionFactory.withTransaction { tx ->
             tx.run(
                 queryOf(
                     sqlHentForBehandling,
@@ -53,15 +58,16 @@ internal class AttesteringRepoImpl(
                 }.asList,
             )
         }
-    }
 
     @Language("SQL")
-    private val sqlHentForBehandling = """
+    private val sqlHentForBehandling =
+        """
         select * from attestering where behandling_id = :behandlingId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlLagre = """
+    private val sqlLagre =
+        """
         insert into attestering (
             id, 
             behandling_id, 
@@ -77,14 +83,15 @@ internal class AttesteringRepoImpl(
             :beslutter,
             :tidspunkt
         )
-    """.trimIndent()
+        """.trimIndent()
 
-    private fun Row.toAttestering() = Attestering(
-        id = AttesteringId.fromDb(string("id")),
-        behandlingId = BehandlingId.fromString(string("behandling_id")),
-        svar = AttesteringStatus.valueOf(string("svar")),
-        begrunnelse = stringOrNull("begrunnelse"),
-        beslutter = string("beslutter"),
-        tidspunkt = localDateTime("tidspunkt"),
-    )
+    private fun Row.toAttestering() =
+        Attestering(
+            id = AttesteringId.fromDb(string("id")),
+            behandlingId = BehandlingId.fromString(string("behandling_id")),
+            svar = AttesteringStatus.valueOf(string("svar")),
+            begrunnelse = stringOrNull("begrunnelse"),
+            beslutter = string("beslutter"),
+            tidspunkt = localDateTime("tidspunkt"),
+        )
 }

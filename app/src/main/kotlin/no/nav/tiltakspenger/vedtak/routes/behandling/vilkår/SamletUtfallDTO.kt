@@ -12,11 +12,10 @@ internal enum class SamletUtfallDTO {
     UAVKLART,
 }
 
-internal fun SamletUtfall.toDTO(): SamletUtfallDTO {
-    return when (this) {
+internal fun SamletUtfall.toDTO(): SamletUtfallDTO =
+    when (this) {
         SamletUtfall.OPPFYLT -> SamletUtfallDTO.OPPFYLT
         SamletUtfall.DELVIS_OPPFYLT -> SamletUtfallDTO.DELVIS_OPPFYLT
         SamletUtfall.IKKE_OPPFYLT -> SamletUtfallDTO.IKKE_OPPFYLT
         SamletUtfall.UAVKLART -> SamletUtfallDTO.UAVKLART
     }
-}

@@ -36,7 +36,7 @@ import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImp
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
@@ -49,7 +49,6 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class LivsoppholdRoutesTest {
-
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
@@ -57,12 +56,13 @@ class LivsoppholdRoutesTest {
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
     private val saksbehandlerIdent = "Q123456"
-    private val saksbehandler = Saksbehandler(
-        saksbehandlerIdent,
-        "Superman",
-        "a@b.c",
-        listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
-    )
+    private val saksbehandler =
+        Saksbehandler(
+            saksbehandlerIdent,
+            "Superman",
+            "a@b.c",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        )
 
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
@@ -75,21 +75,23 @@ class LivsoppholdRoutesTest {
             val behandlingId = sak.førstegangsbehandling.id
             val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val livsoppholdVilkårService =
+                LivsoppholdVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
             testApplication {
                 application {
                     jacksonSerialization()
@@ -106,7 +108,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -119,7 +121,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
                     setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
@@ -132,7 +134,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -154,21 +156,23 @@ class LivsoppholdRoutesTest {
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val livsoppholdVilkårService =
+                LivsoppholdVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -188,7 +192,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
                     setBody(bodyLivsoppholdYtelse(sak.førstegangsbehandling.vurderingsperiode.toDTO(), true))
@@ -210,21 +214,23 @@ class LivsoppholdRoutesTest {
             val behandlingId = sak.førstegangsbehandling.id
             val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val livsoppholdVilkårService =
+                LivsoppholdVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
             testApplication {
                 application {
                     jacksonSerialization()
@@ -241,7 +247,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -255,7 +261,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Post,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
                     setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
@@ -268,7 +274,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -285,60 +291,68 @@ class LivsoppholdRoutesTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val sakId = SakId.random()
-        val søknadMedSykepenger = nySøknad(
-            sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedSykepenger =
+            nySøknad(
+                sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
 
         val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger, 1011)
         livsoppholdVilkårSykepenger.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedEtterlønn = nySøknad(
-            etterlønn = ja(),
-        )
+        val søknadMedEtterlønn =
+            nySøknad(
+                etterlønn = ja(),
+            )
         val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn, 1005)
         livsoppholdVilkårEtterlønn.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedGjenlevendepensjon = nySøknad(
-            gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedGjenlevendepensjon =
+            nySøknad(
+                gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
         val livsoppholdVilkårGjenlevendepensjon =
             opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedSuAlder = nySøknad(
-            supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedSuAlder =
+            nySøknad(
+                supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
         val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder, 1007)
         livsoppholdVilkårSuAlder.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedSuflykning = nySøknad(
-            supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedSuflykning =
+            nySøknad(
+                supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
         val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning, 1008)
         livsoppholdVilkårSuflykning.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedJobbsjansen = nySøknad(
-            jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedJobbsjansen =
+            nySøknad(
+                jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
         val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen, 1009)
         livsoppholdVilkårJobbsjansen.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedPensjonsinntekt = nySøknad(
-            trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-        )
+        val søknadMedPensjonsinntekt =
+            nySøknad(
+                trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+            )
         val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt, 1010)
         livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
-        val søknadMedAlderpensjon = nySøknad(
-            alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
-        )
+        val søknadMedAlderpensjon =
+            nySøknad(
+                alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
+            )
         val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon, 1011)
         livsoppholdVilkårAlderpensjon.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
@@ -355,29 +369,32 @@ class LivsoppholdRoutesTest {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                sakId = sakId,
-                søknad = søknad,
-                løpenummer = løpenummer,
-                saksbehandler = saksbehandler,
-            )
+            val (sak, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    sakId = sakId,
+                    søknad = søknad,
+                    løpenummer = løpenummer,
+                    saksbehandler = saksbehandler,
+                )
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
-            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
+            val livsoppholdVilkårService =
+                LivsoppholdVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -396,7 +413,7 @@ class LivsoppholdRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/livsopphold")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -408,19 +425,22 @@ class LivsoppholdRoutesTest {
         return livsoppholdVilkårDTO
     }
 
-    private fun bodyLivsoppholdYtelse(periodeDTO: PeriodeDTO, harYtelse: Boolean): String {
+    private fun bodyLivsoppholdYtelse(
+        periodeDTO: PeriodeDTO,
+        harYtelse: Boolean,
+    ): String {
         val harYtelseString = if (harYtelse) "true" else "false"
         return """
-        {
-          "ytelseForPeriode": 
             {
-              "periode": {
-                "fraOgMed": "${periodeDTO.fraOgMed}",
-                "tilOgMed": "${periodeDTO.tilOgMed}"
-              },
-              "harYtelse": $harYtelseString
+              "ytelseForPeriode": 
+                {
+                  "periode": {
+                    "fraOgMed": "${periodeDTO.fraOgMed}",
+                    "tilOgMed": "${periodeDTO.tilOgMed}"
+                  },
+                  "harYtelse": $harYtelseString
+                }
             }
-        }
         """.trimIndent()
     }
 }

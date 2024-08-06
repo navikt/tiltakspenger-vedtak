@@ -5,30 +5,33 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.KLA
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.KLAR_TIL_BESLUTNING
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.UNDER_BEHANDLING
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.UNDER_BESLUTNING
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus as BehandlingsstatusDomain
 
 /**
- * @see no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
+ * @see BehandlingsstatusDomain
  */
 private enum class BehandlingsstatusDb {
-    KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, UNDER_BESLUTNING, INNVILGET
+    KLAR_TIL_BEHANDLING,
+    UNDER_BEHANDLING,
+    KLAR_TIL_BESLUTNING,
+    UNDER_BESLUTNING,
+    INNVILGET,
 }
 
-fun String.toBehandlingsstatus(): no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus {
-    return when (BehandlingsstatusDb.valueOf(this)) {
-        KLAR_TIL_BEHANDLING -> no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
-        UNDER_BEHANDLING -> no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BEHANDLING
-        KLAR_TIL_BESLUTNING -> no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
-        UNDER_BESLUTNING -> no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BESLUTNING
-        INNVILGET -> no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.INNVILGET
+fun String.toBehandlingsstatus(): BehandlingsstatusDomain =
+    when (BehandlingsstatusDb.valueOf(this)) {
+        KLAR_TIL_BEHANDLING -> BehandlingsstatusDomain.KLAR_TIL_BEHANDLING
+        UNDER_BEHANDLING -> BehandlingsstatusDomain.UNDER_BEHANDLING
+        KLAR_TIL_BESLUTNING -> BehandlingsstatusDomain.KLAR_TIL_BESLUTNING
+        UNDER_BESLUTNING -> BehandlingsstatusDomain.UNDER_BESLUTNING
+        INNVILGET -> BehandlingsstatusDomain.INNVILGET
     }
-}
 
-fun no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.toDb(): String {
-    return when (this) {
-        no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BEHANDLING -> BehandlingsstatusDb.KLAR_TIL_BEHANDLING
-        no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BEHANDLING -> BehandlingsstatusDb.UNDER_BEHANDLING
-        no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BESLUTNING -> BehandlingsstatusDb.KLAR_TIL_BESLUTNING
-        no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BESLUTNING -> BehandlingsstatusDb.UNDER_BESLUTNING
-        no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.INNVILGET -> BehandlingsstatusDb.INNVILGET
+fun BehandlingsstatusDomain.toDb(): String =
+    when (this) {
+        BehandlingsstatusDomain.KLAR_TIL_BEHANDLING -> KLAR_TIL_BEHANDLING
+        BehandlingsstatusDomain.UNDER_BEHANDLING -> UNDER_BEHANDLING
+        BehandlingsstatusDomain.KLAR_TIL_BESLUTNING -> KLAR_TIL_BESLUTNING
+        BehandlingsstatusDomain.UNDER_BESLUTNING -> UNDER_BESLUTNING
+        BehandlingsstatusDomain.INNVILGET -> INNVILGET
     }.toString()
-}

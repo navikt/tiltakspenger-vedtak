@@ -11,7 +11,8 @@ import java.time.LocalDateTime
 data class Søknad(
     val versjon: String = "1",
     val id: SøknadId,
-    val journalpostId: String, // TODO: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
+    // TODO: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
+    val journalpostId: String,
     val dokumentInfoId: String,
     val filnavn: String,
     val personopplysninger: Personopplysninger,
@@ -32,14 +33,11 @@ data class Søknad(
     val jobbsjansen: PeriodeSpm,
     val trygdOgPensjon: PeriodeSpm,
 ) {
-
     companion object {
         fun randomId() = SøknadId.random()
     }
 
-    fun vurderingsperiode(): Periode {
-        return Periode(tiltak.deltakelseFom, tiltak.deltakelseTom)
-    }
+    fun vurderingsperiode(): Periode = Periode(tiltak.deltakelseFom, tiltak.deltakelseTom)
 
     fun harLivsoppholdYtelser(): Boolean =
         sykepenger.erJa() ||
@@ -60,38 +58,44 @@ data class Søknad(
 
     sealed interface PeriodeSpm {
         data object Nei : PeriodeSpm
+
         data class Ja(
             val periode: Periode,
         ) : PeriodeSpm
 
         /** ignorerer perioden */
-        fun erJa(): Boolean = when (this) {
-            is Ja -> true
-            is Nei -> false
-        }
+        fun erJa(): Boolean =
+            when (this) {
+                is Ja -> true
+                is Nei -> false
+            }
     }
 
     sealed interface JaNeiSpm {
         data object Ja : JaNeiSpm
+
         data object Nei : JaNeiSpm
 
         /** ignorerer perioden */
-        fun erJa(): Boolean = when (this) {
-            is Ja -> true
-            Nei -> false
-        }
+        fun erJa(): Boolean =
+            when (this) {
+                is Ja -> true
+                Nei -> false
+            }
     }
 
     sealed interface FraOgMedDatoSpm {
         data object Nei : FraOgMedDatoSpm
+
         data class Ja(
             val fra: LocalDate,
         ) : FraOgMedDatoSpm
 
-        fun erJa(): Boolean = when (this) {
-            is Ja -> true
-            is Nei -> false
-        }
+        fun erJa(): Boolean =
+            when (this) {
+                is Ja -> true
+                is Nei -> false
+            }
     }
 }
 
@@ -126,9 +130,7 @@ sealed class Barnetillegg {
         override val etternavn: String?,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg() {
-        override fun under16ForDato(dato: LocalDate): Boolean {
-            return fødselsdato.plusYears(16) > dato
-        }
+        override fun under16ForDato(dato: LocalDate): Boolean = fødselsdato.plusYears(16) > dato
     }
 
     data class Manuell(
@@ -138,8 +140,6 @@ sealed class Barnetillegg {
         override val etternavn: String,
         override val fødselsdato: LocalDate,
     ) : Barnetillegg() {
-        override fun under16ForDato(dato: LocalDate): Boolean {
-            return fødselsdato.plusYears(16) > dato
-        }
+        override fun under16ForDato(dato: LocalDate): Boolean = fødselsdato.plusYears(16) > dato
     }
 }
