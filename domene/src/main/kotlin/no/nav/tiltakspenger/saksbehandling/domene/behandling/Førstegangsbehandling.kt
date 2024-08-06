@@ -88,7 +88,7 @@ data class Førstegangsbehandling(
             }
             val tiltak = registrerteTiltak.find {
                 it.eksternId == søknad.tiltak.id &&
-                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(vurderingsperiode)
+                    it.deltakelsesperiode.overlapperMed(vurderingsperiode)
             }
 
             if (tiltak == null) {

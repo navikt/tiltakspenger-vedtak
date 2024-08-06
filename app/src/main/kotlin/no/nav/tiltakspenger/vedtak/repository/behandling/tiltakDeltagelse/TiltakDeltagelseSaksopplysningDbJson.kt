@@ -19,7 +19,8 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),
             girRett = girRett,
-            status = status,
+            // TODO tiltak jah: girRett er Komet sin avgjørelse. Vi bør lagre vår egen også.
+            status = status.toTiltakDeltakerstatus(),
             kilde = kilde.toTiltakskilde(),
         )
     }
@@ -31,7 +32,7 @@ internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksoppl
         tidsstempel = tidsstempel.toString(),
         deltagelsePeriode = deltagelsePeriode.toDbJson(),
         girRett = girRett,
-        status = status,
+        status = status.toDb(),
         kilde = kilde.toDb(),
     )
 }
