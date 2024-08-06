@@ -127,28 +127,27 @@ private fun AuthenticationConfig.jwt(
     roles: List<Rolle>? = null,
 ) =
     jwt(name) {
-        SECURELOG.info { "config : $config" }
+        SECURELOG.debug { "config : $config" }
         this.realm = realm
         val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
         verifier(jwkProviderGammel, config.issuer) {
-            LOG.info { "Er nå i verifier" }
+            LOG.debug { "Er nå i verifier" }
             withAudience(config.clientId)
             acceptLeeway(config.leeway)
         }
         challenge { _, _ ->
-            LOG.info { "verifier feilet" }
+            LOG.debug { "verifier feilet" }
             call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
         }
         validate { cred ->
-            SECURELOG.info("Cred er $cred")
-            LOG.info { "er nå i validate, skal ha preferred_username" }
+            LOG.debug { "er nå i validate, skal ha preferred_username" }
             if (cred.getClaim("preferred_username", String::class) == null) {
-                LOG.info { "Fant ikke preferred_username" }
+                LOG.debug { "Fant ikke preferred_username" }
                 return@validate null
             }
-            LOG.info { "er nå i validate, skal ha NAVident" }
+            LOG.debug { "er nå i validate, skal ha NAVident" }
             if (cred.getClaim("NAVident", String::class) == null) {
-                LOG.info { "Fant ikke NAVident" }
+                LOG.debug { "Fant ikke NAVident" }
                 return@validate null
             }
 
@@ -186,7 +185,6 @@ private fun AuthenticationConfig.jwtSystemToken(
             call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
         }
         validate { cred ->
-            SECURELOG.info("Cred er $cred")
             LOG.info { "er nå i validate, skal ha oid" }
             if (cred.getClaim("oid", String::class) == null) {
                 LOG.info { "Fant ikke oid" }
