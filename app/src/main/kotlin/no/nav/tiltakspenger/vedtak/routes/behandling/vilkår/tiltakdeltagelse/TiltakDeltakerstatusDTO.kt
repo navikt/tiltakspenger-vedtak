@@ -16,8 +16,8 @@ private enum class TiltakDeltakerstatusDTO {
     Vurderes,
 }
 
-internal fun TiltakDeltakerstatus.toDTO(): String {
-    return when (this) {
+internal fun TiltakDeltakerstatus.toDTO(): String =
+    when (this) {
         TiltakDeltakerstatus.VenterPåOppstart -> TiltakDeltakerstatusDTO.VenterPåOppstart.name
         TiltakDeltakerstatus.Deltar -> TiltakDeltakerstatusDTO.Deltar.name
         TiltakDeltakerstatus.HarSluttet -> TiltakDeltakerstatusDTO.HarSluttet.name
@@ -30,4 +30,3 @@ internal fun TiltakDeltakerstatus.toDTO(): String {
         TiltakDeltakerstatus.Venteliste -> TiltakDeltakerstatusDTO.Venteliste.name
         TiltakDeltakerstatus.Vurderes -> TiltakDeltakerstatusDTO.Vurderes.name
     }
-}

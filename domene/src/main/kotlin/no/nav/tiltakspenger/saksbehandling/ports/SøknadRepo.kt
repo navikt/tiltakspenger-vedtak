@@ -5,7 +5,11 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 
 interface SøknadRepo {
-    fun lagre(søknad: Søknad, txContext: TransactionContext? = null)
+    fun lagre(
+        søknad: Søknad,
+        txContext: TransactionContext? = null,
+    )
+
     fun hentSøknad(søknadId: SøknadId): Søknad
 
     fun hentAlleSøknader(): List<Søknad>

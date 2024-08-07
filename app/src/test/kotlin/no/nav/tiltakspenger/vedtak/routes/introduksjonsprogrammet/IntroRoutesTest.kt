@@ -27,7 +27,7 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR
@@ -38,19 +38,19 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class IntroRoutesTest {
-
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
     private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
     private val mockTiltakGateway = mockk<TiltakGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val mockSaksbehandler = Saksbehandler(
-        "Q123456",
-        "Superman",
-        "a@b.c",
-        listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
-    )
+    private val mockSaksbehandler =
+        Saksbehandler(
+            "Q123456",
+            "Superman",
+            "a@b.c",
+            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        )
 
     @Test
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
@@ -59,23 +59,25 @@ class IntroRoutesTest {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
 
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                deltakelseFom = 1.januar(2023),
-                deltakelseTom = 31.mars(2023),
-            )
+            val (sak, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    deltakelseFom = 1.januar(2023),
+                    deltakelseTom = 31.mars(2023),
+                )
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -93,7 +95,7 @@ class IntroRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/introduksjonsprogrammet")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/introduksjonsprogrammet")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK
@@ -110,26 +112,29 @@ class IntroRoutesTest {
 
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
-            val søknadMedIntro = nySøknad(
-                intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-            )
+            val søknadMedIntro =
+                nySøknad(
+                    intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+                )
 
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                søknad = søknadMedIntro,
-            )
+            val (sak, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    søknad = søknadMedIntro,
+                )
             val behandlingId = sak.førstegangsbehandling.id
 
-            val behandlingService = BehandlingServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                vedtakRepo = testDataHelper.vedtakRepo,
-                personopplysningRepo = testDataHelper.personopplysningerRepo,
-                brevPublisherGateway = mockBrevPublisherGateway,
-                meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
-                sakRepo = testDataHelper.sakRepo,
-                attesteringRepo = testDataHelper.attesteringRepo,
-                sessionFactory = testDataHelper.sessionFactory,
-                saksoversiktRepo = testDataHelper.saksoversiktRepo,
-            )
+            val behandlingService =
+                BehandlingServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    vedtakRepo = testDataHelper.vedtakRepo,
+                    personopplysningRepo = testDataHelper.personopplysningerRepo,
+                    brevPublisherGateway = mockBrevPublisherGateway,
+                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
+                    sakRepo = testDataHelper.sakRepo,
+                    attesteringRepo = testDataHelper.attesteringRepo,
+                    sessionFactory = testDataHelper.sessionFactory,
+                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                )
 
             testApplication {
                 application {
@@ -147,7 +152,7 @@ class IntroRoutesTest {
                     HttpMethod.Get,
                     url {
                         protocol = URLProtocol.HTTPS
-                        path("$behandlingPath/$behandlingId/vilkar/introduksjonsprogrammet")
+                        path("$BEHANDLING_PATH/$behandlingId/vilkar/introduksjonsprogrammet")
                     },
                 ).apply {
                     status shouldBe HttpStatusCode.OK

@@ -22,45 +22,54 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 private const val SIXTY_SECONDS = 60L
-fun httpClientCIO(timeout: Long = SIXTY_SECONDS) = HttpClient(CIO).config(timeout)
-fun httpClientGeneric(engine: HttpClientEngine, timeout: Long = SIXTY_SECONDS) = HttpClient(engine).config(timeout)
-fun httpClientWithRetry(timeout: Long = SIXTY_SECONDS) = httpClientCIO(timeout).also { httpClient ->
-    httpClient.config {
-        install(HttpRequestRetry) {
-            retryOnServerErrors(maxRetries = 3)
-            retryOnException(maxRetries = 3, retryOnTimeout = true)
-            constantDelay(100, 0, false)
-        }
-    }
-}
 
-private fun HttpClient.config(timeout: Long) = this.config {
-    install(ContentNegotiation) {
-        jackson {
-            registerModule(KotlinModule.Builder().build())
-            registerModule(JavaTimeModule())
-            setDefaultPrettyPrinter(
-                DefaultPrettyPrinter().apply {
-                    indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
-                    indentObjectsWith(DefaultIndenter("  ", "\n"))
-                },
-            )
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        }
-    }
-    install(HttpTimeout) {
-        connectTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
-        requestTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
-        socketTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
-    }
-    install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                LOG.info("HttpClient detaljer logget til securelog")
-                SECURELOG.info(message)
+fun httpClientCIO(timeout: Long = SIXTY_SECONDS) = HttpClient(CIO).config(timeout)
+
+fun httpClientGeneric(
+    engine: HttpClientEngine,
+    timeout: Long = SIXTY_SECONDS,
+) = HttpClient(engine).config(timeout)
+
+fun httpClientWithRetry(timeout: Long = SIXTY_SECONDS) =
+    httpClientCIO(timeout).also { httpClient ->
+        httpClient.config {
+            install(HttpRequestRetry) {
+                retryOnServerErrors(maxRetries = 3)
+                retryOnException(maxRetries = 3, retryOnTimeout = true)
+                constantDelay(100, 0, false)
             }
         }
-        level = LogLevel.INFO
     }
-    expectSuccess = true
-}
+
+private fun HttpClient.config(timeout: Long) =
+    this.config {
+        install(ContentNegotiation) {
+            jackson {
+                registerModule(KotlinModule.Builder().build())
+                registerModule(JavaTimeModule())
+                setDefaultPrettyPrinter(
+                    DefaultPrettyPrinter().apply {
+                        indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+                        indentObjectsWith(DefaultIndenter("  ", "\n"))
+                    },
+                )
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            }
+        }
+        install(HttpTimeout) {
+            connectTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
+            requestTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
+            socketTimeoutMillis = Duration.ofSeconds(timeout).toMillis()
+        }
+        install(Logging) {
+            logger =
+                object : Logger {
+                    override fun log(message: String) {
+                        LOG.info("HttpClient detaljer logget til securelog")
+                        SECURELOG.info(message)
+                    }
+                }
+            level = LogLevel.INFO
+        }
+        expectSuccess = true
+    }

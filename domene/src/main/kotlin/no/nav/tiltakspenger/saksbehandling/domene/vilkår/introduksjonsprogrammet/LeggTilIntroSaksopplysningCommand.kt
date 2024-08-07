@@ -16,8 +16,6 @@ data class LeggTilIntroSaksopplysningCommand(
         val periode: Periode,
         val deltar: Boolean,
     ) {
-        fun tilDeltagelse(): Deltagelse {
-            return if (deltar) Deltagelse.DELTAR else Deltagelse.DELTAR_IKKE
-        }
+        fun tilDeltagelse(): Deltagelse = if (deltar) Deltagelse.DELTAR else Deltagelse.DELTAR_IKKE
     }
 }

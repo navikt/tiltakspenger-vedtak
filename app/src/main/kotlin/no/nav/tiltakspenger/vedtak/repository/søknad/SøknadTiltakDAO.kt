@@ -10,17 +10,24 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import org.intellij.lang.annotations.Language
 
 internal class SøknadTiltakDAO {
+    fun hent(
+        søknadId: SøknadId,
+        session: Session,
+    ): SøknadsTiltak = hentTiltak(søknadId, session)!!
 
-    fun hent(søknadId: SøknadId, session: Session): SøknadsTiltak =
-        hentTiltak(søknadId, session)!!
-
-    private fun hentTiltak(søknadId: SøknadId, session: Session): SøknadsTiltak? {
-        return session.run(
+    private fun hentTiltak(
+        søknadId: SøknadId,
+        session: Session,
+    ): SøknadsTiltak? =
+        session.run(
             queryOf(hentTiltak, søknadId.toString()).map { row -> row.toTiltak() }.asSingle,
         )
-    }
 
-    fun lagre(søknadId: SøknadId, tiltak: SøknadsTiltak, txSession: TransactionalSession) {
+    fun lagre(
+        søknadId: SøknadId,
+        tiltak: SøknadsTiltak,
+        txSession: TransactionalSession,
+    ) {
         slettTiltak(søknadId, txSession)
         lagreTiltak(søknadId, tiltak, txSession)
     }
@@ -47,7 +54,10 @@ internal class SøknadTiltakDAO {
         )
     }
 
-    private fun slettTiltak(søknadId: SøknadId, txSession: TransactionalSession) {
+    private fun slettTiltak(
+        søknadId: SøknadId,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
     }
 
@@ -75,7 +85,8 @@ internal class SøknadTiltakDAO {
     private val slettTiltak = "delete from søknad_tiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val lagreTiltak = """
+    private val lagreTiltak =
+        """
         insert into søknad_tiltak (
             id,
             søknad_id,
@@ -95,7 +106,7 @@ internal class SøknadTiltakDAO {
             :deltakelseFom,
             :deltakelseTom
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "tilt"

@@ -15,23 +15,26 @@ internal data class SaksbehandlerDTO(
         STRENGT_FORTROLIG_ADRESSE,
         SKJERMING,
         LAGE_HENDELSER,
-        DRIFT, // Systemadministrator (oss)
+
+        // Systemadministrator (oss)
+        DRIFT,
         BESLUTTER,
-        ADMINISTRATOR, // Saksbehandlers administrator (superbruker)
+
+        // Saksbehandlers administrator (superbruker)
+        ADMINISTRATOR,
     }
 }
 
-internal fun Saksbehandler.toDTO(): SaksbehandlerDTO {
-    return SaksbehandlerDTO(
+internal fun Saksbehandler.toDTO(): SaksbehandlerDTO =
+    SaksbehandlerDTO(
         navIdent = navIdent,
         brukernavn = brukernavn,
         epost = epost,
         roller = roller.map { it.toDTO() },
     )
-}
 
-internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO {
-    return when (this) {
+internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO =
+    when (this) {
         Rolle.SAKSBEHANDLER -> SaksbehandlerDTO.RolleDTO.SAKSBEHANDLER
         Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.FORTROLIG_ADRESSE
         Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.STRENGT_FORTROLIG_ADRESSE
@@ -41,4 +44,3 @@ internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO {
         Rolle.BESLUTTER -> SaksbehandlerDTO.RolleDTO.BESLUTTER
         Rolle.ADMINISTRATOR -> SaksbehandlerDTO.RolleDTO.ADMINISTRATOR
     }
-}

@@ -8,30 +8,33 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.vurderingsperiode
 import org.junit.jupiter.api.Test
 
-class Vilkårssett_utfallTest {
-
+internal class VilkårssettUtfallTest {
     @Test
     fun `oppfylt dersom alle vilkår er oppfylt`() {
         ObjectMother.vilkårsett().also {
-            it.utfallsperioder() shouldBe Periodisering(
-                UtfallForPeriode.OPPFYLT,
-                vurderingsperiode(),
-            )
+            it.utfallsperioder() shouldBe
+                Periodisering(
+                    UtfallForPeriode.OPPFYLT,
+                    vurderingsperiode(),
+                )
             it.samletUtfall shouldBe SamletUtfall.OPPFYLT
         }
     }
 
     @Test
     fun `uavklart dersom et vilkår er uavklart`() {
-        val vilkårsett = ObjectMother.vilkårsett(
-            livsoppholdVilkår = ObjectMother.livsoppholdVilkår(
-                saksopplysningCommand = null,
-            ),
-        )
-        vilkårsett.utfallsperioder() shouldBe Periodisering(
-            UtfallForPeriode.UAVKLART,
-            vurderingsperiode(),
-        )
+        val vilkårsett =
+            ObjectMother.vilkårsett(
+                livsoppholdVilkår =
+                ObjectMother.livsoppholdVilkår(
+                    saksopplysningCommand = null,
+                ),
+            )
+        vilkårsett.utfallsperioder() shouldBe
+            Periodisering(
+                UtfallForPeriode.UAVKLART,
+                vurderingsperiode(),
+            )
         vilkårsett.samletUtfall shouldBe SamletUtfall.UAVKLART
     }
 
@@ -39,7 +42,8 @@ class Vilkårssett_utfallTest {
     fun `IkkeImplementertException dersom avslag`() {
         shouldThrow<IkkeImplementertException> {
             ObjectMother.vilkårsett(
-                livsoppholdVilkår = ObjectMother.livsoppholdVilkår(
+                livsoppholdVilkår =
+                ObjectMother.livsoppholdVilkår(
                     harLivsoppholdYtelser = true,
                 ),
             )

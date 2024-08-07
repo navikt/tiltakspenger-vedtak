@@ -24,9 +24,10 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
     private val sessionFactory: PostgresSessionFactory,
-) : VedtakRepo, VedtakDAO {
-    override fun hent(vedtakId: VedtakId): Vedtak? {
-        return sessionFactory.withTransaction { tx ->
+) : VedtakRepo,
+    VedtakDAO {
+    override fun hent(vedtakId: VedtakId): Vedtak? =
+        sessionFactory.withTransaction { tx ->
             tx.run(
                 queryOf(
                     sqlHent,
@@ -38,10 +39,9 @@ internal class VedtakRepoImpl(
                 }.asSingle,
             )
         }
-    }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
-        return sessionFactory.withTransaction { tx ->
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak =
+        sessionFactory.withTransaction { tx ->
             tx.run(
                 queryOf(
                     sqlHentForBehandling,
@@ -53,10 +53,12 @@ internal class VedtakRepoImpl(
                 }.asSingle,
             )
         } ?: throw NotFoundException("Ikke funnet")
-    }
 
-    override fun hentVedtakForSak(sakId: SakId, tx: TransactionalSession): List<Vedtak> {
-        return tx.run(
+    override fun hentVedtakForSak(
+        sakId: SakId,
+        tx: TransactionalSession,
+    ): List<Vedtak> =
+        tx.run(
             queryOf(
                 sqlHentForSak,
                 mapOf(
@@ -66,15 +68,19 @@ internal class VedtakRepoImpl(
                 row.toVedtak(tx)
             }.asList,
         )
-    }
 
-    override fun lagreVedtak(vedtak: Vedtak, context: TransactionContext?): Vedtak {
-        return sessionFactory.withTransaction(context) { tx ->
+    override fun lagreVedtak(
+        vedtak: Vedtak,
+        context: TransactionContext?,
+    ): Vedtak =
+        sessionFactory.withTransaction(context) { tx ->
             lagreVedtak(vedtak, tx)
         }
-    }
 
-    override fun lagreVedtak(vedtak: Vedtak, tx: TransactionalSession): Vedtak {
+    override fun lagreVedtak(
+        vedtak: Vedtak,
+        tx: TransactionalSession,
+    ): Vedtak {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -110,22 +116,26 @@ internal class VedtakRepoImpl(
     }
 
     @Language("SQL")
-    private val sqlHent = """
+    private val sqlHent =
+        """
         select * from vedtak where id = :id
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentForBehandling = """
+    private val sqlHentForBehandling =
+        """
         select * from vedtak where behandling_id = :behandlingId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentForSak = """
+    private val sqlHentForSak =
+        """
         select * from vedtak where sak_id = :sakId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlLagre = """
+    private val sqlLagre =
+        """
         insert into vedtak (
             id, 
             sak_id, 
@@ -149,5 +159,5 @@ internal class VedtakRepoImpl(
             :beslutter,
             :opprettet
         )
-    """.trimIndent()
+        """.trimIndent()
 }

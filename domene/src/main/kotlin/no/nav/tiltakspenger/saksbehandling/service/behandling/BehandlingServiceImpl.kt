@@ -36,10 +36,10 @@ class BehandlingServiceImpl(
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,
 ) : BehandlingService {
-
-    override fun hentBehandling(behandlingId: BehandlingId, sessionContext: SessionContext?): Behandling {
-        return behandlingRepo.hent(behandlingId, sessionContext)
-    }
+    override fun hentBehandling(
+        behandlingId: BehandlingId,
+        sessionContext: SessionContext?,
+    ): Behandling = behandlingRepo.hent(behandlingId, sessionContext)
 
     override fun hentBehandling(
         behandlingId: BehandlingId,
@@ -80,30 +80,36 @@ class BehandlingServiceImpl(
     ) {
         val behandling = hentBehandling(behandlingId, utøvendeBeslutter).sendTilbake(utøvendeBeslutter)
 
-        val attestering = Attestering(
-            behandlingId = behandlingId,
-            svar = AttesteringStatus.SENDT_TILBAKE,
-            begrunnelse = begrunnelse,
-            beslutter = utøvendeBeslutter.navIdent,
-        )
+        val attestering =
+            Attestering(
+                behandlingId = behandlingId,
+                svar = AttesteringStatus.SENDT_TILBAKE,
+                begrunnelse = begrunnelse,
+                beslutter = utøvendeBeslutter.navIdent,
+            )
         sessionFactory.withTransactionContext { tx ->
             behandlingRepo.lagre(behandling, tx)
             attesteringRepo.lagre(attestering, tx)
         }
     }
 
-    override suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler) {
+    override suspend fun iverksett(
+        behandlingId: BehandlingId,
+        utøvendeBeslutter: Saksbehandler,
+    ) {
         val behandling = hentBehandling(behandlingId, utøvendeBeslutter) as Førstegangsbehandling
-        val sak = sakRepo.hentSakDetaljer(behandling.sakId)
-            ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
+        val sak =
+            sakRepo.hentSakDetaljer(behandling.sakId)
+                ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
 
         val iverksattBehandling = behandling.iverksett(utøvendeBeslutter)
-        val attestering = Attestering(
-            behandlingId = behandlingId,
-            svar = AttesteringStatus.GODKJENT,
-            begrunnelse = null,
-            beslutter = utøvendeBeslutter.navIdent,
-        )
+        val attestering =
+            Attestering(
+                behandlingId = behandlingId,
+                svar = AttesteringStatus.GODKJENT,
+                begrunnelse = null,
+                beslutter = utøvendeBeslutter.navIdent,
+            )
 
         val vedtak = iverksattBehandling.opprettVedtak()
         sessionFactory.withTransactionContext { tx ->
@@ -128,7 +134,10 @@ class BehandlingServiceImpl(
         }
     }
 
-    override fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler) {
+    override fun frataBehandling(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    ) {
         val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
         behandlingRepo.lagre(behandling.taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler))
     }

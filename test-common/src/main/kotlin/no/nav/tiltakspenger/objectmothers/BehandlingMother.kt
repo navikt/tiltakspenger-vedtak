@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLiv
 import java.time.LocalDate
 
 interface BehandlingMother {
-
     /** Felles default vurderingsperiode for testdatatypene */
     fun vurderingsperiode() = Periode(1.januar(2023), 31.mars(2023))
 
@@ -39,25 +38,26 @@ interface BehandlingMother {
         fnr: Fnr = Fnr.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
-        registrerteTiltak: List<Tiltak> = listOf(
-            ObjectMother.tiltak(
-                eksternId = søknad.tiltak.id,
-                deltakelseFom = periode.fraOgMed,
-                deltakelseTom = periode.tilOgMed,
+        registrerteTiltak: List<Tiltak> =
+            listOf(
+                ObjectMother.tiltak(
+                    eksternId = søknad.tiltak.id,
+                    deltakelseFom = periode.fraOgMed,
+                    deltakelseTom = periode.tilOgMed,
+                ),
             ),
-        ),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
-    ): Førstegangsbehandling {
-        return Førstegangsbehandling.opprettBehandling(
-            sakId = sakId,
-            saksnummer = saksnummer,
-            fnr = fnr,
-            søknad = søknad,
-            fødselsdato = personopplysningFødselsdato,
-            saksbehandler = saksbehandler,
-            registrerteTiltak = registrerteTiltak,
-        ).getOrNull()!!
-    }
+    ): Førstegangsbehandling =
+        Førstegangsbehandling
+            .opprettBehandling(
+                sakId = sakId,
+                saksnummer = saksnummer,
+                fnr = fnr,
+                søknad = søknad,
+                fødselsdato = personopplysningFødselsdato,
+                saksbehandler = saksbehandler,
+                registrerteTiltak = registrerteTiltak,
+            ).getOrNull()!!
 
     fun behandlingUnderBehandlingInnvilget(
         vurderingsperiode: Periode = ObjectMother.vurderingsperiode(),
@@ -65,23 +65,26 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = vurderingsperiode),
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
-        behandling: Førstegangsbehandling = behandlingUnderBehandlingUavklart(
-            periode = vurderingsperiode,
-            sakId = sakId,
-            søknad = søknad,
-            saksbehandler = saksbehandler,
-        ),
-        livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand = LeggTilLivsoppholdSaksopplysningCommand(
-            behandlingId = behandling.id,
-            saksbehandler = saksbehandler,
-            harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+        behandling: Førstegangsbehandling =
+            behandlingUnderBehandlingUavklart(
                 periode = vurderingsperiode,
-                harYtelse = false,
+                sakId = sakId,
+                søknad = søknad,
+                saksbehandler = saksbehandler,
             ),
-            årsakTilEndring = årsakTilEndring,
-        ),
-    ): Førstegangsbehandling {
-        return behandlingUnderBehandlingUavklart(
+        livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand =
+            LeggTilLivsoppholdSaksopplysningCommand(
+                behandlingId = behandling.id,
+                saksbehandler = saksbehandler,
+                harYtelseForPeriode =
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = vurderingsperiode,
+                    harYtelse = false,
+                ),
+                årsakTilEndring = årsakTilEndring,
+            ),
+    ): Førstegangsbehandling =
+        behandlingUnderBehandlingUavklart(
             periode = vurderingsperiode,
             sakId = sakId,
             søknad = søknad,
@@ -89,7 +92,6 @@ interface BehandlingMother {
         ).leggTilLivsoppholdSaksopplysning(
             command = livsoppholdCommand,
         ).getOrNull()!!
-    }
 
     fun behandlingUnderBehandlingAvslag(
         periode: Periode = ObjectMother.vurderingsperiode(),
@@ -110,7 +112,8 @@ interface BehandlingMother {
                 behandlingId = behandling.id,
                 saksbehandler = saksbehandler,
                 årsakTilEndring = null,
-                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                harYtelseForPeriode =
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
                     periode = behandling.vurderingsperiode,
                     harYtelse = true,
                 ),
@@ -126,11 +129,13 @@ interface BehandlingMother {
     }
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
-        behandlingUnderBehandlingAvslag().copy(saksbehandler = saksbehandler123().navIdent)
+        behandlingUnderBehandlingAvslag()
+            .copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutning(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
-        behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
+        behandlingTilBeslutterInnvilget(saksbehandler123())
+            .copy(beslutter = beslutter().navIdent)
             .iverksett(beslutter())
 
     fun tiltak(
@@ -143,18 +148,17 @@ interface BehandlingMother {
         dagerPrUke: Float? = 2F,
         prosent: Float? = 100F,
         kilde: Tiltakskilde = Komet,
-    ) =
-        Tiltak(
-            id = id,
-            eksternId = eksternId,
-            gjennomføring = gjennomføring,
-            deltakelsesperiode = Periode(fom, tom),
-            deltakelseStatus = status,
-            deltakelseProsent = prosent,
-            kilde = kilde,
-            registrertDato = 1.januarDateTime(2023),
-            innhentetTidspunkt = 1.januarDateTime(2023),
-        )
+    ) = Tiltak(
+        id = id,
+        eksternId = eksternId,
+        gjennomføring = gjennomføring,
+        deltakelsesperiode = Periode(fom, tom),
+        deltakelseStatus = status,
+        deltakelseProsent = prosent,
+        kilde = kilde,
+        registrertDato = 1.januarDateTime(2023),
+        innhentetTidspunkt = 1.januarDateTime(2023),
+    )
 
     fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)
 

@@ -21,7 +21,9 @@ internal data class SammenstillingForBehandlingDTO(
         val endretTidspunkt: LocalDateTime,
     )
 
-    enum class EndringsType(val beskrivelse: String) {
+    enum class EndringsType(
+        val beskrivelse: String,
+    ) {
         SENDT_TILBAKE("Sendt i retur"),
         GODKJENT("Godkjent"),
     }

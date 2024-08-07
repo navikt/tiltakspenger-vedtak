@@ -7,16 +7,14 @@ enum class TiltakskildeDb {
     Komet,
 }
 
-internal fun String.toTiltakskilde(): Tiltakskilde {
-    return when (TiltakskildeDb.valueOf(this)) {
+internal fun String.toTiltakskilde(): Tiltakskilde =
+    when (TiltakskildeDb.valueOf(this)) {
         TiltakskildeDb.Arena -> Tiltakskilde.Arena
         TiltakskildeDb.Komet -> Tiltakskilde.Komet
     }
-}
 
-internal fun Tiltakskilde.toDb(): String {
-    return when (this) {
+internal fun Tiltakskilde.toDb(): String =
+    when (this) {
         Tiltakskilde.Arena -> TiltakskildeDb.Arena
         Tiltakskilde.Komet -> TiltakskildeDb.Komet
     }.toString()
-}

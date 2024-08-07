@@ -16,35 +16,32 @@ internal data class PeriodisertUtfallDbJson(
         UAVKLART,
         ;
 
-        fun toDomain(): UtfallForPeriode {
-            return when (this) {
+        fun toDomain(): UtfallForPeriode =
+            when (this) {
                 OPPFYLT -> UtfallForPeriode.OPPFYLT
                 IKKE_OPPFYLT -> UtfallForPeriode.IKKE_OPPFYLT
                 UAVKLART -> UtfallForPeriode.UAVKLART
             }
-        }
     }
 }
 
-internal fun Periodisering<UtfallForPeriode>.toDbJson(): List<PeriodisertUtfallDbJson> {
-    return this.perioder().map {
+internal fun Periodisering<UtfallForPeriode>.toDbJson(): List<PeriodisertUtfallDbJson> =
+    this.perioder().map {
         PeriodisertUtfallDbJson(
             utfall = it.verdi.toDbJson(),
             periode = it.periode.toDbJson(),
         )
     }
-}
 
-internal fun UtfallForPeriode.toDbJson(): PeriodisertUtfallDbJson.UtfallDbJson {
-    return when (this) {
+internal fun UtfallForPeriode.toDbJson(): PeriodisertUtfallDbJson.UtfallDbJson =
+    when (this) {
         UtfallForPeriode.OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.OPPFYLT
         UtfallForPeriode.IKKE_OPPFYLT -> PeriodisertUtfallDbJson.UtfallDbJson.IKKE_OPPFYLT
         UtfallForPeriode.UAVKLART -> PeriodisertUtfallDbJson.UtfallDbJson.UAVKLART
     }
-}
 
-internal fun List<PeriodisertUtfallDbJson>.toDomain(): Periodisering<UtfallForPeriode> {
-    return Periodisering(
+internal fun List<PeriodisertUtfallDbJson>.toDomain(): Periodisering<UtfallForPeriode> =
+    Periodisering(
         this.map {
             PeriodeMedVerdi(
                 periode = it.periode.toDomain(),
@@ -52,4 +49,3 @@ internal fun List<PeriodisertUtfallDbJson>.toDomain(): Periodisering<UtfallForPe
             )
         },
     )
-}

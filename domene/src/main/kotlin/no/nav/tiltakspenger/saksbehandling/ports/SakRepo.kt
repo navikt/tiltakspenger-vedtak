@@ -10,10 +10,19 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 
 interface SakRepo {
     fun hentForIdent(fnr: Fnr): Saker
+
     fun hentForSaksnummer(saksnummer: Saksnummer): Sak?
-    fun lagre(sak: Sak, transactionContext: TransactionContext? = null): Sak
+
+    fun lagre(
+        sak: Sak,
+        transactionContext: TransactionContext? = null,
+    ): Sak
+
     fun hent(sakId: SakId): Sak?
+
     fun hentSakDetaljer(sakId: SakId): SakDetaljer?
+
     fun hentForJournalpostId(journalpostId: String): Sak?
+
     fun hentNesteSaksnummer(): Saksnummer
 }

@@ -10,14 +10,15 @@ internal class PostgresSøknadRepo(
     private val sessionFactory: PostgresSessionFactory,
     private val søknadDAO: SøknadDAO,
 ) : SøknadRepo {
-
-    override fun hentSøknad(søknadId: SøknadId): Søknad {
-        return sessionFactory.withSession {
+    override fun hentSøknad(søknadId: SøknadId): Søknad =
+        sessionFactory.withSession {
             søknadDAO.hentForSøknadId(søknadId, it)
         }
-    }
 
-    override fun lagre(søknad: Søknad, txContext: TransactionContext?) {
+    override fun lagre(
+        søknad: Søknad,
+        txContext: TransactionContext?,
+    ) {
         sessionFactory.withTransaction(txContext) {
             søknadDAO.lagreHeleSøknaden(søknad, it)
         }
@@ -26,9 +27,8 @@ internal class PostgresSøknadRepo(
     /**
      * TODO jah: Denne kan potensielt hente veldig mye data, bør kun hente akkurat det vi trenger i frontend.
      */
-    override fun hentAlleSøknader(): List<Søknad> {
-        return sessionFactory.withSession {
+    override fun hentAlleSøknader(): List<Søknad> =
+        sessionFactory.withSession {
             søknadDAO.hentAlleSøknader(it)
         }
-    }
 }

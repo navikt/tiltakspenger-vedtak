@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
 
 class SaksoversiktPostgresRepoTest {
-
     @Test
     fun hentAlle() {
         withMigratedDb { dataSource ->
@@ -23,32 +22,33 @@ class SaksoversiktPostgresRepoTest {
             val søknad1 = testDataHelper.persisterSøknad()
             val (sak, søknad2) = testDataHelper.persisterOpprettetFørstegangsbehandling()
             repo.hentAlle().also {
-                it shouldBe Saksoversikt(
-                    listOf(
-                        BehandlingEllerSøknadForSaksoversikt(
-                            periode = null,
-                            status = BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
-                            behandlingstype = SØKNAD,
-                            fnr = søknad1.personopplysninger.fnr,
-                            saksnummer = null,
-                            saksbehandler = null,
-                            beslutter = null,
-                            sakId = null,
-                            id = søknad1.id,
+                it shouldBe
+                    Saksoversikt(
+                        listOf(
+                            BehandlingEllerSøknadForSaksoversikt(
+                                periode = null,
+                                status = BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
+                                behandlingstype = SØKNAD,
+                                fnr = søknad1.personopplysninger.fnr,
+                                saksnummer = null,
+                                saksbehandler = null,
+                                beslutter = null,
+                                sakId = null,
+                                id = søknad1.id,
+                            ),
+                            BehandlingEllerSøknadForSaksoversikt(
+                                periode = ObjectMother.vurderingsperiode(),
+                                status = BehandlingEllerSøknadForSaksoversikt.Status.Behandling(Behandlingsstatus.UNDER_BEHANDLING),
+                                behandlingstype = FØRSTEGANGSBEHANDLING,
+                                fnr = søknad2.personopplysninger.fnr,
+                                saksnummer = sak.saksnummer,
+                                saksbehandler = sak.førstegangsbehandling.saksbehandler!!,
+                                beslutter = null,
+                                sakId = sak.id,
+                                id = sak.førstegangsbehandling.id,
+                            ),
                         ),
-                        BehandlingEllerSøknadForSaksoversikt(
-                            periode = ObjectMother.vurderingsperiode(),
-                            status = BehandlingEllerSøknadForSaksoversikt.Status.Behandling(Behandlingsstatus.UNDER_BEHANDLING),
-                            behandlingstype = FØRSTEGANGSBEHANDLING,
-                            fnr = søknad2.personopplysninger.fnr,
-                            saksnummer = sak.saksnummer,
-                            saksbehandler = sak.førstegangsbehandling.saksbehandler!!,
-                            beslutter = null,
-                            sakId = sak.id,
-                            id = sak.førstegangsbehandling.id,
-                        ),
-                    ),
-                )
+                    )
             }
         }
     }

@@ -15,18 +15,20 @@ internal fun TestDataHelper.persisterSøknad(
     deltakelseFom: LocalDate = 1.januar(2023),
     deltakelseTom: LocalDate = 31.mars(2023),
     journalpostId: String = random.nextInt().toString(),
-    søknad: Søknad = ObjectMother.nySøknad(
-        journalpostId = journalpostId,
-        personopplysninger = ObjectMother.personSøknad(
-            fnr = fnr,
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            journalpostId = journalpostId,
+            personopplysninger =
+            ObjectMother.personSøknad(
+                fnr = fnr,
+            ),
+            tiltak =
+            ObjectMother.søknadTiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
+            ),
+            barnetillegg = listOf(),
         ),
-        tiltak = ObjectMother.søknadTiltak(
-            deltakelseFom = deltakelseFom,
-            deltakelseTom = deltakelseTom,
-        ),
-        barnetillegg = listOf(),
-    ),
-
 ): Søknad {
     this.søknadRepo.lagre(søknad)
     return søknadRepo.hentSøknad(søknad.id).also {

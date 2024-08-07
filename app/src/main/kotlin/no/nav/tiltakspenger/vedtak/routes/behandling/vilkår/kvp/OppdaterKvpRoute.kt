@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
-import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingPath
+import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -33,9 +33,13 @@ fun Route.oppdaterKvpRoute(
         /** Drop-down i frontend. */
         val årsakTilEndring: ÅrsakTilEndringDTO,
     ) {
-        fun toCommand(behandlingId: BehandlingId, saksbehandler: Saksbehandler): LeggTilKvpSaksopplysningCommand {
-            return LeggTilKvpSaksopplysningCommand(
-                deltakelseForPeriode = this.ytelseForPeriode.map {
+        fun toCommand(
+            behandlingId: BehandlingId,
+            saksbehandler: Saksbehandler,
+        ): LeggTilKvpSaksopplysningCommand =
+            LeggTilKvpSaksopplysningCommand(
+                deltakelseForPeriode =
+                this.ytelseForPeriode.map {
                     LeggTilKvpSaksopplysningCommand.DeltakelseForPeriode(
                         periode = it.periode.toDomain(),
                         deltar = it.deltar,
@@ -45,24 +49,26 @@ fun Route.oppdaterKvpRoute(
                 behandlingId = behandlingId,
                 saksbehandler = saksbehandler,
             )
-        }
     }
-    post("$behandlingPath/{behandlingId}/vilkar/kvp") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/{behandlingId}/vilkar/kvp")
+    post("$BEHANDLING_PATH/{behandlingId}/vilkar/kvp") {
+        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/kvp")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val body = call.receive<Body>()
         if (body.ytelseForPeriode.isEmpty()) {
-            throw IllegalArgumentException("Dersom saksbehandler ønsker å legge til en kvp-saksopplysning må hen spesifisere minst én periode")
-        }
-        kvpVilkårService.leggTilSaksopplysning(
-            body.toCommand(behandlingId, saksbehandler),
-        ).let {
-            call.respond(
-                status = HttpStatusCode.Created,
-                message = it.vilkårssett.kvpVilkår.toDTO(),
+            throw IllegalArgumentException(
+                "Dersom saksbehandler ønsker å legge til en kvp-saksopplysning må hen spesifisere minst én periode",
             )
         }
+        kvpVilkårService
+            .leggTilSaksopplysning(
+                body.toCommand(behandlingId, saksbehandler),
+            ).let {
+                call.respond(
+                    status = HttpStatusCode.Created,
+                    message = it.vilkårssett.kvpVilkår.toDTO(),
+                )
+            }
     }
 }

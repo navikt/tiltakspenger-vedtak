@@ -29,8 +29,8 @@ data class LivsoppholdVilkår private constructor(
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
-        return when {
+    override fun utfall(): Periodisering<UtfallForPeriode> =
+        when {
             avklartSaksopplysning == null -> {
                 Periodisering(
                     UtfallForPeriode.UAVKLART,
@@ -51,30 +51,46 @@ data class LivsoppholdVilkår private constructor(
             }
             else -> throw IllegalStateException("Ugyldig utfall")
         }
-    }
 
     init {
-        if (avklartSaksopplysning != null) require(avklartSaksopplysning.periode.inneholderHele(vurderingsperiode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
+        if (avklartSaksopplysning !=
+            null
+        ) {
+            require(
+                avklartSaksopplysning.periode.inneholderHele(vurderingsperiode),
+            ) { "Saksopplysningnen må dekke hele vurderingsperioden" }
+        }
         require(søknadssaksopplysning.periode.inneholderHele(vurderingsperiode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
         if (saksbehandlerSaksopplysning != null) {
-            require(saksbehandlerSaksopplysning.periode.inneholderHele(vurderingsperiode)) { "Saksopplysningnen må dekke hele vurderingsperioden" }
+            require(
+                saksbehandlerSaksopplysning.periode.inneholderHele(vurderingsperiode),
+            ) { "Saksopplysningnen må dekke hele vurderingsperioden" }
 
-            require(avklartSaksopplysning == saksbehandlerSaksopplysning) { "Om vi har saksopplysning fra saksbehandler må den avklarte saksopplysningen være fra saksbehandler" }
+            require(avklartSaksopplysning == saksbehandlerSaksopplysning) {
+                "Om vi har saksopplysning fra saksbehandler må den avklarte saksopplysningen være fra saksbehandler"
+            }
         } else {
-            require(avklartSaksopplysning == null) { "Dersom vi ikke har saksbehandlerSaksopplysning, skal avklartSaksopplysning være null" }
+            require(
+                avklartSaksopplysning == null,
+            ) { "Dersom vi ikke har saksbehandlerSaksopplysning, skal avklartSaksopplysning være null" }
         }
     }
 
-    val samletUtfall: SamletUtfall = when {
-        avklartSaksopplysning == null -> SamletUtfall.UAVKLART
-        avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.IKKE_OPPFYLT
-        !avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.OPPFYLT
-        else -> throw IllegalStateException("Livoppholdvilkår: Ugyldig utfall. harLivsoppholdYtelser: ${avklartSaksopplysning.harLivsoppholdYtelser}")
-    }
+    val samletUtfall: SamletUtfall =
+        when {
+            avklartSaksopplysning == null -> SamletUtfall.UAVKLART
+            avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.IKKE_OPPFYLT
+            !avklartSaksopplysning.harLivsoppholdYtelser -> SamletUtfall.OPPFYLT
+            else -> throw IllegalStateException(
+                "Livoppholdvilkår: Ugyldig utfall. harLivsoppholdYtelser: ${avklartSaksopplysning.harLivsoppholdYtelser}",
+            )
+        }
 
     data object PeriodenMåVæreLikVurderingsperioden
 
-    fun leggTilSaksbehandlerSaksopplysning(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, LivsoppholdVilkår> {
+    fun leggTilSaksbehandlerSaksopplysning(
+        command: LeggTilLivsoppholdSaksopplysningCommand,
+    ): Either<PeriodenMåVæreLikVurderingsperioden, LivsoppholdVilkår> {
         if (!vurderingsperiode.inneholderHele(command.harYtelseForPeriode.periode)) {
             return PeriodenMåVæreLikVurderingsperioden.left()
         }
@@ -86,24 +102,24 @@ data class LivsoppholdVilkår private constructor(
                 saksbehandler = command.saksbehandler,
                 periode = vurderingsperiode,
             )
-        return this.copy(
-            saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
-            avklartSaksopplysning = livsoppholdSaksopplysning,
-        ).right()
+        return this
+            .copy(
+                saksbehandlerSaksopplysning = livsoppholdSaksopplysning,
+                avklartSaksopplysning = livsoppholdSaksopplysning,
+            ).right()
     }
 
     companion object {
         fun opprett(
             søknadSaksopplysning: LivsoppholdSaksopplysning.Søknad,
             vurderingsperiode: Periode,
-        ): LivsoppholdVilkår {
-            return LivsoppholdVilkår(
+        ): LivsoppholdVilkår =
+            LivsoppholdVilkår(
                 søknadssaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = null,
                 vurderingsperiode = vurderingsperiode,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -114,15 +130,16 @@ data class LivsoppholdVilkår private constructor(
             avklartSaksopplysning: LivsoppholdSaksopplysning?,
             vurderingsperiode: Periode,
             utfall: Periodisering<UtfallForPeriode>,
-        ): LivsoppholdVilkår {
-            return LivsoppholdVilkår(
+        ): LivsoppholdVilkår =
+            LivsoppholdVilkår(
                 søknadssaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

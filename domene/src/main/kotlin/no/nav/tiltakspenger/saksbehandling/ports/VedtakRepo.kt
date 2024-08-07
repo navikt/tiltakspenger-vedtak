@@ -7,6 +7,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 
 interface VedtakRepo {
     fun hent(vedtakId: VedtakId): Vedtak?
+
     fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak
-    fun lagreVedtak(vedtak: Vedtak, context: TransactionContext? = null): Vedtak
+
+    fun lagreVedtak(
+        vedtak: Vedtak,
+        context: TransactionContext? = null,
+    ): Vedtak
 }

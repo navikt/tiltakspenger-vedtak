@@ -11,7 +11,6 @@ class IntroVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : IntroVilkårService {
-
     override fun leggTilSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
             behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling

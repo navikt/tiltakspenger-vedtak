@@ -16,19 +16,16 @@ enum class SamletUtfall {
     /**
      * @throws IllegalStateException dersom [SamletUtfall] er [UAVKLART]
      */
-    fun Periodisering<SamletUtfall>.toAvklartSamletUtfall(): Periodisering<AvklartSamletUtfall> {
-        return map { it.toAvklartSamletUtfall() }
-    }
+    fun Periodisering<SamletUtfall>.toAvklartSamletUtfall(): Periodisering<AvklartSamletUtfall> = map { it.toAvklartSamletUtfall() }
 
     /**
      * @throws IllegalStateException dersom [SamletUtfall] er [UAVKLART]
      */
-    fun toAvklartSamletUtfall(): AvklartSamletUtfall {
-        return when (this) {
+    fun toAvklartSamletUtfall(): AvklartSamletUtfall =
+        when (this) {
             OPPFYLT -> AvklartSamletUtfall.OPPFYLT
             DELVIS_OPPFYLT -> AvklartSamletUtfall.DELVIS_OPPFYLT
             IKKE_OPPFYLT -> AvklartSamletUtfall.IKKE_OPPFYLT
             UAVKLART -> throw IllegalStateException("Kan ikke konvertere UAVKLART til AvklartSamletUtfall")
         }
-    }
 }

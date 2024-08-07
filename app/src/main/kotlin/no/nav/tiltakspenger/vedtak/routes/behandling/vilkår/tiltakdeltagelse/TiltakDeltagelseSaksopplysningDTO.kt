@@ -13,14 +13,14 @@ internal data class TiltakDeltagelseSaksopplysningDTO(
     val kilde: TiltakDeltagelseKildeDTO,
 )
 
-internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO {
-    return TiltakDeltagelseSaksopplysningDTO(
+internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO =
+    TiltakDeltagelseSaksopplysningDTO(
         tiltakNavn = tiltakNavn,
-        kilde = when (kilde) {
+        kilde =
+        when (kilde) {
             Arena -> TiltakDeltagelseKildeDTO.ARENA
             Komet -> TiltakDeltagelseKildeDTO.KOMET
         },
         deltagelsePeriode = deltagelsePeriode.toDTO(),
         status = status.toDTO(),
     )
-}

@@ -21,9 +21,10 @@ internal class PersonHttpklient(
     endepunkt: String,
     private val azureTokenProvider: AzureTokenProvider,
 ) : PersonGateway {
-    private val personklient = FellesPersonklient.create(
-        endepunkt = endepunkt,
-    )
+    private val personklient =
+        FellesPersonklient.create(
+            endepunkt = endepunkt,
+        )
 
     /**
      * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
@@ -35,7 +36,9 @@ internal class PersonHttpklient(
             // TODO jah: Her har vi mulighet til å returnere Either.left istedet for å kaste.
             ifLeft = {
                 when (it) {
-                    is AdressebeskyttelseKunneIkkeAvklares -> throw RuntimeException("Feil ved henting av personopplysninger: AdressebeskyttelseKunneIkkeAvklares")
+                    is AdressebeskyttelseKunneIkkeAvklares -> throw RuntimeException(
+                        "Feil ved henting av personopplysninger: AdressebeskyttelseKunneIkkeAvklares",
+                    )
                     is DeserializationException -> throw RuntimeException(
                         "Feil ved henting av personopplysninger: DeserializationException",
                         it.exception,

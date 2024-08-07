@@ -42,26 +42,29 @@ data class Vilkårssett(
     val alderVilkår: AlderVilkår,
     val kravfristVilkår: KravfristVilkår,
 ) {
-    private val vilkårliste: List<Vilkår> = listOf(
-        institusjonsoppholdVilkår,
-        kvpVilkår,
-        tiltakDeltagelseVilkår,
-        introVilkår,
-        livsoppholdVilkår,
-        alderVilkår,
-        kravfristVilkår,
-    )
+    private val vilkårliste: List<Vilkår> =
+        listOf(
+            institusjonsoppholdVilkår,
+            kvpVilkår,
+            tiltakDeltagelseVilkår,
+            introVilkår,
+            livsoppholdVilkår,
+            alderVilkår,
+            kravfristVilkår,
+        )
 
-    val samletUtfall: SamletUtfall = when {
-        vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
-        vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
-        vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
-    }
+    val samletUtfall: SamletUtfall =
+        when {
+            vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
+            vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
+            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
+            else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
+        }
 
-    fun utfallsperioder(): Periodisering<UtfallForPeriode> = vilkårliste.fold(
-        Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode),
-    ) { total, vilkår -> total.kombiner(vilkår.utfall(), UtfallForPeriode::kombiner).slåSammenTilstøtendePerioder() }
+    fun utfallsperioder(): Periodisering<UtfallForPeriode> =
+        vilkårliste.fold(
+            Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode),
+        ) { total, vilkår -> total.kombiner(vilkår.utfall(), UtfallForPeriode::kombiner).slåSammenTilstøtendePerioder() }
 
     init {
         require(vurderingsperiode == institusjonsoppholdVilkår.vurderingsperiode) {
@@ -87,39 +90,42 @@ data class Vilkårssett(
         }
     }
 
-    fun oppdaterKVP(command: LeggTilKvpSaksopplysningCommand): Vilkårssett {
-        return this.copy(
+    fun oppdaterKVP(command: LeggTilKvpSaksopplysningCommand): Vilkårssett =
+        this.copy(
             kvpVilkår = kvpVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
-    }
 
-    fun oppdaterIntro(command: LeggTilIntroSaksopplysningCommand): Vilkårssett {
-        return this.copy(
+    fun oppdaterIntro(command: LeggTilIntroSaksopplysningCommand): Vilkårssett =
+        this.copy(
             introVilkår = introVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
-    }
 
-    fun oppdaterAlder(command: LeggTilAlderSaksopplysningCommand): Vilkårssett {
-        return this.copy(
+    fun oppdaterAlder(command: LeggTilAlderSaksopplysningCommand): Vilkårssett =
+        this.copy(
             alderVilkår = alderVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
-    }
 
-    fun oppdaterKravdato(command: LeggTilKravfristSaksopplysningCommand): Vilkårssett {
-        return this.copy(
+    fun oppdaterKravdato(command: LeggTilKravfristSaksopplysningCommand): Vilkårssett =
+        this.copy(
             kravfristVilkår = kravfristVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
-    }
 
-    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, Vilkårssett> {
-        return livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map { this.copy(livsoppholdVilkår = it) }
-    }
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, Vilkårssett> =
+        livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map {
+            this.copy(livsoppholdVilkår = it)
+        }
 
     companion object {
-        fun opprett(søknad: Søknad, fødselsdato: LocalDate, tiltak: Tiltak, vurderingsperiode: Periode): Vilkårssett {
-            return Vilkårssett(
+        fun opprett(
+            søknad: Søknad,
+            fødselsdato: LocalDate,
+            tiltak: Tiltak,
+            vurderingsperiode: Periode,
+        ): Vilkårssett =
+            Vilkårssett(
                 vurderingsperiode = vurderingsperiode,
-                institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
+                institusjonsoppholdVilkår =
+                InstitusjonsoppholdVilkår.opprett(
                     vurderingsperiode,
                     søknad.institusjonsoppholdSaksopplysning(
                         vurderingsperiode,
@@ -127,20 +133,22 @@ data class Vilkårssett(
                 ),
                 kvpVilkår = KVPVilkår.opprett(vurderingsperiode, søknad.kvpSaksopplysning(vurderingsperiode)),
                 introVilkår = IntroVilkår.opprett(vurderingsperiode, søknad.introSaksopplysning(vurderingsperiode)),
-                livsoppholdVilkår = LivsoppholdVilkår.opprett(
+                livsoppholdVilkår =
+                LivsoppholdVilkår.opprett(
                     søknad.livsoppholdSaksopplysning(vurderingsperiode),
                     vurderingsperiode,
                 ),
-                alderVilkår = AlderVilkår.opprett(
+                alderVilkår =
+                AlderVilkår.opprett(
                     Register.opprett(fødselsdato = fødselsdato),
                     vurderingsperiode,
                 ),
                 kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                tiltakDeltagelseVilkår = TiltakDeltagelseVilkår.opprett(
+                tiltakDeltagelseVilkår =
+                TiltakDeltagelseVilkår.opprett(
                     vurderingsperiode = vurderingsperiode,
                     registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
                 ),
             )
-        }
     }
 }

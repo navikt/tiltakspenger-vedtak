@@ -22,13 +22,10 @@ internal class PostgresPersonopplysningerRepo(
     private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    override fun hent(
-        sakId: SakId,
-    ): SakPersonopplysninger {
-        return sessionFactory.withTransaction { txSession ->
+    override fun hent(sakId: SakId): SakPersonopplysninger =
+        sessionFactory.withTransaction { txSession ->
             hent(sakId, txSession)
         }
-    }
 
     fun hent(
         sakId: SakId,
@@ -57,8 +54,10 @@ internal class PostgresPersonopplysningerRepo(
         personopplysninger.barnUtenIdent().forEach { barnUtenIdentDAO.lagre(sakId, it, txSession) }
     }
 
-    private fun hentPersonopplysningerForSak(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
+    private fun hentPersonopplysningerForSak(
+        sakId: SakId,
+        txSession: TransactionalSession,
+    ) = txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
         sakId: SakId,
@@ -89,8 +88,10 @@ internal class PostgresPersonopplysningerRepo(
         )
     }
 
-    private fun slett(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+    private fun slett(
+        sakId: SakId,
+        txSession: TransactionalSession,
+    ) = txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
         PersonopplysningerSøker(
@@ -116,7 +117,8 @@ internal class PostgresPersonopplysningerRepo(
     private val hentSql = "select * from sak_personopplysninger_søker where sakId = ?"
 
     @Language("SQL")
-    private val lagreSql = """
+    private val lagreSql =
+        """
         insert into sak_personopplysninger_søker (
             id,
             sakId,        
@@ -148,7 +150,7 @@ internal class PostgresPersonopplysningerRepo(
             :bydel,             
             :tidsstempelHosOss
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_PERSONOPPLYSNINGER = "poppl"

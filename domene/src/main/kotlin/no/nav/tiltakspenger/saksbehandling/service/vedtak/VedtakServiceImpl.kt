@@ -12,12 +12,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 class VedtakServiceImpl(
     private val vedtakRepo: VedtakRepo,
 ) : VedtakService {
+    override fun hentVedtak(vedtakId: VedtakId): Vedtak? = vedtakRepo.hent(vedtakId)
 
-    override fun hentVedtak(vedtakId: VedtakId): Vedtak? {
-        return vedtakRepo.hent(vedtakId)
-    }
-
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
-        return vedtakRepo.hentVedtakForBehandling(behandlingId)
-    }
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak = vedtakRepo.hentVedtakForBehandling(behandlingId)
 }

@@ -9,7 +9,6 @@ data class Skjerming(
     val barn: List<SkjermingPerson>,
     val innhentet: LocalDateTime,
 ) : Tidsstempler {
-
     override fun tidsstempelKilde() = innhentet
 
     override fun tidsstempelHosOss() = innhentet

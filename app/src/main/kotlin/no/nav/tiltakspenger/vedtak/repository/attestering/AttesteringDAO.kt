@@ -4,5 +4,8 @@ import kotliquery.TransactionalSession
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 
 interface AttesteringDAO {
-    fun lagre(attestering: Attestering, tx: TransactionalSession): Attestering
+    fun lagre(
+        attestering: Attestering,
+        tx: TransactionalSession,
+    ): Attestering
 }

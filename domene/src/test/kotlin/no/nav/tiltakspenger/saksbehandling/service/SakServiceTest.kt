@@ -87,16 +87,17 @@ internal class SakServiceTest {
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,
             )
-        sakService = SakServiceImpl(
-            sakRepo = sakRepo,
-            behandlingRepo = behandlingRepo,
-            behandlingService = behandlingService,
-            personGateway = personGateway,
-            skjermingGateway = skjermingGateway,
-            sessionFactory = sessionFactory,
-            søknadRepo = søknadRepo,
-            tiltakGateway = tiltakGateway,
-        )
+        sakService =
+            SakServiceImpl(
+                sakRepo = sakRepo,
+                behandlingRepo = behandlingRepo,
+                behandlingService = behandlingService,
+                personGateway = personGateway,
+                skjermingGateway = skjermingGateway,
+                sessionFactory = sessionFactory,
+                søknadRepo = søknadRepo,
+                tiltakGateway = tiltakGateway,
+            )
     }
 
     @AfterEach
@@ -143,12 +144,14 @@ internal class SakServiceTest {
 
     @Test
     fun `sjekk at skjerming blir satt riktig`() {
-        val søknad = nySøknad(
-            tiltak = søknadTiltak(
-                deltakelseFom = 1.januar(2023),
-                deltakelseTom = 31.mars(2023),
-            ),
-        )
+        val søknad =
+            nySøknad(
+                tiltak =
+                søknadTiltak(
+                    deltakelseFom = 1.januar(2023),
+                    deltakelseTom = 31.mars(2023),
+                ),
+            )
         val tiltak = ObjectMother.tiltak()
         val saksbehandler = ObjectMother.saksbehandler(roller = listOf(SAKSBEHANDLER, SKJERMING))
         val fnr = søknad.personopplysninger.fnr
@@ -162,18 +165,20 @@ internal class SakServiceTest {
 
         coEvery { skjermingGateway.erSkjermetPerson(fnr) } returns true
         coEvery { skjermingGateway.erSkjermetPerson(barnFnr) } returns false
-        coEvery { personGateway.hentPerson(any()) } returns listOf(
-            personopplysningKjedeligFyr(fnr = fnr),
-            barn(fnr = barnFnr),
-        )
+        coEvery { personGateway.hentPerson(any()) } returns
+            listOf(
+                personopplysningKjedeligFyr(fnr = fnr),
+                barn(fnr = barnFnr),
+            )
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
         every { behandlingRepo.hent(any(), any()) } returns behandlingUnderBehandlingUavklart()
         every { behandlingRepo.hentForSøknadId(any()) } returns null
         coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(tiltak)
 
-        val sak = sakService.startFørstegangsbehandling(søknad.id, saksbehandler).getOrElse {
-            throw IllegalStateException("Kunne ikke starte førstegangsbehandling + $it")
-        }
+        val sak =
+            sakService.startFørstegangsbehandling(søknad.id, saksbehandler).getOrElse {
+                throw IllegalStateException("Kunne ikke starte førstegangsbehandling + $it")
+            }
 
         sak.personopplysninger.søker().skjermet shouldBe true
         sak.personopplysninger.barnMedIdent(barnFnr)?.skjermet shouldBe false

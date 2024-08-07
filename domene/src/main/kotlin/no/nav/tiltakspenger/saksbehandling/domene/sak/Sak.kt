@@ -26,7 +26,6 @@ data class Sak(
     val personopplysninger: SakPersonopplysninger,
     val vedtak: List<Vedtak>,
 ) : SakDetaljer by sakDetaljer {
-
     init {
         if (behandlinger.isNotEmpty()) {
             require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
@@ -44,9 +43,7 @@ data class Sak(
     /**
      * Sjekker kode 6, 7 og skjermet
      */
-    fun harTilgang(saksbehandler: Saksbehandler): Boolean {
-        return personopplysninger.harTilgang(saksbehandler)
-    }
+    fun harTilgang(saksbehandler: Saksbehandler): Boolean = personopplysninger.harTilgang(saksbehandler)
 
     companion object {
         fun lagSak(
@@ -58,17 +55,20 @@ data class Sak(
             registrerteTiltak: List<Tiltak>,
         ): Either<KanIkkeOppretteBehandling, Sak> {
             val fnr = søknad.personopplysninger.fnr
-            val førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
-                sakId = sakId,
-                saksnummer = saksnummer,
-                fnr = fnr,
-                søknad = søknad,
-                fødselsdato = sakPersonopplysninger.søker().fødselsdato,
-                saksbehandler = saksbehandler,
-                registrerteTiltak = registrerteTiltak,
-            ).getOrElse { return it.left() }
+            val førstegangsbehandling =
+                Førstegangsbehandling
+                    .opprettBehandling(
+                        sakId = sakId,
+                        saksnummer = saksnummer,
+                        fnr = fnr,
+                        søknad = søknad,
+                        fødselsdato = sakPersonopplysninger.søker().fødselsdato,
+                        saksbehandler = saksbehandler,
+                        registrerteTiltak = registrerteTiltak,
+                    ).getOrElse { return it.left() }
             return Sak(
-                sakDetaljer = TynnSak(
+                sakDetaljer =
+                TynnSak(
                     id = sakId,
                     fnr = fnr,
                     saksnummer = saksnummer,

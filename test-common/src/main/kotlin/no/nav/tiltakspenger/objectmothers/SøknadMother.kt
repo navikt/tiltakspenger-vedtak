@@ -15,7 +15,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface SøknadMother {
-
     fun søknadTiltak(
         id: String = "arenaId",
         deltakelseFom: LocalDate = 1.januar(2022),
@@ -23,8 +22,8 @@ interface SøknadMother {
         arrangør: String = "arrangørnavn",
         typeKode: String = "JOBBK",
         typeNavn: String = "JOBBK",
-    ): SøknadsTiltak {
-        return SøknadsTiltak(
+    ): SøknadsTiltak =
+        SøknadsTiltak(
             id = id,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
@@ -32,7 +31,6 @@ interface SøknadMother {
             typeKode = typeKode,
             typeNavn = typeNavn,
         )
-    }
 
     fun barnetilleggMedIdent(
         oppholderSegIEØS: Søknad.JaNeiSpm = Søknad.JaNeiSpm.Ja,
@@ -41,15 +39,14 @@ interface SøknadMother {
         etternavn: String = "Etternavn Barn",
         fødselsdato: LocalDate = 14.juni(2012),
         søktBarnetillegg: Boolean = true,
-    ): Barnetillegg {
-        return Barnetillegg.FraPdl(
+    ): Barnetillegg =
+        Barnetillegg.FraPdl(
             oppholderSegIEØS = oppholderSegIEØS,
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
             fødselsdato = fødselsdato,
         )
-    }
 
     fun barnetilleggUtenIdent(
         oppholderSegIEØS: Søknad.JaNeiSpm = Søknad.JaNeiSpm.Ja,
@@ -57,15 +54,14 @@ interface SøknadMother {
         mellomnavn: String? = "Mellomnavn Barn",
         etternavn: String = "Etternavn Barn",
         fødselsdato: LocalDate = 14.juni(2012),
-    ): Barnetillegg {
-        return Barnetillegg.Manuell(
+    ): Barnetillegg =
+        Barnetillegg.Manuell(
             oppholderSegIEØS = oppholderSegIEØS,
             fornavn = fornavn,
             mellomnavn = mellomnavn,
             etternavn = etternavn,
             fødselsdato = fødselsdato,
         )
-    }
 
     fun personopplysningFødselsdato() = 1.januar(2000)
 
@@ -95,8 +91,8 @@ interface SøknadMother {
         supplerendeStønadAlder: Søknad.PeriodeSpm = periodeNei(),
         supplerendeStønadFlyktning: Søknad.PeriodeSpm = periodeNei(),
         jobbsjansen: Søknad.PeriodeSpm = periodeNei(),
-    ): Søknad {
-        return Søknad(
+    ): Søknad =
+        Søknad(
             versjon = versjon,
             id = id,
             journalpostId = journalpostId,
@@ -120,7 +116,6 @@ interface SøknadMother {
             jobbsjansen = jobbsjansen,
             trygdOgPensjon = trygdOgPensjon,
         )
-    }
 
     fun personSøknad(
         fornavn: String = "Fornavn",
@@ -133,20 +128,24 @@ interface SøknadMother {
     )
 
     fun nei() = Søknad.JaNeiSpm.Nei
+
     fun fraOgMedDatoNei() = Søknad.FraOgMedDatoSpm.Nei
+
     fun periodeNei() = Søknad.PeriodeSpm.Nei
+
     fun ja() = Søknad.JaNeiSpm.Ja
-    fun fraOgMedDatoJa(
-        fom: LocalDate = 1.januar(2022),
-    ) = Søknad.FraOgMedDatoSpm.Ja(
-        fra = fom,
-    )
+
+    fun fraOgMedDatoJa(fom: LocalDate = 1.januar(2022)) =
+        Søknad.FraOgMedDatoSpm.Ja(
+            fra = fom,
+        )
 
     fun periodeJa(
         fom: LocalDate = 1.januar(2022),
         tom: LocalDate = 31.januar(2022),
     ) = Søknad.PeriodeSpm.Ja(
-        periode = Periode(
+        periode =
+        Periode(
             fraOgMed = fom,
             tilOgMed = tom,
         ),

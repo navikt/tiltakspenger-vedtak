@@ -5,8 +5,9 @@ package no.nav.tiltakspenger.saksbehandling.domene.tiltak
  * Hvis vi ønsker denne i domenet på tvers av appene våre kan denne flyttes til libs.
  * Doc: https://confluence.adeo.no/pages/viewpage.action?pageId=573710206
  */
-enum class TiltakDeltakerstatus(val rettTilÅSøke: Boolean) {
-
+enum class TiltakDeltakerstatus(
+    val rettTilÅSøke: Boolean,
+) {
     /**
      * Brukes både ved løpende inntak og kurs.
      * Brukeren er tildelt plass (vedtak fattet), men ennå ikke startet
@@ -77,11 +78,7 @@ enum class TiltakDeltakerstatus(val rettTilÅSøke: Boolean) {
     Vurderes(false),
     ;
 
-    fun deltar(): Boolean {
-        return this == Deltar
-    }
+    fun deltar(): Boolean = this == Deltar
 
-    fun harDeltattOgSluttet(): Boolean {
-        return this == HarSluttet || this == Avbrutt || this == Fullført
-    }
+    fun harDeltattOgSluttet(): Boolean = this == HarSluttet || this == Avbrutt || this == Fullført
 }

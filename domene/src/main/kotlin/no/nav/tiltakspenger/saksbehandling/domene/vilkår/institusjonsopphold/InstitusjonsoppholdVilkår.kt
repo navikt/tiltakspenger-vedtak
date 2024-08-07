@@ -20,17 +20,15 @@ data class InstitusjonsoppholdVilkår private constructor(
     val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
 ) : Vilkår {
-
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
-        return avklartSaksopplysning.opphold.map {
+    override fun utfall(): Periodisering<UtfallForPeriode> =
+        avklartSaksopplysning.opphold.map {
             when (it) {
                 OPPHOLD -> UtfallForPeriode.IKKE_OPPFYLT
                 IKKE_OPPHOLD -> UtfallForPeriode.OPPFYLT
             }
         }
-    }
 
     init {
         if (saksbehandlerSaksopplysning != null) {
@@ -50,14 +48,13 @@ data class InstitusjonsoppholdVilkår private constructor(
         fun opprett(
             vurderingsperiode: Periode,
             søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
-        ): InstitusjonsoppholdVilkår {
-            return InstitusjonsoppholdVilkår(
+        ): InstitusjonsoppholdVilkår =
+            InstitusjonsoppholdVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -68,15 +65,16 @@ data class InstitusjonsoppholdVilkår private constructor(
             saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
             utfall: Periodisering<UtfallForPeriode>,
-        ): InstitusjonsoppholdVilkår {
-            return InstitusjonsoppholdVilkår(
+        ): InstitusjonsoppholdVilkår =
+            InstitusjonsoppholdVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i InstitusjonsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i InstitusjonsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

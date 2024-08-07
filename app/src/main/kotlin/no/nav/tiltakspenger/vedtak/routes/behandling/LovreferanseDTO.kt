@@ -8,8 +8,9 @@ data class LovreferanseDTO(
     val beskrivelse: String,
 )
 
-internal fun Lovreferanse.toDTO() = LovreferanseDTO(
-    lovverk = this.lovverk,
-    paragraf = this.paragraf,
-    beskrivelse = this.beskrivelse,
-)
+internal fun Lovreferanse.toDTO() =
+    LovreferanseDTO(
+        lovverk = this.lovverk,
+        paragraf = this.paragraf,
+        beskrivelse = this.beskrivelse,
+    )

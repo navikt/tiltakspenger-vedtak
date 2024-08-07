@@ -19,10 +19,10 @@ sealed interface AlderSaksopplysning {
         override val saksbehandler = null
 
         companion object {
-            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register {
-                return Register(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
-            }
+            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register =
+                Register(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
         }
+
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }
         }

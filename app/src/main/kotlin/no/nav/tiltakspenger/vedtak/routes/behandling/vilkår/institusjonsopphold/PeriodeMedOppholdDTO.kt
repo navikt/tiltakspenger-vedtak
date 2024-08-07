@@ -15,13 +15,10 @@ enum class OppholdDTO {
     IKKE_OPPHOLD,
 }
 
-fun Opphold.toDTO(): OppholdDTO {
-    return OppholdDTO.valueOf(this.name)
-}
+fun Opphold.toDTO(): OppholdDTO = OppholdDTO.valueOf(this.name)
 
-fun PeriodeMedVerdi<Opphold>.toDTO(): PeriodeMedOppholdDTO {
-    return PeriodeMedOppholdDTO(
+fun PeriodeMedVerdi<Opphold>.toDTO(): PeriodeMedOppholdDTO =
+    PeriodeMedOppholdDTO(
         periode = this.periode.toDTO(),
         opphold = this.verdi.toDTO(),
     )
-}

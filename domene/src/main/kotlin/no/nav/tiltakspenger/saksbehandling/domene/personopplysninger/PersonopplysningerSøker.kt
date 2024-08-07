@@ -16,12 +16,17 @@ data class PersonopplysningerSøker(
     val skjermet: Boolean?,
     val kommune: String?,
     val bydel: String?,
-    val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
+    // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
+    val tidsstempelHosOss: LocalDateTime,
 ) : PersonopplysningerMedIdent {
     override fun avklartSkjerming(): Boolean = skjermet ?: throw IllegalStateException("Skjerming er ikke satt")
+
     override fun strengtFortrolig(): Boolean = (strengtFortrolig || strengtFortroligUtland)
+
     override fun fortrolig(): Boolean = fortrolig
+
     override fun skjermet(): Boolean = skjermet ?: true
+
     override fun fnr(): Fnr = fnr
 
     override fun equals(other: Any?): Boolean {

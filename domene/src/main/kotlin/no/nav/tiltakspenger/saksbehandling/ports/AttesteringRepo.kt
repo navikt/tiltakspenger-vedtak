@@ -5,6 +5,10 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 
 interface AttesteringRepo {
-    fun lagre(attestering: Attestering, context: TransactionContext? = null): Attestering
+    fun lagre(
+        attestering: Attestering,
+        context: TransactionContext? = null,
+    ): Attestering
+
     fun hentForBehandling(behandlingId: BehandlingId): List<Attestering>
 }

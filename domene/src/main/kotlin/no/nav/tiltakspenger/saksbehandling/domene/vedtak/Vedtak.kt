@@ -23,7 +23,10 @@ data class Vedtak(
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
 }
 
-enum class VedtaksType(val navn: String, val skalSendeBrev: Boolean) {
+enum class VedtaksType(
+    val navn: String,
+    val skalSendeBrev: Boolean,
+) {
     AVSLAG("Avslag", true),
     INNVILGELSE("Innvilgelse", true),
     STANS("Stans", true),

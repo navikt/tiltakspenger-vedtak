@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package no.nav.tiltakspenger.vedtak.clients.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
@@ -33,15 +35,16 @@ import java.time.LocalDateTime
 internal fun mapTiltak(
     tiltakDTO: List<TiltakDTO>,
     innhentet: LocalDateTime,
-): List<Tiltak> {
-    return tiltakDTO
+): List<Tiltak> =
+    tiltakDTO
         .filterNot { it.deltakelseFom == null }
         .filterNot { it.deltakelseTom == null }
         .map {
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = it.id,
-                gjennomføring = Gjennomføring(
+                gjennomføring =
+                Gjennomføring(
                     id = it.gjennomforing.id,
                     arrangørnavn = it.gjennomforing.arrangørnavn,
                     typeNavn = it.gjennomforing.typeNavn,
@@ -49,7 +52,8 @@ internal fun mapTiltak(
                     rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
                 ),
                 deltakelsesperiode = Periode(it.deltakelseFom!!, it.deltakelseTom!!),
-                deltakelseStatus = when (it.deltakelseStatus) {
+                deltakelseStatus =
+                when (it.deltakelseStatus) {
                     VURDERES -> Vurderes
                     VENTER_PA_OPPSTART -> VenterPåOppstart
                     DELTAR -> Deltar
@@ -63,13 +67,15 @@ internal fun mapTiltak(
                     FULLFORT -> Fullført
                 },
                 deltakelseProsent = it.deltakelseProsent,
-                kilde = when {
+                kilde =
+                when {
                     it.kilde.lowercase().contains("komet") -> Tiltakskilde.Komet
                     it.kilde.lowercase().contains("arena") -> Tiltakskilde.Arena
-                    else -> throw IllegalStateException("Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${it.kilde}. Forventet Arena eller Komet. Tiltaksid: ${it.id}")
+                    else -> throw IllegalStateException(
+                        "Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${it.kilde}. Forventet Arena eller Komet. Tiltaksid: ${it.id}",
+                    )
                 },
                 registrertDato = it.registrertDato,
                 innhentetTidspunkt = innhentet,
             )
         }
-}
