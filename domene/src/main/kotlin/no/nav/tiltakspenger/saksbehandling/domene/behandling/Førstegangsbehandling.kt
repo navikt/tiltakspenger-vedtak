@@ -116,12 +116,12 @@ data class Førstegangsbehandling(
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett =
-                    Vilkårssett.opprett(
-                        søknad = søknad,
-                        fødselsdato = fødselsdato,
-                        tiltak = tiltak,
-                        vurderingsperiode = vurderingsperiode,
-                    ),
+                Vilkårssett.opprett(
+                    søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    tiltak = tiltak,
+                    vurderingsperiode = vurderingsperiode,
+                ),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,

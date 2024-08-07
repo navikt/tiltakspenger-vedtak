@@ -68,11 +68,11 @@ data class Sak(
                     ).getOrElse { return it.left() }
             return Sak(
                 sakDetaljer =
-                    TynnSak(
-                        id = sakId,
-                        fnr = fnr,
-                        saksnummer = saksnummer,
-                    ),
+                TynnSak(
+                    id = sakId,
+                    fnr = fnr,
+                    saksnummer = saksnummer,
+                ),
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
                 personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),

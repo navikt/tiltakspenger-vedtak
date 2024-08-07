@@ -46,10 +46,10 @@ interface SakMother {
             nySøknad(
                 personopplysninger = søknadPersonopplysninger,
                 tiltak =
-                    søknadTiltak(
-                        deltakelseFom = vurderingsperiode.fraOgMed,
-                        deltakelseTom = vurderingsperiode.tilOgMed,
-                    ),
+                søknadTiltak(
+                    deltakelseFom = vurderingsperiode.fraOgMed,
+                    deltakelseTom = vurderingsperiode.tilOgMed,
+                ),
             ),
         registrerteTiltak: List<Tiltak> =
             listOf(

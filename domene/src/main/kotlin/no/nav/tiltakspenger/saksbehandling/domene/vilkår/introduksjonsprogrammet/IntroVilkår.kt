@@ -36,9 +36,9 @@ data class IntroVilkår private constructor(
         val introSaksopplysning =
             IntroSaksopplysning.Saksbehandler(
                 deltar =
-                    Periodisering(
-                        command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-                    ).utvid(DELTAR_IKKE, vurderingsperiode),
+                Periodisering(
+                    command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
+                ).utvid(DELTAR_IKKE, vurderingsperiode),
                 årsakTilEndring = command.årsakTilEndring,
                 saksbehandler = command.saksbehandler,
                 tidsstempel = LocalDateTime.now(),

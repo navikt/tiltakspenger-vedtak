@@ -310,10 +310,10 @@ interface VilkårMother {
                 behandlingId = behandlingId,
                 saksbehandler = saksbehandler,
                 harYtelseForPeriode =
-                    LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
-                        periode = vurderingsperiode,
-                        harYtelse = harLivsoppholdYtelser,
-                    ),
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = vurderingsperiode,
+                    harYtelse = harLivsoppholdYtelser,
+                ),
                 årsakTilEndring = årsakTilEndring,
             ),
     ): LivsoppholdVilkår =

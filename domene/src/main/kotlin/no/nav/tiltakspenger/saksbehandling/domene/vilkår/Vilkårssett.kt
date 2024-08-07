@@ -125,30 +125,30 @@ data class Vilkårssett(
             Vilkårssett(
                 vurderingsperiode = vurderingsperiode,
                 institusjonsoppholdVilkår =
-                    InstitusjonsoppholdVilkår.opprett(
+                InstitusjonsoppholdVilkår.opprett(
+                    vurderingsperiode,
+                    søknad.institusjonsoppholdSaksopplysning(
                         vurderingsperiode,
-                        søknad.institusjonsoppholdSaksopplysning(
-                            vurderingsperiode,
-                        ),
                     ),
+                ),
                 kvpVilkår = KVPVilkår.opprett(vurderingsperiode, søknad.kvpSaksopplysning(vurderingsperiode)),
                 introVilkår = IntroVilkår.opprett(vurderingsperiode, søknad.introSaksopplysning(vurderingsperiode)),
                 livsoppholdVilkår =
-                    LivsoppholdVilkår.opprett(
-                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
-                        vurderingsperiode,
-                    ),
+                LivsoppholdVilkår.opprett(
+                    søknad.livsoppholdSaksopplysning(vurderingsperiode),
+                    vurderingsperiode,
+                ),
                 alderVilkår =
-                    AlderVilkår.opprett(
-                        Register.opprett(fødselsdato = fødselsdato),
-                        vurderingsperiode,
-                    ),
+                AlderVilkår.opprett(
+                    Register.opprett(fødselsdato = fødselsdato),
+                    vurderingsperiode,
+                ),
                 kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                 tiltakDeltagelseVilkår =
-                    TiltakDeltagelseVilkår.opprett(
-                        vurderingsperiode = vurderingsperiode,
-                        registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
-                    ),
+                TiltakDeltagelseVilkår.opprett(
+                    vurderingsperiode = vurderingsperiode,
+                    registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
+                ),
             )
     }
 }

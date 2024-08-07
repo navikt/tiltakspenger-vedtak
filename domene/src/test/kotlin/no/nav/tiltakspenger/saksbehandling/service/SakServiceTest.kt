@@ -147,10 +147,10 @@ internal class SakServiceTest {
         val søknad =
             nySøknad(
                 tiltak =
-                    søknadTiltak(
-                        deltakelseFom = 1.januar(2023),
-                        deltakelseTom = 31.mars(2023),
-                    ),
+                søknadTiltak(
+                    deltakelseFom = 1.januar(2023),
+                    deltakelseTom = 31.mars(2023),
+                ),
             )
         val tiltak = ObjectMother.tiltak()
         val saksbehandler = ObjectMother.saksbehandler(roller = listOf(SAKSBEHANDLER, SKJERMING))

@@ -145,9 +145,9 @@ interface SøknadMother {
         tom: LocalDate = 31.januar(2022),
     ) = Søknad.PeriodeSpm.Ja(
         periode =
-            Periode(
-                fraOgMed = fom,
-                tilOgMed = tom,
-            ),
+        Periode(
+            fraOgMed = fom,
+            tilOgMed = tom,
+        ),
     )
 }

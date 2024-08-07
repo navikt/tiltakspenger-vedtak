@@ -26,9 +26,9 @@ internal class VilkårssettUtfallTest {
         val vilkårsett =
             ObjectMother.vilkårsett(
                 livsoppholdVilkår =
-                    ObjectMother.livsoppholdVilkår(
-                        saksopplysningCommand = null,
-                    ),
+                ObjectMother.livsoppholdVilkår(
+                    saksopplysningCommand = null,
+                ),
             )
         vilkårsett.utfallsperioder() shouldBe
             Periodisering(
@@ -43,9 +43,9 @@ internal class VilkårssettUtfallTest {
         shouldThrow<IkkeImplementertException> {
             ObjectMother.vilkårsett(
                 livsoppholdVilkår =
-                    ObjectMother.livsoppholdVilkår(
-                        harLivsoppholdYtelser = true,
-                    ),
+                ObjectMother.livsoppholdVilkår(
+                    harLivsoppholdYtelser = true,
+                ),
             )
         }.message shouldBe "Støtter ikke avslag enda."
     }

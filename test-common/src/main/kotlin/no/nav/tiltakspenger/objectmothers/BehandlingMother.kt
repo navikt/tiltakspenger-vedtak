@@ -77,10 +77,10 @@ interface BehandlingMother {
                 behandlingId = behandling.id,
                 saksbehandler = saksbehandler,
                 harYtelseForPeriode =
-                    LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
-                        periode = vurderingsperiode,
-                        harYtelse = false,
-                    ),
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = vurderingsperiode,
+                    harYtelse = false,
+                ),
                 årsakTilEndring = årsakTilEndring,
             ),
     ): Førstegangsbehandling =
@@ -113,10 +113,10 @@ interface BehandlingMother {
                 saksbehandler = saksbehandler,
                 årsakTilEndring = null,
                 harYtelseForPeriode =
-                    LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
-                        periode = behandling.vurderingsperiode,
-                        harYtelse = true,
-                    ),
+                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                    periode = behandling.vurderingsperiode,
+                    harYtelse = true,
+                ),
             ),
         )
 

@@ -11,9 +11,9 @@ fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): Insti
         is Søknad.PeriodeSpm.Nei ->
             InstitusjonsoppholdSaksopplysning.Søknad(
                 opphold =
-                    Periodisering(
-                        listOf(PeriodeMedVerdi(Opphold.IKKE_OPPHOLD, vurderingsperiode)),
-                    ),
+                Periodisering(
+                    listOf(PeriodeMedVerdi(Opphold.IKKE_OPPHOLD, vurderingsperiode)),
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
 
@@ -23,10 +23,10 @@ fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): Insti
             }
             InstitusjonsoppholdSaksopplysning.Søknad(
                 opphold =
-                    Periodisering(Opphold.IKKE_OPPHOLD, vurderingsperiode).setVerdiForDelPeriode(
-                        Opphold.OPPHOLD,
-                        institusjon.periode,
-                    ),
+                Periodisering(Opphold.IKKE_OPPHOLD, vurderingsperiode).setVerdiForDelPeriode(
+                    Opphold.OPPHOLD,
+                    institusjon.periode,
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
         }

@@ -49,9 +49,9 @@ data class KVPVilkår private constructor(
         val kvpSaksopplysning =
             KvpSaksopplysning.Saksbehandler(
                 deltar =
-                    Periodisering(
-                        command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-                    ).utvid(Deltagelse.DELTAR_IKKE, vurderingsperiode),
+                Periodisering(
+                    command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
+                ).utvid(Deltagelse.DELTAR_IKKE, vurderingsperiode),
                 årsakTilEndring = command.årsakTilEndring,
                 saksbehandler = command.saksbehandler,
                 tidsstempel = LocalDateTime.now(),

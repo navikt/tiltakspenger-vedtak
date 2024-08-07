@@ -15,9 +15,13 @@ internal data class SaksbehandlerDbJson(
         STRENGT_FORTROLIG_ADRESSE,
         SKJERMING,
         LAGE_HENDELSER,
-        DRIFT, // Systemadministrator (oss)
+
+        // Systemadministrator (oss)
+        DRIFT,
         BESLUTTER,
-        ADMINISTRATOR, // Saksbehandlers administrator (superbruker)
+
+        // Saksbehandlers administrator (superbruker)
+        ADMINISTRATOR,
         ;
 
         fun toDomain(): Rolle =

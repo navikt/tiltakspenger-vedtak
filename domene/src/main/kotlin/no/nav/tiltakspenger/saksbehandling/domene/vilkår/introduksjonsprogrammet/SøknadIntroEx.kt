@@ -12,9 +12,9 @@ fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning
         is Søknad.PeriodeSpm.Nei ->
             IntroSaksopplysning.Søknad(
                 deltar =
-                    Periodisering(
-                        listOf(PeriodeMedVerdi(Deltagelse.DELTAR_IKKE, vurderingsperiode)),
-                    ),
+                Periodisering(
+                    listOf(PeriodeMedVerdi(Deltagelse.DELTAR_IKKE, vurderingsperiode)),
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
 
@@ -24,10 +24,10 @@ fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning
             }
             IntroSaksopplysning.Søknad(
                 deltar =
-                    Periodisering(Deltagelse.DELTAR_IKKE, vurderingsperiode).setVerdiForDelPeriode(
-                        Deltagelse.DELTAR,
-                        intro.periode,
-                    ),
+                Periodisering(Deltagelse.DELTAR_IKKE, vurderingsperiode).setVerdiForDelPeriode(
+                    Deltagelse.DELTAR,
+                    intro.periode,
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
         }

@@ -12,9 +12,9 @@ fun Søknad.kvpSaksopplysning(vurderingsperiode: Periode): KvpSaksopplysning =
         is Søknad.PeriodeSpm.Nei ->
             KvpSaksopplysning.Søknad(
                 deltar =
-                    Periodisering(
-                        listOf(PeriodeMedVerdi(Deltagelse.DELTAR_IKKE, vurderingsperiode)),
-                    ),
+                Periodisering(
+                    listOf(PeriodeMedVerdi(Deltagelse.DELTAR_IKKE, vurderingsperiode)),
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
 
@@ -24,10 +24,10 @@ fun Søknad.kvpSaksopplysning(vurderingsperiode: Periode): KvpSaksopplysning =
             }
             KvpSaksopplysning.Søknad(
                 deltar =
-                    Periodisering(Deltagelse.DELTAR_IKKE, vurderingsperiode).setVerdiForDelPeriode(
-                        Deltagelse.DELTAR,
-                        kvp.periode,
-                    ),
+                Periodisering(Deltagelse.DELTAR_IKKE, vurderingsperiode).setVerdiForDelPeriode(
+                    Deltagelse.DELTAR,
+                    kvp.periode,
+                ),
                 tidsstempel = LocalDateTime.now(),
             )
         }

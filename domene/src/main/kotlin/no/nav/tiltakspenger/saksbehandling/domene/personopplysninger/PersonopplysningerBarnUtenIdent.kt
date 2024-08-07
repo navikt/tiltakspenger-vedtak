@@ -8,7 +8,9 @@ data class PersonopplysningerBarnUtenIdent(
     val fornavn: String?,
     val mellomnavn: String?,
     val etternavn: String?,
-    val tidsstempelHosOss: LocalDateTime, // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
+
+    // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)
+    val tidsstempelHosOss: LocalDateTime,
 ) : Personopplysninger {
     override fun avklartSkjerming(): Boolean = false
 
