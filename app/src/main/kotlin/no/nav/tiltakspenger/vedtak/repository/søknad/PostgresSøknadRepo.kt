@@ -23,12 +23,4 @@ internal class PostgresSøknadRepo(
             søknadDAO.lagreHeleSøknaden(søknad, it)
         }
     }
-
-    /**
-     * TODO jah: Denne kan potensielt hente veldig mye data, bør kun hente akkurat det vi trenger i frontend.
-     */
-    override fun hentAlleSøknader(): List<Søknad> =
-        sessionFactory.withSession {
-            søknadDAO.hentAlleSøknader(it)
-        }
 }

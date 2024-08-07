@@ -59,30 +59,16 @@ internal class PostgresBehandlingRepo(
         hentOrNull(behandlingId, sessionContext)
             ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
 
-    /**
-     * TODO jah: Denne kan potensielt hente veldig mye data, bør kun hente akkurat det vi trenger i frontend.
-     */
-    override fun hentAlle(): List<Førstegangsbehandling> =
+    override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> =
         sessionFactory.withSession { session ->
             session.run(
-                queryOf(
-                    sqlHentAlleBehandlinger,
-                ).map { row ->
-                    row.toBehandling(session)
-                }.asList,
-            )
-        }
-
-    override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> =
-        sessionFactory.withTransaction { txSession ->
-            txSession.run(
                 queryOf(
                     sqlHentBehandlingForIdent,
                     mapOf(
                         "ident" to fnr.verdi,
                     ),
                 ).map { row ->
-                    row.toBehandling(txSession)
+                    row.toBehandling(session)
                 }.asList,
             )
         }
@@ -110,22 +96,22 @@ internal class PostgresBehandlingRepo(
         }
 
     override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? =
-        sessionFactory.withTransaction { txSession ->
-            txSession.run(
+        sessionFactory.withSession { session ->
+            session.run(
                 queryOf(
                     sqlHentBehandlingForJournalpostId,
                     mapOf(
                         "journalpostId" to journalpostId,
                     ),
                 ).map { row ->
-                    row.toBehandling(txSession)
+                    row.toBehandling(session)
                 }.asSingle,
             )
         }
 
     override fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling? =
-        sessionFactory.withTransaction { txSession ->
-            txSession.run(
+        sessionFactory.withSession { session ->
+            session.run(
                 queryOf(
                     """
                     select b.*,sak.saksnummer,sak.ident
@@ -138,7 +124,7 @@ internal class PostgresBehandlingRepo(
                         "id" to søknadId.toString(),
                     ),
                 ).map { row ->
-                    row.toBehandling(txSession)
+                    row.toBehandling(session)
                 }.asSingle,
             )
         }
@@ -172,12 +158,12 @@ internal class PostgresBehandlingRepo(
     private fun oppdaterBehandling(
         sistEndret: LocalDateTime,
         behandling: Behandling,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
 
         val antRaderOppdatert =
-            txSession.run(
+            session.run(
                 queryOf(
                     sqlOppdaterBehandling,
                     mapOf(
@@ -201,13 +187,13 @@ internal class PostgresBehandlingRepo(
 
     private fun opprettBehandling(
         behandling: Behandling,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
         val nå = nå()
 
-        txSession.run(
+        session.run(
             queryOf(
                 sqlOpprettBehandling,
                 mapOf(
@@ -228,9 +214,9 @@ internal class PostgresBehandlingRepo(
 
     private fun hentSistEndret(
         behandlingId: BehandlingId,
-        txSession: TransactionalSession,
+        session: Session,
     ): LocalDateTime? =
-        txSession.run(
+        session.run(
             queryOf(
                 sqlHentSistEndret,
                 mapOf(

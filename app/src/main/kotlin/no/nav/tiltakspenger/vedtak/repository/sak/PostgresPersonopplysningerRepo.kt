@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
@@ -23,17 +24,17 @@ internal class PostgresPersonopplysningerRepo(
     private val securelog = KotlinLogging.logger("tjenestekall")
 
     override fun hent(sakId: SakId): SakPersonopplysninger =
-        sessionFactory.withTransaction { txSession ->
-            hent(sakId, txSession)
+        sessionFactory.withSession { session ->
+            hent(sakId, session)
         }
 
     fun hent(
         sakId: SakId,
-        txSession: TransactionalSession,
+        session: Session,
     ): SakPersonopplysninger {
-        val søker = hentPersonopplysningerForSak(sakId, txSession) ?: return SakPersonopplysninger()
-        val barnMedIdent = barnMedIdentDAO.hent(sakId, txSession)
-        val barnUtenIdent = barnUtenIdentDAO.hent(sakId, txSession)
+        val søker = hentPersonopplysningerForSak(sakId, session) ?: return SakPersonopplysninger()
+        val barnMedIdent = barnMedIdentDAO.hent(sakId, session)
+        val barnUtenIdent = barnUtenIdentDAO.hent(sakId, session)
 
         return SakPersonopplysninger(listOf(søker) + barnMedIdent + barnUtenIdent)
     }
@@ -56,16 +57,16 @@ internal class PostgresPersonopplysningerRepo(
 
     private fun hentPersonopplysningerForSak(
         sakId: SakId,
-        txSession: TransactionalSession,
-    ) = txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
+        session: Session,
+    ) = session.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
         sakId: SakId,
         personopplysninger: PersonopplysningerSøker,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
-        txSession.run(
+        session.run(
             queryOf(
                 lagreSql,
                 mapOf(
@@ -90,8 +91,8 @@ internal class PostgresPersonopplysningerRepo(
 
     private fun slett(
         sakId: SakId,
-        txSession: TransactionalSession,
-    ) = txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+        session: Session,
+    ) = session.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
         PersonopplysningerSøker(

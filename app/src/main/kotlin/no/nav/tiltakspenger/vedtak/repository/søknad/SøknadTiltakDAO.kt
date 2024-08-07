@@ -35,9 +35,9 @@ internal class SøknadTiltakDAO {
     private fun lagreTiltak(
         søknadId: SøknadId,
         tiltak: SøknadsTiltak,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(
                 lagreTiltak,
                 mapOf(
@@ -56,9 +56,9 @@ internal class SøknadTiltakDAO {
 
     private fun slettTiltak(
         søknadId: SøknadId,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
+        session.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
     }
 
     private fun Row.toTiltak(): SøknadsTiltak {

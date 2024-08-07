@@ -34,9 +34,9 @@ internal class VedleggDAO {
     private fun lagreVedlegg(
         søknadId: SøknadId,
         vedlegg: Vedlegg,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(
                 lagreVedlegg,
                 mapOf(
@@ -52,9 +52,9 @@ internal class VedleggDAO {
 
     private fun slett(
         søknadId: SøknadId,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(slettVedlegg, søknadId.toString()).asUpdate,
         )
     }

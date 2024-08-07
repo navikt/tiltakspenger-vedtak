@@ -16,7 +16,6 @@ fun Row.periodeSpm(navn: String): Søknad.PeriodeSpm {
     val type = string(navn + TYPE_SUFFIX)
     val fom = localDateOrNull(navn + FOM_SUFFIX)
     val tom = localDateOrNull(navn + TOM_SUFFIX)
-    // TODO: Dobbeltsjekke at det er lovlige kombinasjoner som leses opp?
     return when (type) {
         JA -> Søknad.PeriodeSpm.Ja(Periode(fom!!, tom!!))
         NEI -> Søknad.PeriodeSpm.Nei
@@ -27,7 +26,6 @@ fun Row.periodeSpm(navn: String): Søknad.PeriodeSpm {
 fun Row.fraOgMedDatoSpm(navn: String): Søknad.FraOgMedDatoSpm {
     val type = string(navn + TYPE_SUFFIX)
     val fom = localDateOrNull(navn + FOM_SUFFIX)
-    // TODO: Dobbeltsjekke at det er lovlige kombinasjoner som leses opp?
     return when (type) {
         JA -> Søknad.FraOgMedDatoSpm.Ja(fom!!)
         NEI -> Søknad.FraOgMedDatoSpm.Nei

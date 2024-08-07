@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import kotliquery.Row
-import kotliquery.TransactionalSession
+import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.SakId
@@ -14,16 +14,16 @@ internal class PersonopplysningerBarnUtenIdentRepo {
 
     internal fun hent(
         sakId: SakId,
-        txSession: TransactionalSession,
-    ) = txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
+        session: Session,
+    ) = session.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
 
     internal fun lagre(
         sakId: SakId,
         personopplysninger: PersonopplysningerBarnUtenIdent,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         securelog.info { "Lagre personopplysninger for barn uten ident $personopplysninger" }
-        txSession.run(
+        session.run(
             queryOf(
                 lagreSql,
                 mapOf(
@@ -41,8 +41,8 @@ internal class PersonopplysningerBarnUtenIdentRepo {
 
     internal fun slett(
         sakId: SakId,
-        txSession: TransactionalSession,
-    ) = txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+        session: Session,
+    ) = session.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerBarnUtenIdent = { row ->
         PersonopplysningerBarnUtenIdent(

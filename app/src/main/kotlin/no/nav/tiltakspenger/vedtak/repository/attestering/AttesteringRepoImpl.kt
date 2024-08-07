@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.attestering
 
 import kotliquery.Row
-import kotliquery.TransactionalSession
+import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
@@ -19,17 +19,17 @@ internal class AttesteringRepoImpl(
     // Attestering lagres alltid sammen med Behandling.
     override fun lagre(
         attestering: Attestering,
-        context: TransactionContext?,
+        sessionContext: SessionContext?,
     ): Attestering =
-        sessionFactory.withTransaction(context) { tx ->
-            lagre(attestering, tx)
+        sessionFactory.withSession(sessionContext) { session ->
+            lagre(attestering, session)
         }
 
     override fun lagre(
         attestering: Attestering,
-        tx: TransactionalSession,
+        session: Session,
     ): Attestering {
-        tx.run(
+        session.run(
             queryOf(
                 sqlLagre,
                 mapOf(
@@ -46,8 +46,8 @@ internal class AttesteringRepoImpl(
     }
 
     override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> =
-        sessionFactory.withTransaction { tx ->
-            tx.run(
+        sessionFactory.withSession { session ->
+            session.run(
                 queryOf(
                     sqlHentForBehandling,
                     mapOf(

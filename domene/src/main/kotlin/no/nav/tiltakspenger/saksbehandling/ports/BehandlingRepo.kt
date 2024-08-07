@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 interface BehandlingRepo {
     fun lagre(
         behandling: Behandling,
-        context: TransactionContext? = null,
+        transactionContext: TransactionContext? = null,
     )
 
     fun hentOrNull(
@@ -25,8 +25,6 @@ interface BehandlingRepo {
         behandlingId: BehandlingId,
         sessionContext: SessionContext? = null,
     ): Behandling
-
-    fun hentAlle(): List<Førstegangsbehandling>
 
     fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling>
 

@@ -13,11 +13,11 @@ internal class BarnetilleggDAO {
     fun lagre(
         søknadId: SøknadId,
         barnetillegg: List<Barnetillegg>,
-        txSession: TransactionalSession,
+        session: TransactionalSession,
     ) {
-        slettBarnetillegg(søknadId, txSession)
+        slettBarnetillegg(søknadId, session)
         barnetillegg.forEach {
-            lagreBarnetillegg(søknadId, it, txSession)
+            lagreBarnetillegg(søknadId, it, session)
         }
     }
 

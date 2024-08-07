@@ -29,9 +29,9 @@ internal class SøknadDAO(
 ) {
     fun finnIdent(
         søknadId: String,
-        txSession: TransactionalSession,
+        session: Session,
     ): String? =
-        txSession.run(
+        session.run(
             queryOf(sqlHentIdent, søknadId)
                 .map { row -> row.toIdent() }
                 .asSingle,
@@ -39,19 +39,12 @@ internal class SøknadDAO(
 
     fun finnJournalpostId(
         søknadId: String,
-        txSession: TransactionalSession,
+        session: Session,
     ): String? =
-        txSession.run(
+        session.run(
             queryOf(sqlHentIdent, søknadId)
                 .map { row -> row.toJournalpostId() }
                 .asSingle,
-        )
-
-    fun hentAlleSøknader(session: Session): List<Søknad> =
-        session.run(
-            queryOf("select * from søknad")
-                .map { row -> row.toSøknad(session) }
-                .asList,
         )
 
     fun hentForBehandlingId(
@@ -77,9 +70,9 @@ internal class SøknadDAO(
     fun knyttSøknadTilBehandling(
         behandlingId: BehandlingId,
         søknadId: SøknadId,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(
                 """update søknad set behandling_id = :behandlingId where id = :soknadId""",
                 mapOf(
@@ -92,20 +85,20 @@ internal class SøknadDAO(
 
     private fun søknadFinnes(
         søknadId: SøknadId,
-        txSession: TransactionalSession,
+        session: Session,
     ): Boolean =
-        txSession.run(
+        session.run(
             queryOf(sqlFinnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
         ) ?: throw RuntimeException("Failed to check if søknad exists")
 
-    // Søknaden vil aldri endres, så det er ingen grunn til å oppdatere den hvis den først har blitt lagret
+    /**
+     *  @param søknad Lagres dersom den ikke finnes fra før, hvis den finnes, oppdateres den ikke.
+     */
     fun lagreHeleSøknaden(
         søknad: Søknad,
         txSession: TransactionalSession,
     ) {
-        if (søknadFinnes(søknad.id, txSession)) {
-            return
-        }
+        if (søknadFinnes(søknad.id, txSession)) return
 
         lagreSøknad(søknad, txSession)
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
@@ -115,7 +108,7 @@ internal class SøknadDAO(
 
     private fun lagreSøknad(
         søknad: Søknad,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         val periodeSpmParamMap =
             mapOf(
@@ -140,7 +133,7 @@ internal class SøknadDAO(
                 ETTERLØNN_FELT to søknad.etterlønn,
             ).toJaNeiSpmParams()
 
-        txSession.run(
+        session.run(
             queryOf(
                 sqlLagreSøknad,
                 periodeSpmParamMap +

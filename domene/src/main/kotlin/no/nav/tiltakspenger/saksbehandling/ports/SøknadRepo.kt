@@ -11,6 +11,4 @@ interface SøknadRepo {
     )
 
     fun hentSøknad(søknadId: SøknadId): Søknad
-
-    fun hentAlleSøknader(): List<Søknad>
 }
