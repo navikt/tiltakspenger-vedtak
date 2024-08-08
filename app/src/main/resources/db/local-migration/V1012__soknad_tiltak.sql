@@ -1,10 +1,5 @@
 INSERT INTO public.søknad_tiltak (id,søknad_id,ekstern_id,arrangørnavn,typekode,typenavn,deltakelse_fom,deltakelse_tom) VALUES
-    ('tilt_01HSGGES189ER3J9K8MGZH6SJ7','soknad_01HSGGERTKZX85D15ZK90SRGBZ','TA6418307','Kommunerevisjonen','ENKFAGYRKE','Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2024-01-01','2024-06-30'),
-    ('tilt_01HSGN3TJG19H4M9MC155ZMTCJ','soknad_01HSGN3TDQEAGTGWKTN6T3C51T','d759ab33-02ed-4e65-8077-2ff56655c347','TINN KOMMUNE ENHET FOR SKOLE OG BARNEHAGE','GRUFAGYRKE','Gruppe Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2023-10-01','2024-03-01'),
-    ('tilt_01HSJPNHA58BX86GA4WKSYC970','soknad_01HSJPNH63X4QAFYYKQZ3B7RMK','TA6419147','NAV Jobbservice Vestfold','ARBTREN','Arbeidstrening','2023-10-01','2025-03-28'),
-    ('tilt_01HSJQW5QD1PXJ4MQ2FERG4G7Z','soknad_01HSJQW5KFQDVAEK491FNAR34Z','TA6419149','NAV Jobbservice Vestfold','ARBTREN','Arbeidstrening','2023-10-01','2025-03-28'),
     ('tilt_01HSJYVBZNMK4MTEK4R627VWQ3','soknad_01HSJYVBXDSY6JF7HGQ3FY8ZVN','TA6418334','Kommunerevisjonen','ENKFAGYRKE','Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2024-01-01','2024-06-30'),
-    ('tilt_01HSK0AVTEQP2GPSER75YW3SJG','soknad_01HSK0AVR2VCDAHJFS6WXJX9BZ','TA6418499','NAV Jobbservice Vestfold','ARBTREN','Arbeidstrening','2023-10-01','2025-03-28'),
     ('tilt_01HSK4RT3JPHYTMKQAV6BBCBPX','soknad_01HSK4RT0GQ3KKBMH8VSB5Y5T7','TA6418385','Kommunerevisjonen','ENKFAGYRKE','Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2024-01-01','2024-06-30'),
     ('tilt_01HSTQN8KVKGTT18P9C5ZPSD47','soknad_01HSTQN8CH9NAESA311XJTHSQN','2f49374d-909f-4d59-94d0-fcefc3a3229d','TINN KOMMUNE ENHET FOR SKOLE OG BARNEHAGE','GRUPPEAMO','Gruppe AMO','2023-12-02','2024-06-07'),
     ('tilt_01HSTQVPY42BW4Z7ENSE5RJ6RT','soknad_01HSTQVPVE98J0PMTGAVREYTE1','5f89d312-402d-4146-8ffd-ff11ed88d82f','TINN KOMMUNE ENHET FOR SKOLE OG BARNEHAGE','GRUPPEAMO','Gruppe AMO','2023-08-01','2025-01-01'),
