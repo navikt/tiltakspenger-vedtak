@@ -14,6 +14,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.K
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BESLUTNING
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.Stønadsdager
+import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.tilStønadsdagerRegisterSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
@@ -29,6 +31,7 @@ data class Førstegangsbehandling(
     override val saksbehandler: String?,
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
+    override val stønadsdager: Stønadsdager,
     override val status: Behandlingsstatus,
 ) : Behandling {
     init {
@@ -122,6 +125,7 @@ data class Førstegangsbehandling(
                     tiltak = tiltak,
                     vurderingsperiode = vurderingsperiode,
                 ),
+                stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,

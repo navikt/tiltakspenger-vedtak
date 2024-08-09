@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.søkere
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.EndringsType
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTO.PersonopplysningerDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 
@@ -54,5 +55,6 @@ internal object SammenstillingForBehandlingDTOMapper {
                 )
             },
             vilkårsett = behandling.vilkårssett.toDTO(),
+            stønadsdager = behandling.stønadsdager.toDTO(),
         )
 }

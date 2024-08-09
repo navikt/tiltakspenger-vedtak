@@ -23,6 +23,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
+import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toStønadsdager
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -177,6 +179,7 @@ internal class PostgresBehandlingRepo(
                         "saksbehandler" to behandling.saksbehandler,
                         "beslutter" to behandling.beslutter,
                         "vilkaarssett" to behandling.vilkårssett.toDbJson(),
+                        "stonadsdager" to behandling.stønadsdager.toDbJson(),
                     ),
                 ).asUpdate,
             )
@@ -205,6 +208,7 @@ internal class PostgresBehandlingRepo(
                     "sistEndret" to nå,
                     "opprettet" to nå,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
+                    "stonadsdager" to behandling.stønadsdager.toDbJson(),
                     "saksbehandler" to behandling.saksbehandler,
                     "beslutter" to behandling.beslutter,
                 ),
@@ -234,6 +238,7 @@ internal class PostgresBehandlingRepo(
         val beslutter = stringOrNull("beslutter")
         val søknad = søknadDAO.hentForBehandlingId(id, session)!!
 
+        val stønadsdager = string("stønadsdager").toStønadsdager()
         val vilkårssett = string("vilkårssett").toVilkårssett(vurderingsperiode)
         val fnr = Fnr.fromString(string("ident"))
         val saksnummer = Saksnummer(string("saksnummer"))
@@ -248,6 +253,7 @@ internal class PostgresBehandlingRepo(
             vilkårssett = vilkårssett,
             saksbehandler = saksbehandler,
             beslutter = beslutter,
+            stønadsdager = stønadsdager,
             status = status.toBehandlingsstatus(),
         )
     }
@@ -269,6 +275,7 @@ internal class PostgresBehandlingRepo(
             sist_endret,
             opprettet,
             vilkårssett,
+            stønadsdager,
             saksbehandler,
             beslutter
         ) values (
@@ -280,6 +287,7 @@ internal class PostgresBehandlingRepo(
             :sistEndret,
             :opprettet,
             to_jsonb(:vilkaarssett::jsonb),
+            to_jsonb(:stonadsdager::jsonb),
             :saksbehandler,
             :beslutter
         )
@@ -296,7 +304,8 @@ internal class PostgresBehandlingRepo(
             sist_endret = :sistEndret,
             saksbehandler = :saksbehandler,
             beslutter = :beslutter,
-            vilkårssett = to_jsonb(:vilkaarssett::json)
+            vilkårssett = to_jsonb(:vilkaarssett::json),
+            stønadsdager = to_jsonb(:stonadsdager::json)
         where id = :id
           and sist_endret = :sistEndretOld
         """.trimIndent()

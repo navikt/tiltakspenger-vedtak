@@ -11,6 +11,7 @@ data class Tiltak(
     val deltakelsesperiode: Periode,
     val deltakelseStatus: TiltakDeltakerstatus,
     val deltakelseProsent: Float?,
+    val antallDagerPerUke: Float?,
     val kilde: Tiltakskilde,
     val registrertDato: LocalDateTime,
     val innhentetTidspunkt: LocalDateTime,

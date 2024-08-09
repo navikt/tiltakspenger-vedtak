@@ -157,6 +157,7 @@ interface BehandlingMother {
         deltakelseProsent = prosent,
         kilde = kilde,
         registrertDato = 1.januarDateTime(2023),
+        antallDagerPerUke = dagerPrUke,
         innhentetTidspunkt = 1.januarDateTime(2023),
     )
 

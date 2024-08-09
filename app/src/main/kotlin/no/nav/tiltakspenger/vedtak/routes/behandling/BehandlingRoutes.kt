@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVil
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
@@ -106,4 +107,5 @@ fun Route.behandlingRoutes(
     introRoutes(innloggetSaksbehandlerProvider, behandlingService)
     alderRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kravfristRoutes(innloggetSaksbehandlerProvider, behandlingService)
+    stønadsdagerRoutes(innloggetSaksbehandlerProvider, behandlingService)
 }

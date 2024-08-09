@@ -10,7 +10,7 @@ internal data class TiltakDeltagelseSaksopplysningDTO(
     val tiltakNavn: String,
     val deltagelsePeriode: PeriodeDTO,
     val status: String,
-    val kilde: TiltakDeltagelseKildeDTO,
+    val kilde: TiltakKildeDTO,
 )
 
 internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO =
@@ -18,8 +18,8 @@ internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysn
         tiltakNavn = tiltakNavn,
         kilde =
         when (kilde) {
-            Arena -> TiltakDeltagelseKildeDTO.ARENA
-            Komet -> TiltakDeltagelseKildeDTO.KOMET
+            Arena -> TiltakKildeDTO.ARENA
+            Komet -> TiltakKildeDTO.KOMET
         },
         deltagelsePeriode = deltagelsePeriode.toDTO(),
         status = status.toDTO(),

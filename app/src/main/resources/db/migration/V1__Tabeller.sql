@@ -38,7 +38,8 @@ CREATE TABLE behandling
     iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    vilkårssett             JSONB                    NOT NULL
+    vilkårssett             JSONB                    NOT NULL,
+    stønadsdager            JSONB                    NOT NULL
 );
 
 CREATE TABLE vedtak
