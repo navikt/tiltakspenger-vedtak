@@ -135,6 +135,7 @@ interface PersonMother {
             deltakelseProsent = deltakelseProsent,
             kilde = kilde,
             registrertDato = registrertDato,
+            antallDagerPerUke = antallDagerPerUke,
             innhentetTidspunkt = innhentet,
         )
 }

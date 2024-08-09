@@ -66,6 +66,7 @@ internal fun mapTiltak(
                     VENTELISTE -> Venteliste
                     FULLFORT -> Fullført
                 },
+                antallDagerPerUke = it.deltakelseDagerUke,
                 deltakelseProsent = it.deltakelseProsent,
                 kilde =
                 when {
