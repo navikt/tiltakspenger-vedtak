@@ -43,31 +43,35 @@ fun defaultHttpClient(
     engine(engineConfigBlock)
 }
 
-private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> Unit = {
-    install(ContentNegotiation) {
-        register(ContentType.Application.Json, JacksonConverter(objectMapper))
-    }
-    install(HttpTimeout) {
-        connectTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
-        requestTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
-        socketTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
-    }
-
-    this.install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                LOG.info("HttpClient detaljer logget til securelog")
-                SECURELOG.info(message)
-            }
+private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> Unit =
+    {
+        install(ContentNegotiation) {
+            register(ContentType.Application.Json, JacksonConverter(objectMapper))
         }
-        level = LogLevel.ALL
-    }
-    this.expectSuccess = true
-}
+        install(HttpTimeout) {
+            connectTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
+            requestTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
+            socketTimeoutMillis = Duration.ofSeconds(SIXTY_SECONDS).toMillis()
+        }
 
-fun defaultObjectMapper(): ObjectMapper = JsonMapper.builder()
-    .addModule(KotlinModule.Builder().build())
-    .addModule(JavaTimeModule())
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    .build()
+        this.install(Logging) {
+            logger =
+                object : Logger {
+                    override fun log(message: String) {
+                        LOG.info("HttpClient detaljer logget til securelog")
+                        SECURELOG.info(message)
+                    }
+                }
+            level = LogLevel.ALL
+        }
+        this.expectSuccess = true
+    }
+
+fun defaultObjectMapper(): ObjectMapper =
+    JsonMapper
+        .builder()
+        .addModule(KotlinModule.Builder().build())
+        .addModule(JavaTimeModule())
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .build()

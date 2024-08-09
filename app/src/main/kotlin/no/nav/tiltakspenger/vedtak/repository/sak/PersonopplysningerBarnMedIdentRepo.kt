@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import kotliquery.Row
-import kotliquery.TransactionalSession
+import kotliquery.Session
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.UlidBase.Companion.random
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
@@ -14,16 +14,18 @@ import org.intellij.lang.annotations.Language
 internal class PersonopplysningerBarnMedIdentRepo {
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    internal fun hent(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
+    internal fun hent(
+        sakId: SakId,
+        session: Session,
+    ) = session.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asList)
 
     internal fun lagre(
         sakId: SakId,
         personopplysninger: PersonopplysningerBarnMedIdent,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         securelog.info { "Lagre personopplysninger for barn med ident $personopplysninger" }
-        txSession.run(
+        session.run(
             queryOf(
                 lagreSql,
                 mapOf(
@@ -45,8 +47,10 @@ internal class PersonopplysningerBarnMedIdentRepo {
         )
     }
 
-    internal fun slett(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+    internal fun slett(
+        sakId: SakId,
+        session: Session,
+    ) = session.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerBarnMedIdent = { row ->
         PersonopplysningerBarnMedIdent(
@@ -71,7 +75,8 @@ internal class PersonopplysningerBarnMedIdentRepo {
     private val hentSql = "select * from sak_personopplysninger_barn_med_ident where sakId = ?"
 
     @Language("SQL")
-    private val lagreSql = """
+    private val lagreSql =
+        """
         insert into sak_personopplysninger_barn_med_ident (
             id,
             sakId,        
@@ -101,7 +106,7 @@ internal class PersonopplysningerBarnMedIdentRepo {
             :oppholdsland,             
             :tidsstempelHosOss
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_BARN_MED_IDENT = "barnm"

@@ -4,34 +4,39 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import org.intellij.lang.annotations.Language
 
 internal class VedleggDAO {
-
-    fun lagre(søknadId: SøknadId, vedlegg: List<Vedlegg>?, txSession: TransactionalSession) {
+    fun lagre(
+        søknadId: SøknadId,
+        vedlegg: List<Vedlegg>?,
+        txSession: TransactionalSession,
+    ) {
         slett(søknadId, txSession)
         vedlegg?.forEach {
             lagreVedlegg(søknadId, it, txSession)
         }
     }
 
-    fun hentVedleggListe(søknadId: SøknadId, session: Session): List<Vedlegg> {
-        return session.run(
+    fun hentVedleggListe(
+        søknadId: SøknadId,
+        session: Session,
+    ): List<Vedlegg> =
+        session.run(
             queryOf(hentVedlegg, søknadId.toString())
                 .map { row -> row.toVedlegg() }
                 .asList,
         )
-    }
 
     private fun lagreVedlegg(
         søknadId: SøknadId,
         vedlegg: Vedlegg,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(
                 lagreVedlegg,
                 mapOf(
@@ -45,8 +50,11 @@ internal class VedleggDAO {
         )
     }
 
-    private fun slett(søknadId: SøknadId, txSession: TransactionalSession) {
-        txSession.run(
+    private fun slett(
+        søknadId: SøknadId,
+        session: Session,
+    ) {
+        session.run(
             queryOf(slettVedlegg, søknadId.toString()).asUpdate,
         )
     }
@@ -70,7 +78,8 @@ internal class VedleggDAO {
     private val slettVedlegg = "delete from søknad_vedlegg where søknad_id = ?"
 
     @Language("SQL")
-    private val lagreVedlegg = """
+    private val lagreVedlegg =
+        """
         insert into søknad_vedlegg (
             id,
             søknad_id,
@@ -84,7 +93,7 @@ internal class VedleggDAO {
             :dokumentInfoId,
             :filnavn
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_VEDLEGG = "vedlegg"

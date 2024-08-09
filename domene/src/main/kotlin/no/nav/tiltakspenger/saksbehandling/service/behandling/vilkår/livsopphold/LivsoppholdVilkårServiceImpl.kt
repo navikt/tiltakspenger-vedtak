@@ -12,8 +12,9 @@ class LivsoppholdVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : LivsoppholdVilkårService {
-
-    override fun leggTilSaksopplysning(command: LeggTilLivsoppholdSaksopplysningCommand): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling> {
+    override fun leggTilSaksopplysning(
+        command: LeggTilLivsoppholdSaksopplysningCommand,
+    ): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling> {
         val behandling =
             behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling
         return behandling.leggTilLivsoppholdSaksopplysning(command).onRight {

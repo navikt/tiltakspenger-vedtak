@@ -33,9 +33,7 @@ private class VilkårssettJson(
     val kravfristVilkår: KravfristVilkårDbJson,
 )
 
-internal fun String.toVilkårssett(
-    vurderingsperiode: Periode,
-): Vilkårssett {
+internal fun String.toVilkårssett(vurderingsperiode: Periode): Vilkårssett {
     try {
         val vilkårssettJson = deserialize<VilkårssettJson>(this)
         return Vilkårssett(
@@ -53,8 +51,8 @@ internal fun String.toVilkårssett(
     }
 }
 
-internal fun Vilkårssett.toDbJson(): String {
-    return serialize(
+internal fun Vilkårssett.toDbJson(): String =
+    serialize(
         VilkårssettJson(
             kvpVilkår = kvpVilkår.toDbJson(),
             introVilkår = introVilkår.toDbJson(),
@@ -65,4 +63,3 @@ internal fun Vilkårssett.toDbJson(): String {
             tiltakDeltagelseVilkår = tiltakDeltagelseVilkår.toDbJson(),
         ),
     )
-}

@@ -13,25 +13,24 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     val status: String,
     val kilde: String,
 ) {
-    fun toDomain(): TiltakDeltagelseSaksopplysning {
-        return TiltakDeltagelseSaksopplysning.Register(
+    fun toDomain(): TiltakDeltagelseSaksopplysning =
+        TiltakDeltagelseSaksopplysning.Register(
             tiltakNavn = tiltakNavn,
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),
             girRett = girRett,
-            status = status,
-            kilde = kilde,
+            // TODO tiltak jah: girRett er Komet sin avgjørelse. Vi bør lagre vår egen også.
+            status = status.toTiltakDeltakerstatus(),
+            kilde = kilde.toTiltakskilde(),
         )
-    }
 }
 
-internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson {
-    return TiltakDeltagelseSaksopplysningDbJson(
+internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson =
+    TiltakDeltagelseSaksopplysningDbJson(
         tiltakNavn = tiltakNavn,
         tidsstempel = tidsstempel.toString(),
         deltagelsePeriode = deltagelsePeriode.toDbJson(),
         girRett = girRett,
-        status = status,
-        kilde = kilde,
+        status = status.toDb(),
+        kilde = kilde.toDb(),
     )
-}

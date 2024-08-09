@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
-val felleslibVersion = "0.0.165"
+val felleslibVersion = "0.0.171"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -98,7 +98,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.13.0")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.13.1")
     testImplementation(project(":test-common"))
     testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
 }

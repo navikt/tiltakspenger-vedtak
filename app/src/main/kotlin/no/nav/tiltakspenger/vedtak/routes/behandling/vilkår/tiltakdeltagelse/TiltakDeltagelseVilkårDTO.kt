@@ -18,11 +18,10 @@ internal data class TiltakDeltagelseVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun TiltakDeltagelseVilkår.toDTO(): TiltakDeltagelseVilkårDTO {
-    return TiltakDeltagelseVilkårDTO(
+internal fun TiltakDeltagelseVilkår.toDTO(): TiltakDeltagelseVilkårDTO =
+    TiltakDeltagelseVilkårDTO(
         registerSaksopplysning = registerSaksopplysning.toDTO(),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
-}

@@ -8,8 +8,8 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.TestSessionFactory
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
@@ -39,7 +39,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class BehandlingServiceTest {
-
     private lateinit var behandlingRepo: BehandlingRepo
     private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
@@ -97,7 +96,9 @@ internal class BehandlingServiceTest {
 
         shouldThrow<IllegalStateException> {
             innvilget.tilBeslutning(saksbehandler123())
-        }.message.shouldContain("Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: KLAR_TIL_BEHANDLING.")
+        }.message.shouldContain(
+            "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: KLAR_TIL_BEHANDLING.",
+        )
 
         shouldThrow<IkkeImplementertException> {
             val avslag =
@@ -130,15 +131,17 @@ internal class BehandlingServiceTest {
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
-        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(
-            listOf(
-                personopplysningKjedeligFyr(fnr = behandling.fnr),
-            ),
-        )
+        every { personopplysningRepo.hent(any()) } returns
+            SakPersonopplysninger(
+                listOf(
+                    personopplysningKjedeligFyr(fnr = behandling.fnr),
+                ),
+            )
 
         shouldThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang())
-        }.message shouldBe "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='Z12345', brukernavn='*****', epost='*****', roller=[])"
+        }.message shouldBe
+            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='Z12345', brukernavn='*****', epost='*****', roller=[])"
         shouldNotThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, beslutter())
         }
@@ -155,14 +158,16 @@ internal class BehandlingServiceTest {
 
         every { behandlingRepo.hent(behandlingId) } returns behandling
         every { behandlingRepo.lagre(any(), any()) } returnsArgument 0
-        every { personopplysningRepo.hent(any()) } returns SakPersonopplysninger(
-            listOf(
-                personopplysningKjedeligFyr(fnr = behandling.fnr),
-            ),
-        )
+        every { personopplysningRepo.hent(any()) } returns
+            SakPersonopplysninger(
+                listOf(
+                    personopplysningKjedeligFyr(fnr = behandling.fnr),
+                ),
+            )
         shouldThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang(navIdent = navIdentBeslutter))
-        }.message shouldBe "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='B12345', brukernavn='*****', epost='*****', roller=[])"
+        }.message shouldBe
+            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='B12345', brukernavn='*****', epost='*****', roller=[])"
 
         shouldNotThrow<IllegalStateException> {
             behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter(navIdent = navIdentBeslutter), "begrunnelse")

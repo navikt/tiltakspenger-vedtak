@@ -21,7 +21,6 @@ import java.time.LocalDateTime
 import java.time.Month
 
 internal class SøknadDTOTest {
-
     @Test
     fun mapBasisFelter() {
         val søknadDTO = søknadDTO()
@@ -56,19 +55,20 @@ internal class SøknadDTOTest {
     fun `ja i alt`() {
         val fra = LocalDate.of(2023, 1, 1)
         val til = LocalDate.of(2023, 12, 31)
-        val søknadDTO = søknadDTO(
-            kvp = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            intro = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            institusjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            jobbsjansen = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            supplerendeAlder = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            supplerendeFlykting = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            sykepenger = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            alderspensjon = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Ja, fom = fra),
-            gjenlevendePensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            trygdOgPensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
-            etterlønn = JaNeiSpmDTO(SpmSvarDTO.Ja),
-        )
+        val søknadDTO =
+            søknadDTO(
+                kvp = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                intro = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                institusjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                jobbsjansen = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                supplerendeAlder = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                supplerendeFlykting = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                sykepenger = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                alderspensjon = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Ja, fom = fra),
+                gjenlevendePensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                trygdOgPensjon = PeriodeSpmDTO(svar = SpmSvarDTO.Ja, fom = fra, tom = til),
+                etterlønn = JaNeiSpmDTO(SpmSvarDTO.Ja),
+            )
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertEquals(søknad.kvp, Søknad.PeriodeSpm.Ja(Periode(fraOgMed = fra, tilOgMed = til)))
@@ -89,30 +89,33 @@ internal class SøknadDTOTest {
         til: LocalDate = LocalDate.of(2023, 12, 31),
         versjon: String = "1",
         søknadId: String = Søknad.randomId().toString(),
-        dokInfo: DokumentInfoDTO = DokumentInfoDTO(
-            journalpostId = "43",
-            dokumentInfoId = "44",
-            filnavn = "filnavn",
-        ),
-        personopplysninger: PersonopplysningerDTO = PersonopplysningerDTO(
-            fornavn = "Ola",
-            etternavn = "Nordmann",
-            ident = Fnr.random().verdi,
-        ),
+        dokInfo: DokumentInfoDTO =
+            DokumentInfoDTO(
+                journalpostId = "43",
+                dokumentInfoId = "44",
+                filnavn = "filnavn",
+            ),
+        personopplysninger: PersonopplysningerDTO =
+            PersonopplysningerDTO(
+                fornavn = "Ola",
+                etternavn = "Nordmann",
+                ident = Fnr.random().verdi,
+            ),
         kvp: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         intro: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         institusjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         barnetilleggPdl: List<BarnetilleggDTO> = emptyList(),
         barnetilleggManuelle: List<BarnetilleggDTO> = emptyList(),
         opprettet: LocalDateTime = LocalDateTime.of(2022, Month.SEPTEMBER, 13, 15, 0),
-        tiltak: SøknadsTiltakDTO = SøknadsTiltakDTO(
-            id = "arenaId",
-            arrangør = "Arrangørnavn",
-            typeKode = "AMO",
-            typeNavn = "AMO",
-            deltakelseFom = fra,
-            deltakelseTom = til,
-        ),
+        tiltak: SøknadsTiltakDTO =
+            SøknadsTiltakDTO(
+                id = "arenaId",
+                arrangør = "Arrangørnavn",
+                typeKode = "AMO",
+                typeNavn = "AMO",
+                deltakelseFom = fra,
+                deltakelseTom = til,
+            ),
         alderspensjon: FraOgMedDatoSpmDTO = FraOgMedDatoSpmDTO(svar = SpmSvarDTO.Nei, fom = null),
         etterlønn: JaNeiSpmDTO = JaNeiSpmDTO(SpmSvarDTO.Nei),
         gjenlevendePensjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
@@ -121,13 +124,14 @@ internal class SøknadDTOTest {
         supplerendeFlykting: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         sykepenger: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         trygdOgPensjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
-        vedlegg: List<DokumentInfoDTO> = listOf(
-            DokumentInfoDTO(
-                journalpostId = "journalpostId",
-                dokumentInfoId = "dokumentInfoId",
-                filnavn = "filnavn",
+        vedlegg: List<DokumentInfoDTO> =
+            listOf(
+                DokumentInfoDTO(
+                    journalpostId = "journalpostId",
+                    dokumentInfoId = "dokumentInfoId",
+                    filnavn = "filnavn",
+                ),
             ),
-        ),
     ) = SøknadDTO(
         versjon = versjon,
         søknadId = søknadId,

@@ -7,11 +7,12 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
@@ -25,8 +26,8 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private val LOG = KotlinLogging.logger {}
 
-internal const val behandlingPath = "/behandling"
-internal const val behandlingerPath = "/behandlinger"
+internal const val BEHANDLING_PATH = "/behandling"
+internal const val BEHANDLINGER_PATH = "/behandlinger"
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -34,9 +35,8 @@ fun Route.behandlingRoutes(
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
-    get("$behandlingPath/{behandlingId}") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
-
+    get("$BEHANDLING_PATH/{behandlingId}") {
+        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
@@ -45,8 +45,8 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, behandling)
     }
 
-    post("$behandlingPath/beslutter/{behandlingId}") {
-        SECURELOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
+    post("$BEHANDLING_PATH/beslutter/{behandlingId}") {
+        SECURELOG.debug("Mottatt request. $BEHANDLING_PATH/ skal sendes til beslutter")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -56,7 +56,7 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    post("$behandlingPath/avbrytbehandling/{behandlingId}") {
+    post("$BEHANDLING_PATH/avbrytbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
@@ -74,4 +74,5 @@ fun Route.behandlingRoutes(
     introRoutes(innloggetSaksbehandlerProvider, behandlingService)
     alderRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kravfristRoutes(innloggetSaksbehandlerProvider, behandlingService)
+    stønadsdagerRoutes(innloggetSaksbehandlerProvider, behandlingService)
 }

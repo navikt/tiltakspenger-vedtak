@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 import java.util.Random
 
 internal class BehandlingRepoTest {
-
     companion object {
         val random = Random()
     }
@@ -32,12 +31,14 @@ internal class BehandlingRepoTest {
             val testDataHelper = TestDataHelper(dataSource)
             val behandlingRepo = testDataHelper.behandlingRepo
 
-            val (sak1, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                løpenummer = 1001,
-            )
-            val (sak2, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(
-                løpenummer = 1002,
-            )
+            val (sak1, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    løpenummer = 1001,
+                )
+            val (sak2, _) =
+                testDataHelper.persisterOpprettetFørstegangsbehandling(
+                    løpenummer = 1002,
+                )
 
             behandlingRepo.hentAlleForIdent(sak1.fnr) shouldBe listOf(sak1.førstegangsbehandling)
             behandlingRepo.hentAlleForIdent(sak2.fnr) shouldBe listOf(sak2.førstegangsbehandling)

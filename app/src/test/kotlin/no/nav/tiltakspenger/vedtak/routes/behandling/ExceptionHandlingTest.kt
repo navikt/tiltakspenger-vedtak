@@ -37,13 +37,14 @@ class ExceptionHandlingTest {
         every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.Unauthorized
-        val expectedBody = """
-        {
-          "status": 401,
-          "title": "ManglendeJWTTokenException",
-          "detail": "JWTToken ikke funnet"
-        }
-        """.trimIndent()
+        val expectedBody =
+            """
+            {
+              "status": 401,
+              "title": "ManglendeJWTTokenException",
+              "detail": "JWTToken ikke funnet"
+            }
+            """.trimIndent()
 
         testApplication {
             application {
@@ -62,7 +63,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path(behandlingerPath)
+                    path(BEHANDLINGER_PATH)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode
@@ -82,13 +83,14 @@ class ExceptionHandlingTest {
         every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.InternalServerError
-        val expectedBody = """
-        {
-          "status": 500,
-          "title": "IllegalStateException",
-          "detail": "Wuzza"
-        }
-        """.trimIndent()
+        val expectedBody =
+            """
+            {
+              "status": 500,
+              "title": "IllegalStateException",
+              "detail": "Wuzza"
+            }
+            """.trimIndent()
 
         testApplication {
             application {
@@ -107,7 +109,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path(behandlingerPath)
+                    path(BEHANDLINGER_PATH)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode

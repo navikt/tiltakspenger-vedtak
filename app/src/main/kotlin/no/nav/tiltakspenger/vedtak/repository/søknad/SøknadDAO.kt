@@ -4,9 +4,9 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import org.intellij.lang.annotations.Language
 
@@ -27,49 +27,52 @@ internal class SøknadDAO(
     private val tiltakDAO: SøknadTiltakDAO,
     private val vedleggDAO: VedleggDAO,
 ) {
-
-    fun finnIdent(søknadId: String, txSession: TransactionalSession): String? {
-        return txSession.run(
+    fun finnIdent(
+        søknadId: String,
+        session: Session,
+    ): String? =
+        session.run(
             queryOf(sqlHentIdent, søknadId)
                 .map { row -> row.toIdent() }
                 .asSingle,
         )
-    }
 
-    fun finnJournalpostId(søknadId: String, txSession: TransactionalSession): String? {
-        return txSession.run(
+    fun finnJournalpostId(
+        søknadId: String,
+        session: Session,
+    ): String? =
+        session.run(
             queryOf(sqlHentIdent, søknadId)
                 .map { row -> row.toJournalpostId() }
                 .asSingle,
         )
-    }
 
-    fun hentAlleSøknader(session: Session): List<Søknad> {
-        return session.run(
-            queryOf("select * from søknad")
-                .map { row -> row.toSøknad(session) }
-                .asList,
-        )
-    }
-
-    fun hentForBehandlingId(behandlingId: BehandlingId, session: Session): Søknad? {
-        return session.run(
+    fun hentForBehandlingId(
+        behandlingId: BehandlingId,
+        session: Session,
+    ): Søknad? =
+        session.run(
             queryOf(sqlHent, behandlingId.toString())
                 .map { row -> row.toSøknad(session) }
                 .asSingle,
         )
-    }
 
-    fun hentForSøknadId(søknadId: SøknadId, session: Session): Søknad {
-        return session.run(
+    fun hentForSøknadId(
+        søknadId: SøknadId,
+        session: Session,
+    ): Søknad =
+        session.run(
             queryOf("select * from søknad where id = ?", søknadId.toString())
                 .map { row -> row.toSøknad(session) }
                 .asSingle,
         )!!
-    }
 
-    fun knyttSøknadTilBehandling(behandlingId: BehandlingId, søknadId: SøknadId, txSession: TransactionalSession) {
-        txSession.run(
+    fun knyttSøknadTilBehandling(
+        behandlingId: BehandlingId,
+        søknadId: SøknadId,
+        session: Session,
+    ) {
+        session.run(
             queryOf(
                 """update søknad set behandling_id = :behandlingId where id = :soknadId""",
                 mapOf(
@@ -80,15 +83,22 @@ internal class SøknadDAO(
         )
     }
 
-    private fun søknadFinnes(søknadId: SøknadId, txSession: TransactionalSession): Boolean = txSession.run(
-        queryOf(sqlFinnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
-    ) ?: throw RuntimeException("Failed to check if søknad exists")
+    private fun søknadFinnes(
+        søknadId: SøknadId,
+        session: Session,
+    ): Boolean =
+        session.run(
+            queryOf(sqlFinnes, søknadId.toString()).map { row -> row.boolean("exists") }.asSingle,
+        ) ?: throw RuntimeException("Failed to check if søknad exists")
 
-    // Søknaden vil aldri endres, så det er ingen grunn til å oppdatere den hvis den først har blitt lagret
-    fun lagreHeleSøknaden(søknad: Søknad, txSession: TransactionalSession) {
-        if (søknadFinnes(søknad.id, txSession)) {
-            return
-        }
+    /**
+     *  @param søknad Lagres dersom den ikke finnes fra før, hvis den finnes, oppdateres den ikke.
+     */
+    fun lagreHeleSøknaden(
+        søknad: Søknad,
+        txSession: TransactionalSession,
+    ) {
+        if (søknadFinnes(søknad.id, txSession)) return
 
         lagreSøknad(søknad, txSession)
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
@@ -96,28 +106,34 @@ internal class SøknadDAO(
         vedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
     }
 
-    private fun lagreSøknad(søknad: Søknad, txSession: TransactionalSession) {
-        val periodeSpmParamMap = mapOf(
-            KVP_FELT to søknad.kvp,
-            INTRO_FELT to søknad.intro,
-            INSTITUSJON_FELT to søknad.institusjon,
-            SYKEPENGER_FELT to søknad.sykepenger,
-            GJENLEVENDEPENSJON_FELT to søknad.gjenlevendepensjon,
-            SUPPLERENDESTØNAD_ALDER_FELT to søknad.supplerendeStønadAlder,
-            SUPPLERENDESTØNAD_FLYKTNING_FELT to søknad.supplerendeStønadFlyktning,
-            JOBBSJANSEN_FELT to søknad.jobbsjansen,
-            TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
-        ).toPeriodeSpmParams()
+    private fun lagreSøknad(
+        søknad: Søknad,
+        session: Session,
+    ) {
+        val periodeSpmParamMap =
+            mapOf(
+                KVP_FELT to søknad.kvp,
+                INTRO_FELT to søknad.intro,
+                INSTITUSJON_FELT to søknad.institusjon,
+                SYKEPENGER_FELT to søknad.sykepenger,
+                GJENLEVENDEPENSJON_FELT to søknad.gjenlevendepensjon,
+                SUPPLERENDESTØNAD_ALDER_FELT to søknad.supplerendeStønadAlder,
+                SUPPLERENDESTØNAD_FLYKTNING_FELT to søknad.supplerendeStønadFlyktning,
+                JOBBSJANSEN_FELT to søknad.jobbsjansen,
+                TRYGD_OG_PENSJON_FELT to søknad.trygdOgPensjon,
+            ).toPeriodeSpmParams()
 
-        val fraOgMedDatoSpmParamMap = mapOf(
-            ALDERSPENSJON_FELT to søknad.alderspensjon,
-        ).toFraOgMedDatoSpmParams()
+        val fraOgMedDatoSpmParamMap =
+            mapOf(
+                ALDERSPENSJON_FELT to søknad.alderspensjon,
+            ).toFraOgMedDatoSpmParams()
 
-        val jaNeiSpmParamMap = mapOf(
-            ETTERLØNN_FELT to søknad.etterlønn,
-        ).toJaNeiSpmParams()
+        val jaNeiSpmParamMap =
+            mapOf(
+                ETTERLØNN_FELT to søknad.etterlønn,
+            ).toJaNeiSpmParams()
 
-        txSession.run(
+        session.run(
             queryOf(
                 sqlLagreSøknad,
                 periodeSpmParamMap +
@@ -175,7 +191,8 @@ internal class SøknadDAO(
             journalpostId = journalpostId,
             dokumentInfoId = dokumentInfoId,
             filnavn = filnavn,
-            personopplysninger = Søknad.Personopplysninger(
+            personopplysninger =
+            Søknad.Personopplysninger(
                 fnr = fnr,
                 fornavn = fornavn,
                 etternavn = etternavn,
@@ -200,7 +217,8 @@ internal class SøknadDAO(
     }
 
     @Language("SQL")
-    private val sqlLagreSøknad = """
+    private val sqlLagreSøknad =
+        """
         insert into søknad (
             id,
             versjon,
@@ -306,7 +324,7 @@ internal class SøknadDAO(
             :trygd_og_pensjon_tom,
             :etterlonn_type
         )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
     private val sqlFinnes = "select exists(select 1 from søknad where id = ?)"

@@ -1,20 +1,22 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.SøknadId
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 
 interface BehandlingService {
-
     /**
      * Tenkt brukt i systemkall der vi ikke skal gjøre tilgangskontroll eller sjekk på skjermet/kode6/kode7
      * Eller der vi allerede har gjort tilgangskontroll.
      */
-    fun hentBehandling(behandlingId: BehandlingId, sessionContext: SessionContext? = null): Behandling
+    fun hentBehandling(
+        behandlingId: BehandlingId,
+        sessionContext: SessionContext? = null,
+    ): Behandling
 
     /**
      * Tenkt brukt for kommandoer som er trigget av saksbehandler.
@@ -28,11 +30,32 @@ interface BehandlingService {
     ): Behandling
 
     fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
-    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
-    fun sendTilBeslutter(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
-    fun sendTilbakeTilSaksbehandler(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler, begrunnelse: String)
-    suspend fun iverksett(behandlingId: BehandlingId, utøvendeBeslutter: Saksbehandler)
-    fun taBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler): Behandling
 
-    fun frataBehandling(behandlingId: BehandlingId, utøvendeSaksbehandler: Saksbehandler)
+    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
+
+    fun sendTilBeslutter(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    )
+
+    fun sendTilbakeTilSaksbehandler(
+        behandlingId: BehandlingId,
+        utøvendeBeslutter: Saksbehandler,
+        begrunnelse: String,
+    )
+
+    suspend fun iverksett(
+        behandlingId: BehandlingId,
+        utøvendeBeslutter: Saksbehandler,
+    )
+
+    fun taBehandling(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    ): Behandling
+
+    fun frataBehandling(
+        behandlingId: BehandlingId,
+        utøvendeSaksbehandler: Saksbehandler,
+    )
 }

@@ -29,12 +29,6 @@ CREATE INDEX sakPersonopplysningerBarnUtenIdent
          sakId
             );
 
-CREATE INDEX søker_ident
-    ON søker
-        (
-         ident
-            );
-
 CREATE INDEX søknad_ident
     ON søknad
         (

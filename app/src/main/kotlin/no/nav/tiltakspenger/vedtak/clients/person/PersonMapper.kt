@@ -22,8 +22,8 @@ internal fun mapPersonopplysninger(
     dto: Person,
     innhentet: LocalDateTime,
     fnr: Fnr,
-): List<Personopplysninger> {
-    return dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
+): List<Personopplysninger> =
+    dto.barn.filter { it.kanGiRettPåBarnetillegg() }.map {
         PersonopplysningerBarnMedIdent(
             fnr = Fnr.fromString(it.ident),
             fødselsdato = it.fødselsdato,
@@ -34,35 +34,38 @@ internal fun mapPersonopplysninger(
             strengtFortrolig = it.adressebeskyttelseGradering == STRENGT_FORTROLIG,
             strengtFortroligUtland = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG_UTLAND,
             skjermet = null,
-            oppholdsland = null, // TODO: fix!
+            // TODO: fix!
+            oppholdsland = null,
             tidsstempelHosOss = innhentet,
         )
-    } + dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
-        PersonopplysningerBarnUtenIdent(
-            fødselsdato = barn.fødselsdato,
-            fornavn = barn.fornavn,
-            mellomnavn = barn.mellomnavn,
-            etternavn = barn.etternavn,
+    } +
+        dto.barnUtenFolkeregisteridentifikator.filter { it.kanGiRettPåBarnetillegg() }.map { barn ->
+            PersonopplysningerBarnUtenIdent(
+                fødselsdato = barn.fødselsdato,
+                fornavn = barn.fornavn,
+                mellomnavn = barn.mellomnavn,
+                etternavn = barn.etternavn,
+                tidsstempelHosOss = innhentet,
+            )
+        } +
+        PersonopplysningerSøker(
+            fnr = fnr,
+            fødselsdato = dto.fødselsdato,
+            fornavn = dto.fornavn,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn,
+            fortrolig = dto.adressebeskyttelseGradering == FORTROLIG,
+            strengtFortrolig = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG,
+            strengtFortroligUtland = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG_UTLAND,
+            skjermet = null,
+            kommune = dto.gtKommune,
+            bydel = dto.gtBydel,
             tidsstempelHosOss = innhentet,
         )
-    } + PersonopplysningerSøker(
-        fnr = fnr,
-        fødselsdato = dto.fødselsdato,
-        fornavn = dto.fornavn,
-        mellomnavn = dto.mellomnavn,
-        etternavn = dto.etternavn,
-        fortrolig = dto.adressebeskyttelseGradering == FORTROLIG,
-        strengtFortrolig = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG,
-        strengtFortroligUtland = dto.adressebeskyttelseGradering == STRENGT_FORTROLIG_UTLAND,
-        skjermet = null,
-        kommune = dto.gtKommune,
-        bydel = dto.gtBydel,
-        tidsstempelHosOss = innhentet,
-    )
-}
 
 private const val ALDER_BARNETILLEGG = 16L
 private const val SIKKERHETSMARGIN_ÅR = 2L // søknaden sender med barn opp til 18 år. Vi lagrer det samme just in case
+
 private fun BarnIFolkeregisteret.kanGiRettPåBarnetillegg() =
     fødselsdato.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR))
 

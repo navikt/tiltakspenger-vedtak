@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Førstegangsbehandling
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.BehandlingBenkDto.TypeBehandling.Søknad
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -25,7 +26,6 @@ internal data class BehandlingBenkDto(
     val beslutter: String?,
     val sakId: String?,
 ) {
-
     /** Skal sannsynligvis utvides med revurdering, klage og tilbakekreving. */
     enum class TypeBehandling {
         Søknad,
@@ -33,21 +33,21 @@ internal data class BehandlingBenkDto(
     }
 }
 
-internal fun Saksoversikt.fraBehandlingToBehandlingBenkDto(): List<BehandlingBenkDto> {
-    return this.map { it.toBehandlingBenkDto() }
-}
+internal fun Saksoversikt.fraBehandlingToBehandlingBenkDto(): List<BehandlingBenkDto> = this.map { it.toBehandlingBenkDto() }
 
-internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): BehandlingBenkDto {
-    return BehandlingBenkDto(
+internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): BehandlingBenkDto =
+    BehandlingBenkDto(
         periode = periode?.toDTO(),
-        status = when (val s = status) {
+        status =
+        when (val s = status) {
             is BehandlingEllerSøknadForSaksoversikt.Status.Søknad -> "SØKNAD"
             is BehandlingEllerSøknadForSaksoversikt.Status.Behandling -> s.behandlingsstatus.toDTO().toString()
         },
         // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
         // underkjent = this.be,
-        typeBehandling = when (behandlingstype) {
-            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Førstegangsbehandling
+        typeBehandling =
+        when (behandlingstype) {
+            BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Søknad
             BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING -> Førstegangsbehandling
         },
         ident = fnr.verdi,
@@ -57,4 +57,3 @@ internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): Behand
         beslutter = beslutter,
         sakId = sakId.toString(),
     )
-}

@@ -20,7 +20,6 @@ data class AlderVilkår private constructor(
     val saksbehandlerSaksopplysning: AlderSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: AlderSaksopplysning,
 ) : Vilkår {
-
     override val lovreferanse = Lovreferanse.ALDER
 
     override fun utfall(): Periodisering<UtfallForPeriode> {
@@ -37,12 +36,13 @@ data class AlderVilkår private constructor(
     }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
-        val introSaksopplysning = AlderSaksopplysning.Saksbehandler(
-            fødselsdato = command.fødselsdato,
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val introSaksopplysning =
+            AlderSaksopplysning.Saksbehandler(
+                fødselsdato = command.fødselsdato,
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
@@ -53,14 +53,13 @@ data class AlderVilkår private constructor(
         fun opprett(
             registerSaksopplysning: AlderSaksopplysning.Register,
             vurderingsperiode: Periode,
-        ): AlderVilkår {
-            return AlderVilkår(
+        ): AlderVilkår =
+            AlderVilkår(
                 registerSaksopplysning = registerSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -71,15 +70,16 @@ data class AlderVilkår private constructor(
             avklartSaksopplysning: AlderSaksopplysning,
             vurderingsperiode: Periode,
             utfall: Periodisering<UtfallForPeriode>,
-        ): AlderVilkår {
-            return AlderVilkår(
+        ): AlderVilkår =
+            AlderVilkår(
                 registerSaksopplysning = registerSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

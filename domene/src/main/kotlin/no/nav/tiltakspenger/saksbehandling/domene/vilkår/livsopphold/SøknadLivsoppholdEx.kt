@@ -10,10 +10,9 @@ import java.time.LocalDateTime
 *
 */
 
-fun Søknad.livsoppholdSaksopplysning(vurderingsperiode: Periode): LivsoppholdSaksopplysning.Søknad {
-    return LivsoppholdSaksopplysning.Søknad(
+fun Søknad.livsoppholdSaksopplysning(vurderingsperiode: Periode): LivsoppholdSaksopplysning.Søknad =
+    LivsoppholdSaksopplysning.Søknad(
         harLivsoppholdYtelser = harLivsoppholdYtelser(),
         tidsstempel = LocalDateTime.now(),
         periode = vurderingsperiode,
     )
-}

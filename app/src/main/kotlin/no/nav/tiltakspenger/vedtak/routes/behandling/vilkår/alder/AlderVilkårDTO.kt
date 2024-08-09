@@ -19,12 +19,20 @@ internal data class AlderVilkårDTO(
     val samletUtfall: SamletUtfallDTO,
 )
 
-internal fun AlderVilkår.toDTO(): AlderVilkårDTO {
-    return AlderVilkårDTO(
+internal fun AlderVilkår.toDTO(): AlderVilkårDTO =
+    AlderVilkårDTO(
         registerSaksopplysning = registerSaksopplysning.toDTO(AlderKildeDTO.PDL),
-        avklartSaksopplysning = avklartSaksopplysning.toDTO(if (avklartSaksopplysning == registerSaksopplysning) AlderKildeDTO.PDL else AlderKildeDTO.SAKSBEHANDLER),
+        avklartSaksopplysning =
+        avklartSaksopplysning.toDTO(
+            if (avklartSaksopplysning ==
+                registerSaksopplysning
+            ) {
+                AlderKildeDTO.PDL
+            } else {
+                AlderKildeDTO.SAKSBEHANDLER
+            },
+        ),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall().totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
-}

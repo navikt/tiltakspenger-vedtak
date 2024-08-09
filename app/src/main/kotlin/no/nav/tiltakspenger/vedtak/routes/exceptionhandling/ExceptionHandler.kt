@@ -15,7 +15,6 @@ private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 object ExceptionHandler {
-
     suspend fun handle(
         call: ApplicationCall,
         cause: Throwable,
@@ -54,7 +53,10 @@ object ExceptionHandler {
         }
     }
 
-    private suspend fun ApplicationCall.respondWith(statusCode: HttpStatusCode, ex: Throwable) {
+    private suspend fun ApplicationCall.respondWith(
+        statusCode: HttpStatusCode,
+        ex: Throwable,
+    ) {
         this.respond(
             statusCode,
             ExceptionResponse(ex, statusCode),

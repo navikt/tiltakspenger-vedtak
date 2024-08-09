@@ -29,8 +29,8 @@ internal data class VilkårssettDTO(
     val alderVilkår: AlderVilkårDTO,
 )
 
-internal fun Vilkårssett.toDTO(): VilkårssettDTO {
-    return VilkårssettDTO(
+internal fun Vilkårssett.toDTO(): VilkårssettDTO =
+    VilkårssettDTO(
         kravfristVilkår = kravfristVilkår.toDTO(),
         tiltakDeltagelseVilkår = tiltakDeltagelseVilkår.toDTO(),
         kvpVilkår = kvpVilkår.toDTO(),
@@ -39,4 +39,3 @@ internal fun Vilkårssett.toDTO(): VilkårssettDTO {
         alderVilkår = alderVilkår.toDTO(),
         livsoppholdVilkår = livsoppholdVilkår.toDTO(),
     )
-}

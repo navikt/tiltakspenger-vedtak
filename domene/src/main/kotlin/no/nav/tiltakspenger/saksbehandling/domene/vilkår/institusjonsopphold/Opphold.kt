@@ -7,10 +7,9 @@ enum class Opphold {
     IKKE_OPPHOLD,
     ;
 
-    fun vurderMaskinelt(): UtfallForPeriode {
-        return when (this) {
+    fun vurderMaskinelt(): UtfallForPeriode =
+        when (this) {
             OPPHOLD -> UtfallForPeriode.IKKE_OPPFYLT
             IKKE_OPPHOLD -> UtfallForPeriode.OPPFYLT
         }
-    }
 }

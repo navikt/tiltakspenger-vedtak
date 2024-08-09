@@ -16,17 +16,21 @@ internal data class KvpSaksopplysningDTO(
     }
 }
 
-internal fun KvpSaksopplysning.toDTO(kilde: KildeDTO): KvpSaksopplysningDTO {
-    return KvpSaksopplysningDTO(
-        periodeMedDeltagelse = this.deltar.perioder().tilEnkelPeriode().toDTO(),
-        årsakTilEndring = when (årsakTilEndring) {
+internal fun KvpSaksopplysning.toDTO(kilde: KildeDTO): KvpSaksopplysningDTO =
+    KvpSaksopplysningDTO(
+        periodeMedDeltagelse =
+        this.deltar
+            .perioder()
+            .tilEnkelPeriode()
+            .toDTO(),
+        årsakTilEndring =
+        when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> KvpSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> KvpSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         kilde = kilde,
     )
-}
 
 internal fun List<PeriodeMedVerdi<Deltagelse>>.tilEnkelPeriode(): PeriodeMedVerdi<Deltagelse> {
     if (this.size > 1) {

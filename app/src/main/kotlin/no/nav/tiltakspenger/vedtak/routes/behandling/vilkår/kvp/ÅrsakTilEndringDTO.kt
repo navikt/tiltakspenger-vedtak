@@ -7,10 +7,9 @@ internal enum class ÅrsakTilEndringDTO {
     ENDRING_ETTER_SØKNADSTIDSPUNKT,
     ;
 
-    fun toDomain(): ÅrsakTilEndring {
-        return when (this) {
+    fun toDomain(): ÅrsakTilEndring =
+        when (this) {
             FEIL_I_INNHENTET_DATA -> ÅrsakTilEndring.FEIL_I_INNHENTET_DATA
             ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT
         }
-    }
 }

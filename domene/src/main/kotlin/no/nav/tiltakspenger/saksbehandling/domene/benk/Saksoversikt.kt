@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.benk
 
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.Ulid
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Ulid
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -31,7 +31,10 @@ data class BehandlingEllerSøknadForSaksoversikt(
 ) {
     sealed interface Status {
         data object Søknad : Status
-        data class Behandling(val behandlingsstatus: Behandlingsstatus) : Status
+
+        data class Behandling(
+            val behandlingsstatus: Behandlingsstatus,
+        ) : Status
     }
 
     enum class Behandlingstype {

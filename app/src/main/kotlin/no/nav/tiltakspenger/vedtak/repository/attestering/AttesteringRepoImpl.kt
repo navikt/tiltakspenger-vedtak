@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.repository.attestering
 
 import kotliquery.Row
-import kotliquery.TransactionalSession
+import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.AttesteringId
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.AttesteringStatus
@@ -14,17 +14,22 @@ import org.intellij.lang.annotations.Language
 
 internal class AttesteringRepoImpl(
     private val sessionFactory: PostgresSessionFactory,
-) : AttesteringRepo, AttesteringDAO {
-
+) : AttesteringRepo,
+    AttesteringDAO {
     // Attestering lagres alltid sammen med Behandling.
-    override fun lagre(attestering: Attestering, context: TransactionContext?): Attestering {
-        return sessionFactory.withTransaction(context) { tx ->
-            lagre(attestering, tx)
+    override fun lagre(
+        attestering: Attestering,
+        sessionContext: SessionContext?,
+    ): Attestering =
+        sessionFactory.withSession(sessionContext) { session ->
+            lagre(attestering, session)
         }
-    }
 
-    override fun lagre(attestering: Attestering, tx: TransactionalSession): Attestering {
-        tx.run(
+    override fun lagre(
+        attestering: Attestering,
+        session: Session,
+    ): Attestering {
+        session.run(
             queryOf(
                 sqlLagre,
                 mapOf(
@@ -40,9 +45,9 @@ internal class AttesteringRepoImpl(
         return attestering
     }
 
-    override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> {
-        return sessionFactory.withTransaction { tx ->
-            tx.run(
+    override fun hentForBehandling(behandlingId: BehandlingId): List<Attestering> =
+        sessionFactory.withSession { session ->
+            session.run(
                 queryOf(
                     sqlHentForBehandling,
                     mapOf(
@@ -53,15 +58,16 @@ internal class AttesteringRepoImpl(
                 }.asList,
             )
         }
-    }
 
     @Language("SQL")
-    private val sqlHentForBehandling = """
+    private val sqlHentForBehandling =
+        """
         select * from attestering where behandling_id = :behandlingId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlLagre = """
+    private val sqlLagre =
+        """
         insert into attestering (
             id, 
             behandling_id, 
@@ -77,14 +83,15 @@ internal class AttesteringRepoImpl(
             :beslutter,
             :tidspunkt
         )
-    """.trimIndent()
+        """.trimIndent()
 
-    private fun Row.toAttestering() = Attestering(
-        id = AttesteringId.fromDb(string("id")),
-        behandlingId = BehandlingId.fromString(string("behandling_id")),
-        svar = AttesteringStatus.valueOf(string("svar")),
-        begrunnelse = stringOrNull("begrunnelse"),
-        beslutter = string("beslutter"),
-        tidspunkt = localDateTime("tidspunkt"),
-    )
+    private fun Row.toAttestering() =
+        Attestering(
+            id = AttesteringId.fromDb(string("id")),
+            behandlingId = BehandlingId.fromString(string("behandling_id")),
+            svar = AttesteringStatus.valueOf(string("svar")),
+            begrunnelse = stringOrNull("begrunnelse"),
+            beslutter = string("beslutter"),
+            tidspunkt = localDateTime("tidspunkt"),
+        )
 }

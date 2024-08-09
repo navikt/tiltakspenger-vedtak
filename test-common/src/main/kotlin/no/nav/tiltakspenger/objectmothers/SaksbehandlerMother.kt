@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 
 interface SaksbehandlerMother {
-
     fun saksbehandler(
         navIdent: String = "Z12345",
         brukernavn: String = "Sak Behandler",

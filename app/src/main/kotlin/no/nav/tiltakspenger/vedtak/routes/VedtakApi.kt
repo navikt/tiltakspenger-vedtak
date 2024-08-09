@@ -32,18 +32,15 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
-import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
-import no.nav.tiltakspenger.vedtak.routes.søker.søkerRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
@@ -56,7 +53,6 @@ internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
     innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
-    søkerService: SøkerService,
     søknadService: SøknadService,
     sakService: SakService,
     behandlingService: BehandlingService,
@@ -78,7 +74,6 @@ internal fun Application.vedtakApi(
     auth(config)
     routing {
         authenticate("saksbehandling") {
-            søkerRoutes(innloggetSaksbehandlerProvider, søkerService)
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
             behandlingRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
@@ -99,10 +94,8 @@ internal fun Application.vedtakApi(
             )
             sakRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                søkerService = søkerService,
                 sakService = sakService,
             )
-            meldekortRoutes()
         }
         authenticate("admin") {
         }
@@ -125,105 +118,102 @@ private fun AuthenticationConfig.jwt(
     name: String,
     realm: String,
     roles: List<Rolle>? = null,
-) =
-    jwt(name) {
-        SECURELOG.info { "config : $config" }
-        this.realm = realm
-        val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
-        verifier(jwkProviderGammel, config.issuer) {
-            LOG.info { "Er nå i verifier" }
-            withAudience(config.clientId)
-            acceptLeeway(config.leeway)
+) = jwt(name) {
+    SECURELOG.debug { "config : $config" }
+    this.realm = realm
+    val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
+    verifier(jwkProviderGammel, config.issuer) {
+        LOG.debug { "Er nå i verifier" }
+        withAudience(config.clientId)
+        acceptLeeway(config.leeway)
+    }
+    challenge { _, _ ->
+        LOG.debug { "verifier feilet" }
+        call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
+    }
+    validate { cred ->
+        LOG.debug { "er nå i validate, skal ha preferred_username" }
+        if (cred.getClaim("preferred_username", String::class) == null) {
+            LOG.debug { "Fant ikke preferred_username" }
+            return@validate null
         }
-        challenge { _, _ ->
-            LOG.info { "verifier feilet" }
-            call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
+        LOG.debug { "er nå i validate, skal ha NAVident" }
+        if (cred.getClaim("NAVident", String::class) == null) {
+            LOG.debug { "Fant ikke NAVident" }
+            return@validate null
         }
-        validate { cred ->
-            SECURELOG.info("Cred er $cred")
-            LOG.info { "er nå i validate, skal ha preferred_username" }
-            if (cred.getClaim("preferred_username", String::class) == null) {
-                LOG.info { "Fant ikke preferred_username" }
-                return@validate null
-            }
-            LOG.info { "er nå i validate, skal ha NAVident" }
-            if (cred.getClaim("NAVident", String::class) == null) {
-                LOG.info { "Fant ikke NAVident" }
-                return@validate null
-            }
 
-            val claimedRoles: List<UUID> = cred.getListClaim("groups", UUID::class)
-            val configRoles: List<AdRolle> = config.roles
-            val authorizedRoles = configRoles
+        val claimedRoles: List<UUID> = cred.getListClaim("groups", UUID::class)
+        val configRoles: List<AdRolle> = config.roles
+        val authorizedRoles =
+            configRoles
                 .filter { roles?.contains(it.name) ?: true }
                 .map { it.objectId }
-            if (claimedRoles.none(authorizedRoles::contains)) {
-                LOG.info { "Fant ikke riktig rolle" }
-                return@validate null
-            }
-
-            JWTPrincipal(cred.payload)
+        if (claimedRoles.none(authorizedRoles::contains)) {
+            LOG.info { "Fant ikke riktig rolle" }
+            return@validate null
         }
+
+        JWTPrincipal(cred.payload)
     }
+}
 
 private fun AuthenticationConfig.jwtSystemToken(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
     roles: List<Rolle>? = null,
-) =
-    jwt(name) {
-        SECURELOG.info { "config : $config" }
-        this.realm = realm
-        val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
-        verifier(jwkProviderGammel, config.issuer) {
-            LOG.info { "Er nå i verifier" }
-            withAudience(config.clientId)
-            acceptLeeway(config.leeway)
-        }
-        challenge { _, _ ->
-            LOG.info { "verifier feilet" }
-            call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
-        }
-        validate { cred ->
-            SECURELOG.info("Cred er $cred")
-            LOG.info { "er nå i validate, skal ha oid" }
-            if (cred.getClaim("oid", String::class) == null) {
-                LOG.info { "Fant ikke oid" }
-                return@validate null
-            }
-            LOG.info { "er nå i validate, skal ha sub" }
-            if (cred.getClaim("sub", String::class) == null) {
-                LOG.info { "Fant ikke sub" }
-                return@validate null
-            }
-            LOG.info { "er nå i validate, skal ha azp_name" }
-            if (cred.getClaim("azp_name", String::class) == null) {
-                LOG.info { "Fant ikke azp_name" }
-                return@validate null
-            }
-
-            if (cred.getClaim("oid", String::class) != cred.getClaim("sub", String::class)) {
-                LOG.info { "oid og sub er ikke like" }
-                return@validate null
-            }
-
-            val claimedRoles: List<String> = cred.getListClaim("roles", String::class).map { it.uppercase() }
-            LOG.info { "Vi fant disse rollene i token : $claimedRoles" }
-            val authorizedRoles = roles?.map { it.name }
-
-            LOG.info { "Dette er gyldige roller : $authorizedRoles" }
-
-            if (!authorizedRoles.isNullOrEmpty()) {
-                if (claimedRoles.none(authorizedRoles::contains)) {
-                    LOG.info { "Fant ikke riktig rolle" }
-                    return@validate null
-                }
-            }
-
-            JWTPrincipal(cred.payload)
-        }
+) = jwt(name) {
+    SECURELOG.info { "config : $config" }
+    this.realm = realm
+    val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
+    verifier(jwkProviderGammel, config.issuer) {
+        LOG.info { "Er nå i verifier" }
+        withAudience(config.clientId)
+        acceptLeeway(config.leeway)
     }
+    challenge { _, _ ->
+        LOG.info { "verifier feilet" }
+        call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
+    }
+    validate { cred ->
+        LOG.info { "er nå i validate, skal ha oid" }
+        if (cred.getClaim("oid", String::class) == null) {
+            LOG.info { "Fant ikke oid" }
+            return@validate null
+        }
+        LOG.info { "er nå i validate, skal ha sub" }
+        if (cred.getClaim("sub", String::class) == null) {
+            LOG.info { "Fant ikke sub" }
+            return@validate null
+        }
+        LOG.info { "er nå i validate, skal ha azp_name" }
+        if (cred.getClaim("azp_name", String::class) == null) {
+            LOG.info { "Fant ikke azp_name" }
+            return@validate null
+        }
+
+        if (cred.getClaim("oid", String::class) != cred.getClaim("sub", String::class)) {
+            LOG.info { "oid og sub er ikke like" }
+            return@validate null
+        }
+
+        val claimedRoles: List<String> = cred.getListClaim("roles", String::class).map { it.uppercase() }
+        LOG.info { "Vi fant disse rollene i token : $claimedRoles" }
+        val authorizedRoles = roles?.map { it.name }
+
+        LOG.info { "Dette er gyldige roller : $authorizedRoles" }
+
+        if (!authorizedRoles.isNullOrEmpty()) {
+            if (claimedRoles.none(authorizedRoles::contains)) {
+                LOG.info { "Fant ikke riktig rolle" }
+                return@validate null
+            }
+        }
+
+        JWTPrincipal(cred.payload)
+    }
+}
 
 fun Application.auth(config: Configuration.TokenVerificationConfig) {
     install(Authentication) {

@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVil
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
@@ -30,8 +29,6 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
-import no.nav.tiltakspenger.vedtak.repository.søker.PersonopplysningerDAO
-import no.nav.tiltakspenger.vedtak.repository.søker.SøkerRepositoryImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -45,30 +42,32 @@ import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
 
-internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<String, String>) :
-    RapidsConnection.StatusListener {
-    private val rapidConfig = if (Configuration.applicationProfile() == Profile.LOCAL) {
-        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers, LokalKafkaConfig())
-    } else {
-        RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
-    }
-
-    private val rapidsConnection: RapidsConnection = RapidApplication.Builder(rapidConfig)
-        .withKtorModule {
-            vedtakApi(
-                config = Configuration.TokenVerificationConfig(),
-                innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
-                innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
-                søkerService = søkerService,
-                sakService = sakService,
-                behandlingService = behandlingService,
-                attesteringRepo = attesteringRepo,
-                kvpVilkårService = kvpVilkårService,
-                livsoppholdVilkårService = livsoppholdVilkårService,
-                søknadService = søknadService,
-            )
+internal class ApplicationBuilder(
+    @Suppress("UNUSED_PARAMETER") config: Map<String, String>,
+) : RapidsConnection.StatusListener {
+    private val rapidConfig =
+        if (Configuration.applicationProfile() == Profile.LOCAL) {
+            RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers, LokalKafkaConfig())
+        } else {
+            RapidApplication.RapidApplicationConfig.fromEnv(Configuration.rapidsAndRivers)
         }
-        .build()
+
+    private val rapidsConnection: RapidsConnection =
+        RapidApplication
+            .Builder(rapidConfig)
+            .withKtorModule {
+                vedtakApi(
+                    config = Configuration.TokenVerificationConfig(),
+                    innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
+                    innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
+                    sakService = sakService,
+                    behandlingService = behandlingService,
+                    attesteringRepo = attesteringRepo,
+                    kvpVilkårService = kvpVilkårService,
+                    livsoppholdVilkårService = livsoppholdVilkårService,
+                    søknadService = søknadService,
+                )
+            }.build()
 
     private val tokenProviderPdl: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.ouathConfigPdl())
@@ -90,65 +89,69 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
-    private val personopplysningerDAO = PersonopplysningerDAO()
-    private val søkerRepository = SøkerRepositoryImpl(sessionFactory, personopplysningerDAO)
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
     private val barnetilleggDAO = BarnetilleggDAO()
     private val søknadTiltakDAO = SøknadTiltakDAO()
     private val vedleggDAO = VedleggDAO()
-    private val søknadDAO = SøknadDAO(
-        barnetilleggDAO = barnetilleggDAO,
-        tiltakDAO = søknadTiltakDAO,
-        vedleggDAO = vedleggDAO,
-    )
+    private val søknadDAO =
+        SøknadDAO(
+            barnetilleggDAO = barnetilleggDAO,
+            tiltakDAO = søknadTiltakDAO,
+            vedleggDAO = vedleggDAO,
+        )
     private val søknadRepo = PostgresSøknadRepo(sessionFactory = sessionFactory, søknadDAO = søknadDAO)
 
-    private val behandlingRepo = PostgresBehandlingRepo(
-        sessionFactory = sessionFactory,
-        søknadDAO = søknadDAO,
-    )
+    private val behandlingRepo =
+        PostgresBehandlingRepo(
+            sessionFactory = sessionFactory,
+            søknadDAO = søknadDAO,
+        )
 
-    private val vedtakRepo = VedtakRepoImpl(
-        behandlingRepo = behandlingRepo,
-        sessionFactory = sessionFactory,
-    )
+    private val vedtakRepo =
+        VedtakRepoImpl(
+            behandlingRepo = behandlingRepo,
+            sessionFactory = sessionFactory,
+        )
 
-    private val sakRepo = PostgresSakRepo(
-        personopplysningerRepo = personopplysningRepo,
-        behandlingRepo = behandlingRepo,
-        vedtakDAO = vedtakRepo,
-        sessionFactory = sessionFactory,
-    )
+    private val sakRepo =
+        PostgresSakRepo(
+            personopplysningerRepo = personopplysningRepo,
+            behandlingRepo = behandlingRepo,
+            vedtakDAO = vedtakRepo,
+            sessionFactory = sessionFactory,
+        )
 
-    private val attesteringRepo = AttesteringRepoImpl(
-        sessionFactory = sessionFactory,
-    )
+    private val attesteringRepo =
+        AttesteringRepoImpl(
+            sessionFactory = sessionFactory,
+        )
 
-    private val saksoversiktRepo = SaksoversiktPostgresRepo(
-        sessionFactory = sessionFactory,
-    )
+    private val saksoversiktRepo =
+        SaksoversiktPostgresRepo(
+            sessionFactory = sessionFactory,
+        )
 
     @Suppress("unused")
     private val vedtakService = VedtakServiceImpl(vedtakRepo)
-    private val søkerService = SøkerServiceImpl(søkerRepository)
 
     @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val søknadService = SøknadServiceImpl(søknadRepo)
 
-    private val behandlingService = BehandlingServiceImpl(
-        behandlingRepo = behandlingRepo,
-        vedtakRepo = vedtakRepo,
-        personopplysningRepo = personopplysningRepo,
-        brevPublisherGateway = brevPublisherGateway,
-        meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-        sakRepo = sakRepo,
-        attesteringRepo = attesteringRepo,
-        sessionFactory = sessionFactory,
-        saksoversiktRepo = saksoversiktRepo,
-    )
+    private val behandlingService =
+        BehandlingServiceImpl(
+            behandlingRepo = behandlingRepo,
+            vedtakRepo = vedtakRepo,
+            personopplysningRepo = personopplysningRepo,
+            brevPublisherGateway = brevPublisherGateway,
+            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+            sakRepo = sakRepo,
+            attesteringRepo = attesteringRepo,
+            sessionFactory = sessionFactory,
+            saksoversiktRepo = saksoversiktRepo,
+        )
     private val sakService =
         SakServiceImpl(
             sakRepo = sakRepo,
@@ -157,18 +160,19 @@ internal class ApplicationBuilder(@Suppress("UNUSED_PARAMETER") config: Map<Stri
             behandlingService = behandlingService,
             personGateway = personGateway,
             skjermingGateway = skjermingGateway,
-            søkerRepository = søkerRepository,
             tiltakGateway = tiltakGateway,
             sessionFactory = sessionFactory,
         )
-    private val kvpVilkårService = KvpVilkårServiceImpl(
-        behandlingService = behandlingService,
-        behandlingRepo = behandlingRepo,
-    )
-    private val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
-        behandlingService = behandlingService,
-        behandlingRepo = behandlingRepo,
-    )
+    private val kvpVilkårService =
+        KvpVilkårServiceImpl(
+            behandlingService = behandlingService,
+            behandlingRepo = behandlingRepo,
+        )
+    private val livsoppholdVilkårService =
+        LivsoppholdVilkårServiceImpl(
+            behandlingService = behandlingService,
+            behandlingRepo = behandlingRepo,
+        )
 
     init {
         rapidsConnection.register(this)

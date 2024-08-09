@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vedtak
 
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -23,7 +23,10 @@ data class Vedtak(
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
 }
 
-enum class VedtaksType(val navn: String, val skalSendeBrev: Boolean) {
+enum class VedtaksType(
+    val navn: String,
+    val skalSendeBrev: Boolean,
+) {
     AVSLAG("Avslag", true),
     INNVILGELSE("Innvilgelse", true),
     STANS("Stans", true),

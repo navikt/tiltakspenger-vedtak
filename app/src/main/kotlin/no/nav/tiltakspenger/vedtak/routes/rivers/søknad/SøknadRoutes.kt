@@ -11,27 +11,30 @@ import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
-const val søknadpath = "/rivers/soknad"
+const val SØKNAD_PATH = "/rivers/soknad"
 
-fun Route.søknadRoutes(
-    søknadService: SøknadService,
-) {
-    post(søknadpath) {
-        LOG.info { "Vi har mottatt søknad fra river" }
+fun Route.søknadRoutes(søknadService: SøknadService) {
+    post(SØKNAD_PATH) {
+        LOG.debug { "Mottatt ny søknad. Prøver deserialisere og lagre." }
         try {
             val søknadDTO = call.receive<SøknadDTO>()
-
+            LOG.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
             // Oppretter sak med søknad og lagrer den
             søknadService.nySøknad(
-                søknad = SøknadDTOMapper.mapSøknad(
+                søknad =
+                SøknadDTOMapper.mapSøknad(
                     dto = søknadDTO,
                     innhentet = søknadDTO.opprettet,
                 ),
             )
+            call.respond(message = "OK", status = HttpStatusCode.OK)
         } catch (exception: Exception) {
-            SECURELOG.error { "Feil ved mottak av søknad fra rivers. $exception" }
+            LOG.error(
+                "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
+                RuntimeException("Trigger en exception for å få stracktrace."),
+            )
+            SECURELOG.error("Feil ved mottak av søknad.", exception)
+            call.respond(message = "Feil ved mottak av søknad", status = HttpStatusCode.InternalServerError)
         }
-
-        call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }

@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.db
 
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.SøknadId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -29,34 +29,39 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
     fødselsdato: LocalDate = ObjectMother.fødselsdato(),
-    sakPersonopplysninger: SakPersonopplysninger = SakPersonopplysninger(listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato))),
+    sakPersonopplysninger: SakPersonopplysninger =
+        SakPersonopplysninger(listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato))),
     id: SøknadId = Søknad.randomId(),
-    søknad: Søknad = ObjectMother.nySøknad(
-        periode = tiltaksOgVurderingsperiode,
-        journalpostId = journalpostId,
-        personopplysninger = ObjectMother.personSøknad(
-            fnr = fnr,
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            periode = tiltaksOgVurderingsperiode,
+            journalpostId = journalpostId,
+            personopplysninger =
+            ObjectMother.personSøknad(
+                fnr = fnr,
+            ),
+            id = id,
+            tiltak =
+            ObjectMother.søknadTiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
+            ),
+            barnetillegg = listOf(),
         ),
-        id = id,
-        tiltak = ObjectMother.søknadTiltak(
-            deltakelseFom = deltakelseFom,
-            deltakelseTom = deltakelseTom,
-        ),
-        barnetillegg = listOf(),
-    ),
 ): Pair<Sak, Søknad> {
     this.persisterSøknad(
         søknad = søknad,
     )
-    val sak = ObjectMother.sakMedOpprettetBehandling(
-        søknad = søknad,
-        fnr = fnr,
-        vurderingsperiode = tiltaksOgVurderingsperiode,
-        saksnummer = saksnummer,
-        sakPersonopplysninger = sakPersonopplysninger,
-        saksbehandler = saksbehandler,
-        sakId = sakId,
-    )
+    val sak =
+        ObjectMother.sakMedOpprettetBehandling(
+            søknad = søknad,
+            fnr = fnr,
+            vurderingsperiode = tiltaksOgVurderingsperiode,
+            saksnummer = saksnummer,
+            sakPersonopplysninger = sakPersonopplysninger,
+            saksbehandler = saksbehandler,
+            sakId = sakId,
+        )
     søknadRepo.lagre(søknad)
     sakRepo.lagre(sak)
 

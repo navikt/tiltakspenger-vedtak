@@ -1,12 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.UlidBase
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.UlidBase
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
@@ -22,21 +23,18 @@ internal class PostgresPersonopplysningerRepo(
     private val log = KotlinLogging.logger {}
     private val securelog = KotlinLogging.logger("tjenestekall")
 
-    override fun hent(
-        sakId: SakId,
-    ): SakPersonopplysninger {
-        return sessionFactory.withTransaction { txSession ->
-            hent(sakId, txSession)
+    override fun hent(sakId: SakId): SakPersonopplysninger =
+        sessionFactory.withSession { session ->
+            hent(sakId, session)
         }
-    }
 
     fun hent(
         sakId: SakId,
-        txSession: TransactionalSession,
+        session: Session,
     ): SakPersonopplysninger {
-        val søker = hentPersonopplysningerForSak(sakId, txSession) ?: return SakPersonopplysninger()
-        val barnMedIdent = barnMedIdentDAO.hent(sakId, txSession)
-        val barnUtenIdent = barnUtenIdentDAO.hent(sakId, txSession)
+        val søker = hentPersonopplysningerForSak(sakId, session) ?: return SakPersonopplysninger()
+        val barnMedIdent = barnMedIdentDAO.hent(sakId, session)
+        val barnUtenIdent = barnUtenIdentDAO.hent(sakId, session)
 
         return SakPersonopplysninger(listOf(søker) + barnMedIdent + barnUtenIdent)
     }
@@ -57,16 +55,18 @@ internal class PostgresPersonopplysningerRepo(
         personopplysninger.barnUtenIdent().forEach { barnUtenIdentDAO.lagre(sakId, it, txSession) }
     }
 
-    private fun hentPersonopplysningerForSak(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
+    private fun hentPersonopplysningerForSak(
+        sakId: SakId,
+        session: Session,
+    ) = session.run(queryOf(hentSql, sakId.toString()).map(toPersonopplysninger).asSingle)
 
     private fun lagre(
         sakId: SakId,
         personopplysninger: PersonopplysningerSøker,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
         securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
-        txSession.run(
+        session.run(
             queryOf(
                 lagreSql,
                 mapOf(
@@ -89,8 +89,10 @@ internal class PostgresPersonopplysningerRepo(
         )
     }
 
-    private fun slett(sakId: SakId, txSession: TransactionalSession) =
-        txSession.run(queryOf(slettSql, sakId.toString()).asUpdate)
+    private fun slett(
+        sakId: SakId,
+        session: Session,
+    ) = session.run(queryOf(slettSql, sakId.toString()).asUpdate)
 
     private val toPersonopplysninger: (Row) -> PersonopplysningerSøker = { row ->
         PersonopplysningerSøker(
@@ -116,7 +118,8 @@ internal class PostgresPersonopplysningerRepo(
     private val hentSql = "select * from sak_personopplysninger_søker where sakId = ?"
 
     @Language("SQL")
-    private val lagreSql = """
+    private val lagreSql =
+        """
         insert into sak_personopplysninger_søker (
             id,
             sakId,        
@@ -148,7 +151,7 @@ internal class PostgresPersonopplysningerRepo(
             :bydel,             
             :tidsstempelHosOss
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_PERSONOPPLYSNINGER = "poppl"

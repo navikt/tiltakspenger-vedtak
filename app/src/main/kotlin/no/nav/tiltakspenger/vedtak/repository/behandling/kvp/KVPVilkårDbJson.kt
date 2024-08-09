@@ -15,22 +15,20 @@ internal data class KVPVilkårDbJson(
     val avklartSaksopplysning: KvpSaksopplysningDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(vurderingsperiode: Periode): KVPVilkår {
-        return KVPVilkår.fromDb(
+    fun toDomain(vurderingsperiode: Periode): KVPVilkår =
+        KVPVilkår.fromDb(
             vurderingsperiode = vurderingsperiode,
             søknadSaksopplysning = søknadSaksopplysning.toDomain(),
             saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun KVPVilkår.toDbJson(): KVPVilkårDbJson {
-    return KVPVilkårDbJson(
+internal fun KVPVilkår.toDbJson(): KVPVilkårDbJson =
+    KVPVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         utfallsperioder = utfall().toDbJson(),
     )
-}

@@ -1,9 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
+import arrow.core.Either
+import arrow.core.left
+import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.INNVILGET
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
@@ -11,23 +14,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.K
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BESLUTNING
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.Stønadsdager
+import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.tilStønadsdagerRegisterSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.institusjonsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.IntroVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.introSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.kravfristSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KVPVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tilRegisterSaksopplysning
 import java.time.LocalDate
 
 data class Førstegangsbehandling(
@@ -40,12 +31,14 @@ data class Førstegangsbehandling(
     override val saksbehandler: String?,
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
+    override val stønadsdager: Stønadsdager,
     override val status: Behandlingsstatus,
     override val attesteringer: List<Attestering>,
 ) : Behandling {
-
     init {
-        require(vilkårssett.vurderingsperiode == vurderingsperiode) { "Vilkårssettets periode (${vilkårssett.vurderingsperiode} må være lik vurderingsperioden $vurderingsperiode" }
+        require(vilkårssett.vurderingsperiode == vurderingsperiode) {
+            "Vilkårssettets periode (${vilkårssett.vurderingsperiode} må være lik vurderingsperioden $vurderingsperiode"
+        }
         if (beslutter != null && saksbehandler != null) {
             require(beslutter != saksbehandler) { "Saksbehandler og beslutter kan ikke være samme person" }
         }
@@ -53,38 +46,49 @@ data class Førstegangsbehandling(
             "Barnetillegg er ikke støttet i MVP 1"
         }
         if (status == KLAR_TIL_BEHANDLING) {
-            require(saksbehandler == null) { "Behandlingen kan ikke være tilknyttet en saksbehandler når statusen er KLAR_TIL_BEHANDLING" }
+            require(saksbehandler == null) {
+                "Behandlingen kan ikke være tilknyttet en saksbehandler når statusen er KLAR_TIL_BEHANDLING"
+            }
             // Selvom beslutter har underkjent, må vi kunne ta hen av behandlingen.
         }
         if (status == UNDER_BEHANDLING) {
-            requireNotNull(saksbehandler) { "Behandlingen må være tilknyttet en saksbehandler når status er UNDER_BEHANDLING" }
+            requireNotNull(saksbehandler) {
+                "Behandlingen må være tilknyttet en saksbehandler når status er UNDER_BEHANDLING"
+            }
             // Selvom beslutter har underkjent, må vi kunne ta hen av behandlingen.
         }
         if (status == KLAR_TIL_BESLUTNING) {
             // Vi kan ikke ta saksbehandler av behandlingen før den underkjennes.
             requireNotNull(saksbehandler) { "Behandlingen må ha saksbehandler når status er KLAR_TIL_BESLUTNING" }
-            require(beslutter == null) { "Behandlingen kan ikke være tilknyttet en beslutter når status er KLAR_TIL_BESLUTNING" }
-            require(vilkårssett.samletUtfall != SamletUtfall.UAVKLART) { "Behandlingen kan ikke være KLAR_TIL_BESLUTNING når samlet utfall er UAVKLART" }
+            require(beslutter == null) {
+                "Behandlingen kan ikke være tilknyttet en beslutter når status er KLAR_TIL_BESLUTNING"
+            }
+            require(vilkårssett.samletUtfall != SamletUtfall.UAVKLART) {
+                "Behandlingen kan ikke være KLAR_TIL_BESLUTNING når samlet utfall er UAVKLART"
+            }
         }
         if (status == UNDER_BESLUTNING) {
             // Vi kan ikke ta saksbehandler av behandlingen før den underkjennes.
             requireNotNull(saksbehandler) { "Behandlingen må ha saksbehandler når status er UNDER_BESLUTNING" }
             requireNotNull(beslutter) { "Behandlingen må tilknyttet en beslutter når status er UNDER_BESLUTNING" }
-            require(vilkårssett.samletUtfall != SamletUtfall.UAVKLART) { "Behandlingen kan ikke være UNDER_BESLUTNING når samlet utfall er UAVKLART" }
+            require(
+                vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
+            ) { "Behandlingen kan ikke være UNDER_BESLUTNING når samlet utfall er UAVKLART" }
         }
 
         if (status == INNVILGET) {
             // Det er viktig at vi ikke tar saksbehandler og beslutter av behandlingen når status er INNVILGET.
             requireNotNull(beslutter) { "Behandlingen må ha beslutter når status er INNVILGET" }
             requireNotNull(saksbehandler) { "Behandlingen må ha saksbehandler når status er INNVILGET" }
-            require(vilkårssett.samletUtfall != SamletUtfall.UAVKLART) { "Behandlingen kan ikke være innvilget når samlet utfall er UAVKLART" }
+            require(
+                vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
+            ) { "Behandlingen kan ikke være innvilget når samlet utfall er UAVKLART" }
         }
     }
 
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {
-
         fun opprettBehandling(
             sakId: SakId,
             saksnummer: Saksnummer,
@@ -93,14 +97,20 @@ data class Førstegangsbehandling(
             fødselsdato: LocalDate,
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
-        ): Førstegangsbehandling {
+        ): Either<KanIkkeOppretteBehandling, Førstegangsbehandling> {
             val vurderingsperiode = søknad.vurderingsperiode()
-            val tiltak = registrerteTiltak.find {
-                it.eksternId == søknad.tiltak.id &&
-                    Periode(it.deltakelseFom, it.deltakelseTom).overlapperMed(vurderingsperiode)
+            if (søknad.barnetillegg.isNotEmpty()) {
+                return KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg.left()
             }
+            val tiltak =
+                registrerteTiltak.find {
+                    it.eksternId == søknad.tiltak.id &&
+                        it.deltakelsesperiode.overlapperMed(vurderingsperiode)
+                }
 
-            require(tiltak != null) { "Ingen tiltak samsvarer med det tiltaket bruker søkte på i søknaden" }
+            if (tiltak == null) {
+                return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
+            }
 
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
@@ -109,45 +119,31 @@ data class Førstegangsbehandling(
                 fnr = fnr,
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
-                vilkårssett = Vilkårssett(
+                vilkårssett =
+                Vilkårssett.opprett(
+                    søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    tiltak = tiltak,
                     vurderingsperiode = vurderingsperiode,
-                    institusjonsoppholdVilkår = InstitusjonsoppholdVilkår.opprett(
-                        vurderingsperiode,
-                        søknad.institusjonsoppholdSaksopplysning(
-                            vurderingsperiode,
-                        ),
-                    ),
-                    kvpVilkår = KVPVilkår.opprett(vurderingsperiode, søknad.kvpSaksopplysning(vurderingsperiode)),
-                    introVilkår = IntroVilkår.opprett(vurderingsperiode, søknad.introSaksopplysning(vurderingsperiode)),
-                    livsoppholdVilkår = LivsoppholdVilkår.opprett(
-                        søknad.livsoppholdSaksopplysning(vurderingsperiode),
-                        vurderingsperiode,
-                    ),
-                    alderVilkår = AlderVilkår.opprett(
-                        AlderSaksopplysning.Register.opprett(fødselsdato = fødselsdato),
-                        vurderingsperiode,
-                    ),
-                    kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
-                    tiltakDeltagelseVilkår = TiltakDeltagelseVilkår.opprett(
-                        vurderingsperiode = vurderingsperiode,
-                        registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
-                    ),
                 ),
+                stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
-            )
+            ).right()
         }
     }
 
     /**
      * Saksbehandler/beslutter tar eller overtar behandlingen.
      */
-    override fun taBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling {
-        return when (this.status) {
+    override fun taBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling =
+        when (this.status) {
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
-                check(saksbehandler.isSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
+                check(saksbehandler.isSaksbehandler()) {
+                    "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler"
+                }
                 this.copy(saksbehandler = saksbehandler.navIdent, status = UNDER_BEHANDLING).let {
                     // Dersom utøvende saksbehandler er beslutter, fjern beslutter fra behandlingen.
                     if (it.saksbehandler == it.beslutter) it.copy(beslutter = null) else it
@@ -155,16 +151,21 @@ data class Førstegangsbehandling(
             }
 
             KLAR_TIL_BESLUTNING, UNDER_BESLUTNING -> {
-                check(saksbehandler.navIdent != this.saksbehandler) { "Beslutter ($saksbehandler) kan ikke være den samme som saksbehandleren (${this.saksbehandler}" }
-                check(saksbehandler.isBeslutter()) { "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: $saksbehandler" }
+                check(saksbehandler.navIdent != this.saksbehandler) {
+                    "Beslutter ($saksbehandler) kan ikke være den samme som saksbehandleren (${this.saksbehandler}"
+                }
+                check(saksbehandler.isBeslutter()) {
+                    "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: $saksbehandler"
+                }
                 this.copy(beslutter = saksbehandler.navIdent, status = UNDER_BESLUTNING)
             }
 
             INNVILGET -> {
-                throw IllegalArgumentException("Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}")
+                throw IllegalArgumentException(
+                    "Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}",
+                )
             }
         }
-    }
 
     override fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Førstegangsbehandling {
         when (status) {
@@ -183,7 +184,9 @@ data class Førstegangsbehandling(
                     // TODO jah avklaring: Skal vi fjerne saksbehandler eller begge her? Eller ønsker vi at admin skal kunne velge.
                     return this.copy(saksbehandler = null, beslutter = null, status = KLAR_TIL_BEHANDLING)
                 }
-                throw IllegalArgumentException("Kan ikke ta saksbehandler/beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}")
+                throw IllegalArgumentException(
+                    "Kan ikke ta saksbehandler/beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}",
+                )
             }
 
             KLAR_TIL_BESLUTNING, UNDER_BESLUTNING -> {
@@ -197,10 +200,14 @@ data class Førstegangsbehandling(
                 if (utøvendeSaksbehandler.isAdmin()) {
                     return this.copy(beslutter = null, status = KLAR_TIL_BESLUTNING)
                 }
-                throw IllegalArgumentException("Kan ikke ta beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}")
+                throw IllegalArgumentException(
+                    "Kan ikke ta beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}",
+                )
             }
 
-            INNVILGET -> throw IllegalArgumentException("Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}")
+            INNVILGET -> throw IllegalArgumentException(
+                "Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}",
+            )
         }
     }
 
@@ -208,7 +215,9 @@ data class Førstegangsbehandling(
         if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
             throw IllegalStateException("Kan ikke sende en behandling til beslutning som ikke er innvilget i MVP 1")
         }
-        check(status == UNDER_BEHANDLING) { "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}" }
+        check(status == UNDER_BEHANDLING) {
+            "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}"
+        }
 
         check(saksbehandler.isSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
@@ -227,19 +236,26 @@ data class Førstegangsbehandling(
                 this.copy(status = INNVILGET)
             }
 
-            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException("Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: $status")
+            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
+                "Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: $status",
+            )
         }
     }
 
-    override fun sendTilbake(utøvendeBeslutter: Saksbehandler): Førstegangsbehandling {
-        return when (status) {
+    override fun sendTilbake(utøvendeBeslutter: Saksbehandler): Førstegangsbehandling =
+        when (status) {
             UNDER_BESLUTNING -> {
-                check(utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin()) { "utøvende saksbehandler må være beslutter eller admin" }
-                check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) { "Kun admin kan sende en annen sin behandling tilbake til saksbehandler" }
+                check(
+                    utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin(),
+                ) { "utøvende saksbehandler må være beslutter eller admin" }
+                check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) {
+                    "Kun admin kan sende en annen sin behandling tilbake til saksbehandler"
+                }
                 this.copy(status = UNDER_BEHANDLING)
             }
 
-            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException("Må ha status UNDER_BESLUTNING for å sende tilbake. Behandlingsstatus: $status")
+            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
+                "Må ha status UNDER_BESLUTNING for å sende tilbake. Behandlingsstatus: $status",
+            )
         }
-    }
 }

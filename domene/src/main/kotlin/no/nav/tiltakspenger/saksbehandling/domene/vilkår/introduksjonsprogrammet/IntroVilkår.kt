@@ -22,27 +22,27 @@ data class IntroVilkår private constructor(
     val saksbehandlerSaksopplysning: IntroSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: IntroSaksopplysning,
 ) : Vilkår {
-
     override val lovreferanse = Lovreferanse.INTROPROGRAMMET
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
-        return avklartSaksopplysning.deltar.map {
+    override fun utfall(): Periodisering<UtfallForPeriode> =
+        avklartSaksopplysning.deltar.map {
             when (it) {
                 DELTAR -> UtfallForPeriode.IKKE_OPPFYLT
                 DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }
-    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilIntroSaksopplysningCommand): IntroVilkår {
-        val introSaksopplysning = IntroSaksopplysning.Saksbehandler(
-            deltar = Periodisering(
-                command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
-            ).utvid(DELTAR_IKKE, vurderingsperiode),
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val introSaksopplysning =
+            IntroSaksopplysning.Saksbehandler(
+                deltar =
+                Periodisering(
+                    command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
+                ).utvid(DELTAR_IKKE, vurderingsperiode),
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
@@ -67,14 +67,13 @@ data class IntroVilkår private constructor(
         fun opprett(
             vurderingsperiode: Periode,
             søknadSaksopplysning: IntroSaksopplysning.Søknad,
-        ): IntroVilkår {
-            return IntroVilkår(
+        ): IntroVilkår =
+            IntroVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -85,15 +84,16 @@ data class IntroVilkår private constructor(
             saksbehandlerSaksopplysning: IntroSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: IntroSaksopplysning,
             utfall: Periodisering<UtfallForPeriode>,
-        ): IntroVilkår {
-            return IntroVilkår(
+        ): IntroVilkår =
+            IntroVilkår(
                 vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i IntroVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i IntroVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

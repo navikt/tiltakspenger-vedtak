@@ -16,19 +16,17 @@ internal data class PeriodisertUtfallDTO(
     }
 }
 
-internal fun Periodisering<UtfallForPeriode>.toDTO(): List<PeriodisertUtfallDTO> {
-    return this.perioder().map {
+internal fun Periodisering<UtfallForPeriode>.toDTO(): List<PeriodisertUtfallDTO> =
+    this.perioder().map {
         PeriodisertUtfallDTO(
             utfall = it.verdi.toDTO(),
             periode = it.periode.toDTO(),
         )
     }
-}
 
-internal fun UtfallForPeriode.toDTO(): PeriodisertUtfallDTO.UtfallDTO {
-    return when (this) {
+internal fun UtfallForPeriode.toDTO(): PeriodisertUtfallDTO.UtfallDTO =
+    when (this) {
         UtfallForPeriode.OPPFYLT -> PeriodisertUtfallDTO.UtfallDTO.OPPFYLT
         UtfallForPeriode.IKKE_OPPFYLT -> PeriodisertUtfallDTO.UtfallDTO.IKKE_OPPFYLT
         UtfallForPeriode.UAVKLART -> PeriodisertUtfallDTO.UtfallDTO.UAVKLART
     }
-}

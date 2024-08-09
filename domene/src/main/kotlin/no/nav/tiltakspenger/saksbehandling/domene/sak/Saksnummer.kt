@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter
 
 data class Saksnummer(
     val verdi: String,
-
 ) {
     constructor(dato: LocalDate, løpenr: Int) : this(genererSaksnummerPrefiks(dato) + løpenr)
 
@@ -17,13 +16,12 @@ data class Saksnummer(
         require(verdi.length >= 12) { "Saksnummer må være 12 tegn eller lengre" }
         require(løpenr >= 1001) { "Løpenummer må være lik eller større enn 1001" }
     }
+
     companion object {
         fun genererSaknummer(
             dato: LocalDate = LocalDate.now(),
             løpenr: Int = 1001,
-        ): Saksnummer {
-            return Saksnummer(genererSaksnummerPrefiks(dato) + løpenr)
-        }
+        ): Saksnummer = Saksnummer(genererSaksnummerPrefiks(dato) + løpenr)
 
         fun genererSaksnummerPrefiks(date: LocalDate): String =
             date.year.toString() + String.format("%02d%02d", date.monthValue, date.dayOfMonth)

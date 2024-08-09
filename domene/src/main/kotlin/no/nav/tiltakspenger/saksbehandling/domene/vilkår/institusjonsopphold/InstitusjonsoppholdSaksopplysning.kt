@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface InstitusjonsoppholdSaksopplysning {
-
     val opphold: Periodisering<Opphold>
     val tidsstempel: LocalDateTime
     val totalePeriode: Periode

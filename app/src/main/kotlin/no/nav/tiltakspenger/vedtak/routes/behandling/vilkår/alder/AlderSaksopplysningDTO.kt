@@ -17,17 +17,17 @@ internal data class AlderSaksopplysningDTO(
     }
 }
 
-internal fun AlderSaksopplysning.toDTO(kilde: AlderKildeDTO): AlderSaksopplysningDTO {
-    return AlderSaksopplysningDTO(
+internal fun AlderSaksopplysning.toDTO(kilde: AlderKildeDTO): AlderSaksopplysningDTO =
+    AlderSaksopplysningDTO(
         fødselsdato = fødselsdato,
-        årsakTilEndring = when (årsakTilEndring) {
+        årsakTilEndring =
+        when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> AlderSaksopplysningDTO.ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> AlderSaksopplysningDTO.ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         kilde = kilde,
     )
-}
 
 internal fun List<PeriodeMedVerdi<Deltagelse>>.tilEnkelPeriode(): PeriodeMedVerdi<Deltagelse> {
     if (this.size > 1) {

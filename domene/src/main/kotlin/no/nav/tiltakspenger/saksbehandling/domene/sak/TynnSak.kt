@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 
 interface SakDetaljer {
     val id: SakId

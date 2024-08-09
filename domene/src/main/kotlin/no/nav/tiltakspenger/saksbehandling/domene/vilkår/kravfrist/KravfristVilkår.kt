@@ -20,26 +20,32 @@ data class KravfristVilkår private constructor(
     val saksbehandlerSaksopplysning: KravfristSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: KravfristSaksopplysning,
 ) : Vilkår {
-
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
     override fun utfall(): Periodisering<UtfallForPeriode> {
-        val datoDetKanInnvilgesFra = avklartSaksopplysning.kravdato.withDayOfMonth(1).minusMonths(3).toLocalDate()
+        val datoDetKanInnvilgesFra =
+            avklartSaksopplysning.kravdato
+                .withDayOfMonth(1)
+                .minusMonths(3)
+                .toLocalDate()
 
         return when {
             datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
             datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
-            else -> throw IkkeImplementertException("Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)")
+            else -> throw IkkeImplementertException(
+                "Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)",
+            )
         }
     }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
-        val kravfristSaksopplysning = KravfristSaksopplysning.Saksbehandler(
-            kravdato = command.kravdato,
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val kravfristSaksopplysning =
+            KravfristSaksopplysning.Saksbehandler(
+                kravdato = command.kravdato,
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
             saksbehandlerSaksopplysning = kravfristSaksopplysning,
             avklartSaksopplysning = kravfristSaksopplysning,
@@ -50,14 +56,13 @@ data class KravfristVilkår private constructor(
         fun opprett(
             søknadSaksopplysning: KravfristSaksopplysning.Søknad,
             vurderingsperiode: Periode,
-        ): KravfristVilkår {
-            return KravfristVilkår(
+        ): KravfristVilkår =
+            KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
@@ -68,15 +73,16 @@ data class KravfristVilkår private constructor(
             avklartSaksopplysning: KravfristSaksopplysning,
             vurderingsperiode: Periode,
             utfall: Periodisering<UtfallForPeriode>,
-        ): KravfristVilkår {
-            return KravfristVilkår(
+        ): KravfristVilkår =
+            KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) { "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})" }
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
             }
-        }
     }
 }

@@ -38,7 +38,8 @@ CREATE TABLE behandling
     iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    vilkårssett             JSONB                    NOT NULL
+    vilkårssett             JSONB                    NOT NULL,
+    stønadsdager            JSONB                    NOT NULL
 );
 
 CREATE TABLE vedtak
@@ -109,32 +110,6 @@ CREATE TABLE sak_personopplysninger_barn_uten_ident
     mellomnavn          VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE søker
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    ident                   VARCHAR                  NOT NULL,
-    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE personopplysninger
-(
-    id                       VARCHAR PRIMARY KEY,
-    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
-    ident                    VARCHAR                  NOT NULL,
-    fødselsdato              DATE                     NOT NULL,
-    fornavn                  VARCHAR                  NOT NULL,
-    mellomnavn               VARCHAR                  NULL,
-    etternavn                VARCHAR                  NOT NULL,
-    fortrolig                BOOLEAN                  NOT NULL,
-    strengt_fortrolig        BOOLEAN                  NOT NULL,
-    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
-    skjermet                 BOOLEAN                  NULL,
-    kommune                  VARCHAR                  NULL,
-    bydel                    VARCHAR                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE søknad

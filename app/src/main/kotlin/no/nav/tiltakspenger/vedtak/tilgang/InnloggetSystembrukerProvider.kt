@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 
 interface InnloggetSystembrukerProvider {
     fun hentSystembruker(principal: JWTPrincipal): Systembruker
+
     fun hentInnloggetSystembruker(call: ApplicationCall): Systembruker? {
         val principal = call.principal<JWTPrincipal>() ?: return null
         return hentSystembruker(principal)

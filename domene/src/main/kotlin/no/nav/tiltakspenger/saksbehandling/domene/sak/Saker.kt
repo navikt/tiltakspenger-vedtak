@@ -10,7 +10,6 @@ data class Saker(
     val fnr: Fnr,
     val saker: List<Sak>,
 ) : List<Sak> by saker {
-
     init {
         saker.map { it.saksnummer }.also {
             require(it.size == it.toSet().size) { "Saker inneholder duplikate saksnummer: $it" }

@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 
 interface InnloggetSaksbehandlerProvider {
     fun hentSaksbehandler(principal: JWTPrincipal): Saksbehandler
+
     fun hentInnloggetSaksbehandler(call: ApplicationCall): Saksbehandler? {
         val principal = call.principal<JWTPrincipal>() ?: return null
         return hentSaksbehandler(principal)
