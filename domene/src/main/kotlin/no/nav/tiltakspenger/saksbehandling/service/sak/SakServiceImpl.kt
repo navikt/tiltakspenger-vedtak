@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
@@ -42,6 +43,7 @@ class SakServiceImpl(
     private val behandlingService: BehandlingService,
     private val personGateway: PersonGateway,
     private val skjermingGateway: SkjermingGateway,
+    private val tilgangsstyringService: TilgangsstyringService,
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
 ) : SakService {

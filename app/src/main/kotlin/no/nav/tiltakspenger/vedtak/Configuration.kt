@@ -6,7 +6,7 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import java.util.UUID
 
@@ -56,7 +56,8 @@ object Configuration {
             "SKJERMING_SCOPE" to System.getenv("SCOPE_SKJERMING"),
             "SKJERMING_URL" to System.getenv("SKJERMING_URL"),
             "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
-            "PDL_SCOPE" to System.getenv("PDL_ENDPOINT_URL"),
+            "PDL_ENDPOINT_URL" to System.getenv("PDL_ENDPOINT_URL"),
+            "PDL_PIP_ENDPOINT_URL" to System.getenv("PDL_PIP_ENDPOINT_URL"),
             "TILTAK_SCOPE" to System.getenv("TILTAK_SKJERMING"),
             "TILTAK_URL" to System.getenv("TILTAK_URL"),
         )
@@ -77,6 +78,8 @@ object Configuration {
                 "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
                 "PDL_SCOPE" to "api://localhost:8091/.default",
                 "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
+                "PDL_PIP_SCOPE" to "api://localhost:8091/.default",
+                "PDL_PIP_ENDPOINT_URL" to "https://localhost:8091/api/v1/person",
                 "SKJERMING_SCOPE" to "localhost",
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
                 "TILTAK_SCOPE" to "localhost",
@@ -89,6 +92,8 @@ object Configuration {
                 "application.profile" to Profile.DEV.toString(),
                 "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
+                "PDL_PIP_SCOPE" to "api://dev-fss.pdl.pdl-pip-api/.default",
+                "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.dev-fss-pub.nais.io/api/v1/person",
                 "SKJERMING_SCOPE" to "api://dev-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
                 "TILTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-tiltak/.default",
@@ -101,6 +106,8 @@ object Configuration {
                 "application.profile" to Profile.PROD.toString(),
                 "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
+                "PDL_PIP_SCOPE" to "api://prod-fss.pdl.pdl-pip-api/.default",
+                "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.prod-fss-pub.nais.io/api/v1/person",
                 "SKJERMING_SCOPE" to "api://prod-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
                 "TILTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-tiltak/.default",
@@ -156,10 +163,28 @@ object Configuration {
         val roles: List<AdRolle> = alleAdRoller(),
     )
 
-    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun pdlClientConfig(
+        baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)],
+    ) = ClientConfig(baseUrl = baseUrl)
+
+    fun pdlPipClientConfig(
+        baseUrl: String = config()[Key("PDL_PIP_ENDPOINT_URL", stringType)],
+    ) = ClientConfig(baseUrl = baseUrl)
 
     fun ouathConfigPdl(
         scope: String = config()[Key("PDL_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun ouathConfigPipPdl(
+        scope: String = config()[Key("PDL_PIP_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Rolle
 
 interface SaksbehandlerMother {
     fun saksbehandler(

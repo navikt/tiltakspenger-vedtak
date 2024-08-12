@@ -11,13 +11,14 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.request.get
 import io.ktor.http.Parameters
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 
 private val LOG = KotlinLogging.logger {}
 
 fun interface TokenProvider {
-    suspend fun getToken(): String
+    suspend fun getToken(): AccessToken
 }
 
 class AzureTokenProvider(
@@ -35,9 +36,9 @@ class AzureTokenProvider(
 
     private val tokenCache = TokenCache()
 
-    override suspend fun getToken(): String {
+    override suspend fun getToken(): AccessToken {
         try {
-            val currentToken = tokenCache.token
+            val currentToken: AccessToken? = tokenCache.token
             return if (currentToken != null && !tokenCache.isExpired()) {
                 currentToken
             } else {
@@ -50,7 +51,7 @@ class AzureTokenProvider(
 
     private suspend fun wellknown(): WellKnown = azureHttpClient.get(config.wellknownUrl).body()
 
-    private suspend fun clientCredentials(): String {
+    private suspend fun clientCredentials(): AccessToken {
         return azureHttpClient
             .submitForm(
                 url = wellknown().tokenEndpoint,
@@ -63,11 +64,12 @@ class AzureTokenProvider(
                 },
             ).body<OAuth2AccessTokenResponse>()
             .let {
+                val accessToken = AccessToken(it.accessToken)
                 tokenCache.update(
-                    it.accessToken,
-                    it.expiresIn.toLong(),
+                    accessToken = accessToken,
+                    expiresIn = it.expiresIn.toLong(),
                 )
-                return@let it.accessToken
+                return@let accessToken
             }
     }
 

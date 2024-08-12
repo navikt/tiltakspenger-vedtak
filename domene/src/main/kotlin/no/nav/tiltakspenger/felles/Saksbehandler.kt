@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.felles
 
+import no.nav.tiltakspenger.libs.common.Rolle
+
 data class Saksbehandler(
     val navIdent: String,
     override val brukernavn: String,

@@ -5,6 +5,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.libs.personklient.tilgangsstyring.TilgangsstyringServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
@@ -71,6 +72,8 @@ internal class ApplicationBuilder(
 
     private val tokenProviderPdl: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.ouathConfigPdl())
+    private val tokenProviderPipPdl: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.ouathConfigPipPdl())
     private val tokenProviderSkjerming: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigSkjerming())
     private val tokenProviderTiltak: AzureTokenProvider =
@@ -80,6 +83,12 @@ internal class ApplicationBuilder(
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
+    private val tilgangsstyringService = TilgangsstyringServiceImpl.create(
+        skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
+        pdlPipUrl = Configuration.pdlPipClientConfig().baseUrl,
+        getPdlPipToken = tokenProviderPipPdl::getToken,
+        getSkjermingToken = tokenProviderSkjerming::getToken,
+    )
     private val skjermingClient = SkjermingClientImpl(getToken = tokenProviderSkjerming::getToken)
     private val tiltakClient = TiltakClientImpl(getToken = tokenProviderTiltak::getToken)
     private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
@@ -159,6 +168,7 @@ internal class ApplicationBuilder(
             behandlingRepo = behandlingRepo,
             behandlingService = behandlingService,
             personGateway = personGateway,
+            tilgangsstyringService = tilgangsstyringService,
             skjermingGateway = skjermingGateway,
             tiltakGateway = tiltakGateway,
             sessionFactory = sessionFactory,

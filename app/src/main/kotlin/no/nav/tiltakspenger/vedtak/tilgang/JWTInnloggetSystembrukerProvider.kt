@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vedtak.tilgang
 
 import io.ktor.server.auth.jwt.JWTPrincipal
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Systembruker
+import no.nav.tiltakspenger.libs.common.Rolle
 
 private val LOG = KotlinLogging.logger {}
 

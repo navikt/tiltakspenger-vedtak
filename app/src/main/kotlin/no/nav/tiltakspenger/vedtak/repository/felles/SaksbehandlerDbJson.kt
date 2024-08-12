@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.felles
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Rolle
 
 internal data class SaksbehandlerDbJson(
     val navIdent: String,

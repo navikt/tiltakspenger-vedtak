@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.dto
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Rolle
 
 internal data class SaksbehandlerDTO(
     val navIdent: String,
