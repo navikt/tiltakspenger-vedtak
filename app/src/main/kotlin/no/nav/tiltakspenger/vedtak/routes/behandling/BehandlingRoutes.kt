@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
@@ -32,6 +34,7 @@ internal const val BEHANDLINGER_PATH = "/behandlinger"
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
+    sakService: SakService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
@@ -67,6 +70,7 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
+    hentPersonRoute(innloggetSaksbehandlerProvider, sakService)
     tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)

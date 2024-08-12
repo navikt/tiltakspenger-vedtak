@@ -26,7 +26,6 @@ import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -42,7 +41,6 @@ import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
-import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 import java.net.URI
 import java.util.UUID
 
@@ -52,11 +50,9 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
-    innloggetSystembrukerProvider: JWTInnloggetSystembrukerProvider,
     søknadService: SøknadService,
     sakService: SakService,
     behandlingService: BehandlingService,
-    attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
@@ -79,7 +75,6 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 sakService = sakService,
-                attesteringRepo = attesteringRepo,
                 kvpVilkårService = kvpVilkårService,
                 livsoppholdVilkårService = livsoppholdVilkårService,
             )

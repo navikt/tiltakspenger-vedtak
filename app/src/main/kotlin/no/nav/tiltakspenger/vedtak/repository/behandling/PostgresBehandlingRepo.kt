@@ -21,7 +21,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toAttesteringer
+import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toAttesteringer
+import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
 import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toDbJson
@@ -180,7 +181,7 @@ internal class PostgresBehandlingRepo(
                         "saksbehandler" to behandling.saksbehandler,
                         "beslutter" to behandling.beslutter,
                         "vilkaarssett" to behandling.vilkårssett.toDbJson(),
-                        "attesteringer" to behandling.attesteringer,
+                        "attesteringer" to behandling.attesteringer.toDbJson(),
                         "stonadsdager" to behandling.stønadsdager.toDbJson(),
                     ),
                 ).asUpdate,
@@ -213,7 +214,7 @@ internal class PostgresBehandlingRepo(
                     "stonadsdager" to behandling.stønadsdager.toDbJson(),
                     "saksbehandler" to behandling.saksbehandler,
                     "beslutter" to behandling.beslutter,
-                    "attesteringer" to behandling.attesteringer,
+                    "attesteringer" to behandling.attesteringer.toDbJson(),
                 ),
             ).asUpdate,
         )
@@ -312,8 +313,7 @@ internal class PostgresBehandlingRepo(
             saksbehandler = :saksbehandler,
             beslutter = :beslutter,
             vilkårssett = to_jsonb(:vilkaarssett::json),
-            stønadsdager = to_jsonb(:stonadsdager::json)
-            vilkårssett = to_jsonb(:vilkaarssett::json),
+            stønadsdager = to_jsonb(:stonadsdager::json),
             attesteringer = to_jsonb(:attesteringer::json)
         where id = :id
           and sist_endret = :sistEndretOld

@@ -64,7 +64,6 @@ internal class KravfristRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -118,7 +117,6 @@ internal class KravfristRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )

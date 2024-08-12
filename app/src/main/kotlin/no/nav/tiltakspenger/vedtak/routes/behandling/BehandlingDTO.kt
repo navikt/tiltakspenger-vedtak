@@ -16,7 +16,7 @@ internal data class BehandlingDTO(
     val vurderingsperiode: PeriodeDTO,
     val vilkårssett: VilkårssettDTO,
     val stønadsdager: StønadsdagerDTO,
-    // val attesteringer: List<AttesteringDTO>,
+    val attesteringer: List<AttesteringDTO>,
 )
 
 internal fun Behandling.toDTO() = BehandlingDTO(
@@ -25,7 +25,7 @@ internal fun Behandling.toDTO() = BehandlingDTO(
     beslutter = this.beslutter,
     status = this.status.toDTO(),
     vurderingsperiode = this.vurderingsperiode.toDTO(),
-    // attesteringer = this.attesteringer.toDTO,
+    attesteringer = this.attesteringer.toDTO(),
     vilkårssett = this.vilkårssett.toDTO(),
     stønadsdager = this.stønadsdager.toDTO(),
 )

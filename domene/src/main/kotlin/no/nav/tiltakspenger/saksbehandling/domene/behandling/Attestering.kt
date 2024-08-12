@@ -1,19 +1,19 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.AttesteringId
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import java.time.LocalDateTime
 
 data class Attestering(
     val id: AttesteringId = AttesteringId.random(),
-    val behandlingId: BehandlingId,
-    val svar: AttesteringStatus,
+    val status: Attesteringsstatus,
     val begrunnelse: String?,
     val beslutter: String,
     val tidspunkt: LocalDateTime = LocalDateTime.now(),
-)
+) {
+    fun isGodkjent() = status == Attesteringsstatus.GODKJENT
+}
 
-enum class AttesteringStatus {
+enum class Attesteringsstatus {
     GODKJENT,
     SENDT_TILBAKE,
 }

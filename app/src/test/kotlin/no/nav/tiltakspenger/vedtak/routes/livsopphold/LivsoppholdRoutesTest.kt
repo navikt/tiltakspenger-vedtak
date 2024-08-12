@@ -83,7 +83,6 @@ class LivsoppholdRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -164,7 +163,6 @@ class LivsoppholdRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -222,7 +220,6 @@ class LivsoppholdRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -386,7 +383,6 @@ class LivsoppholdRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )

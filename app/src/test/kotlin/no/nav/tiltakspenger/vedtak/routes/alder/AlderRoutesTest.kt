@@ -76,7 +76,6 @@ class AlderRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -128,7 +127,6 @@ class AlderRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )

@@ -21,7 +21,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -50,7 +49,6 @@ internal class SakServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var sakService: SakService
@@ -67,7 +65,6 @@ internal class SakServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        attesteringRepo = mockk()
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         personGateway = mockk(relaxed = true)
@@ -83,7 +80,6 @@ internal class SakServiceTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,
-                attesteringRepo = attesteringRepo,
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,
             )

@@ -14,7 +14,7 @@ data class AttesteringId private constructor(
 
         fun random() = AttesteringId(ulid = UlidBase("${PREFIX}_${ULID.randomULID()}"))
 
-        fun fromDb(stringValue: String) = AttesteringId(ulid = UlidBase(stringValue))
+        fun fromString(stringValue: String) = AttesteringId(ulid = UlidBase(stringValue))
 
         fun fromUUID(uuid: UUID) = AttesteringId(ulid = UlidBase("${PREFIX}_${uuidToUlid(uuid)}"))
     }

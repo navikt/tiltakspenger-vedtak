@@ -39,7 +39,8 @@ CREATE TABLE behandling
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
     vilkårssett             JSONB                    NOT NULL,
-    stønadsdager            JSONB                    NOT NULL
+    stønadsdager            JSONB                    NOT NULL,
+    attesteringer           JSONB                    NULL
 );
 
 CREATE TABLE vedtak
@@ -54,16 +55,6 @@ CREATE TABLE vedtak
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-create table attestering
-(
-    id                      VARCHAR PRIMARY KEY,
-    behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
-    svar                    VARCHAR                  NOT NULL,
-    begrunnelse             VARCHAR                  NULL,
-    beslutter               VARCHAR                  NOT NULL,
-    tidspunkt               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_søker
