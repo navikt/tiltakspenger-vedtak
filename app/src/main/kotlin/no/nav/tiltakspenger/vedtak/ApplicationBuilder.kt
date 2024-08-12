@@ -22,7 +22,6 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -37,7 +36,6 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
 import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
-import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSystembrukerProvider
 
 val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
@@ -59,10 +57,8 @@ internal class ApplicationBuilder(
                 vedtakApi(
                     config = Configuration.TokenVerificationConfig(),
                     innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
-                    innloggetSystembrukerProvider = JWTInnloggetSystembrukerProvider(),
                     sakService = sakService,
                     behandlingService = behandlingService,
-                    attesteringRepo = attesteringRepo,
                     kvpVilkårService = kvpVilkårService,
                     livsoppholdVilkårService = livsoppholdVilkårService,
                     søknadService = søknadService,
@@ -123,11 +119,6 @@ internal class ApplicationBuilder(
             sessionFactory = sessionFactory,
         )
 
-    private val attesteringRepo =
-        AttesteringRepoImpl(
-            sessionFactory = sessionFactory,
-        )
-
     private val saksoversiktRepo =
         SaksoversiktPostgresRepo(
             sessionFactory = sessionFactory,
@@ -148,7 +139,6 @@ internal class ApplicationBuilder(
             brevPublisherGateway = brevPublisherGateway,
             meldekortGrunnlagGateway = meldekortGrunnlagGateway,
             sakRepo = sakRepo,
-            attesteringRepo = attesteringRepo,
             sessionFactory = sessionFactory,
             saksoversiktRepo = saksoversiktRepo,
         )

@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.log
-import no.nav.tiltakspenger.vedtak.repository.attestering.AttesteringRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -29,10 +28,6 @@ internal class TestDataHelper(
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
 
-    val attesteringRepo =
-        AttesteringRepoImpl(
-            sessionFactory = sessionFactory,
-        )
     val personopplysningerBarnUtenIdentRepo = PersonopplysningerBarnUtenIdentRepo()
     val personopplysningerBarnMedIdentRepo = PersonopplysningerBarnMedIdentRepo()
     val personopplysningerRepo =

@@ -74,7 +74,6 @@ class IntroRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )
@@ -131,7 +130,6 @@ class IntroRoutesTest {
                     brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
-                    attesteringRepo = testDataHelper.attesteringRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                 )

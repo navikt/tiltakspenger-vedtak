@@ -1,2 +1,0 @@
-INSERT INTO public.attestering (id,behandling_id,svar,begrunnelse,beslutter,tidspunkt) VALUES
-    ('att_01HSJYYM22Z8M6FCCRR7J1HWJC','beh_01HSJYVBXRP027W70B8RE38NHH','GODKJENT',NULL,'Z994363','2024-03-22 12:32:46.274702+01');

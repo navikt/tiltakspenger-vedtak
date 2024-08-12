@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
@@ -11,6 +12,8 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -23,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface BehandlingMother {
     /** Felles default vurderingsperiode for testdatatypene */
@@ -123,6 +127,14 @@ interface BehandlingMother {
         return behandling
     }
 
+    fun godkjentAttestering(): Attestering = Attestering(
+        id = AttesteringId.random(),
+        status = Attesteringsstatus.SENDT_TILBAKE,
+        begrunnelse = null,
+        beslutter = beslutter().navIdent,
+        tidspunkt = LocalDateTime.now(),
+    )
+
     fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler): Førstegangsbehandling {
         val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
         return behandling.tilBeslutning(saksbehandler)
@@ -136,7 +148,7 @@ interface BehandlingMother {
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
         behandlingTilBeslutterInnvilget(saksbehandler123())
             .copy(beslutter = beslutter().navIdent)
-            .iverksett(beslutter())
+            .iverksett(beslutter(), godkjentAttestering())
 
     fun tiltak(
         id: TiltakId = TiltakId.random(),

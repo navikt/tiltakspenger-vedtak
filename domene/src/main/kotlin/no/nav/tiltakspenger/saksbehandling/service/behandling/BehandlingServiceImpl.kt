@@ -7,13 +7,12 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.Attestering
-import no.nav.tiltakspenger.saksbehandling.domene.attestering.AttesteringStatus
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
-import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -32,7 +31,6 @@ class BehandlingServiceImpl(
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
     private val sakRepo: SakRepo,
-    private val attesteringRepo: AttesteringRepo,
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,
 ) : BehandlingService {
@@ -78,18 +76,15 @@ class BehandlingServiceImpl(
         utøvendeBeslutter: Saksbehandler,
         begrunnelse: String,
     ) {
-        val behandling = hentBehandling(behandlingId, utøvendeBeslutter).sendTilbake(utøvendeBeslutter)
-
         val attestering =
             Attestering(
-                behandlingId = behandlingId,
-                svar = AttesteringStatus.SENDT_TILBAKE,
+                status = Attesteringsstatus.SENDT_TILBAKE,
                 begrunnelse = begrunnelse,
                 beslutter = utøvendeBeslutter.navIdent,
             )
+        val behandling = hentBehandling(behandlingId, utøvendeBeslutter).sendTilbake(utøvendeBeslutter, attestering)
         sessionFactory.withTransactionContext { tx ->
             behandlingRepo.lagre(behandling, tx)
-            attesteringRepo.lagre(attestering, tx)
         }
     }
 
@@ -101,20 +96,17 @@ class BehandlingServiceImpl(
         val sak =
             sakRepo.hentSakDetaljer(behandling.sakId)
                 ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
-
-        val iverksattBehandling = behandling.iverksett(utøvendeBeslutter)
         val attestering =
             Attestering(
-                behandlingId = behandlingId,
-                svar = AttesteringStatus.GODKJENT,
-                begrunnelse = null,
+                status = Attesteringsstatus.GODKJENT,
+                begrunnelse = "",
                 beslutter = utøvendeBeslutter.navIdent,
             )
+        val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
 
         val vedtak = iverksattBehandling.opprettVedtak()
         sessionFactory.withTransactionContext { tx ->
             behandlingRepo.lagre(iverksattBehandling, tx)
-            attesteringRepo.lagre(attestering, tx)
             vedtakRepo.lagreVedtak(vedtak, tx)
         }
 

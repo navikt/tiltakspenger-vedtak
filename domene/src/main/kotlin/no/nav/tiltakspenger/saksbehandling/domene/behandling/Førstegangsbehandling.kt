@@ -33,6 +33,7 @@ data class Førstegangsbehandling(
     override val vilkårssett: Vilkårssett,
     override val stønadsdager: Stønadsdager,
     override val status: Behandlingsstatus,
+    override val attesteringer: List<Attestering>,
 ) : Behandling {
     init {
         require(vilkårssett.vurderingsperiode == vurderingsperiode) {
@@ -129,6 +130,7 @@ data class Førstegangsbehandling(
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
+                attesteringer = emptyList(),
             ).right()
         }
     }
@@ -223,7 +225,7 @@ data class Førstegangsbehandling(
         return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING)
     }
 
-    override fun iverksett(utøvendeBeslutter: Saksbehandler): Førstegangsbehandling {
+    override fun iverksett(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Førstegangsbehandling {
         if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
             throw IllegalStateException("Kan ikke iverksette en behandling som ikke er innvilget i MVP 1")
         }
@@ -231,7 +233,10 @@ data class Førstegangsbehandling(
             UNDER_BESLUTNING -> {
                 check(utøvendeBeslutter.isBeslutter()) { "utøvende saksbehandler må være beslutter" }
                 check(this.beslutter == utøvendeBeslutter.navIdent) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
-                this.copy(status = INNVILGET)
+                check(!this.attesteringer.any { it.isGodkjent() }) {
+                    "Behandlingen er allerede godkjent"
+                }
+                this.copy(status = INNVILGET, attesteringer = attesteringer + attestering)
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
@@ -240,7 +245,7 @@ data class Førstegangsbehandling(
         }
     }
 
-    override fun sendTilbake(utøvendeBeslutter: Saksbehandler): Førstegangsbehandling =
+    override fun sendTilbake(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Førstegangsbehandling =
         when (status) {
             UNDER_BESLUTNING -> {
                 check(
@@ -249,7 +254,10 @@ data class Førstegangsbehandling(
                 check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) {
                     "Kun admin kan sende en annen sin behandling tilbake til saksbehandler"
                 }
-                this.copy(status = UNDER_BEHANDLING)
+                check(!this.attesteringer.any { it.isGodkjent() }) {
+                    "Behandlingen er allerede godkjent"
+                }
+                this.copy(status = UNDER_BEHANDLING, attesteringer = attesteringer + attestering)
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(

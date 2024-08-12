@@ -16,12 +16,12 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingUnderBehandlingAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingUnderBehandlingInnvilget
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.godkjentAttestering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerUtenTilgang
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
@@ -45,7 +45,6 @@ internal class BehandlingServiceTest {
     private lateinit var brevPublisherGateway: BrevPublisherGateway
     private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
-    private lateinit var attesteringRepo: AttesteringRepo
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sessionFactory: TestSessionFactory
@@ -61,7 +60,6 @@ internal class BehandlingServiceTest {
         brevPublisherGateway = mockk()
         meldekortGrunnlagGateway = mockk()
         tiltakGateway = mockk()
-        attesteringRepo = mockk(relaxed = true)
         sakRepo = mockk(relaxed = true)
         sessionFactory = TestSessionFactory()
         sakService = mockk(relaxed = true)
@@ -76,7 +74,6 @@ internal class BehandlingServiceTest {
                 brevPublisherGateway = brevPublisherGateway,
                 meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,
-                attesteringRepo = attesteringRepo,
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,
             )
@@ -114,12 +111,12 @@ internal class BehandlingServiceTest {
         val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123())
 
         shouldThrow<IllegalStateException> {
-            innvilget.iverksett(saksbehandler123())
+            innvilget.iverksett(saksbehandler123(), godkjentAttestering())
         }.message shouldBe "Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: KLAR_TIL_BESLUTNING"
 
         shouldThrow<IkkeImplementertException> {
             val avslag = behandlingTilBeslutterAvslag()
-            avslag.iverksett(saksbehandler123())
+            avslag.iverksett(saksbehandler123(), godkjentAttestering())
         }.message shouldBe "Støtter ikke avslag enda."
     }
 

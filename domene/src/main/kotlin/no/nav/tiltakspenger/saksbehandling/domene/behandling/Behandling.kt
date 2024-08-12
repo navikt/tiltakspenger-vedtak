@@ -25,6 +25,7 @@ interface Behandling {
     val vilkårssett: Vilkårssett
     val stønadsdager: Stønadsdager
     val status: Behandlingsstatus
+    val attesteringer: List<Attestering>
 
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()
@@ -35,7 +36,7 @@ interface Behandling {
 
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
 
-    fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
+    fun iverksett(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
 
-    fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
+    fun sendTilbake(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
 }
