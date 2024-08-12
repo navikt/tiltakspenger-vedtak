@@ -296,8 +296,8 @@ internal class PostgresBehandlingRepo(
             to_jsonb(:vilkaarssett::jsonb),
             to_jsonb(:stonadsdager::jsonb),
             :saksbehandler,
-            to_jsonb(:attesteringer::jsonb),
-            :beslutter
+            :beslutter,
+            to_jsonb(:attesteringer::jsonb)
         )
         """.trimIndent()
 
