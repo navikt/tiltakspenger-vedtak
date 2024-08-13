@@ -5,10 +5,11 @@ import java.time.LocalDateTime
 
 fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register =
     TiltakDeltagelseSaksopplysning.Register(
-        tiltakNavn = gjennomføring.typeNavn,
+        tiltakNavn = this.gjennomføring.typeNavn,
         deltagelsePeriode = this.deltakelsesperiode,
-        kilde = kilde,
-        status = deltakelseStatus,
-        girRett = gjennomføring.rettPåTiltakspenger,
+        kilde = this.kilde,
+        status = this.deltakelseStatus,
+        girRett = this.gjennomføring.rettPåTiltakspenger,
         tidsstempel = LocalDateTime.now(),
+        tiltakstype = this.gjennomføring.typeKode,
     )

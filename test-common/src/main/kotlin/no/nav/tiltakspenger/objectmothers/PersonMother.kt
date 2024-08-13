@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
@@ -109,12 +110,13 @@ interface PersonMother {
 
     fun tiltak(
         eksternId: String = "arenaId",
+        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         gjennomføring: Tiltak.Gjennomføring =
             Tiltak.Gjennomføring(
                 id = "123",
                 arrangørnavn = "arrangør",
                 typeNavn = "Arbeidsmarkedsopplæring (AMO)",
-                typeKode = "AMO",
+                typeKode = tiltakstype,
                 rettPåTiltakspenger = true,
             ),
         deltakelseFom: LocalDate = 1.januar(2022),

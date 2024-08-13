@@ -228,7 +228,10 @@ data class Førstegangsbehandling(
         return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING)
     }
 
-    override fun iverksett(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Førstegangsbehandling {
+    override fun iverksett(
+        utøvendeBeslutter: Saksbehandler,
+        attestering: Attestering,
+    ): Førstegangsbehandling {
         if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
             throw IllegalStateException("Kan ikke iverksette en behandling som ikke er innvilget i MVP 1")
         }
@@ -248,7 +251,10 @@ data class Førstegangsbehandling(
         }
     }
 
-    override fun sendTilbake(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Førstegangsbehandling =
+    override fun sendTilbake(
+        utøvendeBeslutter: Saksbehandler,
+        attestering: Attestering,
+    ): Førstegangsbehandling =
         when (status) {
             UNDER_BESLUTNING -> {
                 check(

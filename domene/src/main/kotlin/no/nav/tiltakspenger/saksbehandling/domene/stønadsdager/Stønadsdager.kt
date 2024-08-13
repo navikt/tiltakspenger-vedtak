@@ -4,6 +4,9 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 
+/**
+ * TODO jah: Snakk med Benedicte og spør om dette er litt overkill for kun å ha antall dager per uke på tiltaket?
+ */
 data class Stønadsdager(
     val vurderingsperiode: Periode,
     val registerSaksopplysning: StønadsdagerSaksopplysning.Register,

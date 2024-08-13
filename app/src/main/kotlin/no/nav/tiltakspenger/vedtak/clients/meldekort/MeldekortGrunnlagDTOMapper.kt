@@ -6,16 +6,18 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 
 object MeldekortGrunnlagDTOMapper {
+
     fun mapMeldekortGrunnlagDTO(
         sak: SakDetaljer,
         vedtak: Vedtak,
     ): MeldekortGrunnlagDTO {
-        val personopplysninger = vedtak.behandling.søknad.personopplysninger
+        val behandling = vedtak.behandling
+        val personopplysninger = behandling.søknad.personopplysninger
         val vedtaksperiode = vedtak.periode
         return MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
             sakId = sak.saksnummer.verdi,
-            behandlingId = vedtak.behandling.id.toString(),
+            behandlingId = behandling.id.toString(),
             status =
             when (vedtak.vedtaksType) {
                 VedtaksType.AVSLAG -> StatusDTO.IKKE_AKTIV
@@ -28,7 +30,6 @@ object MeldekortGrunnlagDTOMapper {
                 fra = vedtaksperiode.fraOgMed,
                 til = vedtaksperiode.tilOgMed,
             ),
-            // TODO KEW Her må vi fylle på riktig verdi.
             tiltak =
             listOf(
                 TiltakDTO(
@@ -37,9 +38,10 @@ object MeldekortGrunnlagDTOMapper {
                         fra = vedtaksperiode.fraOgMed,
                         til = vedtaksperiode.tilOgMed,
                     ),
-                    typeBeskrivelse = "suavitate",
-                    typeKode = "expetenda",
-                    antDagerIUken = 2f,
+                    // TODO jah: Her har jeg ikke mappet til en egen DTO (kontrakt mellom vedtak og meldekort). Jeg tenker det uansett er veldig risikabelt og endre disse enumene.
+                    typeKode = behandling.vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype.name,
+                    // TODO jah: Finn ut hvordan vi skal forholde oss til antall dager som desimal. Hvis det bare er halve dager, foreslår jeg et annet format.
+                    antDagerIUken = behandling.stønadsdager.registerSaksopplysning.antallDager.toFloat(),
                 ),
             ),
             personopplysninger =

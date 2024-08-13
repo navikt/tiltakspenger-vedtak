@@ -12,6 +12,7 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     val girRett: Boolean,
     val status: String,
     val kilde: String,
+    val tiltakstype: String,
 ) {
     fun toDomain(): TiltakDeltagelseSaksopplysning =
         TiltakDeltagelseSaksopplysning.Register(
@@ -19,9 +20,9 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),
             girRett = girRett,
-            // TODO tiltak jah: girRett er Komet sin avgjørelse. Vi bør lagre vår egen også.
             status = status.toTiltakDeltakerstatus(),
             kilde = kilde.toTiltakskilde(),
+            tiltakstype = tiltakstype.toTiltakstypeSomGirRett(),
         )
 }
 
@@ -33,4 +34,5 @@ internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksoppl
         girRett = girRett,
         status = status.toDb(),
         kilde = kilde.toDb(),
+        tiltakstype = tiltakstype.toDb(),
     )

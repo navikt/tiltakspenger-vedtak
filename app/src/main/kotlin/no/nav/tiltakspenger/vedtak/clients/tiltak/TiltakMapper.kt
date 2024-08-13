@@ -2,8 +2,10 @@
 
 package no.nav.tiltakspenger.vedtak.clients.tiltak
 
+import arrow.core.getOrElse
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.AVBRUTT
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.DELTAR
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.FEILREGISTRERT
@@ -16,8 +18,10 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTE
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VURDERES
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
+import no.nav.tiltakspenger.libs.tiltak.toTiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak.Gjennomføring
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Avbrutt
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Feilregistrert
@@ -33,50 +37,58 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import java.time.LocalDateTime
 
 internal fun mapTiltak(
-    tiltakDTO: List<TiltakDTO>,
+    tiltakDTOListe: List<TiltakDTO>,
     innhentet: LocalDateTime,
 ): List<Tiltak> =
-    tiltakDTO
+    tiltakDTOListe
         .filterNot { it.deltakelseFom == null }
         .filterNot { it.deltakelseTom == null }
-        .map {
+        .map { tiltakDto ->
             Tiltak(
                 id = TiltakId.random(),
-                eksternId = it.id,
+                eksternId = tiltakDto.id,
                 gjennomføring =
                 Gjennomføring(
-                    id = it.gjennomforing.id,
-                    arrangørnavn = it.gjennomforing.arrangørnavn,
-                    typeNavn = it.gjennomforing.typeNavn,
-                    typeKode = it.gjennomforing.arenaKode.name,
-                    rettPåTiltakspenger = it.gjennomforing.arenaKode.rettPåTiltakspenger,
+                    id = tiltakDto.gjennomforing.id,
+                    arrangørnavn = tiltakDto.gjennomforing.arrangørnavn,
+                    typeNavn = tiltakDto.gjennomforing.typeNavn,
+                    typeKode =
+                    tiltakDto.gjennomforing.arenaKode.toTiltakstypeSomGirRett().getOrElse {
+                        throw IllegalStateException(
+                            "Inneholder tiltakstype som ikke gir rett (som vi ikke støtter i MVP): ${tiltakDto.gjennomforing.arenaKode}. Tiltaksid: ${tiltakDto.id}",
+                        )
+                    },
+                    rettPåTiltakspenger = tiltakDto.gjennomforing.arenaKode.rettPåTiltakspenger,
                 ),
-                deltakelsesperiode = Periode(it.deltakelseFom!!, it.deltakelseTom!!),
-                deltakelseStatus =
-                when (it.deltakelseStatus) {
-                    VURDERES -> Vurderes
-                    VENTER_PA_OPPSTART -> VenterPåOppstart
-                    DELTAR -> Deltar
-                    HAR_SLUTTET -> HarSluttet
-                    AVBRUTT -> Avbrutt
-                    IKKE_AKTUELL -> IkkeAktuell
-                    FEILREGISTRERT -> Feilregistrert
-                    PABEGYNT_REGISTRERING -> PåbegyntRegistrering
-                    SOKT_INN -> SøktInn
-                    VENTELISTE -> Venteliste
-                    FULLFORT -> Fullført
-                },
-                antallDagerPerUke = it.deltakelseDagerUke,
-                deltakelseProsent = it.deltakelseProsent,
+                deltakelsesperiode = Periode(tiltakDto.deltakelseFom!!, tiltakDto.deltakelseTom!!),
+                deltakelseStatus = tiltakDto.deltakelseStatus.toDomain(),
+                antallDagerPerUke = tiltakDto.deltakelseDagerUke,
+                deltakelseProsent = tiltakDto.deltakelseProsent,
                 kilde =
                 when {
-                    it.kilde.lowercase().contains("komet") -> Tiltakskilde.Komet
-                    it.kilde.lowercase().contains("arena") -> Tiltakskilde.Arena
+                    tiltakDto.kilde.lowercase().contains("komet") -> Tiltakskilde.Komet
+                    tiltakDto.kilde.lowercase().contains("arena") -> Tiltakskilde.Arena
                     else -> throw IllegalStateException(
-                        "Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${it.kilde}. Forventet Arena eller Komet. Tiltaksid: ${it.id}",
+                        "Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${tiltakDto.kilde}. Forventet Arena eller Komet. Tiltaksid: ${tiltakDto.id}",
                     )
                 },
-                registrertDato = it.registrertDato,
+                registrertDato = tiltakDto.registrertDato,
                 innhentetTidspunkt = innhentet,
             )
         }
+
+private fun DeltakerStatusDTO.toDomain(): TiltakDeltakerstatus {
+    return when (this) {
+        VURDERES -> Vurderes
+        VENTER_PA_OPPSTART -> VenterPåOppstart
+        DELTAR -> Deltar
+        HAR_SLUTTET -> HarSluttet
+        AVBRUTT -> Avbrutt
+        IKKE_AKTUELL -> IkkeAktuell
+        FEILREGISTRERT -> Feilregistrert
+        PABEGYNT_REGISTRERING -> PåbegyntRegistrering
+        SOKT_INN -> SøktInn
+        VENTELISTE -> Venteliste
+        FULLFORT -> Fullført
+    }
+}
