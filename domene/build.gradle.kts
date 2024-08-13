@@ -1,7 +1,7 @@
 val jacksonVersion = "2.17.2"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.159"
+val felleslibVersion = "0.0.175"
 val kotlinxCoroutinesVersion = "1.8.1"
 
 dependencies {
@@ -14,11 +14,11 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("com.aallam.ulid:ulid-kotlin:1.3.0")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("io.micrometer:micrometer-core:1.13.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinxCoroutinesVersion")
 
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
@@ -29,7 +29,9 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("ch.qos.logback:logback-classic:1.5.6")
 
     testImplementation(kotlin("test"))
-    testImplementation(project(":common"))
+    testImplementation(project(":test-common"))
+    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
 }

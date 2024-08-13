@@ -1,8 +1,8 @@
 val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val testContainersVersion = "1.20.0"
-val felleslibVersion = "0.0.159"
+val testContainersVersion = "1.20.1"
+val felleslibVersion = "0.0.175"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -28,11 +28,12 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
 
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.6")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
@@ -52,6 +53,9 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
     implementation("com.github.navikt:rapids-and-rivers:2024061408021718344972.64ebbdb34321")
+    // R&R bruker prometheus direkte men mangler dependency. Tidligere var den tatt inn via micrometer, men de har oppdatert til v1 som er inkompatibel med dagens kode i R&R
+    implementation("io.prometheus:simpleclient:0.16.0")
+
     implementation("com.natpryce:konfig:1.6.10.0")
 
     // Http
@@ -72,7 +76,7 @@ dependencies {
 
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.16.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.3")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -94,6 +98,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.13.0")
-    testImplementation(project(":common"))
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.13.2")
+    testImplementation(project(":test-common"))
+    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
 }

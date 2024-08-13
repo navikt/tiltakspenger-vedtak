@@ -23,7 +23,9 @@ data class AuditLogEvent(
     /**
      * Hva slags CRUD-operasjon blir gjort
      */
-    enum class Action(val value: String) {
+    enum class Action(
+        val value: String,
+    ) {
         /** Bruker har sett data. */
         ACCESS("audit:access"),
 
@@ -38,11 +40,14 @@ data class AuditLogEvent(
     }
 
     enum class Level {
-        INFO, WARN
+        INFO,
+        WARN,
     }
 }
 
-enum class CefFieldName(val kode: String) {
+enum class CefFieldName(
+    val kode: String,
+) {
     /**
      * Tidspunkt for når hendelsen skjedde.
      */
@@ -82,7 +87,10 @@ enum class CefFieldName(val kode: String) {
     DECISION_LABEL("flexString1Label"),
 }
 
-data class CefField(val cefFieldName: CefFieldName, val value: String)
+data class CefField(
+    val cefFieldName: CefFieldName,
+    val value: String,
+)
 
 /**
  * Logger til auditlogg på formatet
@@ -94,7 +102,7 @@ data class CefField(val cefFieldName: CefFieldName, val value: String)
  * sproc=40e4608e-7157-415d-86c2-697f4c3c7358
  */
 object AuditLogger {
-    private const val applicationName = "tiltakspenger-vedtak"
+    private const val APPLICATION_NAME = "tiltakspenger-vedtak"
 
     private val auditLogger = KotlinLogging.logger("audit")
 
@@ -107,14 +115,11 @@ object AuditLogger {
 
     private fun compileLogMessage(logEvent: AuditLogEvent): String {
         // Field descriptions from CEF documentation (#tech-logg_analyse_og_datainnsikt):
-        /*
-        Set to: 0 (zero)
-         */
         val version = "CEF:0"
         /*
         Arena, Bisys etc
          */
-        val deviceVendor = applicationName
+        val deviceVendor = APPLICATION_NAME
         /*
         The name of the log that originated the event. Auditlog, leselogg, ABAC-Audit, Sporingslogg
          */
@@ -130,7 +135,7 @@ object AuditLogger {
         /*
         The description of the event. For example 'ABAC sporingslogg' or 'Database query'
          */
-        val name = "$applicationName audit log"
+        val name = "$APPLICATION_NAME audit log"
         /*
         The severity of the event (INFO or WARN)
          */
@@ -162,12 +167,13 @@ object AuditLogger {
             CefField(CefFieldName.DECISION_VERDI, "Permit"),
             CefField(CefFieldName.CALL_ID, logEvent.callId.toString()),
         ).plus(
-            logEvent.behandlingId?.let {
-                listOf(
-                    CefField(CefFieldName.BEHANDLING_LABEL, "behandlingId"),
-                    CefField(CefFieldName.BEHANDLING_VERDI, it.toString()),
-                )
-            }.orEmpty(),
+            logEvent.behandlingId
+                ?.let {
+                    listOf(
+                        CefField(CefFieldName.BEHANDLING_LABEL, "behandlingId"),
+                        CefField(CefFieldName.BEHANDLING_VERDI, it.toString()),
+                    )
+                }.orEmpty(),
         )
 }
 

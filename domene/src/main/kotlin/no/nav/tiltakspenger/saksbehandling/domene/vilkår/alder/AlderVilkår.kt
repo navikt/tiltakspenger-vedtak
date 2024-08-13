@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDateTime
 
 /**
@@ -13,72 +13,73 @@ import java.time.LocalDateTime
  *
  * @param registerSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param utfall Selvom om utfallet er
- *
  */
 data class AlderVilkår private constructor(
-    val registerSaksopplysning: AlderSaksopplysning,
-    val saksbehandlerSaksopplysning: AlderSaksopplysning?,
+    override val vurderingsperiode: Periode,
+    val registerSaksopplysning: AlderSaksopplysning.Register,
+    val saksbehandlerSaksopplysning: AlderSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: AlderSaksopplysning,
-    val vurderingsperiode: Periode,
-    val utfall: Periodisering<Utfall2>,
-) : SkalErstatteVilkår {
-
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
+) : Vilkår {
     override val lovreferanse = Lovreferanse.ALDER
 
+    override fun utfall(): Periodisering<UtfallForPeriode> {
+        // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
+        // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
+        val dagenBrukerFyller18År = avklartSaksopplysning.fødselsdato.plusYears(18)
+        return when {
+            dagenBrukerFyller18År.isBefore(vurderingsperiode.fraOgMed) -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
+            dagenBrukerFyller18År.isAfter(vurderingsperiode.tilOgMed) -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
+            else -> {
+                throw IkkeImplementertException("Støtter ikke delvis innvilgelse av alder enda")
+            }
+        }
+    }
+
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
-        val introSaksopplysning = AlderSaksopplysning.Saksbehandler(
-            fødselsdato = command.fødselsdato,
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val introSaksopplysning =
+            AlderSaksopplysning.Saksbehandler(
+                fødselsdato = command.fødselsdato,
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
             avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
         )
     }
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: AlderSaksopplysning,
+            registerSaksopplysning: AlderSaksopplysning.Register,
             vurderingsperiode: Periode,
-        ): AlderVilkår {
-            return AlderVilkår(
-                registerSaksopplysning = søknadSaksopplysning,
+        ): AlderVilkår =
+            AlderVilkår(
+                registerSaksopplysning = registerSaksopplysning,
                 saksbehandlerSaksopplysning = null,
-                avklartSaksopplysning = søknadSaksopplysning,
+                avklartSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: AlderSaksopplysning,
-            saksbehandlerSaksopplysning: AlderSaksopplysning?,
+            registerSaksopplysning: AlderSaksopplysning.Register,
+            saksbehandlerSaksopplysning: AlderSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: AlderSaksopplysning,
             vurderingsperiode: Periode,
-            utfall: Periodisering<Utfall2>,
-        ): AlderVilkår {
-            return AlderVilkår(
-                registerSaksopplysning = søknadSaksopplysning,
+            utfall: Periodisering<UtfallForPeriode>,
+        ): AlderVilkår =
+            AlderVilkår(
+                registerSaksopplysning = registerSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
-            )
-        }
+            ).also {
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
+            }
     }
 }

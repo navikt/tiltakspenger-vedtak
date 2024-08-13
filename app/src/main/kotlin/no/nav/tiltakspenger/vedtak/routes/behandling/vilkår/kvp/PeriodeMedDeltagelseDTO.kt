@@ -15,13 +15,10 @@ enum class DeltagelseDTO {
     DELTAR_IKKE,
 }
 
-fun Deltagelse.toDTO(): DeltagelseDTO {
-    return DeltagelseDTO.valueOf(this.name)
-}
+fun Deltagelse.toDTO(): DeltagelseDTO = DeltagelseDTO.valueOf(this.name)
 
-fun PeriodeMedVerdi<Deltagelse>.toDTO(): PeriodeMedDeltagelseDTO {
-    return PeriodeMedDeltagelseDTO(
+fun PeriodeMedVerdi<Deltagelse>.toDTO(): PeriodeMedDeltagelseDTO =
+    PeriodeMedDeltagelseDTO(
         periode = this.periode.toDTO(),
         deltagelse = this.verdi.toDTO(),
     )
-}

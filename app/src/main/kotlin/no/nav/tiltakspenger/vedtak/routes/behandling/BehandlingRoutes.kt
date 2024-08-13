@@ -2,100 +2,54 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import io.ktor.server.routing.put
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.BehandlingId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.ports.AttesteringRepo
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.vedtak.routes.behandling.SaksopplysningDTOMapper.lagSaksopplysningMedVilkår
-import no.nav.tiltakspenger.vedtak.routes.behandling.SammenstillingForBehandlingDTOMapper.mapSammenstillingDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.institusjonsopphold.institusjonsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private val LOG = KotlinLogging.logger {}
 
-internal const val behandlingPath = "/behandling"
-internal const val behandlingerPath = "/behandlinger"
-
-data class IdentDTO(
-    val ident: String?,
-)
+internal const val BEHANDLING_PATH = "/behandling"
+internal const val BEHANDLINGER_PATH = "/behandlinger"
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
-    attesteringRepo: AttesteringRepo,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
 ) {
-    get("$behandlingPath/{behandlingId}") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/behandlingId")
+    get("$BEHANDLING_PATH/{behandlingId}") {
+        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val sak = sakService.hentMedBehandlingId(behandlingId, saksbehandler)
+        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler).toDTO()
 
-        if (sak.personopplysninger.erTom()) {
-            return@get call.respond(
-                message = "Sak mangler personopplysninger",
-                status = HttpStatusCode.NotFound,
-            )
-        }
-
-        val behandling = sak.behandlinger.filterIsInstance<Førstegangsbehandling>().firstOrNull {
-            it.id == behandlingId
-        } ?: return@get call.respond(message = "Behandling ikke funnet", status = HttpStatusCode.NotFound)
-
-        // her burde vi nok ikke bare hente den første, men finne den riktige og evnt feilmelding hvis vi ikke finner den
-        // val behandling = behandlingService.hentBehandling(behandlingId) Skal vi hente behandling direkte eller via sak?
-
-        val attesteringer = attesteringRepo.hentForBehandling(behandling.id)
-
-        val dto = mapSammenstillingDTO(
-            behandling = behandling,
-            personopplysninger = sak.personopplysninger.søkere(),
-            attesteringer = attesteringer,
-        )
-        call.respond(status = HttpStatusCode.OK, dto)
+        call.respond(status = HttpStatusCode.OK, behandling)
     }
 
-    post("$behandlingPath/{behandlingId}") {
-        SECURELOG.debug("Mottatt request på $behandlingPath/")
-
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val nySaksopplysning = call.receive<SaksopplysningDTO>()
-
-        behandlingService.leggTilSaksopplysning(
-            behandlingId,
-            lagSaksopplysningMedVilkår(saksbehandler, nySaksopplysning),
-        )
-
-        call.respond(status = HttpStatusCode.OK, message = "{}")
-    }
-
-    post("$behandlingPath/beslutter/{behandlingId}") {
-        SECURELOG.debug("Mottatt request. $behandlingPath/ skal sendes til beslutter")
+    post("$BEHANDLING_PATH/beslutter/{behandlingId}") {
+        SECURELOG.debug("Mottatt request. $BEHANDLING_PATH/ skal sendes til beslutter")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -105,34 +59,7 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    put("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
-        val antallDagerDto = call.receive<AntallDagerDTO>()
-        behandlingService.oppdaterAntallDagerPåTiltak(
-            behandlingId = behandlingId,
-            tiltakId = tiltakId,
-            periodeMedAntallDager = antallDagerDto.toPeriodeMedAntallDager(saksbehandler.navIdent),
-            saksbehandler = saksbehandler,
-        )
-        call.respond(message = "{}", status = HttpStatusCode.OK)
-    }
-
-    delete("$behandlingPath/{behandlingId}/antalldager/{tiltakId}") {
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val tiltakId = TiltakId.fromString(call.parameter("tiltakId"))
-
-        behandlingService.tilbakestillAntallDagerPåTiltak(
-            behandlingId = behandlingId,
-            tiltakId = tiltakId,
-            saksbehandler = saksbehandler,
-        )
-        call.respond(message = "{}", status = HttpStatusCode.OK)
-    }
-
-    post("$behandlingPath/avbrytbehandling/{behandlingId}") {
+    post("$BEHANDLING_PATH/avbrytbehandling/{behandlingId}") {
         SECURELOG.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
@@ -143,10 +70,13 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
+    hentPersonRoute(innloggetSaksbehandlerProvider, sakService)
+    tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
     livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService)
     introRoutes(innloggetSaksbehandlerProvider, behandlingService)
     alderRoutes(innloggetSaksbehandlerProvider, behandlingService)
     kravfristRoutes(innloggetSaksbehandlerProvider, behandlingService)
+    stønadsdagerRoutes(innloggetSaksbehandlerProvider, behandlingService)
 }

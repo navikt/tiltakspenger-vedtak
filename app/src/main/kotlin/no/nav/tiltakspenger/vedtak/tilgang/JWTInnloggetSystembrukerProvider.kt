@@ -12,13 +12,15 @@ class JWTInnloggetSystembrukerProvider(
 ) : InnloggetSystembrukerProvider {
     override fun hentSystembruker(principal: JWTPrincipal): Systembruker {
         val azpName = requireNotNull(principal.getClaim("azp_name", String::class)) { "azp_name er null i token" }
-        val rollerFraToken = principal.getListClaim("roles", String::class).map { it.uppercase() }.also {
-            LOG.info { "Vi fant disse rollene i systemtoken $it" }
-        }
+        val rollerFraToken =
+            principal.getListClaim("roles", String::class).map { it.uppercase() }.also {
+                LOG.info { "Vi fant disse rollene i systemtoken $it" }
+            }
 
-        val roller = allAvailableRoles.filter { rolle ->
-            rollerFraToken.contains(rolle.name)
-        }
+        val roller =
+            allAvailableRoles.filter { rolle ->
+                rollerFraToken.contains(rolle.name)
+            }
 
         return Systembruker(
             brukernavn = azpName,

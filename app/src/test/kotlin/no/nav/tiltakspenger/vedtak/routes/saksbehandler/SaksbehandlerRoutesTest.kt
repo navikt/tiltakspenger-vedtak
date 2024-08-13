@@ -25,14 +25,15 @@ class SaksbehandlerRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
 
     // language = JSON
-    private val saksbehandlerMock = """
+    private val saksbehandlerMock =
+        """
         {
           "navIdent":"Z12345",
           "brukernavn":"Sak Behandler",
           "epost":"Sak.Behandler@nav.no",
           "roller":["SAKSBEHANDLER"]
         }
-    """.trimIndent()
+        """.trimIndent()
 
     @Test
     fun test() {
@@ -52,7 +53,7 @@ class SaksbehandlerRoutesTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$saksbehandlerPath")
+                    path("$SAKSBEHANDLER_PATH")
                 },
             ).apply {
                 status shouldBe HttpStatusCode.OK

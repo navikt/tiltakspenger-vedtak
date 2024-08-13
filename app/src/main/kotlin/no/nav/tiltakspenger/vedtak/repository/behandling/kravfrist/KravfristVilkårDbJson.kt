@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
@@ -17,23 +19,21 @@ internal data class KravfristVilkårDbJson(
     val vurderingsperiode: PeriodeDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): KravfristVilkår {
-        return KravfristVilkår.fromDb(
-            søknadSaksopplysning = søknadSaksopplysning.toDomain(),
-            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
+    fun toDomain(vurderingsperiode: Periode): KravfristVilkår =
+        KravfristVilkår.fromDb(
+            søknadSaksopplysning = søknadSaksopplysning.toDomain()as KravfristSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as KravfristSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
-            vurderingsperiode = vurderingsperiode.toDomain(),
+            vurderingsperiode = this.vurderingsperiode.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson {
-    return KravfristVilkårDbJson(
+internal fun KravfristVilkår.toDbJson(): KravfristVilkårDbJson =
+    KravfristVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
         vurderingsperiode = vurderingsperiode.toDbJson(),
-        utfallsperioder = utfall.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
-}

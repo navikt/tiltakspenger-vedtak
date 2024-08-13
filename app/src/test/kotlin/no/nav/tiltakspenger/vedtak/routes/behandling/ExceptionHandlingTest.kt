@@ -14,8 +14,9 @@ import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.saksbehandling.service.søker.SøkerService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -28,21 +29,22 @@ class ExceptionHandlingTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
     private val behandlingService =
         mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
-    private val søkerService = mockk<SøkerService>()
+    private val sakService = mockk<SakService>()
 
     @Test
     fun `Manglende token skal bli til 401`() {
         every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } throws ManglendeJWTTokenException()
-        every { behandlingService.hentAlleBehandlinger(any()) } throws IllegalStateException("Wuzza")
+        every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.Unauthorized
-        val expectedBody = """
-        {
-          "status": 401,
-          "title": "ManglendeJWTTokenException",
-          "detail": "JWTToken ikke funnet"
-        }
-        """.trimIndent()
+        val expectedBody =
+            """
+            {
+              "status": 401,
+              "title": "ManglendeJWTTokenException",
+              "detail": "JWTToken ikke funnet"
+            }
+            """.trimIndent()
 
         testApplication {
             application {
@@ -53,7 +55,7 @@ class ExceptionHandlingTest {
                     behandlingBenkRoutes(
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
-                        søkerService,
+                        sakService,
                     )
                 }
             }
@@ -61,7 +63,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath")
+                    path(BEHANDLINGER_PATH)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode
@@ -78,16 +80,17 @@ class ExceptionHandlingTest {
     @Test
     fun `IllegalStateException skal bli til 500`() {
         every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns ObjectMother.beslutter()
-        every { behandlingService.hentAlleBehandlinger(any()) } throws IllegalStateException("Wuzza")
+        every { behandlingService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
         val exceptedStatusCode = HttpStatusCode.InternalServerError
-        val expectedBody = """
-        {
-          "status": 500,
-          "title": "IllegalStateException",
-          "detail": "Wuzza"
-        }
-        """.trimIndent()
+        val expectedBody =
+            """
+            {
+              "status": 500,
+              "title": "IllegalStateException",
+              "detail": "Wuzza"
+            }
+            """.trimIndent()
 
         testApplication {
             application {
@@ -98,7 +101,7 @@ class ExceptionHandlingTest {
                     behandlingBenkRoutes(
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
-                        søkerService,
+                        sakService,
                     )
                 }
             }
@@ -106,7 +109,7 @@ class ExceptionHandlingTest {
                 HttpMethod.Get,
                 url {
                     protocol = URLProtocol.HTTPS
-                    path("$behandlingerPath")
+                    path(BEHANDLINGER_PATH)
                 },
             ).apply {
                 status shouldBe exceptedStatusCode

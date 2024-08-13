@@ -4,37 +4,39 @@ import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.Profile
 import org.flywaydb.core.Flyway
 
-private fun flyway(): Flyway =
+private fun flyway(dataSource: javax.sql.DataSource): Flyway =
     when (Configuration.applicationProfile()) {
-        Profile.LOCAL -> localFlyway()
-        else -> gcpFlyway()
+        Profile.LOCAL -> localFlyway(dataSource)
+        else -> gcpFlyway(dataSource)
     }
 
-private fun localFlyway() = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .locations("db/migration", "db/local-migration")
-    .dataSource(DataSource.hikariDataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
+private fun localFlyway(dataSource: javax.sql.DataSource) =
+    Flyway
+        .configure()
+        .loggers("slf4j")
+        .encoding("UTF-8")
+        .locations("db/migration", "db/local-migration")
+        .dataSource(dataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
+        .load()
 
-private fun gcpFlyway() = Flyway
-    .configure()
-    .loggers("slf4j")
-    .encoding("UTF-8")
-    .dataSource(DataSource.hikariDataSource)
-    .cleanDisabled(false)
-    .cleanOnValidationError(true)
-    .load()
+private fun gcpFlyway(dataSource: javax.sql.DataSource) =
+    Flyway
+        .configure()
+        .loggers("slf4j")
+        .encoding("UTF-8")
+        .dataSource(dataSource)
+        .cleanDisabled(false)
+        .cleanOnValidationError(true)
+        .load()
 
-fun flywayMigrate() {
-    flyway().migrate()
+fun flywayMigrate(dataSource: javax.sql.DataSource) {
+    flyway(dataSource).migrate()
 }
 
-fun flywayCleanAndMigrate() {
-    val flyway = flyway()
+fun flywayCleanAndMigrate(dataSource: javax.sql.DataSource) {
+    val flyway = flyway(dataSource)
     flyway.clean()
     flyway.migrate()
 }

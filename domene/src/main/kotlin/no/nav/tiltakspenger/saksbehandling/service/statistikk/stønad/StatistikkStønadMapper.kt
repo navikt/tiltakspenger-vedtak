@@ -13,14 +13,15 @@ fun stønadStatistikkMapper(sak: SakDetaljer, vedtak: Vedtak): StatistikkStønad
         brukerId = "brukerId",
         resultat = "resultat",
         sakDato = LocalDate.now(),
-        sakFraDato = sak.periode.fraOgMed,
-        sakTilDato = sak.periode.tilOgMed,
-        søknadId = vedtak.behandling.søknad().søknadId,
+        // sak har ikke periode lengre, så bruker vedtak sin periode
+        sakFraDato = vedtak.periode.fraOgMed,
+        sakTilDato = vedtak.periode.tilOgMed,
+        søknadId = vedtak.behandling.søknad.id.toString(),
         ytelse = "IND",
         opplysning = "",
-        søknadDato = vedtak.behandling.søknad().opprettet.toLocalDate(),
-        søknadFraDato = vedtak.behandling.søknad().tiltak.deltakelseFom,
-        søknadTilDato = vedtak.behandling.søknad().tiltak.deltakelseTom,
+        søknadDato = vedtak.behandling.søknad.opprettet.toLocalDate(),
+        søknadFraDato = vedtak.behandling.søknad.tiltak.deltakelseFom,
+        søknadTilDato = vedtak.behandling.søknad.tiltak.deltakelseTom,
         vedtakId = vedtak.id.toString(),
     )
 }

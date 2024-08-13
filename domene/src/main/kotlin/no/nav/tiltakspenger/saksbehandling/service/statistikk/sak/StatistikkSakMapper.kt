@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -11,11 +11,13 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
     StatistikkSakDTO(
         id = UUID.randomUUID(),
         sakId = sak.id.toString(),
-        saksnummer = sak.saknummer.toString(),
+        saksnummer = sak.saksnummer.toString(),
         behandlingId = behandling.id.toString(),
-        relatertBehandlingId = null, // hvis revurdering
-        ident = sak.ident,
-        mottattTidspunkt = behandling.søknad().opprettet, // Denne bør vi hente fra den nye saksopplysningen for kravMottattDato?
+        relatertBehandlingId = null,
+        // hvis revurdering
+        ident = sak.fnr.verdi,
+        mottattTidspunkt = behandling.søknad.opprettet,
+        // Denne bør vi hente fra den nye saksopplysningen for kravMottattDato?
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = null,
         vedtakTidspunkt = null,
@@ -45,24 +47,18 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
     )
 
 fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Vedtak): StatistikkSakDTO {
-    val resultat = if (vedtak.utfallsperioder.all { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-        BehandlingResultat.INNVILGET
-    } else if (vedtak.utfallsperioder.any { it.utfall == UtfallForPeriode.GIR_RETT_TILTAKSPENGER }) {
-        BehandlingResultat.DELVIS_INNVILGET
-    } else {
-        BehandlingResultat.AVSLAG
-    }
-
     return StatistikkSakDTO(
         id = UUID.randomUUID(),
         sakId = sak.id.toString(),
-        saksnummer = sak.saknummer.toString(),
+        saksnummer = sak.saksnummer.toString(),
         behandlingId = vedtak.behandling.id.toString(),
-        relatertBehandlingId = null, // hvis revurdering
-        ident = sak.ident,
-        mottattTidspunkt = behandling.søknad().opprettet,
+        // hvis revurdering
+        relatertBehandlingId = null,
+        ident = sak.fnr.verdi,
+        mottattTidspunkt = behandling.søknad.opprettet,
         registrertTidspunkt = behandling.opprettet,
-        ferdigBehandletTidspunkt = null, // trenger et tidspunkt på iverksatt behandling hvis vi skal fylle ut denne
+        // trenger et tidspunkt på iverksatt behandling hvis vi skal fylle ut denne
+        ferdigBehandletTidspunkt = null,
         vedtakTidspunkt = vedtak.vedtaksdato,
         endretTidspunkt = LocalDateTime.now(),
         utbetaltTidspunkt = null,
@@ -74,7 +70,13 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         sakUtland = "N",
         behandlingType = BehandlingType.FØRSTEGANGSBEHANDLING,
         behandlingStatus = BehandlingStatus.FERDIG_BEHANDLET,
-        behandlingResultat = resultat,
+        behandlingResultat = when (vedtak.vedtaksType) {
+            VedtaksType.AVSLAG -> BehandlingResultat.AVSLAG
+            VedtaksType.INNVILGELSE -> BehandlingResultat.INNVILGET
+            // hva skal vi sette her
+            VedtaksType.STANS -> BehandlingResultat.AVVIST
+            VedtaksType.FORLENGELSE -> BehandlingResultat.INNVILGET
+        },
         resultatBegrunnelse = "resultatBegrunnelse",
         behandlingMetode = BehandlingMetode.MANUELL.name,
         opprettetAv = "system",

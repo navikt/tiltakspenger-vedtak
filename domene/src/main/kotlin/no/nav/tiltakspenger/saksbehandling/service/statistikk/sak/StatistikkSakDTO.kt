@@ -10,34 +10,52 @@ data class StatistikkSakDTO(
     val sakId: String,
     val saksnummer: String,
     val behandlingId: String,
-    val relatertBehandlingId: String?, // hvis revurdering
+    val relatertBehandlingId: String?,
     val ident: String,
-    val mottattTidspunkt: LocalDateTime, // tidspunkt da behandlingen oppstår (søknad mottatt)
-    val registrertTidspunkt: LocalDateTime, // tidspunkt da behandlingen registreres i basen
+    // tidspunkt da behandlingen oppstår (søknad mottatt)
+    val mottattTidspunkt: LocalDateTime,
+    // tidspunkt da behandlingen registreres i basen
+    val registrertTidspunkt: LocalDateTime,
     val ferdigBehandletTidspunkt: LocalDateTime?,
     val vedtakTidspunkt: LocalDateTime?,
-    val endretTidspunkt: LocalDateTime, // nå
+    // nå
+    val endretTidspunkt: LocalDateTime,
     val utbetaltTidspunkt: LocalDateTime?,
-    val søknadsformat: String, // papir, digital
-    val forventetOppstartTidspunkt: LocalDate, // forventet oppstart av tiltak
-    val tekniskTidspunkt: LocalDate?, // forventet oppstart av tiltak
+    // papir, digital
+    val søknadsformat: String,
+    // forventet oppstart av tiltak
+    val forventetOppstartTidspunkt: LocalDate,
+    // forventet oppstart av tiltak
+    val tekniskTidspunkt: LocalDate?,
     val vilkår: List<VilkårStatistikkDTO>,
-    val sakYtelse: String, // IND
-    val sakUtland: String, // Om saken gjelder utland. Settes til N
+    // IND
+    val sakYtelse: String,
+    // Om saken gjelder utland. Settes til N
+    val sakUtland: String,
     val behandlingType: BehandlingType,
     val behandlingStatus: BehandlingStatus,
     val behandlingResultat: BehandlingResultat?,
-    val resultatBegrunnelse: String?, // fylles ut ved klage, avvisning, avslag
-    val behandlingMetode: String, // manuell, automatisk
-    val opprettetAv: String, // Settes til -5 hvis kode 6 kan være systembruker
-    val saksbehandler: String?, // Settes til -5 hvis kode 6
-    val ansvarligBeslutter: String?, // Settes til -5 hvis kode 6
-    val ansvarligEnhet: String?, // Settes til -5 hvis kode 6
-    val tilbakekrevingsbeløp: Double?, // beløp som skal tilbakekreves
-    val funksjonellPeriodeFom: LocalDate?, // funksjonell periode for tilbakekreving
-    val funksjonellPeriodeTom: LocalDate?, // funksjonell periode for tilbakekreving
+    // fylles ut ved klage, avvisning, avslag
+    val resultatBegrunnelse: String?,
+    // manuell, automatisk
+    val behandlingMetode: String,
+    // Settes til -5 hvis kode 6 kan være systembruker
+    val opprettetAv: String,
+    // Settes til -5 hvis kode 6
+    val saksbehandler: String?,
+    // Settes til -5 hvis kode 6
+    val ansvarligBeslutter: String?,
+    // Settes til -5 hvis kode 6
+    val ansvarligEnhet: String?,
+    // beløp som skal tilbakekreves
+    val tilbakekrevingsbeløp: Double?,
+    // funksjonell periode for tilbakekreving
+    val funksjonellPeriodeFom: LocalDate?,
+    // funksjonell periode for tilbakekreving
+    val funksjonellPeriodeTom: LocalDate?,
     val avsender: String,
-    val versjon: String, // commit hash
+    // commit hash
+    val versjon: String,
 )
 
 data class VilkårStatistikkDTO(

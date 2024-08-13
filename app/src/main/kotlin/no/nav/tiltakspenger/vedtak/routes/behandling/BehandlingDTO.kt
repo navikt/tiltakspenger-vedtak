@@ -1,18 +1,31 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.StønadsdagerDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
-import java.time.LocalDate
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.toDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal data class BehandlingDTO(
     val id: String,
-    val ident: String,
-    val fom: LocalDate,
-    val tom: LocalDate,
-    val typeBehandling: String,
-    val status: String,
-    val tilstand: BehandlingTilstand,
+    val status: BehandlingsstatusDTO,
     val saksbehandler: String?,
     val beslutter: String?,
+    val vurderingsperiode: PeriodeDTO,
     val vilkårssett: VilkårssettDTO,
+    val stønadsdager: StønadsdagerDTO,
+    val attesteringer: List<AttesteringDTO>,
+)
+
+internal fun Behandling.toDTO() = BehandlingDTO(
+    id = this.id.toString(),
+    saksbehandler = this.saksbehandler,
+    beslutter = this.beslutter,
+    status = this.status.toDTO(),
+    vurderingsperiode = this.vurderingsperiode.toDTO(),
+    attesteringer = this.attesteringer.toDTO(),
+    vilkårssett = this.vilkårssett.toDTO(),
+    stønadsdager = this.stønadsdager.toDTO(),
 )

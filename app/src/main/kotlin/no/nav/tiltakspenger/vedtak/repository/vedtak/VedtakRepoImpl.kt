@@ -5,17 +5,19 @@ import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
-import no.nav.tiltakspenger.felles.VedtakId
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresTransactionContext.Companion.withTransaction
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
-import no.nav.tiltakspenger.vedtak.repository.behandling.UtfallsperiodeDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
@@ -24,59 +26,70 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal class VedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
-    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
-) : VedtakRepo, VedtakDAO {
-    override fun hent(vedtakId: VedtakId): Vedtak? {
-        return sessionFactory.withTransaction { tx ->
-            tx.run(
+) : VedtakRepo,
+    VedtakDAO {
+    override fun hent(vedtakId: VedtakId): Vedtak? =
+        sessionFactory.withSessionContext { sessionContext ->
+            sessionContext.withSession { session ->
+                session.run(
+                    queryOf(
+                        sqlHent,
+                        mapOf(
+                            "id" to vedtakId.toString(),
+                        ),
+                    ).map { row ->
+                        row.toVedtak(sessionContext)
+                    }.asSingle,
+                )
+            }
+        }
+
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak =
+        sessionFactory.withSessionContext { sessionContext ->
+            sessionContext.withSession { session ->
+                session.run(
+                    queryOf(
+                        sqlHentForBehandling,
+                        mapOf(
+                            "behandlingId" to behandlingId.toString(),
+                        ),
+                    ).map { row ->
+                        row.toVedtak(sessionContext)
+                    }.asSingle,
+                )
+            }
+        } ?: throw NotFoundException("Ikke funnet")
+
+    override fun hentVedtakForSak(
+        sakId: SakId,
+        sessionContext: SessionContext,
+    ): List<Vedtak> =
+        sessionContext.withSession { session ->
+            session.run(
                 queryOf(
-                    sqlHent,
+                    sqlHentForSak,
                     mapOf(
-                        "id" to vedtakId.toString(),
+                        "sakId" to sakId.toString(),
                     ),
                 ).map { row ->
-                    row.toVedtak(tx)
-                }.asSingle,
+                    row.toVedtak(sessionContext)
+                }.asList,
             )
         }
-    }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak {
-        return sessionFactory.withTransaction { tx ->
-            tx.run(
-                queryOf(
-                    sqlHentForBehandling,
-                    mapOf(
-                        "behandlingId" to behandlingId.toString(),
-                    ),
-                ).map { row ->
-                    row.toVedtak(tx)
-                }.asSingle,
-            )
-        } ?: throw NotFoundException("Ikke funnet")
-    }
-
-    override fun hentVedtakForSak(sakId: SakId, tx: TransactionalSession): List<Vedtak> {
-        return tx.run(
-            queryOf(
-                sqlHentForSak,
-                mapOf(
-                    "sakId" to sakId.toString(),
-                ),
-            ).map { row ->
-                row.toVedtak(tx)
-            }.asList,
-        )
-    }
-
-    override fun lagreVedtak(vedtak: Vedtak, context: TransactionContext?): Vedtak {
-        return sessionFactory.withTransaction(context) { tx ->
+    override fun lagreVedtak(
+        vedtak: Vedtak,
+        context: TransactionContext?,
+    ): Vedtak =
+        sessionFactory.withTransaction(context) { tx ->
             lagreVedtak(vedtak, tx)
         }
-    }
 
-    override fun lagreVedtak(vedtak: Vedtak, tx: TransactionalSession): Vedtak {
+    override fun lagreVedtak(
+        vedtak: Vedtak,
+        tx: TransactionalSession,
+    ): Vedtak {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -94,42 +107,44 @@ internal class VedtakRepoImpl(
                 ),
             ).asUpdate,
         )
-        utfallsperiodeDAO.oppdaterVedtak(vedtak.id, vedtak.behandling.id, tx)
         return vedtak
     }
 
-    private fun Row.toVedtak(txSession: TransactionalSession): Vedtak {
+    private fun Row.toVedtak(sessionContext: SessionContext): Vedtak {
         val id = VedtakId.fromDb(string("id"))
         return Vedtak(
             id = id,
-            sakId = SakId.fromDb(string("sak_id")),
-            behandling = behandlingRepo.hent(BehandlingId.fromString(string("behandling_id"))),
+            sakId = SakId.fromString(string("sak_id")),
+            behandling = behandlingRepo.hent(BehandlingId.fromString(string("behandling_id")), sessionContext),
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
             periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
-            utfallsperioder = utfallsperiodeDAO.hentForVedtak(id, txSession),
             saksbehandler = string("saksbehandler"),
             beslutter = string("beslutter"),
         )
     }
 
     @Language("SQL")
-    private val sqlHent = """
+    private val sqlHent =
+        """
         select * from vedtak where id = :id
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentForBehandling = """
+    private val sqlHentForBehandling =
+        """
         select * from vedtak where behandling_id = :behandlingId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentForSak = """
+    private val sqlHentForSak =
+        """
         select * from vedtak where sak_id = :sakId
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlLagre = """
+    private val sqlLagre =
+        """
         insert into vedtak (
             id, 
             sak_id, 
@@ -153,5 +168,5 @@ internal class VedtakRepoImpl(
             :beslutter,
             :opprettet
         )
-    """.trimIndent()
+        """.trimIndent()
 }

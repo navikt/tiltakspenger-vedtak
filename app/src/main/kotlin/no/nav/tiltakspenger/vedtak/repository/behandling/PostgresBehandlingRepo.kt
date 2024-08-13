@@ -1,24 +1,32 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
+import arrow.core.NonEmptyList
+import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingStatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.BehandlingTilstand
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toAttesteringer
+import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toVilkårssett
+import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toStønadsdager
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
@@ -26,138 +34,172 @@ import java.time.LocalDateTime
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-// todo Må enten endres til å kunne hente og lagre alle typer behandlinger og ikke bare Søknadsbehandlinger
-//      eller så må vi lage egne Repo for de andre type behandlingene
 internal class PostgresBehandlingRepo(
-    private val saksopplysningRepo: SaksopplysningRepo,
-    private val vurderingRepo: VurderingRepo,
     private val søknadDAO: SøknadDAO,
-    private val tiltakDAO: TiltakDAO,
-    private val utfallsperiodeDAO: UtfallsperiodeDAO,
     private val sessionFactory: PostgresSessionFactory,
-) : BehandlingRepo, BehandlingDAO {
-    override fun hentOrNull(behandlingId: BehandlingId): Førstegangsbehandling? {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
+) : BehandlingRepo,
+    BehandlingDAO {
+    override fun hentOrNull(
+        behandlingId: BehandlingId,
+        sessionContext: SessionContext?,
+    ): Førstegangsbehandling? =
+        sessionFactory.withSession(sessionContext) { session ->
+            session.run(
                 queryOf(
                     sqlHentBehandling,
                     mapOf(
                         "id" to behandlingId.toString(),
                     ),
                 ).map { row ->
-                    row.toBehandling(txSession)
+                    row.toBehandling(session)
                 }.asSingle,
             )
         }
-    }
 
-    override fun hent(behandlingId: BehandlingId): Førstegangsbehandling {
-        return hentOrNull(behandlingId) ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
-    }
+    override fun hent(
+        behandlingId: BehandlingId,
+        sessionContext: SessionContext?,
+    ): Førstegangsbehandling =
+        hentOrNull(behandlingId, sessionContext)
+            ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
 
-    override fun hentAlle(): List<Førstegangsbehandling> {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
-                queryOf(
-                    sqlHentAlleBehandlinger,
-                ).map { row ->
-                    row.toBehandling(txSession)
-                }.asList,
-            )
-        }
-    }
-
-    override fun hentAlleForIdent(ident: String): List<Førstegangsbehandling> {
-        return sessionFactory.withTransaction { txSession ->
-            txSession.run(
+    override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> =
+        sessionFactory.withSession { session ->
+            session.run(
                 queryOf(
                     sqlHentBehandlingForIdent,
                     mapOf(
-                        "ident" to ident,
+                        "ident" to fnr.verdi,
                     ),
                 ).map { row ->
-                    row.toBehandling(txSession)
+                    row.toBehandling(session)
                 }.asList,
             )
         }
-    }
 
-    override fun hentForSak(sakId: SakId, tx: TransactionalSession): List<Førstegangsbehandling> {
-        return tx.run(
-            queryOf(
-                sqlHentBehandlingForSak,
-                mapOf(
-                    "sakId" to sakId.toString(),
-                ),
-            ).map { row ->
-                row.toBehandling(tx)
-            }.asList,
-        )
-    }
+    override fun hentForSak(
+        sakId: SakId,
+        session: Session,
+    ): NonEmptyList<Førstegangsbehandling> =
+        session
+            .run(
+                queryOf(
+                    sqlHentBehandlingForSak,
+                    mapOf(
+                        "sakId" to sakId.toString(),
+                    ),
+                ).map { row ->
+                    row.toBehandling(session)
+                }.asList,
+            ).toNonEmptyListOrNull()
+            ?: throw IkkeFunnetException("sak med id $sakId ikke funnet")
 
-    override fun lagre(behandling: Behandling, context: TransactionContext?): Behandling {
-        return sessionFactory.withTransaction(context) { tx ->
-            lagre(behandling, tx)
+    override fun hentForSak(sakId: SakId): NonEmptyList<Førstegangsbehandling> =
+        sessionFactory.withSession { session ->
+            hentForSak(sakId, session)
         }
+
+    override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? =
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    sqlHentBehandlingForJournalpostId,
+                    mapOf(
+                        "journalpostId" to journalpostId,
+                    ),
+                ).map { row ->
+                    row.toBehandling(session)
+                }.asSingle,
+            )
+        }
+
+    override fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling? =
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select b.*,sak.saksnummer,sak.ident
+                      from behandling b
+                      join søknad s on b.id = s.behandling_id
+                      join sak on sak.id = b.sakId
+                      where s.id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to søknadId.toString(),
+                    ),
+                ).map { row ->
+                    row.toBehandling(session)
+                }.asSingle,
+            )
+        }
+
+    override fun lagre(
+        behandling: Behandling,
+        transactionContext: TransactionContext?,
+    ) = sessionFactory.withTransaction(transactionContext) { tx ->
+        lagre(behandling, tx)
     }
 
-    override fun lagre(behandling: Behandling, tx: TransactionalSession): Behandling {
+    /**
+     * Vil ikke overlagre søknad, men kun knytte søknadene til behandlingen.
+     */
+    override fun lagre(
+        behandling: Behandling,
+        tx: TransactionalSession,
+    ) {
         val sistEndret = hentSistEndret(behandling.id, tx)
-        return if (sistEndret == null) {
+        if (sistEndret == null) {
             opprettBehandling(behandling, tx)
         } else {
             oppdaterBehandling(sistEndret, behandling, tx)
         }.also {
-            saksopplysningRepo.lagre(behandling.id, behandling.saksopplysninger, tx)
             if (behandling is Førstegangsbehandling) {
-                søknadDAO.lagre(behandling.id, behandling.søknader, tx)
+                søknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, tx)
             }
-            tiltakDAO.lagre(behandling.id, behandling.tiltak.tiltak, tx)
-            vurderingRepo.lagre(behandling.id, behandling.vilkårsvurderinger, tx)
-            utfallsperiodeDAO.lagre(behandling.id, behandling.utfallsperioder, tx)
         }
     }
 
     private fun oppdaterBehandling(
         sistEndret: LocalDateTime,
         behandling: Behandling,
-        txSession: TransactionalSession,
-    ): Behandling {
+        session: Session,
+    ) {
         SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
 
-        val antRaderOppdatert = txSession.run(
-            queryOf(
-                sqlOppdaterBehandling,
-                mapOf(
-                    "id" to behandling.id.toString(),
-                    "sakId" to behandling.sakId.toString(),
-                    "fom" to behandling.vurderingsperiode.fraOgMed,
-                    "tom" to behandling.vurderingsperiode.tilOgMed,
-                    "tilstand" to finnTilstand(behandling),
-                    "status" to finnStatus(behandling),
-                    "sistEndretOld" to sistEndret,
-                    "sistEndret" to nå(),
-                    "saksbehandler" to behandling.saksbehandler,
-                    "beslutter" to behandling.beslutter,
-                    "vilkaarssett" to behandling.vilkårssett.toDbJson(),
-                ),
-            ).asUpdate,
-        )
+        val antRaderOppdatert =
+            session.run(
+                queryOf(
+                    sqlOppdaterBehandling,
+                    mapOf(
+                        "id" to behandling.id.toString(),
+                        "sakId" to behandling.sakId.toString(),
+                        "fom" to behandling.vurderingsperiode.fraOgMed,
+                        "tom" to behandling.vurderingsperiode.tilOgMed,
+                        "status" to behandling.status.toDb(),
+                        "sistEndretOld" to sistEndret,
+                        "sistEndret" to nå(),
+                        "saksbehandler" to behandling.saksbehandler,
+                        "beslutter" to behandling.beslutter,
+                        "vilkaarssett" to behandling.vilkårssett.toDbJson(),
+                        "attesteringer" to behandling.attesteringer.toDbJson(),
+                        "stonadsdager" to behandling.stønadsdager.toDbJson(),
+                    ),
+                ).asUpdate,
+            )
         if (antRaderOppdatert == 0) {
             throw IllegalStateException("Noen andre har endret denne behandlingen ${behandling.id}")
         }
-        return behandling
     }
 
     private fun opprettBehandling(
         behandling: Behandling,
-        txSession: TransactionalSession,
-    ): Behandling {
+        session: Session,
+    ) {
         SECURELOG.info { "Oppretter behandling ${behandling.id}" }
 
         val nå = nå()
 
-        txSession.run(
+        session.run(
             queryOf(
                 sqlOpprettBehandling,
                 mapOf(
@@ -165,19 +207,24 @@ internal class PostgresBehandlingRepo(
                     "sakId" to behandling.sakId.toString(),
                     "fom" to behandling.vurderingsperiode.fraOgMed,
                     "tom" to behandling.vurderingsperiode.tilOgMed,
-                    "tilstand" to finnTilstand(behandling),
-                    "status" to finnStatus(behandling),
+                    "status" to behandling.status.toDb(),
                     "sistEndret" to nå,
                     "opprettet" to behandling.opprettet,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
+                    "stonadsdager" to behandling.stønadsdager.toDbJson(),
+                    "saksbehandler" to behandling.saksbehandler,
+                    "beslutter" to behandling.beslutter,
+                    "attesteringer" to behandling.attesteringer.toDbJson(),
                 ),
             ).asUpdate,
         )
-        return behandling
     }
 
-    private fun hentSistEndret(behandlingId: BehandlingId, txSession: TransactionalSession): LocalDateTime? =
-        txSession.run(
+    private fun hentSistEndret(
+        behandlingId: BehandlingId,
+        session: Session,
+    ): LocalDateTime? =
+        session.run(
             queryOf(
                 sqlHentSistEndret,
                 mapOf(
@@ -186,137 +233,128 @@ internal class PostgresBehandlingRepo(
             ).map { row -> row.localDateTime("sist_endret") }.asSingle,
         )
 
-    private fun Row.toBehandling(txSession: TransactionalSession): Førstegangsbehandling {
+    private fun Row.toBehandling(session: Session): Førstegangsbehandling {
         val id = BehandlingId.fromString(string("id"))
-        val sakId = SakId.fromDb(string("sakId"))
-        val fom = localDate("fom")
-        val tom = localDate("tom")
+        val sakId = SakId.fromString(string("sakId"))
+        val vurderingsperiode = Periode(localDate("fom"), localDate("tom"))
         val status = string("status")
         val saksbehandler = stringOrNull("saksbehandler")
         val beslutter = stringOrNull("beslutter")
-        val behandlingStatus = when (status) {
-            "Innvilget" -> BehandlingStatus.Innvilget
-            "Avslag" -> BehandlingStatus.Avslag
-            "Manuell" -> BehandlingStatus.Manuell
-            else -> throw IllegalStateException("Ukjent BehandlingVilkårsvurdert $id med status $status")
-        }
-        val tilstand = when (val type = string("tilstand")) {
-            "søknadsbehandling" -> BehandlingTilstand.OPPRETTET
-            "Vilkårsvurdert" -> BehandlingTilstand.VILKÅRSVURDERT
-            "TilBeslutting" -> BehandlingTilstand.TIL_BESLUTTER
-            "Iverksatt" -> BehandlingTilstand.IVERKSATT
-            else -> throw IllegalStateException("Hentet en Behandling $id med ukjent status : $type")
-        }
-        val vilkårssett = string("vilkårssett").toVilkårssett(
-            saksopplysninger = saksopplysningRepo.hent(id, txSession),
-            vilkårsvurderinger = vurderingRepo.hent(id, txSession),
-            utfallsperioder = utfallsperiodeDAO.hent(id, txSession),
-        )
+        val søknad = søknadDAO.hentForBehandlingId(id, session)!!
+
+        val stønadsdager = string("stønadsdager").toStønadsdager()
+        val attesteringer = string("attesteringer").toAttesteringer()
+        val vilkårssett = string("vilkårssett").toVilkårssett(vurderingsperiode)
+        val fnr = Fnr.fromString(string("ident"))
+        val saksnummer = Saksnummer(string("saksnummer"))
+
         return Førstegangsbehandling(
             id = id,
             sakId = sakId,
-            søknader = søknadDAO.hent(id, txSession),
-            vurderingsperiode = Periode(fom, tom),
+            saksnummer = saksnummer,
+            fnr = fnr,
+            søknad = søknad,
+            vurderingsperiode = vurderingsperiode,
             vilkårssett = vilkårssett,
-            tiltak = TiltakVilkår(tiltakDAO.hent(id, txSession)),
             saksbehandler = saksbehandler,
             beslutter = beslutter,
-            status = behandlingStatus,
-            tilstand = tilstand,
+            attesteringer = attesteringer,
+            stønadsdager = stønadsdager,
+            status = status.toBehandlingsstatus(),
             opprettet = localDateTime("opprettet"),
         )
     }
 
-    private fun finnTilstand(behandling: Behandling): String =
-        when (behandling.tilstand) {
-            BehandlingTilstand.OPPRETTET -> "søknadsbehandling"
-            BehandlingTilstand.VILKÅRSVURDERT -> "Vilkårsvurdert"
-            BehandlingTilstand.TIL_BESLUTTER -> "TilBeslutting"
-            BehandlingTilstand.IVERKSATT -> "Iverksatt"
-        }
-
-    private fun finnStatus(behandling: Behandling): String =
-        when (behandling.status) {
-            BehandlingStatus.Innvilget -> "Innvilget"
-            BehandlingStatus.Manuell -> "Manuell"
-            BehandlingStatus.Avslag -> "Avslag"
-        }
-
-    private val sqlHentSistEndret = """
+    private val sqlHentSistEndret =
+        """
         select sist_endret from behandling where id = :id
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlOpprettBehandling = """
+    private val sqlOpprettBehandling =
+        """
         insert into behandling (
             id,
             sakId,
             fom,
             tom,
-            tilstand,
             status,
             sist_endret,
             opprettet,
-            vilkårssett
+            vilkårssett,
+            stønadsdager,
+            saksbehandler,
+            beslutter,
+            attesteringer                
         ) values (
             :id,
             :sakId,
             :fom,
             :tom,
-            :tilstand,
             :status,
             :sistEndret,
             :opprettet,
-            to_jsonb(:vilkaarssett::jsonb)
+            to_jsonb(:vilkaarssett::jsonb),
+            to_jsonb(:stonadsdager::jsonb),
+            :saksbehandler,
+            :beslutter,
+            to_jsonb(:attesteringer::jsonb)
         )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlOppdaterBehandling = """
+    private val sqlOppdaterBehandling =
+        """
         update behandling set 
             fom = :fom,
             tom = :tom,
             sakId = :sakId,
-            tilstand = :tilstand,
             status = :status,
             sist_endret = :sistEndret,
             saksbehandler = :saksbehandler,
             beslutter = :beslutter,
-            vilkårssett = to_jsonb(:vilkaarssett::json)
+            vilkårssett = to_jsonb(:vilkaarssett::json),
+            stønadsdager = to_jsonb(:stonadsdager::json),
+            attesteringer = to_jsonb(:attesteringer::json)
         where id = :id
           and sist_endret = :sistEndretOld
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentBehandling = """
-        select * from behandling where id = :id
-    """.trimIndent()
+    private val sqlHentBehandling =
+        """
+        select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.id = :id
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentBehandlingForSak = """
-        select * from behandling where sakId = :sakId
-    """.trimIndent()
+    private val sqlHentBehandlingForSak =
+        """
+        select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.sakId = :sakId
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentBehandlingForIdent = """
-        select * from behandling 
-           where sakid = (
-            select id 
-             from sak 
-             where ident = :ident)
-    """.trimIndent()
+    private val sqlHentBehandlingForIdent =
+        """
+        select b.*,s.ident, s.saksnummer from behandling b
+          join sak s on s.id = b.sakid
+           where s.ident = :ident
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentBehandlingForJournalpostId = """
-        select * from behandling 
-         where id = 
-            (select behandling_id 
-             from søknad 
-             where journalpost_id = :journalpostId)
-    """.trimIndent()
+    private val sqlHentBehandlingForJournalpostId =
+        """
+         select b.*,s.ident, s.saksnummer from behandling b
+         join sak s on s.id = b.sakid
+        where b.id = 
+           (select behandling_id 
+            from søknad 
+            where journalpost_id = :journalpostId)
+        """.trimIndent()
 
     @Language("SQL")
-    private val sqlHentAlleBehandlinger = """
-        select * from behandling
-    """.trimIndent()
+    private val sqlHentAlleBehandlinger =
+        """
+        select b.*,s.ident, s.saksnummer from behandling b
+         join sak s on s.id = b.sakid
+        """.trimIndent()
 }

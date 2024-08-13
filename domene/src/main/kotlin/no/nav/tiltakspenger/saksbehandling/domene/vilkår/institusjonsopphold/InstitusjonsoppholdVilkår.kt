@@ -3,36 +3,32 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.IKKE_OPPHOLD
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.Opphold.OPPHOLD
 
 /**
  * Institusjonsopphold:
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param utfall Selvom om utfallet er
- *
  */
 data class InstitusjonsoppholdVilkår private constructor(
-    val søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
-    val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning?,
+    override val vurderingsperiode: Periode,
+    val søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
+    val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
-    val utfall: Periodisering<Utfall2>,
-) : SkalErstatteVilkår {
-
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
+) : Vilkår {
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
 
-    val totalePeriode: Periode = avklartSaksopplysning.totalePeriode
+    override fun utfall(): Periodisering<UtfallForPeriode> =
+        avklartSaksopplysning.opphold.map {
+            when (it) {
+                OPPHOLD -> UtfallForPeriode.IKKE_OPPFYLT
+                IKKE_OPPHOLD -> UtfallForPeriode.OPPFYLT
+            }
+        }
 
     init {
         if (saksbehandlerSaksopplysning != null) {
@@ -50,31 +46,35 @@ data class InstitusjonsoppholdVilkår private constructor(
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
-        ): InstitusjonsoppholdVilkår {
-            return InstitusjonsoppholdVilkår(
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
+        ): InstitusjonsoppholdVilkår =
+            InstitusjonsoppholdVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
-                utfall = søknadSaksopplysning.vurderMaskinelt(),
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning,
-            saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning?,
+            vurderingsperiode: Periode,
+            søknadSaksopplysning: InstitusjonsoppholdSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
-            utfall: Periodisering<Utfall2>,
-        ): InstitusjonsoppholdVilkår {
-            return InstitusjonsoppholdVilkår(
+            utfall: Periodisering<UtfallForPeriode>,
+        ): InstitusjonsoppholdVilkår =
+            InstitusjonsoppholdVilkår(
+                vurderingsperiode = vurderingsperiode,
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
-                utfall = utfall,
-            )
-        }
+            ).also {
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i InstitusjonsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
+            }
     }
 }

@@ -1,62 +1,44 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
-import no.nav.tiltakspenger.felles.BehandlingId
-import no.nav.tiltakspenger.felles.SakId
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.AntallDager
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.tiltak.TiltakVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.saksopplysning.Saksopplysning
+import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.Stønadsdager
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vurdering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.toAvklartUtfallForPeriode
 import java.time.LocalDateTime
-
-data class LeggTilSaksopplysningRespons(
-    val behandling: Behandling,
-    val erEndret: Boolean,
-)
 
 interface Behandling {
     val id: BehandlingId
     val sakId: SakId
+    val fnr: Fnr
+    val saksnummer: Saksnummer
     val vurderingsperiode: Periode
-    val søknader: List<Søknad>
+    val søknad: Søknad
     val saksbehandler: String?
     val beslutter: String?
     val vilkårssett: Vilkårssett
-    val tiltak: TiltakVilkår
-    val status: BehandlingStatus
-    val tilstand: BehandlingTilstand
+    val stønadsdager: Stønadsdager
+    val status: Behandlingsstatus
+    val attesteringer: List<Attestering>
     val opprettet: LocalDateTime
 
-    val saksopplysninger: List<Saksopplysning> get() = vilkårssett.saksopplysninger
-    val vilkårsvurderinger: List<Vurdering> get() = vilkårssett.vilkårsvurderinger
+    val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
+    val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()
 
-    val utfallsperioder: List<Utfallsperiode> get() = vilkårssett.utfallsperioder
+    fun taBehandling(saksbehandler: Saksbehandler): Behandling
 
-    fun leggTilSøknad(søknad: Søknad): Behandling
-    fun leggTilSaksopplysning(saksopplysning: Saksopplysning): LeggTilSaksopplysningRespons
-    fun oppdaterTiltak(tiltak: List<Tiltak>): Behandling
-    fun startBehandling(saksbehandler: Saksbehandler): Behandling
-    fun startGodkjenning(saksbehandler: Saksbehandler): Behandling
-    fun avbrytBehandling(saksbehandler: Saksbehandler): Behandling
-    fun tilBeslutting(saksbehandler: Saksbehandler): Behandling
-    fun iverksett(utøvendeBeslutter: Saksbehandler): Behandling
-    fun sendTilbake(utøvendeBeslutter: Saksbehandler): Behandling
-    fun vilkårsvurder(): Behandling
-    fun saksopplysninger(): List<Saksopplysning>
-    fun søknad(): Søknad
-    fun oppdaterAntallDager(
-        tiltakId: TiltakId,
-        nyPeriodeMedAntallDager: PeriodeMedVerdi<AntallDager>,
-        saksbehandler: Saksbehandler,
-    ): Behandling
+    fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Behandling
 
-    fun tilbakestillAntallDager(
-        tiltakId: TiltakId,
-        saksbehandler: Saksbehandler,
-    ): Behandling
+    fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
+
+    fun iverksett(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
+
+    fun sendTilbake(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
 }

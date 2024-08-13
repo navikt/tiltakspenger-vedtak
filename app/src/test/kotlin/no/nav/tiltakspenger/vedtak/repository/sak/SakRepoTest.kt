@@ -1,21 +1,16 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
-import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.felles.februar
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.objectmothers.ObjectMother.tomSak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
+import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
 import java.util.Random
 
 internal class SakRepoTest {
-
     companion object {
         val random = Random()
     }
@@ -26,28 +21,20 @@ internal class SakRepoTest {
             val testDataHelper = TestDataHelper(dataSource)
             val sakRepo = testDataHelper.sakRepo
 
-            val ident = random.nextInt().toString()
-            val startdato = 1.januar(2023)
-            val sluttdato = 31.mars(2023)
+            val sak1 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        løpenummer = 1001,
+                    ).first
+            testDataHelper
+                .persisterOpprettetFørstegangsbehandling(
+                    løpenummer = 1002,
+                ).first
 
-            val sak = tomSak(ident = ident, periode = Periode(fraOgMed = startdato, tilOgMed = sluttdato))
-
-            sakRepo.lagre(sak) shouldBe sak
-            sakRepo.hentForIdent(ident) shouldBe listOf(sak)
-        }
-    }
-
-    @Test
-    fun `hentForSaksnummer skal hente sak med matchende saksnummer`() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-            val sakRepo = testDataHelper.sakRepo
-
-            val saksnummerMock = Saksnummer("202301011001")
-            val sak = tomSak(saksnummer = saksnummerMock)
-            sakRepo.lagre(sak)
-            val sakHentetUtifraSaksnummer = sakRepo.hentForSaksnummer(saksnummer = saksnummerMock.verdi)
-            sakHentetUtifraSaksnummer?.saknummer shouldBe sak.saknummer
+            sakRepo.hentForIdent(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
+            sakRepo.hentForSaksnummer(saksnummer = sak1.saksnummer)!! shouldBe sak1
+            sakRepo.hent(sak1.id) shouldBe sak1
+            sakRepo.hentSakDetaljer(sak1.id) shouldBe sak1.sakDetaljer
         }
     }
 
@@ -56,25 +43,27 @@ internal class SakRepoTest {
         withMigratedDb { dataSource ->
             val testDataHelper = TestDataHelper(dataSource)
             val sakRepo = testDataHelper.sakRepo
+            val søknadRepo = testDataHelper.søknadRepo
 
-            val ident = "123"
-            val sak1 = tomSak(ident = ident, løpenummer = 1001).also { sakRepo.lagre(it) }
-            val sak2 = tomSak(
-                ident = ident,
-                løpenummer = 1002,
-                periode = Periode(fraOgMed = 2.februar(2022), tilOgMed = 3.februar(2022)),
-            ).also { sakRepo.lagre(it) }
-            val sak3 = tomSak(
-                ident = "456",
+            val fnr = Fnr.random()
+
+            val sak1 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        fnr = fnr,
+                        løpenummer = 1001,
+                    ).first
+            val sak2 =
+                testDataHelper
+                    .persisterOpprettetFørstegangsbehandling(
+                        fnr = fnr,
+                        løpenummer = 1002,
+                    ).first
+            testDataHelper.persisterOpprettetFørstegangsbehandling(
                 løpenummer = 1003,
-                periode = Periode(fraOgMed = 5.februar(2022), tilOgMed = 5.februar(2022)),
-            ).also { sakRepo.lagre(it) }
+            )
 
-            val sakerMedIdent = sakRepo.hentForIdent(ident)
-            sakerMedIdent.size shouldBe 2
-            sakerMedIdent shouldContain sak1
-            sakerMedIdent shouldContain sak2
-            sakerMedIdent shouldNotContain sak3
+            sakRepo.hentForIdent(fnr) shouldBe Saker(fnr, listOf(sak1, sak2))
         }
     }
 }

@@ -12,6 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
@@ -22,23 +23,26 @@ class TiltakClientImpl(
     private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> String,
     engine: HttpClientEngine? = null,
-    private val httpClient: HttpClient = defaultHttpClient(
-        objectMapper = objectMapper,
-        engine = engine,
-    ) {},
+    private val httpClient: HttpClient =
+        defaultHttpClient(
+            objectMapper = objectMapper,
+            engine = engine,
+        ) {},
 ) : TiltakClient {
     companion object {
-        const val navCallIdHeader = "Nav-Call-Id"
+        const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltak(ident: String): List<TiltakDTO> {
-        val httpResponse = httpClient.preparePost("${config.baseUrl}/azure/tiltak") {
-            header(navCallIdHeader, navCallIdHeader)
-            bearerAuth(getToken())
-            accept(ContentType.Application.Json)
-            contentType(ContentType.Application.Json)
-            setBody(TiltakRequestDTO(ident))
-        }.execute()
+    override suspend fun hentTiltak(fnr: Fnr): List<TiltakDTO> {
+        val httpResponse =
+            httpClient
+                .preparePost("${config.baseUrl}/azure/tiltak") {
+                    header(NAV_CALL_ID_HEADER, NAV_CALL_ID_HEADER)
+                    bearerAuth(getToken())
+                    accept(ContentType.Application.Json)
+                    contentType(ContentType.Application.Json)
+                    setBody(TiltakRequestDTO(fnr.verdi))
+                }.execute()
         return when (httpResponse.status) {
             HttpStatusCode.OK -> httpResponse.call.response.body()
             else -> throw RuntimeException("error (responseCode=${httpResponse.status.value}) from Tiltak")

@@ -16,7 +16,6 @@ fun Row.periodeSpm(navn: String): Søknad.PeriodeSpm {
     val type = string(navn + TYPE_SUFFIX)
     val fom = localDateOrNull(navn + FOM_SUFFIX)
     val tom = localDateOrNull(navn + TOM_SUFFIX)
-    // TODO: Dobbeltsjekke at det er lovlige kombinasjoner som leses opp?
     return when (type) {
         JA -> Søknad.PeriodeSpm.Ja(Periode(fom!!, tom!!))
         NEI -> Søknad.PeriodeSpm.Nei
@@ -27,7 +26,6 @@ fun Row.periodeSpm(navn: String): Søknad.PeriodeSpm {
 fun Row.fraOgMedDatoSpm(navn: String): Søknad.FraOgMedDatoSpm {
     val type = string(navn + TYPE_SUFFIX)
     val fom = localDateOrNull(navn + FOM_SUFFIX)
-    // TODO: Dobbeltsjekke at det er lovlige kombinasjoner som leses opp?
     return when (type) {
         JA -> Søknad.FraOgMedDatoSpm.Ja(fom!!)
         NEI -> Søknad.FraOgMedDatoSpm.Nei
@@ -35,45 +33,47 @@ fun Row.fraOgMedDatoSpm(navn: String): Søknad.FraOgMedDatoSpm {
     }
 }
 
-fun Row.jaNeiSpm(navn: String): Søknad.JaNeiSpm {
-    return when (string(navn + TYPE_SUFFIX)) {
+fun Row.jaNeiSpm(navn: String): Søknad.JaNeiSpm =
+    when (string(navn + TYPE_SUFFIX)) {
         JA -> Søknad.JaNeiSpm.Ja
         NEI -> Søknad.JaNeiSpm.Nei
         else -> throw IllegalArgumentException("Ugyldig type")
     }
-}
 
 fun Map<String, Søknad.PeriodeSpm>.toPeriodeSpmParams(): Map<String, Any?> =
-    this.flatMap { (k, v) ->
-        listOf(
-            k + TYPE_SUFFIX to lagrePeriodeSpmType(v),
-            k + JA_SUFFIX to lagrePeriodeSpmJa(v),
-            k + FOM_SUFFIX to lagrePeriodeSpmFra(v),
-            k + TOM_SUFFIX to lagrePeriodeSpmTil(v),
-        )
-    }.associate {
-        it.first to it.second as Any?
-    }
+    this
+        .flatMap { (k, v) ->
+            listOf(
+                k + TYPE_SUFFIX to lagrePeriodeSpmType(v),
+                k + JA_SUFFIX to lagrePeriodeSpmJa(v),
+                k + FOM_SUFFIX to lagrePeriodeSpmFra(v),
+                k + TOM_SUFFIX to lagrePeriodeSpmTil(v),
+            )
+        }.associate {
+            it.first to it.second as Any?
+        }
 
 fun Map<String, Søknad.FraOgMedDatoSpm>.toFraOgMedDatoSpmParams(): Map<String, Any?> =
-    this.flatMap { (k, v) ->
-        listOf(
-            k + TYPE_SUFFIX to lagreFraOgMedDatoSpmType(v),
-            k + JA_SUFFIX to lagreFraOgMedDatoSpmJa(v),
-            k + FOM_SUFFIX to lagreFraOgMedDatoSpmFra(v),
-        )
-    }.associate {
-        it.first to it.second as Any?
-    }
+    this
+        .flatMap { (k, v) ->
+            listOf(
+                k + TYPE_SUFFIX to lagreFraOgMedDatoSpmType(v),
+                k + JA_SUFFIX to lagreFraOgMedDatoSpmJa(v),
+                k + FOM_SUFFIX to lagreFraOgMedDatoSpmFra(v),
+            )
+        }.associate {
+            it.first to it.second as Any?
+        }
 
 fun Map<String, Søknad.JaNeiSpm>.toJaNeiSpmParams(): Map<String, Any?> =
-    this.flatMap { (k, v) ->
-        listOf(
-            k + TYPE_SUFFIX to lagreJaNeiSpmType(v),
-        )
-    }.associate {
-        it.first to it.second as Any?
-    }
+    this
+        .flatMap { (k, v) ->
+            listOf(
+                k + TYPE_SUFFIX to lagreJaNeiSpmType(v),
+            )
+        }.associate {
+            it.first to it.second as Any?
+        }
 
 fun lagrePeriodeSpmType(periodeSpm: Søknad.PeriodeSpm) =
     when (periodeSpm) {

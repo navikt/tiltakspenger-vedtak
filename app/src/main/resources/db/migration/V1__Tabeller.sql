@@ -22,8 +22,6 @@ create TABLE sak
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,
     saksnummer              VARCHAR                  NOT NULL UNIQUE,
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
@@ -34,14 +32,15 @@ CREATE TABLE behandling
     sakId                   VARCHAR                  NOT NULL REFERENCES sak (id),
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
-    tilstand                VARCHAR                  NOT NULL,
     status                  VARCHAR                  NOT NULL,
     saksbehandler           VARCHAR                  NULL,
     beslutter               VARCHAR                  NULL,
     iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
     sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    vilkårssett             JSONB                    NOT NULL
+    vilkårssett             JSONB                    NOT NULL,
+    stønadsdager            JSONB                    NOT NULL,
+    attesteringer           JSONB                    NULL
 );
 
 CREATE TABLE vedtak
@@ -56,57 +55,6 @@ CREATE TABLE vedtak
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
     opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE utfallsperiode
-(
-    id                  VARCHAR PRIMARY KEY,
-    behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    vedtak_id           VARCHAR                  REFERENCES vedtak (id),
-    fom                 DATE                     NOT NULL,
-    tom                 DATE                     NOT NULL,
-    antall_barn         INT                      NOT NULL,
-    utfall              VARCHAR                  NOT NULL
-);
-
-CREATE TABLE saksopplysning
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  REFERENCES behandling (id),
-    vedtakId                VARCHAR                  REFERENCES vedtak (id),
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
-    kilde                   VARCHAR                  NOT NULL,
-    vilkår                  VARCHAR                  NOT NULL,
-    detaljer                VARCHAR                  NOT NULL,
-    typeSaksopplysning      VARCHAR                  NOT NULL,
-    saksbehandler           VARCHAR                  NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE vurdering
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    behandlingId            VARCHAR                  NULL REFERENCES behandling (id),
-    vedtakId                VARCHAR                  NULL REFERENCES vedtak (id),
-    fom                     DATE                     NOT NULL,
-    tom                     DATE                     NOT NULL,
-    kilde                   VARCHAR                  NOT NULL,
-    vilkår                  VARCHAR                  NOT NULL,
-    detaljer                VARCHAR                  NOT NULL,
-    utfall                  VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    grunnlagId              VARCHAR                  NULL
-);
-
-create table attestering
-(
-    id                      VARCHAR PRIMARY KEY,
-    behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
-    svar                    VARCHAR                  NOT NULL,
-    begrunnelse             VARCHAR                  NULL,
-    beslutter               VARCHAR                  NOT NULL,
-    tidspunkt               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_søker
@@ -155,38 +103,12 @@ CREATE TABLE sak_personopplysninger_barn_uten_ident
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE søker
-(
-    id                      VARCHAR                  PRIMARY KEY,
-    ident                   VARCHAR                  NOT NULL,
-    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
-CREATE TABLE personopplysninger
-(
-    id                       VARCHAR PRIMARY KEY,
-    søker_id                 VARCHAR                  NOT NULL REFERENCES søker (id),
-    ident                    VARCHAR                  NOT NULL,
-    fødselsdato              DATE                     NOT NULL,
-    fornavn                  VARCHAR                  NOT NULL,
-    mellomnavn               VARCHAR                  NULL,
-    etternavn                VARCHAR                  NOT NULL,
-    fortrolig                BOOLEAN                  NOT NULL,
-    strengt_fortrolig        BOOLEAN                  NOT NULL,
-    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
-    skjermet                 BOOLEAN                  NULL,
-    kommune                  VARCHAR                  NULL,
-    bydel                    VARCHAR                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
-);
-
 CREATE TABLE søknad
 (
-    id                  VARCHAR PRIMARY KEY,
+    id                  VARCHAR                  PRIMARY KEY,
     versjon             VARCHAR                  NOT NULL,
+    sak_id              VARCHAR                  NULL REFERENCES sak (id),
     behandling_id       VARCHAR                  NULL REFERENCES behandling (id),
-    søknad_id           VARCHAR                  NOT NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
     etternavn           VARCHAR                  NOT NULL,
@@ -284,7 +206,6 @@ CREATE TABLE tiltak
     deltakelse_tom         DATE                     NULL,
     deltakelse_prosent     FLOAT                    NULL,
     deltakelse_status      VARCHAR                  NOT NULL,
-    rett_til_å_søke        BOOLEAN                  NOT NULL,
     kilde                  VARCHAR                  NOT NULL,
     tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
     tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL

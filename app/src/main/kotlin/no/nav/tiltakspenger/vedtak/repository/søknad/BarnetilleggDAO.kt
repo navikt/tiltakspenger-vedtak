@@ -1,60 +1,76 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import org.intellij.lang.annotations.Language
 
 internal class BarnetilleggDAO {
-
-    fun lagre(søknadId: SøknadId, barnetillegg: List<Barnetillegg>, txSession: TransactionalSession) {
-        slettBarnetillegg(søknadId, txSession)
+    fun lagre(
+        søknadId: SøknadId,
+        barnetillegg: List<Barnetillegg>,
+        session: TransactionalSession,
+    ) {
+        slettBarnetillegg(søknadId, session)
         barnetillegg.forEach {
-            lagreBarnetillegg(søknadId, it, txSession)
+            lagreBarnetillegg(søknadId, it, session)
         }
     }
 
-    fun hentBarnetilleggListe(søknadId: SøknadId, txSession: TransactionalSession): List<Barnetillegg> {
-        return txSession.run(
+    fun hentBarnetilleggListe(
+        søknadId: SøknadId,
+        session: Session,
+    ): List<Barnetillegg> =
+        session.run(
             queryOf(hentBarnetillegg, søknadId.toString())
                 .map { row -> row.toBarnetillegg() }
                 .asList,
         )
-    }
 
-    private fun lagreBarnetillegg(søknadId: SøknadId, barnetillegg: Barnetillegg, txSession: TransactionalSession) {
-        val paramMap = when (barnetillegg) {
-            is Barnetillegg.FraPdl -> mapOf(
-                "type" to "PDL",
-                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
-                "soknadId" to søknadId.toString(),
-                "fodselsdato" to barnetillegg.fødselsdato,
-                "fornavn" to barnetillegg.fornavn,
-                "mellomnavn" to barnetillegg.mellomnavn,
-                "etternavn" to barnetillegg.etternavn,
-                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
-            )
+    private fun lagreBarnetillegg(
+        søknadId: SøknadId,
+        barnetillegg: Barnetillegg,
+        txSession: TransactionalSession,
+    ) {
+        val paramMap =
+            when (barnetillegg) {
+                is Barnetillegg.FraPdl ->
+                    mapOf(
+                        "type" to "PDL",
+                        "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
+                        "soknadId" to søknadId.toString(),
+                        "fodselsdato" to barnetillegg.fødselsdato,
+                        "fornavn" to barnetillegg.fornavn,
+                        "mellomnavn" to barnetillegg.mellomnavn,
+                        "etternavn" to barnetillegg.etternavn,
+                        "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
+                    )
 
-            is Barnetillegg.Manuell -> mapOf(
-                "type" to "MANUELL",
-                "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
-                "soknadId" to søknadId.toString(),
-                "fodselsdato" to barnetillegg.fødselsdato,
-                "fornavn" to barnetillegg.fornavn,
-                "mellomnavn" to barnetillegg.mellomnavn,
-                "etternavn" to barnetillegg.etternavn,
-                "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
-            )
-        }
+                is Barnetillegg.Manuell ->
+                    mapOf(
+                        "type" to "MANUELL",
+                        "id" to random(ULID_PREFIX_BARNETILLEGG).toString(),
+                        "soknadId" to søknadId.toString(),
+                        "fodselsdato" to barnetillegg.fødselsdato,
+                        "fornavn" to barnetillegg.fornavn,
+                        "mellomnavn" to barnetillegg.mellomnavn,
+                        "etternavn" to barnetillegg.etternavn,
+                        "opphold_i_eos_type" to lagreJaNeiSpmType(barnetillegg.oppholderSegIEØS),
+                    )
+            }
         txSession.run(
             queryOf(lagreBarnetillegg, paramMap).asUpdate,
         )
     }
 
-    private fun slettBarnetillegg(søknadId: SøknadId, txSession: TransactionalSession) {
+    private fun slettBarnetillegg(
+        søknadId: SøknadId,
+        txSession: TransactionalSession,
+    ) {
         txSession.run(
             queryOf(slettBarnetillegg, søknadId.toString()).asUpdate,
         )
@@ -87,7 +103,8 @@ internal class BarnetilleggDAO {
     }
 
     @Language("SQL")
-    private val lagreBarnetillegg = """
+    private val lagreBarnetillegg =
+        """
         insert into søknad_barnetillegg (
             id,
             søknad_id,
@@ -107,7 +124,7 @@ internal class BarnetilleggDAO {
             :etternavn,
             :opphold_i_eos_type
         )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
     private val slettBarnetillegg = "delete from søknad_barnetillegg where søknad_id = ?"

@@ -1,25 +1,33 @@
 package no.nav.tiltakspenger.vedtak.repository.søknad
 
 import kotliquery.Row
+import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import no.nav.tiltakspenger.felles.SøknadId
-import no.nav.tiltakspenger.felles.UlidBase.Companion.random
+import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import org.intellij.lang.annotations.Language
 
 internal class SøknadTiltakDAO {
+    fun hent(
+        søknadId: SøknadId,
+        session: Session,
+    ): SøknadsTiltak = hentTiltak(søknadId, session)!!
 
-    fun hent(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak =
-        hentTiltak(søknadId, txSession)!!
-
-    private fun hentTiltak(søknadId: SøknadId, txSession: TransactionalSession): SøknadsTiltak? {
-        return txSession.run(
+    private fun hentTiltak(
+        søknadId: SøknadId,
+        session: Session,
+    ): SøknadsTiltak? =
+        session.run(
             queryOf(hentTiltak, søknadId.toString()).map { row -> row.toTiltak() }.asSingle,
         )
-    }
 
-    fun lagre(søknadId: SøknadId, tiltak: SøknadsTiltak, txSession: TransactionalSession) {
+    fun lagre(
+        søknadId: SøknadId,
+        tiltak: SøknadsTiltak,
+        txSession: TransactionalSession,
+    ) {
         slettTiltak(søknadId, txSession)
         lagreTiltak(søknadId, tiltak, txSession)
     }
@@ -27,9 +35,9 @@ internal class SøknadTiltakDAO {
     private fun lagreTiltak(
         søknadId: SøknadId,
         tiltak: SøknadsTiltak,
-        txSession: TransactionalSession,
+        session: Session,
     ) {
-        txSession.run(
+        session.run(
             queryOf(
                 lagreTiltak,
                 mapOf(
@@ -46,8 +54,11 @@ internal class SøknadTiltakDAO {
         )
     }
 
-    private fun slettTiltak(søknadId: SøknadId, txSession: TransactionalSession) {
-        txSession.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
+    private fun slettTiltak(
+        søknadId: SøknadId,
+        session: Session,
+    ) {
+        session.run(queryOf(slettTiltak, søknadId.toString()).asUpdate)
     }
 
     private fun Row.toTiltak(): SøknadsTiltak {
@@ -74,7 +85,8 @@ internal class SøknadTiltakDAO {
     private val slettTiltak = "delete from søknad_tiltak where søknad_id = ?"
 
     @Language("SQL")
-    private val lagreTiltak = """
+    private val lagreTiltak =
+        """
         insert into søknad_tiltak (
             id,
             søknad_id,
@@ -94,7 +106,7 @@ internal class SøknadTiltakDAO {
             :deltakelseFom,
             :deltakelseTom
         )
-    """.trimIndent()
+        """.trimIndent()
 
     companion object {
         private const val ULID_PREFIX_TILTAK = "tilt"

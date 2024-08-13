@@ -6,11 +6,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.leggTilAlderSaks
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 
+/** Brukes ikke i MVPen. */
 class AlderVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : AlderVilkårService {
-
     override fun leggTilSaksopplysning(command: LeggTilAlderSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
             behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling

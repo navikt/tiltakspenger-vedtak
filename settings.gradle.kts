@@ -2,6 +2,6 @@ rootProject.name = "tiltakspenger-vedtak"
 
 include(
     "app",
-    "common",
+    "test-common",
     "domene",
 )

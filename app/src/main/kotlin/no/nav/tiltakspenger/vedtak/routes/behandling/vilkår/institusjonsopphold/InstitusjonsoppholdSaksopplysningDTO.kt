@@ -12,17 +12,21 @@ internal data class InstitusjonsoppholdSaksopplysningDTO(
     val kilde: KildeDTO,
 )
 
-internal fun InstitusjonsoppholdSaksopplysning.toDTO(kilde: KildeDTO): InstitusjonsoppholdSaksopplysningDTO {
-    return InstitusjonsoppholdSaksopplysningDTO(
-        periodeMedOpphold = this.opphold.perioder().tilEnkelPeriode().toDTO(),
-        årsakTilEndring = when (årsakTilEndring) {
+internal fun InstitusjonsoppholdSaksopplysning.toDTO(kilde: KildeDTO): InstitusjonsoppholdSaksopplysningDTO =
+    InstitusjonsoppholdSaksopplysningDTO(
+        periodeMedOpphold =
+        this.opphold
+            .perioder()
+            .tilEnkelPeriode()
+            .toDTO(),
+        årsakTilEndring =
+        when (årsakTilEndring) {
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> ÅrsakTilEndringDTO.FEIL_I_INNHENTET_DATA
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndringDTO.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
         kilde = kilde,
     )
-}
 
 internal fun List<PeriodeMedVerdi<Opphold>>.tilEnkelPeriode(): PeriodeMedVerdi<Opphold> {
     if (this.size > 1) {

@@ -1,7 +1,7 @@
 val javaVersion = JavaVersion.VERSION_21
 
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
@@ -22,7 +22,12 @@ subprojects {
 
     spotless {
         kotlin {
-            ktlint("0.48.2")
+            ktlint()
+                .editorConfigOverride(
+                    mapOf(
+                        "ktlint_standard_max-line-length" to "off",
+                    ),
+                )
         }
     }
 
@@ -40,6 +45,11 @@ subprojects {
             useJUnitPlatform()
             // https://phauer.com/2018/best-practices-unit-testing-kotlin/
             systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
+
+            if (javaVersion.isCompatibleWith(JavaVersion.VERSION_21)) {
+                // https://github.com/mockito/mockito/issues/3037#issuecomment-1588199599
+                jvmArgs("-XX:+EnableDynamicAgentLoading")
+            }
         }
     }
     configurations.all {

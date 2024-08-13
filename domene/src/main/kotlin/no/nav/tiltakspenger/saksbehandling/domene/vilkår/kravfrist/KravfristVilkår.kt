@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SkalErstatteVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Utfall2
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import java.time.LocalDateTime
 
 /**
@@ -13,72 +13,76 @@ import java.time.LocalDateTime
  *
  * @param søknadSaksopplysning Saksopplysninger som kan være avgjørende for vurderingen. Kan ikke ha hull. [avklartSaksopplysning]/faktumet er den avgjørende saksopplysningen.
  * @param avklartSaksopplysning Faktumet som avgjør om vilkåret er oppfylt eller ikke. Null implisiserer uavklart.
- * @param utfall Selvom om utfallet er
- *
  */
 data class KravfristVilkår private constructor(
-    val søknadSaksopplysning: KravfristSaksopplysning,
-    val saksbehandlerSaksopplysning: KravfristSaksopplysning?,
+    override val vurderingsperiode: Periode,
+    val søknadSaksopplysning: KravfristSaksopplysning.Søknad,
+    val saksbehandlerSaksopplysning: KravfristSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: KravfristSaksopplysning,
-    val vurderingsperiode: Periode,
-    val utfall: Periodisering<Utfall2>,
-) : SkalErstatteVilkår {
-
-    val samletUtfall: SamletUtfall = when {
-        utfall.perioder().any { it.verdi == Utfall2.UAVKLART } -> SamletUtfall.UAVKLART
-        utfall.perioder().all { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.OPPFYLT
-        utfall.perioder().all { it.verdi == Utfall2.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
-        utfall.perioder().any() { it.verdi == Utfall2.OPPFYLT } -> SamletUtfall.DELVIS_OPPFYLT
-        else -> throw IllegalStateException("Ugyldig utfall")
-    }
-
+) : Vilkår {
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
+    override fun utfall(): Periodisering<UtfallForPeriode> {
+        val datoDetKanInnvilgesFra =
+            avklartSaksopplysning.kravdato
+                .withDayOfMonth(1)
+                .minusMonths(3)
+                .toLocalDate()
+
+        return when {
+            datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
+            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
+            else -> throw IkkeImplementertException(
+                "Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)",
+            )
+        }
+    }
+
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
-        val introSaksopplysning = KravfristSaksopplysning.Saksbehandler(
-            kravdato = command.kravdato,
-            årsakTilEndring = command.årsakTilEndring,
-            saksbehandler = command.saksbehandler,
-            tidsstempel = LocalDateTime.now(),
-        )
+        val kravfristSaksopplysning =
+            KravfristSaksopplysning.Saksbehandler(
+                kravdato = command.kravdato,
+                årsakTilEndring = command.årsakTilEndring,
+                saksbehandler = command.saksbehandler,
+                tidsstempel = LocalDateTime.now(),
+            )
         return this.copy(
-            saksbehandlerSaksopplysning = introSaksopplysning,
-            avklartSaksopplysning = introSaksopplysning,
-            utfall = introSaksopplysning.vurderMaskinelt(vurderingsperiode),
+            saksbehandlerSaksopplysning = kravfristSaksopplysning,
+            avklartSaksopplysning = kravfristSaksopplysning,
         )
     }
 
     companion object {
         fun opprett(
-            søknadSaksopplysning: KravfristSaksopplysning,
+            søknadSaksopplysning: KravfristSaksopplysning.Søknad,
             vurderingsperiode: Periode,
-        ): KravfristVilkår {
-            return KravfristVilkår(
+        ): KravfristVilkår =
+            KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = null,
                 avklartSaksopplysning = søknadSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = søknadSaksopplysning.vurderMaskinelt(vurderingsperiode),
             )
-        }
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
         fun fromDb(
-            søknadSaksopplysning: KravfristSaksopplysning,
-            saksbehandlerSaksopplysning: KravfristSaksopplysning?,
+            søknadSaksopplysning: KravfristSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning: KravfristSaksopplysning.Saksbehandler?,
             avklartSaksopplysning: KravfristSaksopplysning,
             vurderingsperiode: Periode,
-            utfall: Periodisering<Utfall2>,
-        ): KravfristVilkår {
-            return KravfristVilkår(
+            utfall: Periodisering<UtfallForPeriode>,
+        ): KravfristVilkår =
+            KravfristVilkår(
                 søknadSaksopplysning = søknadSaksopplysning,
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
-            )
-        }
+            ).also {
+                check(utfall == it.utfall()) {
+                    "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                }
+            }
     }
 }

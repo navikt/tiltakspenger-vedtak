@@ -4,35 +4,6 @@ CREATE INDEX sak_behandling
          sakId
             );
 
-CREATE INDEX saksopplysning_behandling
-    ON saksopplysning
-        (
-         behandlingId
-            );
-
-CREATE INDEX saksopplysning_vedtak
-    ON saksopplysning
-        (
-         vedtakId
-            );
-
-CREATE INDEX vurdering_behandling
-    ON vurdering
-        (
-         behandlingId
-            );
-
-CREATE INDEX vurdering_vedtak
-    ON vurdering
-        (
-         vedtakId
-            );
-
-CREATE INDEX utfallsperiode_vedtak
-    ON utfallsperiode
-        (
-         vedtak_id
-            );
 
 CREATE INDEX saks_ident
     ON sak
@@ -56,12 +27,6 @@ CREATE INDEX sakPersonopplysningerBarnUtenIdent
     ON sak_personopplysninger_barn_uten_ident
         (
          sakId
-            );
-
-CREATE INDEX søker_ident
-    ON søker
-        (
-         ident
             );
 
 CREATE INDEX søknad_ident
@@ -98,10 +63,4 @@ CREATE INDEX tiltak_behandling
     ON tiltak
         (
          behandling_id
-            );
-
-CREATE INDEX søknad_søknad_id
-    ON søknad
-        (
-         søknad_id
             );

@@ -15,8 +15,8 @@ internal data class LivsoppholdSaksopplysningDbJson(
     val periode: PeriodeDbJson,
     val tidsstempel: String,
 ) {
-    fun toDomain(): LivsoppholdSaksopplysning {
-        return when {
+    fun toDomain(): LivsoppholdSaksopplysning =
+        when {
             saksbehandler != null -> {
                 LivsoppholdSaksopplysning.Saksbehandler(
                     harLivsoppholdYtelser = harLivsoppholdYtelser,
@@ -30,31 +30,29 @@ internal data class LivsoppholdSaksopplysningDbJson(
                 LivsoppholdSaksopplysning.Søknad(
                     harLivsoppholdYtelser = harLivsoppholdYtelser,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
-                    årsakTilEndring = null,
                     periode = periode.toDomain(),
                 )
             }
         }
-    }
 
     enum class ÅrsakTilEndringLivsoppholdDbJson {
         FEIL_I_INNHENTET_DATA,
         ENDRING_ETTER_SØKNADSTIDSPUNKT,
         ;
 
-        fun toDomain(): ÅrsakTilEndring {
-            return when (this) {
+        fun toDomain(): ÅrsakTilEndring =
+            when (this) {
                 FEIL_I_INNHENTET_DATA -> ÅrsakTilEndring.FEIL_I_INNHENTET_DATA
                 ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT
             }
-        }
     }
 }
 
-internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJson {
-    return LivsoppholdSaksopplysningDbJson(
+internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJson =
+    LivsoppholdSaksopplysningDbJson(
         harLivsoppholdYtelser = harLivsoppholdYtelser,
-        årsakTilEndring = when (årsakTilEndring) {
+        årsakTilEndring =
+        when (årsakTilEndring) {
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> {
                 ÅrsakTilEndringLivsoppholdDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
             }
@@ -69,4 +67,3 @@ internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJs
         periode = periode.toDbJson(),
         tidsstempel = tidsstempel.toString(),
     )
-}

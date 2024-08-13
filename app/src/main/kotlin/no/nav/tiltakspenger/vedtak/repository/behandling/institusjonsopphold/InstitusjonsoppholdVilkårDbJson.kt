@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold.InstitusjonsoppholdVilkår
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.PeriodisertUtfallDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbJson
@@ -14,21 +16,20 @@ internal data class InstitusjonsoppholdVilkårDbJson(
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysningDbJson,
     val utfallsperioder: List<PeriodisertUtfallDbJson>,
 ) {
-    fun toDomain(): InstitusjonsoppholdVilkår {
-        return InstitusjonsoppholdVilkår.fromDb(
-            søknadSaksopplysning = søknadSaksopplysning.toDomain(),
-            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain(),
+    fun toDomain(vurderingsperiode: Periode): InstitusjonsoppholdVilkår =
+        InstitusjonsoppholdVilkår.fromDb(
+            vurderingsperiode = vurderingsperiode,
+            søknadSaksopplysning = søknadSaksopplysning.toDomain() as InstitusjonsoppholdSaksopplysning.Søknad,
+            saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDomain() as InstitusjonsoppholdSaksopplysning.Saksbehandler?,
             avklartSaksopplysning = avklartSaksopplysning.toDomain(),
             utfall = utfallsperioder.toDomain(),
         )
-    }
 }
 
-internal fun InstitusjonsoppholdVilkår.toDbJson(): InstitusjonsoppholdVilkårDbJson {
-    return InstitusjonsoppholdVilkårDbJson(
+internal fun InstitusjonsoppholdVilkår.toDbJson(): InstitusjonsoppholdVilkårDbJson =
+    InstitusjonsoppholdVilkårDbJson(
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
-        utfallsperioder = utfall.toDbJson(),
+        utfallsperioder = utfall().toDbJson(),
     )
-}
