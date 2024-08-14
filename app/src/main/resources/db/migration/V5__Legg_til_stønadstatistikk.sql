@@ -1,67 +1,50 @@
-create TABLE statistikk_stønad
+create table statistikk_stønad
 (
-    id                      VARCHAR                  PRIMARY KEY,
-
-    -- felter for sak
-    bruker_id               VARCHAR                  NULL, -- uuid for søker?
-    sak_id                  VARCHAR                  NULL,
-    resultat                VARCHAR                  NULL, -- Innvilget, Avslått, Avvist, Henlagt, Delvis innvilget
-    sak_dato                DATE                     NULL, -- Hvilken dato er dette?
-    gyldig_fra_dato         DATE                     NULL,
-    gyldig_til_dato         DATE                     NULL,
-
-    -- felter for ytelse
-    ytelse                  VARCHAR                  NULL,  -- type TP-stønad ??
-
-    -- felter for søknad
-    søknad_id               VARCHAR                  NULL,
-    opplysning              VARCHAR                  NULL, -- Relevante opplysninger ???
-    søknad_dato             DATE                     NULL,
-    gyldig_fra_dato_søknad  DATE                     NULL, -- Hvilken dato er dette?
-    gyldig_til_dato_søknad  DATE                     NULL, -- Hvilken dato er dette?
-
-    -- felter for vedtak
-    vedtak_id               VARCHAR                  NULL,
-    type                    VARCHAR                  NULL, -- Søknad, Revurdering, Gjenopptak, Ny rettighet, Klage, Anke
-    vedtak_dato             DATE                     NULL,
-    fom                     DATE                     NULL,
-    tom                     DATE                     NULL,
-
-    -- nav enhet
-    oppfølging_enhet_kode   VARCHAR                  NULL,
-    oppfølging_enhet_navn   VARCHAR                  NULL,
-    beslutning_enhet_kode   VARCHAR                  NULL,
-    beslutning_enhet_navn   VARCHAR                  NULL,
-    tilhørighet_enhet_kode  VARCHAR                  NULL,
-    tilhørighet_enhet_navn  VARCHAR                  NULL,
-
-    -- felter for vilkår
-    vilkår_id               VARCHAR                  NULL,
-    vilkår_type             VARCHAR                  NULL,
-    vilkår_status           VARCHAR                  NULL, -- Godkjent, Avslått
-    lovparagraf             VARCHAR                  NULL,
-    beskrivelse             VARCHAR                  NULL,
-    gyldig_fra_dato_vilkår  DATE                     NULL,
-    gyldig_til_dato_vilkår  DATE                     NULL,
-
-    -- felter for postering
-    postering_id            VARCHAR                  NULL,
-    beløp                   DECIMAL                  NULL,
-    beløp_beskrivelse       VARCHAR                  NULL,
-    aarsak                  VARCHAR                  NULL,
-    postering_dato          DATE                     NULL,
-    gyldig_fra_dato_postering DATE                   NULL,
-    gyldig_til_dato_postering DATE                   NULL,
-
-    -- felter for tiltak
-    tiltak_id               VARCHAR                  NULL,
-    tiltak_type             VARCHAR                  NULL,
-    tiltak_beskrivelse      VARCHAR                  NULL,
-    fagsystem               VARCHAR                  NULL,
-    tiltak_dato             DATE                     NULL,
-    gyldig_fra_dato_tiltak   DATE                    NULL,
-    gyldig_til_dato_tiltak   DATE                    NULL,
-
-    sist_endret             TIMESTAMP WITH TIME ZONE NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NULL
+    id                      varchar                  primary key,
+    bruker_id               varchar                  null,
+    sak_id                  varchar                  null,
+    resultat                varchar                  null,
+    sak_dato                date                     null,
+    gyldig_fra_dato         date                     null,
+    gyldig_til_dato         date                     null,
+    ytelse                  varchar                  null,
+    søknad_id               varchar                  null,
+    opplysning              varchar                  null,
+    søknad_dato             date                     null,
+    gyldig_fra_dato_søknad  date                     null,
+    gyldig_til_dato_søknad  date                     null,
+    vedtak_id               varchar                  null,
+    type                    varchar                  null,
+    vedtak_dato             date                     null,
+    fom                     date                     null,
+    tom                     date                     null,
+    oppfølging_enhet_kode   varchar                  null,
+    oppfølging_enhet_navn   varchar                  null,
+    beslutning_enhet_kode   varchar                  null,
+    beslutning_enhet_navn   varchar                  null,
+    tilhørighet_enhet_kode  varchar                  null,
+    tilhørighet_enhet_navn  varchar                  null,
+    vilkår_id               varchar                  null,
+    vilkår_type             varchar                  null,
+    vilkår_status           varchar                  null,
+    lovparagraf             varchar                  null,
+    beskrivelse             varchar                  null,
+    gyldig_fra_dato_vilkår  date                     null,
+    gyldig_til_dato_vilkår  date                     null,
+    postering_id            varchar                  null,
+    beløp                   decimal                  null,
+    beløp_beskrivelse       varchar                  null,
+    aarsak                  varchar                  null,
+    postering_dato          date                     null,
+    gyldig_fra_dato_postering date                   null,
+    gyldig_til_dato_postering date                   null,
+    tiltak_id               varchar                  null,
+    tiltak_type             varchar                  null,
+    tiltak_beskrivelse      varchar                  null,
+    fagsystem               varchar                  null,
+    tiltak_dato             date                     null,
+    gyldig_fra_dato_tiltak  date                     null,
+    gyldig_til_dato_tiltak  date                     null,
+    sist_endret             timestamp with time zone null,
+    opprettet               timestamp with time zone null
 );
