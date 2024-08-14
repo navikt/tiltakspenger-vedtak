@@ -19,7 +19,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -33,6 +35,7 @@ class BehandlingServiceImpl(
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,
+    private val statistikkSakRepo: StatistikkSakRepo,
 ) : BehandlingService {
     override fun hentBehandling(
         behandlingId: BehandlingId,
@@ -105,9 +108,11 @@ class BehandlingServiceImpl(
         val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
 
         val vedtak = iverksattBehandling.opprettVedtak()
+        val statistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak)
         sessionFactory.withTransactionContext { tx ->
             behandlingRepo.lagre(iverksattBehandling, tx)
             vedtakRepo.lagreVedtak(vedtak, tx)
+            statistikkSakRepo.lagre(statistikk, tx)
         }
 
         meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)

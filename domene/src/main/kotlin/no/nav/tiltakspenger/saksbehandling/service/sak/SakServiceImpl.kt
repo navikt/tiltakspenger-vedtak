@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
@@ -26,11 +27,13 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -44,6 +47,7 @@ class SakServiceImpl(
     private val skjermingGateway: SkjermingGateway,
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
+    private val statistikkSakRepo: StatistikkSakRepo,
 ) : SakService {
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
@@ -90,7 +94,15 @@ class SakServiceImpl(
                     registrerteTiltak = registrerteTiltak,
                 ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
-        sakRepo.lagre(sak)
+        sakRepo.lagre(sak).also { lagretSak ->
+            val statistikk = opprettBehandlingMapper(
+                sak = lagretSak.sakDetaljer,
+                behandling = lagretSak.behandlinger.single { behandling ->
+                    behandling.søknad.id == søknad.id
+                } as Førstegangsbehandling,
+            )
+            statistikkSakRepo.lagre(statistikk)
+        }
 
         return sak.right()
     }

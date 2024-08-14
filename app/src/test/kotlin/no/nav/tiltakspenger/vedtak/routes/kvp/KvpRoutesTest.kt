@@ -77,12 +77,12 @@ class KvpRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val kvpVilkårService =
-                KvpVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val kvpVilkårService = KvpVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
 
             testApplication {
                 application {
@@ -164,12 +164,12 @@ class KvpRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val kvpVilkårService =
-                KvpVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val kvpVilkårService = KvpVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
 
             testApplication {
                 application {
@@ -246,12 +246,12 @@ class KvpRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val kvpVilkårService =
-                KvpVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val kvpVilkårService = KvpVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
 
             testApplication {
                 application {

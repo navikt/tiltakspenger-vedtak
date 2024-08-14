@@ -209,7 +209,7 @@ internal class PostgresBehandlingRepo(
                     "tom" to behandling.vurderingsperiode.tilOgMed,
                     "status" to behandling.status.toDb(),
                     "sistEndret" to nå,
-                    "opprettet" to nå,
+                    "opprettet" to behandling.opprettet,
                     "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                     "stonadsdager" to behandling.stønadsdager.toDbJson(),
                     "saksbehandler" to behandling.saksbehandler,
@@ -261,6 +261,7 @@ internal class PostgresBehandlingRepo(
             attesteringer = attesteringer,
             stønadsdager = stønadsdager,
             status = status.toBehandlingsstatus(),
+            opprettet = localDateTime("opprettet"),
         )
     }
 

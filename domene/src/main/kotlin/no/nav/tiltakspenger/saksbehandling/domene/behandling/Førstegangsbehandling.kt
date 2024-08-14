@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class Førstegangsbehandling(
     override val id: BehandlingId,
@@ -34,6 +35,7 @@ data class Førstegangsbehandling(
     override val stønadsdager: Stønadsdager,
     override val status: Behandlingsstatus,
     override val attesteringer: List<Attestering>,
+    override val opprettet: LocalDateTime,
 ) : Behandling {
     init {
         require(vilkårssett.vurderingsperiode == vurderingsperiode) {
@@ -131,6 +133,7 @@ data class Førstegangsbehandling(
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
+                opprettet = LocalDateTime.now(),
             ).right()
         }
     }

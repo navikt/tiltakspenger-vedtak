@@ -28,6 +28,8 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStønadRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -88,6 +90,8 @@ internal class ApplicationBuilder(
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
+    private val statistikkSakRepo = StatistikkSakRepoImpl(sessionFactory)
+    private val statistikkStønadRepo = StatistikkStønadRepoImpl(sessionFactory)
     private val barnetilleggDAO = BarnetilleggDAO()
     private val søknadTiltakDAO = SøknadTiltakDAO()
     private val vedleggDAO = VedleggDAO()
@@ -141,6 +145,7 @@ internal class ApplicationBuilder(
             sakRepo = sakRepo,
             sessionFactory = sessionFactory,
             saksoversiktRepo = saksoversiktRepo,
+            statistikkSakRepo = statistikkSakRepo,
         )
     private val sakService =
         SakServiceImpl(
@@ -152,6 +157,7 @@ internal class ApplicationBuilder(
             skjermingGateway = skjermingGateway,
             tiltakGateway = tiltakGateway,
             sessionFactory = sessionFactory,
+            statistikkSakRepo = statistikkSakRepo,
         )
     private val kvpVilkårService =
         KvpVilkårServiceImpl(

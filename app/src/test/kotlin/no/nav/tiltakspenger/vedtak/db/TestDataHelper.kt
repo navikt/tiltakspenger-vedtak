@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
+import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -74,6 +75,12 @@ internal class TestDataHelper(
         SaksoversiktPostgresRepo(
             sessionFactory = sessionFactory,
         )
+    val statistikkSakRepo = StatistikkSakRepoImpl(
+        sessionFactory = sessionFactory,
+    )
+    val statistikkStønadRepo = StatistikkSakRepoImpl(
+        sessionFactory = sessionFactory,
+    )
 }
 
 private fun migrateDatabase(dataSource: DataSource) =

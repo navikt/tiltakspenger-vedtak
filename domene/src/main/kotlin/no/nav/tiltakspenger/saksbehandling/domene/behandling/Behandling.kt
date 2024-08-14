@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriod
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.toAvklartUtfallForPeriode
+import java.time.LocalDateTime
 
 interface Behandling {
     val id: BehandlingId
@@ -26,6 +27,7 @@ interface Behandling {
     val stønadsdager: Stønadsdager
     val status: Behandlingsstatus
     val attesteringer: List<Attestering>
+    val opprettet: LocalDateTime
 
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()

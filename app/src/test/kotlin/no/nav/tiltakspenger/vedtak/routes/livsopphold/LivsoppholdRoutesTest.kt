@@ -85,12 +85,12 @@ class LivsoppholdRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
             testApplication {
                 application {
                     jacksonSerialization()
@@ -165,12 +165,12 @@ class LivsoppholdRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
 
             testApplication {
                 application {
@@ -222,6 +222,7 @@ class LivsoppholdRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(
@@ -385,12 +386,12 @@ class LivsoppholdRoutesTest {
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
+                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
                 )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
+            val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
+                behandlingRepo = testDataHelper.behandlingRepo,
+                behandlingService = behandlingService,
+            )
 
             testApplication {
                 application {
