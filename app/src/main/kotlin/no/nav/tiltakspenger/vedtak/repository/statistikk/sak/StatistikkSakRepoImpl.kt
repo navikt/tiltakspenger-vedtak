@@ -22,7 +22,6 @@ internal class StatistikkSakRepoImpl(
             queryOf(
                 lagreSql,
                 mapOf(
-                    "id" to dto.id.toString(),
                     "sakId" to dto.sakId,
                     "saksnummer" to dto.saksnummer,
                     "behandlingId" to dto.behandlingId,
@@ -61,7 +60,6 @@ internal class StatistikkSakRepoImpl(
     @Language("SQL")
     private val lagreSql = """
         insert into statistikk_sak (
-            id,
             sak_id,
             saksnummer,
             behandlingId,
@@ -93,7 +91,6 @@ internal class StatistikkSakRepoImpl(
             avsender,
             versjon        
         ) values (
-            :id,
             :sakId,
             :saksnummer,
             :behandlingId,
