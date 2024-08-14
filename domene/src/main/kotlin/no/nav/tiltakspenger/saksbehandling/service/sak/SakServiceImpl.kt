@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
@@ -76,16 +75,18 @@ class SakServiceImpl(
         val sakPersonopplysninger =
             SakPersonopplysninger(
                 liste = runBlocking { personGateway.hentPerson(fnr) },
-            ).also {
-                // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
-                if (!it.harTilgang(saksbehandler)) {
-                    SECURELOG.info {
-                        "Saksbehandler ${saksbehandler.navIdent} " +
-                            "med roller ${saksbehandler.roller}, har ikke tilgang til person : ${it.søker()}"
+            )
+                .let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+                .also {
+                    // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
+                    if (!it.harTilgang(saksbehandler)) {
+                        SECURELOG.info {
+                            "Saksbehandler ${saksbehandler.navIdent} " +
+                                "med roller ${saksbehandler.roller}, har ikke tilgang til person : ${it.søker()}"
+                        }
+                        return HarIkkeTilgangTilPerson.left()
                     }
-                    return HarIkkeTilgangTilPerson.left()
                 }
-            }.let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
 
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
         require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
@@ -100,14 +101,14 @@ class SakServiceImpl(
                     registrerteTiltak = registrerteTiltak,
                 ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
-        sakRepo.lagre(sak).also { lagretSak ->
-            val statistikk = opprettBehandlingMapper(
-                sak = lagretSak.sakDetaljer,
-                behandling = lagretSak.behandlinger.single { behandling ->
-                    behandling.søknad.id == søknad.id
-                } as Førstegangsbehandling,
-            )
-            statistikkSakRepo.lagre(statistikk)
+        val statistikk = opprettBehandlingMapper(
+            sak = sak.sakDetaljer,
+            behandling = sak.førstegangsbehandling,
+        )
+
+        sessionFactory.withTransactionContext { tx ->
+            sakRepo.lagre(sak, tx)
+            statistikkSakRepo.lagre(statistikk, tx)
         }
 
         return sak.right()
