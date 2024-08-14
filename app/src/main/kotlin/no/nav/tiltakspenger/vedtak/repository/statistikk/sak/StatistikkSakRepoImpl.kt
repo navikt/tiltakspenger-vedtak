@@ -22,7 +22,7 @@ internal class StatistikkSakRepoImpl(
             queryOf(
                 lagreSql,
                 mapOf(
-                    "id" to dto.id,
+                    "id" to dto.id.toString(),
                     "sakId" to dto.sakId,
                     "saksnummer" to dto.saksnummer,
                     "behandlingId" to dto.behandlingId,
@@ -39,9 +39,9 @@ internal class StatistikkSakRepoImpl(
                     "tekniskTidspunkt" to dto.tekniskTidspunkt,
                     "sakYtelse" to dto.sakYtelse,
                     "sakUtland" to dto.sakUtland,
-                    "behandlingType" to dto.behandlingType,
-                    "behandlingStatus" to dto.behandlingStatus,
-                    "behandlingResultat" to dto.behandlingResultat,
+                    "behandlingType" to dto.behandlingType.toString(),
+                    "behandlingStatus" to dto.behandlingStatus.toString(),
+                    "behandlingResultat" to dto.behandlingResultat.toString(),
                     "resultatBegrunnelse" to dto.resultatBegrunnelse,
                     "behandlingMetode" to dto.behandlingMetode,
                     "opprettetAv" to dto.opprettetAv,
