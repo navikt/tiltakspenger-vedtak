@@ -78,7 +78,13 @@ class SakServiceImpl(
                 liste = runBlocking { personGateway.hentPerson(fnr) },
             ).also {
                 // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
-                if (!it.harTilgang(saksbehandler)) return HarIkkeTilgangTilPerson.left()
+                if (!it.harTilgang(saksbehandler)) {
+                    SECURELOG.info {
+                        "Saksbehandler ${saksbehandler.navIdent} " +
+                            "med roller ${saksbehandler.roller}, har ikke tilgang til person : ${it.søker()}"
+                    }
+                    return HarIkkeTilgangTilPerson.left()
+                }
             }.let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
 
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
