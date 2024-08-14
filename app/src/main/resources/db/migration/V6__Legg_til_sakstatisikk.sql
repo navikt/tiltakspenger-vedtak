@@ -40,8 +40,8 @@ create table statistikk_sak
 create table statistikk_sak_vilkår
 (
     id                     VARCHAR                  PRIMARY KEY, -- må være stigende
-    sak_id                 VARCHAR                  NOT NULL, -- fremmednøkkel til statistikk_sak
-    vilkårId               VARCHAR                  NOT NULL, -- hva slags vilkår
-    beskrivelse            VARCHAR                  NOT NULL, -- beskrivelse av vilkår
-    resultat               VARCHAR                  NOT NULL  -- GODKJENT, AVSLÅTT
+    sak_id                 VARCHAR                  NULL, -- fremmednøkkel til statistikk_sak
+    vilkårId               VARCHAR                  NULL, -- hva slags vilkår
+    beskrivelse            VARCHAR                  NULL, -- beskrivelse av vilkår
+    resultat               VARCHAR                  NULL  -- GODKJENT, AVSLÅTT
 );
