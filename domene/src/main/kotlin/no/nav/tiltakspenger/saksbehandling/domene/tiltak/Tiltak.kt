@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.tiltak
 
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import java.time.LocalDateTime
 
 data class Tiltak(
@@ -21,7 +22,7 @@ data class Tiltak(
         // TODO ukjent: kan vi slette denne?
         val arrangørnavn: String,
         val typeNavn: String,
-        val typeKode: String,
+        val typeKode: TiltakstypeSomGirRett,
         val rettPåTiltakspenger: Boolean,
     )
 }

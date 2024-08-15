@@ -30,7 +30,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:persistering-infrastruktur:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
-
+    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.6")

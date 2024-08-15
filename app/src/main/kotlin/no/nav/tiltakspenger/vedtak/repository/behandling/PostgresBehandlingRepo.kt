@@ -285,7 +285,7 @@ internal class PostgresBehandlingRepo(
             stønadsdager,
             saksbehandler,
             beslutter,
-            attesteringer                
+            attesteringer
         ) values (
             :id,
             :sakId,

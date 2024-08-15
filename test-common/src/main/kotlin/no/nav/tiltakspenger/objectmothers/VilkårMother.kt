@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
@@ -277,6 +278,7 @@ interface VilkårMother {
         girRett: Boolean = true,
         status: TiltakDeltakerstatus = Deltar,
         kilde: Tiltakskilde = Komet,
+        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
     ): TiltakDeltagelseSaksopplysning.Register =
         TiltakDeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
@@ -285,6 +287,7 @@ interface VilkårMother {
             girRett = girRett,
             status = status,
             kilde = kilde,
+            tiltakstype = tiltakstype,
         )
 
     /**

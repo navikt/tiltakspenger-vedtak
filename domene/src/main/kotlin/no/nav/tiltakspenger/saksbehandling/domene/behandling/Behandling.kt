@@ -38,7 +38,13 @@ interface Behandling {
 
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
 
-    fun iverksett(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
+    fun iverksett(
+        utøvendeBeslutter: Saksbehandler,
+        attestering: Attestering,
+    ): Behandling
 
-    fun sendTilbake(utøvendeBeslutter: Saksbehandler, attestering: Attestering): Behandling
+    fun sendTilbake(
+        utøvendeBeslutter: Saksbehandler,
+        attestering: Attestering,
+    ): Behandling
 }

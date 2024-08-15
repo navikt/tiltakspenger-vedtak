@@ -38,7 +38,6 @@ enum class StatusDTO {
 
 data class TiltakDTO(
     val periodeDTO: PeriodeDTO,
-    val typeBeskrivelse: String,
     val typeKode: String,
     val antDagerIUken: Float,
 )

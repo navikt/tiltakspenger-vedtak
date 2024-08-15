@@ -19,6 +19,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
