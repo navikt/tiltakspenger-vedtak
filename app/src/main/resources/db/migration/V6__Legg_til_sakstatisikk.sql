@@ -9,7 +9,7 @@ create table statistikk_sak
     mottatttidspunkt       timestamp                null,
     registrerttidspunkt    timestamp                null,
     ferdigbehandlettidspunkt timestamp              null,
-    vedtaktidspunkt        timestamp                not null,
+    vedtaktidspunkt        timestamp                null,
     utbetalttidspunkt      timestamp                null,
     endrettidspunkt        timestamp                not null,
     søknadsformat          varchar                  not null,
