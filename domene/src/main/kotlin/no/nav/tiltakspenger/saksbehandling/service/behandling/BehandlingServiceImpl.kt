@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
@@ -33,7 +33,7 @@ class BehandlingServiceImpl(
     private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val brevPublisherGateway: BrevPublisherGateway,
-    private val meldekortGrunnlagGateway: MeldekortGrunnlagGateway,
+    private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,
@@ -119,8 +119,7 @@ class BehandlingServiceImpl(
             statistikkSakRepo.lagre(sakStatistikk, tx)
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
         }
-
-        meldekortGrunnlagGateway.sendMeldekortGrunnlag(sak, vedtak)
+        // Meldekortgrunnlag sendes etter vedtaket er lagret fra en separat jobb.
 
         val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
         brevPublisherGateway.sendBrev(sak.saksnummer, vedtak, personopplysninger)

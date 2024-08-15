@@ -56,9 +56,12 @@ object Configuration {
             "SKJERMING_SCOPE" to System.getenv("SCOPE_SKJERMING"),
             "SKJERMING_URL" to System.getenv("SKJERMING_URL"),
             "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
-            "PDL_SCOPE" to System.getenv("PDL_ENDPOINT_URL"),
-            "TILTAK_SCOPE" to System.getenv("TILTAK_SKJERMING"),
+            "PDL_ENDPOINT_URL" to System.getenv("PDL_ENDPOINT_URL"),
+            "TILTAK_SCOPE" to System.getenv("TILTAK_SCOPE"),
             "TILTAK_URL" to System.getenv("TILTAK_URL"),
+            "MELDEKORT_SCOPE" to System.getenv("MELDEKORT_SCOPE"),
+            "MELDEKORT_URL" to System.getenv("MELDEKORT_URL"),
+            "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
         )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
@@ -81,6 +84,8 @@ object Configuration {
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
                 "TILTAK_SCOPE" to "localhost",
                 "TILTAK_URL" to "http://host.docker.internal:8091",
+                "MELDEKORT_SCOPE" to System.getenv("localhost"),
+                "MELDEKORT_URL" to System.getenv("http://host.docker.internal:8091"),
             ),
         )
     private val devProperties =
@@ -93,6 +98,8 @@ object Configuration {
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
                 "TILTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-tiltak/.default",
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
+                "MELDEKORT_SCOPE" to System.getenv("api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default"),
+                "MELDEKORT_URL" to System.getenv("http://tiltakspenger-meldekort-api"),
             ),
         )
     private val prodProperties =
@@ -105,6 +112,8 @@ object Configuration {
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
                 "TILTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-tiltak/.default",
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
+                "MELDEKORT_SCOPE" to System.getenv("api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default"),
+                "MELDEKORT_URL" to System.getenv("http://tiltakspenger-meldekort-api"),
             ),
         )
 
@@ -193,10 +202,26 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
-
+    fun oauthConfigMeldekort(
+        scope: String = config()[Key("MELDEKORT_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
     fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
+    fun meldekortClientConfig(baseUrl: String = config()[Key("MELDEKORT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+
     fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
+
+    fun isNais() = applicationProfile() != Profile.LOCAL
+
+    fun electorPath(): String = config()[Key("ELECTOR_PATH", stringType)]
 }

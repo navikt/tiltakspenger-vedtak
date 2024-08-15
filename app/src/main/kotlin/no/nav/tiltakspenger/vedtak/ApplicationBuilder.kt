@@ -1,20 +1,28 @@
 package no.nav.tiltakspenger.vedtak
 
+import arrow.core.Either
+import arrow.core.right
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.libs.common.AccessToken
+import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
+import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
+import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
+import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.meldekort.MeldekortgrunnlagService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
-import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
 import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingClientImpl
 import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingGatewayImpl
@@ -22,6 +30,7 @@ import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.db.flywayMigrate
+import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
@@ -73,6 +82,8 @@ internal class ApplicationBuilder(
         AzureTokenProvider(config = Configuration.oauthConfigSkjerming())
     private val tokenProviderTiltak: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
+    private val tokenProviderMeldekort: AzureTokenProvider =
+        AzureTokenProvider(config = Configuration.oauthConfigMeldekort())
 
     private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
@@ -83,7 +94,10 @@ internal class ApplicationBuilder(
     private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
     private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
-    private val meldekortGrunnlagGateway = MeldekortGrunnlagGatewayImpl(rapidsConnection)
+    private val meldekortGrunnlagGateway = MeldekortGrunnlagHttpClient(
+        baseUrl = Configuration.meldekortClientConfig().baseUrl,
+        getSystemToken = { AccessToken(tokenProviderMeldekort.getToken()) },
+    )
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
@@ -171,6 +185,37 @@ internal class ApplicationBuilder(
             behandlingRepo = behandlingRepo,
         )
 
+    private val sendNyeVedtakTilMeldekortService = MeldekortgrunnlagService(
+        meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+        vedtakRepo = vedtakRepo,
+    )
+
+    private val runCheckFactory = if (Configuration.isNais()) {
+        RunCheckFactory(
+            leaderPodLookup = LeaderPodLookupClient(
+                electorPath = Configuration.electorPath(),
+                logger = KotlinLogging.logger { },
+            ),
+        )
+    } else {
+        RunCheckFactory(
+            leaderPodLookup = object : LeaderPodLookup {
+                override fun amITheLeader(
+                    localHostName: String,
+                ): Either<LeaderPodLookupFeil, Boolean> {
+                    return true.right()
+                }
+            },
+        )
+    }
+
+    private val stoppableTasks = TaskExecutor.startJob(
+        runCheckFactory = runCheckFactory,
+        tasks = listOf { correlationId ->
+            sendNyeVedtakTilMeldekortService.sendNyeVedtak(correlationId)
+        },
+    )
+
     init {
         rapidsConnection.register(this)
     }
@@ -181,6 +226,7 @@ internal class ApplicationBuilder(
 
     override fun onShutdown(rapidsConnection: RapidsConnection) {
         log.info("Shutdown")
+        stoppableTasks.stop()
     }
 
     override fun onStartup(rapidsConnection: RapidsConnection) {

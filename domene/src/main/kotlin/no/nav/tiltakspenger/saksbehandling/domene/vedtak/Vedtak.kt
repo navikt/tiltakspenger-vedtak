@@ -7,12 +7,14 @@ import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDateTime
 
 data class Vedtak(
     val id: VedtakId = VedtakId.random(),
     val sakId: SakId,
+    val saksnummer: Saksnummer,
     val behandling: Behandling,
     val vedtaksdato: LocalDateTime,
     val vedtaksType: VedtaksType,
@@ -38,6 +40,7 @@ fun Førstegangsbehandling.opprettVedtak(): Vedtak {
     return Vedtak(
         id = VedtakId.random(),
         sakId = this.sakId,
+        saksnummer = this.saksnummer,
         behandling = this,
         vedtaksdato = LocalDateTime.now(),
         vedtaksType = VedtaksType.INNVILGELSE,

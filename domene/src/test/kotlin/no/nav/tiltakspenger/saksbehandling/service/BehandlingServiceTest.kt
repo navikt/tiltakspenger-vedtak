@@ -24,7 +24,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerUtenTilgang
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
@@ -45,7 +45,7 @@ internal class BehandlingServiceTest {
     private lateinit var vedtakRepo: VedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
-    private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var meldekortGrunnlagGateway: MeldekortgrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo

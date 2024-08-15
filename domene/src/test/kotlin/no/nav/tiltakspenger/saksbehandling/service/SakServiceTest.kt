@@ -23,7 +23,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortGrunnlagGateway
+import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -49,7 +49,7 @@ internal class SakServiceTest {
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: VedtakService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
-    private lateinit var meldekortGrunnlagGateway: MeldekortGrunnlagGateway
+    private lateinit var meldekortGrunnlagGateway: MeldekortgrunnlagGateway
     private lateinit var tiltakGateway: TiltakGateway
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo

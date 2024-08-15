@@ -14,4 +14,6 @@ interface VedtakRepo {
         vedtak: Vedtak,
         context: TransactionContext? = null,
     ): Vedtak
+
+    fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak>
 }

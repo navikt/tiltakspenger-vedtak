@@ -54,7 +54,8 @@ CREATE TABLE vedtak
     tom                     DATE                     NOT NULL,
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
+    sendt_til_meldekort     BOOLEAN                  NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE sak_personopplysninger_søker
@@ -224,4 +225,100 @@ CREATE TABLE stønadsdager_tiltak
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
     avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
     saksbehandler       VARCHAR                  NULL
+);
+
+create table statistikk_stønad
+(
+    id                      varchar                  primary key,
+    bruker_id               varchar                  null,
+    sak_id                  varchar                  null,
+    saksnummer              varchar                  null,
+    resultat                varchar                  null,
+    sak_dato                date                     null,
+    gyldig_fra_dato         date                     null,
+    gyldig_til_dato         date                     null,
+    ytelse                  varchar                  null,
+    søknad_id               varchar                  null,
+    opplysning              varchar                  null,
+    søknad_dato             date                     null,
+    gyldig_fra_dato_søknad  date                     null,
+    gyldig_til_dato_søknad  date                     null,
+    vedtak_id               varchar                  null,
+    type                    varchar                  null,
+    vedtak_dato             date                     null,
+    fom                     date                     null,
+    tom                     date                     null,
+    oppfølging_enhet_kode   varchar                  null,
+    oppfølging_enhet_navn   varchar                  null,
+    beslutning_enhet_kode   varchar                  null,
+    beslutning_enhet_navn   varchar                  null,
+    tilhørighet_enhet_kode  varchar                  null,
+    tilhørighet_enhet_navn  varchar                  null,
+    vilkår_id               varchar                  null,
+    vilkår_type             varchar                  null,
+    vilkår_status           varchar                  null,
+    lovparagraf             varchar                  null,
+    beskrivelse             varchar                  null,
+    gyldig_fra_dato_vilkår  date                     null,
+    gyldig_til_dato_vilkår  date                     null,
+    postering_id            varchar                  null,
+    beløp                   decimal                  null,
+    beløp_beskrivelse       varchar                  null,
+    aarsak                  varchar                  null,
+    postering_dato          date                     null,
+    gyldig_fra_dato_postering date                   null,
+    gyldig_til_dato_postering date                   null,
+    tiltak_id               varchar                  null,
+    tiltak_type             varchar                  null,
+    tiltak_beskrivelse      varchar                  null,
+    fagsystem               varchar                  null,
+    tiltak_dato             date                     null,
+    gyldig_fra_dato_tiltak  date                     null,
+    gyldig_til_dato_tiltak  date                     null,
+    sist_endret             timestamp with time zone null,
+    opprettet               timestamp with time zone null
+);
+
+create table statistikk_sak
+(
+    id                     serial                   primary key,
+    sak_id                 varchar                  not null,
+    saksnummer             varchar                  not null,
+    behandlingid           varchar                  not null,
+    relatertbehandlingid   varchar                  null,
+    ident                  varchar                  not null,
+    mottatttidspunkt       timestamp                null,
+    registrerttidspunkt    timestamp                null,
+    ferdigbehandlettidspunkt timestamp              null,
+    vedtaktidspunkt        timestamp                null,
+    utbetalttidspunkt      timestamp                null,
+    endrettidspunkt        timestamp                not null,
+    søknadsformat          varchar                  not null,
+    forventetoppstarttidspunkt timestamp            not null,
+    teknisktidspunkt       timestamp                null,
+    sakytelse              varchar                  not null,
+    sakutland              boolean                  not null,
+    behandlingtype         varchar                  not null,
+    behandlingstatus       varchar                  not null,
+    behandlingresultat     varchar                  not null,
+    resultatbegrunnelse    varchar                  not null,
+    behandlingmetode       varchar                  not null,
+    opprettetav            varchar                  not null,
+    saksbehandler          varchar                  not null,
+    ansvarligbeslutter     varchar                  not null,
+    ansvarligenhet         varchar                  not null,
+    tilbakekrevingsbeløp   decimal                  null,
+    funksjonellperiodefom  date                     null,
+    funksjonellperiodetom  date                     null,
+    avsender               varchar                  not null,
+    versjon                varchar                  not null
+);
+
+create table statistikk_sak_vilkår
+(
+    id                     varchar                  primary key,
+    sak_id                 varchar                  null,
+    vilkårid               varchar                  null,
+    beskrivelse            varchar                  null,
+    resultat               varchar                  null
 );

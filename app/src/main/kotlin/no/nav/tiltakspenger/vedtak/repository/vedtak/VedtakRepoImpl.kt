@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresTransactionContext.Companion.withTransaction
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -78,6 +78,20 @@ internal class VedtakRepoImpl(
             )
         }
 
+    override fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak> {
+        return sessionFactory.withSessionContext { sessionContext ->
+            sessionContext.withSession { session ->
+                session.run(
+                    queryOf(
+                        "select * from vedtak where sendt_til_meldekort = false",
+                    ).map { row ->
+                        row.toVedtak(sessionContext)
+                    }.asList,
+                )
+            }
+        }
+    }
+
     override fun lagreVedtak(
         vedtak: Vedtak,
         context: TransactionContext?,
@@ -115,6 +129,7 @@ internal class VedtakRepoImpl(
         return Vedtak(
             id = id,
             sakId = SakId.fromString(string("sak_id")),
+            saksnummer = Saksnummer(string("saksnummer")),
             behandling = behandlingRepo.hent(BehandlingId.fromString(string("behandling_id")), sessionContext),
             vedtaksdato = localDateTime("vedtaksdato"),
             vedtaksType = VedtaksType.valueOf(string("vedtakstype")),
@@ -127,19 +142,19 @@ internal class VedtakRepoImpl(
     @Language("SQL")
     private val sqlHent =
         """
-        select * from vedtak where id = :id
+        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.id = :id
         """.trimIndent()
 
     @Language("SQL")
     private val sqlHentForBehandling =
         """
-        select * from vedtak where behandling_id = :behandlingId
+        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.behandling_id = :behandlingId
         """.trimIndent()
 
     @Language("SQL")
     private val sqlHentForSak =
         """
-        select * from vedtak where sak_id = :sakId
+        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId
         """.trimIndent()
 
     @Language("SQL")

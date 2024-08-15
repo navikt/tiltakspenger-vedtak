@@ -19,7 +19,7 @@ import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagGatewayImpl
+import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
-    private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagGatewayImpl>()
+    private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagHttpClient>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =

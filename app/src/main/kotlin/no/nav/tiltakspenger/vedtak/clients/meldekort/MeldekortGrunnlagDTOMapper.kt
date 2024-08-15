@@ -1,22 +1,28 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.libs.meldekort.MeldekortGrunnlagDTO
+import no.nav.tiltakspenger.libs.meldekort.PeriodeDTO
+import no.nav.tiltakspenger.libs.meldekort.PersonopplysningerDTO
+import no.nav.tiltakspenger.libs.meldekort.StatusDTO
+import no.nav.tiltakspenger.libs.meldekort.TiltakDTO
+import no.nav.tiltakspenger.libs.meldekort.UtfallForPeriodeDTO
+import no.nav.tiltakspenger.libs.meldekort.UtfallsperiodeDTO
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
+import no.nav.tiltakspenger.vedtak.db.serialize
 
 object MeldekortGrunnlagDTOMapper {
 
-    fun mapMeldekortGrunnlagDTO(
-        sak: SakDetaljer,
+    fun toJson(
         vedtak: Vedtak,
-    ): MeldekortGrunnlagDTO {
+    ): String {
         val behandling = vedtak.behandling
         val personopplysninger = behandling.søknad.personopplysninger
         val vedtaksperiode = vedtak.periode
         return MeldekortGrunnlagDTO(
             vedtakId = vedtak.id.toString(),
-            sakId = sak.saksnummer.verdi,
+            sakId = vedtak.saksnummer.verdi,
             behandlingId = behandling.id.toString(),
             status =
             when (vedtak.vedtaksType) {
@@ -40,8 +46,7 @@ object MeldekortGrunnlagDTOMapper {
                     ),
                     // TODO jah: Her har jeg ikke mappet til en egen DTO (kontrakt mellom vedtak og meldekort). Jeg tenker det uansett er veldig risikabelt og endre disse enumene.
                     typeKode = behandling.vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype.name,
-                    // TODO jah: Finn ut hvordan vi skal forholde oss til antall dager som desimal. Hvis det bare er halve dager, foreslår jeg et annet format.
-                    antDagerIUken = behandling.stønadsdager.registerSaksopplysning.antallDager.toFloat(),
+                    antDagerIUken = behandling.stønadsdager.registerSaksopplysning.antallDager,
                 ),
             ),
             personopplysninger =
@@ -53,8 +58,8 @@ object MeldekortGrunnlagDTOMapper {
             utfallsperioder =
             vedtak.utfallsperioder.perioder().map {
                 UtfallsperiodeDTO(
-                    fom = it.periode.fraOgMed,
-                    tom = it.periode.tilOgMed,
+                    fom = it.periode.fraOgMed.toString(),
+                    tom = it.periode.tilOgMed.toString(),
                     utfall =
                     when (it.verdi) {
                         AvklartUtfallForPeriode.OPPFYLT -> UtfallForPeriodeDTO.GIR_RETT_TILTAKSPENGER
@@ -62,6 +67,6 @@ object MeldekortGrunnlagDTOMapper {
                     },
                 )
             },
-        )
+        ).let { serialize(it) }
     }
 }
