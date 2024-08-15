@@ -77,6 +77,7 @@ class IntroRoutesTest {
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
+                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
 
             testApplication {
@@ -134,6 +135,7 @@ class IntroRoutesTest {
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
+                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
 
             testApplication {

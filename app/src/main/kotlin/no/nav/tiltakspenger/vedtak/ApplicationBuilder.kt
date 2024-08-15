@@ -146,6 +146,7 @@ internal class ApplicationBuilder(
             sessionFactory = sessionFactory,
             saksoversiktRepo = saksoversiktRepo,
             statistikkSakRepo = statistikkSakRepo,
+            statistikkStønadRepo = statistikkStønadRepo,
         )
     private val sakService =
         SakServiceImpl(

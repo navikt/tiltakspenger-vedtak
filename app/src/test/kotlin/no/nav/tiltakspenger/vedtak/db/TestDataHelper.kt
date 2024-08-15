@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIden
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresSakRepo
 import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStønadRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.søknad.BarnetilleggDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
@@ -78,7 +79,7 @@ internal class TestDataHelper(
     val statistikkSakRepo = StatistikkSakRepoImpl(
         sessionFactory = sessionFactory,
     )
-    val statistikkStønadRepo = StatistikkSakRepoImpl(
+    val statistikkStønadRepo = StatistikkStønadRepoImpl(
         sessionFactory = sessionFactory,
     )
 }

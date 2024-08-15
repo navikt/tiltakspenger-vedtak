@@ -79,6 +79,7 @@ class AlderRoutesTest {
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
+                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
 
             testApplication {
@@ -131,6 +132,7 @@ class AlderRoutesTest {
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
+                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
 
             testApplication {
