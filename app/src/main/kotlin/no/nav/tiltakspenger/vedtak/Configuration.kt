@@ -84,8 +84,8 @@ object Configuration {
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
                 "TILTAK_SCOPE" to "localhost",
                 "TILTAK_URL" to "http://host.docker.internal:8091",
-                "MELDEKORT_SCOPE" to System.getenv("localhost"),
-                "MELDEKORT_URL" to System.getenv("http://host.docker.internal:8091"),
+                "MELDEKORT_SCOPE" to "localhost",
+                "MELDEKORT_URL" to "http://host.docker.internal:8091",
             ),
         )
     private val devProperties =
