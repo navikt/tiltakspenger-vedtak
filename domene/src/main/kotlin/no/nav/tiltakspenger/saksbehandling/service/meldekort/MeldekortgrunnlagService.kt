@@ -14,16 +14,18 @@ class MeldekortgrunnlagService(
     private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,
     private val vedtakRepo: VedtakRepo,
 ) {
-
     val log = KotlinLogging.logger { }
 
-    suspend fun sendNyeVedtak(correlationId: CorrelationId) {
+    suspend fun sendNyeMeldekortgrunnlag(correlationId: CorrelationId) {
         vedtakRepo.hentVedtakSomIkkeErSendtTilMeldekort().forEach { vedtak ->
-            Either.catch {
-                meldekortGrunnlagGateway.sendMeldekortGrunnlag(vedtak, correlationId)
-            }.mapLeft {
-                log.error(it) { "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
-            }
+            Either
+                .catch {
+                    meldekortGrunnlagGateway.sendMeldekortgrunnlag(vedtak, correlationId)
+                }.mapLeft {
+                    log.error(it) { "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
+                }.onRight {
+                    vedtakRepo.oppdaterVedtakSendtTilMeldekort(vedtak.id)
+                }
         }
     }
 }

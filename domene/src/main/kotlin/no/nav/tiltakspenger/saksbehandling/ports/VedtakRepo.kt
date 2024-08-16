@@ -16,4 +16,6 @@ interface VedtakRepo {
     ): Vedtak
 
     fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak>
+
+    fun oppdaterVedtakSendtTilMeldekort(id: VedtakId)
 }

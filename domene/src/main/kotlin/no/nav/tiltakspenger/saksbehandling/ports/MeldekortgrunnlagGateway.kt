@@ -5,14 +5,20 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 
 interface MeldekortgrunnlagGateway {
-    suspend fun sendMeldekortGrunnlag(
+    suspend fun sendMeldekortgrunnlag(
         vedtak: Vedtak,
         correlationId: CorrelationId,
     ): Either<KunneIkkeSendeMeldekortGrunnlag, Boolean>
 }
+
 sealed interface KunneIkkeSendeMeldekortGrunnlag {
-    data class NetworkError(val exception: Throwable) : KunneIkkeSendeMeldekortGrunnlag
-    data class DeserializationException(val exception: Throwable) : KunneIkkeSendeMeldekortGrunnlag
+    data class NetworkError(
+        val exception: Throwable,
+    ) : KunneIkkeSendeMeldekortGrunnlag
+
+    data class DeserializationException(
+        val exception: Throwable,
+    ) : KunneIkkeSendeMeldekortGrunnlag
 
     /**
      * @param body Bør nok ikke logges til vanlig logg, siden den kan inneholde fødselsnummer.

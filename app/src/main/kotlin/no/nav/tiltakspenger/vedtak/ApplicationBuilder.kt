@@ -94,10 +94,11 @@ internal class ApplicationBuilder(
     private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
     private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
-    private val meldekortGrunnlagGateway = MeldekortGrunnlagHttpClient(
-        baseUrl = Configuration.meldekortClientConfig().baseUrl,
-        getSystemToken = { AccessToken(tokenProviderMeldekort.getToken()) },
-    )
+    private val meldekortGrunnlagGateway =
+        MeldekortGrunnlagHttpClient(
+            baseUrl = Configuration.meldekortClientConfig().baseUrl,
+            getSystemToken = { AccessToken(tokenProviderMeldekort.getToken()) },
+        )
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
@@ -185,36 +186,38 @@ internal class ApplicationBuilder(
             behandlingRepo = behandlingRepo,
         )
 
-    private val sendNyeVedtakTilMeldekortService = MeldekortgrunnlagService(
-        meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-        vedtakRepo = vedtakRepo,
-    )
-
-    private val runCheckFactory = if (Configuration.isNais()) {
-        RunCheckFactory(
-            leaderPodLookup = LeaderPodLookupClient(
-                electorPath = Configuration.electorPath(),
-                logger = KotlinLogging.logger { },
-            ),
+    private val sendNyeVedtakTilMeldekortService =
+        MeldekortgrunnlagService(
+            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+            vedtakRepo = vedtakRepo,
         )
-    } else {
-        RunCheckFactory(
-            leaderPodLookup = object : LeaderPodLookup {
-                override fun amITheLeader(
-                    localHostName: String,
-                ): Either<LeaderPodLookupFeil, Boolean> {
-                    return true.right()
-                }
+
+    private val runCheckFactory =
+        if (Configuration.isNais()) {
+            RunCheckFactory(
+                leaderPodLookup =
+                LeaderPodLookupClient(
+                    electorPath = Configuration.electorPath(),
+                    logger = KotlinLogging.logger { },
+                ),
+            )
+        } else {
+            RunCheckFactory(
+                leaderPodLookup =
+                object : LeaderPodLookup {
+                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> = true.right()
+                },
+            )
+        }
+
+    private val stoppableTasks =
+        TaskExecutor.startJob(
+            runCheckFactory = runCheckFactory,
+            tasks =
+            listOf { correlationId ->
+                sendNyeVedtakTilMeldekortService.sendNyeMeldekortgrunnlag(correlationId)
             },
         )
-    }
-
-    private val stoppableTasks = TaskExecutor.startJob(
-        runCheckFactory = runCheckFactory,
-        tasks = listOf { correlationId ->
-            sendNyeVedtakTilMeldekortService.sendNyeVedtak(correlationId)
-        },
-    )
 
     init {
         rapidsConnection.register(this)

@@ -78,8 +78,8 @@ internal class VedtakRepoImpl(
             )
         }
 
-    override fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak> {
-        return sessionFactory.withSessionContext { sessionContext ->
+    override fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak> =
+        sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
@@ -90,7 +90,6 @@ internal class VedtakRepoImpl(
                 )
             }
         }
-    }
 
     override fun lagreVedtak(
         vedtak: Vedtak,
@@ -122,6 +121,21 @@ internal class VedtakRepoImpl(
             ).asUpdate,
         )
         return vedtak
+    }
+
+    override fun oppdaterVedtakSendtTilMeldekort(id: VedtakId) {
+        sessionFactory.withSessionContext { sessionContext ->
+            sessionContext.withSession { session ->
+                session.run(
+                    queryOf(
+                        "update vedtak set sendt_til_meldekort = true where id = :id",
+                        mapOf(
+                            "id" to id.toString(),
+                        ),
+                    ).asUpdate,
+                )
+            }
+        }
     }
 
     private fun Row.toVedtak(sessionContext: SessionContext): Vedtak {
