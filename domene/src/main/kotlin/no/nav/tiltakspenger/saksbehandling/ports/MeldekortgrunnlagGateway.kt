@@ -16,7 +16,7 @@ sealed interface KunneIkkeSendeMeldekortGrunnlag {
         val exception: Throwable,
     ) : KunneIkkeSendeMeldekortGrunnlag
 
-    data class DeserializationException(
+    data class SerializationException(
         val exception: Throwable,
     ) : KunneIkkeSendeMeldekortGrunnlag
 

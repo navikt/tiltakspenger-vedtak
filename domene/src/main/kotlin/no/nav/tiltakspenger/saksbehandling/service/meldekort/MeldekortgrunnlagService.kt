@@ -20,12 +20,14 @@ class MeldekortgrunnlagService(
         vedtakRepo.hentVedtakSomIkkeErSendtTilMeldekort().forEach { vedtak ->
             Either
                 .catch {
-                    meldekortGrunnlagGateway.sendMeldekortgrunnlag(vedtak, correlationId)
+                    meldekortGrunnlagGateway
+                        .sendMeldekortgrunnlag(vedtak, correlationId)
+                        .onRight {
+                            log.info { "Vedtak ${vedtak.id} sendt til tiltakspenger-meldekort-api. Setter databaseflagg til true." }
+                            vedtakRepo.oppdaterVedtakSendtTilMeldekort(vedtak.id)
+                        }
                 }.mapLeft {
                     log.error(it) { "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
-                }.onRight {
-                    log.info { "Vedtak ${vedtak.id} sendt til tiltakspenger-meldekort-api. Setter databaseflagg til true." }
-                    vedtakRepo.oppdaterVedtakSendtTilMeldekort(vedtak.id)
                 }
         }
     }

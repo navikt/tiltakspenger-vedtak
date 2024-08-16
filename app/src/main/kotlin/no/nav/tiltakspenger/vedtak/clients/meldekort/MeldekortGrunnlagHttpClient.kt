@@ -58,13 +58,30 @@ class MeldekortGrunnlagHttpClient(
                             .catch {
                                 body.lowercase().toBooleanStrict()
                             }.mapLeft {
-                                KunneIkkeSendeMeldekortGrunnlag.DeserializationException(it)
+                                LOG.error(RuntimeException("Trigger exception for stacktrace")) {
+                                    "Serialiseringsfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api"
+                                }
+                                SECURELOG.error(
+                                    it,
+                                ) { "Serialiseringsfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
+                                KunneIkkeSendeMeldekortGrunnlag.SerializationException(it)
                             }
                     } else {
-                        KunneIkkeSendeMeldekortGrunnlag.Ikke2xx(status = httpResponse.statusCode(), body = body).left()
+                        val status = httpResponse.statusCode()
+                        LOG.error(RuntimeException("Trigger exception for debugging")) {
+                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Se securelog for context."
+                        }
+                        SECURELOG.error {
+                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Body: $body"
+                        }
+                        KunneIkkeSendeMeldekortGrunnlag.Ikke2xx(status = status, body = body).left()
                     }
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
+                    LOG.error(RuntimeException("Trigger exception for stacktrace")) {
+                        "Nettverksfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api"
+                    }
+                    SECURELOG.error(it) { "Nettverksfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
                     KunneIkkeSendeMeldekortGrunnlag.NetworkError(it)
                 }.flatten()
         }
