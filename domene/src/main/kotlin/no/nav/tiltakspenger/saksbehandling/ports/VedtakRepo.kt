@@ -15,7 +15,7 @@ interface VedtakRepo {
         context: TransactionContext? = null,
     ): Vedtak
 
-    fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak>
+    fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int = 10): List<Vedtak>
 
     fun oppdaterVedtakSendtTilMeldekort(id: VedtakId)
 }

@@ -78,12 +78,12 @@ internal class VedtakRepoImpl(
             )
         }
 
-    override fun hentVedtakSomIkkeErSendtTilMeldekort(): List<Vedtak> =
+    override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Vedtak> =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
-                        "select * from vedtak where sendt_til_meldekort = false",
+                        "select * from vedtak where sendt_til_meldekort = false limit $limit",
                     ).map { row ->
                         row.toVedtak(sessionContext)
                     }.asList,
