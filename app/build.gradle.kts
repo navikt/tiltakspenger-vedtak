@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
-val felleslibVersion = "0.0.191"
+val felleslibVersion = "0.0.193"
 val tokenSupportVersion = "3.2.0"
 
 plugins {
@@ -76,7 +76,6 @@ dependencies {
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
-
     // DB
     implementation("org.flywaydb:flyway-database-postgresql:10.17.1")
     implementation("com.zaxxer:HikariCP:5.1.0")
@@ -102,5 +101,7 @@ dependencies {
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.13.2")
     testImplementation(project(":test-common"))
-    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 }

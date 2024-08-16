@@ -1,7 +1,7 @@
 val jacksonVersion = "2.17.2"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.191"
+val felleslibVersion = "0.0.193"
 val kotlinxCoroutinesVersion = "1.8.1"
 
 dependencies {
@@ -35,5 +35,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(project(":test-common"))
-    testImplementation("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 }
