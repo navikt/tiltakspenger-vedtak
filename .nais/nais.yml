@@ -38,6 +38,7 @@ spec:
         extra:
           - NAVident
           - azp_name
+  leaderElection: true
   gcp:
     sqlInstances:
       - name: tiltakspenger-vedtak
