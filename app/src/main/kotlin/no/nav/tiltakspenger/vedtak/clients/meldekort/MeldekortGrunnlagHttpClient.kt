@@ -69,7 +69,7 @@ class MeldekortGrunnlagHttpClient(
                 }.flatten()
         }
 
-    private fun createRequest(
+    private suspend fun createRequest(
         vedtak: Vedtak,
         correlationId: CorrelationId,
     ): HttpRequest? =
@@ -77,7 +77,7 @@ class MeldekortGrunnlagHttpClient(
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
-            .header("Authorization", "Bearer $getSystemToken()")
+            .header("Authorization", "Bearer ${getSystemToken()}")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
             .header(NAV_CALL_ID_HEADER, correlationId.value)
