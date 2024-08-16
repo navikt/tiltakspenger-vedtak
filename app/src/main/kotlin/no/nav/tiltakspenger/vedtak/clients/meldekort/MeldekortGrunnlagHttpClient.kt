@@ -94,7 +94,7 @@ class MeldekortGrunnlagHttpClient(
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
-            .header("Authorization", "Bearer ${getSystemToken()}")
+            .header("Authorization", "Bearer ${getSystemToken().value}")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
             .header(NAV_CALL_ID_HEADER, correlationId.value)
