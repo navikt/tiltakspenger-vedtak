@@ -96,11 +96,11 @@ internal class SøknadDAO(
      */
     fun lagreHeleSøknaden(
         søknad: Søknad,
+        kanBehandles: Boolean,
         txSession: TransactionalSession,
     ) {
         if (søknadFinnes(søknad.id, txSession)) return
-
-        lagreSøknad(søknad, txSession)
+        lagreSøknad(søknad, kanBehandles, txSession)
         barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
         vedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
@@ -108,6 +108,7 @@ internal class SøknadDAO(
 
     private fun lagreSøknad(
         søknad: Søknad,
+        kanBehandles: Boolean,
         session: Session,
     ) {
         val periodeSpmParamMap =
@@ -151,6 +152,7 @@ internal class SøknadDAO(
                         "filnavn" to søknad.filnavn,
                         "opprettet" to søknad.opprettet,
                         "tidsstempelHosOss" to søknad.tidsstempelHosOss,
+                        "kanBehandles" to kanBehandles,
                     ),
             ).asUpdate,
         )
@@ -167,6 +169,7 @@ internal class SøknadDAO(
         val etternavn = string("etternavn")
         val fnr = Fnr.fromString(string("ident"))
         val opprettet = localDateTime("opprettet")
+        val kanBehandles = boolean("kanBehandles")
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
@@ -200,6 +203,7 @@ internal class SøknadDAO(
             tiltak = tiltak,
             barnetillegg = barnetillegg,
             opprettet = opprettet,
+            kanBehandles = kanBehandles,
             tidsstempelHosOss = tidsstempelHosOss,
             vedlegg = vedlegg,
             kvp = kvp,

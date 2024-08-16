@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
@@ -33,7 +32,6 @@ class BehandlingServiceImpl(
     private val vedtakRepo: VedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val brevPublisherGateway: BrevPublisherGateway,
-    private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,

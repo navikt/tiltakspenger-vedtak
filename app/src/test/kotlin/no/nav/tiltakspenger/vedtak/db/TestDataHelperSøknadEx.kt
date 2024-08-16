@@ -30,7 +30,7 @@ internal fun TestDataHelper.persisterSøknad(
             barnetillegg = listOf(),
         ),
 ): Søknad {
-    this.søknadRepo.lagre(søknad)
+    this.søknadRepo.lagre(søknad, false)
     return søknadRepo.hentSøknad(søknad.id).also {
         it shouldBe søknad
     }

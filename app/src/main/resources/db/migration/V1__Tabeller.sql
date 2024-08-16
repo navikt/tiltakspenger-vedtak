@@ -110,6 +110,7 @@ CREATE TABLE søknad
     versjon             VARCHAR                  NOT NULL,
     sak_id              VARCHAR                  NULL REFERENCES sak (id),
     behandling_id       VARCHAR                  NULL REFERENCES behandling (id),
+    kanBehandles        BOOLEAN                  NULL,
     ident               VARCHAR                  NOT NULL,
     fornavn             VARCHAR                  NOT NULL,
     etternavn           VARCHAR                  NOT NULL,

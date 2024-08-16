@@ -19,6 +19,7 @@ data class Søknad(
     val tiltak: SøknadsTiltak,
     val barnetillegg: List<Barnetillegg>,
     val opprettet: LocalDateTime,
+    val kanBehandles: Boolean?,
     val tidsstempelHosOss: LocalDateTime,
     val vedlegg: List<Vedlegg>,
     val kvp: PeriodeSpm,
@@ -36,6 +37,14 @@ data class Søknad(
     companion object {
         fun randomId() = SøknadId.random()
     }
+    fun kanBehandles(): Boolean =
+        !(
+            søktUtenforKravfrist() ||
+                harLivsoppholdYtelser() ||
+                harBarnetillegg() ||
+                harKVPEllerIntro() ||
+                institusjon.erJa()
+            )
 
     fun vurderingsperiode(): Periode = Periode(tiltak.deltakelseFom, tiltak.deltakelseTom)
 
@@ -50,6 +59,18 @@ data class Søknad(
             jobbsjansen.erJa() ||
             trygdOgPensjon.erJa()
 
+    private fun harBarnetillegg(): Boolean =
+        barnetillegg.isNotEmpty()
+
+    private fun harKVPEllerIntro(): Boolean =
+        kvp.erJa() || intro.erJa()
+
+    private fun søktUtenforKravfrist(): Boolean {
+        val datoDetKanInnvilgesFra = opprettet.withDayOfMonth(1)
+            .minusMonths(3)
+            .toLocalDate()
+        return datoDetKanInnvilgesFra > tiltak.deltakelseTom || datoDetKanInnvilgesFra > tiltak.deltakelseFom
+    }
     data class Personopplysninger(
         val fnr: Fnr,
         val fornavn: String,

@@ -39,6 +39,7 @@ class SaksoversiktPostgresRepoTest {
                                 underkjent = false,
                                 kravtidspunkt = LocalDateTime.from(1.januarDateTime(2022)),
                                 id = søknad1.id,
+                                kanBehandles = false,
                             ),
                             BehandlingEllerSøknadForSaksoversikt(
                                 periode = ObjectMother.vurderingsperiode(),
@@ -52,6 +53,7 @@ class SaksoversiktPostgresRepoTest {
                                 underkjent = false,
                                 kravtidspunkt = LocalDateTime.from(1.januarDateTime(2022)),
                                 id = sak.førstegangsbehandling.id,
+                                kanBehandles = false,
                             ),
                         ),
                     )

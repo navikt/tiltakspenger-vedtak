@@ -41,7 +41,7 @@ internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): Behand
         periode = periode?.toDTO(),
         status =
         when (val s = status) {
-            is BehandlingEllerSøknadForSaksoversikt.Status.Søknad -> "SØKNAD"
+            is BehandlingEllerSøknadForSaksoversikt.Status.Søknad -> if (kanBehandles!!) "KAN_BEHANDLES" else "KAN_IKKE_BEHANDLES"
             is BehandlingEllerSøknadForSaksoversikt.Status.Behandling -> s.behandlingsstatus.toDTO().toString()
         },
         underkjent = underkjent,

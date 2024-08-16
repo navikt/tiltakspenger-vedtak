@@ -31,6 +31,7 @@ object SøknadDTOMapper {
             dto.barnetilleggPdl.map { mapBarnetilleggPDL(it) } +
                 dto.barnetilleggManuelle.map { mapBarnetilleggManuelle(it) },
             opprettet = dto.opprettet,
+            kanBehandles = null,
             tidsstempelHosOss = innhentet,
             vedlegg = dto.vedlegg.map { mapVedlegg(it) },
             kvp = mapPeriodeSpm(dto.kvp),

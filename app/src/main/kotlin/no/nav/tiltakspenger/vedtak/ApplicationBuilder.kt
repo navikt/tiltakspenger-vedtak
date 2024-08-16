@@ -148,7 +148,6 @@ internal class ApplicationBuilder(
 
     @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
-    private val søknadService = SøknadServiceImpl(søknadRepo)
 
     private val behandlingService =
         BehandlingServiceImpl(
@@ -156,13 +155,13 @@ internal class ApplicationBuilder(
             vedtakRepo = vedtakRepo,
             personopplysningRepo = personopplysningRepo,
             brevPublisherGateway = brevPublisherGateway,
-            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
             sakRepo = sakRepo,
             sessionFactory = sessionFactory,
             saksoversiktRepo = saksoversiktRepo,
             statistikkSakRepo = statistikkSakRepo,
             statistikkStønadRepo = statistikkStønadRepo,
         )
+    private val søknadService = SøknadServiceImpl(søknadRepo, sakRepo, behandlingService)
     private val sakService =
         SakServiceImpl(
             sakRepo = sakRepo,

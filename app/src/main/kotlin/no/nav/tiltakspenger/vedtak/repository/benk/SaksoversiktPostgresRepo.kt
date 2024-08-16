@@ -30,6 +30,7 @@ class SaksoversiktPostgresRepo(
                         select s.id søknadId,
                           s.ident,
                           s.opprettet,
+                          s.kanBehandles,
                           b.id behandlingId,
                           b.fom,
                           b.tom,
@@ -60,6 +61,7 @@ class SaksoversiktPostgresRepo(
                             } else {
                                 null
                             }
+                        val kanBehandles = if (!erFørstegangsbehandling) row.boolean("kanBehandles") else null
                         // B: Vil kanskje bruke kravdato fra vilkåret på sikt, men bruker kun søknaden for nå
                         val opprettet = row.localDateTime("opprettet")
                         val beslutter = row.stringOrNull("beslutter")
@@ -85,6 +87,7 @@ class SaksoversiktPostgresRepo(
                             saksbehandler = saksbehandler,
                             beslutter = beslutter,
                             sakId = row.stringOrNull("sakId")?.let { SakId.fromString(it) },
+                            kanBehandles = kanBehandles,
                         )
                     }.asList,
                 ).let {
