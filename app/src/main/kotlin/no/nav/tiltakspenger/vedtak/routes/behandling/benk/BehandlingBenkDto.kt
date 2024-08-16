@@ -17,7 +17,8 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 internal data class BehandlingBenkDto(
     val periode: PeriodeDTO?,
     val status: String,
-    // val underkjent: Boolean,
+    val kravtidspunkt: String,
+    val underkjent: Boolean?,
     val typeBehandling: TypeBehandling,
     val ident: String,
     val saksnummer: String?,
@@ -43,8 +44,8 @@ internal fun BehandlingEllerSøknadForSaksoversikt.toBehandlingBenkDto(): Behand
             is BehandlingEllerSøknadForSaksoversikt.Status.Søknad -> "SØKNAD"
             is BehandlingEllerSøknadForSaksoversikt.Status.Behandling -> s.behandlingsstatus.toDTO().toString()
         },
-        // TODO jah: Etter denne PRen, så kan man flytte attesteringsobjektet inn på behandling.kt så vi får tak i det her.
-        // underkjent = this.be,
+        underkjent = underkjent,
+        kravtidspunkt = kravtidspunkt.toString(),
         typeBehandling =
         when (behandlingstype) {
             BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD -> Søknad

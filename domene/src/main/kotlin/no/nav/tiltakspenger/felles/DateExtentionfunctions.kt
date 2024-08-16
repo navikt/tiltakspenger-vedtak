@@ -36,7 +36,7 @@ fun Int.januarDateTime(year: Int): LocalDateTime =
             year,
             Month.JANUARY,
             this,
-            0,
+            12,
             0,
         ).truncatedTo(ChronoUnit.MILLIS)
 

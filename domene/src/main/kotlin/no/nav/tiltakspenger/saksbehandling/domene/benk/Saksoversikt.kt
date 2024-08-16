@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.common.Ulid
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import java.time.LocalDateTime
 
 /**
  * En oversikt over flere søknader og behandlinger på tvers av saker.
@@ -20,7 +21,8 @@ data class Saksoversikt(
 data class BehandlingEllerSøknadForSaksoversikt(
     val periode: Periode?,
     val status: Status,
-    // TODO jah: val underkjent: Boolean, (attesteringer må legges til på behandling)
+    val underkjent: Boolean?,
+    val kravtidspunkt: LocalDateTime,
     val behandlingstype: Behandlingstype,
     val fnr: Fnr,
     val saksnummer: Saksnummer?,

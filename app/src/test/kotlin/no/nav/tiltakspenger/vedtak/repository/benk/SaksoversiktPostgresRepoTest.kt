@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.persisterSøknad
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class SaksoversiktPostgresRepoTest {
     @Test
@@ -34,6 +35,8 @@ class SaksoversiktPostgresRepoTest {
                                 saksbehandler = null,
                                 beslutter = null,
                                 sakId = null,
+                                underkjent = false,
+                                kravtidspunkt = LocalDateTime.parse("2024-01-12T13:15:54.746779"),
                                 id = søknad1.id,
                             ),
                             BehandlingEllerSøknadForSaksoversikt(
@@ -45,6 +48,8 @@ class SaksoversiktPostgresRepoTest {
                                 saksbehandler = sak.førstegangsbehandling.saksbehandler!!,
                                 beslutter = null,
                                 sakId = sak.id,
+                                underkjent = false,
+                                kravtidspunkt = LocalDateTime.parse("2024-01-12T13:15:54.746779"),
                                 id = sak.førstegangsbehandling.id,
                             ),
                         ),
