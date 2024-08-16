@@ -83,7 +83,16 @@ internal class VedtakRepoImpl(
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
-                        "select * from vedtak where sendt_til_meldekort = false limit $limit",
+                        """
+                            select v.*, s.saksnummer 
+                              from vedtak v 
+                              
+                              join sak s 
+                              on s.id = v.sak_id 
+                              
+                              where v.sendt_til_meldekort = false
+                              limit $limit
+                        """.trimIndent(),
                     ).map { row ->
                         row.toVedtak(sessionContext)
                     }.asList,
