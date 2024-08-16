@@ -98,8 +98,8 @@ object Configuration {
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
                 "TILTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-tiltak/.default",
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
-                "MELDEKORT_SCOPE" to System.getenv("api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default"),
-                "MELDEKORT_URL" to System.getenv("http://tiltakspenger-meldekort-api"),
+                "MELDEKORT_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
     private val prodProperties =
@@ -112,8 +112,8 @@ object Configuration {
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
                 "TILTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-tiltak/.default",
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
-                "MELDEKORT_SCOPE" to System.getenv("api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default"),
-                "MELDEKORT_URL" to System.getenv("http://tiltakspenger-meldekort-api"),
+                "MELDEKORT_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
 
@@ -202,6 +202,7 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
+
     fun oauthConfigMeldekort(
         scope: String = config()[Key("MELDEKORT_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
@@ -213,6 +214,7 @@ object Configuration {
         clientSecret = clientSecret,
         wellknownUrl = wellknownUrl,
     )
+
     fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
