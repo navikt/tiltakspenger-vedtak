@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.benk
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
@@ -36,7 +37,7 @@ class SaksoversiktPostgresRepoTest {
                                 beslutter = null,
                                 sakId = null,
                                 underkjent = false,
-                                kravtidspunkt = LocalDateTime.parse("2024-01-12T13:15:54.746779"),
+                                kravtidspunkt = LocalDateTime.from(1.januarDateTime(2022)),
                                 id = søknad1.id,
                             ),
                             BehandlingEllerSøknadForSaksoversikt(
@@ -49,7 +50,7 @@ class SaksoversiktPostgresRepoTest {
                                 beslutter = null,
                                 sakId = sak.id,
                                 underkjent = false,
-                                kravtidspunkt = LocalDateTime.parse("2024-01-12T13:15:54.746779"),
+                                kravtidspunkt = LocalDateTime.from(1.januarDateTime(2022)),
                                 id = sak.førstegangsbehandling.id,
                             ),
                         ),
