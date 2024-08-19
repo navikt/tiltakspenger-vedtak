@@ -3,19 +3,20 @@ package no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 fun stønadStatistikkMapper(sak: SakDetaljer, vedtak: Vedtak): StatistikkStønadDTO {
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     return StatistikkStønadDTO(
         id = UUID.randomUUID(),
-        brukerId = "brukerId",
+        brukerId = sak.fnr.verdi,
 
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
         // vår sak har ikke resultat, så bruker vedtak sin resultat
         resultat = vedtak.vedtaksType.navn,
-        // Hva skal vi bruke som sakDato?
-        sakDato = LocalDate.now(),
+        sakDato = LocalDate.parse(sak.saksnummer.toString().substring(0, 8), formatter),
         // sak har ikke periode lengre, så bruker vedtak sin periode
         sakFraDato = vedtak.periode.fraOgMed,
         sakTilDato = vedtak.periode.tilOgMed,
