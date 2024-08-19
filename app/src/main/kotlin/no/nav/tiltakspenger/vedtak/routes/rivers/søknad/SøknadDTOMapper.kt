@@ -49,26 +49,28 @@ object SøknadDTOMapper {
     private fun mapPeriodeSpm(periodeSpmDTO: PeriodeSpmDTO): Søknad.PeriodeSpm =
         when (periodeSpmDTO.svar) {
             SpmSvarDTO.Nei -> Søknad.PeriodeSpm.Nei
-            SpmSvarDTO.Ja ->
+            SpmSvarDTO.Ja -> {
+                checkNotNull(periodeSpmDTO.fom) { "Det skal ikke være mulig med null i fradato hvis man har svart JA " }
+                checkNotNull(periodeSpmDTO.tom) { "Det skal ikke være mulig med null i tildato hvis man har svart JA " }
                 Søknad.PeriodeSpm.Ja(
                     periode =
                     Periode(
-                        fraOgMed = periodeSpmDTO.fom!!,
-                        tilOgMed = periodeSpmDTO.tom!!,
+                        fraOgMed = periodeSpmDTO.fom,
+                        tilOgMed = periodeSpmDTO.tom,
                     ),
                 )
+            }
         }
 
     private fun mapFraOgMedSpm(fraOgMedDatoSpmDTO: FraOgMedDatoSpmDTO): Søknad.FraOgMedDatoSpm {
-        if (fraOgMedDatoSpmDTO.svar == SpmSvarDTO.Ja && fraOgMedDatoSpmDTO.fom == null) {
-            throw IllegalStateException("Det skal ikke være mulig med null i fradato hvis man har svart JA")
-        }
         return when (fraOgMedDatoSpmDTO.svar) {
             SpmSvarDTO.Nei -> Søknad.FraOgMedDatoSpm.Nei
-            SpmSvarDTO.Ja ->
+            SpmSvarDTO.Ja -> {
+                requireNotNull(fraOgMedDatoSpmDTO.fom) { "Det skal ikke være mulig med null i fradato hvis man har svart JA" }
                 Søknad.FraOgMedDatoSpm.Ja(
-                    fra = fraOgMedDatoSpmDTO.fom!!,
+                    fra = fraOgMedDatoSpmDTO.fom,
                 )
+            }
         }
     }
 
@@ -89,23 +91,30 @@ object SøknadDTOMapper {
             filnavn = dto.filnavn,
         )
 
-    private fun mapBarnetilleggManuelle(dto: BarnetilleggDTO): Barnetillegg.FraPdl =
-        Barnetillegg.FraPdl(
-            oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
-            fornavn = dto.fornavn!!,
-            mellomnavn = dto.mellomnavn,
-            etternavn = dto.etternavn!!,
-            fødselsdato = dto.fødselsdato!!,
-        )
+    private fun mapBarnetilleggManuelle(dto: BarnetilleggDTO): Barnetillegg.FraPdl {
+        checkNotNull(dto.fornavn) { "Fornavn kan ikke være null for barnetillegg, manuelle barn " }
+        checkNotNull(dto.etternavn) { "Etternavn kan ikke være null for barnetillegg, manuelle barn " }
+        checkNotNull(dto.fødselsdato) { "Fødselsdato kan ikke være null for barnetillegg, manuelle barn " }
 
-    private fun mapBarnetilleggPDL(dto: BarnetilleggDTO): Barnetillegg.FraPdl =
-        Barnetillegg.FraPdl(
+        return Barnetillegg.FraPdl(
             oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
-            fødselsdato = dto.fødselsdato!!,
+            fødselsdato = dto.fødselsdato,
         )
+    }
+
+    private fun mapBarnetilleggPDL(dto: BarnetilleggDTO): Barnetillegg.FraPdl {
+        checkNotNull(dto.fødselsdato) { "Fødselsdato kan ikke være null for barnetillegg fra PDL" }
+        return Barnetillegg.FraPdl(
+            oppholderSegIEØS = mapJaNei(dto.oppholderSegIEØS),
+            fornavn = dto.fornavn,
+            mellomnavn = dto.mellomnavn,
+            etternavn = dto.etternavn,
+            fødselsdato = dto.fødselsdato,
+        )
+    }
 
     private fun mapJaNei(jaNeiSpmDTO: JaNeiSpmDTO): Søknad.JaNeiSpm =
         when (jaNeiSpmDTO.svar) {

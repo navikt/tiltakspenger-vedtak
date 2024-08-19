@@ -92,11 +92,13 @@ internal class BarnetilleggDAO {
                 fødselsdato = fødselsdato,
             )
         } else {
+            checkNotNull(fornavn) { "Fornavn kan ikke være null for barnetillegg, manuelle barn " }
+            checkNotNull(etternavn) { "Etternavn kan ikke være null for barnetillegg, manuelle barn " }
             Barnetillegg.Manuell(
                 oppholderSegIEØS = oppholderSegIEØS,
-                fornavn = fornavn!!,
+                fornavn = fornavn,
                 mellomnavn = mellomnavn,
-                etternavn = etternavn!!,
+                etternavn = etternavn,
                 fødselsdato = fødselsdato,
             )
         }

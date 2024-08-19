@@ -17,7 +17,11 @@ fun Row.periodeSpm(navn: String): Søknad.PeriodeSpm {
     val fom = localDateOrNull(navn + FOM_SUFFIX)
     val tom = localDateOrNull(navn + TOM_SUFFIX)
     return when (type) {
-        JA -> Søknad.PeriodeSpm.Ja(Periode(fom!!, tom!!))
+        JA -> {
+            checkNotNull(fom) { "Fom må være satt om periodespørsmål er JA" }
+            checkNotNull(tom) { "Tom må være satt om periodespørsmål er JA" }
+            Søknad.PeriodeSpm.Ja(Periode(fom, tom))
+        }
         NEI -> Søknad.PeriodeSpm.Nei
         else -> throw IllegalArgumentException("Ugyldig type")
     }
@@ -27,7 +31,10 @@ fun Row.fraOgMedDatoSpm(navn: String): Søknad.FraOgMedDatoSpm {
     val type = string(navn + TYPE_SUFFIX)
     val fom = localDateOrNull(navn + FOM_SUFFIX)
     return when (type) {
-        JA -> Søknad.FraOgMedDatoSpm.Ja(fom!!)
+        JA -> {
+            checkNotNull(fom) { "Fom må være satt i fraOgMedDatoSpm om svaret er JA" }
+            Søknad.FraOgMedDatoSpm.Ja(fom)
+        }
         NEI -> Søknad.FraOgMedDatoSpm.Nei
         else -> throw IllegalArgumentException("Ugyldig type")
     }

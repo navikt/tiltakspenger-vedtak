@@ -19,7 +19,9 @@ internal data class InstitusjonsoppholdSaksopplysningDbJson(
 ) {
     fun toDomain(): InstitusjonsoppholdSaksopplysning =
         when {
-            saksbehandler != null ->
+            saksbehandler != null -> {
+                checkNotNull(årsakTilEndring) { "Årsak til endring er ikke satt for InstitusjonsoppholdSaksopplysning fra saksbehandler." }
+
                 InstitusjonsoppholdSaksopplysning.Saksbehandler(
                     opphold =
                     Periodisering(
@@ -30,10 +32,11 @@ internal data class InstitusjonsoppholdSaksopplysningDbJson(
                             )
                         },
                     ),
-                    årsakTilEndring = årsakTilEndring!!.toDomain(),
+                    årsakTilEndring = årsakTilEndring.toDomain(),
                     saksbehandler = saksbehandler.toDomain(),
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
+            }
 
             else -> {
                 require(årsakTilEndring == null) { "Støtter ikke årsak til endring for InstitusjonsoppholdSaksopplysning.Søknad." }

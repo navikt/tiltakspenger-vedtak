@@ -19,7 +19,9 @@ internal data class KvpSaksopplysningDbJson(
 ) {
     fun toDomain(): KvpSaksopplysning =
         when {
-            saksbehandler != null ->
+            saksbehandler != null -> {
+                checkNotNull(årsakTilEndring) { "Årsak til endring er ikke satt for KvpSaksopplysning fra saksbehandler." }
+
                 KvpSaksopplysning.Saksbehandler(
                     deltar =
                     Periodisering(
@@ -30,10 +32,11 @@ internal data class KvpSaksopplysningDbJson(
                             )
                         },
                     ),
-                    årsakTilEndring = årsakTilEndring!!.toDomain(),
+                    årsakTilEndring = årsakTilEndring.toDomain(),
                     saksbehandler = saksbehandler.toDomain(),
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
+            }
 
             else -> {
                 require(årsakTilEndring == null) { "Støtter ikke årsak til endring for KvpSaksopplysning.Søknad." }
