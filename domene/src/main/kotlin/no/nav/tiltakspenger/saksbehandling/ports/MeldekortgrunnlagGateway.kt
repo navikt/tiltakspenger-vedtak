@@ -8,7 +8,7 @@ interface MeldekortgrunnlagGateway {
     suspend fun sendMeldekortgrunnlag(
         vedtak: Vedtak,
         correlationId: CorrelationId,
-    ): Either<KunneIkkeSendeMeldekortGrunnlag, Boolean>
+    ): Either<KunneIkkeSendeMeldekortGrunnlag, Unit>
 }
 
 sealed interface KunneIkkeSendeMeldekortGrunnlag {
@@ -20,11 +20,7 @@ sealed interface KunneIkkeSendeMeldekortGrunnlag {
         val exception: Throwable,
     ) : KunneIkkeSendeMeldekortGrunnlag
 
-    /**
-     * @param body Bør nok ikke logges til vanlig logg, siden den kan inneholde fødselsnummer.
-     */
     data class Ikke2xx(
         val status: Int,
-        val body: String?,
     ) : KunneIkkeSendeMeldekortGrunnlag
 }

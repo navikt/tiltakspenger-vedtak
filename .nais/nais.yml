@@ -43,6 +43,7 @@ spec:
     sqlInstances:
       - name: tiltakspenger-vedtak
         type: POSTGRES_15
+        tier: {{ sqlInstances.tier }}
         diskAutoresize: {{ sqlInstances.diskAutoresize }}
         pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
         flags:

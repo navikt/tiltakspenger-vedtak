@@ -3,6 +3,7 @@ kafka:
 sqlInstances:
   diskAutoresize: true
   pointInTimeRecovery: true
+  tier: db-custom-1-3840
 ingress:
   url: https://tiltakspenger-vedtak.intern.nav.no
 cluster: prod-gcp

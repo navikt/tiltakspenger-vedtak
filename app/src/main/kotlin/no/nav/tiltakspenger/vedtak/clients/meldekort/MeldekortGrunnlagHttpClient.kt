@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.clients.meldekort
 import arrow.core.Either
 import arrow.core.flatten
 import arrow.core.left
+import arrow.core.right
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
@@ -45,36 +46,24 @@ class MeldekortGrunnlagHttpClient(
     override suspend fun sendMeldekortgrunnlag(
         vedtak: Vedtak,
         correlationId: CorrelationId,
-    ): Either<KunneIkkeSendeMeldekortGrunnlag, Boolean> =
+    ): Either<KunneIkkeSendeMeldekortGrunnlag, Unit> =
         withContext(Dispatchers.IO) {
             Either
                 .catch {
                     val request = createRequest(vedtak, correlationId)
 
                     val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-                    val body = httpResponse.body()
                     if (httpResponse.isSuccess()) {
-                        Either
-                            .catch {
-                                body.lowercase().toBooleanStrict()
-                            }.mapLeft {
-                                LOG.error(RuntimeException("Trigger exception for stacktrace")) {
-                                    "Serialiseringsfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api"
-                                }
-                                SECURELOG.error(
-                                    it,
-                                ) { "Serialiseringsfeil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api" }
-                                KunneIkkeSendeMeldekortGrunnlag.SerializationException(it)
-                            }
+                        Unit.right()
                     } else {
                         val status = httpResponse.statusCode()
                         LOG.error(RuntimeException("Trigger exception for debugging")) {
                             "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Se securelog for context."
                         }
                         SECURELOG.error {
-                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Body: $body"
+                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status."
                         }
-                        KunneIkkeSendeMeldekortGrunnlag.Ikke2xx(status = status, body = body).left()
+                        KunneIkkeSendeMeldekortGrunnlag.Ikke2xx(status = status).left()
                     }
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
