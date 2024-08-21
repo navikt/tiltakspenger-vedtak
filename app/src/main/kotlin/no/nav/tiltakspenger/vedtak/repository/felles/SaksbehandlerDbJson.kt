@@ -19,9 +19,6 @@ internal data class SaksbehandlerDbJson(
         // Systemadministrator (oss)
         DRIFT,
         BESLUTTER,
-
-        // Saksbehandlers administrator (superbruker)
-        ADMINISTRATOR,
         ;
 
         fun toDomain(): Rolle =
@@ -33,7 +30,6 @@ internal data class SaksbehandlerDbJson(
                 LAGE_HENDELSER -> Rolle.LAGE_HENDELSER
                 DRIFT -> Rolle.DRIFT
                 BESLUTTER -> Rolle.BESLUTTER
-                ADMINISTRATOR -> Rolle.ADMINISTRATOR
             }
     }
 
@@ -63,5 +59,4 @@ internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson =
         Rolle.LAGE_HENDELSER -> SaksbehandlerDbJson.RolleDbJson.LAGE_HENDELSER
         Rolle.DRIFT -> SaksbehandlerDbJson.RolleDbJson.DRIFT
         Rolle.BESLUTTER -> SaksbehandlerDbJson.RolleDbJson.BESLUTTER
-        Rolle.ADMINISTRATOR -> SaksbehandlerDbJson.RolleDbJson.ADMINISTRATOR
     }

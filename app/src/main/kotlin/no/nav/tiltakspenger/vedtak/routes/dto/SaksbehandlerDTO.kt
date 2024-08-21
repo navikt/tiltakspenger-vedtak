@@ -19,9 +19,6 @@ internal data class SaksbehandlerDTO(
         // Systemadministrator (oss)
         DRIFT,
         BESLUTTER,
-
-        // Saksbehandlers administrator (superbruker)
-        ADMINISTRATOR,
     }
 }
 
@@ -42,5 +39,4 @@ internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO =
         Rolle.LAGE_HENDELSER -> SaksbehandlerDTO.RolleDTO.LAGE_HENDELSER
         Rolle.DRIFT -> SaksbehandlerDTO.RolleDTO.DRIFT
         Rolle.BESLUTTER -> SaksbehandlerDTO.RolleDTO.BESLUTTER
-        Rolle.ADMINISTRATOR -> SaksbehandlerDTO.RolleDTO.ADMINISTRATOR
     }

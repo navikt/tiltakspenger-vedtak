@@ -15,7 +15,6 @@ import io.mockk.slot
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
-import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerMedAdmin
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -69,57 +68,6 @@ class BehandlingBeslutterRoutesTest {
         saksbehandler.captured.navIdent shouldBe "Z12345"
         begrunnelse.captured shouldBe "begrunnelse"
     }
-
-    @Test
-    fun `sjekk at man kan sende tilbake med admin rolle`() {
-        val begrunnelse = slot<String>()
-        val bId = slot<BehandlingId>()
-        val saksbehandler = slot<Saksbehandler>()
-
-        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns saksbehandlerMedAdmin()
-        every {
-            behandlingService.sendTilbakeTilSaksbehandler(
-                capture(bId),
-                capture(saksbehandler),
-                capture(begrunnelse),
-            )
-        } returns Unit
-
-        val behandlingId = BehandlingId.random()
-        testApplication {
-            application {
-                // vedtakTestApi()
-                jacksonSerialization()
-                routing {
-                    behandlingBeslutterRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                    )
-                }
-            }
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$BEHANDLING_PATH/sendtilbake/$behandlingId")
-                },
-            ) {
-                setBody(begrunnelseJson)
-            }.apply {
-                status shouldBe HttpStatusCode.OK
-            }
-        }
-        bId.captured shouldBe behandlingId
-        saksbehandler.captured.navIdent shouldBe "Z12345"
-        begrunnelse.captured shouldBe "begrunnelse"
-    }
-
-    private val identJson =
-        """
-        {
-            "ident": "01234567890"
-        }
-        """.trimIndent()
 
     private val begrunnelseJson =
         """

@@ -64,7 +64,7 @@ class BehandlingServiceImpl(
     }
 
     override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
-        require(saksbehandler.isSaksbehandler() || saksbehandler.isAdmin())
+        require(saksbehandler.isSaksbehandler())
         // TODO tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
         return saksoversiktRepo.hentAlle()
     }

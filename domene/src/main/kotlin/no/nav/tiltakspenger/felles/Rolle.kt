@@ -10,7 +10,4 @@ enum class Rolle {
     // Systemadministrator (oss)
     DRIFT,
     BESLUTTER,
-
-    // Saksbehandlers administrator (superbruker)
-    ADMINISTRATOR,
 }
