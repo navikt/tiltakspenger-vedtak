@@ -183,10 +183,6 @@ data class Førstegangsbehandling(
                 if (this.beslutter == utøvendeSaksbehandler.navIdent) {
                     return this.copy(beslutter = null)
                 }
-                if (utøvendeSaksbehandler.isAdmin()) {
-                    // TODO jah avklaring: Skal vi fjerne saksbehandler eller begge her? Eller ønsker vi at admin skal kunne velge.
-                    return this.copy(saksbehandler = null, beslutter = null, status = KLAR_TIL_BEHANDLING)
-                }
                 throw IllegalArgumentException(
                     "Kan ikke ta saksbehandler/beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}",
                 )
@@ -198,9 +194,6 @@ data class Førstegangsbehandling(
                     return this
                 }
                 if (this.beslutter == utøvendeSaksbehandler.navIdent) {
-                    return this.copy(beslutter = null, status = KLAR_TIL_BESLUTNING)
-                }
-                if (utøvendeSaksbehandler.isAdmin()) {
                     return this.copy(beslutter = null, status = KLAR_TIL_BESLUTNING)
                 }
                 throw IllegalArgumentException(
@@ -258,10 +251,10 @@ data class Førstegangsbehandling(
         when (status) {
             UNDER_BESLUTNING -> {
                 check(
-                    utøvendeBeslutter.isBeslutter() || utøvendeBeslutter.isAdmin(),
-                ) { "utøvende saksbehandler må være beslutter eller admin" }
-                check(this.beslutter == utøvendeBeslutter.navIdent || utøvendeBeslutter.isAdmin()) {
-                    "Kun admin kan sende en annen sin behandling tilbake til saksbehandler"
+                    utøvendeBeslutter.isBeslutter(),
+                ) { "utøvende saksbehandler må være beslutter" }
+                check(this.beslutter == utøvendeBeslutter.navIdent) {
+                    "Kun beslutter som har saken kan sende tilbake"
                 }
                 check(!this.attesteringer.any { it.isGodkjent() }) {
                     "Behandlingen er allerede godkjent"

@@ -92,8 +92,6 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
             )
         }
-        authenticate("admin") {
-        }
         authenticate("systemtoken") {
             søknadRoutes(søknadService)
         }
@@ -216,7 +214,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
             config,
             "saksbehandling",
             "saksbehandling",
-            listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER, Rolle.ADMINISTRATOR),
+            listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
         )
         jwt(config, "admin", "saksbehandling", listOf(Rolle.DRIFT))
         jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))

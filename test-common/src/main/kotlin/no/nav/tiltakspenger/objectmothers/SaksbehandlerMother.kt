@@ -38,17 +38,6 @@ interface SaksbehandlerMother {
         brukernavn = brukernavn,
     )
 
-    fun saksbehandlerMedAdmin(
-        navIdent: String = "Z12345",
-        brukernavn: String = "Sak Behandler",
-        epost: String = "Sak.Behandler@nav.no",
-    ) = saksbehandler(
-        roller = listOf(Rolle.ADMINISTRATOR),
-        navIdent = navIdent,
-        epost = epost,
-        brukernavn = brukernavn,
-    )
-
     fun saksbehandlerMedKode6(
         navIdent: String = "Z12345",
         brukernavn: String = "Sak Behandler",
