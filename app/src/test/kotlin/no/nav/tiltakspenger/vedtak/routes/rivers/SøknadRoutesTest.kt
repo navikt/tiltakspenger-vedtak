@@ -97,6 +97,7 @@ class SøknadRoutesTest {
                     ),
                 ),
                 opprettet = søknad.captured.opprettet,
+                kanBehandles = false,
                 tidsstempelHosOss = LocalDateTime.parse("2023-06-14T21:12:08.447993177"),
                 vedlegg =
                 listOf(

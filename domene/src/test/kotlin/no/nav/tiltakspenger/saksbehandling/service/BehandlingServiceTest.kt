@@ -78,7 +78,6 @@ internal class BehandlingServiceTest {
                 vedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
                 brevPublisherGateway = brevPublisherGateway,
-                meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,

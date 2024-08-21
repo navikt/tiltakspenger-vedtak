@@ -62,7 +62,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             saksbehandler = saksbehandler,
             sakId = sakId,
         )
-    søknadRepo.lagre(søknad)
+    søknadRepo.lagre(søknad, false)
     sakRepo.lagre(sak)
 
     return Pair(
