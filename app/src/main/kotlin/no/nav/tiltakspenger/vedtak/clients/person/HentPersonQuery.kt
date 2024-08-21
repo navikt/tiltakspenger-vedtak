@@ -43,7 +43,6 @@ query(${'$'}ident: ID!){
                 }
                 foedselsdato
                 statsborgerskap
-                kjoenn
             }
             folkeregistermetadata {
                 ...folkeregistermetadataDetails

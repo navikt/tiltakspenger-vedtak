@@ -23,8 +23,7 @@ internal val pdlResponseManglendeIdentPåBarn = """
               "etternavn": "Jakt"
             },
             "foedselsdato": "2016-05-23",
-            "statsborgerskap": "BHS",
-            "kjoenn": "MANN"
+            "statsborgerskap": "BHS"
           },
           "folkeregistermetadata": {
             "aarsak": null,
