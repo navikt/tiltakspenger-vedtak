@@ -28,7 +28,7 @@ interface SaksbehandlerMother {
     )
 
     fun beslutter(
-        navIdent: String = "Z12345",
+        navIdent: String = "B12345",
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(

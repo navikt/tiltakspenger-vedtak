@@ -65,7 +65,7 @@ class BehandlingBeslutterRoutesTest {
             }
         }
         bId.captured shouldBe behandlingId
-        saksbehandler.captured.navIdent shouldBe "Z12345"
+        saksbehandler.captured.navIdent shouldBe "B12345"
         begrunnelse.captured shouldBe "begrunnelse"
     }
 

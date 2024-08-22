@@ -128,11 +128,13 @@ interface BehandlingMother {
         return behandling
     }
 
-    fun godkjentAttestering(): Attestering = Attestering(
+    fun godkjentAttestering(
+        beslutter: Saksbehandler = ObjectMother.beslutter(),
+    ): Attestering = Attestering(
         id = AttesteringId.random(),
-        status = Attesteringsstatus.SENDT_TILBAKE,
+        status = Attesteringsstatus.GODKJENT,
         begrunnelse = null,
-        beslutter = beslutter().navIdent,
+        beslutter = beslutter.navIdent,
         tidspunkt = LocalDateTime.now(),
     )
 

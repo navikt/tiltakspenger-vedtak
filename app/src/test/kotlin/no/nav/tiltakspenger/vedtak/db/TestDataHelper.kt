@@ -4,9 +4,11 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.log
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
+import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
@@ -18,7 +20,8 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakRepoImpl
 import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
@@ -61,7 +64,7 @@ internal class TestDataHelper(
         )
 
     val vedtakRepo =
-        VedtakRepoImpl(
+        RammevedtakRepoImpl(
             behandlingRepo = behandlingRepo,
             sessionFactory = sessionFactory,
         )
@@ -76,12 +79,17 @@ internal class TestDataHelper(
         SaksoversiktPostgresRepo(
             sessionFactory = sessionFactory,
         )
-    val statistikkSakRepo = StatistikkSakRepoImpl(
-        sessionFactory = sessionFactory,
-    )
-    val statistikkStønadRepo = StatistikkStønadRepoImpl(
-        sessionFactory = sessionFactory,
-    )
+    val statistikkSakRepo =
+        StatistikkSakRepoImpl(
+            sessionFactory = sessionFactory,
+        )
+    val statistikkStønadRepo =
+        StatistikkStønadRepoImpl(
+            sessionFactory = sessionFactory,
+        )
+    val meldekortRepo = MeldekortRepoImpl(sessionFactory)
+
+    val utbetalingsvedtakRepo: UtbetalingsvedtakRepo = UtbetalingsvedtakRepoImpl(sessionFactory, meldekortRepo)
 }
 
 private fun migrateDatabase(dataSource: DataSource) =

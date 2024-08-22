@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.saksbehandling.ports
 
 import arrow.core.Either
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 
 interface MeldekortgrunnlagGateway {
     suspend fun sendMeldekortgrunnlag(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         correlationId: CorrelationId,
     ): Either<KunneIkkeSendeMeldekortGrunnlag, Unit>
 }

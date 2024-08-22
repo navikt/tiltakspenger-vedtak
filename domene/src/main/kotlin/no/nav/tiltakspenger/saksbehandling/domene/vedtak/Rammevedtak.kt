@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDateTime
 
-data class Vedtak(
+data class Rammevedtak(
     val id: VedtakId = VedtakId.random(),
     val sakId: SakId,
     val saksnummer: Saksnummer,
@@ -22,6 +22,7 @@ data class Vedtak(
     val saksbehandler: String,
     val beslutter: String,
 ) {
+    val fnr = behandling.fnr
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
 }
 
@@ -35,9 +36,9 @@ enum class VedtaksType(
     FORLENGELSE("Forlengelse", true),
 }
 
-fun Førstegangsbehandling.opprettVedtak(): Vedtak {
+fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
     require(this.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtak for behandling som ikke er iverksatt" }
-    return Vedtak(
+    return Rammevedtak(
         id = VedtakId.random(),
         sakId = this.sakId,
         saksnummer = this.saksnummer,

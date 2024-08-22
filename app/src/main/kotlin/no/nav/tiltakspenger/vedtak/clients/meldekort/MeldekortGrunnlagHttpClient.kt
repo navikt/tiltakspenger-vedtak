@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeSendeMeldekortGrunnlag
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import java.net.URI
@@ -44,7 +44,7 @@ class MeldekortGrunnlagHttpClient(
     }
 
     override suspend fun sendMeldekortgrunnlag(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         correlationId: CorrelationId,
     ): Either<KunneIkkeSendeMeldekortGrunnlag, Unit> =
         withContext(Dispatchers.IO) {
@@ -76,7 +76,7 @@ class MeldekortGrunnlagHttpClient(
         }
 
     private suspend fun createRequest(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         correlationId: CorrelationId,
     ): HttpRequest? =
         HttpRequest

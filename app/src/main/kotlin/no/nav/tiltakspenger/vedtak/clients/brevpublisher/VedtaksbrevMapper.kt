@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.libs.dokument.PersonaliaDTO
 import no.nav.tiltakspenger.libs.dokument.TiltaksinfoDTO
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -23,7 +23,7 @@ val norskDatoFormatter: DateTimeFormatter =
 object VedtaksbrevMapper {
     fun mapVedtaksBrevDTO(
         saksnummer: Saksnummer,
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         personopplysninger: PersonopplysningerSøker,
     ) = BrevDTO(
         personalia = mapPersonaliaDTO(vedtak, personopplysninger),
@@ -50,7 +50,7 @@ object VedtaksbrevMapper {
     )
 
     private fun mapPersonaliaDTO(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         personopplysninger: PersonopplysningerSøker,
     ) = PersonaliaDTO(
         ident = personopplysninger.fnr.verdi,

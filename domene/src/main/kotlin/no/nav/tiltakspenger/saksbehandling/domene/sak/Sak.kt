@@ -15,7 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBeha
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -24,7 +24,7 @@ data class Sak(
     val sakDetaljer: SakDetaljer,
     val behandlinger: NonEmptyList<Behandling>,
     val personopplysninger: SakPersonopplysninger,
-    val vedtak: List<Vedtak>,
+    val vedtak: List<Rammevedtak>,
 ) : SakDetaljer by sakDetaljer {
     init {
         if (behandlinger.isNotEmpty()) {
