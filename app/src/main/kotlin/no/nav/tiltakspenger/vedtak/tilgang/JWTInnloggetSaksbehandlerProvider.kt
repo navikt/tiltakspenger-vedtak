@@ -15,7 +15,7 @@ class JWTInnloggetSaksbehandlerProvider(
 ) : InnloggetSaksbehandlerProvider {
     private fun epostToBrukernavn(epost: String): String = epost.split("@").first().replace(".", " ")
 
-    private fun finnRolleMedUUID(uuidFraClaim: UUID): AdRolle? = allAvailableRoles.firstOrNull() { configRole -> configRole.objectId == uuidFraClaim }
+    private fun finnRolleMedUUID(uuidFraClaim: UUID): AdRolle? = allAvailableRoles.firstOrNull { configRole -> configRole.objectId == uuidFraClaim }
 
     private fun List<UUID>.mapFromUUIDToRoleName(): List<Rolle> =
         this
