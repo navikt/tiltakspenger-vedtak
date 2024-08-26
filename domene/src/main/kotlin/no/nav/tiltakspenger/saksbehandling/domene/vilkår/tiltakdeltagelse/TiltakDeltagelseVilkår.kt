@@ -14,7 +14,7 @@ data class TiltakDeltagelseVilkår private constructor(
     override val vurderingsperiode: Periode,
     val registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register,
 ) : Vilkår {
-    val logger = KotlinLogging.logger { }
+    private val logger = KotlinLogging.logger { }
 
     init {
         check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden må være lik deltagelsesperioden" }

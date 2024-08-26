@@ -5,7 +5,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import java.time.LocalDateTime
 
@@ -17,7 +17,7 @@ class BrevPublisherGatewayImpl(
 ) : BrevPublisherGateway {
     override fun sendBrev(
         saksnummer: Saksnummer,
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         personopplysninger: PersonopplysningerSøker,
     ) {
         mutableMapOf(

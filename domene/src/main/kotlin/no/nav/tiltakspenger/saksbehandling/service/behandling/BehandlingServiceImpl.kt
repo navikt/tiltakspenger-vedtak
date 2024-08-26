@@ -17,11 +17,11 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadStatistikkMapper
 
@@ -30,7 +30,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
-    private val vedtakRepo: VedtakRepo,
+    private val vedtakRepo: RammevedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,

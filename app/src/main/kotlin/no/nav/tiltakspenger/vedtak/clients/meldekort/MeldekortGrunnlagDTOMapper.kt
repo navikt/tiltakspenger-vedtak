@@ -7,16 +7,13 @@ import no.nav.tiltakspenger.libs.meldekort.StatusDTO
 import no.nav.tiltakspenger.libs.meldekort.TiltakDTO
 import no.nav.tiltakspenger.libs.meldekort.UtfallForPeriodeDTO
 import no.nav.tiltakspenger.libs.meldekort.UtfallsperiodeDTO
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import no.nav.tiltakspenger.vedtak.db.serialize
 
 object MeldekortGrunnlagDTOMapper {
-
-    fun toJson(
-        vedtak: Vedtak,
-    ): String {
+    fun toJson(vedtak: Rammevedtak): String {
         val behandling = vedtak.behandling
         val personopplysninger = behandling.søknad.personopplysninger
         val vedtaksperiode = vedtak.periode

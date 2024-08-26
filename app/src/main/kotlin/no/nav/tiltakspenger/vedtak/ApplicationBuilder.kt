@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.meldekort.service.MottaUtfyltMeldekortService
+import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
@@ -19,7 +21,11 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphol
 import no.nav.tiltakspenger.saksbehandling.service.meldekort.MeldekortgrunnlagService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.vedtak.VedtakServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakServiceImpl
+import no.nav.tiltakspenger.utbetaling.client.iverksett.UtbetalingHttpClient
+import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
+import no.nav.tiltakspenger.utbetaling.service.OpprettUtbetalingsvedtakService
+import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
@@ -33,6 +39,7 @@ import no.nav.tiltakspenger.vedtak.db.flywayMigrate
 import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
 import no.nav.tiltakspenger.vedtak.repository.behandling.PostgresBehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
+import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnMedIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerBarnUtenIdentRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PostgresPersonopplysningerRepo
@@ -44,7 +51,8 @@ import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadTiltakDAO
 import no.nav.tiltakspenger.vedtak.repository.søknad.VedleggDAO
-import no.nav.tiltakspenger.vedtak.repository.vedtak.VedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakRepoImpl
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 
@@ -73,6 +81,8 @@ internal class ApplicationBuilder(
                     kvpVilkårService = kvpVilkårService,
                     livsoppholdVilkårService = livsoppholdVilkårService,
                     søknadService = søknadService,
+                    mottaUtfyltMeldekortService = mottaUtfyltMeldekortService,
+                    hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
                 )
             }.build()
 
@@ -84,6 +94,7 @@ internal class ApplicationBuilder(
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
     private val tokenProviderMeldekort: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigMeldekort())
+    private val tokenProviderUtbetaling = AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
 
     private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
@@ -102,6 +113,32 @@ internal class ApplicationBuilder(
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
+    private val utbetalingsklient: UtbetalingGateway =
+        UtbetalingHttpClient(
+            endepunkt = Configuration.utbetalingClientConfig().baseUrl,
+            getToken = { AccessToken(tokenProviderUtbetaling.getToken()) },
+        )
+    private val meldekortRepo = MeldekortRepoImpl(sessionFactory)
+    private val utbetalingsvedtakRepo =
+        UtbetalingsvedtakRepoImpl(
+            sessionFactory = sessionFactory,
+            meldekortRepo = meldekortRepo,
+        )
+    private val hentUtbetalingsvedtakService =
+        HentUtbetalingsvedtakService(
+            utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+        )
+
+    private val mottaUtfyltMeldekortService =
+        MottaUtfyltMeldekortService(
+            meldekortRepo = meldekortRepo,
+        )
+    private val sendUtbetalingerService =
+        SendUtbetalingerService(
+            utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+            utbetalingsklient = utbetalingsklient,
+        )
+
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
     private val personopplysningRepo = PostgresPersonopplysningerRepo(sessionFactory, barnMedIdentDAO, barnUtenIdentDAO)
@@ -117,24 +154,27 @@ internal class ApplicationBuilder(
             vedleggDAO = vedleggDAO,
         )
     private val søknadRepo = PostgresSøknadRepo(sessionFactory = sessionFactory, søknadDAO = søknadDAO)
-
     private val behandlingRepo =
         PostgresBehandlingRepo(
             sessionFactory = sessionFactory,
             søknadDAO = søknadDAO,
         )
-
-    private val vedtakRepo =
-        VedtakRepoImpl(
+    private val rammevedtakRepo =
+        RammevedtakRepoImpl(
             behandlingRepo = behandlingRepo,
             sessionFactory = sessionFactory,
+        )
+    private val opprettUtbetalingsvedtak =
+        OpprettUtbetalingsvedtakService(
+            utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+            rammevedtakRepo = rammevedtakRepo,
         )
 
     private val sakRepo =
         PostgresSakRepo(
             personopplysningerRepo = personopplysningRepo,
             behandlingRepo = behandlingRepo,
-            vedtakDAO = vedtakRepo,
+            vedtakDAO = rammevedtakRepo,
             sessionFactory = sessionFactory,
         )
 
@@ -144,7 +184,7 @@ internal class ApplicationBuilder(
         )
 
     @Suppress("unused")
-    private val vedtakService = VedtakServiceImpl(vedtakRepo)
+    private val rammevedtakService = RammevedtakServiceImpl(rammevedtakRepo)
 
     @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
@@ -153,7 +193,7 @@ internal class ApplicationBuilder(
     private val behandlingService =
         BehandlingServiceImpl(
             behandlingRepo = behandlingRepo,
-            vedtakRepo = vedtakRepo,
+            vedtakRepo = rammevedtakRepo,
             personopplysningRepo = personopplysningRepo,
             brevPublisherGateway = brevPublisherGateway,
             meldekortGrunnlagGateway = meldekortGrunnlagGateway,
@@ -189,7 +229,7 @@ internal class ApplicationBuilder(
     private val sendNyeVedtakTilMeldekortService =
         MeldekortgrunnlagService(
             meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-            vedtakRepo = vedtakRepo,
+            vedtakRepo = rammevedtakRepo,
         )
 
     private val runCheckFactory =
@@ -216,6 +256,8 @@ internal class ApplicationBuilder(
             tasks =
             listOf { correlationId ->
                 sendNyeVedtakTilMeldekortService.sendNyeMeldekortgrunnlag(correlationId)
+                sendUtbetalingerService.send(correlationId)
+                opprettUtbetalingsvedtak.opprettUtbetalingsvedtak(correlationId)
             },
         )
 

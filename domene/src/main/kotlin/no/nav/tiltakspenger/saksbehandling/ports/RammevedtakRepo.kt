@@ -3,19 +3,19 @@ package no.nav.tiltakspenger.saksbehandling.ports
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 
-interface VedtakRepo {
-    fun hent(vedtakId: VedtakId): Vedtak?
+interface RammevedtakRepo {
+    fun hent(vedtakId: VedtakId): Rammevedtak?
 
-    fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak
+    fun hentVedtakForBehandling(behandlingId: BehandlingId): Rammevedtak
 
     fun lagreVedtak(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         context: TransactionContext? = null,
-    ): Vedtak
+    ): Rammevedtak
 
-    fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int = 10): List<Vedtak>
+    fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int = 10): List<Rammevedtak>
 
     fun oppdaterVedtakSendtTilMeldekort(id: VedtakId)
 }

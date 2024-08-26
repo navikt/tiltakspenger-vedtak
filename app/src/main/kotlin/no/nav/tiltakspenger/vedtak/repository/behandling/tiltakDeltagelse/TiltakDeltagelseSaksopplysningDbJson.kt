@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.behandling.tiltakDeltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
+import no.nav.tiltakspenger.vedtak.repository.tiltak.toDb
+import no.nav.tiltakspenger.vedtak.repository.tiltak.toTiltakstypeSomGirRett
 import java.time.LocalDateTime
 
 internal data class TiltakDeltagelseSaksopplysningDbJson(

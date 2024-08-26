@@ -6,4 +6,5 @@ object ObjectMother :
     BehandlingMother,
     SakMother,
     VilkårMother,
-    PersonMother
+    PersonMother,
+    MeldekortMother

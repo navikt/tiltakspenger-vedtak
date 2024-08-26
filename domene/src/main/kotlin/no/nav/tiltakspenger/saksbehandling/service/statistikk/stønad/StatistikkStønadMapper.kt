@@ -1,12 +1,15 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad
 
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-fun stønadStatistikkMapper(sak: SakDetaljer, vedtak: Vedtak): StatistikkStønadDTO {
+fun stønadStatistikkMapper(
+    sak: SakDetaljer,
+    vedtak: Rammevedtak,
+): StatistikkStønadDTO {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     return StatistikkStønadDTO(
         id = UUID.randomUUID(),

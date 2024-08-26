@@ -4,7 +4,7 @@ import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 
 /**
  * Har som oppgave og sende vedtak til meldekort.
@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
  */
 class MeldekortgrunnlagService(
     private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,
-    private val vedtakRepo: VedtakRepo,
+    private val vedtakRepo: RammevedtakRepo,
 ) {
     val log = KotlinLogging.logger { }
 

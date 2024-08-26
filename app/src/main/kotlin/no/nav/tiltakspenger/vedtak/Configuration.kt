@@ -84,6 +84,8 @@ object Configuration {
                 "TILTAK_URL" to "http://host.docker.internal:8091",
                 "MELDEKORT_SCOPE" to "localhost",
                 "MELDEKORT_URL" to "http://host.docker.internal:8091",
+                "UTBETALING_SCOPE" to "localhost",
+                "UTBETALING_URL" to "http://localhost:8091",
             ),
         )
     private val devProperties =
@@ -98,6 +100,8 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "MELDEKORT_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default",
                 "MELDEKORT_URL" to "http://tiltakspenger-meldekort-api",
+                "UTBETALING_SCOPE" to "api://dev-gcp.helved.utsjekk/.default",
+                "UTBETALING_URL" to "http://utsjekk.helved",
             ),
         )
     private val prodProperties =
@@ -112,6 +116,8 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "MELDEKORT_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default",
                 "MELDEKORT_URL" to "http://tiltakspenger-meldekort-api",
+                "UTBETALING_SCOPE" to "api://prod-gcp.helved.utsjekk/.default",
+                "UTBETALING_URL" to "http://utsjekk.helved",
             ),
         )
 
@@ -212,11 +218,25 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
+    fun oauthConfigUtbetaling(
+        scope: String = config()[Key("UTBETALING_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
     fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun meldekortClientConfig(baseUrl: String = config()[Key("MELDEKORT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+
+    fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
 

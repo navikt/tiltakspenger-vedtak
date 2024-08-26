@@ -14,22 +14,22 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.ports.VedtakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class VedtakRepoImpl(
+internal class RammevedtakRepoImpl(
     private val behandlingRepo: BehandlingRepo,
     private val sessionFactory: PostgresSessionFactory,
-) : VedtakRepo,
+) : RammevedtakRepo,
     VedtakDAO {
-    override fun hent(vedtakId: VedtakId): Vedtak? =
+    override fun hent(vedtakId: VedtakId): Rammevedtak? =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
@@ -45,7 +45,7 @@ internal class VedtakRepoImpl(
             }
         }
 
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Vedtak =
+    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Rammevedtak =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
@@ -64,7 +64,7 @@ internal class VedtakRepoImpl(
     override fun hentVedtakForSak(
         sakId: SakId,
         sessionContext: SessionContext,
-    ): List<Vedtak> =
+    ): List<Rammevedtak> =
         sessionContext.withSession { session ->
             session.run(
                 queryOf(
@@ -78,20 +78,20 @@ internal class VedtakRepoImpl(
             )
         }
 
-    override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Vedtak> =
+    override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Rammevedtak> =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
                         """
-                            select v.*, s.saksnummer 
-                              from vedtak v 
-                              
-                              join sak s 
-                              on s.id = v.sak_id 
-                              
-                              where v.sendt_til_meldekort = false
-                              limit $limit
+                        select v.*, s.saksnummer 
+                          from vedtak v 
+                          
+                          join sak s 
+                          on s.id = v.sak_id 
+                          
+                          where v.sendt_til_meldekort = false
+                          limit $limit
                         """.trimIndent(),
                     ).map { row ->
                         row.toVedtak(sessionContext)
@@ -101,17 +101,17 @@ internal class VedtakRepoImpl(
         }
 
     override fun lagreVedtak(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         context: TransactionContext?,
-    ): Vedtak =
+    ): Rammevedtak =
         sessionFactory.withTransaction(context) { tx ->
             lagreVedtak(vedtak, tx)
         }
 
     override fun lagreVedtak(
-        vedtak: Vedtak,
+        vedtak: Rammevedtak,
         tx: TransactionalSession,
-    ): Vedtak {
+    ): Rammevedtak {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -147,9 +147,9 @@ internal class VedtakRepoImpl(
         }
     }
 
-    private fun Row.toVedtak(sessionContext: SessionContext): Vedtak {
+    private fun Row.toVedtak(sessionContext: SessionContext): Rammevedtak {
         val id = VedtakId.fromString(string("id"))
-        return Vedtak(
+        return Rammevedtak(
             id = id,
             sakId = SakId.fromString(string("sak_id")),
             saksnummer = Saksnummer(string("saksnummer")),
@@ -165,25 +165,25 @@ internal class VedtakRepoImpl(
     @Language("SQL")
     private val sqlHent =
         """
-        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.id = :id
+        select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.id = :id
         """.trimIndent()
 
     @Language("SQL")
     private val sqlHentForBehandling =
         """
-        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.behandling_id = :behandlingId
+        select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.behandling_id = :behandlingId
         """.trimIndent()
 
     @Language("SQL")
     private val sqlHentForSak =
         """
-        select v.*, s.saksnummer from vedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId
+        select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId
         """.trimIndent()
 
     @Language("SQL")
     private val sqlLagre =
         """
-        insert into vedtak (
+        insert into rammevedtak (
             id, 
             sak_id, 
             behandling_id, 

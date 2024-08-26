@@ -26,20 +26,24 @@ import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.meldekort.service.MottaUtfyltMeldekortService
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
+import no.nav.tiltakspenger.vedtak.routes.meldekort.mottaUtfyltMeldekortRoute
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
+import no.nav.tiltakspenger.vedtak.routes.utbetaling.utbetalingRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.net.URI
 import java.util.UUID
@@ -55,6 +59,8 @@ internal fun Application.vedtakApi(
     behandlingService: BehandlingService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
+    mottaUtfyltMeldekortService: MottaUtfyltMeldekortService,
+    hentUtbetalingsvedtakService: HentUtbetalingsvedtakService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -91,6 +97,8 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 sakService = sakService,
             )
+            mottaUtfyltMeldekortRoute(mottaUtfyltMeldekortService)
+            utbetalingRoutes(hentUtbetalingsvedtakService)
         }
         authenticate("systemtoken") {
             søknadRoutes(søknadService)

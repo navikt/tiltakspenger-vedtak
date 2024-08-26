@@ -43,7 +43,7 @@ CREATE TABLE behandling
     attesteringer           JSONB                    NULL
 );
 
-CREATE TABLE vedtak
+CREATE TABLE rammevedtak
 (
     id                      VARCHAR                  PRIMARY KEY,
     sak_id                  VARCHAR                  NULL REFERENCES sak (id),
@@ -225,6 +225,34 @@ CREATE TABLE stønadsdager_tiltak
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
     avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
     saksbehandler       VARCHAR                  NULL
+);
+
+create table meldekort
+(
+    id                   varchar primary key,
+    sakId                varchar not null REFERENCES sak(id),
+    rammevedtakId        varchar not null REFERENCES rammevedtak(id),
+    fraOgMed             date not null,
+    tilOgMed             date not null,
+    meldekortdager       jsonb not null,
+    saksbehandler        varchar not null,
+    beslutter            varchar not null
+);
+
+create table utbetalingsvedtak
+(
+    id                   varchar primary key,
+    sakId                varchar not null REFERENCES sak(id),
+    rammevedtakId        varchar not null REFERENCES rammevedtak(id),
+    brukerNavkontor      varchar not null,
+    vedtakstidspunkt     timestamp not null,
+    saksbehandler        varchar not null,
+    beslutter            varchar not null,
+    forrigeVedtakId      varchar null references utbetalingsvedtak(id),
+    meldekortId          varchar not null references meldekort(id),
+    utbetalingsperiode   jsonb not null,
+    utbetalt             boolean not null default false,
+    metadata             jsonb null
 );
 
 create table statistikk_stønad

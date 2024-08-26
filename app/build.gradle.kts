@@ -4,6 +4,7 @@ val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
 val felleslibVersion = "0.0.202"
 val tokenSupportVersion = "3.2.0"
+val iverksettVersjon = "1.0_20240821103442_e26671e"
 
 plugins {
     application
@@ -81,6 +82,9 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
+
+    // Helved/Utsjekk/Utbetaling
+    implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
 
     // DIV
     implementation("io.arrow-kt:arrow-core:1.2.4")
