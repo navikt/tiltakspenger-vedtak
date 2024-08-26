@@ -148,7 +148,7 @@ internal class VedtakRepoImpl(
     }
 
     private fun Row.toVedtak(sessionContext: SessionContext): Vedtak {
-        val id = VedtakId.fromDb(string("id"))
+        val id = VedtakId.fromString(string("id"))
         return Vedtak(
             id = id,
             sakId = SakId.fromString(string("sak_id")),

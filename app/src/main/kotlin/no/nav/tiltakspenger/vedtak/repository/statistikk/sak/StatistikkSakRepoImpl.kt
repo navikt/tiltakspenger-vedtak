@@ -2,11 +2,15 @@ package no.nav.tiltakspenger.vedtak.repository.statistikk.sak
 
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.StatistikkSakDTO
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.VilkårStatistikkDTO
 import org.intellij.lang.annotations.Language
+
+private val LOG = KotlinLogging.logger {}
 
 internal class StatistikkSakRepoImpl(
     private val sessionFactory: PostgresSessionFactory,
@@ -50,8 +54,29 @@ internal class StatistikkSakRepoImpl(
                     "tilbakekrevingsbelop" to dto.tilbakekrevingsbeløp,
                     "funksjonellPeriodeFom" to dto.funksjonellPeriodeFom,
                     "funksjonellPeriodeTom" to dto.funksjonellPeriodeTom,
+                    "hendelse" to dto.hendelse,
                     "avsender" to dto.avsender,
                     "versjon" to dto.versjon,
+                ),
+            ).asUpdateAndReturnGeneratedKey,
+        ).also { id ->
+            if (id != null) {
+                dto.vilkår.forEach { vilkår ->
+                    lagreVilkår(id.toInt(), vilkår, tx)
+                }
+            }
+        }
+    }
+
+    private fun lagreVilkår(id: Int, dto: VilkårStatistikkDTO, tx: TransactionalSession) {
+        tx.run(
+            queryOf(
+                lagreVilkårSql,
+                mapOf(
+                    "statistikkSakId" to id,
+                    "vilkar" to dto.vilkår,
+                    "beskrivelse" to dto.beskrivelse,
+                    "resultat" to dto.resultat.name,
                 ),
             ).asUpdate,
         )
@@ -65,7 +90,7 @@ internal class StatistikkSakRepoImpl(
             behandlingId,
             relatertBehandlingId,
             ident,
-            mottattTidspunkt,
+            mottatt_tidspunkt,
             registrertTidspunkt,
             ferdigBehandletTidspunkt,
             vedtakTidspunkt,
@@ -88,6 +113,7 @@ internal class StatistikkSakRepoImpl(
             tilbakekrevingsbeløp,
             funksjonellPeriodeFom,
             funksjonellPeriodeTom,
+            hendelse,
             avsender,
             versjon        
         ) values (
@@ -119,8 +145,24 @@ internal class StatistikkSakRepoImpl(
             :tilbakekrevingsbelop,
             :funksjonellPeriodeFom,
             :funksjonellPeriodeTom,
+            :hendelse,
             :avsender,
             :versjon
+        ) returning id
+    """.trimIndent()
+
+    @Language("SQL")
+    private val lagreVilkårSql = """
+        insert into statistikk_sak_vilkår (
+            statistikk_sak_id,
+            vilkår,
+            beskrivelse,
+            resultat  
+        ) values (
+            :statistikkSakId,
+            :vilkar,
+            :beskrivelse,
+            :resultat
         )
     """.trimIndent()
 }

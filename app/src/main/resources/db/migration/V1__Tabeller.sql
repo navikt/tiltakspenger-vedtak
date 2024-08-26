@@ -280,7 +280,7 @@ create table statistikk_sak
     behandlingid           varchar                  null,
     relatertbehandlingid   varchar                  null,
     ident                  varchar                  null,
-    mottatttidspunkt       timestamp                null,
+    mottatt_tidspunkt      timestamp                null,
     registrerttidspunkt    timestamp                null,
     ferdigbehandlettidspunkt timestamp              null,
     vedtaktidspunkt        timestamp                null,
@@ -303,15 +303,15 @@ create table statistikk_sak
     tilbakekrevingsbeløp   decimal                  null,
     funksjonellperiodefom  date                     null,
     funksjonellperiodetom  date                     null,
+    hendelse               varchar                  null,
     avsender               varchar                  null,
     versjon                varchar                  null
 );
 
 create table statistikk_sak_vilkår
 (
-    id                     varchar                  primary key,
-    sak_id                 varchar                  null,
-    vilkårid               varchar                  null,
+    statistikk_sak_id      int                      not null references statistikk_sak (id),
+    vilkår                 varchar                  null,
     beskrivelse            varchar                  null,
     resultat               varchar                  null
 );

@@ -2,11 +2,9 @@ package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.UUID
 
 // https://confluence.adeo.no/display/navdvh/Teknisk+beskrivelse+av+behov+til+felles+saksbehandlingsstatistikk
 data class StatistikkSakDTO(
-    val id: UUID,
     val sakId: String,
     val saksnummer: String,
     val behandlingId: String,
@@ -56,6 +54,7 @@ data class StatistikkSakDTO(
     val avsender: String,
     // commit hash
     val versjon: String,
+    val hendelse: String,
 )
 
 data class VilkårStatistikkDTO(
@@ -73,13 +72,14 @@ enum class Resultat {
     OPPFYLT,
     IKKE_OPPFYLT,
     IKKE_VURDERT,
+    UAVKLART,
 }
 
 enum class BehandlingResultat {
     INNVILGET,
     AVSLAG,
-    AVVIST,
-    DELVIS_INNVILGET,
+    STANS,
+    FORLENGELSE,
 }
 
 enum class BehandlingStatus {
