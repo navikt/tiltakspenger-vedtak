@@ -78,17 +78,24 @@ internal class RammevedtakRepoImpl(
             )
         }
 
-    override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Rammevedtak> =
+    /**
+     * Brukes for å generere det første meldekortet.
+     */
+    override fun hentRammevedtakSomIkkeHarMeldekort(limit: Int): List<Rammevedtak> =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
                         """
-                        select v.*, s.saksnummer
-                        from rammevedtak v
-                        join sak s on s.id = v.sak_id
-                        where v.sendt_til_meldekort = false
-                        limit $limit
+                         SELECT v.*, s.saksnummer
+                         FROM rammevedtak v
+                         JOIN sak s ON s.id = v.sak_id
+                         WHERE NOT EXISTS (
+                           SELECT 1
+                           FROM meldekort m
+                           WHERE m.rammevedtakId = v.id
+                        )
+                        LIMIT $limit
                         """.trimIndent(),
                     ).map { row ->
                         row.toVedtak(sessionContext)
@@ -96,6 +103,9 @@ internal class RammevedtakRepoImpl(
                 )
             }
         }
+
+    fun hentRammevedtakViSkalGenerereMeldekortFor() {
+    }
 
     override fun lagreVedtak(
         vedtak: Rammevedtak,

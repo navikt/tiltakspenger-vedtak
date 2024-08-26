@@ -13,13 +13,13 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Test
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
-    private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagHttpClient>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -43,7 +42,7 @@ internal class KravfristRoutesTest {
             "Q123456",
             "Superman",
             "a@b.c",
-            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
 
     @Test
@@ -62,12 +61,12 @@ internal class KravfristRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
 
             testApplication {
@@ -117,12 +116,12 @@ internal class KravfristRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
 
             testApplication {

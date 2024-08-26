@@ -9,7 +9,8 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.meldekort.domene.UtfyltMeldekort
+import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
+import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
@@ -66,18 +67,29 @@ internal class UtbetalingsvedtakRepoImpl(
         }
     }
 
-    override fun markerUtbetalt(
+    override fun markerSendtTilUtbetaling(
         vedtakId: VedtakId,
         utbetalingsrespons: SendtUtbetaling,
     ) {
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "update utbetalingsvedtak set utbetalt = true, metadata = to_jsonb(:metadata::jsonb) where id = :id",
+                    "update utbetalingsvedtak set sendt_til_utbetaling = true, utbetaling_metadata = to_jsonb(:metadata::jsonb) where id = :id",
                     mapOf(
                         "id" to vedtakId.toString(),
                         "metadata" to """{"request": "${utbetalingsrespons.request}", "response": "${utbetalingsrespons.response}"}""",
                     ),
+                ).asUpdate,
+            )
+        }
+    }
+
+    override fun markerSendtTilDokument(vedtakId: VedtakId) {
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    "update utbetalingsvedtak set sendt_til_dokument = true where id = :id",
+                    mapOf("id" to vedtakId.toString()),
                 ).asUpdate,
             )
         }
@@ -112,11 +124,11 @@ internal class UtbetalingsvedtakRepoImpl(
             session.run(
                 queryOf(
                     """
-                        select u.*, s.ident as fnr, s.saksnummer
-                        from utbetalingsvedtak u
-                        join sak s on s.id = u.sakid
-                        join rammevedtak v on u.rammevedtakId = v.id
-                        where v.behandling_id = :behandlingId
+                    select u.*, s.ident as fnr, s.saksnummer
+                    from utbetalingsvedtak u
+                    join sak s on s.id = u.sakid
+                    join rammevedtak v on u.rammevedtakId = v.id
+                    where v.behandling_id = :behandlingId
                     """.trimIndent(),
                     mapOf("behandlingId" to behandlingId.toString()),
                 ).map { row ->
@@ -142,26 +154,29 @@ internal class UtbetalingsvedtakRepoImpl(
             session.run(
                 queryOf(
                     """
-                    select * from meldekort m
+                    select m.* from meldekort m
                     left join utbetalingsvedtak u on m.id = u.meldekortId
-                    where u.id is null
+                    where u.id is null and m.beslutter is not null
                     limit :limit
                     """.trimIndent(),
                     mapOf("limit" to limit),
                 ).map { row ->
+                    val meldekortperiode = meldekortRepo
+                        .hentForMeldekortId(
+                            MeldekortId.fromString(row.string("id")),
+                            session,
+                        )!!
+                        .meldekortperiode as Meldeperiode.UtfyltMeldeperiode
                     UtfyltMeldekort(
                         id = MeldekortId.fromString(row.string("id")),
                         sakId = SakId.fromString(row.string("sakId")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                         meldekortperiode =
-                        meldekortRepo
-                            .hentForMeldekortId(
-                                MeldekortId.fromString(row.string("id")),
-                                session,
-                            )!!
-                            .meldekortperiode,
+                        meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
                         beslutter = row.string("beslutter"),
+                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
+                        tiltakstype = meldekortperiode.tiltakstype,
                     )
                 }.asList,
             )
@@ -175,7 +190,7 @@ internal class UtbetalingsvedtakRepoImpl(
                     select u.*,s.ident as fnr,s.saksnummer 
                     from utbetalingsvedtak u 
                     join sak s on s.id = u.sakid 
-                    where u.utbetalt = false
+                    where u.sendt_til_utbetaling = false
                     limit :limit
                     """.trimIndent(),
                     mapOf("limit" to limit),
@@ -185,7 +200,24 @@ internal class UtbetalingsvedtakRepoImpl(
             )
         }
 
-    private fun Row.toSakId(): SakId? = stringOrNull("sakId")?.let { SakId.fromString(it) }
+    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select u.*,s.ident as fnr,s.saksnummer 
+                    from utbetalingsvedtak u 
+                    join sak s on s.id = u.sakid 
+                    where u.sendt_til_dokument = false
+                    limit :limit
+                    """.trimIndent(),
+                    mapOf("limit" to limit),
+                ).map { row ->
+                    row.toVedtak(session)
+                }.asList,
+            )
+        }
+    }
 
     private fun Row.toVedtak(session: Session): Utbetalingsvedtak {
         val vedtakId = VedtakId.fromString(string("id"))
@@ -207,7 +239,7 @@ internal class UtbetalingsvedtakRepoImpl(
                     MeldekortId.fromString(string("meldekortId")),
                     session,
                 )!!
-                .meldekortperiode,
+                .meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
         )
     }
 }

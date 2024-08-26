@@ -1,14 +1,15 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Roller
 
 interface SaksbehandlerMother {
     fun saksbehandler(
         navIdent: String = "Z12345",
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
-        roller: List<Rolle> = listOf(Rolle.SAKSBEHANDLER),
+        roller: Roller = Roller(listOf(Rolle.SAKSBEHANDLER)),
     ) = Saksbehandler(
         navIdent = navIdent,
         brukernavn = brukernavn,
@@ -21,7 +22,7 @@ interface SaksbehandlerMother {
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(
-        roller = emptyList(),
+        roller = Roller(emptyList()),
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
@@ -32,7 +33,7 @@ interface SaksbehandlerMother {
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(
-        roller = listOf(Rolle.BESLUTTER),
+        roller = Roller(listOf(Rolle.BESLUTTER)),
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
@@ -46,7 +47,7 @@ interface SaksbehandlerMother {
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
-        roller = listOf(Rolle.SAKSBEHANDLER, Rolle.STRENGT_FORTROLIG_ADRESSE),
+        roller = Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.STRENGT_FORTROLIG_ADRESSE)),
     )
 
     fun saksbehandlerMedKode7(
@@ -57,7 +58,7 @@ interface SaksbehandlerMother {
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
-        roller = listOf(Rolle.SAKSBEHANDLER, Rolle.FORTROLIG_ADRESSE),
+        roller = Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.FORTROLIG_ADRESSE)),
     )
 
     fun saksbehandler123(): Saksbehandler =
@@ -65,6 +66,6 @@ interface SaksbehandlerMother {
             navIdent = "123",
             brukernavn = "Test Testesen",
             epost = "Test.Testesen@nav.no",
-            roller = listOf(Rolle.SAKSBEHANDLER),
+            roller = Roller(listOf(Rolle.SAKSBEHANDLER)),
         )
 }

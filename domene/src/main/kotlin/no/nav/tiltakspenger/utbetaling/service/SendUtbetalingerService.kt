@@ -20,7 +20,7 @@ class SendUtbetalingerService(
             Either.catch {
                 utbetalingsklient.iverksett(utbetalingsvedtak, correlationId).onRight {
                     logger.info { "Utbetaling iverksatt for vedtak ${utbetalingsvedtak.id}" }
-                    utbetalingsvedtakRepo.markerUtbetalt(utbetalingsvedtak.id, it)
+                    utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, it)
                     logger.info { "Utbetaling markert som utbetalt for vedtak ${utbetalingsvedtak.id}" }
                 }.onLeft {
                     logger.error { "Utbetaling kunne ikke iverksettes. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }

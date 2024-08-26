@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 internal data class BehandlingDTO(
     val id: String,
+    val sakId: String,
     val status: BehandlingsstatusDTO,
     val saksbehandler: String?,
     val beslutter: String?,
@@ -19,13 +20,15 @@ internal data class BehandlingDTO(
     val attesteringer: List<AttesteringDTO>,
 )
 
-internal fun Behandling.toDTO() = BehandlingDTO(
-    id = this.id.toString(),
-    saksbehandler = this.saksbehandler,
-    beslutter = this.beslutter,
-    status = this.status.toDTO(),
-    vurderingsperiode = this.vurderingsperiode.toDTO(),
-    attesteringer = this.attesteringer.toDTO(),
-    vilkårssett = this.vilkårssett.toDTO(),
-    stønadsdager = this.stønadsdager.toDTO(),
-)
+internal fun Behandling.toDTO() =
+    BehandlingDTO(
+        id = this.id.toString(),
+        sakId = this.sakId.toString(),
+        saksbehandler = this.saksbehandler,
+        beslutter = this.beslutter,
+        status = this.status.toDTO(),
+        vurderingsperiode = this.vurderingsperiode.toDTO(),
+        attesteringer = this.attesteringer.toDTO(),
+        vilkårssett = this.vilkårssett.toDTO(),
+        stønadsdager = this.stønadsdager.toDTO(),
+    )

@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.meldekort.domene.UtfyltMeldekort
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -190,7 +190,7 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             ),
             barnetillegg = listOf(),
         ),
-): Pair<Sak, UtfyltMeldekort> {
+): Pair<Sak, Meldekort.UtfyltMeldekort> {
     val sak =
         persisterIverksattFørstegangsbehandling(
             sakId = sakId,
@@ -210,7 +210,7 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             beslutter = beslutter,
         )
     val utfyltMeldekort =
-        ObjectMother.meldekort(
+        ObjectMother.utfyltMeldekort(
             sakId = sak.id,
             rammevedtakId = sak.vedtak.single().id,
         )

@@ -17,10 +17,11 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoJa
@@ -32,7 +33,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceI
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -51,7 +51,6 @@ import org.junit.jupiter.api.Test
 class LivsoppholdRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
-    private val mockMeldekortGrunnlagGateway = mockk<MeldekortGrunnlagHttpClient>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -61,7 +60,7 @@ class LivsoppholdRoutesTest {
             saksbehandlerIdent,
             "Superman",
             "a@b.c",
-            listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE),
+            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
 
     @Test
@@ -81,12 +80,12 @@ class LivsoppholdRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -162,12 +161,12 @@ class LivsoppholdRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,
@@ -220,12 +219,12 @@ class LivsoppholdRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(
@@ -385,12 +384,12 @@ class LivsoppholdRoutesTest {
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     brevPublisherGateway = mockBrevPublisherGateway,
-                    meldekortGrunnlagGateway = mockMeldekortGrunnlagGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
                     saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
+                    meldekortRepo = testDataHelper.meldekortRepo,
                 )
             val livsoppholdVilkårService = LivsoppholdVilkårServiceImpl(
                 behandlingRepo = testDataHelper.behandlingRepo,

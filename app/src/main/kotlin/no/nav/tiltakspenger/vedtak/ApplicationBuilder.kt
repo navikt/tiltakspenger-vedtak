@@ -12,13 +12,13 @@ import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
-import no.nav.tiltakspenger.meldekort.service.MottaUtfyltMeldekortService
+import no.nav.tiltakspenger.meldekort.service.JournalførMeldekortService
+import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.meldekort.MeldekortgrunnlagService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakServiceImpl
@@ -28,7 +28,7 @@ import no.nav.tiltakspenger.utbetaling.service.OpprettUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
-import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortGrunnlagHttpClient
+import no.nav.tiltakspenger.vedtak.clients.dokument.DokumentClient
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
 import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingClientImpl
 import no.nav.tiltakspenger.vedtak.clients.skjerming.SkjermingGatewayImpl
@@ -81,7 +81,6 @@ internal class ApplicationBuilder(
                     kvpVilkårService = kvpVilkårService,
                     livsoppholdVilkårService = livsoppholdVilkårService,
                     søknadService = søknadService,
-                    mottaUtfyltMeldekortService = mottaUtfyltMeldekortService,
                     hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
                 )
             }.build()
@@ -92,9 +91,8 @@ internal class ApplicationBuilder(
         AzureTokenProvider(config = Configuration.oauthConfigSkjerming())
     private val tokenProviderTiltak: AzureTokenProvider =
         AzureTokenProvider(config = Configuration.oauthConfigTiltak())
-    private val tokenProviderMeldekort: AzureTokenProvider =
-        AzureTokenProvider(config = Configuration.oauthConfigMeldekort())
     private val tokenProviderUtbetaling = AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
+    private val tokenProviderDokument = AzureTokenProvider(config = Configuration.oauthConfigDokument())
 
     private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
@@ -105,11 +103,7 @@ internal class ApplicationBuilder(
     private val skjermingGateway = SkjermingGatewayImpl(skjermingClient)
     private val tiltakGateway = TiltakGatewayImpl(tiltakClient)
     private val brevPublisherGateway = BrevPublisherGatewayImpl(rapidsConnection)
-    private val meldekortGrunnlagGateway =
-        MeldekortGrunnlagHttpClient(
-            baseUrl = Configuration.meldekortClientConfig().baseUrl,
-            getSystemToken = { AccessToken(tokenProviderMeldekort.getToken()) },
-        )
+
     private val personGateway =
         PersonHttpklient(endepunkt = Configuration.pdlClientConfig().baseUrl, azureTokenProvider = tokenProviderPdl)
 
@@ -118,26 +112,36 @@ internal class ApplicationBuilder(
             endepunkt = Configuration.utbetalingClientConfig().baseUrl,
             getToken = { AccessToken(tokenProviderUtbetaling.getToken()) },
         )
-    private val meldekortRepo = MeldekortRepoImpl(sessionFactory)
+
+    private val dokumentGateway = DokumentClient(
+        baseUrl = Configuration.dokumentClientConfig().baseUrl,
+        getToken = { AccessToken(tokenProviderDokument.getToken()) },
+    )
+    private val utfyltMeldekortRepo = MeldekortRepoImpl(sessionFactory)
     private val utbetalingsvedtakRepo =
         UtbetalingsvedtakRepoImpl(
             sessionFactory = sessionFactory,
-            meldekortRepo = meldekortRepo,
+            meldekortRepo = utfyltMeldekortRepo,
         )
     private val hentUtbetalingsvedtakService =
         HentUtbetalingsvedtakService(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
         )
 
-    private val mottaUtfyltMeldekortService =
-        MottaUtfyltMeldekortService(
-            meldekortRepo = meldekortRepo,
+    private val sendeMeldekortTilBeslutterService =
+        SendMeldekortTilBeslutterService(
+            meldekortRepo = utfyltMeldekortRepo,
         )
     private val sendUtbetalingerService =
         SendUtbetalingerService(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
             utbetalingsklient = utbetalingsklient,
         )
+
+    private val journalførMeldekortService = JournalførMeldekortService(
+        utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+        dokumentGateway = dokumentGateway,
+    )
 
     private val barnMedIdentDAO = PersonopplysningerBarnMedIdentRepo()
     private val barnUtenIdentDAO = PersonopplysningerBarnUtenIdentRepo()
@@ -189,14 +193,17 @@ internal class ApplicationBuilder(
     @Suppress("unused")
     private val personopplysningServiceImpl = PersonopplysningServiceImpl(personopplysningRepo)
     private val søknadService = SøknadServiceImpl(søknadRepo)
-
+    private val meldekortRepo =
+        MeldekortRepoImpl(
+            sessionFactory = sessionFactory,
+        )
     private val behandlingService =
         BehandlingServiceImpl(
             behandlingRepo = behandlingRepo,
             vedtakRepo = rammevedtakRepo,
             personopplysningRepo = personopplysningRepo,
             brevPublisherGateway = brevPublisherGateway,
-            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+            meldekortRepo = meldekortRepo,
             sakRepo = sakRepo,
             sessionFactory = sessionFactory,
             saksoversiktRepo = saksoversiktRepo,
@@ -226,12 +233,6 @@ internal class ApplicationBuilder(
             behandlingRepo = behandlingRepo,
         )
 
-    private val sendNyeVedtakTilMeldekortService =
-        MeldekortgrunnlagService(
-            meldekortGrunnlagGateway = meldekortGrunnlagGateway,
-            vedtakRepo = rammevedtakRepo,
-        )
-
     private val runCheckFactory =
         if (Configuration.isNais()) {
             RunCheckFactory(
@@ -255,9 +256,9 @@ internal class ApplicationBuilder(
             runCheckFactory = runCheckFactory,
             tasks =
             listOf { correlationId ->
-                sendNyeVedtakTilMeldekortService.sendNyeMeldekortgrunnlag(correlationId)
+                opprettUtbetalingsvedtak.opprettUtbetalingsvedtak()
                 sendUtbetalingerService.send(correlationId)
-                opprettUtbetalingsvedtak.opprettUtbetalingsvedtak(correlationId)
+                journalførMeldekortService.send(correlationId)
             },
         )
 

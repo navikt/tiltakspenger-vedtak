@@ -5,7 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.libs.common.Rolle
 import org.junit.jupiter.api.Test
 import java.util.UUID
 

@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.meldekort.domene.opprettFørsteMeldekortForEnSak
+import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -15,7 +17,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -33,7 +34,7 @@ class BehandlingServiceImpl(
     private val vedtakRepo: RammevedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val brevPublisherGateway: BrevPublisherGateway,
-    private val meldekortGrunnlagGateway: MeldekortgrunnlagGateway,
+    private val meldekortRepo: MeldekortRepo,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val saksoversiktRepo: SaksoversiktRepo,
@@ -113,13 +114,14 @@ class BehandlingServiceImpl(
         val vedtak = iverksattBehandling.opprettVedtak()
         val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak)
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
+        val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
         sessionFactory.withTransactionContext { tx ->
             behandlingRepo.lagre(iverksattBehandling, tx)
             vedtakRepo.lagreVedtak(vedtak, tx)
             statistikkSakRepo.lagre(sakStatistikk, tx)
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
+            meldekortRepo.lagre(førsteMeldekort, tx)
         }
-        // Meldekortgrunnlag sendes etter vedtaket er lagret fra en separat jobb.
 
         val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
         brevPublisherGateway.sendBrev(sak.saksnummer, vedtak, personopplysninger)

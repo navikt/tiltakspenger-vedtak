@@ -24,9 +24,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.meldekort.service.MottaUtfyltMeldekortService
+import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -39,7 +39,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
-import no.nav.tiltakspenger.vedtak.routes.meldekort.mottaUtfyltMeldekortRoute
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
@@ -59,7 +58,6 @@ internal fun Application.vedtakApi(
     behandlingService: BehandlingService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
-    mottaUtfyltMeldekortService: MottaUtfyltMeldekortService,
     hentUtbetalingsvedtakService: HentUtbetalingsvedtakService,
 ) {
     install(CallId)
@@ -97,7 +95,6 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 sakService = sakService,
             )
-            mottaUtfyltMeldekortRoute(mottaUtfyltMeldekortService)
             utbetalingRoutes(hentUtbetalingsvedtakService)
         }
         authenticate("systemtoken") {
@@ -118,7 +115,7 @@ private fun AuthenticationConfig.jwt(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null,
+    roles: Roller? = null,
 ) = jwt(name) {
     SECURELOG.debug { "config : $config" }
     this.realm = realm
@@ -163,7 +160,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     config: Configuration.TokenVerificationConfig,
     name: String,
     realm: String,
-    roles: List<Rolle>? = null,
+    roles: Roller? = null,
 ) = jwt(name) {
     SECURELOG.info { "config : $config" }
     this.realm = realm
@@ -222,10 +219,10 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
             config,
             "saksbehandling",
             "saksbehandling",
-            listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER)),
         )
-        jwt(config, "admin", "saksbehandling", listOf(Rolle.DRIFT))
-        jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))
+        jwt(config, "admin", "saksbehandling", Roller(listOf(Rolle.DRIFT)))
+        jwtSystemToken(config, "systemtoken", "systemtoken", Roller(listOf(Rolle.LAGE_HENDELSER)))
     }
 }
 

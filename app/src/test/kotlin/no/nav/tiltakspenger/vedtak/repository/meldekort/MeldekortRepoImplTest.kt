@@ -14,13 +14,14 @@ class MeldekortRepoImplTest {
             val testDataHelper = TestDataHelper(it)
             val sak = testDataHelper.persisterIverksattFørstegangsbehandling()
             val meldekort =
-                ObjectMother.meldekort(
+                ObjectMother.utfyltMeldekort(
                     sakId = sak.id,
                     rammevedtakId = sak.vedtak.single().id,
                 )
             val meldekortRepo = testDataHelper.meldekortRepo
             meldekortRepo.lagre(meldekort)
-            meldekortRepo.hentForMeldekortId(meldekort.id)!! shouldBe meldekort
+            val hentForMeldekortId = meldekortRepo.hentForMeldekortId(meldekort.id)!!
+            hentForMeldekortId shouldBe meldekort
         }
     }
 }

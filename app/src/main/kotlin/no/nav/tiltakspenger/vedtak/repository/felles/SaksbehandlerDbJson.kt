@@ -1,7 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.felles
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Roller
 
 internal data class SaksbehandlerDbJson(
     val navIdent: String,
@@ -38,7 +39,7 @@ internal data class SaksbehandlerDbJson(
             navIdent = navIdent,
             brukernavn = brukernavn,
             epost = epost,
-            roller = roller.map { it.toDomain() },
+            roller = Roller(roller.map { it.toDomain() }),
         )
 }
 

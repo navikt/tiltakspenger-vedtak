@@ -6,13 +6,15 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.felles.Rolle.SAKSBEHANDLER
-import no.nav.tiltakspenger.felles.Rolle.SKJERMING
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle.SAKSBEHANDLER
+import no.nav.tiltakspenger.libs.common.Rolle.SKJERMING
+import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.barn
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingUnderBehandlingUavklart
@@ -23,7 +25,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
@@ -49,7 +50,7 @@ internal class SakServiceTest {
     private lateinit var behandlingService: BehandlingService
     private lateinit var vedtakService: RammevedtakService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
-    private lateinit var meldekortGrunnlagGateway: MeldekortgrunnlagGateway
+    private lateinit var meldekortRepo: MeldekortRepo
     private lateinit var tiltakGateway: TiltakGateway
     private lateinit var personopplysningRepo: PersonopplysningerRepo
     private lateinit var sakRepo: SakRepo
@@ -67,7 +68,7 @@ internal class SakServiceTest {
         vedtakRepo = mockk()
         vedtakService = mockk()
         brevPublisherGateway = mockk()
-        meldekortGrunnlagGateway = mockk()
+        meldekortRepo = mockk()
         tiltakGateway = mockk()
         sakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
@@ -84,7 +85,7 @@ internal class SakServiceTest {
                 vedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
                 brevPublisherGateway = brevPublisherGateway,
-                meldekortGrunnlagGateway = meldekortGrunnlagGateway,
+                meldekortRepo = meldekortRepo,
                 sakRepo = sakRepo,
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,
@@ -158,7 +159,7 @@ internal class SakServiceTest {
                 ),
             )
         val tiltak = ObjectMother.tiltak()
-        val saksbehandler = ObjectMother.saksbehandler(roller = listOf(SAKSBEHANDLER, SKJERMING))
+        val saksbehandler = ObjectMother.saksbehandler(roller = Roller(listOf(SAKSBEHANDLER, SKJERMING)))
         val fnr = søknad.personopplysninger.fnr
         val barnFnr = Fnr.random()
 

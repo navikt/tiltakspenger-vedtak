@@ -54,8 +54,7 @@ CREATE TABLE rammevedtak
     tom                     DATE                     NOT NULL,
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
-    sendt_til_meldekort     BOOLEAN                  NOT NULL DEFAULT FALSE
+    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_søker
@@ -232,18 +231,20 @@ create table meldekort
     id                   varchar primary key,
     sakId                varchar not null REFERENCES sak(id),
     rammevedtakId        varchar not null REFERENCES rammevedtak(id),
+    forrigeMeldekortId   varchar null references meldekort(id),
     fraOgMed             date not null,
     tilOgMed             date not null,
     meldekortdager       jsonb not null,
-    saksbehandler        varchar not null,
-    beslutter            varchar not null
+    saksbehandler        varchar null,
+    beslutter            varchar null,
+    type                 varchar null
 );
 
 create table utbetalingsvedtak
 (
     id                   varchar primary key,
-    sakId                varchar not null REFERENCES sak(id),
-    rammevedtakId        varchar not null REFERENCES rammevedtak(id),
+    sakId                varchar not null references sak(id),
+    rammevedtakId        varchar not null references rammevedtak(id),
     brukerNavkontor      varchar not null,
     vedtakstidspunkt     timestamp not null,
     saksbehandler        varchar not null,
@@ -251,8 +252,9 @@ create table utbetalingsvedtak
     forrigeVedtakId      varchar null references utbetalingsvedtak(id),
     meldekortId          varchar not null references meldekort(id),
     utbetalingsperiode   jsonb not null,
-    utbetalt             boolean not null default false,
-    metadata             jsonb null
+    sendt_til_utbetaling boolean not null default false,
+    sendt_til_dokument   boolean not null default false,
+    utbetaling_metadata   jsonb null
 );
 
 create table statistikk_stønad

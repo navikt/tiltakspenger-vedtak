@@ -6,7 +6,7 @@ import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import no.nav.tiltakspenger.felles.Rolle
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import java.util.UUID
 
@@ -206,8 +206,8 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
-    fun oauthConfigMeldekort(
-        scope: String = config()[Key("MELDEKORT_SCOPE", stringType)],
+    fun oauthConfigDokument(
+        scope: String = config()[Key("DOKUMENT_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
@@ -234,7 +234,7 @@ object Configuration {
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
-    fun meldekortClientConfig(baseUrl: String = config()[Key("MELDEKORT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun dokumentClientConfig(baseUrl: String = config()[Key("DOKUMENT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 

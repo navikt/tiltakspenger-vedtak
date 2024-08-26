@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.utbetaling.domene
 
 import no.nav.tiltakspenger.libs.common.MeldekortId
-import no.nav.tiltakspenger.libs.periodisering.tilstøter
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
 import java.time.LocalDate
 
 /**
@@ -17,10 +17,11 @@ data class Utbetalingsdag(
     val sats: Sats,
 ) {
     // Legg til barnetillegg etter MVP
-    val beløp: Int = when (status) {
-        Status.FullUtbetaling -> sats.sats
-        Status.DelvisUtbetaling -> sats.satsDelvis
-    }
+    val beløp: Int =
+        when (status) {
+            Status.FullUtbetaling -> sats.sats
+            Status.DelvisUtbetaling -> sats.satsDelvis
+        }
 
     init {
         require(sats.periode.inneholder(dato)) { "Satsens periode må inneholde utbetalingsdagens dato, men var $dato" }
@@ -32,26 +33,32 @@ data class Utbetalingsdag(
         DelvisUtbetaling,
     }
 
-    fun kanSlåSammen(annen: Meldekortdag): Boolean {
-        return when (annen) {
-            is Meldekortdag.Tiltaksdag ->
-                this.tiltakstype == annen.tiltakstype &&
-                    this.status == annen.status &&
-                    this.tiltakstype == annen.tiltakstype &&
-                    this.meldekortId == annen.meldekortId &&
-                    this.dato.tilstøter(annen.dato)
+    /**
+     * Kan slå sammen en utbetalingsdag med en meldekortdag dersom de har samme tiltakstype, meldekortId,  og er påfølgende dager.
+     *
+     * Merk at venste side må være dagen før høyre side for at de skal kunne slås sammen.
+     */
+    fun kanSlåSammen(neste: Meldekortdag.Utfylt): Boolean =
+        this::class == neste::class &&
+            this.tiltakstype == neste.tiltakstype &&
+            this.meldekortId == neste.meldekortId &&
+            this.dato.plusDays(1) == neste.dato &&
+            this.status == neste.tilUtbetalingsstatus()
+}
 
-            is Meldekortdag.IkkeTiltaksdag -> false
-        }
+fun Meldekortdag.Utfylt.tilUtbetalingsstatus(): Utbetalingsdag.Status? {
+    return when (this.reduksjon) {
+        ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon -> Utbetalingsdag.Status.FullUtbetaling
+        ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon -> Utbetalingsdag.Status.DelvisUtbetaling
+        ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> null
     }
 }
 
-fun Meldekortdag.Tiltaksdag.genererUtbetalingsdag(): Utbetalingsdag {
-    return Utbetalingsdag(
+fun Meldekortdag.Utfylt.genererUtbetalingsdag(): Utbetalingsdag =
+    Utbetalingsdag(
         dato = dato,
         tiltakstype = tiltakstype,
-        status = status,
+        status = tilUtbetalingsstatus()!!,
         meldekortId = meldekortId,
         sats = Satser.sats(dato),
     )
-}
