@@ -84,12 +84,9 @@ internal class RammevedtakRepoImpl(
                 session.run(
                     queryOf(
                         """
-                        select v.*, s.saksnummer 
-                          from vedtak v 
-                          
-                          join sak s 
-                          on s.id = v.sak_id 
-                          
+                          select v.*, s.saksnummer
+                          from rammevedtak v
+                          join sak s on s.id = v.sak_id
                           where v.sendt_til_meldekort = false
                           limit $limit
                         """.trimIndent(),
