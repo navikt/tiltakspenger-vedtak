@@ -24,7 +24,7 @@ data class StatistikkSakDTO(
     // forventet oppstart av tiltak
     val forventetOppstartTidspunkt: LocalDate,
     // forventet oppstart av tiltak
-    val tekniskTidspunkt: LocalDate?,
+    val tekniskTidspunkt: LocalDateTime,
     val vilkår: List<VilkårStatistikkDTO>,
     // IND
     val sakYtelse: String,

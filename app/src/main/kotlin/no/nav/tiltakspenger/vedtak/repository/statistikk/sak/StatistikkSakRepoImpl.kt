@@ -40,7 +40,7 @@ internal class StatistikkSakRepoImpl(
                     "soknadsformat" to dto.søknadsformat,
                     "forventetOppstartTidspunkt" to dto.forventetOppstartTidspunkt,
                     "tekniskTidspunkt" to dto.tekniskTidspunkt,
-                    "sakYtelse" to false,
+                    "sakYtelse" to dto.sakYtelse,
                     "sakUtland" to false,
                     "behandlingType" to dto.behandlingType.toString(),
                     "behandlingStatus" to dto.behandlingStatus.toString(),

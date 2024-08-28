@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import java.time.LocalDateTime
 
 fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
     StatistikkSakDTO(
@@ -19,9 +19,9 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = null,
         vedtakTidspunkt = null,
-        endretTidspunkt = LocalDateTime.now(),
+        endretTidspunkt = nå(),
         utbetaltTidspunkt = null,
-        tekniskTidspunkt = null,
+        tekniskTidspunkt = nå(),
         søknadsformat = Format.DIGITAL.name,
         forventetOppstartTidspunkt = behandling.vurderingsperiode.fraOgMed,
         vilkår = mapVilkår(behandling.vilkårssett),
@@ -55,9 +55,9 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = null,
         vedtakTidspunkt = vedtak.vedtaksdato,
-        endretTidspunkt = LocalDateTime.now(),
+        endretTidspunkt = nå(),
         utbetaltTidspunkt = null,
-        tekniskTidspunkt = null,
+        tekniskTidspunkt = nå(),
         søknadsformat = Format.DIGITAL.name,
         forventetOppstartTidspunkt = vedtak.periode.fraOgMed,
         vilkår = mapVilkår(behandling.vilkårssett),
