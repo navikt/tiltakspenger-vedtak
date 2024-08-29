@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekortperiode
 import no.nav.tiltakspenger.meldekort.domene.UtfyltMeldekort
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -77,3 +78,18 @@ fun UtfyltMeldekort.tilUtbetalingsperiode(
         utbetalingsperiode = this.meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
         forrigeUtbetalingsvedtak = forrigeUtbetalingsvedtak,
     )
+
+fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO {
+    return StatistikkUtbetalingDTO(
+        // er rammevedtakId det riktige her?
+        id = this.rammevedtakId.toString(),
+        sakId = this.sakId.toString(),
+        saksnummer = this.saksnummer.toString(),
+        beløp = this.beløp,
+        beløpBeskrivelse = "",
+        årsak = "",
+        posteringDato = this.vedtakstidspunkt.toLocalDate(),
+        gyldigFraDatoPostering = this.periode.fraOgMed,
+        gyldigTilDatoPostering = this.periode.tilOgMed,
+    )
+}

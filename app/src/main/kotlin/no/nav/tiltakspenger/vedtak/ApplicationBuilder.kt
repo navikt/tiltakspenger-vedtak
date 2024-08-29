@@ -168,6 +168,7 @@ internal class ApplicationBuilder(
         OpprettUtbetalingsvedtakService(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
             rammevedtakRepo = rammevedtakRepo,
+            statistikkStønadRepo = statistikkStønadRepo,
         )
 
     private val sakRepo =

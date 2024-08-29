@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.domene.UtfyltMeldekort
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
+import no.nav.tiltakspenger.utbetaling.domene.tilStatistikk
 import no.nav.tiltakspenger.utbetaling.domene.tilUtbetalingsperiode
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 
@@ -17,6 +19,7 @@ import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 class OpprettUtbetalingsvedtakService(
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
     private val rammevedtakRepo: RammevedtakRepo,
+    private val statistikkStønadRepo: StatistikkStønadRepo,
 ) {
     val logger = KotlinLogging.logger { }
 
@@ -31,6 +34,8 @@ class OpprettUtbetalingsvedtakService(
                     val eksisterendeUtbetalingsvedtak = utbetalingsvedtakRepo.hentForSakId(meldekort.sakId)
                     meldekort.tilUtbetalingsperiode(rammevedtak, eksisterendeUtbetalingsvedtak.lastOrNull()?.id).also {
                         utbetalingsvedtakRepo.lagre(it)
+                        // TODO jah lager en herlig transaksjon som lagrer statistikk og utbetalingsvedtak i samme transaksjon.
+                        statistikkStønadRepo.lagre(it.tilStatistikk())
                     }
                 }.onLeft {
                     logger.error(it) { "Feil ved opprettelse av utbetalingsvedtak for meldekortId=${meldekort.id}" }

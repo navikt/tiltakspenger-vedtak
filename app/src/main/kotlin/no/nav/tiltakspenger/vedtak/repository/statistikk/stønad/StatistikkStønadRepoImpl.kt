@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkStønadDTO
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import org.intellij.lang.annotations.Language
 
 internal class StatistikkStønadRepoImpl(
@@ -72,6 +73,31 @@ internal class StatistikkStønadRepoImpl(
 
                     "sistEndret" to nå(),
                     "opprettet" to nå(),
+                ),
+            ).asUpdate,
+        )
+    }
+
+    override fun lagre(dto: StatistikkUtbetalingDTO, context: TransactionContext?) {
+        sessionFactory.withTransaction(context) { tx ->
+            lagre(dto, tx)
+        }
+    }
+
+    override fun lagre(dto: StatistikkUtbetalingDTO, tx: TransactionalSession) {
+        tx.run(
+            queryOf(
+                lagreUtbetalingSql,
+                mapOf(
+                    "id" to dto.id,
+                    "sakId" to dto.sakId,
+                    "saksnummer" to dto.saksnummer,
+                    "belop" to dto.beløp,
+                    "belopBeskrivelse" to dto.beløpBeskrivelse,
+                    "arsak" to dto.årsak,
+                    "posteringsDato" to dto.posteringDato,
+                    "gyldigFraDato" to dto.gyldigFraDatoPostering,
+                    "gyldigTilDat" to dto.gyldigTilDatoPostering,
                 ),
             ).asUpdate,
         )
@@ -163,6 +189,31 @@ internal class StatistikkStønadRepoImpl(
         :gyldigTilDatoTiltak,
         :sistEndret,
         :opprettet
+        )
+    """.trimIndent()
+
+    @Language("SQL")
+    private val lagreUtbetalingSql = """
+        insert into statistikk_utbetaling (
+        id,
+        sak_id,
+        saksnummer,
+        beløp,
+        beløp_beskrivelse,
+        årsak,
+        posteringsdato,
+        gyldig_fra_dato,
+        gyldig_til_dato     
+        ) values (
+        :id,
+        :sakId,
+        :saksnummer,
+        :belop,
+        :belopBeskrivelse,
+        :arsak,
+        :posteringsDato,
+        :gyldigFraDato,
+        :gyldigTilDato
         )
     """.trimIndent()
 }

@@ -255,6 +255,19 @@ create table utbetalingsvedtak
     metadata             jsonb null
 );
 
+create table statistikk_utbetaling
+(
+    id                   varchar primary key,
+    sak_id               varchar not null,
+    saksnummer           varchar not null,
+    beløp                int not null,
+    beløp_beskrivelse    varchar not null,
+    årsak                varchar not null,
+    posteringsdato       date not null,
+    gyldig_fra_dato      date not null,
+    gyldig_til_dato      date not null
+);
+
 create table statistikk_stønad
 (
     id                      varchar                  primary key,
