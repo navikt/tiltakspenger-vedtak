@@ -4,7 +4,7 @@ val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
 val felleslibVersion = "0.0.202"
 val tokenSupportVersion = "3.2.0"
-val iverksettVersjon = "1.0_20240826123742_5c53279"
+val iverksettVersjon = "1.0_20240829083905_36ac417"
 
 plugins {
     application
