@@ -61,7 +61,7 @@ class MeldekortGrunnlagHttpClient(
                             "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Se securelog for context."
                         }
                         SECURELOG.error {
-                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status."
+                            "Feil ved sending av vedtak ${vedtak.id} til tiltakspenger-meldekort-api. Status: $status. Body: ${httpResponse.body()}"
                         }
                         KunneIkkeSendeMeldekortGrunnlag.Ikke2xx(status = status).left()
                     }

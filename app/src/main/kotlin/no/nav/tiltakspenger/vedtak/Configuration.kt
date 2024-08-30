@@ -83,7 +83,7 @@ object Configuration {
                 "TILTAK_SCOPE" to "localhost",
                 "TILTAK_URL" to "http://host.docker.internal:8091",
                 "MELDEKORT_SCOPE" to "localhost",
-                "MELDEKORT_URL" to "http://host.docker.internal:8091",
+                "MELDEKORT_URL" to "http://host.docker.internal:8081",
                 "UTBETALING_SCOPE" to "localhost",
                 "UTBETALING_URL" to "http://localhost:8091",
             ),
