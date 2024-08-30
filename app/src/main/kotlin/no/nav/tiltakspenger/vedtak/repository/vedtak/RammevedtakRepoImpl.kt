@@ -6,6 +6,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -76,6 +77,29 @@ internal class RammevedtakRepoImpl(
                     row.toVedtak(sessionContext)
                 }.asList,
             )
+        }
+
+    override fun hentVedtakForIdent(ident: Fnr): List<Rammevedtak> =
+        sessionFactory.withSessionContext { sessionContext ->
+            sessionContext.withSession { session ->
+                session.run(
+                    queryOf(
+                        """
+                           select v.*, 
+                                  s.saksnummer
+                             from rammevedtak v
+                           join sak s 
+                             on s.id = v.sak_id
+                           where s.ident = :ident
+                        """.trimIndent(),
+                        mapOf(
+                            "ident" to ident.toString(),
+                        ),
+                    ).map { row ->
+                        row.toVedtak(sessionContext)
+                    }.asList,
+                )
+            }
         }
 
     override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Rammevedtak> =

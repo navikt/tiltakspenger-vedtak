@@ -88,6 +88,8 @@ data class Førstegangsbehandling(
         }
     }
 
+    fun erIverksatt(): Boolean = status == INNVILGET
+
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {

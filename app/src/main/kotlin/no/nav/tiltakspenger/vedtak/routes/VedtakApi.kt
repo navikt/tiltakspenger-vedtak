@@ -32,12 +32,14 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
+import no.nav.tiltakspenger.vedtak.routes.datadeling.datadelingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.mottaUtfyltMeldekortRoute
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
@@ -57,6 +59,7 @@ internal fun Application.vedtakApi(
     søknadService: SøknadService,
     sakService: SakService,
     behandlingService: BehandlingService,
+    rammevedtakService: RammevedtakService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     mottaUtfyltMeldekortService: MottaUtfyltMeldekortService,
@@ -102,6 +105,10 @@ internal fun Application.vedtakApi(
         }
         authenticate("systemtoken") {
             søknadRoutes(søknadService)
+            datadelingRoutes(
+                behandlingService = behandlingService,
+                rammevedtakService = rammevedtakService,
+            )
         }
         staticResources(
             remotePath = "/",

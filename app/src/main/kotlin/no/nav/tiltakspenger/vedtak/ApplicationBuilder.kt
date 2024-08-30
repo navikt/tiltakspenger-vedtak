@@ -78,6 +78,7 @@ internal class ApplicationBuilder(
                     innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider(),
                     sakService = sakService,
                     behandlingService = behandlingService,
+                    rammevedtakService = rammevedtakService,
                     kvpVilkårService = kvpVilkårService,
                     livsoppholdVilkårService = livsoppholdVilkårService,
                     søknadService = søknadService,
@@ -184,7 +185,6 @@ internal class ApplicationBuilder(
             sessionFactory = sessionFactory,
         )
 
-    @Suppress("unused")
     private val rammevedtakService = RammevedtakServiceImpl(rammevedtakRepo)
 
     @Suppress("unused")
