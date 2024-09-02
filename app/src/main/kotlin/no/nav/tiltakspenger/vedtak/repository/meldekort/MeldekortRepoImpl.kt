@@ -123,15 +123,15 @@ class MeldekortRepoImpl(
             .withSession(sessionContext) { session ->
                 session.run(
                     queryOf(
-                        "select id,fom,tom,type from meldekort where sakId = :sakId",
-                        mapOf("sakId" to sakId),
+                        "select id,fraOgMed,tilOgMed,type from meldekort where sakId = :sakId",
+                        mapOf("sakId" to sakId.toString()),
                     ).map { row ->
                         MeldekortSammendrag(
                             meldekortId = MeldekortId.fromString(row.string("id")),
                             periode =
                             Periode(
-                                fraOgMed = row.localDate("fom"),
-                                tilOgMed = row.localDate("tom"),
+                                fraOgMed = row.localDate("fraOgMed"),
+                                tilOgMed = row.localDate("tilOgMed"),
                             ),
                             erUtfylt = row.string("type") == "utfylt",
                         )
@@ -147,7 +147,7 @@ class MeldekortRepoImpl(
             session.run(
                 queryOf(
                     """
-                    select sak.fnr from sak
+                    select sak.ident as fnr from sak
                     join meldekort on sak.id = meldekort.sakId
                     where meldekort.id = :meldekortId
                     """.trimIndent(),
@@ -206,7 +206,7 @@ class MeldekortRepoImpl(
                     sakId = sakId,
                     rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                     meldekortperiode = meldekortperiode,
-                    forrigeMeldekortId = MeldekortId.fromString(row.string("forrigeMeldekortId")),
+                    forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                     tiltakstype = meldekortperiode.tiltakstype,
                 )
             }

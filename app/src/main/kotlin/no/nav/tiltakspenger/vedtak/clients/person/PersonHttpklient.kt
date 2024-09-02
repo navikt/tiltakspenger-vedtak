@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
@@ -38,9 +37,9 @@ internal class PersonHttpklient(
      * TODO jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
     override suspend fun hentPerson(fnr: Fnr): List<Personopplysninger> {
-        val token = AccessToken(azureTokenProvider.getToken())
+        val token = azureTokenProvider::getToken
         val body = objectMapper.writeValueAsString(hentPersonQuery(fnr))
-        return personklient.hentPerson(fnr, token, body)
+        return personklient.hentPerson(fnr, token(), body)
             .map { mapPersonopplysninger(it, LocalDateTime.now(), fnr) }
             .getOrElse { it.mapError() }
     }

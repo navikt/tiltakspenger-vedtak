@@ -27,6 +27,9 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
+import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
+import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
+import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -39,6 +42,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
+import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
@@ -59,6 +63,9 @@ internal fun Application.vedtakApi(
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     hentUtbetalingsvedtakService: HentUtbetalingsvedtakService,
+    hentMeldekortService: HentMeldekortService,
+    iverksettMeldekortService: IverksettMeldekortService,
+    sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -96,6 +103,13 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
             )
             utbetalingRoutes(hentUtbetalingsvedtakService)
+
+            meldekortRoutes(
+                hentMeldekortService = hentMeldekortService,
+                iverksettMeldekortService = iverksettMeldekortService,
+                sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+            )
         }
         authenticate("systemtoken") {
             søknadRoutes(søknadService)

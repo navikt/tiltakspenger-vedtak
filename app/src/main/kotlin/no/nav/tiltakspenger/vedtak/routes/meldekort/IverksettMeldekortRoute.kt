@@ -18,7 +18,7 @@ fun Route.iverksettMeldekortRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
 ) {
     val logger = KotlinLogging.logger { }
-    post("$MELDEKORT_PATH/{meldekortId}/iverksett") {
+    post("sak/{sakId}/meldekort/{meldekortId}/iverksett") {
         logger.info { "Mottatt request på $MELDEKORT_PATH/{meldekortId}/iverksett" }
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val meldekortId =

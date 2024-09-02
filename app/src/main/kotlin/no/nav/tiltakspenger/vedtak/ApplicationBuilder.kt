@@ -5,13 +5,15 @@ import arrow.core.right
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
+import no.nav.tiltakspenger.libs.personklient.tilgangsstyring.TilgangsstyringServiceImpl
+import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
+import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.meldekort.service.JournalførMeldekortService
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
@@ -82,6 +84,9 @@ internal class ApplicationBuilder(
                     livsoppholdVilkårService = livsoppholdVilkårService,
                     søknadService = søknadService,
                     hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
+                    hentMeldekortService = hentMeldekortService,
+                    iverksettMeldekortService = iverksettMeldekortService,
+                    sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
                 )
             }.build()
 
@@ -110,12 +115,12 @@ internal class ApplicationBuilder(
     private val utbetalingsklient: UtbetalingGateway =
         UtbetalingHttpClient(
             endepunkt = Configuration.utbetalingClientConfig().baseUrl,
-            getToken = { AccessToken(tokenProviderUtbetaling.getToken()) },
+            getToken = tokenProviderUtbetaling::getToken,
         )
 
     private val dokumentGateway = DokumentClient(
         baseUrl = Configuration.dokumentClientConfig().baseUrl,
-        getToken = { AccessToken(tokenProviderDokument.getToken()) },
+        getToken = tokenProviderDokument::getToken,
     )
     private val utfyltMeldekortRepo = MeldekortRepoImpl(sessionFactory)
     private val utbetalingsvedtakRepo =
@@ -232,6 +237,14 @@ internal class ApplicationBuilder(
             behandlingService = behandlingService,
             behandlingRepo = behandlingRepo,
         )
+
+    private val tilgangsstyringService = TilgangsstyringServiceImpl.create(skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl, getPdlPipToken = tokenProviderPdl::getToken, pdlPipUrl = Configuration.pdlClientConfig().baseUrl, getSkjermingToken = tokenProviderSkjerming::getToken)
+    private val hentMeldekortService = HentMeldekortService(meldekortRepo = meldekortRepo, sakService = sakService, tilgangsstyringService = tilgangsstyringService)
+
+    private val
+    iverksettMeldekortService = IverksettMeldekortService(meldekortRepo = meldekortRepo, hentMeldekortService = hentMeldekortService, sessionFactory = sessionFactory, rammevedtakRepo = rammevedtakRepo)
+
+    private val sendMeldekortTilBeslutterService = SendMeldekortTilBeslutterService(meldekortRepo = meldekortRepo)
 
     private val runCheckFactory =
         if (Configuration.isNais()) {

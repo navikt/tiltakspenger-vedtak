@@ -26,11 +26,14 @@ fun Route.hentMeldekortRoute(
             call.parameters["sakId"]
                 ?: return@get call.respond(message = "sakId mangler", status = HttpStatusCode.NotFound)
         val meldekortperioder = hentMeldekortService.hentForSakId(SakId.fromString(sakId), saksbehandler)
-        call.respond(status = HttpStatusCode.OK, message = meldekortperioder.toDTO())
+
+        val message = meldekortperioder.toDTO()
+        logger.info { "respons på request /sak/{sakId}/meldekort - henter alle meldekort for sak: $message" }
+        call.respond(status = HttpStatusCode.OK, message = message)
     }
 
-    get("$MELDEKORT_PATH/{meldekortId}") {
-        logger.info("Motatt request på $MELDEKORT_PATH/{meldekortId}")
+    get("/sak/{sakId}/meldekort/{meldekortId}") {
+        logger.info("Motatt request på /sak/{sakId}/meldekort/{meldekortId}")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val meldekortId =
             call.parameters["meldekortId"]

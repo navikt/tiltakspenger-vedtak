@@ -14,8 +14,4 @@ interface RammevedtakRepo {
         vedtak: Rammevedtak,
         context: TransactionContext? = null,
     ): Rammevedtak
-
-    fun hentRammevedtakSomIkkeHarMeldekort(limit: Int = 10): List<Rammevedtak>
-
-    fun oppdaterVedtakSendtTilMeldekort(id: VedtakId)
 }

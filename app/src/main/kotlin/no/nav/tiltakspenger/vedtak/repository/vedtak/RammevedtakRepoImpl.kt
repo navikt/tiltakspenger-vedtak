@@ -78,35 +78,6 @@ internal class RammevedtakRepoImpl(
             )
         }
 
-    /**
-     * Brukes for å generere det første meldekortet.
-     */
-    override fun hentRammevedtakSomIkkeHarMeldekort(limit: Int): List<Rammevedtak> =
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        """
-                         SELECT v.*, s.saksnummer
-                         FROM rammevedtak v
-                         JOIN sak s ON s.id = v.sak_id
-                         WHERE NOT EXISTS (
-                           SELECT 1
-                           FROM meldekort m
-                           WHERE m.rammevedtakId = v.id
-                        )
-                        LIMIT $limit
-                        """.trimIndent(),
-                    ).map { row ->
-                        row.toVedtak(sessionContext)
-                    }.asList,
-                )
-            }
-        }
-
-    fun hentRammevedtakViSkalGenerereMeldekortFor() {
-    }
-
     override fun lagreVedtak(
         vedtak: Rammevedtak,
         context: TransactionContext?,
@@ -137,21 +108,6 @@ internal class RammevedtakRepoImpl(
             ).asUpdate,
         )
         return vedtak
-    }
-
-    override fun oppdaterVedtakSendtTilMeldekort(id: VedtakId) {
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        "update rammevedtak set sendt_til_meldekort = true where id = :id",
-                        mapOf(
-                            "id" to id.toString(),
-                        ),
-                    ).asUpdate,
-                )
-            }
-        }
     }
 
     private fun Row.toVedtak(sessionContext: SessionContext): Rammevedtak {

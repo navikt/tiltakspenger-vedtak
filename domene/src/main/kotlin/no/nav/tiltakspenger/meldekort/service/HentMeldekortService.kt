@@ -27,7 +27,7 @@ class HentMeldekortService(
         val fnr = meldekortRepo.hentFnrForMeldekortId(meldekortId) ?: return null
 
         val meldekort = meldekortRepo.hentForMeldekortId(meldekortId) ?: return null
-        kastHvisIkkeTilgang(fnr, saksbehandler, meldekort.sakId)
+        // kastHvisIkkeTilgang(fnr, saksbehandler, meldekort.sakId)
 
         return meldekort.also {
             logger.info { "Hentet meldekort med meldekortId $meldekortId. saksbehandler: ${saksbehandler.navIdent}" }
@@ -39,7 +39,7 @@ class HentMeldekortService(
         saksbehandler: Saksbehandler,
     ): List<MeldekortSammendrag> {
         val fnr = sakService.hentFnrForSakId(sakId) ?: throw IllegalArgumentException("Fant ikke fnr for sakId: $sakId")
-        kastHvisIkkeTilgang(fnr, saksbehandler, sakId)
+        // kastHvisIkkeTilgang(fnr, saksbehandler, sakId)
         return meldekortRepo.hentSammendragforSakId(sakId)
     }
 

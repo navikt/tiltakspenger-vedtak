@@ -86,6 +86,8 @@ object Configuration {
                 "MELDEKORT_URL" to "http://host.docker.internal:8091",
                 "UTBETALING_SCOPE" to "localhost",
                 "UTBETALING_URL" to "http://localhost:8091",
+                "DOKUMENT_SCOPE" to "localhost",
+                "DOKUMENT_URL" to "http://localhost:8091",
             ),
         )
     private val devProperties =

@@ -115,7 +115,7 @@ internal class PostgresSakRepo(
         return sessionFactory.withSession(sessionContext) { session ->
             session.run(
                 queryOf(
-                    "select sak.fnr from sak  where sak.id = :sakId",
+                    "select ident as fnr from sak  where sak.id = :sakId",
                     mapOf("sakId" to sakId.toString()),
                 ).map { row ->
                     Fnr.fromString(row.string("fnr"))
