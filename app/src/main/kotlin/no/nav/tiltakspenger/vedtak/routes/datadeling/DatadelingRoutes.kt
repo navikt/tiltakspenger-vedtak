@@ -46,6 +46,7 @@ fun Route.datadelingRoutes(
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
+                    SECURELOG.info { "Henter perioder for vedtak med ident ${it.ident}, med periode fra ${it.fom} til ${it.tom}" }
                     val vedtak = rammevedtakService.hentVedtakForIdent(
                         ident = it.ident,
                         fom = it.fom,

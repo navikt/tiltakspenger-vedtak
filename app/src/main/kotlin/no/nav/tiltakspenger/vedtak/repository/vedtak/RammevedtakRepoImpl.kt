@@ -100,6 +100,8 @@ internal class RammevedtakRepoImpl(
                     }.asList,
                 )
             }
+        }.also {
+            SECURELOG.info { "Hentet ${it.size} vedtak for ident $ident" }
         }
 
     override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Rammevedtak> =
