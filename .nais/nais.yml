@@ -58,7 +58,9 @@ spec:
     outbound:
       rules:
         - application: tiltakspenger-tiltak
-        - application: tiltakspenger-meldekort-api
+        - application: tiltakspenger-dokument
+        - application: utsjekk
+          namespace: helved
       external:
         - host: {{ urlPdl }}
         - host: {{ urlSkjerming }}
