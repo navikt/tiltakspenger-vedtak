@@ -52,12 +52,6 @@ object Configuration {
             "ROLE_SKJERMING" to System.getenv("ROLE_SKJERMING"),
             "ROLE_DRIFT" to System.getenv("ROLE_DRIFT"),
             "logback.configurationFile" to "logback.xml",
-            "SKJERMING_SCOPE" to System.getenv("SCOPE_SKJERMING"),
-            "SKJERMING_URL" to System.getenv("SKJERMING_URL"),
-            "PDL_SCOPE" to System.getenv("PDL_SCOPE"),
-            "PDL_ENDPOINT_URL" to System.getenv("PDL_ENDPOINT_URL"),
-            "TILTAK_SCOPE" to System.getenv("TILTAK_SCOPE"),
-            "TILTAK_URL" to System.getenv("TILTAK_URL"),
             "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
         )
 
@@ -98,6 +92,8 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "UTBETALING_SCOPE" to "api://dev-gcp.helved.utsjekk/.default",
                 "UTBETALING_URL" to "http://utsjekk.helved",
+                "DOKUMENT_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-dokument/.default",
+                "DOKUMENT_URL" to "http://tiltakspenger-dokument",
             ),
         )
     private val prodProperties =
@@ -112,6 +108,8 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "UTBETALING_SCOPE" to "api://prod-gcp.helved.utsjekk/.default",
                 "UTBETALING_URL" to "http://utsjekk.helved",
+                "DOKUMENT_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-dokument/.default",
+                "DOKUMENT_URL" to "http://tiltakspenger-dokument",
             ),
         )
 
