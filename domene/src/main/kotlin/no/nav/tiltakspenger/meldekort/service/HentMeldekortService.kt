@@ -3,25 +3,24 @@ package no.nav.tiltakspenger.meldekort.service
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.getOrCreateCorrelationIdFromThreadLocal
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.domene.Meldekortperioder
+import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
-import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 
 class HentMeldekortService(
     private val meldekortRepo: MeldekortRepo,
-    private val behandlingRepo: BehandlingRepo,
+    private val sakService: SakService,
     private val tilgangsstyringService: TilgangsstyringService,
 ) {
     val logger = KotlinLogging.logger { }
 
-    fun hentMeldekort(
+    fun hentForMeldekortId(
         meldekortId: MeldekortId,
         saksbehandler: Saksbehandler,
     ): Meldekort? {
@@ -35,21 +34,13 @@ class HentMeldekortService(
         }
     }
 
-    fun hentMeldekortForFørstegangsbehandlingId(
-        førstegangsbehandlingId: BehandlingId,
+    fun hentForSakId(
+        sakId: SakId,
         saksbehandler: Saksbehandler,
-    ): Meldekortperioder? {
-        val fnr = behandlingRepo.hentFnrForBehandlingId(førstegangsbehandlingId) ?: return null
-
-        val meldekort =
-            meldekortRepo.hentUtfylteMeldekortForFørstegangsbehandlingId(førstegangsbehandlingId) ?: return null
-        kastHvisIkkeTilgang(fnr, saksbehandler, meldekort.sakId)
-
-        return meldekort.also {
-            logger.info {
-                "Hentet utfylte meldekort for førstegangsbehandlingId $førstegangsbehandlingId. saksbehandler: ${saksbehandler.navIdent}"
-            }
-        }
+    ): List<MeldekortSammendrag> {
+        val fnr = sakService.hentFnrForSakId(sakId) ?: throw IllegalArgumentException("Fant ikke fnr for sakId: $sakId")
+        kastHvisIkkeTilgang(fnr, saksbehandler, sakId)
+        return meldekortRepo.hentSammendragforSakId(sakId)
     }
 
     private fun kastHvisIkkeTilgang(

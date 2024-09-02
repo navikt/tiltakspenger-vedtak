@@ -8,6 +8,7 @@ import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -19,14 +20,13 @@ fun Route.hentMeldekortRoute(
     val logger = KotlinLogging.logger { }
 
     get("/sak/{sakId}/meldekort") {
-        logger.info("Mottatt request på $MELDEKORT_PATH/{meldekortId}")
+        logger.info("Mottatt request på /sak/{sakId}/meldekort - henter alle meldekort for sak")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val meldekortId =
-            call.parameters["meldekortId"]
-                ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
-        val meldekort = hentMeldekortService.hentMeldekort(MeldekortId.fromString(meldekortId), saksbehandler)
-        checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
-        call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO())
+        val sakId =
+            call.parameters["sakId"]
+                ?: return@get call.respond(message = "sakId mangler", status = HttpStatusCode.NotFound)
+        val meldekortperioder = hentMeldekortService.hentForSakId(SakId.fromString(sakId), saksbehandler)
+        call.respond(status = HttpStatusCode.OK, message = meldekortperioder.toDTO())
     }
 
     get("$MELDEKORT_PATH/{meldekortId}") {
@@ -35,7 +35,7 @@ fun Route.hentMeldekortRoute(
         val meldekortId =
             call.parameters["meldekortId"]
                 ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
-        val meldekort = hentMeldekortService.hentMeldekort(MeldekortId.fromString(meldekortId), saksbehandler)
+        val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler)
         checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
         call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO())
     }

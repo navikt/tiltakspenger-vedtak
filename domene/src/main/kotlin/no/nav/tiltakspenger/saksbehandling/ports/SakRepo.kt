@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.ports
 
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
@@ -25,4 +26,9 @@ interface SakRepo {
     fun hentForJournalpostId(journalpostId: String): Sak?
 
     fun hentNesteSaksnummer(): Saksnummer
+
+    fun hentFnrForSakId(
+        sakId: SakId,
+        sessionContext: SessionContext? = null,
+    ): Fnr?
 }

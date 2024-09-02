@@ -9,12 +9,14 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
+import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.domene.Meldekortperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
@@ -98,7 +100,7 @@ class MeldekortRepoImpl(
     override fun hentforSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
-    ): Meldekortperioder =
+    ): Meldekortperioder? =
         sessionFactory
             .withSession(sessionContext) { session ->
                 session.run(
@@ -111,7 +113,31 @@ class MeldekortRepoImpl(
                         fromRow(row)
                     }.asList,
                 )
-            }.let { it.toNonEmptyListOrNull()!!.tilMeldekortperioder() }
+            }.let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
+
+    override fun hentSammendragforSakId(
+        sakId: SakId,
+        sessionContext: SessionContext?,
+    ): List<MeldekortSammendrag> =
+        sessionFactory
+            .withSession(sessionContext) { session ->
+                session.run(
+                    queryOf(
+                        "select id,fom,tom,type from meldekort where sakId = :sakId",
+                        mapOf("sakId" to sakId),
+                    ).map { row ->
+                        MeldekortSammendrag(
+                            meldekortId = MeldekortId.fromString(row.string("id")),
+                            periode =
+                            Periode(
+                                fraOgMed = row.localDate("fom"),
+                                tilOgMed = row.localDate("tom"),
+                            ),
+                            erUtfylt = row.string("type") == "utfylt",
+                        )
+                    }.asList,
+                )
+            }
 
     override fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,

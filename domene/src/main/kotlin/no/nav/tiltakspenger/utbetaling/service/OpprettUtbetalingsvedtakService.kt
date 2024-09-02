@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
  * Henter alle godkjente meldekort, beregner og lagrer en utbetaling.
  * Grunnen til at vi ønsker å gjøre dette i et eget steg er at vi må kunne resende utbetaling til helved dersom noe feiler og da bør vi prøve den samme behandlingId på nytt, som de deduper på.
  *
- * TODO pre-mvp jah: Diskuter med teamet: Siden saksbehandler sender inn meldekort, kan vi flytte dette inn i transaksjonen som oppretter meldekortet.
+ * TODO pre-mvp jah: Diskuter med teamet: Siden beslutter sender inn meldekort, kan vi flytte dette inn i transaksjonen som oppretter meldekortet.
  */
 class OpprettUtbetalingsvedtakService(
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,

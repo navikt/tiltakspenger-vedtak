@@ -15,7 +15,7 @@ class IverksettMeldekortService(
     fun iverksettMeldekort(kommando: IverksettMeldekortKommando): Meldekort.UtfyltMeldekort {
         val meldekortId = kommando.meldekortId
         val meldekort: Meldekort =
-            hentMeldekortService.hentMeldekort(meldekortId, kommando.beslutter)
+            hentMeldekortService.hentForMeldekortId(meldekortId, kommando.beslutter)
                 ?: throw IllegalStateException("Fant ikke meldekort med id $meldekortId")
         // TODO pre-mvp: Sjekk at beslutter har rollen beslutter. Lag en hent-funksjon i en service som sjekker kode6/7/skjermet og sjekker roller.
         meldekort as Meldekort.UtfyltMeldekort

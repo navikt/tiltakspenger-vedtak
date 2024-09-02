@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
@@ -75,8 +76,7 @@ class SakServiceImpl(
         val sakPersonopplysninger =
             SakPersonopplysninger(
                 liste = runBlocking { personGateway.hentPerson(fnr) },
-            )
-                .let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+            ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
                 .also {
                     // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
                     if (!it.harTilgang(saksbehandler)) {
@@ -101,10 +101,11 @@ class SakServiceImpl(
                     registrerteTiltak = registrerteTiltak,
                 ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
-        val statistikk = opprettBehandlingMapper(
-            sak = sak.sakDetaljer,
-            behandling = sak.førstegangsbehandling,
-        )
+        val statistikk =
+            opprettBehandlingMapper(
+                sak = sak.sakDetaljer,
+                behandling = sak.førstegangsbehandling,
+            )
 
         sessionFactory.withTransactionContext { tx ->
             sakRepo.lagre(sak, tx)
@@ -157,6 +158,8 @@ class SakServiceImpl(
         }
         return sak
     }
+
+    override fun hentFnrForSakId(sakId: SakId): Fnr? = sakRepo.hentFnrForSakId(sakId)
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<Fnr, Boolean> =
         liste

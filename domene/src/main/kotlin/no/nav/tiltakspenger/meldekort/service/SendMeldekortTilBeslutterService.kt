@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
+import java.lang.IllegalStateException
 
 /**
  * Genererer meldekort for alle rammevedtak som ikke har meldekort.
@@ -19,8 +20,12 @@ class SendMeldekortTilBeslutterService(
     fun sendMeldekortTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Meldekort.UtfyltMeldekort> {
-        val eksisterendeMeldekort = meldekortRepo.hentforSakId(kommando.sakId)
-        return eksisterendeMeldekort.sendTilBeslutter(kommando)
+        val sakId = kommando.sakId
+        val eksisterendeMeldekort =
+            meldekortRepo.hentforSakId(sakId)
+                ?: throw IllegalStateException("Det finnes ingen eksisterende meldekort for sak $sakId")
+        return eksisterendeMeldekort
+            .sendTilBeslutter(kommando)
             .map { it.second }
             .onRight {
                 meldekortRepo.lagre(it)
