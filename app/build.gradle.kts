@@ -3,7 +3,7 @@ val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
 val felleslibVersion = "0.0.208"
-val tokenSupportVersion = "3.2.0"
+val tokenSupportVersion = "5.0.4"
 val iverksettVersjon = "1.0_20240829083905_36ac417"
 
 plugins {
