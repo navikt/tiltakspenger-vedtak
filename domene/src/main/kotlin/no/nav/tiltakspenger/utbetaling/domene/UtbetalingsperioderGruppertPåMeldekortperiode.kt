@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.utbetaling.domene
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.meldekort.domene.Meldekortperiode
+import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import java.time.DayOfWeek
 
 /**
@@ -60,7 +60,7 @@ data class UtbetalingsperioderGruppertPåMeldekortperiode(
     fun satsUnsafe(): Sats = utbetalingsperioder.filterIsInstance<Utbetalingsperiode.SkalUtbetale>().first().sats
 }
 
-fun Meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(): UtbetalingsperioderGruppertPåMeldekortperiode {
+fun Meldeperiode.UtfyltMeldeperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(): UtbetalingsperioderGruppertPåMeldekortperiode {
     val utbetalingsperioder =
         this.verdi
             .fold((listOf<Utbetalingsperiode>())) { acc, meldekortdag ->

@@ -59,8 +59,8 @@ CREATE INDEX søknadVedlegg_søknad
          søknad_id
             );
 
-CREATE INDEX tiltak_behandling
-    ON tiltak
-        (
-         behandling_id
-            );
+CREATE INDEX tiltak_behandling ON tiltak (behandling_id);
+
+CREATE INDEX idx_utfylt_meldekort_sakid ON meldekort (sakId);
+
+CREATE INDEX idx_utfylt_meldekort_rammevedtakid ON meldekort (rammevedtakId);

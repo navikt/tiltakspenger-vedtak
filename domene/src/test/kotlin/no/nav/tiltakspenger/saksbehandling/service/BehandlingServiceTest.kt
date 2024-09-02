@@ -10,6 +10,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
+import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterAvslag
 import no.nav.tiltakspenger.objectmothers.ObjectMother.behandlingTilBeslutterInnvilget
@@ -24,7 +25,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerUtenTilgang
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
-import no.nav.tiltakspenger.saksbehandling.ports.MeldekortgrunnlagGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -45,7 +45,7 @@ internal class BehandlingServiceTest {
     private lateinit var vedtakRepo: RammevedtakRepo
     private lateinit var behandlingService: BehandlingService
     private lateinit var brevPublisherGateway: BrevPublisherGateway
-    private lateinit var meldekortGrunnlagGateway: MeldekortgrunnlagGateway
+    private lateinit var meldekortRepo: MeldekortRepo
     private lateinit var tiltakGateway: TiltakGateway
     private lateinit var sakRepo: SakRepo
     private lateinit var personopplysningRepo: PersonopplysningerRepo
@@ -62,7 +62,7 @@ internal class BehandlingServiceTest {
         vedtakRepo = mockk()
         personopplysningRepo = mockk(relaxed = true)
         brevPublisherGateway = mockk()
-        meldekortGrunnlagGateway = mockk()
+        meldekortRepo = mockk()
         tiltakGateway = mockk()
         sakRepo = mockk(relaxed = true)
         sessionFactory = TestSessionFactory()
@@ -78,12 +78,12 @@ internal class BehandlingServiceTest {
                 vedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
                 brevPublisherGateway = brevPublisherGateway,
-                meldekortGrunnlagGateway = meldekortGrunnlagGateway,
                 sakRepo = sakRepo,
                 sessionFactory = sessionFactory,
                 saksoversiktRepo = saksoversiktRepo,
                 statistikkSakRepo = statistikkSakRepo,
                 statistikkStønadRepo = statistikkStønadRepo,
+                meldekortRepo = meldekortRepo,
             )
     }
 
@@ -146,7 +146,7 @@ internal class BehandlingServiceTest {
         shouldThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang())
         }.message shouldBe
-            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='Z12345', brukernavn='*****', epost='*****', roller=[])"
+            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='Z12345', brukernavn='*****', epost='*****', roller=Roller(value=[]))"
         shouldNotThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, beslutter())
         }
@@ -172,7 +172,7 @@ internal class BehandlingServiceTest {
         shouldThrow<IllegalStateException> {
             behandlingService.taBehandling(behandlingId, saksbehandlerUtenTilgang(navIdent = navIdentBeslutter))
         }.message shouldBe
-            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='B12345', brukernavn='*****', epost='*****', roller=[])"
+            "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='B12345', brukernavn='*****', epost='*****', roller=Roller(value=[]))"
 
         shouldNotThrow<IllegalStateException> {
             behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter(navIdent = navIdentBeslutter), "begrunnelse")

@@ -104,25 +104,6 @@ internal class RammevedtakRepoImpl(
             SECURELOG.info { "Hentet ${it.size} vedtak for ident $ident" }
         }
 
-    override fun hentVedtakSomIkkeErSendtTilMeldekort(limit: Int): List<Rammevedtak> =
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        """
-                        select v.*, s.saksnummer
-                        from rammevedtak v
-                        join sak s on s.id = v.sak_id
-                        where v.sendt_til_meldekort = false
-                        limit $limit
-                        """.trimIndent(),
-                    ).map { row ->
-                        row.toVedtak(sessionContext)
-                    }.asList,
-                )
-            }
-        }
-
     override fun lagreVedtak(
         vedtak: Rammevedtak,
         context: TransactionContext?,
@@ -153,21 +134,6 @@ internal class RammevedtakRepoImpl(
             ).asUpdate,
         )
         return vedtak
-    }
-
-    override fun oppdaterVedtakSendtTilMeldekort(id: VedtakId) {
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        "update rammevedtak set sendt_til_meldekort = true where id = :id",
-                        mapOf(
-                            "id" to id.toString(),
-                        ),
-                    ).asUpdate,
-                )
-            }
-        }
     }
 
     private fun Row.toVedtak(sessionContext: SessionContext): Rammevedtak {

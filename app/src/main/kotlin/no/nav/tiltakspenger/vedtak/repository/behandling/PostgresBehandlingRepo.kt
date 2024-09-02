@@ -133,6 +133,24 @@ internal class PostgresBehandlingRepo(
             )
         }
 
+    override fun hentFnrForBehandlingId(førstegangsbehandlingId: BehandlingId): Fnr? =
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select ident from behandling b
+                    join sak s on b.sakId = s.id
+                    where b.id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to førstegangsbehandlingId.toString(),
+                    ),
+                ).map { row ->
+                    Fnr.fromString(row.string("ident"))
+                }.asSingle,
+            )
+        }
+
     override fun lagre(
         behandling: Behandling,
         transactionContext: TransactionContext?,

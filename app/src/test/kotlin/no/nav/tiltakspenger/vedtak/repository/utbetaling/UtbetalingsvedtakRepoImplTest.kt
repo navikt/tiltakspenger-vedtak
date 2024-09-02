@@ -28,7 +28,7 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.hentGodkjenteMeldekortUtenUtbetalingsvedtak() shouldBe emptyList()
 
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
-            utbetalingsvedtakRepo.markerUtbetalt(utbetalingsvedtak.id, SendtUtbetaling("", ""))
+            utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, SendtUtbetaling("", ""))
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe emptyList()
         }
     }

@@ -2,8 +2,8 @@ package no.nav.tiltakspenger.vedtak.tilgang
 
 import io.ktor.server.auth.jwt.JWTPrincipal
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import java.util.UUID
@@ -17,12 +17,12 @@ class JWTInnloggetSaksbehandlerProvider(
 
     private fun finnRolleMedUUID(uuidFraClaim: UUID): AdRolle? = allAvailableRoles.firstOrNull { configRole -> configRole.objectId == uuidFraClaim }
 
-    private fun List<UUID>.mapFromUUIDToRoleName(): List<Rolle> =
+    private fun List<UUID>.mapFromUUIDToRoleName(): Roller =
         this
             .map {
                 LOG.debug { "Mapper rolle $it" }
                 it
-            }.mapNotNull { finnRolleMedUUID(it)?.name }
+            }.mapNotNull { finnRolleMedUUID(it)?.name }.let { Roller(it) }
 
     override fun hentSaksbehandler(principal: JWTPrincipal): Saksbehandler {
         val ident = requireNotNull(principal.getClaim("NAVident", String::class)) { "NAVident er null i token" }

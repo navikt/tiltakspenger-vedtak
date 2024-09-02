@@ -2,37 +2,124 @@ package no.nav.tiltakspenger.meldekort.domene
 
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
-import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.IkkeTiltaksdag
-import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Tiltaksdag
-import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsdag
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import java.time.LocalDate
 
 /**
- * Når en bruker er på tiltak kan hen være 1-5 av 7 dager i uken på tiltak.
- * Når bruker har registrert sine maks antall dager på meldekortet [Tiltaksdag], vil de resterende dagene være [IkkeTiltaksdag].
- * [IkkeTiltaksdag] blir også omtalt som sperret.
- * Selvom en dag er en [Tiltaksdag], trenger ikke bruker å ha deltatt, men hen må ha meldt dagen.
+ * Når en bruker er på tiltak kan hen være 1-5 av 7 dager i uken på tiltak. Dvs. minst 2 dager per uke må være Sperret eller IkkeDeltatt.
+ *
+ * Vi vet at det på et tidspunkt kommer til å være mulig å fylle ut en meldekortdag for flere enn ett tiltak. Da vil man kunne rename Meldekortdag til MeldekortdagForTiltak og wrappe den i en Meldekortdag(List<MeldekortdagForTiltak>)
  */
 sealed interface Meldekortdag {
     val dato: LocalDate
     val meldekortId: MeldekortId
 
-    /**
-     * En dag bruker har vært på tiltak.
-     */
-    data class Tiltaksdag(
-        override val dato: LocalDate,
-        // TODO pre-mvp jah: Vi må legge til ingen utbetaling igjen. Evt. kan vi ha en egen klasse for det.
-        val status: Utbetalingsdag.Status,
-        override val meldekortId: MeldekortId,
-        val tiltakstype: TiltakstypeSomGirRett,
-    ) : Meldekortdag
+    val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær?
+    val tiltakstype: TiltakstypeSomGirRett
 
-    /**
-     * En dag bruker ikke har vært på tiltak. Blir også omtalt som sperret.
-     */
-    data class IkkeTiltaksdag(
-        override val dato: LocalDate,
+    data class IkkeUtfylt(
         override val meldekortId: MeldekortId,
-    ) : Meldekortdag
+        override val dato: LocalDate,
+        override val tiltakstype: TiltakstypeSomGirRett,
+    ) : Meldekortdag {
+        override val reduksjon = null
+    }
+
+    sealed interface Utfylt : Meldekortdag {
+        override val tiltakstype: TiltakstypeSomGirRett
+        override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær
+
+        /** Begrenses av antallDager (1-5) per uke og vurderingsperioden sine utfall. */
+        val harDeltattEllerFravær: Boolean
+
+        sealed interface Deltatt : Utfylt {
+            override val harDeltattEllerFravær get() = true
+
+            data class DeltattUtenLønnITiltaket(
+                override val meldekortId: MeldekortId,
+                override val dato: LocalDate,
+                override val tiltakstype: TiltakstypeSomGirRett,
+            ) : Deltatt {
+                override val reduksjon = IngenReduksjon
+            }
+
+            data class DeltattMedLønnITiltaket(
+                override val meldekortId: MeldekortId,
+                override val dato: LocalDate,
+                override val tiltakstype: TiltakstypeSomGirRett,
+            ) : Deltatt {
+                override val reduksjon = YtelsenFallerBort
+            }
+        }
+
+        data class IkkeDeltatt(
+            override val meldekortId: MeldekortId,
+            override val dato: LocalDate,
+            // TODO post-mvp: Siden vi bare støtter et tiltak i MVP kan vi implisitt fylle ut denne. Dersom vi har flere tiltak, må bruker i så fall velge tiltaket han ikke har deltatt på og det er ikke sikkert det gir mening og vi tar bort feltet.
+            override val tiltakstype: TiltakstypeSomGirRett,
+        ) : Utfylt {
+            override val reduksjon = YtelsenFallerBort
+            override val harDeltattEllerFravær = false
+        }
+
+        sealed interface Fravær : Utfylt {
+            override val harDeltattEllerFravær get() = true
+
+            /**
+             * @property reduksjon I tilfellet syk bruker/barn, gjøres det en utregning på tvers av meldekort basert på egenmeldingsdager, sykedager og karantene.
+             */
+            sealed interface Syk : Fravær {
+                override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær
+
+                data class SykBruker(
+                    override val meldekortId: MeldekortId,
+                    override val dato: LocalDate,
+                    override val tiltakstype: TiltakstypeSomGirRett,
+                    override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
+                ) : Syk
+
+                data class SyktBarn(
+                    override val meldekortId: MeldekortId,
+                    override val dato: LocalDate,
+                    override val tiltakstype: TiltakstypeSomGirRett,
+                    override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
+                ) : Syk
+            }
+
+            sealed interface Velferd : Fravær {
+                data class VelferdGodkjentAvNav(
+                    override val meldekortId: MeldekortId,
+                    override val dato: LocalDate,
+                    override val tiltakstype: TiltakstypeSomGirRett,
+                ) : Velferd {
+                    override val reduksjon = IngenReduksjon
+                }
+
+                data class VelferdIkkeGodkjentAvNav(
+                    override val meldekortId: MeldekortId,
+                    override val dato: LocalDate,
+                    override val tiltakstype: TiltakstypeSomGirRett,
+                ) : Velferd {
+                    override val reduksjon = YtelsenFallerBort
+                }
+            }
+        }
+
+        /**
+         * En meldekortdag bruker ikke får mulighet til å fylle ut.
+         * Gjelder for disse tilfellene:
+         * 1. Første del av første meldekort i en sak.
+         * 1. Siste del av siste meldekort i en sak.
+         * 1. Andre dager bruker ikke får melde pga. vilkårsvurderingen. Delvis innvilget. Dette vil ikke gjelde MVP.
+         */
+        data class Sperret(
+            override val meldekortId: MeldekortId,
+            override val dato: LocalDate,
+            override val tiltakstype: TiltakstypeSomGirRett,
+        ) : Utfylt {
+            override val reduksjon = YtelsenFallerBort
+            override val harDeltattEllerFravær = false
+        }
+    }
 }

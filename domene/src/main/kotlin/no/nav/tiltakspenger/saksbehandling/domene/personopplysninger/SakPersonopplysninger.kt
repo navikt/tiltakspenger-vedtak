@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
 
-import no.nav.tiltakspenger.felles.Rolle
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle
 
 data class SakPersonopplysninger(
     val liste: List<Personopplysninger> = emptyList(),

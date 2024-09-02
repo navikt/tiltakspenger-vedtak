@@ -33,4 +33,6 @@ interface BehandlingRepo {
     fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling?
 
     fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
+
+    fun hentFnrForBehandlingId(førstegangsbehandlingId: BehandlingId): Fnr?
 }

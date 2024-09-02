@@ -42,8 +42,8 @@ internal enum class TiltakstypeSomGirRettDb {
     UTVIDET_OPPFØLGING_I_OPPLÆRING,
     ;
 
-    fun toDomain(): TiltakstypeSomGirRett {
-        return when (this) {
+    fun toDomain(): TiltakstypeSomGirRett =
+        when (this) {
             ARBEIDSFORBEREDENDE_TRENING -> TiltakstypeSomGirRett.ARBEIDSFORBEREDENDE_TRENING
             ARBEIDSRETTET_REHABILITERING -> TiltakstypeSomGirRett.ARBEIDSRETTET_REHABILITERING
             ARBEIDSTRENING -> TiltakstypeSomGirRett.ARBEIDSTRENING
@@ -62,7 +62,6 @@ internal enum class TiltakstypeSomGirRettDb {
             UTVIDET_OPPFØLGING_I_NAV -> TiltakstypeSomGirRett.UTVIDET_OPPFØLGING_I_NAV
             UTVIDET_OPPFØLGING_I_OPPLÆRING -> TiltakstypeSomGirRett.UTVIDET_OPPFØLGING_I_OPPLÆRING
         }
-    }
 }
 
 internal fun TiltakstypeSomGirRett.toDb(): String =

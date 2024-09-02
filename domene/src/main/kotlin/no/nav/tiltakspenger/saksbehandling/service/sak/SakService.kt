@@ -4,6 +4,7 @@ import arrow.core.Either
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
@@ -32,4 +33,6 @@ interface SakService {
         saksnummer: Saksnummer,
         saksbehandler: Saksbehandler,
     ): Sak
+
+    fun hentFnrForSakId(sakId: SakId): Fnr?
 }
