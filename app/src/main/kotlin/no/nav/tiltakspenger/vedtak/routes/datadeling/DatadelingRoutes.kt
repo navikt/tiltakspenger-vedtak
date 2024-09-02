@@ -96,7 +96,7 @@ private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> {
             // Resten av feltene er TODO()
             antallDager = 0.0,
             dagsatsTiltakspenger = 0,
-            dagsatsArbeidsgiver = 0,
+            dagsatsBarnetillegg = 0,
             antallBarn = 0,
             relaterteTiltak = "",
             rettighet = Rettighet.TILTAKSPENGER,
@@ -120,7 +120,7 @@ data class DatadelingVedtakDTO(
     val tom: LocalDate,
     val antallDager: Double,
     val dagsatsTiltakspenger: Int,
-    val dagsatsArbeidsgiver: Int,
+    val dagsatsBarnetillegg: Int,
     val antallBarn: Int,
     val relaterteTiltak: String,
     val rettighet: Rettighet,
