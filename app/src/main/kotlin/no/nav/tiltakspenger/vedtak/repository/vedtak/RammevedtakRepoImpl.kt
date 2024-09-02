@@ -93,7 +93,7 @@ internal class RammevedtakRepoImpl(
                            where s.ident = :ident
                         """.trimIndent(),
                         mapOf(
-                            "ident" to ident.toString(),
+                            "ident" to ident.verdi,
                         ),
                     ).map { row ->
                         row.toVedtak(sessionContext)
