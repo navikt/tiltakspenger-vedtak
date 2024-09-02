@@ -39,8 +39,25 @@ fun Route.datadelingRoutes(
             )
     }
 
-    post("$DATADELING_PATH/vedtak") {
-        SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak")
+    post("$DATADELING_PATH/vedtak/perioder") {
+        SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
+
+        call.receive<DatadelingDTO>().toRequest()
+            .fold(
+                { call.respond(HttpStatusCode.BadRequest, it) },
+                {
+                    val vedtak = rammevedtakService.hentVedtakForIdent(
+                        ident = it.ident,
+                        fom = it.fom,
+                        tom = it.tom,
+                    )
+                    call.respond(status = HttpStatusCode.OK, mapVedtakPerioder(vedtak))
+                },
+            )
+    }
+
+    post("$DATADELING_PATH/vedtak/detaljer") {
+        SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
 
         call.receive<DatadelingDTO>().toRequest()
             .fold(
@@ -73,11 +90,51 @@ private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> {
             vedtakId = it.id.toString(),
             fom = it.periode.fraOgMed,
             tom = it.periode.tilOgMed,
+            sakId = it.sakId.toString(),
+            saksnummer = it.saksnummer.toString(),
+            // Resten av feltene er TODO()
+            antallDager = 0.0,
+            dagsatsTiltakspenger = 0,
+            dagsatsArbeidsgiver = 0,
+            antallBarn = 0,
+            relaterteTiltak = "",
+            rettighet = Rettighet.TILTAKSPENGER,
+        )
+    }
+}
+
+private fun mapVedtakPerioder(vedtak: List<Rammevedtak>): List<DatadelingVedtakPeriodeDTO> {
+    return vedtak.map {
+        DatadelingVedtakPeriodeDTO(
+            vedtakId = it.id.toString(),
+            fom = it.periode.fraOgMed,
+            tom = it.periode.tilOgMed,
         )
     }
 }
 
 data class DatadelingVedtakDTO(
+    val vedtakId: String,
+    val fom: LocalDate,
+    val tom: LocalDate,
+    val antallDager: Double,
+    val dagsatsTiltakspenger: Int,
+    val dagsatsArbeidsgiver: Int,
+    val antallBarn: Int,
+    val relaterteTiltak: String,
+    val rettighet: Rettighet,
+    val sakId: String,
+    val saksnummer: String,
+)
+
+enum class Rettighet {
+    TILTAKSPENGER,
+    BARNETILLEGG,
+    TILTAKSPENGER_OG_BARNETILLEGG,
+    INGENTING,
+}
+
+data class DatadelingVedtakPeriodeDTO(
     val vedtakId: String,
     val fom: LocalDate,
     val tom: LocalDate,
