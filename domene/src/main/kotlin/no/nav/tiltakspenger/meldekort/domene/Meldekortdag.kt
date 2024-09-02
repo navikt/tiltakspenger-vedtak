@@ -22,7 +22,7 @@ sealed interface Meldekortdag {
      */
     data class Tiltaksdag(
         override val dato: LocalDate,
-        // TODO jah denne PR: Vi må legge til ingen utbetaling igjen. Evt. kan vi ha en egen klasse for det.
+        // TODO pre-mvp jah: Vi må legge til ingen utbetaling igjen. Evt. kan vi ha en egen klasse for det.
         val status: Utbetalingsdag.Status,
         override val meldekortId: MeldekortId,
         val tiltakstype: TiltakstypeSomGirRett,

@@ -111,7 +111,7 @@ sealed interface Utbetalingsperiode {
 
 fun Meldekortdag.genererUtbetalingsperiode(): Utbetalingsperiode =
     when (this) {
-        // TODO jah: En tiltaksdag kan ende opp i at vi ikke skal utbetale. Syk/fravær osv.
+        // TODO pre-mvp jah: En tiltaksdag kan ende opp i at vi ikke skal utbetale. Syk/fravær osv.
         is Meldekortdag.Tiltaksdag ->
             Utbetalingsperiode.SkalUtbetale(
                 nonEmptyListOf(this.genererUtbetalingsdag()),

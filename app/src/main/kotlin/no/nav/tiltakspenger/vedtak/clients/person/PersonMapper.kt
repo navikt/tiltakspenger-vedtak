@@ -51,8 +51,9 @@ internal fun mapPersonopplysninger(
         val navn = avklarNavn(person.navn).bind()
         val fødsel = avklarFødsel(person.foedsel).bind()
         val adressebeskyttelse: AdressebeskyttelseGradering = avklarGradering(person.adressebeskyttelse).bind()
-        // TODO jah: toIdenterForBarnIFolkeregisteret() var ikke brukt. Sjekk hva vi bør gjøre her.
-        person.forelderBarnRelasjon.toBarnUtenforFolkeregisteret().filter { it.kanGiRettPåBarnetillegg() }
+        person.forelderBarnRelasjon
+            .toBarnUtenforFolkeregisteret()
+            .filter { it.kanGiRettPåBarnetillegg() }
             .map { barn ->
                 PersonopplysningerBarnUtenIdent(
                     fødselsdato = barn.fødselsdato,
@@ -61,20 +62,21 @@ internal fun mapPersonopplysninger(
                     etternavn = barn.etternavn,
                     tidsstempelHosOss = innhentet,
                 )
-            } + PersonopplysningerSøker(
-            fnr = fnr,
-            fødselsdato = fødsel.foedselsdato,
-            fornavn = navn.fornavn,
-            mellomnavn = navn.mellomnavn,
-            etternavn = navn.etternavn,
-            fortrolig = adressebeskyttelse.erFortrolig(),
-            strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
-            strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
-            skjermet = null,
-            kommune = geografiskTilknytning?.gtKommune,
-            bydel = geografiskTilknytning?.gtBydel,
-            tidsstempelHosOss = innhentet,
-        )
+            } +
+            PersonopplysningerSøker(
+                fnr = fnr,
+                fødselsdato = fødsel.foedselsdato,
+                fornavn = navn.fornavn,
+                mellomnavn = navn.mellomnavn,
+                etternavn = navn.etternavn,
+                fortrolig = adressebeskyttelse.erFortrolig(),
+                strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
+                strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
+                skjermet = null,
+                kommune = geografiskTilknytning?.gtKommune,
+                bydel = geografiskTilknytning?.gtBydel,
+                tidsstempelHosOss = innhentet,
+            )
     }.getOrElse { it.mapError() }
 }
 
@@ -84,7 +86,7 @@ private const val SIKKERHETSMARGIN_ÅR = 2L // søknaden sender med barn opp til
 private fun BarnIFolkeregisteret.kanGiRettPåBarnetillegg() =
     fødselsdato.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR))
 
-// TODO jah: Vi kan ikke bruke LocalDate.now(). Vi må sammenligne med vurderingsperioden.
+// TODO pre-mvp jah: Vi kan ikke bruke LocalDate.now(). Vi må sammenligne med vurderingsperioden.
 private fun BarnUtenFolkeregisteridentifikator.kanGiRettPåBarnetillegg() =
     fødselsdato?.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR)) ?: true
 
@@ -93,19 +95,22 @@ private data class PdlResponseData(
     val hentPerson: PdlPerson,
 )
 
-private val objectMapper: ObjectMapper = JsonMapper.builder()
-    .addModule(JavaTimeModule())
-    .addModule(KotlinModule.Builder().build())
-    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-    .disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
-    .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
-    .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
-    .build()
+private val objectMapper: ObjectMapper =
+    JsonMapper
+        .builder()
+        .addModule(JavaTimeModule())
+        .addModule(KotlinModule.Builder().build())
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+        .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+        .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
+        .build()
 
 internal fun FellesPersonklientError.mapError(): Nothing {
-    // TODO jah: Her har vi mulighet til å returnere Either.left istedet for å kaste.
     when (this) {
-        is AdressebeskyttelseKunneIkkeAvklares -> throw RuntimeException("Feil ved henting av personopplysninger: AdressebeskyttelseKunneIkkeAvklares")
+        is AdressebeskyttelseKunneIkkeAvklares -> throw RuntimeException(
+            "Feil ved henting av personopplysninger: AdressebeskyttelseKunneIkkeAvklares",
+        )
         is DeserializationException -> throw RuntimeException(
             "Feil ved henting av personopplysninger: DeserializationException",
             this.exception,

@@ -19,7 +19,6 @@ sealed interface PersonopplysningerMedIdent : Personopplysninger {
     fun fnr(): Fnr
 }
 
-// TODO: Det er en del funksjoner her som fremdeles er i bruk, da jeg ikke har innført SakPersonopplysninger overalt ennå (mangler Innsending)
 fun List<Personopplysninger>.søkere(): List<PersonopplysningerSøker> = this.filterIsInstance<PersonopplysningerSøker>()
 
 fun List<Personopplysninger>.søkerOrNull(): PersonopplysningerSøker? = this.filterIsInstance<PersonopplysningerSøker>().firstOrNull()

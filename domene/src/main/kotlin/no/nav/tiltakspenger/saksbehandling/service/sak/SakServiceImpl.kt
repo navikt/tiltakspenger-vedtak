@@ -75,10 +75,9 @@ class SakServiceImpl(
         val sakPersonopplysninger =
             SakPersonopplysninger(
                 liste = runBlocking { personGateway.hentPerson(fnr) },
-            )
-                .let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
+            ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
                 .also {
-                    // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
+                    // TODO pre-mvp jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
                     if (!it.harTilgang(saksbehandler)) {
                         SECURELOG.info {
                             "Saksbehandler ${saksbehandler.navIdent} " +
@@ -101,10 +100,11 @@ class SakServiceImpl(
                     registrerteTiltak = registrerteTiltak,
                 ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
 
-        val statistikk = opprettBehandlingMapper(
-            sak = sak.sakDetaljer,
-            behandling = sak.førstegangsbehandling,
-        )
+        val statistikk =
+            opprettBehandlingMapper(
+                sak = sak.sakDetaljer,
+                behandling = sak.førstegangsbehandling,
+            )
 
         sessionFactory.withTransactionContext { tx ->
             sakRepo.lagre(sak, tx)

@@ -25,15 +25,18 @@ fun Route.datadelingRoutes(
     post("$DATADELING_PATH/behandlinger") {
         SECURELOG.debug("Mottatt request på $DATADELING_PATH/behadlinger")
 
-        call.receive<DatadelingDTO>().toRequest()
+        call
+            .receive<DatadelingDTO>()
+            .toRequest()
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
-                    val behandlinger = behandlingService.hentBehandlingerUnderBehandlingForIdent(
-                        ident = it.ident,
-                        fom = it.fom,
-                        tom = it.tom,
-                    )
+                    val behandlinger =
+                        behandlingService.hentBehandlingerUnderBehandlingForIdent(
+                            ident = it.ident,
+                            fom = it.fom,
+                            tom = it.tom,
+                        )
                     call.respond(status = HttpStatusCode.OK, mapBehandlinger(behandlinger))
                 },
             )
@@ -42,16 +45,19 @@ fun Route.datadelingRoutes(
     post("$DATADELING_PATH/vedtak/perioder") {
         SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
 
-        call.receive<DatadelingDTO>().toRequest()
+        call
+            .receive<DatadelingDTO>()
+            .toRequest()
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
                     SECURELOG.info { "Henter perioder for vedtak med ident ${it.ident}, med periode fra ${it.fom} til ${it.tom}" }
-                    val vedtak = rammevedtakService.hentVedtakForIdent(
-                        ident = it.ident,
-                        fom = it.fom,
-                        tom = it.tom,
-                    )
+                    val vedtak =
+                        rammevedtakService.hentVedtakForIdent(
+                            ident = it.ident,
+                            fom = it.fom,
+                            tom = it.tom,
+                        )
                     call.respond(status = HttpStatusCode.OK, mapVedtakPerioder(vedtak))
                 },
             )
@@ -60,40 +66,42 @@ fun Route.datadelingRoutes(
     post("$DATADELING_PATH/vedtak/detaljer") {
         SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
 
-        call.receive<DatadelingDTO>().toRequest()
+        call
+            .receive<DatadelingDTO>()
+            .toRequest()
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
-                    val vedtak = rammevedtakService.hentVedtakForIdent(
-                        ident = it.ident,
-                        fom = it.fom,
-                        tom = it.tom,
-                    )
+                    val vedtak =
+                        rammevedtakService.hentVedtakForIdent(
+                            ident = it.ident,
+                            fom = it.fom,
+                            tom = it.tom,
+                        )
                     call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
                 },
             )
     }
 }
 
-private fun mapBehandlinger(behandlinger: List<Behandling>): List<DatadelingBehandlingDTO> {
-    return behandlinger.map {
+private fun mapBehandlinger(behandlinger: List<Behandling>): List<DatadelingBehandlingDTO> =
+    behandlinger.map {
         DatadelingBehandlingDTO(
             behandlingId = it.id.toString(),
             fom = it.vurderingsperiode.fraOgMed,
             tom = it.vurderingsperiode.tilOgMed,
         )
     }
-}
 
-private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> {
-    return vedtak.map {
+private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> =
+    vedtak.map {
         DatadelingVedtakDTO(
             vedtakId = it.id.toString(),
             fom = it.periode.fraOgMed,
             tom = it.periode.tilOgMed,
             sakId = it.sakId.toString(),
             saksnummer = it.saksnummer.toString(),
-            // Resten av feltene er TODO()
+            // TODO pre-mvp: Resten av feltene.
             antallDager = 0.0,
             dagsatsTiltakspenger = 0,
             dagsatsBarnetillegg = 0,
@@ -102,17 +110,15 @@ private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> {
             rettighet = Rettighet.TILTAKSPENGER,
         )
     }
-}
 
-private fun mapVedtakPerioder(vedtak: List<Rammevedtak>): List<DatadelingVedtakPeriodeDTO> {
-    return vedtak.map {
+private fun mapVedtakPerioder(vedtak: List<Rammevedtak>): List<DatadelingVedtakPeriodeDTO> =
+    vedtak.map {
         DatadelingVedtakPeriodeDTO(
             vedtakId = it.id.toString(),
             fom = it.periode.fraOgMed,
             tom = it.periode.tilOgMed,
         )
     }
-}
 
 data class DatadelingVedtakDTO(
     val vedtakId: String,

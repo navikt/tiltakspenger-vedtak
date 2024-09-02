@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-// Todo() B: Midlertidig løsning for å ikke brekke dev. Denne skal skrives om til å hente personalia direkte fra pdl.
+// TODO pre-mvp B: Midlertidig løsning for å ikke brekke dev. Denne skal skrives om til å hente personalia direkte fra pdl.
 fun Route.hentPersonRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     sakService: SakService,

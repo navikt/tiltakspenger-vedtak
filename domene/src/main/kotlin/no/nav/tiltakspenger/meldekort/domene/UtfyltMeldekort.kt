@@ -16,7 +16,7 @@ data class UtfyltMeldekort(
     val id: MeldekortId,
     val sakId: SakId,
     val rammevedtakId: VedtakId,
-    // TODO jah: Tanken er at vi heller tar i mot brukers deltagelses-svar og gjør beregninga her. Men utsetter det til neste PR, da det er et større arbeid.
+    // TODO pre-mvp jah: Tanken er at vi heller tar i mot brukers deltagelses-svar og gjør beregninga her. Men utsetter det til neste PR, da det er et større arbeid.
     val meldekortperiode: Meldekortperiode,
     val saksbehandler: String,
     val beslutter: String,

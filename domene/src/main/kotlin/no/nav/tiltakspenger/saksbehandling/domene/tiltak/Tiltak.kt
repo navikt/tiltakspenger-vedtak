@@ -19,7 +19,7 @@ data class Tiltak(
 ) {
     data class Gjennomføring(
         val id: String,
-        // TODO ukjent: kan vi slette denne?
+        // TODO pre-mvp jah: kan vi slette denne?
         val arrangørnavn: String,
         val typeNavn: String,
         val typeKode: TiltakstypeSomGirRett,

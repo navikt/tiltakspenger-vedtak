@@ -29,7 +29,7 @@ object VedtaksbrevMapper {
         personalia = mapPersonaliaDTO(vedtak, personopplysninger),
         tiltaksinfo =
         TiltaksinfoDTO(
-            // TODO() KEBH Denne må fikses, men ikke nå. Tar en runde på brev
+            // TODO pre-mvp KEBH: Denne må fikses, men ikke nå. Tar en runde på brev
             tiltak = "MåkK",
             tiltaksnavn = "mÅKk",
             tiltaksnummer = "MÅkk",
@@ -38,11 +38,11 @@ object VedtaksbrevMapper {
         fraDato = vedtak.periode.fraOgMed.format(norskDatoFormatter),
         tilDato = vedtak.periode.tilOgMed.format(norskDatoFormatter),
         saksnummer = saksnummer.verdi,
-        // TODO jah: Er det vits at denne er her før vi implementerer barnetillegg?
+        // TODO pre-mvp jah: Er det vits at denne er her før vi implementerer barnetillegg?
         barnetillegg = false,
         saksbehandler = vedtak.saksbehandler,
         beslutter = vedtak.beslutter,
-        // TODO Disse satsene bor i utbetaling. Burde vi hente de derfra?
+        // TODO pre-mvp jah: Dersom vi sender fra oss satser til bruker i rammevedtaksbrevet, bør vi lagre dette og heller hente det fra vedtaket.
         sats = 285,
         satsBarn = 53,
         kontor = "måkk",
@@ -56,7 +56,7 @@ object VedtaksbrevMapper {
         ident = personopplysninger.fnr.verdi,
         fornavn = personopplysninger.fornavn,
         etternavn = personopplysninger.etternavn,
-        // TODO brev jah: Ikke vits å ha denne her før vi har implementert barnetillegg
+        // TODO pre-mvp jah: Ikke vits å ha denne her før vi har implementert barnetillegg
         antallBarn = 0,
     )
 }

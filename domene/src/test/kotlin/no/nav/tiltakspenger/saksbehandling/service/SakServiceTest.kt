@@ -110,43 +110,6 @@ internal class SakServiceTest {
         clearAllMocks()
     }
 
-    // TODO jah: Vi skal ikke støtte mer enn en sak i første omgang. Dessuten hadde det vært bedre å gjøre den om til en integrasjonstest ved å teste på route-nivå
-//    @Test
-//    fun `søknad som ikke overlapper med eksisterende sak, blir en ny sak med en behandling`() {
-//        val søknad = nySøknad(
-//            tiltak = søknadTiltak(
-//                deltakelseFom = 1.januar(2023),
-//                deltakelseTom = 31.mars(2023),
-//            ),
-//        )
-//        val saksbehandler = ObjectMother.saksbehandler()
-//        val ident = søknad.personopplysninger.ident
-//        every { sakRepo.hentForIdent(any()) } returns Saker(ident, emptyList())
-//        every { sakRepo.lagre(any(), any()) } returnsArgument 0
-//        every { sakRepo.hentNesteSaksnummer() } returns Saksnummer("202301011001")
-//        every { søknadRepo.hentSøknad(any()) } returns søknad
-//
-//        coEvery { tiltakGateway.hentTiltak(any()) } returns listOf(ObjectMother.tiltak())
-
-    // coEvery { personGateway.hentPerson(any()) } returns listOf(personopplysningKjedeligFyr(ident = ident))
-//        every { behandlingRepo.hent(any(),any()) } returns behandling()
-//        every { behandlingRepo.hentForSøknadId(any()) } returns behandling()
-//        every { behandlingRepo.lagre(any()) } returnsArgument 0
-//
-//        val sak =
-//            sakService.startFørstegangsbehandling(søknadId = søknad.id, saksbehandler = saksbehandler).getOrElse {
-//                throw IllegalStateException("Kunne ikke starte førstegangsbehandling + $it")
-//
-//            }
-//
-//        sak.behandlinger.size shouldBe 1
-//        sak.behandlinger.first().tilstand shouldBe BehandlingTilstand.OPPRETTET
-//
-//        val behandling = sak.behandlinger.first { it.tilstand == BehandlingTilstand.OPPRETTET }
-//        behandling.vurderingsperiode shouldBe Periode(1.januar(2023), 31.mars(2023))
-//        behandling.søknader.first() shouldBe søknad
-//    }
-
     @Test
     fun `sjekk at skjerming blir satt riktig`() {
         val søknad =

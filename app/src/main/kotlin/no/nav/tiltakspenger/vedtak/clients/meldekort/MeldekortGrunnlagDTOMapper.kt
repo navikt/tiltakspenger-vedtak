@@ -41,7 +41,7 @@ object MeldekortGrunnlagDTOMapper {
                         fra = vedtaksperiode.fraOgMed,
                         til = vedtaksperiode.tilOgMed,
                     ),
-                    // TODO jah: Her har jeg ikke mappet til en egen DTO (kontrakt mellom vedtak og meldekort). Jeg tenker det uansett er veldig risikabelt og endre disse enumene.
+                    // TODO pre-mvp jah: Denne fila skal slettes. Vi flytter meldekort-api inn i vedtak.
                     typeKode = behandling.vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype.name,
                     antDagerIUken = behandling.stønadsdager.registerSaksopplysning.antallDager,
                 ),

@@ -5,7 +5,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
 
 data class SakPersonopplysninger(
-    // TODO jah: Midlertidig public, mens vi skriver oss bort fra RnR.
     val liste: List<Personopplysninger> = emptyList(),
 ) {
     fun søkere(): List<PersonopplysningerSøker> = liste.filterIsInstance<PersonopplysningerSøker>()

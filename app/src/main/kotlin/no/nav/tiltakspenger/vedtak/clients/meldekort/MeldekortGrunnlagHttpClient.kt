@@ -24,6 +24,7 @@ import kotlin.time.toJavaDuration
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
+// TODO pre-mvp jah: Denne fila skal slettes. Vi flytter meldekort-api inn i vedtak.
 class MeldekortGrunnlagHttpClient(
     baseUrl: String,
     private val getSystemToken: suspend () -> AccessToken,

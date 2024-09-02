@@ -30,11 +30,11 @@ class OpprettUtbetalingsvedtakService(
                 .catch {
                     val rammevedtak: Rammevedtak = rammevedtakRepo.hent(meldekort.rammevedtakId)!!
                     require(rammevedtak.sakId == meldekort.sakId)
-                    // TODO jah: Lag en type som passer på at disse er sortert riktig.
+                    // TODO pre-mvp jah: Lag en type som passer på at disse er sortert riktig.
                     val eksisterendeUtbetalingsvedtak = utbetalingsvedtakRepo.hentForSakId(meldekort.sakId)
                     meldekort.tilUtbetalingsperiode(rammevedtak, eksisterendeUtbetalingsvedtak.lastOrNull()?.id).also {
                         utbetalingsvedtakRepo.lagre(it)
-                        // TODO jah lager en herlig transaksjon som lagrer statistikk og utbetalingsvedtak i samme transaksjon.
+                        // TODO pre-mvp jah: lager en herlig transaksjon som lagrer statistikk og utbetalingsvedtak i samme transaksjon.
                         statistikkStønadRepo.lagre(it.tilStatistikk())
                     }
                 }.onLeft {
