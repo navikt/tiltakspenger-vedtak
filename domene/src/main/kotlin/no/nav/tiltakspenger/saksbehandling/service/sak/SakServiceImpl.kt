@@ -78,7 +78,7 @@ class SakServiceImpl(
                 liste = runBlocking { personGateway.hentPerson(fnr) },
             ).let { runBlocking { it.medSkjermingFra(lagListeMedSkjerming(it.liste)) } }
                 .also {
-                    // TODO jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
+                    // TODO pre-mvp jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
                     if (!it.harTilgang(saksbehandler)) {
                         SECURELOG.info {
                             "Saksbehandler ${saksbehandler.navIdent} " +

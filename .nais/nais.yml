@@ -67,6 +67,12 @@ spec:
         - application: tiltakspenger-saksbehandler
           namespace: tpts
           cluster: {{ cluster }}
+        - application: tiltakspenger-datadeling
+          namespace: tpts
+          cluster: {{ cluster }}
+          permissions:
+            roles:
+              - "hente_data"
         - application: tiltakspenger-vedtak-rivers
           namespace: tpts
           cluster: {{ cluster }}

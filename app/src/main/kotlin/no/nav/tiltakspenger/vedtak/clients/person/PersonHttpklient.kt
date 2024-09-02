@@ -23,23 +23,26 @@ internal class PersonHttpklient(
             endepunkt = endepunkt,
         )
 
-    private val objectMapper: ObjectMapper = JsonMapper.builder()
-        .addModule(JavaTimeModule())
-        .addModule(KotlinModule.Builder().build())
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        .disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
-        .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
-        .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
-        .build()
+    private val objectMapper: ObjectMapper =
+        JsonMapper
+            .builder()
+            .addModule(JavaTimeModule())
+            .addModule(KotlinModule.Builder().build())
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
+            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+            .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
+            .build()
 
     /**
      * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
-     * TODO jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
+     * TODO pre-mvp jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
     override suspend fun hentPerson(fnr: Fnr): List<Personopplysninger> {
         val token = azureTokenProvider::getToken
         val body = objectMapper.writeValueAsString(hentPersonQuery(fnr))
-        return personklient.hentPerson(fnr, token(), body)
+        return personklient
+            .hentPerson(fnr, token(), body)
             .map { mapPersonopplysninger(it, LocalDateTime.now(), fnr) }
             .getOrElse { it.mapError() }
     }

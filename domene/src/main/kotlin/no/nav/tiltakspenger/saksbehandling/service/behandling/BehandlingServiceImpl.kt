@@ -4,7 +4,9 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.meldekort.domene.opprettFørsteMeldekortForEnSak
@@ -25,6 +27,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadStatistikkMapper
+import java.time.LocalDate
 
 private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -60,13 +63,13 @@ class BehandlingServiceImpl(
     }
 
     override fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling? {
-        // TODO tilgang jah: Legg på sjekk på kode 6/7/skjermet.
+        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet.
         return behandlingRepo.hentForSøknadId(søknadId)
     }
 
     override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
         require(saksbehandler.isSaksbehandler())
-        // TODO tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
+        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
         return saksoversiktRepo.hentAlle()
     }
 
@@ -144,4 +147,22 @@ class BehandlingServiceImpl(
         val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
         behandlingRepo.lagre(behandling.taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler))
     }
+
+    // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident
+    override fun hentBehandlingerUnderBehandlingForIdent(
+        ident: Fnr,
+        fom: LocalDate,
+        tom: LocalDate,
+    ): List<Behandling> =
+        behandlingRepo
+            .hentAlleForIdent(ident)
+            .filter { behandling -> !behandling.erIverksatt() }
+            .filter { behandling ->
+                behandling.vurderingsperiode.overlapperMed(
+                    Periode(
+                        fraOgMed = fom,
+                        tilOgMed = tom,
+                    ),
+                )
+            }
 }

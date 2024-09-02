@@ -14,7 +14,7 @@ data class PersonopplysningerSøker(
     val strengtFortrolig: Boolean,
     val strengtFortroligUtland: Boolean,
     val skjermet: Boolean?,
-    // TODO jah: Trenger vi kommune + bydel, eller kan vi slette?
+    // TODO pre-mvp jah: Trenger vi kommune + bydel, eller kan vi slette?
     val kommune: String?,
     val bydel: String?,
     // innhentet gjelder PDL, ikke skjerming (som i teorien er litt etter)

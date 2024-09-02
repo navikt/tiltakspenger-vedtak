@@ -16,6 +16,7 @@ internal data class SaksbehandlerDbJson(
         STRENGT_FORTROLIG_ADRESSE,
         SKJERMING,
         LAGE_HENDELSER,
+        HENTE_DATA,
 
         // Systemadministrator (oss)
         DRIFT,
@@ -29,6 +30,7 @@ internal data class SaksbehandlerDbJson(
                 STRENGT_FORTROLIG_ADRESSE -> Rolle.STRENGT_FORTROLIG_ADRESSE
                 SKJERMING -> Rolle.SKJERMING
                 LAGE_HENDELSER -> Rolle.LAGE_HENDELSER
+                HENTE_DATA -> Rolle.HENTE_DATA
                 DRIFT -> Rolle.DRIFT
                 BESLUTTER -> Rolle.BESLUTTER
             }
@@ -57,7 +59,8 @@ internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson =
         Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.FORTROLIG_ADRESSE
         Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.STRENGT_FORTROLIG_ADRESSE
         Rolle.SKJERMING -> SaksbehandlerDbJson.RolleDbJson.SKJERMING
-        Rolle.LAGE_HENDELSER -> SaksbehandlerDbJson.RolleDbJson.LAGE_HENDELSER
+        Rolle.LAGE_HENDELSER -> SaksbehandlerDbJson.RolleDbJson.HENTE_DATA
+        Rolle.HENTE_DATA -> SaksbehandlerDbJson.RolleDbJson.LAGE_HENDELSER
         Rolle.DRIFT -> SaksbehandlerDbJson.RolleDbJson.DRIFT
         Rolle.BESLUTTER -> SaksbehandlerDbJson.RolleDbJson.BESLUTTER
     }

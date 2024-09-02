@@ -96,18 +96,4 @@ fun Route.behandlingBenkRoutes(
         val response = BehandlingIdDTO(behandlingId.toString())
         call.respond(status = HttpStatusCode.OK, response)
     }
-
-    // TODO jah: Kommenterer ut denne inntil videre. Søk på fnr vil ikke lengre fungere for frontend
-//    get("$behandlingerPath/hentForIdent/{søkerId}") {
-//        SECURELOG.debug { "Mottatt request om å hente alle behandlinger for en ident" }
-//
-//        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-//        val søkerId = SøkerId.fromString(call.parameter("søkerId"))
-//        val ident = søkerService.hentIdent(søkerId, saksbehandler)
-//
-//        val behandlinger = behandlingService.hentBehandlingForIdent(ident, saksbehandler)
-//            .mapBehandlinger()
-//
-//        call.respond(status = HttpStatusCode.OK, behandlinger)
-//    }
 }

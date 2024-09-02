@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
+import java.lang.IllegalStateException
 
 /**
  * @param registerSaksopplysning Saksopplysninger som er avgjørende for vurderingen. Kan ikke ha hull. Må gå til kildesystem for å oppdatere/endre dersom vi oppdager feil i datasettet.
@@ -21,21 +22,20 @@ data class TiltakDeltagelseVilkår private constructor(
     }
 
     override fun utfall(): Periodisering<UtfallForPeriode> {
-        val kometGirRett = registerSaksopplysning.girRett
+        val rettTilTiltakspenger = registerSaksopplysning.girRett
         val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
         val status = registerSaksopplysning.status
 
-        val tiltakspengerGirRett = status.rettTilÅSøke
-        if (tiltakspengerGirRett != kometGirRett) {
-            // TODO tiltak jah: skal tiltakspenger eller komet eie denne logikken?
-            //  Se på dette sammen med Tia og Sølvi?
-            logger.error {
-                "rettTilSøke basert på statusen ($tiltakspengerGirRett) stemmer ikke overens med tiltak.gjennomføring. Saksopplysning: $registerSaksopplysning "
-            }
+        val rettTilÅSøke = status.rettTilÅSøke
+        if (!rettTilÅSøke || !rettTilTiltakspenger) {
+            // TODO pre-mvp jah: Vi utleder girRett i tiltakspenger-tiltak. Her kan vi heller bruke en felles algoritme i libs, istedet for å sende den over nettverk.
+            throw IllegalStateException(
+                "Per dags dato får søkere kun søke dersom vi har whitelistet tiltakets status og klassekode. rettTilÅSøke: $rettTilÅSøke, rettTilTIltakspenger: $rettTilTiltakspenger",
+            )
         }
 
         return when {
-            kometGirRett && tiltakspengerGirRett -> Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
+            rettTilTiltakspenger && rettTilÅSøke -> Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
             else -> Periodisering(UtfallForPeriode.UAVKLART, deltagelsePeriode)
         }
     }

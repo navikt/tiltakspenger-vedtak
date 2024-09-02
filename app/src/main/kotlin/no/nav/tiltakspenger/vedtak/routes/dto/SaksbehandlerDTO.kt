@@ -15,6 +15,7 @@ internal data class SaksbehandlerDTO(
         STRENGT_FORTROLIG_ADRESSE,
         SKJERMING,
         LAGE_HENDELSER,
+        HENTE_DATA,
 
         // Systemadministrator (oss)
         DRIFT,
@@ -37,6 +38,7 @@ internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO =
         Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.STRENGT_FORTROLIG_ADRESSE
         Rolle.SKJERMING -> SaksbehandlerDTO.RolleDTO.SKJERMING
         Rolle.LAGE_HENDELSER -> SaksbehandlerDTO.RolleDTO.LAGE_HENDELSER
+        Rolle.HENTE_DATA -> SaksbehandlerDTO.RolleDTO.HENTE_DATA
         Rolle.DRIFT -> SaksbehandlerDTO.RolleDTO.DRIFT
         Rolle.BESLUTTER -> SaksbehandlerDTO.RolleDTO.BESLUTTER
     }

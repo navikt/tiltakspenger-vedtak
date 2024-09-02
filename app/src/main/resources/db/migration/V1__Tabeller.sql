@@ -257,6 +257,19 @@ create table utbetalingsvedtak
     utbetaling_metadata   jsonb null
 );
 
+create table statistikk_utbetaling
+(
+    id                   varchar primary key,
+    sak_id               varchar not null,
+    saksnummer           varchar not null,
+    beløp                int not null,
+    beløp_beskrivelse    varchar not null,
+    årsak                varchar not null,
+    posteringsdato       date not null,
+    gyldig_fra_dato      date not null,
+    gyldig_til_dato      date not null
+);
+
 create table statistikk_stønad
 (
     id                      varchar                  primary key,
@@ -310,15 +323,15 @@ create table statistikk_sak
     behandlingid           varchar                  null,
     relatertbehandlingid   varchar                  null,
     ident                  varchar                  null,
-    mottatt_tidspunkt      timestamp                null,
-    registrerttidspunkt    timestamp                null,
-    ferdigbehandlettidspunkt timestamp              null,
-    vedtaktidspunkt        timestamp                null,
-    utbetalttidspunkt      timestamp                null,
-    endrettidspunkt        timestamp                null,
+    mottatt_tidspunkt      timestamp with time zone null,
+    registrerttidspunkt    timestamp with time zone null,
+    ferdigbehandlettidspunkt timestamp with time zone null,
+    vedtaktidspunkt        timestamp with time zone null,
+    utbetalttidspunkt      timestamp with time zone null,
+    endrettidspunkt        timestamp with time zone null,
     søknadsformat          varchar                  null,
-    forventetoppstarttidspunkt timestamp            null,
-    teknisktidspunkt       timestamp                null,
+    forventetoppstarttidspunkt timestamp with time zone null,
+    teknisktidspunkt       timestamp with time zone null,
     sakytelse              varchar                  null,
     sakutland              boolean                  null,
     behandlingtype         varchar                  null,
