@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
-val felleslibVersion = "0.0.208"
+val felleslibVersion = "0.0.209"
 val tokenSupportVersion = "3.2.0"
 val iverksettVersjon = "1.0_20240829083905_36ac417"
 
@@ -32,7 +32,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:meldekort:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.7")

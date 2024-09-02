@@ -1,4 +1,4 @@
-val felleslibVersion = "0.0.208"
+val felleslibVersion = "0.0.209"
 val kotestVersion = "5.9.1"
 
 dependencies {
