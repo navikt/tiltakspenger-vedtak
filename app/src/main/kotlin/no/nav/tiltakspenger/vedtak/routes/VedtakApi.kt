@@ -232,7 +232,7 @@ fun Application.auth(config: Configuration.TokenVerificationConfig) {
             listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
         )
         jwt(config, "admin", "saksbehandling", listOf(Rolle.DRIFT))
-        jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER))
+        jwtSystemToken(config, "systemtoken", "systemtoken", listOf(Rolle.LAGE_HENDELSER, Rolle.HENTE_DATA))
     }
 }
 

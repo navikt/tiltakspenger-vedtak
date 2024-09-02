@@ -6,6 +6,7 @@ enum class Rolle {
     STRENGT_FORTROLIG_ADRESSE,
     SKJERMING,
     LAGE_HENDELSER,
+    HENTE_DATA,
 
     // Systemadministrator (oss)
     DRIFT,
