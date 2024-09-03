@@ -77,7 +77,7 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.17.2")
+    implementation("org.flywaydb:flyway-database-postgresql:10.17.3")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
