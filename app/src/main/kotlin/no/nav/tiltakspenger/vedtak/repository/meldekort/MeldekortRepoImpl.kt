@@ -224,7 +224,7 @@ class MeldekortRepoImpl(
                     rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                     meldekortperiode = meldekortperiode,
                     saksbehandler = row.string("saksbehandler"),
-                    beslutter = row.string("beslutter"),
+                    beslutter = row.stringOrNull("beslutter"),
                     forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                     tiltakstype = meldekortperiode.tiltakstype,
                 )
