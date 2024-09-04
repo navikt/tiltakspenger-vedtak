@@ -28,7 +28,7 @@ class SendMeldekortTilBeslutterService(
             .sendTilBeslutter(kommando)
             .map { it.second }
             .onRight {
-                meldekortRepo.lagre(it)
+                meldekortRepo.oppdater(it)
                 logger.info { "Meldekort med id ${it.id} sendt til beslutter." }
             }
     }

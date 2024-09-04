@@ -21,7 +21,7 @@ private data class Body(
     val dager: List<Dag>,
 ) {
     data class Dag(
-        val dag: String,
+        val dato: String,
         val status: String,
     )
 
@@ -35,7 +35,7 @@ private data class Body(
         dager =
         this.dager.map { dag ->
             Dag(
-                dag = LocalDate.parse(dag.dag),
+                dag = LocalDate.parse(dag.dato),
                 status =
                 when (dag.status) {
                     "SPERRET" -> SendMeldekortTilBeslutterKommando.Status.SPERRET

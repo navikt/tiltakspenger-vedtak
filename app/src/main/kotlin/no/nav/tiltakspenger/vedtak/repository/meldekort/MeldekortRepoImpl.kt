@@ -74,6 +74,36 @@ class MeldekortRepoImpl(
         }
     }
 
+    override fun oppdater(
+        meldekort: Meldekort,
+        transactionContext: TransactionContext?,
+    ) {
+        sessionFactory.withTransaction(transactionContext) { tx ->
+            tx.run(
+                queryOf(
+                    """
+                    update meldekort set 
+                        meldekortdager = to_jsonb(:meldekortdager::jsonb),
+                        saksbehandler = :saksbehandler,
+                        beslutter = :beslutter,
+                        type = :type     
+                    where id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
+                        "saksbehandler" to meldekort.saksbehandler,
+                        "beslutter" to meldekort.beslutter,
+                        "type" to
+                            when (meldekort) {
+                                is UtfyltMeldekort -> "utfylt"
+                                is IkkeUtfyltMeldekort -> "ikke_utfylt"
+                            },
+                    ),
+                ).asUpdate,
+            )
+        }
+    }
+
     override fun hentForMeldekortId(
         meldekortId: MeldekortId,
         sessionContext: SessionContext?,
@@ -108,7 +138,7 @@ class MeldekortRepoImpl(
                         """
                         select * from meldekort where sakId = :sakId
                         """.trimIndent(),
-                        mapOf("sakId" to sakId),
+                        mapOf("sakId" to sakId.toString()),
                     ).map { row ->
                         fromRow(row)
                     }.asList,

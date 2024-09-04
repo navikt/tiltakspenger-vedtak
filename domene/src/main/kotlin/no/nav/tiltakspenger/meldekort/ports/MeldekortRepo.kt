@@ -16,6 +16,11 @@ interface MeldekortRepo {
         transactionContext: TransactionContext? = null,
     )
 
+    fun oppdater(
+        meldekort: Meldekort,
+        transactionContext: TransactionContext? = null,
+    )
+
     fun hentForMeldekortId(
         meldekortId: MeldekortId,
         sessionContext: SessionContext? = null,
