@@ -90,6 +90,7 @@ class MeldekortRepoImpl(
                     where id = :id
                     """.trimIndent(),
                     mapOf(
+                        "id" to meldekort.id.toString(),
                         "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
