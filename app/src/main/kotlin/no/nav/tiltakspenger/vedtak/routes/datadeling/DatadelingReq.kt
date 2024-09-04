@@ -27,6 +27,14 @@ data class DatadelingDTO(
             ).left()
         }
 
+        val ident = try {
+            Fnr.fromString(ident)
+        } catch (e: Exception) {
+            return MappingError(
+                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+            ).left()
+        }
+
         val fraDato = if (fom.isNullOrBlank()) {
             LocalDate.of(1970, 1, 1)
         } else {
@@ -58,7 +66,7 @@ data class DatadelingDTO(
         }
 
         return DatadelingReq(
-            ident = Fnr.fromString(ident),
+            ident = ident,
             fom = fraDato,
             tom = tilDato,
         ).right()
