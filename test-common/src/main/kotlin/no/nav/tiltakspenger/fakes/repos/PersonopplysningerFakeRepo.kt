@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 class PersonopplysningerFakeRepo(
     private val data: Map<SakId, SakPersonopplysninger>,
 ) : PersonopplysningerRepo {
+    constructor(vararg data: Pair<SakId, SakPersonopplysninger>) : this(data.toMap())
 
     override fun hent(sakId: SakId): SakPersonopplysninger {
         return data[sakId]!!

@@ -10,9 +10,16 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 
-class BehandlingFakeRepo : BehandlingRepo {
+class BehandlingFakeRepo(
+    private val data: Atomic<MutableMap<BehandlingId, Behandling>> = Atomic(mutableMapOf()),
+) : BehandlingRepo {
 
-    private val data = Atomic(mutableMapOf<BehandlingId, Behandling>())
+    constructor(data: MutableMap<BehandlingId, Behandling>) : this(Atomic(data))
+    constructor(eksisterendeFørstegangbehandling: Førstegangsbehandling?) : this(
+        mutableMapOf<BehandlingId, Behandling>().apply {
+            eksisterendeFørstegangbehandling?.let { put(it.id, it) }
+        },
+    )
 
     val alle get() = data.get().values.toList()
 

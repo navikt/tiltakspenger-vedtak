@@ -213,6 +213,7 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
         ObjectMother.utfyltMeldekort(
             sakId = sak.id,
             rammevedtakId = sak.vedtak.single().id,
+            fnr = sak.fnr,
         )
     meldekortRepo.lagre(utfyltMeldekort)
     return Pair(sakRepo.hent(sakId)!!, utfyltMeldekort)

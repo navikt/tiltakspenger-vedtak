@@ -5,9 +5,11 @@ import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.common.getOrFail
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
@@ -24,6 +26,7 @@ interface MeldekortMother {
     fun utfyltMeldekort(
         id: MeldekortId = MeldekortId.random(),
         sakId: SakId = SakId.random(),
+        fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId = VedtakId.random(),
         meldekortperiode: Meldeperiode.UtfyltMeldeperiode =
             utfyltMeldekortperiode(
@@ -37,6 +40,7 @@ interface MeldekortMother {
     ) = Meldekort.UtfyltMeldekort(
         id = id,
         sakId = sakId,
+        fnr = fnr,
         rammevedtakId = rammevedtakId,
         meldekortperiode = meldekortperiode,
         saksbehandler = saksbehandler,
@@ -111,6 +115,7 @@ interface MeldekortMother {
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         sakId: SakId = SakId.random(),
+        fnr: Fnr = Fnr.random(),
         perioder: NonEmptyList<NonEmptyList<SendMeldekortTilBeslutterKommando.Dag>>,
         rammevedtakId: VedtakId = VedtakId.random(),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode> = Periodisering(
@@ -127,9 +132,9 @@ interface MeldekortMother {
             )
         }
         return kommandoer.drop(1).fold(
-            førsteBeregnetMeldekort(tiltakstype, kommandoer.first().meldekortId, sakId, rammevedtakId, kommandoer.first(), utfallsperioder).first,
+            førsteBeregnetMeldekort(tiltakstype, kommandoer.first().meldekortId, sakId, fnr, rammevedtakId, kommandoer.first(), utfallsperioder).first,
         ) { meldekortperioder, kommando ->
-            meldekortperioder.beregnNesteMeldekort(kommando)
+            meldekortperioder.beregnNesteMeldekort(kommando, fnr)
         }
     }
 
@@ -137,6 +142,7 @@ interface MeldekortMother {
         tiltakstype: TiltakstypeSomGirRett,
         meldekortId: MeldekortId,
         sakId: SakId,
+        fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId,
         kommando: SendMeldekortTilBeslutterKommando,
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
@@ -146,6 +152,7 @@ interface MeldekortMother {
             Meldekort.IkkeUtfyltMeldekort(
                 id = meldekortId,
                 sakId = sakId,
+                fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,
@@ -162,6 +169,7 @@ interface MeldekortMother {
 
     fun Meldekortperioder.beregnNesteMeldekort(
         kommando: SendMeldekortTilBeslutterKommando,
+        fnr: Fnr,
     ): Meldekortperioder {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
@@ -176,6 +184,7 @@ interface MeldekortMother {
             verdi = this.verdi + Meldekort.IkkeUtfyltMeldekort(
                 id = meldekortId,
                 sakId = sakId,
+                fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,

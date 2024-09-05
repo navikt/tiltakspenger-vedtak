@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.meldekort.ports
 
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -40,6 +39,4 @@ interface MeldekortRepo {
         meldekortId: MeldekortId,
         sessionContext: SessionContext? = null,
     ): Fnr?
-
-    fun hentUtfylteMeldekortForFørstegangsbehandlingId(førstegangsbehandlingId: BehandlingId): Meldekortperioder?
 }

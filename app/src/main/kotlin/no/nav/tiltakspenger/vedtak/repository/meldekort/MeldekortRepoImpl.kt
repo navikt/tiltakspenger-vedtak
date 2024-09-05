@@ -4,7 +4,6 @@ import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -120,7 +119,7 @@ class MeldekortRepoImpl(
         session.run(
             queryOf(
                 """
-                select * from meldekort where id = :id
+                select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where m.id = :id
                 """.trimIndent(),
                 mapOf("id" to meldekortId.toString()),
             ).map { row ->
@@ -137,7 +136,7 @@ class MeldekortRepoImpl(
                 session.run(
                     queryOf(
                         """
-                        select * from meldekort where sakId = :sakId
+                        select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId
                         """.trimIndent(),
                         mapOf("sakId" to sakId.toString()),
                     ).map { row ->
@@ -189,29 +188,6 @@ class MeldekortRepoImpl(
             )
         }
 
-    override fun hentUtfylteMeldekortForFørstegangsbehandlingId(førstegangsbehandlingId: BehandlingId): Meldekortperioder? =
-        sessionFactory
-            .withSession { session ->
-                session.run(
-                    queryOf(
-                        """
-                        select * from meldekort m 
-                        join rammvedtak r on m.rammevedtakId = r.id 
-                        where r.behandling_id = :rammevedtakId and type = 'utfylt'
-                        """.trimIndent(),
-                        mapOf("rammevedtakId" to førstegangsbehandlingId.toString()),
-                    ).map { row ->
-                        fromRow(row)
-                    }.asList,
-                )
-            }.toNonEmptyListOrNull()
-            ?.let {
-                Meldekortperioder(
-                    tiltakstype = it.first().tiltakstype,
-                    verdi = it,
-                )
-            }
-
     private fun fromRow(row: Row): Meldekort {
         val id = MeldekortId.fromString(row.string("id"))
         val sakId = SakId.fromString(row.string("sakId"))
@@ -221,6 +197,7 @@ class MeldekortRepoImpl(
                 UtfyltMeldekort(
                     id = id,
                     sakId = sakId,
+                    fnr = Fnr.fromString(row.string("fnr")),
                     rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                     meldekortperiode = meldekortperiode,
                     saksbehandler = row.string("saksbehandler"),
@@ -235,6 +212,7 @@ class MeldekortRepoImpl(
                 IkkeUtfyltMeldekort(
                     id = id,
                     sakId = sakId,
+                    fnr = Fnr.fromString(row.string("fnr")),
                     rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                     meldekortperiode = meldekortperiode,
                     forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },

@@ -154,7 +154,8 @@ internal class UtbetalingsvedtakRepoImpl(
             session.run(
                 queryOf(
                     """
-                    select m.* from meldekort m
+                    select m.*, s.ident as fnr from meldekort m
+                    join sak s on s.id = m.sakId
                     left join utbetalingsvedtak u on m.id = u.meldekortId
                     where u.id is null and m.beslutter is not null
                     limit :limit
@@ -170,6 +171,7 @@ internal class UtbetalingsvedtakRepoImpl(
                     UtfyltMeldekort(
                         id = MeldekortId.fromString(row.string("id")),
                         sakId = SakId.fromString(row.string("sakId")),
+                        fnr = Fnr.fromString(row.string("fnr")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                         meldekortperiode =
                         meldekortperiode,
