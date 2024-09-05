@@ -62,7 +62,7 @@ query(${'$'}ident: ID!){
                 ...metadataDetails
             }
         }
-        foedsel {
+        foedselsdato {
             foedselsdato
             folkeregistermetadata {
                 ...folkeregistermetadataDetails
