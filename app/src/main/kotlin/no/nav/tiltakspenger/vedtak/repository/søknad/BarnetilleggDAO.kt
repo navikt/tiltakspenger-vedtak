@@ -9,7 +9,10 @@ import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import org.intellij.lang.annotations.Language
 
-internal class BarnetilleggDAO {
+internal object BarnetilleggDAO {
+
+    private const val ULID_PREFIX_BARNETILLEGG = "btil"
+
     fun lagre(
         søknadId: SøknadId,
         barnetillegg: List<Barnetillegg>,
@@ -133,8 +136,4 @@ internal class BarnetilleggDAO {
 
     @Language("SQL")
     private val hentBarnetillegg = "select * from søknad_barnetillegg where søknad_id = ?"
-
-    companion object {
-        private const val ULID_PREFIX_BARNETILLEGG = "btil"
-    }
 }

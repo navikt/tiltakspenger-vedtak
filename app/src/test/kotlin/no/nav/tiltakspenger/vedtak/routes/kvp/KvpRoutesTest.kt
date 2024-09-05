@@ -22,7 +22,6 @@ import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
-import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
@@ -42,7 +41,6 @@ import org.junit.jupiter.api.Test
 
 class KvpRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
@@ -69,10 +67,8 @@ class KvpRoutesTest {
                     behandlingRepo = testDataHelper.behandlingRepo,
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    brevPublisherGateway = mockBrevPublisherGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
-                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
@@ -157,11 +153,9 @@ class KvpRoutesTest {
                     behandlingRepo = testDataHelper.behandlingRepo,
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortRepo = testDataHelper.meldekortRepo,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
-                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
@@ -240,11 +234,9 @@ class KvpRoutesTest {
                     behandlingRepo = testDataHelper.behandlingRepo,
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    brevPublisherGateway = mockBrevPublisherGateway,
                     meldekortRepo = testDataHelper.meldekortRepo,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
-                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )

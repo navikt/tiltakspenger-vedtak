@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
-import no.nav.tiltakspenger.meldekort.domene.Meldekortperioder
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
 class MeldekortFakeRepo : MeldekortRepo {
@@ -27,11 +27,11 @@ class MeldekortFakeRepo : MeldekortRepo {
         return data.get()[meldekortId]
     }
 
-    override fun hentforSakId(sakId: SakId, sessionContext: SessionContext?): Meldekortperioder? {
+    override fun hentForSakId(sakId: SakId, sessionContext: SessionContext?): Meldeperioder? {
         return data.get().values
             .filter { it.sakId == sakId }.let { meldekort ->
                 meldekort.firstOrNull()?.let {
-                    Meldekortperioder(it.tiltakstype, meldekort)
+                    Meldeperioder(it.tiltakstype, meldekort)
                 }
             }
     }

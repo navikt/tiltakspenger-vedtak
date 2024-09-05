@@ -22,11 +22,7 @@ private const val ALDERSPENSJON_FELT = "alderspensjon"
 private const val TRYGD_OG_PENSJON_FELT = "trygd_og_pensjon"
 private const val ETTERLØNN_FELT = "etterlonn"
 
-internal class SøknadDAO(
-    private val barnetilleggDAO: BarnetilleggDAO,
-    private val tiltakDAO: SøknadTiltakDAO,
-    private val vedleggDAO: VedleggDAO,
-) {
+internal object SøknadDAO {
     fun finnIdent(
         søknadId: String,
         session: Session,
@@ -101,9 +97,9 @@ internal class SøknadDAO(
         if (søknadFinnes(søknad.id, txSession)) return
 
         lagreSøknad(søknad, txSession)
-        barnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
-        tiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
-        vedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
+        BarnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
+        SøknadTiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
+        VedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
     }
 
     private fun lagreSøknad(
@@ -171,9 +167,9 @@ internal class SøknadDAO(
         val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
         val filnavn = string("filnavn")
-        val barnetillegg = barnetilleggDAO.hentBarnetilleggListe(id, session)
-        val tiltak = tiltakDAO.hent(id, session)
-        val vedlegg = vedleggDAO.hentVedleggListe(id, session)
+        val barnetillegg = BarnetilleggDAO.hentBarnetilleggListe(id, session)
+        val tiltak = SøknadTiltakDAO.hent(id, session)
+        val vedlegg = VedleggDAO.hentVedleggListe(id, session)
         val kvp = periodeSpm(KVP_FELT)
         val intro = periodeSpm(INTRO_FELT)
         val institusjon = periodeSpm(INSTITUSJON_FELT)

@@ -22,7 +22,7 @@ import no.nav.tiltakspenger.vedtak.db.objectMapper
 
 private val LOG = KotlinLogging.logger {}
 
-class DokumentClient(
+class DokumentHttpClient(
     private val baseUrl: String,
     private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
@@ -36,7 +36,7 @@ class DokumentClient(
         const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
-    override suspend fun sendMeldekortTilDokument(
+    override suspend fun journalførMeldekort(
         vedtak: Utbetalingsvedtak,
         correlationId: CorrelationId,
     ): JoarkResponse {

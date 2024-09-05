@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.meldekort.domene
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
@@ -15,7 +16,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
  * @param tiltakstype I MVP støtter vi kun ett tiltak, men på sikt kan vi ikke garantere at det er én til én mellom meldekortperioder og tiltakstype.
  *
  */
-data class Meldekortperioder(
+data class Meldeperioder(
     val tiltakstype: TiltakstypeSomGirRett,
     val verdi: List<Meldekort>,
 ) : List<Meldekort> by verdi {
@@ -25,12 +26,12 @@ data class Meldekortperioder(
      */
     fun sendTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
-    ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldekortperioder, UtfyltMeldekort>> {
+    ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldeperioder, UtfyltMeldekort>> {
         val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
         val ikkeUtfyltMeldekort = this.ikkeUtfyltMeldekort!!
         return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler).map {
             Pair(
-                Meldekortperioder(
+                Meldeperioder(
                     tiltakstype = tiltakstype,
                     verdi = (verdi.dropLast(1) + it).toNonEmptyListOrNull()!!,
                 ),
@@ -39,7 +40,11 @@ data class Meldekortperioder(
         }
     }
 
-    val periode: Periode = Periode(verdi.first().fraOgMed, verdi.last().tilOgMed)
+    fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
+        return verdi.find { it.id == meldekortId }
+    }
+
+    val periode: Periode by lazy { Periode(verdi.first().fraOgMed, verdi.last().tilOgMed) }
 
     val utfylteMeldekort: List<UtfyltMeldekort> = verdi.filterIsInstance<UtfyltMeldekort>()
 
@@ -50,7 +55,7 @@ data class Meldekortperioder(
     val ikkeUtfyltMeldekort: Meldekort.IkkeUtfyltMeldekort? =
         verdi.filterIsInstance<Meldekort.IkkeUtfyltMeldekort>().firstOrNull()
 
-    val sakId: SakId = verdi.first().sakId
+    val sakId: SakId by lazy { verdi.first().sakId }
 
     init {
         verdi.zipWithNext { a, b ->
@@ -72,7 +77,7 @@ data class Meldekortperioder(
         require(verdi.dropLast(1).all { it is UtfyltMeldekort }) {
             "Kun det siste meldekortet kan være i tilstanden 'ikke utfylt', de N første må være 'utfylt'."
         }
-        require(verdi.map { it.sakId }.distinct().size == 1) {
+        require(verdi.map { it.sakId }.distinct().size <= 1) {
             "Alle meldekortperioder må tilhøre samme sak."
         }
         verdi.map { it.id }.also {
@@ -81,11 +86,20 @@ data class Meldekortperioder(
             }
         }
     }
+
+    companion object {
+        fun empty(tiltakstype: TiltakstypeSomGirRett): Meldeperioder {
+            return Meldeperioder(
+                tiltakstype = tiltakstype,
+                verdi = emptyList(),
+            )
+        }
+    }
 }
 
-fun NonEmptyList<Meldekort>.tilMeldekortperioder(): Meldekortperioder {
+fun NonEmptyList<Meldekort>.tilMeldekortperioder(): Meldeperioder {
     val tiltakstype = first().tiltakstype
-    return Meldekortperioder(
+    return Meldeperioder(
         tiltakstype = tiltakstype,
         verdi = this,
     )

@@ -15,8 +15,8 @@ import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
-import no.nav.tiltakspenger.meldekort.domene.Meldekortperioder
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDate
@@ -122,7 +122,7 @@ interface MeldekortMother {
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
             totalePeriode = Periode(perioder.first().first().dag, perioder.first().last().dag),
         ),
-    ): Meldekortperioder {
+    ): Meldeperioder {
         val kommandoer = perioder.map { dager ->
             SendMeldekortTilBeslutterKommando(
                 sakId = sakId,
@@ -146,7 +146,7 @@ interface MeldekortMother {
         rammevedtakId: VedtakId,
         kommando: SendMeldekortTilBeslutterKommando,
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
-    ) = Meldekortperioder(
+    ) = Meldeperioder(
         tiltakstype = tiltakstype,
         verdi = nonEmptyListOf(
             Meldekort.IkkeUtfyltMeldekort(
@@ -167,10 +167,10 @@ interface MeldekortMother {
         ),
     ).sendTilBeslutter(kommando).getOrFail()
 
-    fun Meldekortperioder.beregnNesteMeldekort(
+    fun Meldeperioder.beregnNesteMeldekort(
         kommando: SendMeldekortTilBeslutterKommando,
         fnr: Fnr,
-    ): Meldekortperioder {
+    ): Meldeperioder {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
         val rammevedtakId = VedtakId.random()
@@ -179,7 +179,7 @@ interface MeldekortMother {
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
             totalePeriode = Periode(kommando.dager.first().dag, kommando.dager.last().dag),
         )
-        return Meldekortperioder(
+        return Meldeperioder(
             tiltakstype = tiltakstype,
             verdi = this.verdi + Meldekort.IkkeUtfyltMeldekort(
                 id = meldekortId,

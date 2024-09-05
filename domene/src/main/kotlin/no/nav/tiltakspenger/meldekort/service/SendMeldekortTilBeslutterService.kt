@@ -22,7 +22,7 @@ class SendMeldekortTilBeslutterService(
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Meldekort.UtfyltMeldekort> {
         val sakId = kommando.sakId
         val eksisterendeMeldekort =
-            meldekortRepo.hentforSakId(sakId)
+            meldekortRepo.hentForSakId(sakId)
                 ?: throw IllegalStateException("Det finnes ingen eksisterende meldekort for sak $sakId")
         return eksisterendeMeldekort
             .sendTilBeslutter(kommando)

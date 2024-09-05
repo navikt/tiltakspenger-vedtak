@@ -15,34 +15,31 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
+import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
 
-private val LOG = KotlinLogging.logger {}
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class SakServiceImpl(
     private val sakRepo: SakRepo,
-    private val søknadRepo: SøknadRepo,
-    private val behandlingRepo: BehandlingRepo,
-    private val behandlingService: BehandlingService,
+    private val saksoversiktRepo: SaksoversiktRepo,
+    private val søknadService: SøknadService,
     private val personGateway: PersonGateway,
     private val skjermingGateway: SkjermingGateway,
     private val sessionFactory: SessionFactory,
@@ -65,12 +62,12 @@ class SakServiceImpl(
         søknadId: SøknadId,
         saksbehandler: Saksbehandler,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
-        val søknad = søknadRepo.hentSøknad(søknadId)
-        behandlingService.hentBehandlingForSøknadId(søknadId)?.also {
-            return HarAlleredeStartetBehandlingen(it.id).left()
+        val søknad = søknadService.hentSøknad(søknadId)
+        sakRepo.hentForSøknadId(søknadId)?.also {
+            return HarAlleredeStartetBehandlingen(it.førstegangsbehandling.id).left()
         }
         val fnr = søknad.fnr
-        if (sakRepo.hentForIdent(fnr).isNotEmpty()) {
+        if (sakRepo.hentForFnr(fnr).isNotEmpty()) {
             throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
         }
         val sakPersonopplysninger =
@@ -115,35 +112,15 @@ class SakServiceImpl(
         return sak.right()
     }
 
-    override fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak? {
-        val behandling = behandlingRepo.hentOrNull(behandlingId) ?: return null
-        return sakRepo.hent(behandling.sakId)
-    }
-
-    override fun hentMedBehandlingId(
+    override fun hentForFørstegangsbehandlingId(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
     ): Sak {
-        val behandling = behandlingRepo.hent(behandlingId)
-        val sak = sakRepo.hent(behandling.sakId) ?: throw IkkeFunnetException("Sak ikke funnet")
+        val sak = sakRepo.hentForFørstegangsbehandlingId(behandlingId) ?: throw IkkeFunnetException("Sak ikke funnet")
         if (!sak.personopplysninger.harTilgang(saksbehandler)) {
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
         }
         return sak
-    }
-
-    override fun hentForIdent(
-        fnr: Fnr,
-        saksbehandler: Saksbehandler,
-    ): Saker {
-        val saker = sakRepo.hentForIdent(fnr)
-        saker.forEach { sak ->
-            if (!sak.personopplysninger.harTilgang(saksbehandler)) {
-                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
-            }
-        }
-
-        return saker
     }
 
     override fun hentForSaksnummer(
@@ -160,6 +137,23 @@ class SakServiceImpl(
     }
 
     override fun hentFnrForSakId(sakId: SakId): Fnr? = sakRepo.hentFnrForSakId(sakId)
+
+    override fun hentForSakId(
+        sakId: SakId,
+        saksbehandler: Saksbehandler,
+    ): Sak? {
+        val sak = sakRepo.hentForSakId(sakId) ?: return null
+        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
+        }
+        return sak
+    }
+
+    override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
+        require(saksbehandler.isSaksbehandler())
+        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
+        return saksoversiktRepo.hentAlle()
+    }
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<Fnr, Boolean> =
         liste

@@ -2,8 +2,10 @@ package no.nav.tiltakspenger.fakes.repos
 
 import arrow.atomic.Atomic
 import arrow.core.nonEmptyListOf
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -18,12 +20,13 @@ class SakFakeRepo(
     private val personopplysningerRepo: PersonopplysningerFakeRepo,
     private val behandlingRepo: BehandlingFakeRepo,
     private val vedtakRepo: RammevedtakFakeRepo,
+    private val meldekortRepo: MeldekortFakeRepo,
 ) : SakRepo {
 
     // TODO jah: Bør heller komponere denne basert på
     val data = Atomic(mutableMapOf<SakId, Sak>())
 
-    override fun hentForIdent(fnr: Fnr): Saker {
+    override fun hentForFnr(fnr: Fnr): Saker {
         return Saker(fnr, data.get().values.filter { it.fnr == fnr })
     }
 
@@ -35,10 +38,11 @@ class SakFakeRepo(
         return sak.also { data.get()[sak.id] = sak }
     }
 
-    override fun hent(sakId: SakId): Sak? {
+    override fun hentForSakId(sakId: SakId): Sak? {
         val førstegangsbehandling = behandlingRepo.hentFørstegangsbehandlingForSakId(sakId)
         val personopplysninger = personopplysningerRepo.hent(sakId)
         val vedtak = vedtakRepo.hentForSakId(sakId)
+        val meldekort = meldekortRepo.hentForSakId(sakId)
         if (førstegangsbehandling == null || vedtak == null) {
             return null
         }
@@ -51,10 +55,11 @@ class SakFakeRepo(
             behandlinger = nonEmptyListOf(førstegangsbehandling),
             personopplysninger = personopplysninger,
             vedtak = listOf(vedtak),
+            meldekort = meldekort!!,
         )
     }
 
-    override fun hentSakDetaljer(sakId: SakId): SakDetaljer? {
+    override fun hentDetaljerForSakId(sakId: SakId): SakDetaljer? {
         return data.get()[sakId]?.let {
             TynnSak(
                 id = it.id,
@@ -70,5 +75,13 @@ class SakFakeRepo(
 
     override fun hentFnrForSakId(sakId: SakId, sessionContext: SessionContext?): Fnr? {
         return data.get()[sakId]?.fnr
+    }
+
+    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? {
+        return data.get().values.find { it.behandlinger.any { behandling -> behandling.id == behandlingId } }
+    }
+
+    override fun hentForSøknadId(søknadId: SøknadId): Sak? {
+        return data.get().values.find { it.behandlinger.any { behandling -> behandling.søknad.id == søknadId } }
     }
 }

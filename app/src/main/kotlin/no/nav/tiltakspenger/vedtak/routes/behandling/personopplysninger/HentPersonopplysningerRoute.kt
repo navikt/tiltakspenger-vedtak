@@ -25,7 +25,7 @@ fun Route.hentPersonRoute(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val sak = sakService.hentMedBehandlingId(behandlingId, saksbehandler)
+        val sak = sakService.hentForFørstegangsbehandlingId(behandlingId, saksbehandler)
 
         val personopplysninger = sak.personopplysninger.søker().toDTO()
 

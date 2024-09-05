@@ -21,7 +21,7 @@ class SøknadFakeRepo(
         data.get()[søknad.id] = søknad
     }
 
-    override fun hentSøknad(søknadId: SøknadId): Søknad {
+    override fun hentForSøknadId(søknadId: SøknadId): Søknad {
         return data.get()[søknadId]!!
     }
 }

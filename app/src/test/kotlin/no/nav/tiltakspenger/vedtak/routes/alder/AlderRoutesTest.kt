@@ -29,7 +29,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.clients.brevpublisher.BrevPublisherGatewayImpl
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
@@ -47,7 +46,6 @@ import java.time.LocalDateTime
 
 class AlderRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -72,10 +70,8 @@ class AlderRoutesTest {
                     behandlingRepo = testDataHelper.behandlingRepo,
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    brevPublisherGateway = mockBrevPublisherGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
-                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
@@ -125,10 +121,8 @@ class AlderRoutesTest {
                     behandlingRepo = testDataHelper.behandlingRepo,
                     vedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    brevPublisherGateway = mockBrevPublisherGateway,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
-                    saksoversiktRepo = testDataHelper.saksoversiktRepo,
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,

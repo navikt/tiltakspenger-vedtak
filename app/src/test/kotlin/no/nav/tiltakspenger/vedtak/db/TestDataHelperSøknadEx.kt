@@ -31,7 +31,7 @@ internal fun TestDataHelper.persisterSøknad(
         ),
 ): Søknad {
     this.søknadRepo.lagre(søknad)
-    return søknadRepo.hentSøknad(søknad.id).also {
+    return søknadRepo.hentForSøknadId(søknad.id).also {
         it shouldBe søknad
     }
 }

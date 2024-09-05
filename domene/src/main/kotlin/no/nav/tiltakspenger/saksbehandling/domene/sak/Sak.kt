@@ -8,7 +8,10 @@ import arrow.core.nonEmptyListOf
 import arrow.core.right
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
@@ -24,7 +27,9 @@ data class Sak(
     val sakDetaljer: SakDetaljer,
     val behandlinger: NonEmptyList<Behandling>,
     val personopplysninger: SakPersonopplysninger,
+    // TODO pre-mvp: Endre til val rammevedtak: Rammevedtak? siden vi kun har et rammevedtak per sak.
     val vedtak: List<Rammevedtak>,
+    val meldekort: Meldeperioder,
 ) : SakDetaljer by sakDetaljer {
     init {
         if (behandlinger.isNotEmpty()) {
@@ -44,6 +49,14 @@ data class Sak(
      * Sjekker kode 6, 7 og skjermet
      */
     fun harTilgang(saksbehandler: Saksbehandler): Boolean = personopplysninger.harTilgang(saksbehandler)
+
+    fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
+        return meldekort.hentMeldekort(meldekortId)
+    }
+
+    fun hentRammevedtak(): Rammevedtak? {
+        return vedtak.lastOrNull()
+    }
 
     companion object {
         fun lagSak(
@@ -76,6 +89,7 @@ data class Sak(
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
                 personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),
+                meldekort = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
             ).right()
         }
     }

@@ -10,5 +10,5 @@ interface SøknadRepo {
         txContext: TransactionContext? = null,
     )
 
-    fun hentSøknad(søknadId: SøknadId): Søknad
+    fun hentForSøknadId(søknadId: SøknadId): Søknad
 }

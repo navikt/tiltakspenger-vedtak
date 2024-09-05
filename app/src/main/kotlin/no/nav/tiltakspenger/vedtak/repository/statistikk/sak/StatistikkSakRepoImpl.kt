@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.repository.statistikk.sak
 
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
@@ -10,80 +9,79 @@ import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.StatistikkSakD
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.VilkårStatistikkDTO
 import org.intellij.lang.annotations.Language
 
-private val LOG = KotlinLogging.logger {}
-
 internal class StatistikkSakRepoImpl(
     private val sessionFactory: PostgresSessionFactory,
-) : StatistikkSakRepo, StatistikkSakDAO {
+) : StatistikkSakRepo {
     override fun lagre(dto: StatistikkSakDTO, context: TransactionContext?) {
         sessionFactory.withTransaction(context) { tx ->
             lagre(dto, tx)
         }
     }
 
-    override fun lagre(dto: StatistikkSakDTO, tx: TransactionalSession) {
-        tx.run(
-            queryOf(
-                lagreSql,
-                mapOf(
-                    "sakId" to dto.sakId,
-                    "saksnummer" to dto.saksnummer,
-                    "behandlingId" to dto.behandlingId,
-                    "relatertBehandlingId" to dto.relatertBehandlingId,
-                    "ident" to dto.ident,
-                    "mottattTidspunkt" to dto.mottattTidspunkt,
-                    "registrertTidspunkt" to dto.registrertTidspunkt,
-                    "ferdigBehandletTidspunkt" to dto.ferdigBehandletTidspunkt,
-                    "vedtakTidspunkt" to dto.vedtakTidspunkt,
-                    "utbetaltTidspunkt" to dto.utbetaltTidspunkt,
-                    "endretTidspunkt" to dto.endretTidspunkt,
-                    "soknadsformat" to dto.søknadsformat,
-                    "forventetOppstartTidspunkt" to dto.forventetOppstartTidspunkt,
-                    "tekniskTidspunkt" to dto.tekniskTidspunkt,
-                    "sakYtelse" to dto.sakYtelse,
-                    "sakUtland" to false,
-                    "behandlingType" to dto.behandlingType.toString(),
-                    "behandlingStatus" to dto.behandlingStatus.toString(),
-                    "behandlingResultat" to dto.behandlingResultat.toString(),
-                    "resultatBegrunnelse" to dto.resultatBegrunnelse,
-                    "behandlingMetode" to dto.behandlingMetode,
-                    "opprettetAv" to dto.opprettetAv,
-                    "saksbehandler" to dto.saksbehandler,
-                    "ansvarligBeslutter" to dto.ansvarligBeslutter,
-                    "ansvarligEnhet" to dto.ansvarligEnhet,
-                    "tilbakekrevingsbelop" to dto.tilbakekrevingsbeløp,
-                    "funksjonellPeriodeFom" to dto.funksjonellPeriodeFom,
-                    "funksjonellPeriodeTom" to dto.funksjonellPeriodeTom,
-                    "hendelse" to dto.hendelse,
-                    "avsender" to dto.avsender,
-                    "versjon" to dto.versjon,
-                ),
-            ).asUpdateAndReturnGeneratedKey,
-        ).also { id ->
-            if (id != null) {
-                dto.vilkår.forEach { vilkår ->
-                    lagreVilkår(id.toInt(), vilkår, tx)
+    companion object {
+        fun lagre(dto: StatistikkSakDTO, tx: TransactionalSession) {
+            tx.run(
+                queryOf(
+                    lagreSql,
+                    mapOf(
+                        "sakId" to dto.sakId,
+                        "saksnummer" to dto.saksnummer,
+                        "behandlingId" to dto.behandlingId,
+                        "relatertBehandlingId" to dto.relatertBehandlingId,
+                        "ident" to dto.ident,
+                        "mottattTidspunkt" to dto.mottattTidspunkt,
+                        "registrertTidspunkt" to dto.registrertTidspunkt,
+                        "ferdigBehandletTidspunkt" to dto.ferdigBehandletTidspunkt,
+                        "vedtakTidspunkt" to dto.vedtakTidspunkt,
+                        "utbetaltTidspunkt" to dto.utbetaltTidspunkt,
+                        "endretTidspunkt" to dto.endretTidspunkt,
+                        "soknadsformat" to dto.søknadsformat,
+                        "forventetOppstartTidspunkt" to dto.forventetOppstartTidspunkt,
+                        "tekniskTidspunkt" to dto.tekniskTidspunkt,
+                        "sakYtelse" to dto.sakYtelse,
+                        "sakUtland" to false,
+                        "behandlingType" to dto.behandlingType.toString(),
+                        "behandlingStatus" to dto.behandlingStatus.toString(),
+                        "behandlingResultat" to dto.behandlingResultat.toString(),
+                        "resultatBegrunnelse" to dto.resultatBegrunnelse,
+                        "behandlingMetode" to dto.behandlingMetode,
+                        "opprettetAv" to dto.opprettetAv,
+                        "saksbehandler" to dto.saksbehandler,
+                        "ansvarligBeslutter" to dto.ansvarligBeslutter,
+                        "ansvarligEnhet" to dto.ansvarligEnhet,
+                        "tilbakekrevingsbelop" to dto.tilbakekrevingsbeløp,
+                        "funksjonellPeriodeFom" to dto.funksjonellPeriodeFom,
+                        "funksjonellPeriodeTom" to dto.funksjonellPeriodeTom,
+                        "hendelse" to dto.hendelse,
+                        "avsender" to dto.avsender,
+                        "versjon" to dto.versjon,
+                    ),
+                ).asUpdateAndReturnGeneratedKey,
+            ).also { id ->
+                if (id != null) {
+                    dto.vilkår.forEach { vilkår ->
+                        lagreVilkår(id.toInt(), vilkår, tx)
+                    }
                 }
             }
         }
-    }
 
-    private fun lagreVilkår(id: Int, dto: VilkårStatistikkDTO, tx: TransactionalSession) {
-        tx.run(
-            queryOf(
-                lagreVilkårSql,
-                mapOf(
-                    "statistikkSakId" to id,
-                    "vilkar" to dto.vilkår,
-                    "beskrivelse" to dto.beskrivelse,
-                    "resultat" to dto.resultat.name,
-                ),
-            ).asUpdate,
-        )
-    }
+        private fun lagreVilkår(id: Int, dto: VilkårStatistikkDTO, tx: TransactionalSession) {
+            tx.run(
+                queryOf(
+                    lagreVilkårSql,
+                    mapOf(
+                        "statistikkSakId" to id,
+                        "vilkar" to dto.vilkår,
+                        "beskrivelse" to dto.beskrivelse,
+                        "resultat" to dto.resultat.name,
+                    ),
+                ).asUpdate,
+            )
+        }
 
-    @Language("SQL")
-    private val lagreSql = """
+        @Language("SQL")
+        private val lagreSql = """
         insert into statistikk_sak (
             sak_id,
             saksnummer,
@@ -149,10 +147,10 @@ internal class StatistikkSakRepoImpl(
             :avsender,
             :versjon
         ) returning id
-    """.trimIndent()
+        """.trimIndent()
 
-    @Language("SQL")
-    private val lagreVilkårSql = """
+        @Language("SQL")
+        private val lagreVilkårSql = """
         insert into statistikk_sak_vilkår (
             statistikk_sak_id,
             vilkår,
@@ -164,5 +162,6 @@ internal class StatistikkSakRepoImpl(
             :beskrivelse,
             :resultat
         )
-    """.trimIndent()
+        """.trimIndent()
+    }
 }

@@ -7,7 +7,6 @@ import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import java.time.LocalDate
 
 interface BehandlingService {
@@ -32,8 +31,6 @@ interface BehandlingService {
     ): Behandling
 
     fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
-
-    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
 
     fun sendTilBeslutter(
         behandlingId: BehandlingId,

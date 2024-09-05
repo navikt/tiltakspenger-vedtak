@@ -17,7 +17,7 @@ class DokumentGatewayFake(
     private val brevSendt: Atomic<Map<SakId, BrevSendt>> = Atomic(mutableMapOf())
     val antallBrevSendt: Int get() = brevSendt.get().size
 
-    override suspend fun sendMeldekortTilDokument(
+    override suspend fun journalførMeldekort(
         vedtak: Utbetalingsvedtak,
         correlationId: CorrelationId,
     ): JoarkResponse {

@@ -16,11 +16,11 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
-import no.nav.tiltakspenger.meldekort.domene.Meldekortperioder
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
-class MeldekortRepoImpl(
+class MeldekortPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : MeldekortRepo {
     override fun lagre(
@@ -112,44 +112,20 @@ class MeldekortRepoImpl(
             hentForMeldekortId(meldekortId, session)
         }
 
-    internal fun hentForMeldekortId(
-        meldekortId: MeldekortId,
-        session: Session,
-    ): Meldekort? =
-        session.run(
-            queryOf(
-                """
-                select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where m.id = :id
-                """.trimIndent(),
-                mapOf("id" to meldekortId.toString()),
-            ).map { row ->
-                fromRow(row)
-            }.asSingle,
-        )
-
-    override fun hentforSakId(
+    override fun hentForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
-    ): Meldekortperioder? =
-        sessionFactory
-            .withSession(sessionContext) { session ->
-                session.run(
-                    queryOf(
-                        """
-                        select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId
-                        """.trimIndent(),
-                        mapOf("sakId" to sakId.toString()),
-                    ).map { row ->
-                        fromRow(row)
-                    }.asList,
-                )
-            }.let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
+    ): Meldeperioder? {
+        return sessionFactory.withSession(sessionContext) { session ->
+            hentForSakId(sakId, session)
+        }
+    }
 
     override fun hentSammendragforSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
-    ): List<MeldekortSammendrag> =
-        sessionFactory
+    ): List<MeldekortSammendrag> {
+        return sessionFactory
             .withSession(sessionContext) { session ->
                 session.run(
                     queryOf(
@@ -168,6 +144,7 @@ class MeldekortRepoImpl(
                     }.asList,
                 )
             }
+    }
 
     override fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,
@@ -188,39 +165,68 @@ class MeldekortRepoImpl(
             )
         }
 
-    private fun fromRow(row: Row): Meldekort {
-        val id = MeldekortId.fromString(row.string("id"))
-        val sakId = SakId.fromString(row.string("sakId"))
-        return when (val type = row.string("type")) {
-            "utfylt" -> {
-                val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
-                UtfyltMeldekort(
-                    id = id,
-                    sakId = sakId,
-                    fnr = Fnr.fromString(row.string("fnr")),
-                    rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                    meldekortperiode = meldekortperiode,
-                    saksbehandler = row.string("saksbehandler"),
-                    beslutter = row.stringOrNull("beslutter"),
-                    forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
-                    tiltakstype = meldekortperiode.tiltakstype,
-                )
-            }
+    companion object {
+        internal fun hentForMeldekortId(
+            meldekortId: MeldekortId,
+            session: Session,
+        ): Meldekort? {
+            return session.run(
+                queryOf(
+                    """
+                        select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where m.id = :id
+                    """.trimIndent(),
+                    mapOf("id" to meldekortId.toString()),
+                ).map { row ->
+                    fromRow(row)
+                }.asSingle,
+            )
+        }
+        internal fun hentForSakId(
+            sakId: SakId,
+            session: Session,
+        ): Meldeperioder? {
+            return session.run(
+                queryOf(
+                    "select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId",
+                    mapOf("sakId" to sakId.toString()),
+                ).map { fromRow(it) }.asList,
+            ).let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
+        }
 
-            "ikke_utfylt" -> {
-                val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
-                IkkeUtfyltMeldekort(
-                    id = id,
-                    sakId = sakId,
-                    fnr = Fnr.fromString(row.string("fnr")),
-                    rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                    meldekortperiode = meldekortperiode,
-                    forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
-                    tiltakstype = meldekortperiode.tiltakstype,
-                )
-            }
+        private fun fromRow(row: Row): Meldekort {
+            val id = MeldekortId.fromString(row.string("id"))
+            val sakId = SakId.fromString(row.string("sakId"))
+            return when (val type = row.string("type")) {
+                "utfylt" -> {
+                    val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
+                    UtfyltMeldekort(
+                        id = id,
+                        sakId = sakId,
+                        fnr = Fnr.fromString(row.string("fnr")),
+                        rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
+                        meldekortperiode = meldekortperiode,
+                        saksbehandler = row.string("saksbehandler"),
+                        beslutter = row.stringOrNull("beslutter"),
+                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
+                        tiltakstype = meldekortperiode.tiltakstype,
+                    )
+                }
 
-            else -> throw IllegalStateException("Ukjent meldekorttype $type for meldekort $id")
+                "ikke_utfylt" -> {
+                    val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
+                    IkkeUtfyltMeldekort(
+                        id = id,
+                        sakId = sakId,
+                        fnr = Fnr.fromString(row.string("fnr")),
+                        rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
+                        meldekortperiode = meldekortperiode,
+                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
+                        tiltakstype = meldekortperiode.tiltakstype,
+                    )
+                }
+
+                else -> throw IllegalStateException("Ukjent meldekorttype $type for meldekort $id")
+            }
         }
     }
 }

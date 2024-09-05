@@ -9,7 +9,10 @@ import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import org.intellij.lang.annotations.Language
 
-internal class VedleggDAO {
+internal object VedleggDAO {
+
+    private const val ULID_PREFIX_VEDLEGG = "vedlegg"
+
     fun lagre(
         søknadId: SøknadId,
         vedlegg: List<Vedlegg>?,
@@ -94,8 +97,4 @@ internal class VedleggDAO {
             :filnavn
         )
         """.trimIndent()
-
-    companion object {
-        private const val ULID_PREFIX_VEDLEGG = "vedlegg"
-    }
 }
