@@ -23,8 +23,6 @@ interface SakRepo {
 
     fun hentSakDetaljer(sakId: SakId): SakDetaljer?
 
-    fun hentForJournalpostId(journalpostId: String): Sak?
-
     fun hentNesteSaksnummer(): Saksnummer
 
     fun hentFnrForSakId(

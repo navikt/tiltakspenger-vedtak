@@ -33,6 +33,8 @@ data class Søknad(
     val jobbsjansen: PeriodeSpm,
     val trygdOgPensjon: PeriodeSpm,
 ) {
+    val fnr: Fnr = personopplysninger.fnr
+
     companion object {
         fun randomId() = SøknadId.random()
     }

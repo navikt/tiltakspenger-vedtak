@@ -10,11 +10,17 @@ data class Saksnummer(
 
     val prefiks = verdi.substring(0, 8)
     val løpenr = verdi.substring(8).toInt()
-    val dato = LocalDate.parse(prefiks, DateTimeFormatter.ofPattern("yyyyMMdd"))
+    val dato: LocalDate = LocalDate.parse(prefiks, DateTimeFormatter.ofPattern("yyyyMMdd"))
 
     init {
         require(verdi.length >= 12) { "Saksnummer må være 12 tegn eller lengre" }
         require(løpenr >= 1001) { "Løpenummer må være lik eller større enn 1001" }
+    }
+
+    fun nesteSaksnummer(): Saksnummer {
+        val prefiks = this.prefiks
+        val nesteLøpenummer = this.løpenr + 1
+        return Saksnummer(prefiks + nesteLøpenummer)
     }
 
     companion object {
@@ -25,12 +31,6 @@ data class Saksnummer(
 
         fun genererSaksnummerPrefiks(date: LocalDate): String =
             date.year.toString() + String.format("%02d%02d", date.monthValue, date.dayOfMonth)
-
-        fun nesteSaksnummer(sisteSaksnummer: Saksnummer): Saksnummer {
-            val prefiks = sisteSaksnummer.prefiks
-            val nesteLøpenummer = sisteSaksnummer.løpenr + 1
-            return Saksnummer(prefiks + nesteLøpenummer)
-        }
     }
 
     override fun toString() = verdi

@@ -1,9 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.ports
 
-import arrow.core.NonEmptyList
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
@@ -28,11 +26,5 @@ interface BehandlingRepo {
 
     fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling>
 
-    fun hentForSak(sakId: SakId): NonEmptyList<Førstegangsbehandling>
-
-    fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling?
-
     fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
-
-    fun hentFnrForBehandlingId(førstegangsbehandlingId: BehandlingId): Fnr?
 }

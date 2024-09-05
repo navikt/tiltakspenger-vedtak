@@ -9,7 +9,7 @@ interface VedtakDAO {
     fun lagreVedtak(
         vedtak: Rammevedtak,
         tx: TransactionalSession,
-    ): Rammevedtak
+    )
 
     fun hentVedtakForSak(
         sakId: SakId,

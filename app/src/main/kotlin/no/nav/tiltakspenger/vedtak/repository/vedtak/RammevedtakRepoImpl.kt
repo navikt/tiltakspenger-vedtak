@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.vedtak
 
-import io.ktor.server.plugins.NotFoundException
 import kotliquery.Row
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
@@ -45,22 +44,6 @@ internal class RammevedtakRepoImpl(
                 )
             }
         }
-
-    override fun hentVedtakForBehandling(behandlingId: BehandlingId): Rammevedtak =
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        sqlHentForBehandling,
-                        mapOf(
-                            "behandlingId" to behandlingId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVedtak(sessionContext)
-                    }.asSingle,
-                )
-            }
-        } ?: throw NotFoundException("Ikke funnet")
 
     override fun hentVedtakForSak(
         sakId: SakId,
@@ -107,15 +90,16 @@ internal class RammevedtakRepoImpl(
     override fun lagreVedtak(
         vedtak: Rammevedtak,
         context: TransactionContext?,
-    ): Rammevedtak =
+    ) {
         sessionFactory.withTransaction(context) { tx ->
             lagreVedtak(vedtak, tx)
         }
+    }
 
     override fun lagreVedtak(
         vedtak: Rammevedtak,
         tx: TransactionalSession,
-    ): Rammevedtak {
+    ) {
         tx.run(
             queryOf(
                 sqlLagre,
@@ -133,7 +117,6 @@ internal class RammevedtakRepoImpl(
                 ),
             ).asUpdate,
         )
-        return vedtak
     }
 
     private fun Row.toVedtak(sessionContext: SessionContext): Rammevedtak {

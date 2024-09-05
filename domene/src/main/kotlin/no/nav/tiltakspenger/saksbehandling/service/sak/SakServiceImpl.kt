@@ -69,7 +69,7 @@ class SakServiceImpl(
         behandlingService.hentBehandlingForSøknadId(søknadId)?.also {
             return HarAlleredeStartetBehandlingen(it.id).left()
         }
-        val fnr = søknad.personopplysninger.fnr
+        val fnr = søknad.fnr
         if (sakRepo.hentForIdent(fnr).isNotEmpty()) {
             throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
         }

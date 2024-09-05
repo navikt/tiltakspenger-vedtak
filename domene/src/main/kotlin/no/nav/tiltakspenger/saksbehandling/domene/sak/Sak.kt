@@ -54,7 +54,7 @@ data class Sak(
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
         ): Either<KanIkkeOppretteBehandling, Sak> {
-            val fnr = søknad.personopplysninger.fnr
+            val fnr = søknad.fnr
             val førstegangsbehandling =
                 Førstegangsbehandling
                     .opprettBehandling(

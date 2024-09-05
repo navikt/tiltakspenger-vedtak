@@ -94,25 +94,6 @@ internal class PostgresBehandlingRepo(
             ).toNonEmptyListOrNull()
             ?: throw IkkeFunnetException("sak med id $sakId ikke funnet")
 
-    override fun hentForSak(sakId: SakId): NonEmptyList<Førstegangsbehandling> =
-        sessionFactory.withSession { session ->
-            hentForSak(sakId, session)
-        }
-
-    override fun hentForJournalpostId(journalpostId: String): Førstegangsbehandling? =
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    sqlHentBehandlingForJournalpostId,
-                    mapOf(
-                        "journalpostId" to journalpostId,
-                    ),
-                ).map { row ->
-                    row.toBehandling(session)
-                }.asSingle,
-            )
-        }
-
     override fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling? =
         sessionFactory.withSession { session ->
             session.run(
@@ -129,24 +110,6 @@ internal class PostgresBehandlingRepo(
                     ),
                 ).map { row ->
                     row.toBehandling(session)
-                }.asSingle,
-            )
-        }
-
-    override fun hentFnrForBehandlingId(førstegangsbehandlingId: BehandlingId): Fnr? =
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """
-                    select ident from behandling b
-                    join sak s on b.sakId = s.id
-                    where b.id = :id
-                    """.trimIndent(),
-                    mapOf(
-                        "id" to førstegangsbehandlingId.toString(),
-                    ),
-                ).map { row ->
-                    Fnr.fromString(row.string("ident"))
                 }.asSingle,
             )
         }

@@ -66,22 +66,6 @@ internal class PostgresSakRepo(
             }
         }
 
-    override fun hentForJournalpostId(journalpostId: String): Sak? =
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        sqlHentForJournalpost,
-                        mapOf(
-                            "journalpostId" to journalpostId,
-                        ),
-                    ).map { row ->
-                        row.toSak(sessionContext)
-                    }.asSingle,
-                )
-            }
-        }
-
     override fun hent(sakId: SakId): Sak? =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
@@ -217,7 +201,7 @@ internal class PostgresSakRepo(
                 ).map { row ->
                     row
                         .string("saksnummer")
-                        .let { Saksnummer.nesteSaksnummer(Saksnummer(it)) }
+                        .let { Saksnummer(it).nesteSaksnummer() }
                 }.asSingle,
             )
         } ?: Saksnummer.genererSaknummer(dato = iDag)

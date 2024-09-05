@@ -145,7 +145,7 @@ internal class SøknadDAO(
                         "behandlingId" to null,
                         "fornavn" to søknad.personopplysninger.fornavn,
                         "etternavn" to søknad.personopplysninger.etternavn,
-                        "ident" to søknad.personopplysninger.fnr.verdi,
+                        "ident" to søknad.fnr.verdi,
                         "journalpostId" to søknad.journalpostId,
                         "dokumentinfoId" to søknad.dokumentInfoId,
                         "filnavn" to søknad.filnavn,

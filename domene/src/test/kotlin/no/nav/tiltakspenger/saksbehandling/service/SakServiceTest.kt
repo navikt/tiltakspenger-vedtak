@@ -123,7 +123,7 @@ internal class SakServiceTest {
             )
         val tiltak = ObjectMother.tiltak()
         val saksbehandler = ObjectMother.saksbehandler(roller = Roller(listOf(SAKSBEHANDLER, SKJERMING)))
-        val fnr = søknad.personopplysninger.fnr
+        val fnr = søknad.fnr
         val barnFnr = Fnr.random()
 
         every { sakRepo.hentForIdent(any()) } returns Saker(fnr, emptyList())
