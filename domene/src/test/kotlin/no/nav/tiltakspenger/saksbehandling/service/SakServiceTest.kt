@@ -60,8 +60,8 @@ internal class SakServiceTest {
         saksoversiktRepo = mockk(relaxed = true)
         behandlingService =
             BehandlingServiceImpl(
-                behandlingRepo = behandlingRepo,
-                vedtakRepo = vedtakRepo,
+                førstegangsbehandlingRepo = behandlingRepo,
+                rammevedtakRepo = vedtakRepo,
                 personopplysningRepo = personopplysningRepo,
                 meldekortRepo = meldekortRepo,
                 sakRepo = sakRepo,

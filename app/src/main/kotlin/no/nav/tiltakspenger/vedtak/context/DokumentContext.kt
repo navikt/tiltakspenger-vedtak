@@ -6,21 +6,12 @@ import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.dokument.DokumentHttpClient
 
 @Suppress("unused")
-internal open class DokumentContext(
-    val dokumentGateway: DokumentGateway,
-    val tokenProviderDokument: AzureTokenProvider,
-) {
-    companion object {
-        fun create(): DokumentContext {
-            val tokenProviderDokument = AzureTokenProvider(config = Configuration.oauthConfigDokument())
-
-            return DokumentContext(
-                dokumentGateway = DokumentHttpClient(
-                    baseUrl = Configuration.dokumentClientConfig().baseUrl,
-                    getToken = tokenProviderDokument::getToken,
-                ),
-                tokenProviderDokument = tokenProviderDokument,
-            )
-        }
+open class DokumentContext {
+    private val tokenProviderDokument by lazy { AzureTokenProvider(config = Configuration.oauthConfigDokument()) }
+    open val dokumentGateway: DokumentGateway by lazy {
+        DokumentHttpClient(
+            baseUrl = Configuration.dokumentClientConfig().baseUrl,
+            getToken = tokenProviderDokument::getToken,
+        )
     }
 }

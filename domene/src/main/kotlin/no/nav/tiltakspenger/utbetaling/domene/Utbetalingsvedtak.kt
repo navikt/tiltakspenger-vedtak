@@ -28,6 +28,8 @@ data class Utbetalingsvedtak(
     val meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
     val utbetalingsperiode: UtbetalingsperioderGruppertPåMeldekortperiode,
     val forrigeUtbetalingsvedtak: VedtakId?,
+    val sendtTilUtbetaling: Boolean,
+    val sendtTilDokument: Boolean,
 ) {
     val periode = utbetalingsperiode.periode
     val beløp = utbetalingsperiode.beløp
@@ -49,8 +51,8 @@ data class Utbetalingsvedtak(
 fun Utbetalingsvedtak.nyttUtbetalingVedtak(
     saksbehandler: String,
     meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
-): Utbetalingsvedtak {
-    return this.copy(
+): Utbetalingsvedtak =
+    this.copy(
         id = VedtakId.random(),
         vedtakstidspunkt = LocalDateTime.now(),
         saksbehandler = saksbehandler,
@@ -59,7 +61,6 @@ fun Utbetalingsvedtak.nyttUtbetalingVedtak(
         meldekortperiode = meldekortperiode,
         forrigeUtbetalingsvedtak = this.id,
     )
-}
 
 fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
     rammevedtak: Rammevedtak,
@@ -79,10 +80,12 @@ fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
         meldekortperiode = this.meldekortperiode,
         utbetalingsperiode = this.meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
         forrigeUtbetalingsvedtak = forrigeUtbetalingsvedtak,
+        sendtTilUtbetaling = false,
+        sendtTilDokument = false,
     )
 
-fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO {
-    return StatistikkUtbetalingDTO(
+fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO =
+    StatistikkUtbetalingDTO(
         // er rammevedtakId det riktige her?
         id = this.rammevedtakId.toString(),
         sakId = this.sakId.toString(),
@@ -94,4 +97,3 @@ fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO {
         gyldigFraDatoPostering = this.periode.fraOgMed,
         gyldigTilDatoPostering = this.periode.tilOgMed,
     )
-}

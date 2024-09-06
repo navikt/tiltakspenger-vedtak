@@ -29,7 +29,7 @@ class OpprettUtbetalingsvedtakService(
             // Vi ønsker ikke at trøblete meldekort skal spenne ben for andre meldekort.
             Either
                 .catch {
-                    val rammevedtak: Rammevedtak = rammevedtakRepo.hent(meldekort.rammevedtakId)!!
+                    val rammevedtak: Rammevedtak = rammevedtakRepo.hentForVedtakId(meldekort.rammevedtakId)!!
                     require(rammevedtak.sakId == meldekort.sakId)
                     // TODO pre-mvp jah: Lag en type som passer på at disse er sortert riktig. Dette vil være en del av arbeidet å sentralisere Sak.kt
                     val eksisterendeUtbetalingsvedtak = utbetalingsvedtakRepo.hentForSakId(meldekort.sakId)

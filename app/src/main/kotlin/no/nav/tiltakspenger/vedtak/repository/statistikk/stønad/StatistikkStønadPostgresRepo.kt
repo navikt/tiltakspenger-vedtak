@@ -10,23 +10,28 @@ import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.Statistikk
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import org.intellij.lang.annotations.Language
 
-internal class StatistikkStønadPostgresRepo(
+class StatistikkStønadPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : StatistikkStønadRepo {
-    override fun lagre(dto: StatistikkStønadDTO, context: TransactionContext?) {
+    override fun lagre(
+        dto: StatistikkStønadDTO,
+        context: TransactionContext?,
+    ) {
         sessionFactory.withTransaction(context) { tx ->
             lagre(dto, tx)
         }
     }
 
-    internal fun lagre(dto: StatistikkStønadDTO, tx: TransactionalSession) {
+    internal fun lagre(
+        dto: StatistikkStønadDTO,
+        tx: TransactionalSession,
+    ) {
         tx.run(
             queryOf(
                 lagreSql,
                 mapOf(
                     "id" to dto.id.toString(),
                     "brukerId" to dto.brukerId,
-
                     "sakId" to dto.sakId,
                     "saksnummer" to dto.saksnummer,
                     "resultat" to dto.resultat,
@@ -34,26 +39,22 @@ internal class StatistikkStønadPostgresRepo(
                     "gyldigFraDato" to dto.sakFraDato,
                     "gyldigTilDato" to dto.sakTilDato,
                     "ytelse" to dto.ytelse,
-
                     "soknadId" to dto.søknadId,
                     "opplysning" to dto.opplysning,
                     "soknadDato" to dto.søknadDato,
                     "gyldigFraDatoSoknad" to dto.søknadFraDato,
                     "gyldigTilDatoSoknad" to dto.søknadTilDato,
-
                     "vedtakId" to dto.vedtakId,
                     "type" to dto.vedtaksType,
                     "vedtakDato" to dto.vedtakDato,
                     "fom" to dto.vedtakFom,
                     "tom" to dto.vedtakTom,
-
                     "oppfolgingEnhetKode" to null,
                     "oppfolgingEnhetNavn" to null,
                     "beslutningEnhetKode" to null,
                     "beslutningEnhetNavn" to null,
                     "tilhorighetEnhetKode" to null,
                     "tilhorighetEnhetNavn" to null,
-
                     "vilkarId" to null,
                     "vilkarType" to null,
                     "vilkarStatus" to null,
@@ -61,7 +62,6 @@ internal class StatistikkStønadPostgresRepo(
                     "beskrivelse" to null,
                     "gyldigFraDatoVilkar" to null,
                     "gyldigTilDatoVilkar" to null,
-
                     // Er dette tiltak pr utbetaling, eller tiltak på rammevedtaket?
                     "tiltakId" to null,
                     "tiltakType" to null,
@@ -70,7 +70,6 @@ internal class StatistikkStønadPostgresRepo(
                     "tiltakDato" to null,
                     "gyldigFraDatoTiltak" to null,
                     "gyldigTilDatoTiltak" to null,
-
                     "sistEndret" to nå(),
                     "opprettet" to nå(),
                 ),
@@ -78,13 +77,19 @@ internal class StatistikkStønadPostgresRepo(
         )
     }
 
-    override fun lagre(dto: StatistikkUtbetalingDTO, context: TransactionContext?) {
+    override fun lagre(
+        dto: StatistikkUtbetalingDTO,
+        context: TransactionContext?,
+    ) {
         sessionFactory.withTransaction(context) { tx ->
             lagre(dto, tx)
         }
     }
 
-    fun lagre(dto: StatistikkUtbetalingDTO, tx: TransactionalSession) {
+    fun lagre(
+        dto: StatistikkUtbetalingDTO,
+        tx: TransactionalSession,
+    ) {
         tx.run(
             queryOf(
                 lagreUtbetalingSql,
@@ -104,7 +109,8 @@ internal class StatistikkStønadPostgresRepo(
     }
 
     @Language("SQL")
-    private val lagreSql = """
+    private val lagreSql =
+        """
         insert into statistikk_stønad (
         id,
         bruker_id,
@@ -190,10 +196,11 @@ internal class StatistikkStønadPostgresRepo(
         :sistEndret,
         :opprettet
         )
-    """.trimIndent()
+        """.trimIndent()
 
     @Language("SQL")
-    private val lagreUtbetalingSql = """
+    private val lagreUtbetalingSql =
+        """
         insert into statistikk_utbetaling (
         id,
         sak_id,
@@ -215,5 +222,5 @@ internal class StatistikkStønadPostgresRepo(
         :gyldigFraDato,
         :gyldigTilDato
         )
-    """.trimIndent()
+        """.trimIndent()
 }

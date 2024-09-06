@@ -15,10 +15,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
-internal class PersonopplysningerPostgresRepo(
+class PersonopplysningerPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : PersonopplysningerRepo {
-
     override fun hent(sakId: SakId): SakPersonopplysninger =
         sessionFactory.withSession { session ->
             hentForSakId(sakId, session)
@@ -27,6 +26,7 @@ internal class PersonopplysningerPostgresRepo(
     companion object {
         private val log = KotlinLogging.logger {}
         private val securelog = KotlinLogging.logger("tjenestekall")
+
         fun hentForSakId(
             sakId: SakId,
             session: Session,
@@ -51,7 +51,8 @@ internal class PersonopplysningerPostgresRepo(
             log.info { "Lagre personopplysninger" }
             personopplysninger.søkerOrNull()?.let { lagre(sakId, it, txSession) }
             personopplysninger.barnMedIdent().forEach { PersonopplysningerBarnMedIdentDAO.lagre(sakId, it, txSession) }
-            personopplysninger.barnUtenIdent()
+            personopplysninger
+                .barnUtenIdent()
                 .forEach { PersonopplysningerBarnUtenIdentDAO.lagre(sakId, it, txSession) }
         }
 
@@ -121,37 +122,37 @@ internal class PersonopplysningerPostgresRepo(
         @Language("SQL")
         private val lagreSql =
             """
-        insert into sak_personopplysninger_søker (
-            id,
-            sakId,        
-            ident,           
-            fødselsdato,     
-            fornavn,         
-            mellomnavn,      
-            etternavn,       
-            fortrolig,       
-            strengt_fortrolig,
-            strengt_fortrolig_utland,
-            skjermet,        
-            kommune,         
-            bydel,           
-            tidsstempel_hos_oss            
-        ) values (
-            :id,
-            :sakId,
-            :ident,             
-            :fodselsdato,   
-            :fornavn,           
-            :mellomnavn,        
-            :etternavn,         
-            :fortrolig,         
-            :strengtFortrolig, 
-            :strengtFortroligUtland, 
-            :skjermet,          
-            :kommune,           
-            :bydel,             
-            :tidsstempelHosOss
-        )
+            insert into sak_personopplysninger_søker (
+                id,
+                sakId,        
+                ident,           
+                fødselsdato,     
+                fornavn,         
+                mellomnavn,      
+                etternavn,       
+                fortrolig,       
+                strengt_fortrolig,
+                strengt_fortrolig_utland,
+                skjermet,        
+                kommune,         
+                bydel,           
+                tidsstempel_hos_oss            
+            ) values (
+                :id,
+                :sakId,
+                :ident,             
+                :fodselsdato,   
+                :fornavn,           
+                :mellomnavn,        
+                :etternavn,         
+                :fortrolig,         
+                :strengtFortrolig, 
+                :strengtFortroligUtland, 
+                :skjermet,          
+                :kommune,           
+                :bydel,             
+                :tidsstempelHosOss
+            )
             """.trimIndent()
 
         private const val ULID_PREFIX_PERSONOPPLYSNINGER = "poppl"

@@ -1,82 +1,54 @@
 package no.nav.tiltakspenger.vedtak.context
 
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 
 /**
- * Inneholder alle klienter, repoer, jobber og servicer.
+ * Inneholder alle klienter, repoer og servicer.
+ * Tanken er at man kan erstatte klienter og repoer med Fakes for testing.
  */
 @Suppress("unused")
-internal open class ApplicationContext(
-    val dokumentContext: DokumentContext,
-    val førstegangsbehandlingContext: FørstegangsbehandlingContext,
-    val meldekortContext: MeldekortContext,
-    val personContext: PersonContext,
-    val sakContext: SakContext,
-    val statistikkContext: StatistikkContext,
-    val søknadContext: SøknadContext,
-    val tilgangsstyringContext: TilgangsstyringContext,
-    val tiltakContext: TiltakContext,
-    val utbetalingContext: UtbetalingContext,
+open class ApplicationContext(
+    val sessionFactory: SessionFactory,
 ) {
-    companion object {
-        fun create(
-            sessionFactory: PostgresSessionFactory,
-        ): ApplicationContext {
-            val søknadContext = SøknadContext.create(
-                sessionFactory = sessionFactory,
-            )
-            val dokumentContext = DokumentContext.create()
-            val personContext = PersonContext.create(
-                sessionFactory = sessionFactory,
-            )
-            val statistikkContext = StatistikkContext.create(
-                sessionFactory = sessionFactory,
-            )
-            val tilgangsstyringContext = TilgangsstyringContext.create(
-                tokenProviderPdl = personContext.tokenProviderPdl,
-            )
-            val tiltakContext = TiltakContext.create()
-            val sakContext = SakContext.create(
-                sessionFactory = sessionFactory,
-                personGateway = personContext.personGateway,
-                søknadService = søknadContext.søknadService,
-                skjermingGateway = tilgangsstyringContext.skjermingGateway,
-                statistikkSakRepo = statistikkContext.statistikkSakRepo,
-                tiltakGateway = tiltakContext.tiltakGateway,
-            )
-            val meldekortContext = MeldekortContext.create(
-                sessionFactory = sessionFactory,
-                sakService = sakContext.sakService,
-                tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
-                dokumentGateway = dokumentContext.dokumentGateway,
-            )
-            val førstegangsbehandlingContext = FørstegangsbehandlingContext.create(
-                sessionFactory = sessionFactory,
-                personopplysningRepo = personContext.personopplysningRepo,
-                meldekortRepo = meldekortContext.meldekortRepo,
-                sakRepo = sakContext.sakRepo,
-                statistikkSakRepo = statistikkContext.statistikkSakRepo,
-                statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
-            )
-
-            val utbetalingContext = UtbetalingContext.create(
-                sessionFactory = sessionFactory,
-                rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
-                statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
-                dokumentGateway = dokumentContext.dokumentGateway,
-            )
-            return ApplicationContext(
-                dokumentContext = dokumentContext,
-                personContext = personContext,
-                statistikkContext = statistikkContext,
-                søknadContext = søknadContext,
-                førstegangsbehandlingContext = førstegangsbehandlingContext,
-                meldekortContext = meldekortContext,
-                sakContext = sakContext,
-                tilgangsstyringContext = tilgangsstyringContext,
-                tiltakContext = tiltakContext,
-                utbetalingContext = utbetalingContext,
-            )
-        }
+    open val personContext by lazy { PersonContext(sessionFactory) }
+    open val dokumentContext by lazy { DokumentContext() }
+    open val statistikkContext by lazy { StatistikkContext(sessionFactory) }
+    open val søknadContext by lazy { SøknadContext(sessionFactory) }
+    open val tilgangsstyringContext by lazy { TilgangsstyringContext(personContext.tokenProviderPdl::getToken) }
+    open val tiltakContext by lazy { TiltakContext() }
+    open val sakContext by lazy {
+        SakContext(
+            sessionFactory = sessionFactory,
+            personGateway = personContext.personGateway,
+            søknadService = søknadContext.søknadService,
+            skjermingGateway = tilgangsstyringContext.skjermingGateway,
+            statistikkSakRepo = statistikkContext.statistikkSakRepo,
+            tiltakGateway = tiltakContext.tiltakGateway,
+        )
+    }
+    open val meldekortContext by lazy {
+        MeldekortContext(
+            sessionFactory = sessionFactory,
+            sakService = sakContext.sakService,
+            tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
+        )
+    }
+    open val førstegangsbehandlingContext by lazy {
+        FørstegangsbehandlingContext(
+            sessionFactory = sessionFactory,
+            personopplysningRepo = personContext.personopplysningerRepo,
+            meldekortRepo = meldekortContext.meldekortRepo,
+            sakRepo = sakContext.sakRepo,
+            statistikkSakRepo = statistikkContext.statistikkSakRepo,
+            statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
+        )
+    }
+    open val utbetalingContext by lazy {
+        UtbetalingContext(
+            sessionFactory = sessionFactory,
+            rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
+            statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
+            dokumentGateway = dokumentContext.dokumentGateway,
+        )
     }
 }

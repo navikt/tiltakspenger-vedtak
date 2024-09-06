@@ -6,11 +6,9 @@ import java.util.concurrent.atomic.AtomicLong
  * Trådsikker. Dersom tester deler database, bør de bruke en felles statisk versjon av denne.
  */
 class JournalpostIdGenerator(
-    private val første: Long,
+    første: Long = 1,
 ) {
     private val neste = AtomicLong(første)
 
-    fun neste(): String {
-        return neste.getAndIncrement().toString()
-    }
+    fun neste(): String = neste.getAndIncrement().toString()
 }

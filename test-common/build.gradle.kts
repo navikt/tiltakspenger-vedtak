@@ -2,13 +2,16 @@ val felleslibVersion = "0.0.211"
 val kotestVersion = "5.9.1"
 
 dependencies {
-    implementation(project(":domene"))
-    implementation(project(":app"))
-    implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    api(project(":domene"))
+    api(project(":app"))
+    api("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:personklient-infrastruktur:$felleslibVersion")
     api("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
-    implementation("io.arrow-kt:arrow-core:1.2.4")
-    implementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    api("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
+    api("io.arrow-kt:arrow-core:1.2.4")
+    api("io.kotest:kotest-assertions-core:$kotestVersion")
 }

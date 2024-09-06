@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import java.time.LocalDateTime
 
-internal class PersonHttpklient(
+class PersonHttpklient(
     endepunkt: String,
     private val azureTokenProvider: AzureTokenProvider,
 ) : PersonGateway {

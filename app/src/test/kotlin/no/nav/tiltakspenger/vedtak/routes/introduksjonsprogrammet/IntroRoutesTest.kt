@@ -63,8 +63,8 @@ class IntroRoutesTest {
 
             val behandlingService =
                 BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
+                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
+                    rammevedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
@@ -119,8 +119,8 @@ class IntroRoutesTest {
 
             val behandlingService =
                 BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
+                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
+                    rammevedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
