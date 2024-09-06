@@ -173,9 +173,9 @@ internal class SakPostgresRepo(
                            select s.* from søknad sø
                            left join behandling b on b.id = sø.behandling_id
                            left join sak s on s.id = b.sakid
-                           where sø.id = :søknadId
+                           where sø.id = :soknadId
                         """.trimIndent(),
-                        mapOf("søknadId" to søknadId.toString()),
+                        mapOf("soknadId" to søknadId.toString()),
                     ).map { row ->
                         row.toSak(sessionContext)
                     }.asSingle,
