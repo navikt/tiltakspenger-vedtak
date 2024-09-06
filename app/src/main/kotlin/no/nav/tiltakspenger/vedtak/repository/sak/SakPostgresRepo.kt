@@ -171,8 +171,8 @@ internal class SakPostgresRepo(
                     queryOf(
                         """
                            select s.* from søknad sø
-                           left join behandling b on b.id = sø.behandling_id
-                           left join sak s on s.id = b.sakid
+                           join behandling b on b.id = sø.behandling_id
+                           join sak s on s.id = b.sakid
                            where sø.id = :soknadId
                         """.trimIndent(),
                         mapOf("soknadId" to søknadId.toString()),
