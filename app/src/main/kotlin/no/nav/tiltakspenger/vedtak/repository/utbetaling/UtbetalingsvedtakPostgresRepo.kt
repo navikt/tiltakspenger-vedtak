@@ -10,13 +10,13 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
+import no.nav.tiltakspenger.vedtak.repository.meldekort.toMeldekortStatus
 
 internal class UtbetalingsvedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -178,7 +178,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                         beslutter = row.string("beslutter"),
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
-                        status = MeldekortStatus.valueOf(row.string("status")),
+                        status = row.string("status").toMeldekortStatus(),
                     )
                 }.asList,
             )

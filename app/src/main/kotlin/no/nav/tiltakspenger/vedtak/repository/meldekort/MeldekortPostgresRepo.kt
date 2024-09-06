@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
-import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
@@ -63,7 +62,7 @@ class MeldekortPostgresRepo(
                         "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
-                        "status" to meldekort.status.toDbJson(),
+                        "status" to meldekort.status.toDb(),
                     ),
                 ).asUpdate,
             )
@@ -82,7 +81,7 @@ class MeldekortPostgresRepo(
                         meldekortdager = to_jsonb(:meldekortdager::jsonb),
                         saksbehandler = :saksbehandler,
                         beslutter = :beslutter,
-                        status = :status,   
+                        status = :status
                     where id = :id
                     """.trimIndent(),
                     mapOf(
@@ -90,7 +89,7 @@ class MeldekortPostgresRepo(
                         "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
-                        "status" to meldekort.status,
+                        "status" to meldekort.status.toDb(),
                     ),
                 ).asUpdate,
             )
@@ -122,7 +121,7 @@ class MeldekortPostgresRepo(
             .withSession(sessionContext) { session ->
                 session.run(
                     queryOf(
-                        "select id,fraOgMed,tilOgMed,type from meldekort where sakId = :sakId",
+                        "select id,fraOgMed,tilOgMed,status,beslutter,saksbehandler from meldekort where sakId = :sakId",
                         mapOf("sakId" to sakId.toString()),
                     ).map { row ->
                         MeldekortSammendrag(
@@ -132,9 +131,9 @@ class MeldekortPostgresRepo(
                                 fraOgMed = row.localDate("fraOgMed"),
                                 tilOgMed = row.localDate("tilOgMed"),
                             ),
-                            status = MeldekortStatus.valueOf(row.string("status")),
-                            beslutter = row.string("beslutter"),
-                            saksbehandler = row.string("saksbehandler"),
+                            status = row.string("status").toMeldekortStatus(),
+                            beslutter = row.stringOrNull("beslutter"),
+                            saksbehandler = row.stringOrNull("saksbehandler"),
                         )
                     }.asList,
                 )
@@ -204,10 +203,9 @@ class MeldekortPostgresRepo(
                         beslutter = row.stringOrNull("beslutter"),
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
-                        status = MeldekortStatus.valueOf(row.string("status")),
+                        status = row.string("status").toMeldekortStatus(),
                     )
                 }
-
                 "KLAR_TIL_UTFYLLING" -> {
                     val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
                     IkkeUtfyltMeldekort(
