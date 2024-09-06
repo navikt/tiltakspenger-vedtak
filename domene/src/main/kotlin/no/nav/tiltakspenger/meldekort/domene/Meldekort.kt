@@ -30,6 +30,7 @@ sealed interface Meldekort {
     val periode: Periode get() = meldekortperiode.periode
     val saksbehandler: String?
     val beslutter: String?
+    val status: MeldekortStatus
 
     /**
      * Meldekort utfylt av saksbehandler og godkjent av beslutter.
@@ -50,7 +51,12 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val saksbehandler: String,
         override val beslutter: String?,
+        override val status: MeldekortStatus,
     ) : Meldekort {
+        init {
+            require(status in listOf(MeldekortStatus.GODKJENT, MeldekortStatus.KLAR_TIL_BESLUTNING))
+        }
+
         /**
          * TODO post-mvp jah: Ved revurderinger av rammevedtaket, så må vi basere oss på både forrige meldekort og revurderingsvedtaket. Dette løser vi å flytte mer logikk til Sak.kt.
          * TODO post-mvp jah: Når vi implementerer delvis innvilgelse vil hele meldekortperioder bli SPERRET.
@@ -92,6 +98,7 @@ sealed interface Meldekort {
                 tiltakstype = this.tiltakstype,
                 saksbehandler = this.saksbehandler,
                 beslutter = beslutter.navIdent,
+                status = MeldekortStatus.GODKJENT,
             )
     }
 
@@ -104,7 +111,7 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldekortperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
     ) : Meldekort {
-
+        override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
         fun sendTilBeslutter(
             meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
             saksbehandler: Saksbehandler,
@@ -124,6 +131,7 @@ sealed interface Meldekort {
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = this.beslutter,
+                status = MeldekortStatus.KLAR_TIL_BESLUTNING,
             ).right()
         }
 

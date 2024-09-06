@@ -9,5 +9,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 data class MeldekortSammendrag(
     val meldekortId: MeldekortId,
     val periode: Periode,
-    val erUtfylt: Boolean,
+    val status: MeldekortStatus,
+    val saksbehandler: String?,
+    val beslutter: String?,
 )

@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
+import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
@@ -40,7 +41,7 @@ class MeldekortPostgresRepo(
                         meldekortdager,
                         saksbehandler,
                         beslutter,
-                        type
+                        status
                     ) values (
                         :id,
                         :sakId,
@@ -50,7 +51,7 @@ class MeldekortPostgresRepo(
                         to_jsonb(:meldekortdager::jsonb),
                         :saksbehandler,
                         :beslutter,
-                        :type
+                        :status
                     )
                     """.trimIndent(),
                     mapOf(
@@ -62,11 +63,7 @@ class MeldekortPostgresRepo(
                         "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
-                        "type" to
-                            when (meldekort) {
-                                is UtfyltMeldekort -> "utfylt"
-                                is IkkeUtfyltMeldekort -> "ikke_utfylt"
-                            },
+                        "status" to meldekort.status.toDbJson(),
                     ),
                 ).asUpdate,
             )
@@ -85,7 +82,7 @@ class MeldekortPostgresRepo(
                         meldekortdager = to_jsonb(:meldekortdager::jsonb),
                         saksbehandler = :saksbehandler,
                         beslutter = :beslutter,
-                        type = :type     
+                        status = :status,   
                     where id = :id
                     """.trimIndent(),
                     mapOf(
@@ -93,11 +90,7 @@ class MeldekortPostgresRepo(
                         "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
-                        "type" to
-                            when (meldekort) {
-                                is UtfyltMeldekort -> "utfylt"
-                                is IkkeUtfyltMeldekort -> "ikke_utfylt"
-                            },
+                        "status" to meldekort.status,
                     ),
                 ).asUpdate,
             )
@@ -139,7 +132,9 @@ class MeldekortPostgresRepo(
                                 fraOgMed = row.localDate("fraOgMed"),
                                 tilOgMed = row.localDate("tilOgMed"),
                             ),
-                            erUtfylt = row.string("type") == "utfylt",
+                            status = MeldekortStatus.valueOf(row.string("status")),
+                            beslutter = row.string("beslutter"),
+                            saksbehandler = row.string("saksbehandler"),
                         )
                     }.asList,
                 )
@@ -196,8 +191,8 @@ class MeldekortPostgresRepo(
         private fun fromRow(row: Row): Meldekort {
             val id = MeldekortId.fromString(row.string("id"))
             val sakId = SakId.fromString(row.string("sakId"))
-            return when (val type = row.string("type")) {
-                "utfylt" -> {
+            return when (val status = row.string("status")) {
+                "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
                     UtfyltMeldekort(
                         id = id,
@@ -209,10 +204,11 @@ class MeldekortPostgresRepo(
                         beslutter = row.stringOrNull("beslutter"),
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
+                        status = MeldekortStatus.valueOf(row.string("status")),
                     )
                 }
 
-                "ikke_utfylt" -> {
+                "KLAR_TIL_UTFYLLING" -> {
                     val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
                     IkkeUtfyltMeldekort(
                         id = id,
@@ -225,7 +221,7 @@ class MeldekortPostgresRepo(
                     )
                 }
 
-                else -> throw IllegalStateException("Ukjent meldekorttype $type for meldekort $id")
+                else -> throw IllegalStateException("Ukjent meldekortstatus $status for meldekort $id")
             }
         }
     }
