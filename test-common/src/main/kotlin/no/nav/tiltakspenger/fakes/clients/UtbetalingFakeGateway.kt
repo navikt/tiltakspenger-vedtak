@@ -10,17 +10,14 @@ import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 
-class UtbetalingGatewayFake(
-    private val data: Map<VedtakId, SendtUtbetaling>,
-) : UtbetalingGateway {
-
+class UtbetalingFakeGateway : UtbetalingGateway {
     private val utbetalinger = Atomic(mutableMapOf<VedtakId, Utbetaling>())
 
     override suspend fun iverksett(
         vedtak: Utbetalingsvedtak,
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling> {
-        val response = data[vedtak.id]!!
+        val response = SendtUtbetaling("request - ${vedtak.id}", "response - ${vedtak.id}")
         val utbetaling = Utbetaling(vedtak, correlationId, response)
         utbetalinger.get()[vedtak.id] = utbetaling
         return response.right()

@@ -22,11 +22,11 @@ import java.time.LocalDateTime
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class RammevedtakPostgresRepo(
+class RammevedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : RammevedtakRepo {
-    override fun hent(vedtakId: VedtakId): Rammevedtak? {
-        return sessionFactory.withSession { session ->
+    override fun hentForVedtakId(vedtakId: VedtakId): Rammevedtak? =
+        sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.id = :id",
@@ -38,33 +38,32 @@ internal class RammevedtakPostgresRepo(
                 }.asSingle,
             )
         }
-    }
 
-    override fun hentVedtakForIdent(ident: Fnr): List<Rammevedtak> {
-        return sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """
-                               select v.*, 
-                                      s.saksnummer
-                                 from rammevedtak v
-                               join sak s 
-                                 on s.id = v.sak_id
-                               where s.ident = :ident
-                    """.trimIndent(),
-                    mapOf(
-                        "ident" to ident.verdi,
-                    ),
-                ).map { row ->
-                    row.toVedtak(session)
-                }.asList,
-            )
-        }.also {
-            SECURELOG.info { "Hentet ${it.size} vedtak for ident $ident" }
-        }
-    }
+    override fun hentForFnr(fnr: Fnr): List<Rammevedtak> =
+        sessionFactory
+            .withSession { session ->
+                session.run(
+                    queryOf(
+                        """
+                        select v.*, 
+                               s.saksnummer
+                          from rammevedtak v
+                        join sak s 
+                          on s.id = v.sak_id
+                        where s.ident = :ident
+                        """.trimIndent(),
+                        mapOf(
+                            "ident" to fnr.verdi,
+                        ),
+                    ).map { row ->
+                        row.toVedtak(session)
+                    }.asList,
+                )
+            }.also {
+                SECURELOG.info { "Hentet ${it.size} vedtak for ident $fnr" }
+            }
 
-    override fun lagreVedtak(
+    override fun lagre(
         vedtak: Rammevedtak,
         context: TransactionContext?,
     ) {
@@ -77,8 +76,8 @@ internal class RammevedtakPostgresRepo(
         fun hentForSakId(
             sakId: SakId,
             sessionContext: SessionContext,
-        ): List<Rammevedtak> {
-            return sessionContext.withSession { session ->
+        ): List<Rammevedtak> =
+            sessionContext.withSession { session ->
                 session.run(
                     queryOf(
                         "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId",
@@ -90,7 +89,6 @@ internal class RammevedtakPostgresRepo(
                     }.asList,
                 )
             }
-        }
 
         internal fun lagreVedtak(
             vedtak: Rammevedtak,
@@ -145,7 +143,8 @@ internal class RammevedtakPostgresRepo(
                 id = id,
                 sakId = SakId.fromString(string("sak_id")),
                 saksnummer = Saksnummer(string("saksnummer")),
-                behandling = BehandlingPostgresRepo.hentOrNull(
+                behandling =
+                BehandlingPostgresRepo.hentOrNull(
                     BehandlingId.fromString(string("behandling_id")),
                     session,
                 )!!,

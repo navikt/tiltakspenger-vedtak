@@ -19,12 +19,12 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.hentGodkjenteMeldekortUtenUtbetalingsvedtak() shouldBe listOf(meldekort)
             utbetalingsvedtakRepo.lagre(utbetalingsvedtak)
             utbetalingsvedtakRepo.hentForVedtakId(utbetalingsvedtak.id) shouldBe utbetalingsvedtak
-            utbetalingsvedtakRepo.hentSisteUtbetalingsvedtak(sak.id) shouldBe utbetalingsvedtak
             utbetalingsvedtakRepo.hentForSakId(sak.id) shouldBe listOf(utbetalingsvedtak)
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
-            utbetalingsvedtakRepo.hentForFørstegangsbehandlingId(sak.førstegangsbehandling.id) shouldBe listOf(
-                utbetalingsvedtak,
-            )
+            utbetalingsvedtakRepo.hentForFørstegangsbehandlingId(sak.førstegangsbehandling.id) shouldBe
+                listOf(
+                    utbetalingsvedtak,
+                )
             utbetalingsvedtakRepo.hentGodkjenteMeldekortUtenUtbetalingsvedtak() shouldBe emptyList()
 
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)

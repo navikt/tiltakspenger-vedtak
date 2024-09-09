@@ -19,7 +19,7 @@ interface SakRepo {
     fun lagre(
         sak: Sak,
         transactionContext: TransactionContext? = null,
-    ): Sak
+    )
 
     fun hentForSakId(sakId: SakId): Sak?
 

@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -30,7 +29,6 @@ import java.time.LocalDateTime
 internal class SakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : SakRepo {
-
     override fun hentForFnr(fnr: Fnr): Saker {
         val saker =
             sessionFactory.withSessionContext { sessionContext ->
@@ -65,8 +63,8 @@ internal class SakPostgresRepo(
             }
         }
 
-    override fun hentForSakId(sakId: SakId): Sak? {
-        return sessionFactory.withSessionContext { sessionContext ->
+    override fun hentForSakId(sakId: SakId): Sak? =
+        sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
@@ -78,10 +76,9 @@ internal class SakPostgresRepo(
                 )
             }
         }
-    }
 
-    override fun hentDetaljerForSakId(sakId: SakId): TynnSak? {
-        return sessionFactory.withSession { session ->
+    override fun hentDetaljerForSakId(sakId: SakId): TynnSak? =
+        sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     sqlHent,
@@ -91,13 +88,12 @@ internal class SakPostgresRepo(
                 }.asSingle,
             )
         }
-    }
 
     override fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
-    ): Fnr? {
-        return sessionFactory.withSession(sessionContext) { session ->
+    ): Fnr? =
+        sessionFactory.withSession(sessionContext) { session ->
             session.run(
                 queryOf(
                     "select ident as fnr from sak  where sak.id = :sakId",
@@ -107,30 +103,26 @@ internal class SakPostgresRepo(
                 }.asSingle,
             )
         }
-    }
 
     override fun lagre(
         sak: Sak,
         transactionContext: TransactionContext?,
-    ): Sak =
+    ) {
         sessionFactory.withTransaction(transactionContext) { txSession ->
             val sistEndret = hentSistEndret(sak.id, txSession)
-            val opprettetSak =
-                if (sistEndret == null) {
-                    opprettSak(sak, txSession)
-                } else {
-                    oppdaterSak(sistEndret, sak, txSession)
-                }
+            if (sistEndret == null) {
+                opprettSak(sak, txSession)
+            } else {
+                oppdaterSak(sistEndret, sak, txSession)
+            }
             PersonopplysningerPostgresRepo.lagre(
                 sakId = sak.id,
                 personopplysninger = sak.personopplysninger,
                 txSession = txSession,
             )
-            sak.behandlinger.filterIsInstance<Førstegangsbehandling>().forEach {
-                BehandlingPostgresRepo.lagre(it, txSession)
-            }
-            opprettetSak
+            BehandlingPostgresRepo.lagre(sak.førstegangsbehandling, txSession)
         }
+    }
 
     override fun hentNesteSaksnummer(): Saksnummer {
         val iDag = LocalDate.now()
@@ -149,8 +141,8 @@ internal class SakPostgresRepo(
         } ?: Saksnummer.genererSaknummer(dato = iDag)
     }
 
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? {
-        return sessionFactory.withSessionContext { sessionContext ->
+    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? =
+        sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
@@ -162,18 +154,17 @@ internal class SakPostgresRepo(
                 )
             }
         }
-    }
 
-    override fun hentForSøknadId(søknadId: SøknadId): Sak? {
-        return sessionFactory.withSessionContext { sessionContext ->
+    override fun hentForSøknadId(søknadId: SøknadId): Sak? =
+        sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
                         """
-                           select s.* from søknad sø
-                           join behandling b on b.id = sø.behandling_id
-                           join sak s on s.id = b.sakid
-                           where sø.id = :soknadId
+                        select s.* from søknad sø
+                        join behandling b on b.id = sø.behandling_id
+                        join sak s on s.id = b.sakid
+                        where sø.id = :soknadId
                         """.trimIndent(),
                         mapOf("soknadId" to søknadId.toString()),
                     ).map { row ->
@@ -182,7 +173,6 @@ internal class SakPostgresRepo(
                 )
             }
         }
-    }
 
     companion object {
         private val SECURELOG = KotlinLogging.logger("tjenestekall")
@@ -272,19 +262,19 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlOpprettSak =
             """
-        insert into sak (
-            id,
-            ident,
-            saksnummer,
-            sist_endret,
-            opprettet
-        ) values (
-            :id,
-            :ident,
-            :saksnummer,
-            :sistEndret,
-            :opprettet
-        )
+            insert into sak (
+                id,
+                ident,
+                saksnummer,
+                sist_endret,
+                opprettet
+            ) values (
+                :id,
+                :ident,
+                :saksnummer,
+                :sistEndret,
+                :opprettet
+            )
             """.trimIndent()
 
         @Language("SQL")
@@ -303,15 +293,15 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlHentForJournalpost =
             """
-        select * 
-          from sak 
-         where id = (select sakid 
-                       from behandling 
-                      where id = (select behandling_id
-                                    from søknad
-                                   where journalpost_id = :journalpostId
-                                    )
-                       )
+            select * 
+              from sak 
+             where id = (select sakid 
+                           from behandling 
+                          where id = (select behandling_id
+                                        from søknad
+                                       where journalpost_id = :journalpostId
+                                        )
+                           )
             """.trimIndent()
 
         @Language("SQL")
@@ -329,11 +319,11 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlHentNesteLøpenummer =
             """
-        SELECT saksnummer 
-        FROM sak 
-        WHERE saksnummer LIKE :saksnummerprefiks 
-        ORDER BY saksnummer DESC 
-        LIMIT 1
+            SELECT saksnummer 
+            FROM sak 
+            WHERE saksnummer LIKE :saksnummerprefiks 
+            ORDER BY saksnummer DESC 
+            LIMIT 1
             """.trimIndent()
     }
 }

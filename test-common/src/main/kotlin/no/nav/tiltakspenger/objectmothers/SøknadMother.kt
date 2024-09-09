@@ -69,7 +69,6 @@ interface SøknadMother {
         periode: Periode = ObjectMother.vurderingsperiode(),
         versjon: String = "1",
         id: SøknadId = Søknad.randomId(),
-        søknadId: String = "søknadId",
         journalpostId: String = "journalpostId",
         dokumentInfoId: String = "dokumentInfoId",
         filnavn: String = "filnavn",

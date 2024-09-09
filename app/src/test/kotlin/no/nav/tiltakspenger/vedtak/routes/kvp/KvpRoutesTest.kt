@@ -64,8 +64,8 @@ class KvpRoutesTest {
 
             val behandlingService =
                 BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
+                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
+                    rammevedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     sakRepo = testDataHelper.sakRepo,
                     sessionFactory = testDataHelper.sessionFactory,
@@ -73,10 +73,11 @@ class KvpRoutesTest {
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
                 )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -150,8 +151,8 @@ class KvpRoutesTest {
 
             val behandlingService =
                 BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
+                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
+                    rammevedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
                     sakRepo = testDataHelper.sakRepo,
@@ -159,10 +160,11 @@ class KvpRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
@@ -231,8 +233,8 @@ class KvpRoutesTest {
 
             val behandlingService =
                 BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
+                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
+                    rammevedtakRepo = testDataHelper.vedtakRepo,
                     personopplysningRepo = testDataHelper.personopplysningerRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
                     sakRepo = testDataHelper.sakRepo,
@@ -240,10 +242,11 @@ class KvpRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                 )
-            val kvpVilkårService = KvpVilkårServiceImpl(
-                behandlingRepo = testDataHelper.behandlingRepo,
-                behandlingService = behandlingService,
-            )
+            val kvpVilkårService =
+                KvpVilkårServiceImpl(
+                    behandlingRepo = testDataHelper.behandlingRepo,
+                    behandlingService = behandlingService,
+                )
 
             testApplication {
                 application {
