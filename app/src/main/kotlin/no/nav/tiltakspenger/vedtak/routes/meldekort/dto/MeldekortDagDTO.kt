@@ -6,6 +6,7 @@ import java.time.LocalDate
 data class MeldekortDagDTO(
     val dato: LocalDate,
     val status: String,
+    val reduksjonAvYtelsePåGrunnAvFravær: ReduksjonAvYtelsePåGrunnAvFraværDTO?,
 )
 
 fun Meldeperiode.toDTO(): List<MeldekortDagDTO> =
@@ -13,5 +14,6 @@ fun Meldeperiode.toDTO(): List<MeldekortDagDTO> =
         MeldekortDagDTO(
             dato = it.dato,
             status = it.toStatusDTO().toString(),
+            reduksjonAvYtelsePåGrunnAvFravær = it.reduksjon?.toDTO(),
         )
     }
