@@ -100,7 +100,9 @@ internal class SakPostgresRepo(
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    sqlHentFnr,
+                    """
+                        select ident from sak where saksnummer = :saksnummer
+                    """.trimIndent(),
                     mapOf("saksnummer" to saksnummer.verdi),
                 ).map { row ->
                     row.toFnr()
@@ -318,10 +320,6 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlHent =
             """select * from sak where id = :id""".trimIndent()
-
-        @Language("SQL")
-        private val sqlHentFnr =
-            """select ident from sak where saksnummer = :saksnummer""".trimIndent()
 
         @Language("SQL")
         private val sqlHentForJournalpost =

@@ -45,7 +45,7 @@ fun Route.iverksettMeldekortRoute(
         auditService.logMedMeldekortId(
             meldekortId = meldekortId,
             navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.CREATE,
+            action = AuditLogEvent.Action.UPDATE,
             callId = call.callId,
         )
 

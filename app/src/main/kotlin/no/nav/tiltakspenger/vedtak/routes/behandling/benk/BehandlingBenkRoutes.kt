@@ -87,7 +87,7 @@ fun Route.behandlingBenkRoutes(
                 auditService.logForSøknadId(
                     søknadId = søknadId,
                     navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.ACCESS,
+                    action = AuditLogEvent.Action.CREATE,
                     callId = call.callId,
                 )
 
@@ -109,7 +109,7 @@ fun Route.behandlingBenkRoutes(
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.ACCESS,
+            action = AuditLogEvent.Action.UPDATE,
             callId = call.callId,
         )
 
