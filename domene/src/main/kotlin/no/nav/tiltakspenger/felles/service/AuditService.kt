@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.felles.service
 
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -256,25 +255,6 @@ class AuditService(
             AuditLogEvent(
                 navIdent = navIdent,
                 berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
-    }
-
-    fun logForFnr(
-        berørtBrukerFnr: Fnr,
-        navIdent: String,
-        action: AuditLogEvent.Action,
-        callId: String?,
-        behandlingUUID: UUID? = null,
-    ) {
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerFnr.verdi,
                 action = action,
                 behandlingId = behandlingUUID,
                 callId = callId,
