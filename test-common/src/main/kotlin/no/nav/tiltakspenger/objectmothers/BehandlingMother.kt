@@ -243,8 +243,21 @@ fun TestApplicationContext.førstegangsbehandlingUavklart(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
     erSkjermet: Boolean = false,
+    fødselsdato: LocalDate = 1.januar(2000),
+    personopplysningerForBrukerFraPdl: Personopplysninger =
+        ObjectMother.personopplysningKjedeligFyr(
+            fnr = fnr,
+            skjermet = erSkjermet,
+            fødselsdato = fødselsdato,
+        ),
 ): Sak {
-    val søknad = this.nySøknad(periode = periode, fnr = fnr, erSkjermet = erSkjermet)
+    val søknad =
+        this.nySøknad(
+            periode = periode,
+            fnr = fnr,
+            erSkjermet = erSkjermet,
+            personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
+        )
     return this.sakContext.sakService
         .startFørstegangsbehandling(søknad.id, saksbehandler)
         .getOrNull()!!
@@ -291,6 +304,9 @@ fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
             saksbehandler = saksbehandler,
             erSkjermet = erSkjermet,
         )
-    this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(vilkårsvurdert.førstegangsbehandling.id, saksbehandler)
+    this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
+        vilkårsvurdert.førstegangsbehandling.id,
+        saksbehandler,
+    )
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
 }
