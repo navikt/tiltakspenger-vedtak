@@ -2,12 +2,15 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.service.AuditLogEvent
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
@@ -28,6 +31,7 @@ fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
+    auditService: AuditService,
 ) {
     get(BEHANDLINGER_PATH) {
         SECURELOG.debug("Mottatt request for å hente alle behandlinger på benken")
@@ -80,6 +84,13 @@ fun Route.behandlingBenkRoutes(
                 }
             },
             {
+                auditService.logForSøknadId(
+                    søknadId = søknadId,
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.ACCESS,
+                    callId = call.callId,
+                )
+
                 call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.førstegangsbehandling.id.toString()))
             },
         )
@@ -94,6 +105,14 @@ fun Route.behandlingBenkRoutes(
         behandlingService.taBehandling(behandlingId, saksbehandler)
 
         val response = BehandlingIdDTO(behandlingId.toString())
+
+        auditService.logMedBehandlingId(
+            behandlingId = behandlingId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.ACCESS,
+            callId = call.callId,
+        )
+
         call.respond(status = HttpStatusCode.OK, response)
     }
 }

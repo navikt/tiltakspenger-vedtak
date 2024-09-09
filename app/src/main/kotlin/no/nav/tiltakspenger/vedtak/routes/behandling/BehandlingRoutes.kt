@@ -2,12 +2,15 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.service.AuditLogEvent
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -37,6 +40,7 @@ fun Route.behandlingRoutes(
     sakService: SakService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
+    auditService: AuditService,
 ) {
     get("$BEHANDLING_PATH/{behandlingId}") {
         SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
@@ -44,6 +48,13 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler).toDTO()
+
+        auditService.logMedBehandlingId(
+            behandlingId = behandlingId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.ACCESS,
+            callId = call.callId,
+        )
 
         call.respond(status = HttpStatusCode.OK, behandling)
     }
@@ -56,6 +67,13 @@ fun Route.behandlingRoutes(
 
         behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
 
+        auditService.logMedBehandlingId(
+            behandlingId = behandlingId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.UPDATE,
+            callId = call.callId,
+        )
+
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
@@ -67,16 +85,23 @@ fun Route.behandlingRoutes(
 
         behandlingService.frataBehandling(behandlingId, saksbehandler)
 
+        auditService.logMedBehandlingId(
+            behandlingId = behandlingId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.UPDATE,
+            callId = call.callId,
+        )
+
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    hentPersonRoute(innloggetSaksbehandlerProvider, sakService)
-    tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService)
-    institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService)
-    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService)
-    livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService)
-    introRoutes(innloggetSaksbehandlerProvider, behandlingService)
-    alderRoutes(innloggetSaksbehandlerProvider, behandlingService)
-    kravfristRoutes(innloggetSaksbehandlerProvider, behandlingService)
-    stønadsdagerRoutes(innloggetSaksbehandlerProvider, behandlingService)
+    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, auditService)
+    tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
+    institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
+    kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService, auditService)
+    livsoppholdRoutes(innloggetSaksbehandlerProvider, livsoppholdVilkårService, behandlingService, auditService)
+    introRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
+    alderRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
+    kravfristRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
+    stønadsdagerRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
 }

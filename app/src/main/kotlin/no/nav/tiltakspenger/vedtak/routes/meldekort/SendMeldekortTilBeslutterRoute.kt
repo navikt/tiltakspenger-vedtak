@@ -2,11 +2,14 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.service.AuditLogEvent
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
@@ -57,6 +60,7 @@ private data class Body(
 fun Route.sendMeldekortTilBeslutterRoute(
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
+    auditService: AuditService,
 ) {
     post("/sak/{sakId}/meldekort/{meldekortId}") {
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
@@ -84,6 +88,13 @@ fun Route.sendMeldekortTilBeslutterRoute(
                 )
             },
             ifRight = {
+                auditService.logMedMeldekortId(
+                    meldekortId = MeldekortId.fromString(meldekortId),
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.UPDATE,
+                    callId = call.callId,
+                )
+
                 call.respond(message = it.toDTO(), status = HttpStatusCode.OK)
             },
         )

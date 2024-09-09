@@ -2,12 +2,15 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.service.AuditLogEvent
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
@@ -22,6 +25,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 fun Route.oppdaterKvpRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     kvpVilkårService: KvpVilkårService,
+    auditService: AuditService,
 ) {
     data class DeltarForPeriode(
         val periode: PeriodeDTO,
@@ -65,6 +69,13 @@ fun Route.oppdaterKvpRoute(
             .leggTilSaksopplysning(
                 body.toCommand(behandlingId, saksbehandler),
             ).let {
+                auditService.logMedBehandlingId(
+                    behandlingId = behandlingId,
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.UPDATE,
+                    callId = call.callId,
+                )
+
                 call.respond(
                     status = HttpStatusCode.Created,
                     message = it.vilkårssett.kvpVilkår.toDTO(),

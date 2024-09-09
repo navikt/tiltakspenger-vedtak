@@ -15,6 +15,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
@@ -30,11 +31,13 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfrist
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
+    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -44,6 +47,11 @@ internal class KravfristRoutesTest {
             "a@b.c",
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
+
+    @BeforeEach
+    fun setup() {
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any()) } returns Unit
+    }
 
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
@@ -76,6 +84,7 @@ internal class KravfristRoutesTest {
                         kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -131,6 +140,7 @@ internal class KravfristRoutesTest {
                         kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }

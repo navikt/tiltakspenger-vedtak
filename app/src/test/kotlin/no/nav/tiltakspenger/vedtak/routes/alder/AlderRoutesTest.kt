@@ -18,6 +18,7 @@ import io.mockk.mockk
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
@@ -41,6 +42,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -48,6 +50,7 @@ import java.time.LocalDateTime
 class AlderRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
     private val mockBrevPublisherGateway = mockk<BrevPublisherGatewayImpl>()
+    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -57,6 +60,11 @@ class AlderRoutesTest {
             "a@b.c",
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
+
+    @BeforeEach
+    fun setup() {
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any()) } returns Unit
+    }
 
     @Test
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
@@ -88,6 +96,7 @@ class AlderRoutesTest {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -141,6 +150,7 @@ class AlderRoutesTest {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }

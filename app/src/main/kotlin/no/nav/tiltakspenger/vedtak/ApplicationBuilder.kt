@@ -5,6 +5,8 @@ import arrow.core.right
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tiltakspenger.felles.service.AuditService
+import no.nav.tiltakspenger.felles.service.PersonService
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
@@ -88,6 +90,7 @@ internal class ApplicationBuilder(
                     hentMeldekortService = hentMeldekortService,
                     iverksettMeldekortService = iverksettMeldekortService,
                     sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
+                    auditService = auditService,
                 )
             }.build()
 
@@ -239,13 +242,37 @@ internal class ApplicationBuilder(
             behandlingRepo = behandlingRepo,
         )
 
-    private val tilgangsstyringService = TilgangsstyringServiceImpl.create(skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl, getPdlPipToken = tokenProviderPdl::getToken, pdlPipUrl = Configuration.pdlClientConfig().baseUrl, getSkjermingToken = tokenProviderSkjerming::getToken)
-    private val hentMeldekortService = HentMeldekortService(meldekortRepo = meldekortRepo, sakService = sakService, tilgangsstyringService = tilgangsstyringService)
+    private val tilgangsstyringService = TilgangsstyringServiceImpl.create(
+        skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
+        getPdlPipToken = tokenProviderPdl::getToken,
+        pdlPipUrl = Configuration.pdlClientConfig().baseUrl,
+        getSkjermingToken = tokenProviderSkjerming::getToken,
+    )
+    private val hentMeldekortService = HentMeldekortService(
+        meldekortRepo = meldekortRepo,
+        sakService = sakService,
+        tilgangsstyringService = tilgangsstyringService,
+    )
 
     private val
-    iverksettMeldekortService = IverksettMeldekortService(meldekortRepo = meldekortRepo, hentMeldekortService = hentMeldekortService, sessionFactory = sessionFactory, rammevedtakRepo = rammevedtakRepo)
+    iverksettMeldekortService = IverksettMeldekortService(
+        meldekortRepo = meldekortRepo,
+        hentMeldekortService = hentMeldekortService,
+        sessionFactory = sessionFactory,
+        rammevedtakRepo = rammevedtakRepo,
+    )
 
     private val sendMeldekortTilBeslutterService = SendMeldekortTilBeslutterService(meldekortRepo = meldekortRepo)
+
+    private val personService = PersonService(
+        meldekortRepo = meldekortRepo,
+        sakRepo = sakRepo,
+        behandlingRepo = behandlingRepo,
+        utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+        søknadRepo = søknadRepo,
+    )
+
+    private val auditService = AuditService(personService = personService)
 
     private val runCheckFactory =
         if (Configuration.isNais()) {
@@ -260,7 +287,8 @@ internal class ApplicationBuilder(
             RunCheckFactory(
                 leaderPodLookup =
                 object : LeaderPodLookup {
-                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> = true.right()
+                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> =
+                        true.right()
                 },
             )
         }

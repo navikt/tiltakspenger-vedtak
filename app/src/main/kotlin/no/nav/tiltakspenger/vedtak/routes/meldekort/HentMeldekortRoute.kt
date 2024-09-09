@@ -2,11 +2,14 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.service.AuditLogEvent
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
@@ -16,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 fun Route.hentMeldekortRoute(
     hentMeldekortService: HentMeldekortService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
+    auditService: AuditService,
 ) {
     val logger = KotlinLogging.logger { }
 
@@ -29,6 +33,14 @@ fun Route.hentMeldekortRoute(
 
         val message = meldekortperioder.toDTO()
         logger.info { "respons på request /sak/{sakId}/meldekort - henter alle meldekort for sak: $message" }
+
+        auditService.logMedSakId(
+            sakId = SakId.fromString(sakId),
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.ACCESS,
+            callId = call.callId,
+        )
+
         call.respond(status = HttpStatusCode.OK, message = message)
     }
 
@@ -40,6 +52,14 @@ fun Route.hentMeldekortRoute(
                 ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
         val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler)
         checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
+
+        auditService.logMedMeldekortId(
+            meldekortId = MeldekortId.fromString(meldekortId),
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.ACCESS,
+            callId = call.callId,
+        )
+
         call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO())
     }
 }

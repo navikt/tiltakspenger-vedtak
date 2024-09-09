@@ -25,6 +25,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
@@ -69,6 +70,7 @@ internal fun Application.vedtakApi(
     hentMeldekortService: HentMeldekortService,
     iverksettMeldekortService: IverksettMeldekortService,
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
+    auditService: AuditService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -91,27 +93,36 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
                 kvpVilkårService = kvpVilkårService,
                 livsoppholdVilkårService = livsoppholdVilkårService,
+                auditService = auditService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 sakService = sakService,
+                auditService = auditService,
             )
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
+                auditService = auditService,
             )
             sakRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 sakService = sakService,
+                auditService = auditService,
             )
-            utbetalingRoutes(hentUtbetalingsvedtakService)
+            utbetalingRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
+                auditService = auditService,
+            )
 
             meldekortRoutes(
                 hentMeldekortService = hentMeldekortService,
                 iverksettMeldekortService = iverksettMeldekortService,
                 sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                auditService = auditService,
             )
         }
         authenticate("systemtoken") {

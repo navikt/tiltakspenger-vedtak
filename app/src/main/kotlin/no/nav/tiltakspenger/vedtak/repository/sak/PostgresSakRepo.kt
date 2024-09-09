@@ -108,6 +108,21 @@ internal class PostgresSakRepo(
             )
         }
 
+    override fun hentFnrForSaksnummer(
+        saksnummer: Saksnummer,
+        sessionContext: SessionContext?,
+    ) =
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    sqlHentFnr,
+                    mapOf("saksnummer" to saksnummer.verdi),
+                ).map { row ->
+                    row.toFnr()
+                }.asSingle,
+            )
+        }
+
     override fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
@@ -244,6 +259,10 @@ internal class PostgresSakRepo(
         )
     }
 
+    private fun Row.toFnr(): Fnr {
+        return Fnr.fromString(string("ident"))
+    }
+
     @Language("SQL")
     private val sqlOpprettSak =
         """
@@ -274,6 +293,10 @@ internal class PostgresSakRepo(
     @Language("SQL")
     private val sqlHent =
         """select * from sak where id = :id""".trimIndent()
+
+    @Language("SQL")
+    private val sqlHentFnr =
+        """select ident from sak where saksnummer = :saksnummer""".trimIndent()
 
     @Language("SQL")
     private val sqlHentForJournalpost =

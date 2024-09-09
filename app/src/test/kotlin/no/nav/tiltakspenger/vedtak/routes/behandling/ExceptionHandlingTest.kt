@@ -13,6 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
@@ -30,6 +31,7 @@ class ExceptionHandlingTest {
     private val behandlingService =
         mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
     private val sakService = mockk<SakService>()
+    private val mockAuditService = mockk<AuditService>()
 
     @Test
     fun `Manglende token skal bli til 401`() {
@@ -56,6 +58,7 @@ class ExceptionHandlingTest {
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
                         sakService,
+                        mockAuditService,
                     )
                 }
             }
@@ -102,6 +105,7 @@ class ExceptionHandlingTest {
                         innloggetSaksbehandlerProviderMock,
                         behandlingService,
                         sakService,
+                        mockAuditService,
                     )
                 }
             }

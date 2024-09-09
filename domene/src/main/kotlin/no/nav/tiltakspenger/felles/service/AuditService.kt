@@ -1,16 +1,15 @@
-package no.nav.tiltakspenger.vedtak.audit
+package no.nav.tiltakspenger.felles.service
 
-import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
-import io.ktor.server.plugins.callid.callId
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import java.lang.String.join
 import java.util.UUID
-
-private val LOG = KotlinLogging.logger {}
 
 data class AuditLogEvent(
     val navIdent: String,
@@ -82,6 +81,8 @@ enum class CefFieldName(
 
     /**
      * Om handlingen blir tillatt eller ikke (permit/deny)
+     * Denne brukes ikke nå, men skal kanskje tas i bruk:
+     * https://nav-it.slack.com/archives/C034K7M30JY/p1725870505466469
      */
     DECISION_VERDI("flexString1"),
     DECISION_LABEL("flexString1Label"),
@@ -95,7 +96,7 @@ data class CefField(
 /**
  * Logger til auditlogg på formatet
  *
- * CEF:0|su-se-bakover|auditLog|1.0|audit:access|su-se-bakover audit log|INFO|
+ * CEF:0|tiltakspenger-vedtak|auditLog|1.0|audit:access|tiltakspenger-vedtak audit log|INFO|
  * end=1618308696856 suid=X123456 duid=01010199999
  * flexString1Label=Decision flexString1=Permit
  * flexString2Label=behandlingId flexString2=2dc4c100-395a-4e25-b1e9-6ea52f49b9e1
@@ -177,56 +178,150 @@ object AuditLogger {
         )
 }
 
-internal fun ApplicationCall.audit(
-    navIdent: String,
-    berørtBruker: String,
-    action: AuditLogEvent.Action = AuditLogEvent.Action.ACCESS,
-    behandlingId: UUID? = null,
+class AuditService(
+    private val personService: PersonService,
 ) {
-    AuditLogger.log(
-        AuditLogEvent(
-            navIdent = navIdent,
-            berørtBrukerId = berørtBruker,
-            action = action,
-            behandlingId = behandlingId,
-            callId = this.callId,
-        ),
-    )
-}
+    fun logMedBehandlingId(
+        behandlingId: BehandlingId,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+    ) {
+        val berørtBrukerId = personService.hentFnrForBehandlingId(behandlingId)
 
-internal suspend fun ApplicationCall.auditHvisInnlogget(
-    berørtBruker: String,
-    action: AuditLogEvent.Action = AuditLogEvent.Action.ACCESS,
-    behandlingId: UUID? = null,
-) {
-    this.principal<JWTPrincipal>()?.let {
-        LOG.debug { "Auditlogger" }
         AuditLogger.log(
             AuditLogEvent(
-                navIdent = JWTInnloggetSaksbehandlerProvider().hentSaksbehandler(it).navIdent,
-                berørtBrukerId = berørtBruker,
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerId.verdi,
                 action = action,
-                behandlingId = behandlingId,
-                callId = this.callId,
+                behandlingId = behandlingId.uuid(),
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
             ),
         )
     }
-}
 
-internal suspend fun audit(
-    saksbehandler: Saksbehandler,
-    berørtBruker: String,
-    action: AuditLogEvent.Action = AuditLogEvent.Action.ACCESS,
-    behandlingId: UUID? = null,
-    callId: String? = null,
-) {
-    AuditLogger.log(
-        AuditLogEvent(
-            navIdent = saksbehandler.navIdent,
-            berørtBrukerId = berørtBruker,
-            action = action,
-            behandlingId = behandlingId,
-            callId = callId,
-        ),
-    )
+    fun logMedMeldekortId(
+        meldekortId: MeldekortId,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        val berørtBrukerId = personService.hentFnrForMeldekortId(meldekortId)
+
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerId.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
+
+    fun logMedSakId(
+        sakId: SakId,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        val berørtBrukerId = personService.hentFnrForSakId(sakId)
+
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerId.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
+
+    fun logMedSaksnummer(
+        saksnummer: Saksnummer,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        val berørtBrukerId = personService.hentFnrForSaksnummer(saksnummer = saksnummer)
+
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerId.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
+
+    fun logForFnr(
+        berørtBrukerFnr: Fnr,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerFnr.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
+
+    fun logForSøknadId(
+        søknadId: SøknadId,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        val berørtBrukerFnr = personService.hentFnrForSøknadId(søknadId)
+
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerFnr.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
+
+    fun logMedVedtakId(
+        vedtakId: VedtakId,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        behandlingUUID: UUID? = null,
+    ) {
+        val berørtBrukerId = personService.hentFnrForVedtakId(vedtakId = vedtakId)
+
+        AuditLogger.log(
+            AuditLogEvent(
+                navIdent = navIdent,
+                berørtBrukerId = berørtBrukerId.verdi,
+                action = action,
+                behandlingId = behandlingUUID,
+                callId = callId,
+                logLevel = AuditLogEvent.Level.INFO,
+            ),
+        )
+    }
 }
