@@ -20,7 +20,7 @@ internal class BehandlingRepoTest {
             val sakRepo = testDataHelper.sakRepo
 
             val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
-            sakRepo.hent(sak.id) shouldBe sak
+            sakRepo.hentForSakId(sak.id) shouldBe sak
             behandlingRepo.hent(sak.førstegangsbehandling.id) shouldBe sak.førstegangsbehandling
         }
     }

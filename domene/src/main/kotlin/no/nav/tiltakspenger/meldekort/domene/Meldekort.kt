@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
@@ -19,6 +20,7 @@ import java.time.temporal.TemporalAdjusters
 sealed interface Meldekort {
     val id: MeldekortId
     val sakId: SakId
+    val fnr: Fnr
     val rammevedtakId: VedtakId
     val forrigeMeldekortId: MeldekortId?
     val meldekortperiode: Meldeperiode
@@ -41,6 +43,7 @@ sealed interface Meldekort {
     data class UtfyltMeldekort(
         override val id: MeldekortId,
         override val sakId: SakId,
+        override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
         override val meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
@@ -63,6 +66,7 @@ sealed interface Meldekort {
             return IkkeUtfyltMeldekort(
                 id = meldekortId,
                 sakId = this.sakId,
+                fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
                 tiltakstype = this.tiltakstype,
@@ -81,6 +85,7 @@ sealed interface Meldekort {
             UtfyltMeldekort(
                 id = this.id,
                 sakId = this.sakId,
+                fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
                 meldekortperiode = this.meldekortperiode,
@@ -93,6 +98,7 @@ sealed interface Meldekort {
     data class IkkeUtfyltMeldekort(
         override val id: MeldekortId,
         override val sakId: SakId,
+        override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
         override val tiltakstype: TiltakstypeSomGirRett,
@@ -111,6 +117,7 @@ sealed interface Meldekort {
             return UtfyltMeldekort(
                 id = this.id,
                 sakId = this.sakId,
+                fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
                 meldekortperiode = meldekortperiode,
@@ -134,6 +141,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
     return Meldekort.IkkeUtfyltMeldekort(
         id = meldekortId,
         sakId = this.sakId,
+        fnr = this.behandling.fnr,
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
         tiltakstype = tiltakstype,

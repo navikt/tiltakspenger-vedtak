@@ -8,11 +8,10 @@ import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 
 internal class PostgresSøknadRepo(
     private val sessionFactory: PostgresSessionFactory,
-    private val søknadDAO: SøknadDAO,
 ) : SøknadRepo {
-    override fun hentSøknad(søknadId: SøknadId): Søknad =
+    override fun hentForSøknadId(søknadId: SøknadId): Søknad =
         sessionFactory.withSession {
-            søknadDAO.hentForSøknadId(søknadId, it)
+            SøknadDAO.hentForSøknadId(søknadId, it)
         }
 
     override fun lagre(
@@ -20,7 +19,7 @@ internal class PostgresSøknadRepo(
         txContext: TransactionContext?,
     ) {
         sessionFactory.withTransaction(txContext) {
-            søknadDAO.lagreHeleSøknaden(søknad, it)
+            SøknadDAO.lagreHeleSøknaden(søknad, it)
         }
     }
 }

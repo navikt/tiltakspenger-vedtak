@@ -9,7 +9,10 @@ import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import org.intellij.lang.annotations.Language
 
-internal class PersonopplysningerBarnUtenIdentRepo {
+internal object PersonopplysningerBarnUtenIdentDAO {
+
+    private const val ULID_PREFIX_BARN_UTEN_IDENT = "barnu"
+
     private val securelog = KotlinLogging.logger("tjenestekall")
 
     internal fun hent(
@@ -81,8 +84,4 @@ internal class PersonopplysningerBarnUtenIdentRepo {
             :tidsstempelHosOss
         )
         """.trimIndent()
-
-    companion object {
-        private const val ULID_PREFIX_BARN_UTEN_IDENT = "barnu"
-    }
 }

@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
-val felleslibVersion = "0.0.209"
+val felleslibVersion = "0.0.211"
 val tokenSupportVersion = "3.2.0"
 val iverksettVersjon = "1.0_20240829083905_36ac417"
 
@@ -34,7 +34,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("ch.qos.logback:logback-classic:1.5.7")
+    implementation("ch.qos.logback:logback-classic:1.5.8")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
@@ -102,7 +102,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.14.0")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.14.2")
     testImplementation(project(":test-common"))
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")

@@ -10,16 +10,16 @@ import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.Statistikk
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import org.intellij.lang.annotations.Language
 
-internal class StatistikkStønadRepoImpl(
+internal class StatistikkStønadPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
-) : StatistikkStønadRepo, StatistikkStønadDAO {
+) : StatistikkStønadRepo {
     override fun lagre(dto: StatistikkStønadDTO, context: TransactionContext?) {
         sessionFactory.withTransaction(context) { tx ->
             lagre(dto, tx)
         }
     }
 
-    override fun lagre(dto: StatistikkStønadDTO, tx: TransactionalSession) {
+    internal fun lagre(dto: StatistikkStønadDTO, tx: TransactionalSession) {
         tx.run(
             queryOf(
                 lagreSql,
@@ -84,7 +84,7 @@ internal class StatistikkStønadRepoImpl(
         }
     }
 
-    override fun lagre(dto: StatistikkUtbetalingDTO, tx: TransactionalSession) {
+    fun lagre(dto: StatistikkUtbetalingDTO, tx: TransactionalSession) {
         tx.run(
             queryOf(
                 lagreUtbetalingSql,

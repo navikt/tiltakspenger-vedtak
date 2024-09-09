@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.common.BehandlingId
@@ -15,32 +14,24 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.ports.BrevPublisherGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadStatistikkMapper
 import java.time.LocalDate
 
-private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
-
 class BehandlingServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val vedtakRepo: RammevedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
-    private val brevPublisherGateway: BrevPublisherGateway,
     private val meldekortRepo: MeldekortRepo,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
-    private val saksoversiktRepo: SaksoversiktRepo,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
 ) : BehandlingService {
@@ -65,12 +56,6 @@ class BehandlingServiceImpl(
     override fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling? {
         // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet.
         return behandlingRepo.hentForSøknadId(søknadId)
-    }
-
-    override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
-        require(saksbehandler.isSaksbehandler())
-        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
-        return saksoversiktRepo.hentAlle()
     }
 
     override fun sendTilBeslutter(
@@ -103,9 +88,8 @@ class BehandlingServiceImpl(
         utøvendeBeslutter: Saksbehandler,
     ) {
         val behandling = hentBehandling(behandlingId, utøvendeBeslutter) as Førstegangsbehandling
-        val sak =
-            sakRepo.hentSakDetaljer(behandling.sakId)
-                ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
+        val sak = sakRepo.hentDetaljerForSakId(behandling.sakId)
+            ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
         val attestering =
             Attestering(
                 status = Attesteringsstatus.GODKJENT,
@@ -125,9 +109,7 @@ class BehandlingServiceImpl(
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
             meldekortRepo.lagre(førsteMeldekort, tx)
         }
-
-        val personopplysninger = personopplysningRepo.hent(vedtak.sakId).søker()
-        brevPublisherGateway.sendBrev(sak.saksnummer, vedtak, personopplysninger)
+        // journalføring og dokumentdistribusjon skjer i egen jobb
     }
 
     override fun taBehandling(

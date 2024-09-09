@@ -5,7 +5,8 @@ import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import java.time.LocalDateTime
 
 interface DokumentGateway {
-    suspend fun sendMeldekortTilDokument(
+    // TODO jah: Denne bør være mer generisk.
+    suspend fun journalførMeldekort(
         vedtak: Utbetalingsvedtak,
         correlationId: CorrelationId,
     ): JoarkResponse

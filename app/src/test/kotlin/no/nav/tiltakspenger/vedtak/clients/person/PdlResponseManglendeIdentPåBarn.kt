@@ -74,7 +74,7 @@ internal val pdlResponseManglendeIdentPåBarn = """
           }
         }
       ],
-      "foedsel": [
+      "foedselsdato": [
         {
           "foedselsdato": "1984-07-04",
           "folkeregistermetadata": {

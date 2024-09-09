@@ -11,10 +11,11 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.service.AuditLogEvent
 import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
+import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import java.util.UUID
 
 fun Route.iverksettMeldekortRoute(
     iverksettMeldekortService: IverksettMeldekortService,
@@ -26,25 +27,28 @@ fun Route.iverksettMeldekortRoute(
         logger.info { "Mottatt request på $MELDEKORT_PATH/{meldekortId}/iverksett" }
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val meldekortId =
-            call.parameters["meldekortId"]?.let { UUID.fromString(it) }
+            call.parameters["meldekortId"]?.let { MeldekortId.fromString(it) }
                 ?: return@post call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
 
+        val sakId =
+            call.parameters["sakId"]?.let { SakId.fromString(it) }
+                ?: return@post call.respond(message = "sakId mangler", status = HttpStatusCode.NotFound)
         logger.info { "Meldekort med id $meldekortId skal godkjennes" }
-        val meldekort =
-            iverksettMeldekortService.iverksettMeldekort(
-                IverksettMeldekortKommando(
-                    meldekortId = MeldekortId.fromString(meldekortId),
-                    beslutter = saksbehandler,
-                ),
-            )
+        val meldekort = iverksettMeldekortService.iverksettMeldekort(
+            IverksettMeldekortKommando(
+                meldekortId = meldekortId,
+                beslutter = saksbehandler,
+                sakId = sakId,
+            ),
+        )
 
         auditService.logMedMeldekortId(
-            meldekortId = MeldekortId.Companion.fromString(meldekortId),
+            meldekortId = meldekortId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.CREATE,
             callId = call.callId,
         )
 
-        call.respond(message = "OK", status = HttpStatusCode.OK)
+        call.respond(message = meldekort.toDTO(), status = HttpStatusCode.OK)
     }
 }

@@ -71,8 +71,8 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     sakRepo.lagre(sak)
 
     return Pair(
-        sakRepo.hent(sakId)!!,
-        søknadRepo.hentSøknad(søknad.id),
+        sakRepo.hentForSakId(sakId)!!,
+        søknadRepo.hentForSøknadId(søknad.id),
     )
 }
 
@@ -153,7 +153,7 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
         vedtakRepo.lagreVedtak(it)
     }
     behandlingRepo.lagre(oppdatertFørstegangsbehandling)
-    return sakRepo.hent(sakId)!!
+    return sakRepo.hentForSakId(sakId)!!
 }
 
 internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
@@ -213,7 +213,8 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
         ObjectMother.utfyltMeldekort(
             sakId = sak.id,
             rammevedtakId = sak.vedtak.single().id,
+            fnr = sak.fnr,
         )
     meldekortRepo.lagre(utfyltMeldekort)
-    return Pair(sakRepo.hent(sakId)!!, utfyltMeldekort)
+    return Pair(sakRepo.hentForSakId(sakId)!!, utfyltMeldekort)
 }

@@ -31,10 +31,10 @@ internal class SakRepoTest {
                     løpenummer = 1002,
                 ).first
 
-            sakRepo.hentForIdent(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
+            sakRepo.hentForFnr(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
             sakRepo.hentForSaksnummer(saksnummer = sak1.saksnummer)!! shouldBe sak1
-            sakRepo.hent(sak1.id) shouldBe sak1
-            sakRepo.hentSakDetaljer(sak1.id) shouldBe sak1.sakDetaljer
+            sakRepo.hentForSakId(sak1.id) shouldBe sak1
+            sakRepo.hentDetaljerForSakId(sak1.id) shouldBe sak1.sakDetaljer
         }
     }
 
@@ -63,7 +63,7 @@ internal class SakRepoTest {
                 løpenummer = 1003,
             )
 
-            sakRepo.hentForIdent(fnr) shouldBe Saker(fnr, listOf(sak1, sak2))
+            sakRepo.hentForFnr(fnr) shouldBe Saker(fnr, listOf(sak1, sak2))
         }
     }
 }

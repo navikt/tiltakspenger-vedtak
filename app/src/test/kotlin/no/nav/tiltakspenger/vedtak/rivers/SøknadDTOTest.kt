@@ -32,7 +32,7 @@ internal class SøknadDTOTest {
         assertEquals(søknadDTO.dokInfo.filnavn, søknad.filnavn)
         assertEquals(søknadDTO.personopplysninger.fornavn, søknad.personopplysninger.fornavn)
         assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
-        assertEquals(søknadDTO.personopplysninger.ident, søknad.personopplysninger.fnr.verdi)
+        assertEquals(søknadDTO.personopplysninger.ident, søknad.fnr.verdi)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
         assertEquals(søknadDTO.vedlegg.first().journalpostId, søknad.vedlegg.first().journalpostId)
         assertEquals(søknadDTO.vedlegg.first().dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)

@@ -23,8 +23,7 @@ class PersonService(
 ) {
 
     fun hentFnrForBehandlingId(behandlingId: BehandlingId): Fnr {
-        return behandlingRepo.hentFnrForBehandlingId(behandlingId)
-            ?: throw IkkeFunnetException("Fant ikke fnr på behandlingId: $behandlingId")
+        return behandlingRepo.hent(behandlingId).fnr
     }
 
     fun hentFnrForSakId(sakId: SakId): Fnr {
@@ -50,7 +49,7 @@ class PersonService(
     }
 
     fun hentFnrForSøknadId(søknadId: SøknadId): Fnr {
-        val søknad = søknadRepo.hentSøknad(søknadId)
+        val søknad = søknadRepo.hentForSøknadId(søknadId)
 
         return søknad.personopplysninger.fnr
     }

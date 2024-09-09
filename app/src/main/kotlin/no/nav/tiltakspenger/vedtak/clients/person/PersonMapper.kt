@@ -49,7 +49,7 @@ internal fun mapPersonopplysninger(
     val geografiskTilknytning: GeografiskTilknytning? = data.hentGeografiskTilknytning
     return either {
         val navn = avklarNavn(person.navn).bind()
-        val fødsel = avklarFødsel(person.foedsel).bind()
+        val fødsel = avklarFødsel(person.foedselsdato).bind()
         val adressebeskyttelse: AdressebeskyttelseGradering = avklarGradering(person.adressebeskyttelse).bind()
         person.forelderBarnRelasjon
             .toBarnUtenforFolkeregisteret()

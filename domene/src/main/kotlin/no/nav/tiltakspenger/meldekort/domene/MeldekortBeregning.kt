@@ -45,7 +45,7 @@ private data class MeldekortBeregning(
 
     fun lagUtbetalingsdager(
         kommando: SendMeldekortTilBeslutterKommando,
-        eksisterendeMeldekortPåSaken: Meldekortperioder,
+        eksisterendeMeldekortPåSaken: Meldeperioder,
     ): Meldeperiode.UtfyltMeldeperiode {
         require(eksisterendeMeldekortPåSaken.sakId == kommando.sakId) {
             "SakId på eksisterende meldekortperiode ${eksisterendeMeldekortPåSaken.sakId} er ikke likt sakId på kommando ${kommando.sakId}"
@@ -437,7 +437,7 @@ private enum class SykTilstand {
 }
 
 fun SendMeldekortTilBeslutterKommando.beregnUtbetalingsdager(
-    eksisterendeMeldekort: Meldekortperioder,
+    eksisterendeMeldekort: Meldeperioder,
 ): Meldeperiode.UtfyltMeldeperiode =
     MeldekortBeregning(
         utløsendeMeldekortId = this.meldekortId,

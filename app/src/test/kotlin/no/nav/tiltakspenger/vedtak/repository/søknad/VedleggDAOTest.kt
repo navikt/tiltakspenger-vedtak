@@ -28,7 +28,7 @@ internal class VedleggDAOTest {
                 )
 
             testDataHelper.sessionFactory.withTransaction { txSession ->
-                testDataHelper.vedleggDAO.lagre(
+                VedleggDAO.lagre(
                     søknadId = søknadId,
                     vedlegg = listOf(vedleggMedNull, vedleggUtenNull),
                     txSession,
@@ -37,7 +37,7 @@ internal class VedleggDAOTest {
 
             val hentet =
                 testDataHelper.sessionFactory.withTransaction { txSession ->
-                    testDataHelper.vedleggDAO.hentVedleggListe(søknadId = søknadId, session = txSession)
+                    VedleggDAO.hentVedleggListe(søknadId = søknadId, session = txSession)
                 }
 
             hentet.size shouldBe 2

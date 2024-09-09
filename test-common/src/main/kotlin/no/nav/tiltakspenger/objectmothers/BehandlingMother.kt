@@ -138,7 +138,9 @@ interface BehandlingMother {
         tidspunkt = LocalDateTime.now(),
     )
 
-    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler): Førstegangsbehandling {
+    fun behandlingTilBeslutterInnvilget(
+        saksbehandler: Saksbehandler = saksbehandler123(),
+    ): Førstegangsbehandling {
         val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
         return behandling.tilBeslutning(saksbehandler)
     }

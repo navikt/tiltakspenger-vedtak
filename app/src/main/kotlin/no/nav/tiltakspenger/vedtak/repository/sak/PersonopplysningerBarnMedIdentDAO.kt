@@ -11,7 +11,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.vedtak.db.booleanOrNull
 import org.intellij.lang.annotations.Language
 
-internal class PersonopplysningerBarnMedIdentRepo {
+internal object PersonopplysningerBarnMedIdentDAO {
+
+    private const val ULID_PREFIX_BARN_MED_IDENT = "barnm"
+
     private val securelog = KotlinLogging.logger("tjenestekall")
 
     internal fun hent(
@@ -107,8 +110,4 @@ internal class PersonopplysningerBarnMedIdentRepo {
             :tidsstempelHosOss
         )
         """.trimIndent()
-
-    companion object {
-        private const val ULID_PREFIX_BARN_MED_IDENT = "barnm"
-    }
 }

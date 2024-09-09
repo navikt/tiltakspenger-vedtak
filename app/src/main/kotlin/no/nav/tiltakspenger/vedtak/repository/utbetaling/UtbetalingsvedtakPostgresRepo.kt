@@ -15,11 +15,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
-import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
 
-internal class UtbetalingsvedtakRepoImpl(
+internal class UtbetalingsvedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
-    private val meldekortRepo: MeldekortRepoImpl,
 ) : UtbetalingsvedtakRepo {
     override fun lagre(vedtak: Utbetalingsvedtak) {
         sessionFactory.withSession { session ->
@@ -154,22 +153,23 @@ internal class UtbetalingsvedtakRepoImpl(
             session.run(
                 queryOf(
                     """
-                    select m.* from meldekort m
+                    select m.*, s.ident as fnr from meldekort m
+                    join sak s on s.id = m.sakId
                     left join utbetalingsvedtak u on m.id = u.meldekortId
                     where u.id is null and m.beslutter is not null
                     limit :limit
                     """.trimIndent(),
                     mapOf("limit" to limit),
                 ).map { row ->
-                    val meldekortperiode = meldekortRepo
-                        .hentForMeldekortId(
-                            MeldekortId.fromString(row.string("id")),
-                            session,
-                        )!!
+                    val meldekortperiode = MeldekortPostgresRepo.hentForMeldekortId(
+                        MeldekortId.fromString(row.string("id")),
+                        session,
+                    )!!
                         .meldekortperiode as Meldeperiode.UtfyltMeldeperiode
                     UtfyltMeldekort(
                         id = MeldekortId.fromString(row.string("id")),
                         sakId = SakId.fromString(row.string("sakId")),
+                        fnr = Fnr.fromString(row.string("fnr")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
                         meldekortperiode =
                         meldekortperiode,
@@ -233,13 +233,10 @@ internal class UtbetalingsvedtakRepoImpl(
             beslutter = string("beslutter"),
             utbetalingsperiode = string("utbetalingsperiode").toUtbetalingsperiode(),
             forrigeUtbetalingsvedtak = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
-            meldekortperiode =
-            meldekortRepo
-                .hentForMeldekortId(
-                    MeldekortId.fromString(string("meldekortId")),
-                    session,
-                )!!
-                .meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
+            meldekortperiode = MeldekortPostgresRepo.hentForMeldekortId(
+                MeldekortId.fromString(string("meldekortId")),
+                session,
+            )!!.meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
         )
     }
 }

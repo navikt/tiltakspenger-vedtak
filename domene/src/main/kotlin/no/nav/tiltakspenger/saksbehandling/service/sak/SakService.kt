@@ -6,8 +6,8 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
+import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling
 
@@ -17,17 +17,10 @@ interface SakService {
         saksbehandler: Saksbehandler,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak>
 
-    fun hentMedBehandlingIdOrNull(behandlingId: BehandlingId): Sak?
-
-    fun hentMedBehandlingId(
+    fun hentForFørstegangsbehandlingId(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
     ): Sak
-
-    fun hentForIdent(
-        fnr: Fnr,
-        saksbehandler: Saksbehandler,
-    ): Saker
 
     fun hentForSaksnummer(
         saksnummer: Saksnummer,
@@ -35,4 +28,11 @@ interface SakService {
     ): Sak
 
     fun hentFnrForSakId(sakId: SakId): Fnr?
+
+    fun hentForSakId(
+        sakId: SakId,
+        saksbehandler: Saksbehandler,
+    ): Sak?
+
+    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
 }

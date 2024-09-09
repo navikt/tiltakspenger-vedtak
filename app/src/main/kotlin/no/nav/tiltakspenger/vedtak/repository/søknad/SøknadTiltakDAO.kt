@@ -9,7 +9,10 @@ import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
 import org.intellij.lang.annotations.Language
 
-internal class SøknadTiltakDAO {
+internal object SøknadTiltakDAO {
+
+    private const val ULID_PREFIX_TILTAK = "tilt"
+
     fun hent(
         søknadId: SøknadId,
         session: Session,
@@ -107,8 +110,4 @@ internal class SøknadTiltakDAO {
             :deltakelseTom
         )
         """.trimIndent()
-
-    companion object {
-        private const val ULID_PREFIX_TILTAK = "tilt"
-    }
 }
