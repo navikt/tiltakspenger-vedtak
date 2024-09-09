@@ -242,9 +242,9 @@ fun TestApplicationContext.førstegangsbehandlingUavklart(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
 ): Sak {
-    val søknad = this.nySøknad(periode = periode, fnr = fnr)
-    this.søknadContext.søknadService.nySøknad(søknad)
+    val søknad = this.nySøknad(periode = periode, fnr = fnr, erSkjermet = erSkjermet)
     return this.sakContext.sakService
         .startFørstegangsbehandling(søknad.id, saksbehandler)
         .getOrNull()!!
@@ -254,12 +254,14 @@ fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
 ): Sak {
     val uavklart =
         førstegangsbehandlingUavklart(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
         )
     this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
         LeggTilLivsoppholdSaksopplysningCommand(
@@ -280,12 +282,14 @@ fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
 ): Sak {
     val vilkårsvurdert =
         førstegangsbehandlingVilkårsvurdert(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
         )
     this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(vilkårsvurdert.førstegangsbehandling.id, saksbehandler)
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
