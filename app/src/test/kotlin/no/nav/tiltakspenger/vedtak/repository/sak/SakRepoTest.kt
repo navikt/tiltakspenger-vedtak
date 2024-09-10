@@ -4,7 +4,6 @@ import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
@@ -17,19 +16,11 @@ internal class SakRepoTest {
 
     @Test
     fun `lagre og hente en sak med en søknad`() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
+        withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
 
-            val sak1 =
-                testDataHelper
-                    .persisterOpprettetFørstegangsbehandling(
-                        løpenummer = 1001,
-                    ).first
-            testDataHelper
-                .persisterOpprettetFørstegangsbehandling(
-                    løpenummer = 1002,
-                ).first
+            val sak1 = testDataHelper.persisterOpprettetFørstegangsbehandling().first
+            testDataHelper.persisterOpprettetFørstegangsbehandling().first
 
             sakRepo.hentForFnr(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
             sakRepo.hentForSaksnummer(saksnummer = sak1.saksnummer)!! shouldBe sak1
@@ -40,10 +31,8 @@ internal class SakRepoTest {
 
     @Test
     fun `hentForIdent skal hente saker med matchende ident`() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
+        withMigratedDb { testDataHelper ->
             val sakRepo = testDataHelper.sakRepo
-            val søknadRepo = testDataHelper.søknadRepo
 
             val fnr = Fnr.random()
 
@@ -51,17 +40,13 @@ internal class SakRepoTest {
                 testDataHelper
                     .persisterOpprettetFørstegangsbehandling(
                         fnr = fnr,
-                        løpenummer = 1001,
                     ).first
             val sak2 =
                 testDataHelper
                     .persisterOpprettetFørstegangsbehandling(
                         fnr = fnr,
-                        løpenummer = 1002,
                     ).first
-            testDataHelper.persisterOpprettetFørstegangsbehandling(
-                løpenummer = 1003,
-            )
+            testDataHelper.persisterOpprettetFørstegangsbehandling()
 
             sakRepo.hentForFnr(fnr) shouldBe Saker(fnr, listOf(sak1, sak2))
         }

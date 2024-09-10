@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak.repository.utbetaling
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.tilUtbetalingsperiode
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterRammevedtakMedUtfyltMeldekort
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
@@ -11,8 +10,7 @@ import org.junit.jupiter.api.Test
 class UtbetalingsvedtakRepoImplTest {
     @Test
     fun `kan lagre og hente`() {
-        withMigratedDb {
-            val testDataHelper = TestDataHelper(it)
+        withMigratedDb(runIsolated = true) { testDataHelper ->
             val (sak, meldekort) = testDataHelper.persisterRammevedtakMedUtfyltMeldekort()
             val utbetalingsvedtakRepo = testDataHelper.utbetalingsvedtakRepo
             val utbetalingsvedtak = meldekort.tilUtbetalingsperiode(sak.vedtak.single(), null)
