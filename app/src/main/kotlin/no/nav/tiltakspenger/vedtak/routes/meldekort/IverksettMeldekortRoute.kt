@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -11,12 +12,15 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
+import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.iverksettMeldekortRoute(
     iverksettMeldekortService: IverksettMeldekortService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
+    auditService: AuditService,
 ) {
     val logger = KotlinLogging.logger { }
     post("sak/{sakId}/meldekort/{meldekortId}/iverksett") {
@@ -36,6 +40,14 @@ fun Route.iverksettMeldekortRoute(
                 beslutter = saksbehandler,
                 sakId = sakId,
             ),
+        )
+
+        auditService.logMedMeldekortId(
+            meldekortId = meldekortId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Iverksetter meldekort",
+            callId = call.callId,
         )
 
         call.respond(message = meldekort.toDTO(), status = HttpStatusCode.OK)

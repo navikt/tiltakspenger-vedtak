@@ -15,13 +15,23 @@ import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUnderBeslutning
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
+    private val behandlingService =
+        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
+    private val mockAuditService = mockk<AuditService>()
+
+    @BeforeEach
+    fun setup() {
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
+    }
 
     @Test
     fun `sjekk at begrunnelse kan sendes inn`() {
@@ -37,6 +47,7 @@ class BehandlingBeslutterRoutesTest {
                         behandlingBeslutterRoutes(
                             innloggetSaksbehandlerProviderMock,
                             tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }

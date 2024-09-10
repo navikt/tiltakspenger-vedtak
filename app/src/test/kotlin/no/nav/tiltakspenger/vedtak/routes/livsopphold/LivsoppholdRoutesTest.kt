@@ -31,6 +31,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
@@ -45,10 +46,12 @@ import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class LivsoppholdRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
+    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -60,6 +63,11 @@ class LivsoppholdRoutesTest {
             "a@b.c",
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
+
+    @BeforeEach
+    fun setup() {
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
+    }
 
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
@@ -96,6 +104,7 @@ class LivsoppholdRoutesTest {
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             livsoppholdVilkårService = livsoppholdVilkårService,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -178,6 +187,7 @@ class LivsoppholdRoutesTest {
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             livsoppholdVilkårService = livsoppholdVilkårService,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -233,6 +243,7 @@ class LivsoppholdRoutesTest {
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             livsoppholdVilkårService = livsoppholdVilkårService,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -398,6 +409,7 @@ class LivsoppholdRoutesTest {
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             livsoppholdVilkårService = livsoppholdVilkårService,
                             behandlingService = behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }

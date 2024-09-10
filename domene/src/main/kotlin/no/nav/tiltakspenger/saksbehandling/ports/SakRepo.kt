@@ -27,6 +27,11 @@ interface SakRepo {
 
     fun hentNesteSaksnummer(): Saksnummer
 
+    fun hentFnrForSaksnummer(
+        saksnummer: Saksnummer,
+        sessionContext: SessionContext? = null,
+    ): Fnr?
+
     fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext? = null,

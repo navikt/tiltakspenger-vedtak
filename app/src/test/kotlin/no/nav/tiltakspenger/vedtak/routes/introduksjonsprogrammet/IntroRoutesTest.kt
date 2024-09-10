@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
@@ -27,10 +28,12 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.D
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class IntroRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
+    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val mockSaksbehandler =
@@ -40,6 +43,11 @@ class IntroRoutesTest {
             "a@b.c",
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
+
+    @BeforeEach
+    fun setup() {
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
+    }
 
     @Test
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
@@ -56,6 +64,7 @@ class IntroRoutesTest {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }
@@ -91,6 +100,7 @@ class IntroRoutesTest {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = mockAuditService,
                         )
                     }
                 }

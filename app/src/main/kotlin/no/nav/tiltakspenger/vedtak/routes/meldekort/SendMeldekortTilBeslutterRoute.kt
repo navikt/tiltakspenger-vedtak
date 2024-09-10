@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -13,6 +14,8 @@ import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dag
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
+import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import java.time.LocalDate
@@ -57,6 +60,7 @@ private data class Body(
 fun Route.sendMeldekortTilBeslutterRoute(
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
+    auditService: AuditService,
 ) {
     post("/sak/{sakId}/meldekort/{meldekortId}") {
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
@@ -84,6 +88,14 @@ fun Route.sendMeldekortTilBeslutterRoute(
                 )
             },
             ifRight = {
+                auditService.logMedMeldekortId(
+                    meldekortId = MeldekortId.fromString(meldekortId),
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.UPDATE,
+                    contextMessage = "Oppdaterer meldekort og sender til beslutter",
+                    callId = call.callId,
+                )
+
                 call.respond(message = it.toDTO(), status = HttpStatusCode.OK)
             },
         )

@@ -56,6 +56,10 @@ class SakFakeRepo(
             ?.nesteSaksnummer()
             ?: Saksnummer.genererSaknummer(dato = LocalDate.now())
 
+    override fun hentFnrForSaksnummer(saksnummer: Saksnummer, sessionContext: SessionContext?): Fnr? {
+        return data.get().values.singleOrNull { it.saksnummer == saksnummer }?.fnr
+    }
+
     override fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
