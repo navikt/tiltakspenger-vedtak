@@ -218,6 +218,7 @@ fun TestApplicationContext.nySøknad(
             skjermet = erSkjermet,
         ),
     deltarPåIntroduksjonsprogram: Boolean = false,
+    deltarPåKvp: Boolean = false,
     tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
     søknad: Søknad =
         ObjectMother.nySøknad(
@@ -232,6 +233,7 @@ fun TestApplicationContext.nySøknad(
                 typeNavn = tiltak.gjennomføring.typeNavn,
             ),
             intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
         ),
 ): Søknad {
     this.søknadContext.søknadService.nySøknad(søknad)
@@ -239,6 +241,9 @@ fun TestApplicationContext.nySøknad(
     return søknad
 }
 
+/**
+ * @param søknad Dersom du sender inn denne, bør du og sende inn tiltak+fnr for at de skal henge sammen.
+ */
 fun TestApplicationContext.førstegangsbehandlingUavklart(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
@@ -252,15 +257,39 @@ fun TestApplicationContext.førstegangsbehandlingUavklart(
             fødselsdato = fødselsdato,
         ),
     deltarPåIntroduksjonsprogram: Boolean = false,
-): Sak {
-    val søknad =
-        this.nySøknad(
-            periode = periode,
+    deltarPåKvp: Boolean = false,
+    tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
+    fornavn: String = "Fornavn",
+    etternavn: String = "Etternavn",
+    personopplysningerFraSøknad: Søknad.Personopplysninger =
+        personSøknad(
             fnr = fnr,
-            erSkjermet = erSkjermet,
-            personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
-            deltarPåIntroduksjonsprogram = deltarPåIntroduksjonsprogram,
-        )
+            fornavn = fornavn,
+            etternavn = etternavn,
+        ),
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            fnr = fnr,
+            personopplysninger = personopplysningerFraSøknad,
+            tiltak = søknadTiltak(
+                id = tiltak.eksternId,
+                deltakelseFom = periode.fraOgMed,
+                deltakelseTom = periode.tilOgMed,
+                arrangør = tiltak.gjennomføring.arrangørnavn,
+                typeKode = tiltak.gjennomføring.typeKode.toString(),
+                typeNavn = tiltak.gjennomføring.typeNavn,
+            ),
+            intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+        ),
+): Sak {
+    this.nySøknad(
+        erSkjermet = erSkjermet,
+        fnr = fnr,
+        søknad = søknad,
+        personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
+        tiltak = tiltak,
+    )
     return this.sakContext.sakService
         .startFørstegangsbehandling(søknad.id, saksbehandler)
         .getOrNull()!!

@@ -13,16 +13,14 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
-import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.KravfristVilkårDTO
@@ -30,12 +28,10 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfrist
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class KravfristRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -46,32 +42,14 @@ internal class KravfristRoutesTest {
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
 
-    @BeforeEach
-    fun setup() {
-        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
-    }
-
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart()
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
 
             testApplication {
                 application {
@@ -79,8 +57,8 @@ internal class KravfristRoutesTest {
                     routing {
                         kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -105,27 +83,12 @@ internal class KravfristRoutesTest {
     fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    deltakelseFom = 1.januar(2021),
-                    deltakelseTom = 31.januar(2021),
-                )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(
+                periode = Periode(1.januar(2021), 31.januar(2021)),
+            )
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
 
             testApplication {
                 application {
@@ -133,8 +96,8 @@ internal class KravfristRoutesTest {
                     routing {
                         kravfristRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }

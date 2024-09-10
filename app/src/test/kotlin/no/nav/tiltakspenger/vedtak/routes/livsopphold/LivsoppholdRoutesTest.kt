@@ -17,25 +17,19 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
-import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ja
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
+import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
-import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
-import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
-import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
@@ -46,12 +40,10 @@ import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class LivsoppholdRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-    private val mockAuditService = mockk<AuditService>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -64,47 +56,25 @@ class LivsoppholdRoutesTest {
             Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
         )
 
-    @BeforeEach
-    fun setup() {
-        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
-    }
-
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(
+                saksbehandler = saksbehandler,
+            )
             val behandlingId = sak.førstegangsbehandling.id
-            val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
             testApplication {
                 application {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            livsoppholdVilkårService = livsoppholdVilkårService,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -129,7 +99,7 @@ class LivsoppholdRoutesTest {
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
-                    setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
+                    setBody(bodyLivsoppholdYtelse(sak.førstegangsbehandling.vurderingsperiode.toDTO(), false))
                 }.apply {
                     status shouldBe HttpStatusCode.Created
                 }
@@ -155,28 +125,12 @@ class LivsoppholdRoutesTest {
     fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(
+                saksbehandler = saksbehandler,
+            )
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
 
             testApplication {
                 application {
@@ -185,9 +139,9 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            livsoppholdVilkårService = livsoppholdVilkårService,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -212,38 +166,21 @@ class LivsoppholdRoutesTest {
     fun `test at livsoppholdytelser blir uavklart om man bare har data fra søknaden`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling(saksbehandler = saksbehandler)
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(
+                saksbehandler = saksbehandler,
+            )
             val behandlingId = sak.førstegangsbehandling.id
-            val vurderingsperiode = sak.førstegangsbehandling.vurderingsperiode
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
             testApplication {
                 application {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            livsoppholdVilkårService = livsoppholdVilkårService,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -269,7 +206,7 @@ class LivsoppholdRoutesTest {
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
                 ) {
-                    setBody(bodyLivsoppholdYtelse(vurderingsperiode.toDTO(), false))
+                    setBody(bodyLivsoppholdYtelse(sak.førstegangsbehandling.vurderingsperiode.toDTO(), false))
                 }.apply {
                     status shouldBe HttpStatusCode.Created
                 }
@@ -295,13 +232,12 @@ class LivsoppholdRoutesTest {
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        val sakId = SakId.random()
         val søknadMedSykepenger =
             nySøknad(
                 sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
 
-        val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSykepenger, 1011)
+        val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(søknadMedSykepenger)
         livsoppholdVilkårSykepenger.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -309,7 +245,7 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 etterlønn = ja(),
             )
-        val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedEtterlønn, 1005)
+        val livsoppholdVilkårEtterlønn = opprettSakOgKjørGetPåLivsopphold(søknadMedEtterlønn)
         livsoppholdVilkårEtterlønn.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårEtterlønn.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -318,7 +254,7 @@ class LivsoppholdRoutesTest {
                 gjenlevendepensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
         val livsoppholdVilkårGjenlevendepensjon =
-            opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedGjenlevendepensjon, 1006)
+            opprettSakOgKjørGetPåLivsopphold(søknadMedGjenlevendepensjon)
         livsoppholdVilkårGjenlevendepensjon.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårGjenlevendepensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -326,7 +262,7 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 supplerendeStønadAlder = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
-        val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuAlder, 1007)
+        val livsoppholdVilkårSuAlder = opprettSakOgKjørGetPåLivsopphold(søknadMedSuAlder)
         livsoppholdVilkårSuAlder.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSuAlder.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -334,7 +270,7 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 supplerendeStønadFlyktning = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
-        val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedSuflykning, 1008)
+        val livsoppholdVilkårSuflykning = opprettSakOgKjørGetPåLivsopphold(søknadMedSuflykning)
         livsoppholdVilkårSuflykning.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSuflykning.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -342,7 +278,7 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 jobbsjansen = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
-        val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedJobbsjansen, 1009)
+        val livsoppholdVilkårJobbsjansen = opprettSakOgKjørGetPåLivsopphold(søknadMedJobbsjansen)
         livsoppholdVilkårJobbsjansen.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårJobbsjansen.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -350,7 +286,7 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 trygdOgPensjon = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
             )
-        val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedPensjonsinntekt, 1010)
+        val livsoppholdVilkårPensjonsinntekt = opprettSakOgKjørGetPåLivsopphold(søknadMedPensjonsinntekt)
         livsoppholdVilkårPensjonsinntekt.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårPensjonsinntekt.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
 
@@ -358,48 +294,23 @@ class LivsoppholdRoutesTest {
             nySøknad(
                 alderspensjon = fraOgMedDatoJa(fom = 1.januar(2023)),
             )
-        val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(sakId, søknadMedAlderpensjon, 1011)
+        val livsoppholdVilkårAlderpensjon = opprettSakOgKjørGetPåLivsopphold(søknadMedAlderpensjon)
         livsoppholdVilkårAlderpensjon.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
     }
 
     private fun opprettSakOgKjørGetPåLivsopphold(
-        sakId: SakId,
         søknad: Søknad,
-        løpenummer: Int,
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     ): LivsoppholdVilkårDTO {
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    sakId = sakId,
-                    søknad = søknad,
-                    løpenummer = løpenummer,
-                    saksbehandler = saksbehandler,
-                )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(
+                søknad = søknad,
+                fnr = søknad.fnr,
+            )
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-            val livsoppholdVilkårService =
-                LivsoppholdVilkårServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    behandlingService = behandlingService,
-                )
-
             testApplication {
                 application {
                     configureExceptions()
@@ -407,9 +318,9 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            livsoppholdVilkårService = livsoppholdVilkårService,
-                            behandlingService = behandlingService,
-                            auditService = mockAuditService,
+                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
