@@ -7,11 +7,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.service.AuditLogEvent
-import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 

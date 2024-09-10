@@ -1,24 +1,15 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStønadPostgresRepo
 
-internal open class StatistikkContext(
-    val statistikkSakRepo: StatistikkSakRepo,
-    val statistikkStønadRepo: StatistikkStønadPostgresRepo,
+open class StatistikkContext(
+    sessionFactory: SessionFactory,
 ) {
-    companion object {
-        fun create(
-            sessionFactory: PostgresSessionFactory,
-        ): StatistikkContext {
-            val statistikkSakRepo = StatistikkSakRepoImpl(sessionFactory)
-            val statistikkStønadRepo = StatistikkStønadPostgresRepo(sessionFactory)
-            return StatistikkContext(
-                statistikkSakRepo = statistikkSakRepo,
-                statistikkStønadRepo = statistikkStønadRepo,
-            )
-        }
-    }
+    open val statistikkSakRepo: StatistikkSakRepo by lazy { StatistikkSakRepoImpl(sessionFactory as PostgresSessionFactory) }
+    open val statistikkStønadRepo: StatistikkStønadRepo by lazy { StatistikkStønadPostgresRepo(sessionFactory as PostgresSessionFactory) }
 }

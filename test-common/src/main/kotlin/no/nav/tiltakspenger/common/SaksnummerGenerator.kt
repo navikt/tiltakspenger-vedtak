@@ -11,7 +11,5 @@ class SaksnummerGenerator(
 ) {
     private val neste = Atomic(første)
 
-    fun neste(): String {
-        return neste.getAndUpdate { it.nesteSaksnummer() }.toString()
-    }
+    fun neste(): Saksnummer = neste.getAndUpdate { it.nesteSaksnummer() }
 }

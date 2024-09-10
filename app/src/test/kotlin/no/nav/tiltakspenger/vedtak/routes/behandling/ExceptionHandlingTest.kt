@@ -13,9 +13,9 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions

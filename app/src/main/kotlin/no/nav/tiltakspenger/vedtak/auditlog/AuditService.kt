@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.felles.service
+package no.nav.tiltakspenger.vedtak.auditlog
 
 import arrow.core.Either
 import mu.KotlinLogging

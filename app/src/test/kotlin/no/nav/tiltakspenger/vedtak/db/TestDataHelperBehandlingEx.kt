@@ -150,7 +150,7 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             .taBehandling(beslutter)
             .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter))
     oppdatertFørstegangsbehandling.opprettVedtak().also {
-        vedtakRepo.lagreVedtak(it)
+        vedtakRepo.lagre(it)
     }
     behandlingRepo.lagre(oppdatertFørstegangsbehandling)
     return sakRepo.hentForSakId(sakId)!!

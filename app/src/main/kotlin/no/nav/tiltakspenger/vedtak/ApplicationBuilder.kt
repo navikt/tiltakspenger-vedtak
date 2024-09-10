@@ -34,7 +34,7 @@ internal class ApplicationBuilder(
     private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
-    private val applicationContext = ApplicationContext.create(sessionFactory)
+    private val applicationContext = ApplicationContext(sessionFactory)
     private val rapidsConnection: RapidsConnection =
         RapidApplication
             .Builder(rapidConfig)
@@ -52,7 +52,7 @@ internal class ApplicationBuilder(
                     hentMeldekortService = applicationContext.meldekortContext.hentMeldekortService,
                     iverksettMeldekortService = applicationContext.meldekortContext.iverksettMeldekortService,
                     sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
-                    auditService = applicationContext.auditContext.auditService,
+                    auditService = applicationContext.personContext.auditService,
                 )
             }.build()
 
@@ -69,8 +69,7 @@ internal class ApplicationBuilder(
             RunCheckFactory(
                 leaderPodLookup =
                 object : LeaderPodLookup {
-                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> =
-                        true.right()
+                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> = true.right()
                 },
             )
         }

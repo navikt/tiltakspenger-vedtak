@@ -10,9 +10,15 @@ import java.time.LocalDate
 class RammevedtakServiceImpl(
     private val vedtakRepo: RammevedtakRepo,
 ) : RammevedtakService {
-    override fun hentVedtak(vedtakId: VedtakId): Rammevedtak? = vedtakRepo.hent(vedtakId)
-    override fun hentVedtakForIdent(ident: Fnr, fom: LocalDate, tom: LocalDate): List<Rammevedtak> =
-        vedtakRepo.hentVedtakForIdent(ident)
+    override fun hentVedtak(vedtakId: VedtakId): Rammevedtak? = vedtakRepo.hentForVedtakId(vedtakId)
+
+    override fun hentVedtakForIdent(
+        ident: Fnr,
+        fom: LocalDate,
+        tom: LocalDate,
+    ): List<Rammevedtak> =
+        vedtakRepo
+            .hentForFnr(ident)
             .filter { vedtak ->
                 vedtak.periode.overlapperMed(
                     Periode(

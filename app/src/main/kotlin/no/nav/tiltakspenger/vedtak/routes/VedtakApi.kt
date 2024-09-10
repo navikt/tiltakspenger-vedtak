@@ -25,7 +25,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
@@ -40,6 +39,7 @@ import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes

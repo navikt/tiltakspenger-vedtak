@@ -15,17 +15,13 @@ interface UtbetalingsvedtakRepo {
         utbetalingsrespons: SendtUtbetaling,
     )
 
-    fun markerSendtTilDokument(
-        vedtakId: VedtakId,
-    )
+    fun markerSendtTilDokument(vedtakId: VedtakId)
 
     fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak?
 
     fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak>
 
     fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak>
-
-    fun hentSisteUtbetalingsvedtak(sakId: SakId): Utbetalingsvedtak?
 
     fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int = 10): List<Meldekort.UtfyltMeldekort>
 

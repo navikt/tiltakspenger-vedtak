@@ -10,10 +10,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import java.time.LocalDateTime
 
-class DokumentGatewayFake(
+class DokumentFakeGateway(
     private val journalpostIdGenerator: JournalpostIdGenerator,
 ) : DokumentGateway {
-
     private val brevSendt: Atomic<Map<SakId, BrevSendt>> = Atomic(mutableMapOf())
     val antallBrevSendt: Int get() = brevSendt.get().size
 
@@ -23,23 +22,20 @@ class DokumentGatewayFake(
     ): JoarkResponse {
         val response = JoarkResponse(journalpostIdGenerator.neste(), LocalDateTime.now())
         brevSendt.get().plus(
-            vedtak.sakId to BrevSendt(
-                vedtak,
-                correlationId,
-                response,
-            ),
+            vedtak.sakId to
+                BrevSendt(
+                    vedtak,
+                    correlationId,
+                    response,
+                ),
         )
         return response
     }
 
-    fun hentBrevSendt(sakId: SakId): BrevSendt? {
-        return brevSendt.get()[sakId]
-    }
+    fun hentBrevSendt(sakId: SakId): BrevSendt? = brevSendt.get()[sakId]
 
     /** Hent på sakId er raskere. */
-    fun hentBrevSendt(saksnummer: Saksnummer): BrevSendt? {
-        return brevSendt.get().values.find { it.vedtak.saksnummer == saksnummer }
-    }
+    fun hentBrevSendt(saksnummer: Saksnummer): BrevSendt? = brevSendt.get().values.find { it.vedtak.saksnummer == saksnummer }
 
     data class BrevSendt(
         val vedtak: Utbetalingsvedtak,

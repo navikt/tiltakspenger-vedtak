@@ -6,12 +6,12 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 
 interface RammevedtakRepo {
-    fun hent(vedtakId: VedtakId): Rammevedtak?
+    fun hentForVedtakId(vedtakId: VedtakId): Rammevedtak?
 
-    fun lagreVedtak(
+    fun lagre(
         vedtak: Rammevedtak,
         context: TransactionContext? = null,
     )
 
-    fun hentVedtakForIdent(ident: Fnr): List<Rammevedtak>
+    fun hentForFnr(fnr: Fnr): List<Rammevedtak>
 }

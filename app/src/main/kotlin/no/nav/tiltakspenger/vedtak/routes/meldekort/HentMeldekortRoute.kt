@@ -8,11 +8,11 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.service.AuditLogEvent
-import no.nav.tiltakspenger.felles.service.AuditService
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
+import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
