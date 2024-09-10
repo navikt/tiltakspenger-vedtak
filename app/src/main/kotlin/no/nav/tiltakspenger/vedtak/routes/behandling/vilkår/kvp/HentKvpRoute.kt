@@ -33,6 +33,7 @@ fun Route.hentKvpRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om kvalifikasjonsprogrammet",
                 callId = call.callId,
             )
 

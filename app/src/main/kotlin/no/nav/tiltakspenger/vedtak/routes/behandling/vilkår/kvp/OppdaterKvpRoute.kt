@@ -73,6 +73,7 @@ fun Route.oppdaterKvpRoute(
                     behandlingId = behandlingId,
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.UPDATE,
+                    contextMessage = "Oppdaterer data om vilkåret kvalifikasjonsprogrammet",
                     callId = call.callId,
                 )
 

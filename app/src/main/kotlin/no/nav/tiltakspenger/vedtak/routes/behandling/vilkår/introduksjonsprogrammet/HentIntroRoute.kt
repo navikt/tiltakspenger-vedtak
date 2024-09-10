@@ -33,6 +33,7 @@ fun Route.hentIntroRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om introduksjonsprogrammet",
                 callId = call.callId,
             )
 

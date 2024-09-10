@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.felles.service
 
+import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -10,12 +11,15 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import java.lang.String.join
 import java.util.UUID
 
+private val LOG = KotlinLogging.logger {}
+
 data class AuditLogEvent(
     val navIdent: String,
     val berørtBrukerId: String,
     val action: Action = Action.ACCESS,
-    val behandlingId: UUID? = null,
+    val message: String,
     val callId: String?,
+    val behandlingId: UUID? = null,
     val logLevel: Level = Level.INFO,
 ) {
     /**
@@ -77,6 +81,11 @@ enum class CefFieldName(
      * Call-id, prosess-id
      */
     CALL_ID("sproc"),
+
+    /**
+     * Message er et fritekstfelt som skal beskrive noe rundt konteksten til loggingen
+     */
+    MESSAGE("msg"),
 
     /**
      * Om handlingen blir tillatt eller ikke (permit/deny)
@@ -166,6 +175,7 @@ object AuditLogger {
             CefField(CefFieldName.DECISION_LABEL, "Decision"),
             CefField(CefFieldName.DECISION_VERDI, "Permit"),
             CefField(CefFieldName.CALL_ID, logEvent.callId.toString()),
+            CefField(CefFieldName.MESSAGE, logEvent.message),
         ).plus(
             logEvent.behandlingId
                 ?.let {
@@ -184,20 +194,24 @@ class AuditService(
         behandlingId: BehandlingId,
         navIdent: String,
         action: AuditLogEvent.Action,
+        contextMessage: String,
         callId: String?,
     ) {
-        val berørtBrukerId = personService.hentFnrForBehandlingId(behandlingId)
+        Either.catch {
+            val berørtBrukerId = personService.hentFnrForBehandlingId(behandlingId)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingId.uuid(),
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingId.uuid(),
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedMeldekortId(
@@ -205,20 +219,24 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         callId: String?,
+        contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
-        val berørtBrukerId = personService.hentFnrForMeldekortId(meldekortId)
+        Either.catch {
+            val berørtBrukerId = personService.hentFnrForMeldekortId(meldekortId)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedSakId(
@@ -226,20 +244,24 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         callId: String?,
+        contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
-        val berørtBrukerId = personService.hentFnrForSakId(sakId)
+        Either.catch {
+            val berørtBrukerId = personService.hentFnrForSakId(sakId)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedSaksnummer(
@@ -247,20 +269,24 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         callId: String?,
+        contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
-        val berørtBrukerId = personService.hentFnrForSaksnummer(saksnummer = saksnummer)
+        Either.catch {
+            val berørtBrukerId = personService.hentFnrForSaksnummer(saksnummer = saksnummer)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logForSøknadId(
@@ -268,20 +294,24 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         callId: String?,
+        contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
-        val berørtBrukerFnr = personService.hentFnrForSøknadId(søknadId)
+        Either.catch {
+            val berørtBrukerFnr = personService.hentFnrForSøknadId(søknadId)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerFnr.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerFnr.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedVedtakId(
@@ -289,19 +319,23 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         callId: String?,
+        contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
-        val berørtBrukerId = personService.hentFnrForVedtakId(vedtakId = vedtakId)
+        Either.catch {
+            val berørtBrukerId = personService.hentFnrForVedtakId(vedtakId = vedtakId)
 
-        AuditLogger.log(
-            AuditLogEvent(
-                navIdent = navIdent,
-                berørtBrukerId = berørtBrukerId.verdi,
-                action = action,
-                behandlingId = behandlingUUID,
-                callId = callId,
-                logLevel = AuditLogEvent.Level.INFO,
-            ),
-        )
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
     }
 }

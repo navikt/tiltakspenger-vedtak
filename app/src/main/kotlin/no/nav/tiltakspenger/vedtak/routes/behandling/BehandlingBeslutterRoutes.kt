@@ -39,6 +39,7 @@ fun Route.behandlingBeslutterRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Beslutter underkjenner behandling",
             callId = call.callId,
         )
 
@@ -57,6 +58,7 @@ fun Route.behandlingBeslutterRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Beslutter godkjenner behandlingen",
             callId = call.callId,
         )
 

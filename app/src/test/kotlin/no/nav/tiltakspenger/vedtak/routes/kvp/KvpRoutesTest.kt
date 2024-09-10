@@ -57,7 +57,7 @@ class KvpRoutesTest {
 
     @BeforeEach
     fun setup() {
-        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any()) } returns Unit
+        every { mockAuditService.logMedBehandlingId(any(), any(), any(), any(), any()) } returns Unit
     }
 
     @Test

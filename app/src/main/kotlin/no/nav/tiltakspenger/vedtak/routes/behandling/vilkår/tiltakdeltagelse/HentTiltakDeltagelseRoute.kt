@@ -33,6 +33,7 @@ fun Route.hentTiltakDeltagelseRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om tiltaksdeltagelse",
                 callId = call.callId,
             )
 

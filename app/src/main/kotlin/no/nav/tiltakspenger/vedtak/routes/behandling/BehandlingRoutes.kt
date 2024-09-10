@@ -53,6 +53,7 @@ fun Route.behandlingRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter hele behandlingen",
             callId = call.callId,
         )
 
@@ -71,6 +72,7 @@ fun Route.behandlingRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Sender behandlingen til beslutter",
             callId = call.callId,
         )
 
@@ -89,6 +91,7 @@ fun Route.behandlingRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Avbryter behandling",
             callId = call.callId,
         )
 

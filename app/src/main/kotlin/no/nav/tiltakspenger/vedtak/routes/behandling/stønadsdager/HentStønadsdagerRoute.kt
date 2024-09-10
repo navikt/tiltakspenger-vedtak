@@ -33,6 +33,7 @@ fun Route.hentStønadsdagerRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om stønadsdager",
                 callId = call.callId,
             )
 

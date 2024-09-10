@@ -39,6 +39,7 @@ fun Route.sakRoutes(
             saksnummer = saksnummer,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter hele saken til brukeren",
             callId = call.callId,
         )
         val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler).toDTO()

@@ -88,6 +88,7 @@ fun Route.behandlingBenkRoutes(
                     søknadId = søknadId,
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.CREATE,
+                    contextMessage = "Oppretter behandling fra søknad og starter behandlingen",
                     callId = call.callId,
                 )
 
@@ -110,6 +111,7 @@ fun Route.behandlingBenkRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Saksbehandler tar behandlingen",
             callId = call.callId,
         )
 

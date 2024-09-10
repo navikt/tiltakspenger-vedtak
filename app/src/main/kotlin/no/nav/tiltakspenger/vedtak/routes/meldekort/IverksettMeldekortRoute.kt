@@ -46,6 +46,7 @@ fun Route.iverksettMeldekortRoute(
             meldekortId = meldekortId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Iverksetter meldekort",
             callId = call.callId,
         )
 

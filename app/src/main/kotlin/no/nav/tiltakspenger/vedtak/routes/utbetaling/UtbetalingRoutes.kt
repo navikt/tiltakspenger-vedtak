@@ -36,6 +36,7 @@ internal fun Route.utbetalingRoutes(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter alle utbetalinger for en behandling",
             callId = call.callId,
         )
 
@@ -57,6 +58,7 @@ internal fun Route.utbetalingRoutes(
             vedtakId = vedtakId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter vedtak for behandlingen",
             callId = call.callId,
         )
 

@@ -37,6 +37,7 @@ fun Route.hentPersonRoute(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter personopplysninger for en behandling",
             callId = call.callId,
         )
 

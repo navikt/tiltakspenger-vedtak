@@ -33,6 +33,7 @@ fun Route.hentAlderRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om alder",
                 callId = call.callId,
             )
 

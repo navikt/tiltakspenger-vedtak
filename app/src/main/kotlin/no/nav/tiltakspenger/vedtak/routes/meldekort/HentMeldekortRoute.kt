@@ -38,6 +38,7 @@ fun Route.hentMeldekortRoute(
             sakId = SakId.fromString(sakId),
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter alle meldekortene for en sak",
             callId = call.callId,
         )
 
@@ -57,6 +58,7 @@ fun Route.hentMeldekortRoute(
             meldekortId = MeldekortId.fromString(meldekortId),
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
+            contextMessage = "Henter meldekort",
             callId = call.callId,
         )
 

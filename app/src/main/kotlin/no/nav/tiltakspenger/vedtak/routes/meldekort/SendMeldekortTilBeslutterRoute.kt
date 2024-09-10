@@ -92,6 +92,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     meldekortId = MeldekortId.fromString(meldekortId),
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.UPDATE,
+                    contextMessage = "Oppdaterer meldekort og sender til beslutter",
                     callId = call.callId,
                 )
 

@@ -33,6 +33,7 @@ fun Route.hentInstitusjonsoppholdRoute(
                 behandlingId = behandlingId,
                 navIdent = saksbehandler.navIdent,
                 action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter vilkår om institusjonsopphold",
                 callId = call.callId,
             )
 
