@@ -13,18 +13,12 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
-import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
@@ -51,35 +45,17 @@ class IntroRoutesTest {
     fun `test at endepunkt for henting og lagring av intro fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    deltakelseFom = 1.januar(2023),
-                    deltakelseTom = 31.mars(2023),
-                )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart()
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-
             testApplication {
                 application {
                     jacksonSerialization()
                     routing {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                         )
                     }
                 }
@@ -104,38 +80,17 @@ class IntroRoutesTest {
     fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-            val søknadMedIntro =
-                nySøknad(
-                    intro = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-                )
-
-            val (sak, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    søknad = søknadMedIntro,
-                )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart()
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    førstegangsbehandlingRepo = testDataHelper.behandlingRepo,
-                    rammevedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
-
             testApplication {
                 application {
                     jacksonSerialization()
                     routing {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                         )
                     }
                 }

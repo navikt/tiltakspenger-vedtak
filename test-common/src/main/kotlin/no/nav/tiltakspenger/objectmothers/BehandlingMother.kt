@@ -218,13 +218,11 @@ fun TestApplicationContext.nySøknad(
             skjermet = erSkjermet,
         ),
     tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
-): Søknad {
-    val søknad =
+    søknad: Søknad =
         ObjectMother.nySøknad(
             fnr = fnr,
             personopplysninger = personopplysningerFraSøknad,
-            tiltak =
-            søknadTiltak(
+            tiltak = søknadTiltak(
                 id = tiltak.eksternId,
                 deltakelseFom = periode.fraOgMed,
                 deltakelseTom = periode.tilOgMed,
@@ -232,7 +230,8 @@ fun TestApplicationContext.nySøknad(
                 typeKode = tiltak.gjennomføring.typeKode.toString(),
                 typeNavn = tiltak.gjennomføring.typeNavn,
             ),
-        )
+        ),
+): Søknad {
     this.søknadContext.søknadService.nySøknad(søknad)
     this.leggTilPerson(fnr, erSkjermet, personopplysningerForBrukerFraPdl, tiltak)
     return søknad
