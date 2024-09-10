@@ -15,14 +15,19 @@ class JWTInnloggetSaksbehandlerProvider(
 ) : InnloggetSaksbehandlerProvider {
     private fun epostToBrukernavn(epost: String): String = epost.split("@").first().replace(".", " ")
 
-    private fun finnRolleMedUUID(uuidFraClaim: UUID): AdRolle? = allAvailableRoles.firstOrNull { configRole -> configRole.objectId == uuidFraClaim }
+    private fun finnRolleMedUUID(uuidFraClaim: UUID): AdRolle? =
+        allAvailableRoles.firstOrNull { configRole ->
+            configRole.objectId ==
+                uuidFraClaim
+        }
 
     private fun List<UUID>.mapFromUUIDToRoleName(): Roller =
         this
             .map {
                 LOG.debug { "Mapper rolle $it" }
                 it
-            }.mapNotNull { finnRolleMedUUID(it)?.name }.let { Roller(it) }
+            }.mapNotNull { finnRolleMedUUID(it)?.name }
+            .let { Roller(it) }
 
     override fun hentSaksbehandler(principal: JWTPrincipal): Saksbehandler {
         val ident = requireNotNull(principal.getClaim("NAVident", String::class)) { "NAVident er null i token" }

@@ -310,3 +310,24 @@ fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
     )
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
 }
+
+fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val vilkårsvurdert =
+        førstegangsbehandlingTilBeslutter(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+        )
+    this.førstegangsbehandlingContext.behandlingService.taBehandling(
+        vilkårsvurdert.førstegangsbehandling.id,
+        beslutter,
+    )
+    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
+}

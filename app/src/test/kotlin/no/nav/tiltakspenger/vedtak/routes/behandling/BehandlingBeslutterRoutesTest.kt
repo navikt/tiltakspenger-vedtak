@@ -11,10 +11,10 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUnderBeslutning
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
@@ -22,57 +22,47 @@ import org.junit.jupiter.api.Test
 
 class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
-    private val behandlingService =
-        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
 
     @Test
     fun `sjekk at begrunnelse kan sendes inn`() {
-        val begrunnelse = slot<String>()
-        val bId = slot<BehandlingId>()
-        val saksbehandler = slot<Saksbehandler>()
-
-        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns beslutter()
-        every {
-            behandlingService.sendTilbakeTilSaksbehandler(
-                capture(bId),
-                capture(saksbehandler),
-                capture(begrunnelse),
-            )
-        } returns Unit
-
-        val behandlingId = BehandlingId.random()
-        testApplication {
-            application {
-                // vedtakTestApi()
-                jacksonSerialization()
-                routing {
-                    behandlingBeslutterRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                    )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUnderBeslutning()
+            val behandlingId = sak.førstegangsbehandling.id
+            every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns beslutter()
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        behandlingBeslutterRoutes(
+                            innloggetSaksbehandlerProviderMock,
+                            tac.førstegangsbehandlingContext.behandlingService,
+                        )
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$BEHANDLING_PATH/sendtilbake/$behandlingId")
+                    },
+                ) {
+                    setBody("""{"begrunnelse": "begrunnelse"}""")
+                }.apply {
+                    status shouldBe HttpStatusCode.OK
                 }
             }
-            defaultRequest(
-                HttpMethod.Post,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path("$BEHANDLING_PATH/sendtilbake/$behandlingId")
-                },
-            ) {
-                setBody(begrunnelseJson)
-            }.apply {
-                status shouldBe HttpStatusCode.OK
+            tac.førstegangsbehandlingContext.behandlingRepo.hent(behandlingId).attesteringer.single().let {
+                it shouldBe
+                    Attestering(
+                        // Ignorerer id+tidspunkt
+                        id = it.id,
+                        tidspunkt = it.tidspunkt,
+                        status = no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus.SENDT_TILBAKE,
+                        begrunnelse = "begrunnelse",
+                        beslutter = beslutter().navIdent,
+                    )
             }
         }
-        bId.captured shouldBe behandlingId
-        saksbehandler.captured.navIdent shouldBe "B12345"
-        begrunnelse.captured shouldBe "begrunnelse"
     }
-
-    private val begrunnelseJson =
-        """
-        {
-            "begrunnelse": "begrunnelse"
-        }
-        """.trimIndent()
 }

@@ -11,6 +11,7 @@ data class Attestering(
     val tidspunkt: LocalDateTime = LocalDateTime.now(),
 ) {
     fun isGodkjent() = status == Attesteringsstatus.GODKJENT
+
     fun isUnderkjent() = status == Attesteringsstatus.SENDT_TILBAKE
 }
 
