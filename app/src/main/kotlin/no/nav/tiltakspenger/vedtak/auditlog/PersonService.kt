@@ -8,10 +8,10 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.vedtak.repository.person.PersonRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
 
 class PersonService(
-    private val personRepo: PersonRepoImpl,
+    private val personRepo: PersonRepo,
 ) {
 
     fun hentFnrForBehandlingId(behandlingId: BehandlingId): Fnr =

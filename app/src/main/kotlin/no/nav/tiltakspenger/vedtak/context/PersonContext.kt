@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auditlog.PersonService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
+import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
 import no.nav.tiltakspenger.vedtak.repository.person.PersonRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerPostgresRepo
 
@@ -36,7 +37,16 @@ open class PersonContext(
             sessionFactory as PostgresSessionFactory,
         )
     }
-    open val auditService by lazy {
-        AuditService(PersonService(personRepo = PersonRepoImpl(sessionFactory = sessionFactory as PostgresSessionFactory)))
+    open val personRepo: PersonRepo by lazy {
+        PersonRepoImpl(
+            sessionFactory = sessionFactory as PostgresSessionFactory,
+        )
+    }
+    val auditService by lazy {
+        AuditService(
+            PersonService(
+                personRepo = personRepo,
+            ),
+        )
     }
 }
