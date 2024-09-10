@@ -53,7 +53,7 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         ident = sak.fnr.verdi,
         mottattTidspunkt = behandling.søknad.opprettet,
         registrertTidspunkt = behandling.opprettet,
-        ferdigBehandletTidspunkt = null,
+        ferdigBehandletTidspunkt = vedtak.vedtaksdato,
         vedtakTidspunkt = vedtak.vedtaksdato,
         endretTidspunkt = nå(),
         utbetaltTidspunkt = null,
