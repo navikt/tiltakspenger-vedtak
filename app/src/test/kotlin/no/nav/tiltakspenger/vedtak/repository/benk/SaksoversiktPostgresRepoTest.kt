@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadFor
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.persisterSøknad
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
@@ -18,8 +17,7 @@ import java.time.LocalDateTime
 class SaksoversiktPostgresRepoTest {
     @Test
     fun hentAlle() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
+        withMigratedDb(runIsolated = true) { testDataHelper ->
             val repo = testDataHelper.saksoversiktRepo
             val søknad1 = testDataHelper.persisterSøknad()
             val (sak, søknad2) = testDataHelper.persisterOpprettetFørstegangsbehandling()

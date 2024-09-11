@@ -35,8 +35,9 @@ class BehandlingBeslutterRoutesTest {
                     jacksonSerialization()
                     routing {
                         behandlingBeslutterRoutes(
-                            innloggetSaksbehandlerProviderMock,
-                            tac.førstegangsbehandlingContext.behandlingService,
+                            innloggetSaksbehandlerProvider = innloggetSaksbehandlerProviderMock,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }

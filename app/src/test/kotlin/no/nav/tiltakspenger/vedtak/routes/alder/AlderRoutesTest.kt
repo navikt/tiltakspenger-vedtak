@@ -62,6 +62,7 @@ class AlderRoutesTest {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -98,6 +99,7 @@ class AlderRoutesTest {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }

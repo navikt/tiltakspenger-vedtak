@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
 import no.nav.tiltakspenger.fakes.clients.UtbetalingFakeGateway
 import no.nav.tiltakspenger.fakes.repos.BehandlingFakeRepo
 import no.nav.tiltakspenger.fakes.repos.MeldekortFakeRepo
+import no.nav.tiltakspenger.fakes.repos.PersonFakeRepo
 import no.nav.tiltakspenger.fakes.repos.PersonopplysningerFakeRepo
 import no.nav.tiltakspenger.fakes.repos.RammevedtakFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SakFakeRepo
@@ -84,10 +85,13 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             meldekortRepo = meldekortFakeRepo,
         )
 
+    private val personFakeRepo = PersonFakeRepo(sakFakeRepo)
+
     override val personContext =
         object : PersonContext(sessionFactory) {
             override val personopplysningerRepo = personopplysningerFakeRepo
             override val personGateway = personGatewayFake
+            override val personRepo = personFakeRepo
         }
     override val dokumentContext by lazy {
         object : DokumentContext() {

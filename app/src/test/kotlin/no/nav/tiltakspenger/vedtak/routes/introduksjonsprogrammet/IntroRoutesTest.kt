@@ -56,6 +56,7 @@ class IntroRoutesTest {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -82,7 +83,9 @@ class IntroRoutesTest {
 
         with(TestApplicationContext()) {
             val tac = this
-            val sak = this.førstegangsbehandlingUavklart()
+            val sak = this.førstegangsbehandlingUavklart(
+                deltarPåIntroduksjonsprogram = true,
+            )
             val behandlingId = sak.førstegangsbehandling.id
             testApplication {
                 application {
@@ -91,6 +94,7 @@ class IntroRoutesTest {
                         introRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }

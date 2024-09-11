@@ -39,6 +39,7 @@ import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
@@ -69,6 +70,7 @@ internal fun Application.vedtakApi(
     hentMeldekortService: HentMeldekortService,
     iverksettMeldekortService: IverksettMeldekortService,
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
+    auditService: AuditService,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -91,27 +93,36 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
                 kvpVilkårService = kvpVilkårService,
                 livsoppholdVilkårService = livsoppholdVilkårService,
+                auditService = auditService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
                 sakService = sakService,
+                auditService = auditService,
             )
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = behandlingService,
+                auditService = auditService,
             )
             sakRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 sakService = sakService,
+                auditService = auditService,
             )
-            utbetalingRoutes(hentUtbetalingsvedtakService)
+            utbetalingRoutes(
+                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
+                auditService = auditService,
+            )
 
             meldekortRoutes(
                 hentMeldekortService = hentMeldekortService,
                 iverksettMeldekortService = iverksettMeldekortService,
                 sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                auditService = auditService,
             )
         }
         authenticate("systemtoken") {

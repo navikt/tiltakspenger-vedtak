@@ -89,6 +89,23 @@ internal class SakPostgresRepo(
             )
         }
 
+    override fun hentFnrForSaksnummer(
+        saksnummer: Saksnummer,
+        sessionContext: SessionContext?,
+    ) =
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                        select ident from sak where saksnummer = :saksnummer
+                    """.trimIndent(),
+                    mapOf("saksnummer" to saksnummer.verdi),
+                ).map { row ->
+                    row.toFnr()
+                }.asSingle,
+            )
+        }
+
     override fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
@@ -257,6 +274,10 @@ internal class SakPostgresRepo(
                 fnr = Fnr.fromString(string("ident")),
                 saksnummer = Saksnummer(verdi = string("saksnummer")),
             )
+        }
+
+        private fun Row.toFnr(): Fnr {
+            return Fnr.fromString(string("ident"))
         }
 
         @Language("SQL")
