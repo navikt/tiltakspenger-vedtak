@@ -23,7 +23,7 @@ internal fun Route.utbetalingRoutes(hentUtbetalingsvedtakService: HentUtbetaling
         val behandlingId = BehandlingId.fromString(id)
         val vedtak = hentUtbetalingsvedtakService.hentForBehandlingId(behandlingId).filterNot { it.utbetalingsperiode.isEmpty() }
 
-        call.respond(status = HttpStatusCode.OK, mapAlleVedtak(vedtak))
+        call.respond(status = HttpStatusCode.OK, message = {})
     }
 
     get("$UTBETALING_PATH/hentVedtak/{vedtakId}") {
@@ -36,6 +36,6 @@ internal fun Route.utbetalingRoutes(hentUtbetalingsvedtakService: HentUtbetaling
         val vedtak = hentUtbetalingsvedtakService.hentForVedtakId(vedtakId)
         checkNotNull(vedtak) { "Fant ikke vedtak" }
 
-        call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
+        call.respond(status = HttpStatusCode.OK, message = {})
     }
 }

@@ -13,6 +13,6 @@ enum class ReduksjonAvYtelsePåGrunnAvFraværDTO {
 fun ReduksjonAvYtelsePåGrunnAvFravær.toDTO(): ReduksjonAvYtelsePåGrunnAvFraværDTO =
     when (this) {
         ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDTO.INGEN_REDUKSJON
-        ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDTO.DELVIS_REDUKSJON
+        ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDTO.DELVIS_REDUKSJON
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> ReduksjonAvYtelsePåGrunnAvFraværDTO.YTELSEN_FALLER_BORT
     }

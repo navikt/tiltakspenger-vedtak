@@ -10,4 +10,4 @@ data class SatsDTO(
     val satsDelvis: Int,
 )
 
-fun Sats.toDTO(): SatsDTO = SatsDTO(periode = periode.toDTO(), sats = sats, satsDelvis = satsDelvis)
+fun Sats.toDTO(): SatsDTO = SatsDTO(periode = periode.toDTO(), sats = sats, satsDelvis = satsRedusert)

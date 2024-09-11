@@ -11,8 +11,8 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Fravær.Velferd
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Fravær.Velferd.VelferdIkkeGodkjentAvNav
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.IkkeDeltatt
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Sperret
-import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
@@ -108,7 +108,7 @@ private data class MeldekortBeregning(
 
         if (skalLeggeTilDag) {
             utbetalingDager.add(
-                DeltattUtenLønnITiltaket(
+                DeltattUtenLønnITiltaket.create(
                     meldekortId = meldekortId,
                     dato = dag,
                     tiltakstype = tiltakstype,
@@ -127,7 +127,7 @@ private data class MeldekortBeregning(
         sjekkSykBarnKarantene(dag)
         if (skalLeggeTilDag) {
             utbetalingDager.add(
-                VelferdGodkjentAvNav(
+                VelferdGodkjentAvNav.create(
                     meldekortId = meldekortId,
                     dato = dag,
                     tiltakstype = tiltakstype,
@@ -146,7 +146,7 @@ private data class MeldekortBeregning(
         sjekkSykBarnKarantene(dag)
         if (skalLeggeTilDag) {
             utbetalingDager.add(
-                VelferdIkkeGodkjentAvNav(
+                VelferdIkkeGodkjentAvNav.create(
                     meldekortId = meldekortId,
                     dato = dag,
                     tiltakstype = tiltakstype,
@@ -184,7 +184,7 @@ private data class MeldekortBeregning(
         sjekkSykBarnKarantene(dag)
         if (skalLeggeTilDag) {
             utbetalingDager.add(
-                IkkeDeltatt(
+                IkkeDeltatt.create(
                     meldekortId = meldekortId,
                     dato = dag,
                     tiltakstype = tiltakstype,
@@ -203,7 +203,7 @@ private data class MeldekortBeregning(
         sjekkSykBarnKarantene(dag)
         if (skalLeggeTilDag) {
             utbetalingDager.add(
-                DeltattMedLønnITiltaket(
+                DeltattMedLønnITiltaket.create(
                     meldekortId = meldekortId,
                     dato = dag,
                     tiltakstype = tiltakstype,
@@ -225,7 +225,7 @@ private data class MeldekortBeregning(
                     egenmeldingsdagerSyk--
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SykBruker(
+                            SykBruker.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
@@ -239,11 +239,11 @@ private data class MeldekortBeregning(
                     sykTilstand = SykTilstand.DelvisUtbetaling
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SykBruker(
+                            SykBruker.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
-                                reduksjon = DelvisReduksjon,
+                                reduksjon = Reduksjon,
                             ),
                         )
                     }
@@ -255,11 +255,11 @@ private data class MeldekortBeregning(
                     egenmeldingsdagerSyk--
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SykBruker(
+                            SykBruker.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
-                                reduksjon = DelvisReduksjon,
+                                reduksjon = Reduksjon,
                             ),
                         )
                     }
@@ -272,7 +272,7 @@ private data class MeldekortBeregning(
                     sykKaranteneDag = dag.plusDays(DAGER_KARANTENE)
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SykBruker(
+                            SykBruker.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
@@ -289,7 +289,7 @@ private data class MeldekortBeregning(
                 sykKaranteneDag = dag.plusDays(DAGER_KARANTENE)
                 if (skalLeggeTilDag) {
                     utbetalingDager.add(
-                        SykBruker(
+                        SykBruker.create(
                             meldekortId = meldekortId,
                             dato = dag,
                             tiltakstype = tiltakstype,
@@ -314,7 +314,7 @@ private data class MeldekortBeregning(
                     egenmeldingsdagerSyktBarn--
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SyktBarn(
+                            SyktBarn.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
@@ -328,11 +328,11 @@ private data class MeldekortBeregning(
                     syktBarnTilstand = SykTilstand.DelvisUtbetaling
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SyktBarn(
+                            SyktBarn.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
-                                reduksjon = DelvisReduksjon,
+                                reduksjon = Reduksjon,
                             ),
                         )
                     }
@@ -344,11 +344,11 @@ private data class MeldekortBeregning(
                     egenmeldingsdagerSyktBarn--
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SyktBarn(
+                            SyktBarn.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
-                                reduksjon = DelvisReduksjon,
+                                reduksjon = Reduksjon,
                             ),
                         )
                     }
@@ -361,7 +361,7 @@ private data class MeldekortBeregning(
                     syktBarnKaranteneDag = dag.plusDays(DAGER_KARANTENE)
                     if (skalLeggeTilDag) {
                         utbetalingDager.add(
-                            SyktBarn(
+                            SyktBarn.create(
                                 meldekortId = meldekortId,
                                 dato = dag,
                                 tiltakstype = tiltakstype,
@@ -377,7 +377,7 @@ private data class MeldekortBeregning(
                 sjekkSykBarnKarantene(dag)
                 if (skalLeggeTilDag) {
                     utbetalingDager.add(
-                        SyktBarn(
+                        SyktBarn.create(
                             meldekortId = meldekortId,
                             dato = dag,
                             tiltakstype = tiltakstype,

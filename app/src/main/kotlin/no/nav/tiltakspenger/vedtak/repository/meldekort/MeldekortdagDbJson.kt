@@ -39,6 +39,7 @@ private data class MeldekortdagDbJson(
     val dato: String,
     val status: StatusDb,
     val reduksjon: ReduksjonAvYtelsePåGrunnAvFraværDb?,
+    val beregningsdag: BeregningsdagDbJson?,
 ) {
     enum class StatusDb {
         SPERRET,
@@ -61,7 +62,7 @@ private data class MeldekortdagDbJson(
         fun toDomain(): ReduksjonAvYtelsePåGrunnAvFravær =
             when (this) {
                 IngenReduksjon -> ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
-                DelvisReduksjon -> ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon
+                DelvisReduksjon -> ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon
                 YtelsenFallerBort -> ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
             }
     }
@@ -69,16 +70,17 @@ private data class MeldekortdagDbJson(
     fun toMeldekortdag(meldekortId: MeldekortId): Meldekortdag {
         val parsedDato = LocalDate.parse(dato)
         val parsedTiltakstype = tiltakstype.toTiltakstypeSomGirRett()
+        val parsedBeregningsdag = beregningsdag?.toBeregningsdag()
         return when (status) {
             SPERRET -> Sperret(meldekortId, parsedDato, parsedTiltakstype)
             IKKE_UTFYLT -> IkkeUtfylt(meldekortId, parsedDato, parsedTiltakstype)
-            DELTATT_UTEN_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket(meldekortId, parsedDato, parsedTiltakstype)
-            DELTATT_MED_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket(meldekortId, parsedDato, parsedTiltakstype)
-            IKKE_DELTATT -> IkkeDeltatt(meldekortId, parsedDato, parsedTiltakstype)
-            FRAVÆR_SYK -> SykBruker(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain())
-            FRAVÆR_SYKT_BARN -> SyktBarn(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain())
-            FRAVÆR_VELFERD_GODKJENT_AV_NAV -> VelferdGodkjentAvNav(meldekortId, parsedDato, parsedTiltakstype)
-            FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV -> VelferdIkkeGodkjentAvNav(meldekortId, parsedDato, parsedTiltakstype)
+            DELTATT_UTEN_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            DELTATT_MED_LØNN_I_TILTAKET -> DeltattMedLønnITiltaket.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            IKKE_DELTATT -> IkkeDeltatt.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            FRAVÆR_SYK -> SykBruker.fromDb(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain(), parsedBeregningsdag!!)
+            FRAVÆR_SYKT_BARN -> SyktBarn.fromDb(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain(), parsedBeregningsdag!!)
+            FRAVÆR_VELFERD_GODKJENT_AV_NAV -> VelferdGodkjentAvNav.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV -> VelferdIkkeGodkjentAvNav.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
         }
     }
 }
@@ -97,6 +99,7 @@ private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
                 dato = meldekortdag.dato.toString(),
                 status = MeldekortdagDbJson.StatusDb.IKKE_UTFYLT,
                 reduksjon = null,
+                beregningsdag = meldekortdag.beregningsdag!!.toDbJson(),
             )
         }.let { serialize(it) }
 
@@ -106,7 +109,8 @@ private fun Meldeperiode.UtfyltMeldeperiode.toDbJson(): String =
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
                 dato = meldekortdag.dato.toString(),
-                reduksjon = meldekortdag.reduksjon?.toDb(),
+                reduksjon = meldekortdag.reduksjon.toDb(),
+                beregningsdag = meldekortdag.beregningsdag!!.toDbJson(),
                 status =
                 when (meldekortdag) {
                     is DeltattMedLønnITiltaket -> DELTATT_MED_LØNN_I_TILTAKET
@@ -124,7 +128,7 @@ private fun Meldeperiode.UtfyltMeldeperiode.toDbJson(): String =
 private fun ReduksjonAvYtelsePåGrunnAvFravær.toDb(): ReduksjonAvYtelsePåGrunnAvFraværDb =
     when (this) {
         ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDb.IngenReduksjon
-        ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDb.DelvisReduksjon
+        ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon -> ReduksjonAvYtelsePåGrunnAvFraværDb.DelvisReduksjon
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> ReduksjonAvYtelsePåGrunnAvFraværDb.YtelsenFallerBort
     }
 

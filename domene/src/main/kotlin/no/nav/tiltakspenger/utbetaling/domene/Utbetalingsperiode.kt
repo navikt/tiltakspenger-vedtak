@@ -1,10 +1,7 @@
 package no.nav.tiltakspenger.utbetaling.domene
 
-import arrow.core.Either
 import arrow.core.NonEmptyList
-import arrow.core.left
 import arrow.core.nonEmptyListOf
-import arrow.core.right
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
@@ -21,9 +18,17 @@ sealed interface Utbetalingsperiode {
     val summertBeløp: Int
     val beløpPerDag: Int
 
-    fun leggTil(meldekortdag: Meldekortdag.Utfylt): Either<KanIkkeSlåSammen, Utbetalingsperiode>
+    fun leggTil(meldekortdag: Meldekortdag.Utfylt): Resultat
 
-    object KanIkkeSlåSammen
+    sealed interface Resultat {
+        data object SkalIkkeUtbetales : Resultat
+        data class KanIkkeSlåSammen(
+            val utbetalingsdag: Utbetalingsdag,
+        ) : Resultat
+        data class KanSlåSammen(
+            val utbetalingsperiode: Utbetalingsperiode,
+        ) : Resultat
+    }
 
     data class SkalUtbetale(
         val utbetalingsperiode: NonEmptyList<Utbetalingsdag>,
@@ -36,7 +41,6 @@ sealed interface Utbetalingsperiode {
         override val summertBeløp = utbetalingsperiode.sumOf { it.beløp }
         override val beløpPerDag = utbetalingsperiode.first().beløp
         val tiltakstype: TiltakstypeSomGirRett = utbetalingsperiode.first().tiltakstype
-        val sats: Sats = utbetalingsperiode.first().sats
 
         init {
             require(
@@ -69,14 +73,15 @@ sealed interface Utbetalingsperiode {
                     it.tiltakstype == tiltakstype
                 },
             ) { "Tiltakstype må være lik for alle utbetalingsdager i en utbetalingsperiode" }
-            require(utbetalingsperiode.all { it.sats == sats }) { "Sats må være lik for alle utbetalingsdager i en utbetalingsperiode" }
         }
 
-        override fun leggTil(meldekortdag: Meldekortdag.Utfylt): Either<KanIkkeSlåSammen, Utbetalingsperiode> {
+        override fun leggTil(meldekortdag: Meldekortdag.Utfylt): Resultat {
+            val utbetalingsdag = meldekortdag.genererUtbetalingsdag() ?: return Resultat.SkalIkkeUtbetales
+
             return if (kanSlåSammen(meldekortdag)) {
-                SkalUtbetale(utbetalingsperiode.plus(meldekortdag.genererUtbetalingsdag())).right()
+                Resultat.KanSlåSammen(SkalUtbetale(utbetalingsperiode.plus(utbetalingsdag)))
             } else {
-                KanIkkeSlåSammen.left()
+                Resultat.KanIkkeSlåSammen(utbetalingsdag)
             }
         }
 
@@ -95,30 +100,16 @@ sealed interface Utbetalingsperiode {
         override val summertBeløp = 0
         override val beløpPerDag = 0
 
-        override fun leggTil(meldekortdag: Meldekortdag.Utfylt): Either<KanIkkeSlåSammen, Utbetalingsperiode> =
-            if (kanSlåSammen(meldekortdag)) {
-                SkalIkkeUtbetale(Periode(periode.fraOgMed, meldekortdag.dato), meldekortId).right()
-            } else {
-                KanIkkeSlåSammen.left()
-            }
-
-        private fun kanSlåSammen(neste: Meldekortdag.Utfylt): Boolean {
-            return when (neste.reduksjon) {
-                ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort ->
-                    this.meldekortId == neste.meldekortId &&
-                        this.periode.tilOgMed.plusDays(1) == neste.dato
-
-                ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon, ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon -> false
-            }
-        }
+        override fun leggTil(meldekortdag: Meldekortdag.Utfylt): Resultat =
+            Resultat.SkalIkkeUtbetales
     }
 }
 
-fun Meldekortdag.Utfylt.genererUtbetalingsperiode(): Utbetalingsperiode =
-    when (this.reduksjon) {
-        ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon, ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon ->
+fun Meldekortdag.Utfylt.genererUtbetalingsperiode(): Utbetalingsperiode? {
+    return when (this.reduksjon) {
+        ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon, ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon ->
             Utbetalingsperiode.SkalUtbetale(
-                nonEmptyListOf(this.genererUtbetalingsdag()),
+                nonEmptyListOf(this.genererUtbetalingsdag() ?: return null),
             )
 
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort ->
@@ -127,3 +118,4 @@ fun Meldekortdag.Utfylt.genererUtbetalingsperiode(): Utbetalingsperiode =
                 meldekortId,
             )
     }
+}

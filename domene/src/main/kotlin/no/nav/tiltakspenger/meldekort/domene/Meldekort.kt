@@ -31,6 +31,7 @@ sealed interface Meldekort {
     val saksbehandler: String?
     val beslutter: String?
     val status: MeldekortStatus
+    fun beregnTotalbeløp(): Int?
 
     /**
      * Meldekort utfylt av saksbehandler og godkjent av beslutter.
@@ -100,6 +101,8 @@ sealed interface Meldekort {
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
             )
+
+        override fun beregnTotalbeløp(): Int = meldekortperiode.beregnTotalbeløp()
     }
 
     data class IkkeUtfyltMeldekort(
@@ -111,6 +114,7 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldekortperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
     ) : Meldekort {
+        override fun beregnTotalbeløp() = null
         override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
         fun sendTilBeslutter(
             meldekortperiode: Meldeperiode.UtfyltMeldeperiode,

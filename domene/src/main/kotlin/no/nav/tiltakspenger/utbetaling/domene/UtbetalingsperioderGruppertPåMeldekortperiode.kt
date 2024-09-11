@@ -52,12 +52,6 @@ data class UtbetalingsperioderGruppertPåMeldekortperiode(
             },
         ) { "MeldekortId må være lik for alle utbetalingsperioder i en meldekortperiode" }
     }
-
-    /**
-     * TODO pre-mvp jah: Midlertidig løsning for route-DTO.
-     * Vi kan ikke garantere at det brukes en enhetlig sats i meldekortperioden, siden meldekortet kan gå på tvers av satsendringav (1.januar).
-     */
-    fun satsUnsafe(): Sats = utbetalingsperioder.filterIsInstance<Utbetalingsperiode.SkalUtbetale>().first().sats
 }
 
 fun Meldeperiode.UtfyltMeldeperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(): UtbetalingsperioderGruppertPåMeldekortperiode {
@@ -65,12 +59,19 @@ fun Meldeperiode.UtfyltMeldeperiode.genererUtbetalingsperioderGruppertPåMeldeko
         this.verdi
             .fold((listOf<Utbetalingsperiode>())) { acc, meldekortdag ->
                 when (val sisteUtbetalingsperiode = acc.lastOrNull()) {
-                    null -> acc + meldekortdag.genererUtbetalingsperiode()
+                    null -> meldekortdag.genererUtbetalingsperiode() ?.let { acc + it } ?: acc
                     else ->
-                        sisteUtbetalingsperiode.leggTil(meldekortdag).fold(
-                            { acc + meldekortdag.genererUtbetalingsperiode() },
-                            { acc.dropLast(1) + it },
-                        )
+                        sisteUtbetalingsperiode.leggTil(meldekortdag).let {
+                            when (it) {
+                                is Utbetalingsperiode.Resultat.KanIkkeSlåSammen -> {
+                                    acc + meldekortdag.genererUtbetalingsperiode()!!
+                                }
+                                is Utbetalingsperiode.Resultat.KanSlåSammen -> {
+                                    acc.dropLast(1) + it.utbetalingsperiode
+                                }
+                                is Utbetalingsperiode.Resultat.SkalIkkeUtbetales -> acc
+                            } 
+                        }
                 }
             }.toNonEmptyListOrNull()!!
     return UtbetalingsperioderGruppertPåMeldekortperiode(utbetalingsperioder)
