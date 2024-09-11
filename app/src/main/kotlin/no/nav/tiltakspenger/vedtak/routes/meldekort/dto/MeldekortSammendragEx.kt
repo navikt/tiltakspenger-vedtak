@@ -8,7 +8,9 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 private data class MeldekortSammendragDTO(
     val meldekortId: String,
     val periode: PeriodeDTO,
-    val erUtfylt: Boolean,
+    val status: MeldekortstatusDTO,
+    val saksbehandler: String?,
+    val beslutter: String?,
 )
 
 fun List<MeldekortSammendrag>.toDTO(): String = serialize(map { it.toDTO() })
@@ -17,5 +19,7 @@ private fun MeldekortSammendrag.toDTO(): MeldekortSammendragDTO =
     MeldekortSammendragDTO(
         meldekortId = meldekortId.toString(),
         periode = periode.toDTO(),
-        erUtfylt = erUtfylt,
+        status = status.toDTO(),
+        saksbehandler = saksbehandler,
+        beslutter = beslutter,
     )

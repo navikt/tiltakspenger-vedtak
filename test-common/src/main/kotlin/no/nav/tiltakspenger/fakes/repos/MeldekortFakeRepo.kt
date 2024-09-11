@@ -56,7 +56,7 @@ class MeldekortFakeRepo : MeldekortRepo {
             .get()
             .values
             .filter { it.sakId == sakId }
-            .map { MeldekortSammendrag(it.id, it.periode, it is Meldekort.UtfyltMeldekort) }
+            .map { MeldekortSammendrag(it.id, it.periode, it.status, it.saksbehandler, it.beslutter) }
 
     override fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,

@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
@@ -22,31 +22,31 @@ internal class MeldekortberegningKaranteneTest {
         DagMedForventning(31.januar(2024), FRAVÆR_SYK, IngenReduksjon),
         DagMedForventning(1.februar(2024), FRAVÆR_SYK, IngenReduksjon),
         // 1. er siste dag med 100%, og 2. februar er første dag med 75%
-        DagMedForventning(2.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(2.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(3.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(4.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
 
-        DagMedForventning(5.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(6.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(7.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(8.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(9.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(5.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(6.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(7.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(8.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(9.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(10.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(11.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
     )
 
     // Totalt 9 sykedager for bruker etter første meldekort
     private val meldekort2 = nonEmptyListOf(
-        DagMedForventning(12.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(13.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(14.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(15.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(16.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(12.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(13.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(14.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(15.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(16.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(17.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(18.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
 
-        DagMedForventning(19.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(20.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(19.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(20.februar(2024), FRAVÆR_SYK, Reduksjon),
         // 20. var 16 dagen med sykdom og siste dag med 75% fra nå er det karantene i 16 dager + dager man er syk.
         DagMedForventning(21.februar(2024), FRAVÆR_SYK, YtelsenFallerBort),
         DagMedForventning(22.februar(2024), FRAVÆR_SYK, YtelsenFallerBort),
@@ -98,7 +98,7 @@ internal class MeldekortberegningKaranteneTest {
     )
     private val meldekort5 = nonEmptyListOf(
         DagMedForventning(25.mars(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
-        DagMedForventning(26.mars(2024), FRAVÆR_SYKT_BARN, DelvisReduksjon),
+        DagMedForventning(26.mars(2024), FRAVÆR_SYKT_BARN, Reduksjon),
         // 4 dagen med sykt barn - 12 dager til karantene pga. sykt barn.
         DagMedForventning(27.mars(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
         DagMedForventning(28.mars(2024), FRAVÆR_SYK, IngenReduksjon),
@@ -110,10 +110,10 @@ internal class MeldekortberegningKaranteneTest {
         DagMedForventning(1.april(2024), FRAVÆR_SYK, IngenReduksjon),
         DagMedForventning(2.april(2024), FRAVÆR_SYK, IngenReduksjon),
         // egenmeldingsperioden for syk bruker er over. 13 dager igjen med delvis reduksjon.
-        DagMedForventning(3.april(2024), FRAVÆR_SYKT_BARN, DelvisReduksjon),
+        DagMedForventning(3.april(2024), FRAVÆR_SYKT_BARN, Reduksjon),
         // 3. april er 5. dagen med sykt barn og gir 75%
         DagMedForventning(4.april(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
-        DagMedForventning(5.april(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(5.april(2024), FRAVÆR_SYK, Reduksjon),
         // 12 dager igjen av arbeidsgiverperioden før karantene pga. syk bruker
         DagMedForventning(6.april(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(7.april(2024), IKKE_DELTATT, YtelsenFallerBort),

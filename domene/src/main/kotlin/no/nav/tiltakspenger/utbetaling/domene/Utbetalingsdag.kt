@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.utbetaling.domene
 
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.meldekort.domene.Beregningsdag
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
 import java.time.LocalDate
@@ -14,17 +15,13 @@ data class Utbetalingsdag(
     val tiltakstype: TiltakstypeSomGirRett,
     val status: Status,
     val meldekortId: MeldekortId,
-    val sats: Sats,
+    val beregningsdag: Beregningsdag,
 ) {
     // Legg til barnetillegg etter MVP
-    val beløp: Int =
-        when (status) {
-            Status.FullUtbetaling -> sats.sats
-            Status.DelvisUtbetaling -> sats.satsDelvis
-        }
+    val beløp: Int = beregningsdag.beløp
 
     init {
-        require(sats.periode.inneholder(dato)) { "Satsens periode må inneholde utbetalingsdagens dato, men var $dato" }
+        require(beregningsdag.dato == dato) { "Beregningsdagens dato må samsvare med utbetalingsdagens dato, men var $dato" }
         require(beløp > 0) { "Beløp må være større enn 0, men var $beløp" }
     }
 
@@ -43,22 +40,24 @@ data class Utbetalingsdag(
             this.tiltakstype == neste.tiltakstype &&
             this.meldekortId == neste.meldekortId &&
             this.dato.plusDays(1) == neste.dato &&
-            this.status == neste.tilUtbetalingsstatus()
+            this.status == neste.tilUtbetalingsstatus() &&
+            this.beløp == neste.beregningsdag?.beløp
 }
 
 fun Meldekortdag.Utfylt.tilUtbetalingsstatus(): Utbetalingsdag.Status? {
     return when (this.reduksjon) {
         ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon -> Utbetalingsdag.Status.FullUtbetaling
-        ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon -> Utbetalingsdag.Status.DelvisUtbetaling
+        ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon -> Utbetalingsdag.Status.DelvisUtbetaling
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> null
     }
 }
 
-fun Meldekortdag.Utfylt.genererUtbetalingsdag(): Utbetalingsdag =
-    Utbetalingsdag(
+fun Meldekortdag.Utfylt.genererUtbetalingsdag(): Utbetalingsdag? {
+    return Utbetalingsdag(
         dato = dato,
         tiltakstype = tiltakstype,
-        status = tilUtbetalingsstatus()!!,
+        status = tilUtbetalingsstatus() ?: return null,
         meldekortId = meldekortId,
-        sats = Satser.sats(dato),
+        beregningsdag = beregningsdag ?: return null,
     )
+}

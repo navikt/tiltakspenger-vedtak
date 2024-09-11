@@ -40,7 +40,7 @@ internal fun Route.utbetalingRoutes(
             callId = call.callId,
         )
 
-        call.respond(status = HttpStatusCode.OK, mapAlleVedtak(vedtak))
+        call.respond(status = HttpStatusCode.OK, message = {})
     }
 
     get("$UTBETALING_PATH/hentVedtak/{vedtakId}") {
@@ -62,6 +62,6 @@ internal fun Route.utbetalingRoutes(
             callId = call.callId,
         )
 
-        call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
+        call.respond(status = HttpStatusCode.OK, message = {})
     }
 }

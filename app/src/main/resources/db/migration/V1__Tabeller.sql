@@ -237,7 +237,7 @@ create table meldekort
     meldekortdager       jsonb not null,
     saksbehandler        varchar null,
     beslutter            varchar null,
-    type                 varchar null
+    status               varchar not null
 );
 
 create table utbetalingsvedtak

@@ -14,9 +14,9 @@ data class SatsDbJson(
     fun toDomain(): Sats = Sats(
         periode = periode.toDomain(),
         sats = sats,
-        satsDelvis = satsDelvis,
+        satsRedusert = satsDelvis,
         satsBarnetillegg = satsBarnetillegg,
-        satsBarnetilleggDelvis = satsBarnetilleggDelvis,
+        satsBarnetilleggRedusert = satsBarnetilleggDelvis,
     )
 }
 
@@ -24,7 +24,7 @@ internal fun Sats.toDbJson(): SatsDbJson =
     SatsDbJson(
         periode = periode.toDbJson(),
         sats = sats,
-        satsDelvis = satsDelvis,
+        satsDelvis = satsRedusert,
         satsBarnetillegg = satsBarnetillegg,
-        satsBarnetilleggDelvis = satsBarnetilleggDelvis,
+        satsBarnetilleggDelvis = satsBarnetilleggRedusert,
     )

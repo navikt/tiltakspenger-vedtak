@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
+import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
@@ -37,6 +38,7 @@ interface MeldekortMother {
         beslutter: String = "beslutter",
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        status: MeldekortStatus = MeldekortStatus.GODKJENT,
     ) = Meldekort.UtfyltMeldekort(
         id = id,
         sakId = sakId,
@@ -47,6 +49,7 @@ interface MeldekortMother {
         beslutter = beslutter,
         forrigeMeldekortId = forrigeMeldekortId,
         tiltakstype = tiltakstype,
+        status = status,
     )
 
     /**
@@ -85,7 +88,7 @@ interface MeldekortMother {
             "Antall sammenhengende dager vil aldri være mer mindre enn 1 eller mer enn 5, men var $antallDager"
         }
         return List(antallDager) { index ->
-            Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket(
+            Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket.create(
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,
@@ -103,7 +106,7 @@ interface MeldekortMother {
             "Antall sammenhengende dager vil aldri være mer mindre enn 1 eller mer enn 5, men var $antallDager"
         }
         return List(antallDager) { index ->
-            Meldekortdag.Utfylt.IkkeDeltatt(
+            Meldekortdag.Utfylt.IkkeDeltatt.create(
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,

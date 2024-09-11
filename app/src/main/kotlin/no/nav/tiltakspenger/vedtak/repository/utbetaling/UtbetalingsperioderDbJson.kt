@@ -9,7 +9,9 @@ import no.nav.tiltakspenger.vedtak.db.deserializeList
 import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
-import no.nav.tiltakspenger.vedtak.repository.sats.SatsDbJson
+import no.nav.tiltakspenger.vedtak.repository.meldekort.BeregningsdagDbJson
+import no.nav.tiltakspenger.vedtak.repository.meldekort.toBeregningsdag
+import no.nav.tiltakspenger.vedtak.repository.meldekort.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.sats.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.tiltak.toTiltakstypeSomGirRett
 import java.time.LocalDate
@@ -27,7 +29,7 @@ private data class UtbetalingsperiodeDbJson(
 private data class UtbetalingsdagDbJson(
     val dato: LocalDate,
     val meldekortId: String,
-    val sats: SatsDbJson,
+    val beregningsdag: BeregningsdagDbJson,
     val tiltakstype: String,
     val beløp: Int,
     val status: Status,
@@ -60,7 +62,7 @@ fun String.toUtbetalingsperiode(): UtbetalingsperioderGruppertPåMeldekortperiod
                         Utbetalingsdag(
                             dato = utbetalingsdag.dato,
                             meldekortId = MeldekortId.fromString(utbetalingsdag.meldekortId),
-                            sats = utbetalingsdag.sats.toDomain(),
+                            beregningsdag = utbetalingsdag.beregningsdag.toBeregningsdag(),
                             tiltakstype = utbetalingsdag.tiltakstype.toTiltakstypeSomGirRett(),
                             status = utbetalingsdag.status.toDomain(),
                         )
@@ -86,7 +88,7 @@ fun UtbetalingsperioderGruppertPåMeldekortperiode.toDbJson(): String {
                     UtbetalingsdagDbJson(
                         dato = utbetalingsdag.dato,
                         meldekortId = utbetalingsdag.meldekortId.toString(),
-                        sats = utbetalingsdag.sats.toDbJson(),
+                        beregningsdag = utbetalingsdag.beregningsdag.toDbJson(),
                         tiltakstype = utbetalingsdag.tiltakstype.name,
                         beløp = utbetalingsdag.beløp,
                         status = when (utbetalingsdag.status) {

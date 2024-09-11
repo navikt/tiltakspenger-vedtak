@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
+import no.nav.tiltakspenger.vedtak.repository.meldekort.toMeldekortStatus
 
 internal class UtbetalingsvedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -167,6 +168,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                         beslutter = row.string("beslutter"),
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
+                        status = row.string("status").toMeldekortStatus(),
                     )
                 }.asList,
             )

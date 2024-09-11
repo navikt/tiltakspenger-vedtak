@@ -27,7 +27,7 @@ class IverksettMeldekortService(
         return meldekort.iverksettMeldekort(kommando.beslutter).also { iverksattMeldekort ->
             val nesteMeldekort = meldekort.opprettNesteMeldekort(rammevedtak.utfallsperioder)
             sessionFactory.withTransactionContext { tx ->
-                meldekortRepo.lagre(iverksattMeldekort, tx)
+                meldekortRepo.oppdater(iverksattMeldekort, tx)
                 nesteMeldekort.onRight {
                     meldekortRepo.lagre(it, tx)
                 }

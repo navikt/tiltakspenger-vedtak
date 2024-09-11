@@ -5,8 +5,8 @@ import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.DelvisReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
+import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
@@ -30,32 +30,32 @@ internal class Meldekortberegning5DagerIUkaEksempel4Test {
         DagMedForventning(4.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
 
         DagMedForventning(5.februar(2024), FRAVÆR_SYK, IngenReduksjon),
-        DagMedForventning(6.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(7.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(8.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(9.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(6.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(7.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(8.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(9.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(10.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(11.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
     )
     private val meldekort2 = nonEmptyListOf(
-        DagMedForventning(12.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(13.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(14.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(15.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(16.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(12.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(13.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(14.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(15.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(16.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(17.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(18.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
 
         DagMedForventning(19.februar(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
-        DagMedForventning(20.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(20.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(21.februar(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
-        DagMedForventning(22.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
-        DagMedForventning(23.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(22.februar(2024), FRAVÆR_SYK, Reduksjon),
+        DagMedForventning(23.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(24.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(25.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
     )
     private val meldekort3 = nonEmptyListOf(
-        DagMedForventning(26.februar(2024), FRAVÆR_SYK, DelvisReduksjon),
+        DagMedForventning(26.februar(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(27.februar(2024), IKKE_DELTATT, YtelsenFallerBort),
         DagMedForventning(28.februar(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
         DagMedForventning(29.februar(2024), FRAVÆR_SYKT_BARN, IngenReduksjon),

@@ -5,8 +5,6 @@ package no.nav.tiltakspenger.meldekort.domene
  */
 enum class ReduksjonAvYtelsePåGrunnAvFravær {
     IngenReduksjon,
-
-    // Kommentar jah: Dersom denne endres fra nåværende prosent på 75% på denne endres fra en enum til et sealed interface også må prosenten legges inn i denne dataklassen.
-    DelvisReduksjon,
+    Reduksjon,
     YtelsenFallerBort,
 }

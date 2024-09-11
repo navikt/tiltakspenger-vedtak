@@ -54,6 +54,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
                 verdi.all { it.meldekortId == meldekortId },
             ) { "Alle dager må tilhøre samme meldekort, men var: ${verdi.map { it.meldekortId }}" }
         }
+        fun beregnTotalbeløp(): Int = verdi.sumOf { it.beregningsdag?.beløp ?: 0 }
     }
 
     /**
