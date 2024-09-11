@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
@@ -14,8 +13,7 @@ internal class BehandlingRepoTest {
 
     @Test
     fun `lagre og hente en behandling`() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
+        withMigratedDb { testDataHelper ->
             val behandlingRepo = testDataHelper.behandlingRepo
             val sakRepo = testDataHelper.sakRepo
 
@@ -27,18 +25,11 @@ internal class BehandlingRepoTest {
 
     @Test
     fun `hentAlleForIdent skal kun hente behandlinger for en ident og ikke de andre`() {
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
+        withMigratedDb { testDataHelper ->
             val behandlingRepo = testDataHelper.behandlingRepo
 
-            val (sak1, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    løpenummer = 1001,
-                )
-            val (sak2, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    løpenummer = 1002,
-                )
+            val (sak1, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+            val (sak2, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
 
             behandlingRepo.hentAlleForIdent(sak1.fnr) shouldBe listOf(sak1.førstegangsbehandling)
             behandlingRepo.hentAlleForIdent(sak2.fnr) shouldBe listOf(sak2.førstegangsbehandling)

@@ -4,7 +4,6 @@ import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
-import java.time.DayOfWeek
 
 /**
  * Garanterer at utbetalingsperioden starter på en mandag, slutter på en søndag og varer i 14 dager.
@@ -27,23 +26,12 @@ data class UtbetalingsperioderGruppertPåMeldekortperiode(
     val perioderSomSkalUtbetales = utbetalingsperioder.filterIsInstance<Utbetalingsperiode.SkalUtbetale>()
 
     init {
-        require(periode.antallDager == 14L) {
-            "Utbetalingsperioder gruppert på meldekortperiode må bestå av 14 dager, men var ${periode.antallDager}"
+        require(periode.antallDager <= 14L) {
+            "Utbetalingsperioder gruppert på meldekortperiode kan maks være 14 dager, men var ${periode.antallDager}"
         }
-
-        require(
-            utbetalingsperioder
-                .first()
-                .periode.fraOgMed.dayOfWeek == DayOfWeek.MONDAY,
-        ) { "Utbetalingsperiodene må starte på en mandag" }
-        require(
-            utbetalingsperioder
-                .last()
-                .periode.tilOgMed.dayOfWeek == DayOfWeek.SUNDAY,
-        ) { "Utbetalingsperiodene må slutte på en sønad" }
         utbetalingsperioder.zipWithNext { a, b ->
-            require(a.periode.tilOgMed.plusDays(1) == b.periode.fraOgMed) {
-                "Datoene må være sammenhengende og sortert, men var ${utbetalingsperioder.map { it.periode }}"
+            require(a.periode.tilOgMed < b.periode.fraOgMed) {
+                "Periodene kan ikke overlappe og må være sortert, men var ${utbetalingsperioder.map { it.periode }}"
             }
         }
         require(
@@ -70,7 +58,7 @@ fun Meldeperiode.UtfyltMeldeperiode.genererUtbetalingsperioderGruppertPåMeldeko
                                     acc.dropLast(1) + it.utbetalingsperiode
                                 }
                                 is Utbetalingsperiode.Resultat.SkalIkkeUtbetales -> acc
-                            } 
+                            }
                         }
                 }
             }.toNonEmptyListOrNull()!!

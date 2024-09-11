@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -17,6 +18,8 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.OppretteBehandling
+import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
+import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
@@ -28,6 +31,7 @@ fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
+    auditService: AuditService,
 ) {
     get(BEHANDLINGER_PATH) {
         SECURELOG.debug("Mottatt request for å hente alle behandlinger på benken")
@@ -80,6 +84,14 @@ fun Route.behandlingBenkRoutes(
                 }
             },
             {
+                auditService.logForSøknadId(
+                    søknadId = søknadId,
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.CREATE,
+                    contextMessage = "Oppretter behandling fra søknad og starter behandlingen",
+                    callId = call.callId,
+                )
+
                 call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.førstegangsbehandling.id.toString()))
             },
         )
@@ -94,6 +106,15 @@ fun Route.behandlingBenkRoutes(
         behandlingService.taBehandling(behandlingId, saksbehandler)
 
         val response = BehandlingIdDTO(behandlingId.toString())
+
+        auditService.logMedBehandlingId(
+            behandlingId = behandlingId,
+            navIdent = saksbehandler.navIdent,
+            action = AuditLogEvent.Action.UPDATE,
+            contextMessage = "Saksbehandler tar behandlingen",
+            callId = call.callId,
+        )
+
         call.respond(status = HttpStatusCode.OK, response)
     }
 }

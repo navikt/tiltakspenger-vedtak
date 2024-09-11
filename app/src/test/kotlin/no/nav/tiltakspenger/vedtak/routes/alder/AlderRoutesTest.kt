@@ -15,24 +15,15 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
-import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
+import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
-import no.nav.tiltakspenger.vedtak.db.TestDataHelper
-import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
-import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
@@ -42,7 +33,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class AlderRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
@@ -60,22 +50,10 @@ class AlderRoutesTest {
     fun `test at endepunkt for henting og lagring av alder fungerer`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-
-            val (sak, _) = testDataHelper.persisterOpprettetFørstegangsbehandling()
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart()
             val behandlingId = sak.førstegangsbehandling.id
-            val behandlingService =
-                BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
 
             testApplication {
                 application {
@@ -83,7 +61,8 @@ class AlderRoutesTest {
                     routing {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -108,25 +87,10 @@ class AlderRoutesTest {
     fun `test at søknaden blir gjenspeilet i alder vilkåret`() {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
-        withMigratedDb { dataSource ->
-            val testDataHelper = TestDataHelper(dataSource)
-            val (sak, _) =
-                testDataHelper.persisterOpprettetFørstegangsbehandling(
-                    fødselsdato = LocalDate.now().minusYears(10),
-                )
+        with(TestApplicationContext()) {
+            val tac = this
+            val sak = this.førstegangsbehandlingUavklart(fødselsdato = LocalDate.now().minusYears(10))
             val behandlingId = sak.førstegangsbehandling.id
-
-            val behandlingService =
-                BehandlingServiceImpl(
-                    behandlingRepo = testDataHelper.behandlingRepo,
-                    vedtakRepo = testDataHelper.vedtakRepo,
-                    personopplysningRepo = testDataHelper.personopplysningerRepo,
-                    sakRepo = testDataHelper.sakRepo,
-                    sessionFactory = testDataHelper.sessionFactory,
-                    statistikkSakRepo = testDataHelper.statistikkSakRepo,
-                    statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
-                    meldekortRepo = testDataHelper.meldekortRepo,
-                )
 
             testApplication {
                 application {
@@ -134,7 +98,8 @@ class AlderRoutesTest {
                     routing {
                         alderRoutes(
                             innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = behandlingService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            auditService = tac.personContext.auditService,
                         )
                     }
                 }
@@ -157,38 +122,12 @@ class AlderRoutesTest {
 
     @Test
     fun `test at behandlingen ikke kan opprettes om bruker fyller 18 år midt i vurderingsperioden`() {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
         val fødselsdato = 5.januar(2000)
-
-        val søknad =
-            nySøknad(
-                periode = vurderingsperiode,
-                tidsstempelHosOss = LocalDateTime.now(),
-            )
-
-        val behandling =
-            ObjectMother
-                .sakMedOpprettetBehandling(
-                    saksbehandler = saksbehandler,
-                    vurderingsperiode = vurderingsperiode,
-                    søknad = søknad,
-                    løpenummer = 1003,
-                    sakPersonopplysninger =
-                    SakPersonopplysninger(
-                        listOf(
-                            personopplysningKjedeligFyr(
-                                fnr = Fnr.random(),
-                                fødselsdato = fødselsdato,
-                            ),
-                        ),
-                    ),
-                ).behandlinger
-                .first() as Førstegangsbehandling
-
-        shouldThrow<IkkeImplementertException> {
-            behandling.vilkårssett.alderVilkår.utfall()
-        }.shouldHaveMessage("Støtter ikke delvis innvilgelse av alder enda")
+        with(TestApplicationContext()) {
+            shouldThrow<IkkeImplementertException> {
+                this.førstegangsbehandlingUavklart(fødselsdato = fødselsdato, periode = vurderingsperiode)
+            }.shouldHaveMessage("Støtter ikke delvis innvilgelse av alder enda")
+        }
     }
 }

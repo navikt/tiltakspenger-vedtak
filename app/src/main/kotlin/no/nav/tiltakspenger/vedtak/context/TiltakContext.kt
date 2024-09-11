@@ -6,15 +6,9 @@ import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 
-internal open class TiltakContext(
-    val tiltakGateway: TiltakGateway,
-) {
-    companion object {
-        fun create(): TiltakContext {
-            val tokenProviderTiltak = AzureTokenProvider(config = Configuration.oauthConfigTiltak())
-            val tiltakClient = TiltakClientImpl(getToken = tokenProviderTiltak::getToken)
-            val tiltakGateway = TiltakGatewayImpl(tiltakClient)
-            return TiltakContext(tiltakGateway = tiltakGateway)
-        }
-    }
+open class TiltakContext {
+    private val tokenProviderTiltak by lazy { AzureTokenProvider(config = Configuration.oauthConfigTiltak()) }
+    private val tiltakClient by lazy { TiltakClientImpl(getToken = tokenProviderTiltak::getToken) }
+
+    open val tiltakGateway: TiltakGateway by lazy { TiltakGatewayImpl(tiltakClient) }
 }

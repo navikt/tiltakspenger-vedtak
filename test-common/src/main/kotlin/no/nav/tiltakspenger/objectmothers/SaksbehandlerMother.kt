@@ -18,7 +18,7 @@ interface SaksbehandlerMother {
     )
 
     fun saksbehandlerUtenTilgang(
-        navIdent: String = "Z12345",
+        navIdent: String = "U12345",
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(

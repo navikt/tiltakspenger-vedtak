@@ -88,7 +88,7 @@ interface MeldekortMother {
             "Antall sammenhengende dager vil aldri være mer mindre enn 1 eller mer enn 5, men var $antallDager"
         }
         return List(antallDager) { index ->
-            Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket(
+            Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket.create(
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,
@@ -106,7 +106,7 @@ interface MeldekortMother {
             "Antall sammenhengende dager vil aldri være mer mindre enn 1 eller mer enn 5, men var $antallDager"
         }
         return List(antallDager) { index ->
-            Meldekortdag.Utfylt.IkkeDeltatt(
+            Meldekortdag.Utfylt.IkkeDeltatt.create(
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,

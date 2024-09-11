@@ -19,13 +19,18 @@ interface SakRepo {
     fun lagre(
         sak: Sak,
         transactionContext: TransactionContext? = null,
-    ): Sak
+    )
 
     fun hentForSakId(sakId: SakId): Sak?
 
     fun hentDetaljerForSakId(sakId: SakId): SakDetaljer?
 
     fun hentNesteSaksnummer(): Saksnummer
+
+    fun hentFnrForSaksnummer(
+        saksnummer: Saksnummer,
+        sessionContext: SessionContext? = null,
+    ): Fnr?
 
     fun hentFnrForSakId(
         sakId: SakId,

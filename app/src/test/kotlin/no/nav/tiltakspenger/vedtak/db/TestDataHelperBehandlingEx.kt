@@ -14,7 +14,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligF
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode
@@ -29,9 +28,6 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     deltakelseTom: LocalDate = 31.mars(2023),
     journalpostId: String = random.nextInt().toString(),
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
-    iDag: LocalDate = LocalDate.of(2023, 1, 1),
-    løpenummer: Int = 1001,
-    saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
     fødselsdato: LocalDate = ObjectMother.fødselsdato(),
     sakPersonopplysninger: SakPersonopplysninger =
@@ -62,7 +58,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             søknad = søknad,
             fnr = fnr,
             vurderingsperiode = tiltaksOgVurderingsperiode,
-            saksnummer = saksnummer,
+            saksnummer = this.saksnummerGenerator.neste(),
             sakPersonopplysninger = sakPersonopplysninger,
             saksbehandler = saksbehandler,
             sakId = sakId,
@@ -87,9 +83,6 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
     journalpostId: String = random.nextInt().toString(),
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     beslutter: Saksbehandler = ObjectMother.beslutter(),
-    iDag: LocalDate = LocalDate.of(2023, 1, 1),
-    løpenummer: Int = 1001,
-    saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
     fødselsdato: LocalDate = ObjectMother.fødselsdato(),
     sakPersonopplysninger: SakPersonopplysninger =
@@ -122,9 +115,6 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             deltakelseTom = deltakelseTom,
             journalpostId = journalpostId,
             saksbehandler = saksbehandler,
-            iDag = iDag,
-            løpenummer = løpenummer,
-            saksnummer = saksnummer,
             tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
             fødselsdato = fødselsdato,
             sakPersonopplysninger = sakPersonopplysninger,
@@ -150,7 +140,7 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             .taBehandling(beslutter)
             .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter))
     oppdatertFørstegangsbehandling.opprettVedtak().also {
-        vedtakRepo.lagreVedtak(it)
+        vedtakRepo.lagre(it)
     }
     behandlingRepo.lagre(oppdatertFørstegangsbehandling)
     return sakRepo.hentForSakId(sakId)!!
@@ -164,9 +154,6 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
     journalpostId: String = random.nextInt().toString(),
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     beslutter: Saksbehandler = ObjectMother.beslutter(),
-    iDag: LocalDate = LocalDate.of(2023, 1, 1),
-    løpenummer: Int = 1001,
-    saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
     fødselsdato: LocalDate = ObjectMother.fødselsdato(),
     sakPersonopplysninger: SakPersonopplysninger =
@@ -199,9 +186,6 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             deltakelseTom = deltakelseTom,
             journalpostId = journalpostId,
             saksbehandler = saksbehandler,
-            iDag = iDag,
-            løpenummer = løpenummer,
-            saksnummer = saksnummer,
             tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
             fødselsdato = fødselsdato,
             sakPersonopplysninger = sakPersonopplysninger,

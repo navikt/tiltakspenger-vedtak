@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
@@ -12,11 +13,16 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
+import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
+import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
@@ -37,7 +43,7 @@ interface BehandlingMother {
      * Dette er kun det første steget i en behandlingsprosess. Bruk andre helper-funksjoner for å starte i en senere tilstand.
      */
     fun behandlingUnderBehandlingUavklart(
-        periode: Periode = ObjectMother.vurderingsperiode(),
+        periode: Periode = vurderingsperiode(),
         sakId: SakId = SakId.random(),
         saksnummer: Saksnummer = Saksnummer("202301011001"),
         fnr: Fnr = Fnr.random(),
@@ -51,7 +57,7 @@ interface BehandlingMother {
                     deltakelseTom = periode.tilOgMed,
                 ),
             ),
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+        saksbehandler: Saksbehandler = saksbehandler(),
     ): Førstegangsbehandling =
         Førstegangsbehandling
             .opprettBehandling(
@@ -65,10 +71,10 @@ interface BehandlingMother {
             ).getOrNull()!!
 
     fun behandlingUnderBehandlingInnvilget(
-        vurderingsperiode: Periode = ObjectMother.vurderingsperiode(),
+        vurderingsperiode: Periode = vurderingsperiode(),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = vurderingsperiode),
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+        saksbehandler: Saksbehandler = saksbehandler(),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
         behandling: Førstegangsbehandling =
             behandlingUnderBehandlingUavklart(
@@ -99,10 +105,10 @@ interface BehandlingMother {
         ).getOrNull()!!
 
     fun behandlingUnderBehandlingAvslag(
-        periode: Periode = ObjectMother.vurderingsperiode(),
+        periode: Periode = vurderingsperiode(),
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+        saksbehandler: Saksbehandler = saksbehandler(),
     ): Førstegangsbehandling {
         val behandling =
             behandlingUnderBehandlingUavklart(
@@ -128,19 +134,16 @@ interface BehandlingMother {
         return behandling
     }
 
-    fun godkjentAttestering(
-        beslutter: Saksbehandler = ObjectMother.beslutter(),
-    ): Attestering = Attestering(
-        id = AttesteringId.random(),
-        status = Attesteringsstatus.GODKJENT,
-        begrunnelse = null,
-        beslutter = beslutter.navIdent,
-        tidspunkt = LocalDateTime.now(),
-    )
+    fun godkjentAttestering(beslutter: Saksbehandler = beslutter()): Attestering =
+        Attestering(
+            id = AttesteringId.random(),
+            status = Attesteringsstatus.GODKJENT,
+            begrunnelse = null,
+            beslutter = beslutter.navIdent,
+            tidspunkt = LocalDateTime.now(),
+        )
 
-    fun behandlingTilBeslutterInnvilget(
-        saksbehandler: Saksbehandler = saksbehandler123(),
-    ): Førstegangsbehandling {
+    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Førstegangsbehandling {
         val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
         return behandling.tilBeslutning(saksbehandler)
     }
@@ -162,7 +165,7 @@ interface BehandlingMother {
         fom: LocalDate = 1.januar(2023),
         tom: LocalDate = 31.mars(2023),
         status: TiltakDeltakerstatus = Deltar,
-        dagerPrUke: Float? = 2F,
+        dagerPrUke: Float? = 5F,
         prosent: Float? = 100F,
         kilde: Tiltakskilde = Komet,
     ) = Tiltak(
@@ -195,4 +198,168 @@ interface BehandlingMother {
             typeKode = tiltakstype,
             rettPåTiltakspenger = rettPåTiltakspenger,
         )
+}
+
+fun TestApplicationContext.nySøknad(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    fornavn: String = "Fornavn",
+    etternavn: String = "Etternavn",
+    erSkjermet: Boolean = false,
+    personopplysningerFraSøknad: Søknad.Personopplysninger =
+        personSøknad(
+            fnr = fnr,
+            fornavn = fornavn,
+            etternavn = etternavn,
+        ),
+    personopplysningerForBrukerFraPdl: Personopplysninger =
+        ObjectMother.personopplysningKjedeligFyr(
+            fnr = fnr,
+            skjermet = erSkjermet,
+        ),
+    deltarPåIntroduksjonsprogram: Boolean = false,
+    deltarPåKvp: Boolean = false,
+    tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            fnr = fnr,
+            personopplysninger = personopplysningerFraSøknad,
+            tiltak = søknadTiltak(
+                id = tiltak.eksternId,
+                deltakelseFom = periode.fraOgMed,
+                deltakelseTom = periode.tilOgMed,
+                arrangør = tiltak.gjennomføring.arrangørnavn,
+                typeKode = tiltak.gjennomføring.typeKode.toString(),
+                typeNavn = tiltak.gjennomføring.typeNavn,
+            ),
+            intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+        ),
+): Søknad {
+    this.søknadContext.søknadService.nySøknad(søknad)
+    this.leggTilPerson(fnr, erSkjermet, personopplysningerForBrukerFraPdl, tiltak)
+    return søknad
+}
+
+/**
+ * @param søknad Dersom du sender inn denne, bør du og sende inn tiltak+fnr for at de skal henge sammen.
+ */
+fun TestApplicationContext.førstegangsbehandlingUavklart(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    fødselsdato: LocalDate = 1.januar(2000),
+    personopplysningerForBrukerFraPdl: Personopplysninger =
+        ObjectMother.personopplysningKjedeligFyr(
+            fnr = fnr,
+            skjermet = erSkjermet,
+            fødselsdato = fødselsdato,
+        ),
+    deltarPåIntroduksjonsprogram: Boolean = false,
+    deltarPåKvp: Boolean = false,
+    tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
+    fornavn: String = "Fornavn",
+    etternavn: String = "Etternavn",
+    personopplysningerFraSøknad: Søknad.Personopplysninger =
+        personSøknad(
+            fnr = fnr,
+            fornavn = fornavn,
+            etternavn = etternavn,
+        ),
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            fnr = fnr,
+            personopplysninger = personopplysningerFraSøknad,
+            tiltak = søknadTiltak(
+                id = tiltak.eksternId,
+                deltakelseFom = periode.fraOgMed,
+                deltakelseTom = periode.tilOgMed,
+                arrangør = tiltak.gjennomføring.arrangørnavn,
+                typeKode = tiltak.gjennomføring.typeKode.toString(),
+                typeNavn = tiltak.gjennomføring.typeNavn,
+            ),
+            intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+        ),
+): Sak {
+    this.nySøknad(
+        erSkjermet = erSkjermet,
+        fnr = fnr,
+        søknad = søknad,
+        personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
+        tiltak = tiltak,
+    )
+    return this.sakContext.sakService
+        .startFørstegangsbehandling(søknad.id, saksbehandler)
+        .getOrNull()!!
+}
+
+fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+): Sak {
+    val uavklart =
+        førstegangsbehandlingUavklart(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+        )
+    this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
+        LeggTilLivsoppholdSaksopplysningCommand(
+            behandlingId = uavklart.førstegangsbehandling.id,
+            saksbehandler = saksbehandler,
+            harYtelseForPeriode =
+            LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                periode = periode,
+                harYtelse = false,
+            ),
+            årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
+        ),
+    )
+    return this.sakContext.sakService.hentForSakId(uavklart.id, saksbehandler)!!
+}
+
+fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+): Sak {
+    val vilkårsvurdert =
+        førstegangsbehandlingVilkårsvurdert(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+        )
+    this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
+        vilkårsvurdert.førstegangsbehandling.id,
+        saksbehandler,
+    )
+    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
+}
+
+fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val vilkårsvurdert =
+        førstegangsbehandlingTilBeslutter(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+        )
+    this.førstegangsbehandlingContext.behandlingService.taBehandling(
+        vilkårsvurdert.førstegangsbehandling.id,
+        beslutter,
+    )
+    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
 }

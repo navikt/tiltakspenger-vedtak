@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.db
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
+import no.nav.tiltakspenger.common.SaksnummerGenerator
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
@@ -16,13 +15,11 @@ import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStøn
 import no.nav.tiltakspenger.vedtak.repository.søknad.PostgresSøknadRepo
 import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakPostgresRepo
-import org.flywaydb.core.Flyway
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.utility.DockerImageName
 import javax.sql.DataSource
 
 internal class TestDataHelper(
-    dataSource: DataSource,
+    val dataSource: DataSource,
+    val saksnummerGenerator: SaksnummerGenerator,
 ) {
     private val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
@@ -38,38 +35,11 @@ internal class TestDataHelper(
     val utbetalingsvedtakRepo: UtbetalingsvedtakRepo = UtbetalingsvedtakPostgresRepo(sessionFactory)
 }
 
-private fun migrateDatabase(dataSource: DataSource) =
-    Flyway
-        .configure()
-        .loggers("slf4j")
-        .encoding("UTF-8")
-        .locations("db/migration")
-        .dataSource(dataSource)
-        .cleanDisabled(false)
-        .cleanOnValidationError(true)
-        .load()
-        .migrate()
+private val dbManager = TestDatabaseManager()
 
-fun withMigratedDb(test: (dataSource: DataSource) -> Unit) {
-    val postgres = PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
-    postgres.start()
-
-    val dataSource =
-        HikariDataSource(
-            HikariConfig().apply {
-                this.jdbcUrl = postgres.jdbcUrl
-                this.maximumPoolSize = 3
-                this.minimumIdle = 1
-                this.idleTimeout = 10001
-                this.connectionTimeout = 1000
-                this.maxLifetime = 30001
-                this.username = postgres.username
-                this.password = postgres.password
-                initializationFailTimeout = 5000
-            },
-        )
-
-    migrateDatabase(dataSource)
-    test(dataSource)
-    postgres.stop()
+/**
+ * @param runIsolated Tømmer databasen før denne testen for kjøre i isolasjon. Brukes når man gjør operasjoner på tvers av saker.
+ */
+internal fun withMigratedDb(runIsolated: Boolean = false, test: (TestDataHelper) -> Unit) {
+    dbManager.withMigratedDb(runIsolated, test)
 }

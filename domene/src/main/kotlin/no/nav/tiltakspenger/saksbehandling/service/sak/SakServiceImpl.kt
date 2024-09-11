@@ -45,6 +45,7 @@ class SakServiceImpl(
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
     private val statistikkSakRepo: StatistikkSakRepo,
+    private val gitHash: String,
 ) : SakService {
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
@@ -62,10 +63,10 @@ class SakServiceImpl(
         søknadId: SøknadId,
         saksbehandler: Saksbehandler,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
-        val søknad = søknadService.hentSøknad(søknadId)
         sakRepo.hentForSøknadId(søknadId)?.also {
             return HarAlleredeStartetBehandlingen(it.førstegangsbehandling.id).left()
         }
+        val søknad = søknadService.hentSøknad(søknadId)
         val fnr = søknad.fnr
         if (sakRepo.hentForFnr(fnr).isNotEmpty()) {
             throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
@@ -102,6 +103,7 @@ class SakServiceImpl(
             opprettBehandlingMapper(
                 sak = sak.sakDetaljer,
                 behandling = sak.førstegangsbehandling,
+                versjon = gitHash,
             )
 
         sessionFactory.withTransactionContext { tx ->

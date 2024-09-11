@@ -33,25 +33,23 @@ import java.time.LocalDateTime
 
 private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
-internal class BehandlingPostgresRepo(
+class BehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : BehandlingRepo {
     override fun hent(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Førstegangsbehandling {
-        return hentOrNull(behandlingId, sessionContext)
+    ): Førstegangsbehandling =
+        hentOrNull(behandlingId, sessionContext)
             ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
-    }
 
     override fun hentOrNull(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Førstegangsbehandling? {
-        return sessionFactory.withSession(sessionContext) { session ->
+    ): Førstegangsbehandling? =
+        sessionFactory.withSession(sessionContext) { session ->
             hentOrNull(behandlingId, session)
         }
-    }
 
     override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> =
         sessionFactory.withSession { session ->
@@ -100,8 +98,8 @@ internal class BehandlingPostgresRepo(
         fun hentOrNull(
             behandlingId: BehandlingId,
             session: Session,
-        ): Førstegangsbehandling? {
-            return session.run(
+        ): Førstegangsbehandling? =
+            session.run(
                 queryOf(
                     sqlHentBehandling,
                     mapOf(
@@ -111,13 +109,12 @@ internal class BehandlingPostgresRepo(
                     row.toBehandling(session)
                 }.asSingle,
             )
-        }
 
         internal fun hentForSakId(
             sakId: SakId,
             session: Session,
-        ): NonEmptyList<Førstegangsbehandling> {
-            return session
+        ): NonEmptyList<Førstegangsbehandling> =
+            session
                 .run(
                     queryOf(
                         sqlHentBehandlingForSak,
@@ -129,7 +126,6 @@ internal class BehandlingPostgresRepo(
                     }.asList,
                 ).toNonEmptyListOrNull()
                 ?: throw IkkeFunnetException("sak med id $sakId ikke funnet")
-        }
 
         /**
          * Vil ikke overlagre søknad, men kun knytte søknadene til behandlingen.
@@ -259,71 +255,71 @@ internal class BehandlingPostgresRepo(
         @Language("SQL")
         private val sqlOpprettBehandling =
             """
-        insert into behandling (
-            id,
-            sakId,
-            fom,
-            tom,
-            status,
-            sist_endret,
-            opprettet,
-            vilkårssett,
-            stønadsdager,
-            saksbehandler,
-            beslutter,
-            attesteringer
-        ) values (
-            :id,
-            :sakId,
-            :fom,
-            :tom,
-            :status,
-            :sistEndret,
-            :opprettet,
-            to_jsonb(:vilkaarssett::jsonb),
-            to_jsonb(:stonadsdager::jsonb),
-            :saksbehandler,
-            :beslutter,
-            to_jsonb(:attesteringer::jsonb)
-        )
+            insert into behandling (
+                id,
+                sakId,
+                fom,
+                tom,
+                status,
+                sist_endret,
+                opprettet,
+                vilkårssett,
+                stønadsdager,
+                saksbehandler,
+                beslutter,
+                attesteringer
+            ) values (
+                :id,
+                :sakId,
+                :fom,
+                :tom,
+                :status,
+                :sistEndret,
+                :opprettet,
+                to_jsonb(:vilkaarssett::jsonb),
+                to_jsonb(:stonadsdager::jsonb),
+                :saksbehandler,
+                :beslutter,
+                to_jsonb(:attesteringer::jsonb)
+            )
             """.trimIndent()
 
         @Language("SQL")
         private val sqlOppdaterBehandling =
             """
-        update behandling set 
-            fom = :fom,
-            tom = :tom,
-            sakId = :sakId,
-            status = :status,
-            sist_endret = :sistEndret,
-            saksbehandler = :saksbehandler,
-            beslutter = :beslutter,
-            vilkårssett = to_jsonb(:vilkaarssett::json),
-            stønadsdager = to_jsonb(:stonadsdager::json),
-            attesteringer = to_jsonb(:attesteringer::json)
-        where id = :id
-          and sist_endret = :sistEndretOld
+            update behandling set 
+                fom = :fom,
+                tom = :tom,
+                sakId = :sakId,
+                status = :status,
+                sist_endret = :sistEndret,
+                saksbehandler = :saksbehandler,
+                beslutter = :beslutter,
+                vilkårssett = to_jsonb(:vilkaarssett::json),
+                stønadsdager = to_jsonb(:stonadsdager::json),
+                attesteringer = to_jsonb(:attesteringer::json)
+            where id = :id
+              and sist_endret = :sistEndretOld
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandling =
             """
-        select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.id = :id
+            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.id = :id
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandlingForSak =
             """
-        select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.sakId = :sakId
+            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.sakId = :sakId
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandlingForIdent =
             """
-        select b.*,s.ident, s.saksnummer from behandling b
-          join sak s on s.id = b.sakid
-           where s.ident = :ident
+            select b.*,s.ident, s.saksnummer from behandling b
+              join sak s on s.id = b.sakid
+               where s.ident = :ident
             """.trimIndent()
     }
 }

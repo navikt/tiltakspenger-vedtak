@@ -137,18 +137,6 @@ internal class UtbetalingsvedtakPostgresRepo(
             )
         }
 
-    override fun hentSisteUtbetalingsvedtak(sakId: SakId): Utbetalingsvedtak? =
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    "select u.*,s.ident as fnr,s.saksnummer from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId order by u.vedtakstidspunkt desc limit 1",
-                    mapOf("sakId" to sakId.toString()),
-                ).map { row ->
-                    row.toVedtak(session)
-                }.asSingle,
-            )
-        }
-
     override fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int): List<UtfyltMeldekort> =
         sessionFactory.withSession { session ->
             session.run(
@@ -162,11 +150,13 @@ internal class UtbetalingsvedtakPostgresRepo(
                     """.trimIndent(),
                     mapOf("limit" to limit),
                 ).map { row ->
-                    val meldekortperiode = MeldekortPostgresRepo.hentForMeldekortId(
-                        MeldekortId.fromString(row.string("id")),
-                        session,
-                    )!!
-                        .meldekortperiode as Meldeperiode.UtfyltMeldeperiode
+                    val meldekortperiode =
+                        MeldekortPostgresRepo
+                            .hentForMeldekortId(
+                                MeldekortId.fromString(row.string("id")),
+                                session,
+                            )!!
+                            .meldekortperiode as Meldeperiode.UtfyltMeldeperiode
                     UtfyltMeldekort(
                         id = MeldekortId.fromString(row.string("id")),
                         sakId = SakId.fromString(row.string("sakId")),
@@ -202,8 +192,8 @@ internal class UtbetalingsvedtakPostgresRepo(
             )
         }
 
-    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> {
-        return sessionFactory.withSession { session ->
+    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> =
+        sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
@@ -219,7 +209,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                 }.asList,
             )
         }
-    }
 
     private fun Row.toVedtak(session: Session): Utbetalingsvedtak {
         val vedtakId = VedtakId.fromString(string("id"))
@@ -235,10 +224,15 @@ internal class UtbetalingsvedtakPostgresRepo(
             beslutter = string("beslutter"),
             utbetalingsperiode = string("utbetalingsperiode").toUtbetalingsperiode(),
             forrigeUtbetalingsvedtak = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
-            meldekortperiode = MeldekortPostgresRepo.hentForMeldekortId(
-                MeldekortId.fromString(string("meldekortId")),
-                session,
-            )!!.meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
+            meldekortperiode =
+            MeldekortPostgresRepo
+                .hentForMeldekortId(
+                    MeldekortId.fromString(string("meldekortId")),
+                    session,
+                )!!
+                .meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
+            sendtTilUtbetaling = boolean("sendt_til_utbetaling"),
+            sendtTilDokument = boolean("sendt_til_dokument"),
         )
     }
 }

@@ -26,19 +26,20 @@ import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadSta
 import java.time.LocalDate
 
 class BehandlingServiceImpl(
-    private val behandlingRepo: BehandlingRepo,
-    private val vedtakRepo: RammevedtakRepo,
+    private val førstegangsbehandlingRepo: BehandlingRepo,
+    private val rammevedtakRepo: RammevedtakRepo,
     private val personopplysningRepo: PersonopplysningerRepo,
     private val meldekortRepo: MeldekortRepo,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
+    private val gitHash: String,
 ) : BehandlingService {
     override fun hentBehandling(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Behandling = behandlingRepo.hent(behandlingId, sessionContext)
+    ): Behandling = førstegangsbehandlingRepo.hent(behandlingId, sessionContext)
 
     override fun hentBehandling(
         behandlingId: BehandlingId,
@@ -55,7 +56,7 @@ class BehandlingServiceImpl(
 
     override fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling? {
         // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet.
-        return behandlingRepo.hentForSøknadId(søknadId)
+        return førstegangsbehandlingRepo.hentForSøknadId(søknadId)
     }
 
     override fun sendTilBeslutter(
@@ -63,7 +64,7 @@ class BehandlingServiceImpl(
         utøvendeSaksbehandler: Saksbehandler,
     ) {
         val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler).tilBeslutning(utøvendeSaksbehandler)
-        behandlingRepo.lagre(behandling)
+        førstegangsbehandlingRepo.lagre(behandling)
     }
 
     override fun sendTilbakeTilSaksbehandler(
@@ -79,7 +80,7 @@ class BehandlingServiceImpl(
             )
         val behandling = hentBehandling(behandlingId, utøvendeBeslutter).sendTilbake(utøvendeBeslutter, attestering)
         sessionFactory.withTransactionContext { tx ->
-            behandlingRepo.lagre(behandling, tx)
+            førstegangsbehandlingRepo.lagre(behandling, tx)
         }
     }
 
@@ -88,8 +89,9 @@ class BehandlingServiceImpl(
         utøvendeBeslutter: Saksbehandler,
     ) {
         val behandling = hentBehandling(behandlingId, utøvendeBeslutter) as Førstegangsbehandling
-        val sak = sakRepo.hentDetaljerForSakId(behandling.sakId)
-            ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
+        val sak =
+            sakRepo.hentDetaljerForSakId(behandling.sakId)
+                ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
         val attestering =
             Attestering(
                 status = Attesteringsstatus.GODKJENT,
@@ -99,12 +101,12 @@ class BehandlingServiceImpl(
         val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
 
         val vedtak = iverksattBehandling.opprettVedtak()
-        val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak)
+        val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak, gitHash)
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
         sessionFactory.withTransactionContext { tx ->
-            behandlingRepo.lagre(iverksattBehandling, tx)
-            vedtakRepo.lagreVedtak(vedtak, tx)
+            førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
+            rammevedtakRepo.lagre(vedtak, tx)
             statistikkSakRepo.lagre(sakStatistikk, tx)
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
             meldekortRepo.lagre(førsteMeldekort, tx)
@@ -118,7 +120,7 @@ class BehandlingServiceImpl(
     ): Behandling {
         val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
         return behandling.taBehandling(utøvendeSaksbehandler).also {
-            behandlingRepo.lagre(it)
+            førstegangsbehandlingRepo.lagre(it)
         }
     }
 
@@ -127,7 +129,7 @@ class BehandlingServiceImpl(
         utøvendeSaksbehandler: Saksbehandler,
     ) {
         val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
-        behandlingRepo.lagre(behandling.taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler))
+        førstegangsbehandlingRepo.lagre(behandling.taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler))
     }
 
     // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident
@@ -136,7 +138,7 @@ class BehandlingServiceImpl(
         fom: LocalDate,
         tom: LocalDate,
     ): List<Behandling> =
-        behandlingRepo
+        førstegangsbehandlingRepo
             .hentAlleForIdent(ident)
             .filter { behandling -> !behandling.erIverksatt() }
             .filter { behandling ->
