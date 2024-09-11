@@ -45,6 +45,7 @@ class SakServiceImpl(
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
     private val statistikkSakRepo: StatistikkSakRepo,
+    private val gitHash: String,
 ) : SakService {
     sealed interface KanIkkeStarteFørstegangsbehandling {
         data object HarIkkeTilgangTilPerson : KanIkkeStarteFørstegangsbehandling
@@ -102,6 +103,7 @@ class SakServiceImpl(
             opprettBehandlingMapper(
                 sak = sak.sakDetaljer,
                 behandling = sak.førstegangsbehandling,
+                versjon = gitHash,
             )
 
         sessionFactory.withTransactionContext { tx ->

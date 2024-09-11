@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 @Suppress("unused")
 open class ApplicationContext(
     val sessionFactory: SessionFactory,
+    private val gitHash: String,
 ) {
     open val personContext by lazy { PersonContext(sessionFactory) }
     open val dokumentContext by lazy { DokumentContext() }
@@ -24,6 +25,7 @@ open class ApplicationContext(
             skjermingGateway = tilgangsstyringContext.skjermingGateway,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
             tiltakGateway = tiltakContext.tiltakGateway,
+            gitHash = gitHash,
         )
     }
     open val meldekortContext by lazy {
@@ -41,6 +43,7 @@ open class ApplicationContext(
             sakRepo = sakContext.sakRepo,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
+            gitHash = gitHash,
         )
     }
     open val utbetalingContext by lazy {

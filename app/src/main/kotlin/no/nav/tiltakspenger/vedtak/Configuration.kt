@@ -53,6 +53,7 @@ object Configuration {
             "ROLE_DRIFT" to System.getenv("ROLE_DRIFT"),
             "logback.configurationFile" to "logback.xml",
             "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
+            "NAIS_APP_IMAGE" to System.getenv("NAIS_APP_IMAGE"),
         )
 
     private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
@@ -78,6 +79,7 @@ object Configuration {
                 "UTBETALING_URL" to "http://localhost:8091",
                 "DOKUMENT_SCOPE" to "localhost",
                 "DOKUMENT_URL" to "http://localhost:8091",
+                "NAIS_APP_IMAGE" to "http://localhost8080:githubhash",
             ),
         )
     private val devProperties =
@@ -235,4 +237,6 @@ object Configuration {
     fun isNais() = applicationProfile() != Profile.LOCAL
 
     fun electorPath(): String = config()[Key("ELECTOR_PATH", stringType)]
+
+    fun gitHash(): String = config()[Key("NAIS_APP_IMAGE", stringType)].substringAfterLast(":")
 }

@@ -34,7 +34,7 @@ internal class ApplicationBuilder(
     private val dataSource = DataSourceSetup.createDatasource()
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
-    private val applicationContext = ApplicationContext(sessionFactory)
+    private val applicationContext = ApplicationContext(sessionFactory, Configuration.gitHash())
     private val rapidsConnection: RapidsConnection =
         RapidApplication
             .Builder(rapidConfig)
