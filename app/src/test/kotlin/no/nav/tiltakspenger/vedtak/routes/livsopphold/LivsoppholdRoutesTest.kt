@@ -82,6 +82,7 @@ class LivsoppholdRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
+                    gitHash = "1234",
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(
@@ -162,6 +163,7 @@ class LivsoppholdRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
+                    gitHash = "1234",
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(
@@ -219,6 +221,7 @@ class LivsoppholdRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
+                    gitHash = "1234",
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(
@@ -382,6 +385,7 @@ class LivsoppholdRoutesTest {
                     statistikkSakRepo = testDataHelper.statistikkSakRepo,
                     statistikkStønadRepo = testDataHelper.statistikkStønadRepo,
                     meldekortRepo = testDataHelper.meldekortRepo,
+                    gitHash = "1234",
                 )
             val livsoppholdVilkårService =
                 LivsoppholdVilkårServiceImpl(

@@ -21,6 +21,7 @@ open class SakContext(
     skjermingGateway: SkjermingGateway,
     statistikkSakRepo: StatistikkSakRepo,
     tiltakGateway: TiltakGateway,
+    gitHash: String,
 ) {
     val sakService: SakService by lazy {
         SakServiceImpl(
@@ -32,6 +33,7 @@ open class SakContext(
             sessionFactory = sessionFactory,
             statistikkSakRepo = statistikkSakRepo,
             saksoversiktRepo = saksoversiktRepo,
+            gitHash = gitHash,
         )
     }
     open val sakRepo: SakRepo by lazy {

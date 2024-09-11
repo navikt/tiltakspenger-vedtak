@@ -34,6 +34,7 @@ class BehandlingServiceImpl(
     private val sessionFactory: SessionFactory,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
+    private val gitHash: String,
 ) : BehandlingService {
     override fun hentBehandling(
         behandlingId: BehandlingId,
@@ -100,7 +101,7 @@ class BehandlingServiceImpl(
         val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
 
         val vedtak = iverksattBehandling.opprettVedtak()
-        val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak)
+        val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak, gitHash)
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
         sessionFactory.withTransactionContext { tx ->

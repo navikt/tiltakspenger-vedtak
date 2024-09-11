@@ -15,6 +15,7 @@ fun TestApplicationContext.withBehandlingService(block: (BehandlingService) -> U
             sessionFactory = this.sessionFactory,
             statistikkSakRepo = this.statistikkContext.statistikkSakRepo,
             statistikkStønadRepo = this.statistikkContext.statistikkStønadRepo,
+            gitHash = "1234",
         ),
     )
 }

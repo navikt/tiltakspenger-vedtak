@@ -27,6 +27,7 @@ open class FørstegangsbehandlingContext(
     sakRepo: SakRepo,
     statistikkSakRepo: StatistikkSakRepo,
     statistikkStønadRepo: StatistikkStønadRepo,
+    gitHash: String,
 ) {
     open val rammevedtakRepo: RammevedtakRepo by lazy { RammevedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -40,6 +41,7 @@ open class FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
             statistikkSakRepo = statistikkSakRepo,
             statistikkStønadRepo = statistikkStønadRepo,
+            gitHash = gitHash,
         )
     }
     val kvpVilkårService: KvpVilkårService by lazy {

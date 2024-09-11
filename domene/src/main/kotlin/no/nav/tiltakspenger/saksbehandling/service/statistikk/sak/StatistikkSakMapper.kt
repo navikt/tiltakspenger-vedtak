@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
-fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
+fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, versjon: String) =
     StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
@@ -33,18 +33,18 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling) =
         resultatBegrunnelse = null,
         behandlingMetode = BehandlingMetode.MANUELL.name,
         opprettetAv = "system",
-        saksbehandler = null,
+        saksbehandler = behandling.saksbehandler,
         ansvarligBeslutter = null,
         ansvarligEnhet = null,
         tilbakekrevingsbeløp = null,
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,
         avsender = "tiltakspenger-vedtak",
-        versjon = "versjon",
+        versjon = versjon,
         hendelse = "opprettet_behandling",
     )
 
-fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Rammevedtak): StatistikkSakDTO {
+fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Rammevedtak, versjon: String): StatistikkSakDTO {
     return StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
@@ -81,7 +81,7 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,
         avsender = "tiltakspenger-vedtak",
-        versjon = "versjon",
+        versjon = versjon,
         hendelse = "iverksatt_behandling",
     )
 }

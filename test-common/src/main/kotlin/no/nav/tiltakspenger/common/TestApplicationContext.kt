@@ -40,7 +40,7 @@ import no.nav.tiltakspenger.vedtak.context.UtbetalingContext
  * Dette vil tilsvare en tom intern database og tomme fakes for eksterne tjenester.
  * Bruk service-funksjoner og hjelpemetoder for å legge til data.
  */
-class TestApplicationContext : ApplicationContext(TestSessionFactory()) {
+class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-git-hash") {
     val journalpostIdGenerator = JournalpostIdGenerator()
 
     private val rammevedtakFakeRepo = RammevedtakFakeRepo()
@@ -130,6 +130,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory()) {
             skjermingGateway = skjermingFakeGateway,
             statistikkSakRepo = statistikkSakFakeRepo,
             tiltakGateway = tiltakGatewayFake,
+            gitHash = "fake-git-hash",
         ) {
             override val sakRepo = sakFakeRepo
             override val saksoversiktRepo = saksoversiktFakeRepo
@@ -151,6 +152,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory()) {
             sakRepo = sakFakeRepo,
             statistikkSakRepo = statistikkSakFakeRepo,
             statistikkStønadRepo = statistikkStønadFakeRepo,
+            gitHash = "fake-git-hash",
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo
             override val behandlingRepo = behandlingFakeRepo
