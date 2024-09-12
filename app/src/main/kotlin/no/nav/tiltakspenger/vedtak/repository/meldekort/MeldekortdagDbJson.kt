@@ -99,7 +99,7 @@ private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
                 dato = meldekortdag.dato.toString(),
                 status = MeldekortdagDbJson.StatusDb.IKKE_UTFYLT,
                 reduksjon = null,
-                beregningsdag = meldekortdag.beregningsdag!!.toDbJson(),
+                beregningsdag = null,
             )
         }.let { serialize(it) }
 
