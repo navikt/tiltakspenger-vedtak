@@ -36,7 +36,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVil
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
-import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -49,7 +48,6 @@ import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
-import no.nav.tiltakspenger.vedtak.routes.utbetaling.utbetalingRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.net.URI
 import java.util.UUID
@@ -66,7 +64,6 @@ internal fun Application.vedtakApi(
     rammevedtakService: RammevedtakService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
-    hentUtbetalingsvedtakService: HentUtbetalingsvedtakService,
     hentMeldekortService: HentMeldekortService,
     iverksettMeldekortService: IverksettMeldekortService,
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
@@ -111,12 +108,6 @@ internal fun Application.vedtakApi(
                 sakService = sakService,
                 auditService = auditService,
             )
-            utbetalingRoutes(
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                hentUtbetalingsvedtakService = hentUtbetalingsvedtakService,
-                auditService = auditService,
-            )
-
             meldekortRoutes(
                 hentMeldekortService = hentMeldekortService,
                 iverksettMeldekortService = iverksettMeldekortService,
@@ -177,7 +168,7 @@ private fun AuthenticationConfig.jwt(
         val configRoles: List<AdRolle> = config.roles
         val authorizedRoles =
             configRoles
-                .filter { roles?.contains(it.name) ?: true }
+                .filter { roles?.contains(it.name) != false }
                 .map { it.objectId }
         if (claimedRoles.none(authorizedRoles::contains)) {
             LOG.info { "Fant ikke riktig rolle" }

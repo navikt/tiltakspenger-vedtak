@@ -22,7 +22,7 @@ val log = KotlinLogging.logger {}
 val securelog = KotlinLogging.logger("tjenestekall")
 
 internal class ApplicationBuilder(
-    @Suppress("UNUSED_PARAMETER") config: Map<String, String>,
+    @Suppress("unused") config: Map<String, String>,
 ) : RapidsConnection.StatusListener {
     private val rapidConfig =
         if (Configuration.applicationProfile() == Profile.LOCAL) {
@@ -48,7 +48,6 @@ internal class ApplicationBuilder(
                     kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
                     livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
                     søknadService = applicationContext.søknadContext.søknadService,
-                    hentUtbetalingsvedtakService = applicationContext.utbetalingContext.hentUtbetalingsvedtakService,
                     hentMeldekortService = applicationContext.meldekortContext.hentMeldekortService,
                     iverksettMeldekortService = applicationContext.meldekortContext.iverksettMeldekortService,
                     sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
