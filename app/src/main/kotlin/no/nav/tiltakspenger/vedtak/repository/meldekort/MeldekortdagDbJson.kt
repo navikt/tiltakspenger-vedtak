@@ -97,7 +97,17 @@ private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
                 dato = meldekortdag.dato.toString(),
-                status = MeldekortdagDbJson.StatusDb.IKKE_UTFYLT,
+                status = when (meldekortdag) {
+                    is Sperret -> SPERRET
+                    is IkkeUtfylt -> IKKE_UTFYLT
+                    is DeltattMedLønnITiltaket -> DELTATT_MED_LØNN_I_TILTAKET
+                    is DeltattUtenLønnITiltaket -> DELTATT_UTEN_LØNN_I_TILTAKET
+                    is SykBruker -> FRAVÆR_SYK
+                    is SyktBarn -> FRAVÆR_SYKT_BARN
+                    is VelferdGodkjentAvNav -> FRAVÆR_VELFERD_GODKJENT_AV_NAV
+                    is VelferdIkkeGodkjentAvNav -> FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
+                    is IkkeDeltatt -> IKKE_DELTATT
+                },
                 reduksjon = null,
                 beregningsdag = null,
             )
@@ -110,7 +120,7 @@ private fun Meldeperiode.UtfyltMeldeperiode.toDbJson(): String =
                 tiltakstype = tiltakstype.toDb(),
                 dato = meldekortdag.dato.toString(),
                 reduksjon = meldekortdag.reduksjon.toDb(),
-                beregningsdag = meldekortdag.beregningsdag!!.toDbJson(),
+                beregningsdag = meldekortdag.beregningsdag?.toDbJson(),
                 status =
                 when (meldekortdag) {
                     is DeltattMedLønnITiltaket -> DELTATT_MED_LØNN_I_TILTAKET
@@ -143,7 +153,7 @@ internal fun String.toUtfyltMeldekortperiode(sakId: SakId, meldekortId: Meldekor
 internal fun String.toIkkeUtfyltMeldekortperiode(sakId: SakId, meldekortId: MeldekortId): Meldeperiode.IkkeUtfyltMeldeperiode =
     deserializeList<MeldekortdagDbJson>(this)
         .map {
-            it.toMeldekortdag(meldekortId) as IkkeUtfylt
+            it.toMeldekortdag(meldekortId)
         }.let {
             Meldeperiode.IkkeUtfyltMeldeperiode(sakId, it.toNonEmptyListOrNull()!!)
         }
