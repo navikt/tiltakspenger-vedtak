@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -49,7 +50,17 @@ fun Route.iverksettMeldekortRoute(
             contextMessage = "Iverksetter meldekort",
             callId = call.callId,
         )
-
-        call.respond(message = meldekort.toDTO(), status = HttpStatusCode.OK)
+        meldekort.fold(
+            {
+                call.respond(
+                    message = when (it) {
+                        is KanIkkeIverksetteMeldekort.MåVæreBeslutter -> "Må ha beslutter-rolle for å iverksette."
+                        is KanIkkeIverksetteMeldekort.SaksbehandlerOgBeslutterKanIkkeVæreLik -> "Beslutter kan ikke være den samme som saksbehandler."
+                    },
+                    status = HttpStatusCode.BadRequest,
+                )
+            },
+            { call.respond(message = it.toDTO(), status = HttpStatusCode.OK) },
+        )
     }
 }

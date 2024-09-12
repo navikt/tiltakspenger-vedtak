@@ -26,6 +26,9 @@ data class SakPersonopplysninger(
 
     fun erTom(): Boolean = liste.isEmpty()
 
+    /**
+     * Sjekker kun kode 6/7/skjermet
+     */
     fun harTilgang(saksbehandler: Saksbehandler): Boolean {
         if (liste.any { it.strengtFortrolig() }) return Rolle.STRENGT_FORTROLIG_ADRESSE in saksbehandler.roller
         if (liste.any { it.fortrolig() }) return Rolle.FORTROLIG_ADRESSE in saksbehandler.roller

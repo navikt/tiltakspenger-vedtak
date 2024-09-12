@@ -88,8 +88,14 @@ sealed interface Meldekort {
             ).right()
         }
 
-        fun iverksettMeldekort(beslutter: Saksbehandler): UtfyltMeldekort =
-            UtfyltMeldekort(
+        fun iverksettMeldekort(beslutter: Saksbehandler): Either<KanIkkeIverksetteMeldekort, UtfyltMeldekort> {
+            if (!beslutter.isBeslutter()) {
+                return KanIkkeIverksetteMeldekort.MåVæreBeslutter(beslutter.roller).left()
+            }
+            if (saksbehandler == beslutter.navIdent) {
+                return KanIkkeIverksetteMeldekort.SaksbehandlerOgBeslutterKanIkkeVæreLik.left()
+            }
+            return UtfyltMeldekort(
                 id = this.id,
                 sakId = this.sakId,
                 fnr = this.fnr,
@@ -100,7 +106,8 @@ sealed interface Meldekort {
                 saksbehandler = this.saksbehandler,
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
-            )
+            ).right()
+        }
 
         override fun beregnTotalbeløp(): Int = meldekortperiode.beregnTotalbeløp()
     }
@@ -120,6 +127,9 @@ sealed interface Meldekort {
             meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
             saksbehandler: Saksbehandler,
         ): Either<KanIkkeSendeMeldekortTilBeslutter, UtfyltMeldekort> {
+            if (!saksbehandler.isSaksbehandler()) {
+                return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(saksbehandler.roller).left()
+            }
             if (LocalDate.now().isBefore(meldekortperiode.periode.fraOgMed)) {
                 // John har avklart med Sølvi og Taulant at vi bør ha en begrensning på at vi kan fylle ut et meldekort hvis dagens dato er innenfor meldekortperioden eller senere.
                 // Dette kan endres på ved behov.

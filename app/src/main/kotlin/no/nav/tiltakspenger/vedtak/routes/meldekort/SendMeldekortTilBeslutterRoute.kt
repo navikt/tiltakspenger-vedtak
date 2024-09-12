@@ -82,7 +82,8 @@ fun Route.sendMeldekortTilBeslutterRoute(
             ifLeft = {
                 call.respond(
                     message = when (it) {
-                        KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> "Kan ikke sende inn et meldekort før meldekortperioden har begynt."
+                        is KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> "Kan ikke sende inn et meldekort før meldekortperioden har begynt."
+                        is KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler -> "Mangler saksbehandler rolle."
                     },
                     status = HttpStatusCode.BadRequest,
                 )
