@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}

@@ -3,6 +3,14 @@ package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.libs.soknad.BarnetilleggDTO
+import no.nav.tiltakspenger.libs.soknad.DokumentInfoDTO
+import no.nav.tiltakspenger.libs.soknad.FraOgMedDatoSpmDTO
+import no.nav.tiltakspenger.libs.soknad.JaNeiSpmDTO
+import no.nav.tiltakspenger.libs.soknad.PeriodeSpmDTO
+import no.nav.tiltakspenger.libs.soknad.SpmSvarDTO
+import no.nav.tiltakspenger.libs.soknad.SøknadDTO
+import no.nav.tiltakspenger.libs.soknad.SøknadsTiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
@@ -55,8 +63,8 @@ object SøknadDTOMapper {
                 Søknad.PeriodeSpm.Ja(
                     periode =
                     Periode(
-                        fraOgMed = periodeSpmDTO.fom,
-                        tilOgMed = periodeSpmDTO.tom,
+                        fraOgMed = periodeSpmDTO.fom!!,
+                        tilOgMed = periodeSpmDTO.tom!!,
                     ),
                 )
             }
@@ -68,7 +76,7 @@ object SøknadDTOMapper {
             SpmSvarDTO.Ja -> {
                 requireNotNull(fraOgMedDatoSpmDTO.fom) { "Det skal ikke være mulig med null i fradato hvis man har svart JA" }
                 Søknad.FraOgMedDatoSpm.Ja(
-                    fra = fraOgMedDatoSpmDTO.fom,
+                    fra = fraOgMedDatoSpmDTO.fom!!,
                 )
             }
         }
@@ -101,7 +109,7 @@ object SøknadDTOMapper {
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
-            fødselsdato = dto.fødselsdato,
+            fødselsdato = dto.fødselsdato!!,
         )
     }
 
@@ -112,7 +120,7 @@ object SøknadDTOMapper {
             fornavn = dto.fornavn,
             mellomnavn = dto.mellomnavn,
             etternavn = dto.etternavn,
-            fødselsdato = dto.fødselsdato,
+            fødselsdato = dto.fødselsdato!!,
         )
     }
 
