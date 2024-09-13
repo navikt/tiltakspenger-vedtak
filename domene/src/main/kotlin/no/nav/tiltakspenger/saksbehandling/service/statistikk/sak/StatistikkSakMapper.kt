@@ -4,7 +4,7 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
@@ -68,10 +68,10 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
         behandlingType = BehandlingType.FØRSTEGANGSBEHANDLING,
         behandlingStatus = BehandlingStatus.FERDIG_BEHANDLET,
         behandlingResultat = when (vedtak.vedtaksType) {
-            VedtaksType.AVSLAG -> BehandlingResultat.AVSLAG
-            VedtaksType.INNVILGELSE -> BehandlingResultat.INNVILGET
-            VedtaksType.STANS -> BehandlingResultat.STANS
-            VedtaksType.FORLENGELSE -> BehandlingResultat.FORLENGELSE
+            Vedtakstype.AVSLAG -> BehandlingResultat.AVSLAG
+            Vedtakstype.INNVILGELSE -> BehandlingResultat.INNVILGET
+            Vedtakstype.STANS -> BehandlingResultat.STANS
+            Vedtakstype.FORLENGELSE -> BehandlingResultat.FORLENGELSE
         },
         resultatBegrunnelse = null,
         behandlingMetode = BehandlingMetode.MANUELL.name,

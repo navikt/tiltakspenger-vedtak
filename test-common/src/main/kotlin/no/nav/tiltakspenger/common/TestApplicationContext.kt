@@ -1,8 +1,12 @@
 package no.nav.tiltakspenger.common
 
-import no.nav.tiltakspenger.fakes.clients.DokumentFakeGateway
+import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
 import no.nav.tiltakspenger.fakes.clients.FellesFakeAdressebeskyttelseKlient
 import no.nav.tiltakspenger.fakes.clients.FellesFakeSkjermingsklient
+import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
+import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
+import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
+import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.PersonFakeGateway
 import no.nav.tiltakspenger.fakes.clients.SkjermingFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
@@ -43,11 +47,11 @@ import no.nav.tiltakspenger.vedtak.context.UtbetalingContext
  */
 class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-git-hash") {
     val journalpostIdGenerator = JournalpostIdGenerator()
+    val distribusjonIdGenerator = DistribusjonIdGenerator()
 
     private val rammevedtakFakeRepo = RammevedtakFakeRepo()
     private val statistikkStønadFakeRepo = StatistikkStønadFakeRepo()
     private val statistikkSakFakeRepo = StatistikkSakFakeRepo()
-    private val dokumentGatewayFake = DokumentFakeGateway(journalpostIdGenerator)
     private val utbetalingGatewayFake = UtbetalingFakeGateway()
     private val meldekortFakeRepo = MeldekortFakeRepo()
     private val utbetalingsvedtakFakeRepo = UtbetalingsvedtakFakeRepo(rammevedtakFakeRepo, meldekortFakeRepo)
@@ -59,6 +63,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     private val personGatewayFake = PersonFakeGateway()
     private val fellesPersonTilgangsstyringsklient = FellesFakeAdressebeskyttelseKlient()
     private val fellesFakeSkjermingsklient = FellesFakeSkjermingsklient()
+    private val genererFakeMeldekortPdfGateway = GenererFakeMeldekortPdfGateway()
+    private val genererFakeVedtaksbrevGateway = GenererFakeVedtaksbrevGateway()
+    private val journalførFakeMeldekortGateway = JournalførFakeMeldekortGateway(journalpostIdGenerator)
+    private val journalførFakeVedtaksbrevGateway = JournalførFakeVedtaksbrevGateway(journalpostIdGenerator)
+    private val dokdistFakeGateway = DokdistFakeGateway(distribusjonIdGenerator)
 
     fun leggTilPerson(
         fnr: Fnr,
@@ -95,7 +104,10 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
         }
     override val dokumentContext by lazy {
         object : DokumentContext() {
-            override val dokumentGateway = dokumentGatewayFake
+            override val journalførMeldekortGateway = journalførFakeMeldekortGateway
+            override val journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway
+            override val genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway
+            override val genererVedtaksbrevGateway = genererFakeVedtaksbrevGateway
         }
     }
 
@@ -157,6 +169,9 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             statistikkSakRepo = statistikkSakFakeRepo,
             statistikkStønadRepo = statistikkStønadFakeRepo,
             gitHash = "fake-git-hash",
+            journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
+            genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
+            dokdistGateway = dokumentContext.dokdistGateway,
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo
             override val behandlingRepo = behandlingFakeRepo
@@ -164,7 +179,13 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     }
 
     override val utbetalingContext by lazy {
-        object : UtbetalingContext(sessionFactory, rammevedtakFakeRepo, statistikkStønadFakeRepo, dokumentGatewayFake) {
+        object : UtbetalingContext(
+            sessionFactory = sessionFactory,
+            rammevedtakRepo = rammevedtakFakeRepo,
+            statistikkStønadRepo = statistikkStønadFakeRepo,
+            genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
+            journalførMeldekortGateway = journalførFakeMeldekortGateway,
+        ) {
             override val utbetalingGateway = utbetalingGatewayFake
             override val utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo
         }

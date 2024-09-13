@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.fakes.repos
 
 import arrow.atomic.Atomic
+import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
@@ -9,6 +10,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
+import java.time.LocalDateTime
 
 class UtbetalingsvedtakFakeRepo(
     private val rammevedtakFakeRepo: RammevedtakFakeRepo,
@@ -22,13 +24,19 @@ class UtbetalingsvedtakFakeRepo(
 
     override fun markerSendtTilUtbetaling(
         vedtakId: VedtakId,
+        tidspunkt: LocalDateTime,
         utbetalingsrespons: SendtUtbetaling,
     ) {
-        data.get()[vedtakId] = data.get()[vedtakId]!!.copy(sendtTilUtbetaling = true)
+        data.get()[vedtakId] = data.get()[vedtakId]!!.copy(sendtTilUtbetaling = tidspunkt)
     }
 
-    override fun markerSendtTilDokument(vedtakId: VedtakId) {
-        data.get()[vedtakId] = data.get()[vedtakId]!!.copy(sendtTilDokument = true)
+    override fun markerJournalført(
+        vedtakId: VedtakId,
+        journalpostId: JournalpostId,
+        tidspunkt: LocalDateTime,
+    ) {
+        data.get()[vedtakId] =
+            data.get()[vedtakId]!!.copy(journalpostId = journalpostId, journalføringstidspunkt = tidspunkt)
     }
 
     override fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak? = data.get()[vedtakId]
@@ -42,12 +50,12 @@ class UtbetalingsvedtakFakeRepo(
 
     override fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int): List<UtfyltMeldekort> =
         meldekortFakeRepo.hentAlle().filter {
-            data.get().values.none { utbetalingsvedtak -> utbetalingsvedtak.meldekortperiode.meldekortId == it.id }
+            data.get().values.none { utbetalingsvedtak -> utbetalingsvedtak.meldekort.id == it.id }
         }
 
     override fun hentUtbetalingsvedtakForUtsjekk(limit: Int): List<Utbetalingsvedtak> =
-        data.get().values.filter { it.sendtTilUtbetaling }
+        data.get().values.filter { it.sendtTilUtbetaling == null }.take(limit)
 
-    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> =
-        data.get().values.filter { it.sendtTilDokument }
+    override fun hentDeSomSkalJournalføres(limit: Int): List<Utbetalingsvedtak> =
+        data.get().values.filter { it.journalpostId == null }.take(limit)
 }

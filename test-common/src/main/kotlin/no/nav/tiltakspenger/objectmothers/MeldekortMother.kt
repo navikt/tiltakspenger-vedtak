@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface MeldekortMother {
 
@@ -39,6 +40,7 @@ interface MeldekortMother {
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
+        iverksattTidspunkt: LocalDateTime? = null,
     ) = Meldekort.UtfyltMeldekort(
         id = id,
         sakId = sakId,
@@ -50,6 +52,7 @@ interface MeldekortMother {
         forrigeMeldekortId = forrigeMeldekortId,
         tiltakstype = tiltakstype,
         status = status,
+        iverksattTidspunkt = iverksattTidspunkt,
     )
 
     /**
@@ -135,7 +138,15 @@ interface MeldekortMother {
             )
         }
         return kommandoer.drop(1).fold(
-            førsteBeregnetMeldekort(tiltakstype, kommandoer.first().meldekortId, sakId, fnr, rammevedtakId, kommandoer.first(), utfallsperioder).first,
+            førsteBeregnetMeldekort(
+                tiltakstype,
+                kommandoer.first().meldekortId,
+                sakId,
+                fnr,
+                rammevedtakId,
+                kommandoer.first(),
+                utfallsperioder,
+            ).first,
         ) { meldekortperioder, kommando ->
             meldekortperioder.beregnNesteMeldekort(kommando, fnr)
         }

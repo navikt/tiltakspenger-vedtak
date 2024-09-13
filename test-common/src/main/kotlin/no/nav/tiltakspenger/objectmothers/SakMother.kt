@@ -133,7 +133,7 @@ interface SakMother {
         løpenummer: Int = 1001,
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         saksbehandler: Saksbehandler = saksbehandler(),
-        beslutter: Saksbehandler = saksbehandler(),
+        beslutter: Saksbehandler = beslutter(),
     ): Sak {
         return sakTilBeslutter(
             sakId = sakId,
@@ -141,9 +141,10 @@ interface SakMother {
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
+            val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())
             it.copy(
-                behandlinger = nonEmptyListOf(it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())),
-                vedtak = listOf(it.førstegangsbehandling.opprettVedtak()),
+                behandlinger = nonEmptyListOf(iverksattBehandling),
+                vedtak = listOf(iverksattBehandling.opprettVedtak()),
             )
         }
     }

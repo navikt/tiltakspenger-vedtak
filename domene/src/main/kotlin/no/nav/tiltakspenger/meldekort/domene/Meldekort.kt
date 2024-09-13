@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
 
 sealed interface Meldekort {
@@ -39,8 +40,7 @@ sealed interface Meldekort {
      *
      * @param saksbehandler: Obligatorisk dersom meldekortet er utfylt av saksbehandler.
      * @param beslutter: Obligatorisk dersom meldekortet er godkjent av beslutter.
-     *
-     * TODO pre-mvp jah: Verifiser at saksbehandler og beslutter ikke er den samme.
+     * @param forrigeMeldekortId kan være null dersom det er første meldekort.
      */
     data class UtfyltMeldekort(
         override val id: MeldekortId,
@@ -53,6 +53,7 @@ sealed interface Meldekort {
         override val saksbehandler: String,
         override val beslutter: String?,
         override val status: MeldekortStatus,
+        val iverksattTidspunkt: LocalDateTime?,
     ) : Meldekort {
         init {
             require(status in listOf(MeldekortStatus.GODKJENT, MeldekortStatus.KLAR_TIL_BESLUTNING))
@@ -60,7 +61,7 @@ sealed interface Meldekort {
 
         /**
          * TODO post-mvp jah: Ved revurderinger av rammevedtaket, så må vi basere oss på både forrige meldekort og revurderingsvedtaket. Dette løser vi å flytte mer logikk til Sak.kt.
-         * TODO post-mvp jah: Når vi implementerer delvis innvilgelse vil hele meldekortperioder bli SPERRET.
+         * TODO post-mvp jah: Når vi implementerer delvis innvilgelse vil hele meldekortperioder kunne bli SPERRET.
          */
         fun opprettNesteMeldekort(
             utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
@@ -106,6 +107,7 @@ sealed interface Meldekort {
                 saksbehandler = this.saksbehandler,
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
+                iverksattTidspunkt = LocalDateTime.now(),
             ).right()
         }
 
@@ -146,6 +148,7 @@ sealed interface Meldekort {
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = this.beslutter,
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
+                iverksattTidspunkt = null,
             ).right()
         }
 

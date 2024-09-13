@@ -28,11 +28,12 @@ private val log = KotlinLogging.logger {}
  * https://navikt.github.io/utsjekk-docs/
  */
 class UtbetalingHttpClient(
-    endepunkt: String,
+    baseUrl: String,
     private val getToken: suspend () -> AccessToken,
     connectTimeout: Duration = 1.seconds,
     private val timeout: Duration = 1.seconds,
 ) : UtbetalingGateway {
+
     private val client =
         java.net.http.HttpClient
             .newBuilder()
@@ -40,7 +41,7 @@ class UtbetalingHttpClient(
             .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
             .build()
 
-    private val uri = URI.create("$endepunkt/api/iverksetting/v2")
+    private val uri = URI.create("$baseUrl/api/iverksetting/v2")
 
     override suspend fun iverksett(
         vedtak: Utbetalingsvedtak,
@@ -74,7 +75,7 @@ class UtbetalingHttpClient(
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
-            .header("Authorization", "Bearer ${getToken()}")
+            .header("Authorization", "Bearer ${getToken().value}")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
             // Dette er kun for vår del, open telemetry vil kunne være et alternativ. Slack tråd: https://nav-it.slack.com/archives/C06SJTR2X3L/p1724072054018589
