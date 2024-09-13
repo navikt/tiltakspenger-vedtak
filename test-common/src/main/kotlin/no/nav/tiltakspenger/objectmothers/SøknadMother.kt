@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -82,7 +81,7 @@ interface SøknadMother {
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
         tiltak: SøknadsTiltak = søknadTiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
-        vedlegg: List<Vedlegg> = emptyList(),
+        vedlegg: Int = 0,
         etterlønn: Søknad.JaNeiSpm = nei(),
         gjenlevendepensjon: Søknad.PeriodeSpm = periodeNei(),
         alderspensjon: Søknad.FraOgMedDatoSpm = fraOgMedDatoNei(),
@@ -95,8 +94,6 @@ interface SøknadMother {
             versjon = versjon,
             id = id,
             journalpostId = journalpostId,
-            dokumentInfoId = dokumentInfoId,
-            filnavn = filnavn,
             personopplysninger = personopplysninger,
             tiltak = tiltak,
             barnetillegg = barnetillegg,

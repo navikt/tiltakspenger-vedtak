@@ -99,7 +99,6 @@ internal object SøknadDAO {
         lagreSøknad(søknad, txSession)
         BarnetilleggDAO.lagre(søknad.id, søknad.barnetillegg, txSession)
         SøknadTiltakDAO.lagre(søknad.id, søknad.tiltak, txSession)
-        VedleggDAO.lagre(søknad.id, søknad.vedlegg, txSession)
     }
 
     private fun lagreSøknad(
@@ -143,8 +142,7 @@ internal object SøknadDAO {
                         "etternavn" to søknad.personopplysninger.etternavn,
                         "ident" to søknad.fnr.verdi,
                         "journalpostId" to søknad.journalpostId,
-                        "dokumentinfoId" to søknad.dokumentInfoId,
-                        "filnavn" to søknad.filnavn,
+                        "vedlegg" to søknad.vedlegg,
                         "opprettet" to søknad.opprettet,
                         "tidsstempelHosOss" to søknad.tidsstempelHosOss,
                     ),
@@ -164,12 +162,10 @@ internal object SøknadDAO {
         val fnr = Fnr.fromString(string("ident"))
         val opprettet = localDateTime("opprettet")
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
-        val dokumentInfoId = string("dokumentinfo_id")
         val journalpostId = string("journalpost_id")
-        val filnavn = string("filnavn")
         val barnetillegg = BarnetilleggDAO.hentBarnetilleggListe(id, session)
         val tiltak = SøknadTiltakDAO.hent(id, session)
-        val vedlegg = VedleggDAO.hentVedleggListe(id, session)
+        val vedlegg = int("vedlegg")
         val kvp = periodeSpm(KVP_FELT)
         val intro = periodeSpm(INTRO_FELT)
         val institusjon = periodeSpm(INSTITUSJON_FELT)
@@ -185,8 +181,6 @@ internal object SøknadDAO {
             versjon = versjon,
             id = id,
             journalpostId = journalpostId,
-            dokumentInfoId = dokumentInfoId,
-            filnavn = filnavn,
             personopplysninger =
             Søknad.Personopplysninger(
                 fnr = fnr,
@@ -220,8 +214,6 @@ internal object SøknadDAO {
             versjon,
             behandling_id,
             journalpost_id,
-            dokumentinfo_id,
-            filnavn,
             fornavn, 
             etternavn, 
             ident, 
@@ -266,14 +258,13 @@ internal object SøknadDAO {
             trygd_og_pensjon_ja,
             trygd_og_pensjon_fom,
             trygd_og_pensjon_tom,
-            etterlonn_type
+            etterlonn_type,
+            vedlegg
         ) values (
             :id,
             :versjon,
             :behandlingId,
             :journalpostId,
-            :dokumentinfoId,
-            :filnavn,
             :fornavn, 
             :etternavn,
             :ident,
@@ -318,7 +309,8 @@ internal object SøknadDAO {
             :trygd_og_pensjon_ja,
             :trygd_og_pensjon_fom,
             :trygd_og_pensjon_tom,
-            :etterlonn_type
+            :etterlonn_type,
+            :vedlegg
         )
         """.trimIndent()
 

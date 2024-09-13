@@ -53,12 +53,6 @@ CREATE INDEX søknadBarnetillegg_søknad
          søknad_id
             );
 
-CREATE INDEX søknadVedlegg_søknad
-    ON søknad_vedlegg
-        (
-         søknad_id
-            );
-
 CREATE INDEX tiltak_behandling ON tiltak (behandling_id);
 
 CREATE INDEX idx_utfylt_meldekort_sakid ON meldekort (sakId);

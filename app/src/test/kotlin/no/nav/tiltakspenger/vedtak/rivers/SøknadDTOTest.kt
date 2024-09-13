@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.soknad.BarnetilleggDTO
-import no.nav.tiltakspenger.libs.soknad.DokumentInfoDTO
 import no.nav.tiltakspenger.libs.soknad.FraOgMedDatoSpmDTO
 import no.nav.tiltakspenger.libs.soknad.JaNeiSpmDTO
 import no.nav.tiltakspenger.libs.soknad.PeriodeSpmDTO
@@ -27,16 +26,12 @@ internal class SøknadDTOTest {
         val søknad = SøknadDTOMapper.mapSøknad(søknadDTO, LocalDateTime.MIN)
 
         assertEquals(søknadDTO.søknadId, søknad.id.toString())
-        assertEquals(søknadDTO.dokInfo.journalpostId, søknad.journalpostId)
-        assertEquals(søknadDTO.dokInfo.dokumentInfoId, søknad.dokumentInfoId)
-        assertEquals(søknadDTO.dokInfo.filnavn, søknad.filnavn)
+        assertEquals(søknadDTO.journalpostId, søknad.journalpostId)
         assertEquals(søknadDTO.personopplysninger.fornavn, søknad.personopplysninger.fornavn)
         assertEquals(søknadDTO.personopplysninger.etternavn, søknad.personopplysninger.etternavn)
         assertEquals(søknadDTO.personopplysninger.ident, søknad.fnr.verdi)
         assertEquals(søknadDTO.opprettet, søknad.opprettet)
-        assertEquals(søknadDTO.vedlegg.first().journalpostId, søknad.vedlegg.first().journalpostId)
-        assertEquals(søknadDTO.vedlegg.first().dokumentInfoId, søknad.vedlegg.first().dokumentInfoId)
-        assertEquals(søknadDTO.vedlegg.first().filnavn, søknad.vedlegg.first().filnavn)
+        assertEquals(søknadDTO.vedlegg, søknad.vedlegg)
 
         assertEquals(søknad.kvp, Søknad.PeriodeSpm.Nei)
         assertEquals(søknad.intro, Søknad.PeriodeSpm.Nei)
@@ -89,12 +84,7 @@ internal class SøknadDTOTest {
         til: LocalDate = LocalDate.of(2023, 12, 31),
         versjon: String = "1",
         søknadId: String = Søknad.randomId().toString(),
-        dokInfo: DokumentInfoDTO =
-            DokumentInfoDTO(
-                journalpostId = "43",
-                dokumentInfoId = "44",
-                filnavn = "filnavn",
-            ),
+        journalpostId: String = "43",
         personopplysninger: PersonopplysningerDTO =
             PersonopplysningerDTO(
                 fornavn = "Ola",
@@ -124,18 +114,11 @@ internal class SøknadDTOTest {
         supplerendeFlykting: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         sykepenger: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
         trygdOgPensjon: PeriodeSpmDTO = PeriodeSpmDTO(svar = SpmSvarDTO.Nei, fom = null, tom = null),
-        vedlegg: List<DokumentInfoDTO> =
-            listOf(
-                DokumentInfoDTO(
-                    journalpostId = "journalpostId",
-                    dokumentInfoId = "dokumentInfoId",
-                    filnavn = "filnavn",
-                ),
-            ),
+        vedlegg: Int = 0,
     ) = SøknadDTO(
         versjon = versjon,
         søknadId = søknadId,
-        dokInfo = dokInfo,
+        journalpostId = journalpostId,
         personopplysninger = personopplysninger,
         kvp = kvp,
         intro = intro,

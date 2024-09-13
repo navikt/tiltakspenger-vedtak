@@ -96,7 +96,6 @@ internal class TestDatabaseManager {
                   rammevedtak,
                   behandling,
                   sak,
-                  søknad_vedlegg,
                   søknad_tiltak,
                   søknad_barnetillegg,
                   søknad

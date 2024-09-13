@@ -19,7 +19,6 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -69,8 +68,6 @@ class SøknadRoutesTest {
                 versjon = "3",
                 id = søknad.captured.id,
                 journalpostId = JOURNALPOSTID,
-                dokumentInfoId = "987",
-                filnavn = "tiltakspengersoknad.json",
                 personopplysninger =
                 Søknad.Personopplysninger(
                     fnr = IDENT,
@@ -98,14 +95,7 @@ class SøknadRoutesTest {
                 ),
                 opprettet = søknad.captured.opprettet,
                 tidsstempelHosOss = LocalDateTime.parse("2023-06-14T21:12:08.447993177"),
-                vedlegg =
-                listOf(
-                    Vedlegg(
-                        journalpostId = "123",
-                        dokumentInfoId = "456",
-                        filnavn = "tiltakspengersoknad.json",
-                    ),
-                ),
+                vedlegg = 0,
                 kvp = Søknad.PeriodeSpm.Nei,
                 intro = Søknad.PeriodeSpm.Nei,
                 institusjon = Søknad.PeriodeSpm.Nei,
@@ -125,11 +115,7 @@ class SøknadRoutesTest {
         {
             "versjon": "3",
             "søknadId": "$søknadId",
-            "dokInfo": {
-              "journalpostId": "$JOURNALPOSTID",
-              "dokumentInfoId": "987",
-              "filnavn": "tiltakspengersoknad.json"
-            },
+            "journalpostId": "$JOURNALPOSTID",
             "personopplysninger": {
               "ident": "${IDENT.verdi}",
               "fornavn": "NØDVENDIG",
@@ -155,13 +141,7 @@ class SøknadRoutesTest {
               }
             ],
             "barnetilleggManuelle": [],
-            "vedlegg": [
-              {
-                "journalpostId": "123",
-                "dokumentInfoId": "456",
-                "filnavn": "tiltakspengersoknad.json"
-              }
-            ],
+            "vedlegg": 0,
             "kvp": {
               "svar": "Nei",
               "fom": null,

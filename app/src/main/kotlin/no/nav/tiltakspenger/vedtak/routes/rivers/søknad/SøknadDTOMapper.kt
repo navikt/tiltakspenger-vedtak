@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.soknad.BarnetilleggDTO
-import no.nav.tiltakspenger.libs.soknad.DokumentInfoDTO
 import no.nav.tiltakspenger.libs.soknad.FraOgMedDatoSpmDTO
 import no.nav.tiltakspenger.libs.soknad.JaNeiSpmDTO
 import no.nav.tiltakspenger.libs.soknad.PeriodeSpmDTO
@@ -14,7 +13,6 @@ import no.nav.tiltakspenger.libs.soknad.SøknadsTiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Vedlegg
 import java.time.LocalDateTime
 
 object SøknadDTOMapper {
@@ -25,9 +23,7 @@ object SøknadDTOMapper {
         Søknad(
             id = SøknadId.fromString(dto.søknadId),
             versjon = dto.versjon,
-            journalpostId = dto.dokInfo.journalpostId,
-            dokumentInfoId = dto.dokInfo.dokumentInfoId,
-            filnavn = dto.dokInfo.filnavn,
+            journalpostId = dto.journalpostId,
             personopplysninger =
             Søknad.Personopplysninger(
                 fornavn = dto.personopplysninger.fornavn,
@@ -40,7 +36,7 @@ object SøknadDTOMapper {
                 dto.barnetilleggManuelle.map { mapBarnetilleggManuelle(it) },
             opprettet = dto.opprettet,
             tidsstempelHosOss = innhentet,
-            vedlegg = dto.vedlegg.map { mapVedlegg(it) },
+            vedlegg = dto.vedlegg,
             kvp = mapPeriodeSpm(dto.kvp),
             intro = mapPeriodeSpm(dto.intro),
             institusjon = mapPeriodeSpm(dto.institusjon),
@@ -90,13 +86,6 @@ object SøknadDTOMapper {
             arrangør = dto.arrangør,
             typeKode = dto.typeKode,
             typeNavn = dto.typeNavn,
-        )
-
-    private fun mapVedlegg(dto: DokumentInfoDTO): Vedlegg =
-        Vedlegg(
-            journalpostId = dto.journalpostId,
-            dokumentInfoId = dto.dokumentInfoId,
-            filnavn = dto.filnavn,
         )
 
     private fun mapBarnetilleggManuelle(dto: BarnetilleggDTO): Barnetillegg.FraPdl {

@@ -113,8 +113,6 @@ CREATE TABLE søknad
     fornavn             VARCHAR                  NOT NULL,
     etternavn           VARCHAR                  NOT NULL,
     journalpost_id      VARCHAR                  NOT NULL,
-    dokumentinfo_id     VARCHAR                  NOT NULL,
-    filnavn             VARCHAR                  NOT NULL,
     opprettet           TIMESTAMP WITH TIME ZONE NULL,
     tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
     kvp_type            VARCHAR                  NOT NULL,
@@ -156,7 +154,8 @@ CREATE TABLE søknad
     trygd_og_pensjon_ja              BOOLEAN                  NULL,
     trygd_og_pensjon_fom             DATE                     NULL,
     trygd_og_pensjon_tom             DATE                     NULL,
-    etterlonn_type            VARCHAR                  NOT NULL
+    etterlonn_type            VARCHAR                  NOT NULL,
+    vedlegg                   INT                      NOT NULL
 );
 
 CREATE TABLE søknad_barnetillegg
@@ -181,15 +180,6 @@ CREATE TABLE søknad_tiltak
     typenavn                VARCHAR NOT NULL,
     deltakelse_fom          DATE    NOT NULL,
     deltakelse_tom          DATE    NULL
-);
-
-CREATE TABLE søknad_vedlegg
-(
-    id              VARCHAR PRIMARY KEY,
-    søknad_id       VARCHAR NOT NULL REFERENCES søknad (id),
-    journalpost_id  VARCHAR NOT NULL,
-    dokumentinfo_id VARCHAR NOT NULL,
-    filnavn         VARCHAR NULL
 );
 
 CREATE TABLE tiltak
