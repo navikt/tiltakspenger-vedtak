@@ -75,6 +75,12 @@ spec:
           permissions:
             roles:
               - "hente_data"
+        - application: tiltakspenger-soknad-api
+          namespace: tpts
+          cluster: {{ cluster }}
+          permissions:
+            roles:
+              - "lage_hendelser"
         - application: tiltakspenger-vedtak-rivers
           namespace: tpts
           cluster: {{ cluster }}
