@@ -31,7 +31,7 @@ internal class TaskExecutor(
             val logger = KotlinLogging.logger { }
             return TaskExecutor(
                 startStoppableJob(
-                    jobName = "generer-meldekort",
+                    jobName = "taskExecutor",
                     initialDelay = initialDelay.toJavaDuration(),
                     intervall = intervall.toJavaDuration(),
                     logger = logger,

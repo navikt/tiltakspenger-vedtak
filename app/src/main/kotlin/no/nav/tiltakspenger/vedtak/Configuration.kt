@@ -4,6 +4,7 @@ import com.natpryce.konfig.ConfigurationMap
 import com.natpryce.konfig.ConfigurationProperties.Companion.systemProperties
 import com.natpryce.konfig.EnvironmentVariables
 import com.natpryce.konfig.Key
+import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.libs.common.Rolle
@@ -24,20 +25,7 @@ data class AdRolle(
 )
 
 object Configuration {
-    val rapidsAndRivers =
-        mapOf(
-            "RAPID_APP_NAME" to APPLICATION_NAME,
-            "KAFKA_BROKERS" to System.getenv("KAFKA_BROKERS"),
-            "KAFKA_CREDSTORE_PASSWORD" to System.getenv("KAFKA_CREDSTORE_PASSWORD"),
-            "KAFKA_TRUSTSTORE_PATH" to System.getenv("KAFKA_TRUSTSTORE_PATH"),
-            "KAFKA_KEYSTORE_PATH" to System.getenv("KAFKA_KEYSTORE_PATH"),
-            "KAFKA_RAPID_TOPIC" to "tpts.rapid.v1",
-            "KAFKA_RESET_POLICY" to "latest",
-            "KAFKA_CONSUMER_GROUP_ID" to "tiltakspenger-vedtak-v1",
-            "HTTP_PORT" to "8080",
-        )
-
-    private val otherDefaultProperties =
+    private val defaultProperties = ConfigurationMap(
         mapOf(
             "application.httpPort" to 8080.toString(),
             "SERVICEUSER_TPTS_USERNAME" to System.getenv("SERVICEUSER_TPTS_USERNAME"),
@@ -54,9 +42,8 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
             "NAIS_APP_IMAGE" to System.getenv("NAIS_APP_IMAGE"),
-        )
-
-    private val defaultProperties = ConfigurationMap(rapidsAndRivers + otherDefaultProperties)
+        ),
+    )
 
     private val localProperties =
         ConfigurationMap(
@@ -80,8 +67,19 @@ object Configuration {
                 "DOKUMENT_SCOPE" to "localhost",
                 "DOKUMENT_URL" to "http://localhost:8091",
                 "NAIS_APP_IMAGE" to "http://localhost8080:githubhash",
+                "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
+                "AZURE_APP_CLIENT_SECRET" to "secret",
+                "AZURE_APP_WELL_KNOWN_URL" to "http://localhost:2222",
+                "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
+                "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
+                "DB_USERNAME" to "postgres",
+                "DB_PASSWORD" to "test",
+                "DB_DATABASE" to "vedtak",
+                "DB_HOST" to "localhost",
+                "DB_PORT" to "5433",
             ),
         )
+
     private val devProperties =
         ConfigurationMap(
             mapOf(
@@ -224,6 +222,8 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
+    fun httpPort() = config()[Key("application.httpPort", intType)]
+
     fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
@@ -232,11 +232,24 @@ object Configuration {
 
     fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
-    fun kafkaBootstrapLocal(): String = config()[Key("KAFKA_BROKERS", stringType)]
-
     fun isNais() = applicationProfile() != Profile.LOCAL
 
     fun electorPath(): String = config()[Key("ELECTOR_PATH", stringType)]
 
     fun gitHash(): String = config()[Key("NAIS_APP_IMAGE", stringType)].substringAfterLast(":")
+
+    data class DataBaseConf(
+        val database: String,
+        val host: String,
+        val passord: String,
+        val port: Int,
+        val brukernavn: String,
+    )
+    fun database() = DataBaseConf(
+        database = config()[Key("DB_DATABASE", stringType)],
+        host = config()[Key("DB_HOST", stringType)],
+        passord = config()[Key("DB_PASSWORD", stringType)],
+        brukernavn = config()[Key("DB_USERNAME", stringType)],
+        port = config()[Key("DB_PORT", intType)],
+    )
 }

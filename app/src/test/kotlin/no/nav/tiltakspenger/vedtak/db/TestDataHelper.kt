@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.db
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.common.SaksnummerGenerator
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
-import no.nav.tiltakspenger.vedtak.log
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
@@ -18,11 +18,12 @@ import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakPostgresRepo
 import javax.sql.DataSource
 
 internal class TestDataHelper(
-    val dataSource: DataSource,
+    private val dataSource: DataSource,
     val saksnummerGenerator: SaksnummerGenerator,
 ) {
+    private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
-    val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
+    private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val personopplysningerRepo = PersonopplysningerPostgresRepo(sessionFactory)
     val søknadRepo = PostgresSøknadRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)

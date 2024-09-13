@@ -27,18 +27,9 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
-import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
-import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
-import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
-import no.nav.tiltakspenger.saksbehandling.service.SøknadService
-import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
-import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
-import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
-import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
@@ -58,16 +49,7 @@ private val SECURELOG = KotlinLogging.logger("tjenestekall")
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
-    søknadService: SøknadService,
-    sakService: SakService,
-    behandlingService: BehandlingService,
-    rammevedtakService: RammevedtakService,
-    kvpVilkårService: KvpVilkårService,
-    livsoppholdVilkårService: LivsoppholdVilkårService,
-    hentMeldekortService: HentMeldekortService,
-    iverksettMeldekortService: IverksettMeldekortService,
-    sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
-    auditService: AuditService,
+    applicationContext: ApplicationContext,
 ) {
     install(CallId)
     install(CallLogging) {
@@ -82,45 +64,46 @@ internal fun Application.vedtakApi(
     jacksonSerialization()
     auth(config)
     routing {
+        healthRoutes()
         authenticate("saksbehandling") {
             saksbehandlerRoutes(innloggetSaksbehandlerProvider)
             behandlingRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                behandlingService = behandlingService,
-                sakService = sakService,
-                kvpVilkårService = kvpVilkårService,
-                livsoppholdVilkårService = livsoppholdVilkårService,
-                auditService = auditService,
+                behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+                sakService = applicationContext.sakContext.sakService,
+                kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
+                livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
+                auditService = applicationContext.personContext.auditService,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                behandlingService = behandlingService,
-                sakService = sakService,
-                auditService = auditService,
+                behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+                sakService = applicationContext.sakContext.sakService,
+                auditService = applicationContext.personContext.auditService,
             )
             behandlingBeslutterRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                behandlingService = behandlingService,
-                auditService = auditService,
+                behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+                auditService = applicationContext.personContext.auditService,
             )
             sakRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                sakService = sakService,
-                auditService = auditService,
+                sakService = applicationContext.sakContext.sakService,
+                auditService = applicationContext.personContext.auditService,
             )
             meldekortRoutes(
-                hentMeldekortService = hentMeldekortService,
-                iverksettMeldekortService = iverksettMeldekortService,
-                sendMeldekortTilBeslutterService = sendMeldekortTilBeslutterService,
+                hentMeldekortService = applicationContext.meldekortContext.hentMeldekortService,
+                iverksettMeldekortService = applicationContext.meldekortContext.iverksettMeldekortService,
+                sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
-                auditService = auditService,
+                auditService = applicationContext.personContext.auditService,
             )
         }
         authenticate("systemtoken") {
-            søknadRoutes(søknadService)
+            søknadRoutes(applicationContext.søknadContext.søknadService)
             datadelingRoutes(
-                behandlingService = behandlingService,
-                rammevedtakService = rammevedtakService,
+                behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+                rammevedtakService = applicationContext.førstegangsbehandlingContext.rammevedtakService,
             )
         }
         staticResources(
