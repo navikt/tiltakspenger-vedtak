@@ -27,6 +27,11 @@ interface SakService {
         saksbehandler: Saksbehandler,
     ): Sak
 
+    fun hentForFnr(
+        fnr: Fnr,
+        saksbehandler: Saksbehandler,
+    ): Sak
+
     fun hentFnrForSakId(sakId: SakId): Fnr?
 
     fun hentForSakId(

@@ -138,6 +138,19 @@ class SakServiceImpl(
         return sak
     }
 
+    override fun hentForFnr(fnr: Fnr, saksbehandler: Saksbehandler): Sak {
+        val saker = sakRepo.hentForFnr(fnr)
+        if (saker.saker.isEmpty()) throw IkkeFunnetException("Fant ikke sak for fnr $fnr")
+        if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. fnr: $fnr")
+
+        val sak = saker.single()
+        if (!sak.personopplysninger.harTilgang(saksbehandler)) {
+            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak på fnr $fnr")
+        }
+
+        return sak
+    }
+
     override fun hentFnrForSakId(sakId: SakId): Fnr? = sakRepo.hentFnrForSakId(sakId)
 
     override fun hentForSakId(

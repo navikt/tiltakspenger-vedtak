@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.auditlog
 import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -279,6 +280,29 @@ class AuditService(
                 AuditLogEvent(
                     navIdent = navIdent,
                     berørtBrukerId = berørtBrukerId.verdi,
+                    action = action,
+                    behandlingId = behandlingUUID,
+                    callId = callId,
+                    message = contextMessage,
+                    logLevel = AuditLogEvent.Level.INFO,
+                ),
+            )
+        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+    }
+
+    fun logMedBrukerId(
+        brukerId: Fnr,
+        navIdent: String,
+        action: AuditLogEvent.Action,
+        callId: String?,
+        contextMessage: String,
+        behandlingUUID: UUID? = null,
+    ) {
+        Either.catch {
+            AuditLogger.log(
+                AuditLogEvent(
+                    navIdent = navIdent,
+                    berørtBrukerId = brukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
                     callId = callId,
