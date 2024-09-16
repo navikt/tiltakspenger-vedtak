@@ -127,13 +127,17 @@ object AuditLogger {
         // Field descriptions from CEF documentation (#tech-logg_analyse_og_datainnsikt):
         val version = "CEF:0"
         /*
-        Arena, Bisys etc
+        For å redusere antall duplikate logger har Team Auditlog kommet med et ønske om at vi skal legges i
+        'samme bås' som Tiltaksgjennomføring siden vi er av lik karakter- og er avhengige av denne applikasjonen.
+        Dette gir mening å gjøre i en auditlog-kontekst, og har ingen praktisk betydning.
+        https://nav-it.slack.com/archives/C014576K5TQ/p1726490122242699?thread_ts=1726042802.693829&cid=C014576K5TQ
          */
-        val deviceVendor = APPLICATION_NAME
+        val deviceVendor = "Tiltaksgjennomforing"
         /*
-        The name of the log that originated the event. Auditlog, leselogg, ABAC-Audit, Sporingslogg
+        Dette er også ønske fra Team Auditlog. At 'deviceProduct' er applikasjonsnavnet.
+        https://nav-it.slack.com/archives/C014576K5TQ/p1726490122242699?thread_ts=1726042802.693829&cid=C014576K5TQ
          */
-        val deviceProduct = "auditLog"
+        val deviceProduct = APPLICATION_NAME
         /*
         The version of the logformat. 1.0
          */
