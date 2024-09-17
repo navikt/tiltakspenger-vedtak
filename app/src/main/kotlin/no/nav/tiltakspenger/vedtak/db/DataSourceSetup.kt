@@ -10,12 +10,10 @@ object DataSourceSetup {
     private const val MAX_POOLS = 5
     private val config = database()
 
-    private fun getEnvOrProp(key: String) = System.getenv(key) ?: System.getProperty(key)
-
     fun createDatasource(): HikariDataSource {
         LOG.info {
-            "Kobler til Postgres '${getEnvOrProp(config.brukernavn)}:xxx@" +
-                "${getEnvOrProp(config.host)}:${getEnvOrProp(config.port.toString())}/${getEnvOrProp(config.database)}'"
+            "Kobler til Postgres '${config.brukernavn}:xxx@" +
+                "${config.host}:${config.port}/${config.database}'"
         }
 
         return HikariDataSource().apply {
