@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeFnr
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling
 
 interface SakService {
@@ -30,7 +31,7 @@ interface SakService {
     fun hentForFnr(
         fnr: Fnr,
         saksbehandler: Saksbehandler,
-    ): Sak
+    ): Either<FantIkkeFnr, Sak>
 
     fun hentFnrForSakId(sakId: SakId): Fnr?
 

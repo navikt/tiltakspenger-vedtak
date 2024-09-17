@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -55,7 +56,17 @@ fun Route.sakRoutes(
             callId = call.callId,
         )
 
-        val sakDTO = sakService.hentForFnr(fnr, saksbehandler).toDTO()
-        call.respond(message = sakDTO, status = HttpStatusCode.OK)
+        sakService.hentForFnr(fnr, saksbehandler).fold(
+            ifLeft = {
+                call.respond(
+                    message = Standardfeil.fantIkkeFnr(),
+                    status = HttpStatusCode.BadRequest,
+                )
+            },
+            ifRight = {
+                val sakDTO = it.toDTO()
+                call.respond(message = sakDTO, status = HttpStatusCode.OK)
+            },
+        )
     }
 }

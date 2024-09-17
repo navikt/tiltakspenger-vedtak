@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeFnr
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
@@ -138,9 +139,19 @@ class SakServiceImpl(
         return sak
     }
 
-    override fun hentForFnr(fnr: Fnr, saksbehandler: Saksbehandler): Sak {
+    data class ErrorTilFrontend(
+        val melding: String,
+        val kode: String,
+    ) : RuntimeException()
+
+    data object FantIkkeFnr
+
+    override fun hentForFnr(
+        fnr: Fnr,
+        saksbehandler: Saksbehandler,
+    ): Either<FantIkkeFnr, Sak> {
         val saker = sakRepo.hentForFnr(fnr)
-        if (saker.saker.isEmpty()) throw IkkeFunnetException("Fant ikke sak for fnr $fnr")
+        if (saker.saker.isEmpty()) FantIkkeFnr.left()
         if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. fnr: $fnr")
 
         val sak = saker.single()
@@ -148,7 +159,7 @@ class SakServiceImpl(
             throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak på fnr $fnr")
         }
 
-        return sak
+        return sak.right()
     }
 
     override fun hentFnrForSakId(sakId: SakId): Fnr? = sakRepo.hentFnrForSakId(sakId)
