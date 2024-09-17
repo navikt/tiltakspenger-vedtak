@@ -38,7 +38,6 @@
         </syslogConfig>
     </appender>
 
-    <logger name="no.nav.helse.rapids_rivers" level="INFO"/>
     <logger name="org.apache.kafka" level="WARN"/>
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="com.zaxxer" level="WARN"/>

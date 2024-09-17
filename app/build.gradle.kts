@@ -55,9 +55,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.ktor:ktor-utils:$ktorVersion")
-    implementation("com.github.navikt:rapids-and-rivers:2024082313161724411773.1db923f4402d")
-    // R&R bruker prometheus direkte men mangler dependency. Tidligere var den tatt inn via micrometer, men de har oppdatert til v1 som er inkompatibel med dagens kode i R&R
-    implementation("io.prometheus:simpleclient:0.16.0")
 
     implementation("com.natpryce:konfig:1.6.10.0")
 
