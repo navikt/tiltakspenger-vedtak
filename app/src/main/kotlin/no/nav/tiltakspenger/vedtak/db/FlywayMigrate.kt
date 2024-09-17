@@ -34,9 +34,3 @@ private fun gcpFlyway(dataSource: javax.sql.DataSource) =
 fun flywayMigrate(dataSource: javax.sql.DataSource) {
     flyway(dataSource).migrate()
 }
-
-fun flywayCleanAndMigrate(dataSource: javax.sql.DataSource) {
-    val flyway = flyway(dataSource)
-    flyway.clean()
-    flyway.migrate()
-}

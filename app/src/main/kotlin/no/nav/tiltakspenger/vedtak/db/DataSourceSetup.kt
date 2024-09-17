@@ -25,6 +25,8 @@ object DataSourceSetup {
             addDataSourceProperty("password", config.passord)
             initializationFailTimeout = 5000
             maximumPoolSize = MAX_POOLS
+        }.also {
+            flywayMigrate(it)
         }
     }
 }
