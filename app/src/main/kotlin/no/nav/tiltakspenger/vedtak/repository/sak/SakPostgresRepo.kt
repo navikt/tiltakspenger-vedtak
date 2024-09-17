@@ -3,8 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.sak
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -192,7 +192,6 @@ internal class SakPostgresRepo(
         }
 
     companion object {
-        private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
         private fun hentSistEndret(
             sakId: SakId,
@@ -210,7 +209,7 @@ internal class SakPostgresRepo(
             sak: Sak,
             session: Session,
         ): Sak {
-            SECURELOG.info { "Oppdaterer sak ${sak.id}" }
+            sikkerlogg.info { "Oppdaterer sak ${sak.id}" }
 
             val antRaderOppdatert =
                 session.run(
@@ -234,7 +233,7 @@ internal class SakPostgresRepo(
             sak: Sak,
             session: Session,
         ): Sak {
-            SECURELOG.info { "Oppretter sak ${sak.id}" }
+            sikkerlogg.info { "Oppretter sak ${sak.id}" }
 
             val nå = nå()
 
@@ -262,7 +261,8 @@ internal class SakPostgresRepo(
                     behandlinger = behandlinger,
                     personopplysninger = PersonopplysningerPostgresRepo.hentForSakId(id, session),
                     vedtak = RammevedtakPostgresRepo.hentForSakId(id, sessionContext),
-                    meldekort = MeldekortPostgresRepo.hentForSakId(id, session) ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
+                    meldekort = MeldekortPostgresRepo.hentForSakId(id, session)
+                        ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
                 )
             }
         }

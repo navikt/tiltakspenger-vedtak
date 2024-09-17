@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.jobber.StoppableJob
@@ -35,7 +36,7 @@ internal class TaskExecutor(
                     initialDelay = initialDelay.toJavaDuration(),
                     intervall = intervall.toJavaDuration(),
                     logger = logger,
-                    sikkerLogg = KotlinLogging.logger("tjenestekall"),
+                    sikkerLogg = sikkerlogg,
                     // Ref callIdMdc("call-id") i VedtakApi.kt
                     mdcCallIdKey = "call-id",
                     runJobCheck = listOf(runCheckFactory.leaderPod()),

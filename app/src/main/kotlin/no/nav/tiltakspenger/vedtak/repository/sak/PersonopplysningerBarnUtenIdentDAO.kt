@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.sak
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
-import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.UlidBase.Companion.random
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
@@ -12,8 +12,6 @@ import org.intellij.lang.annotations.Language
 internal object PersonopplysningerBarnUtenIdentDAO {
 
     private const val ULID_PREFIX_BARN_UTEN_IDENT = "barnu"
-
-    private val securelog = KotlinLogging.logger("tjenestekall")
 
     internal fun hent(
         sakId: SakId,
@@ -25,7 +23,7 @@ internal object PersonopplysningerBarnUtenIdentDAO {
         personopplysninger: PersonopplysningerBarnUtenIdent,
         session: Session,
     ) {
-        securelog.info { "Lagre personopplysninger for barn uten ident $personopplysninger" }
+        sikkerlogg.info { "Lagre personopplysninger for barn uten ident $personopplysninger" }
         session.run(
             queryOf(
                 lagreSql,

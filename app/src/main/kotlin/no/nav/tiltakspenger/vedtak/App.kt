@@ -5,6 +5,7 @@ import arrow.core.right
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
@@ -22,11 +23,10 @@ fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
 
     val log = KotlinLogging.logger {}
-    val securelog = KotlinLogging.logger("tjenestekall")
     log.info { "starting server" }
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
         log.error { e }
-        securelog.error(e) { e.message }
+        sikkerlogg.error(e) { e.message }
     }
 
     val dataSource = DataSourceSetup.createDatasource()

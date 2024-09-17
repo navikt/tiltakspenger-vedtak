@@ -5,10 +5,10 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -34,8 +34,6 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeFn
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.KanIkkeStarteFørstegangsbehandling.HarIkkeTilgangTilPerson
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
-
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class SakServiceImpl(
     private val sakRepo: SakRepo,
@@ -79,7 +77,7 @@ class SakServiceImpl(
                 .also {
                     // TODO pre-mvp jah: Denne sjekken bør gjøres av domenekoden, ikke servicen.
                     if (!it.harTilgang(saksbehandler)) {
-                        SECURELOG.info {
+                        sikkerlogg.info {
                             "Saksbehandler ${saksbehandler.navIdent} " +
                                 "med roller ${saksbehandler.roller}, har ikke tilgang til person : ${it.søker()}"
                         }
@@ -138,11 +136,6 @@ class SakServiceImpl(
         }
         return sak
     }
-
-    data class ErrorTilFrontend(
-        val melding: String,
-        val kode: String,
-    ) : RuntimeException()
 
     data object FantIkkeFnr
 

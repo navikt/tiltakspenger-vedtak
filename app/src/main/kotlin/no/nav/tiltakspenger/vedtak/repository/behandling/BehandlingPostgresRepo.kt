@@ -6,9 +6,9 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -30,8 +30,6 @@ import no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager.toStønad
 import no.nav.tiltakspenger.vedtak.repository.søknad.SøknadDAO
 import org.intellij.lang.annotations.Language
 import java.time.LocalDateTime
-
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class BehandlingPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -151,7 +149,7 @@ class BehandlingPostgresRepo(
             behandling: Behandling,
             session: Session,
         ) {
-            SECURELOG.info { "Oppdaterer behandling ${behandling.id}" }
+            sikkerlogg.info { "Oppdaterer behandling ${behandling.id}" }
 
             val antRaderOppdatert =
                 session.run(
@@ -182,7 +180,7 @@ class BehandlingPostgresRepo(
             behandling: Behandling,
             session: Session,
         ) {
-            SECURELOG.info { "Oppretter behandling ${behandling.id}" }
+            sikkerlogg.info { "Oppretter behandling ${behandling.id}" }
 
             val nå = nå()
 

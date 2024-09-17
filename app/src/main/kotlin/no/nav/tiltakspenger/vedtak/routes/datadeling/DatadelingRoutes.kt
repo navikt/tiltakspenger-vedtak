@@ -7,13 +7,13 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import java.time.LocalDate
 
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 private val LOG = KotlinLogging.logger {}
 
 internal const val DATADELING_PATH = "/datadeling"
@@ -23,7 +23,7 @@ fun Route.datadelingRoutes(
     rammevedtakService: RammevedtakService,
 ) {
     post("$DATADELING_PATH/behandlinger") {
-        SECURELOG.debug("Mottatt request på $DATADELING_PATH/behadlinger")
+        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/behadlinger")
 
         call
             .receive<DatadelingDTO>()
@@ -43,7 +43,7 @@ fun Route.datadelingRoutes(
     }
 
     post("$DATADELING_PATH/vedtak/perioder") {
-        SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
+        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
 
         call
             .receive<DatadelingDTO>()
@@ -51,7 +51,7 @@ fun Route.datadelingRoutes(
             .fold(
                 { call.respond(HttpStatusCode.BadRequest, it) },
                 {
-                    SECURELOG.info { "Henter perioder for vedtak med ident ${it.ident}, med periode fra ${it.fom} til ${it.tom}" }
+                    sikkerlogg.info { "Henter perioder for vedtak med ident ${it.ident}, med periode fra ${it.fom} til ${it.tom}" }
                     val vedtak =
                         rammevedtakService.hentVedtakForIdent(
                             ident = it.ident,
@@ -64,7 +64,7 @@ fun Route.datadelingRoutes(
     }
 
     post("$DATADELING_PATH/vedtak/detaljer") {
-        SECURELOG.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
+        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
 
         call
             .receive<DatadelingDTO>()

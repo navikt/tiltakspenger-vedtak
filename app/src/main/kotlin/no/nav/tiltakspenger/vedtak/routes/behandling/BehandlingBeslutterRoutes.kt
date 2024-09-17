@@ -7,15 +7,13 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 data class BegrunnelseDTO(
     val begrunnelse: String,
@@ -27,7 +25,7 @@ fun Route.behandlingBeslutterRoutes(
     auditService: AuditService,
 ) {
     post("$BEHANDLING_PATH/sendtilbake/{behandlingId}") {
-        SECURELOG.debug("Mottatt request. $BEHANDLING_PATH/ send tilbake til saksbehandler")
+        sikkerlogg.debug("Mottatt request. $BEHANDLING_PATH/ send tilbake til saksbehandler")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -47,7 +45,7 @@ fun Route.behandlingBeslutterRoutes(
     }
 
     post("$BEHANDLING_PATH/godkjenn/{behandlingId}") {
-        SECURELOG.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
+        sikkerlogg.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

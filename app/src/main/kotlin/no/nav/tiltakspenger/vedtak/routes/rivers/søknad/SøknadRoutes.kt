@@ -7,11 +7,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
+
 const val SØKNAD_PATH = "/rivers/soknad"
 
 fun Route.søknadRoutes(søknadService: SøknadService) {
@@ -34,7 +35,7 @@ fun Route.søknadRoutes(søknadService: SøknadService) {
                 "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
                 RuntimeException("Trigger en exception for å få stracktrace."),
             )
-            SECURELOG.error("Feil ved mottak av søknad.", exception)
+            sikkerlogg.error("Feil ved mottak av søknad.", exception)
             call.respond(message = "Feil ved mottak av søknad", status = HttpStatusCode.InternalServerError)
         }
     }

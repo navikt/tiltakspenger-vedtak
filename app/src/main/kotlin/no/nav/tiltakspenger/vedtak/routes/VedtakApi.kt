@@ -25,6 +25,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -44,7 +45,6 @@ import java.net.URI
 import java.util.UUID
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
@@ -123,7 +123,7 @@ private fun AuthenticationConfig.jwt(
     realm: String,
     roles: Roller? = null,
 ) = jwt(name) {
-    SECURELOG.debug { "config : $config" }
+    sikkerlogg.debug { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
     verifier(jwkProviderGammel, config.issuer) {
@@ -168,7 +168,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     realm: String,
     roles: Roller? = null,
 ) = jwt(name) {
-    SECURELOG.info { "config : $config" }
+    sikkerlogg.info { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
     verifier(jwkProviderGammel, config.issuer) {

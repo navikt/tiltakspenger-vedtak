@@ -7,8 +7,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
@@ -18,8 +18,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 fun Route.oppdaterLivsoppholdRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -51,7 +49,7 @@ fun Route.oppdaterLivsoppholdRoute(
     }
 
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
-        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold")
+        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

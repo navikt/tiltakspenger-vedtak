@@ -5,6 +5,7 @@ import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.UlidBase
@@ -25,7 +26,6 @@ class PersonopplysningerPostgresRepo(
 
     companion object {
         private val log = KotlinLogging.logger {}
-        private val securelog = KotlinLogging.logger("tjenestekall")
 
         fun hentForSakId(
             sakId: SakId,
@@ -73,7 +73,7 @@ class PersonopplysningerPostgresRepo(
             personopplysninger: PersonopplysningerSøker,
             session: Session,
         ) {
-            securelog.info { "Lagre personopplysninger for søker $personopplysninger" }
+            sikkerlogg.info { "Lagre personopplysninger for søker $personopplysninger" }
             session.run(
                 queryOf(
                     lagreSql,

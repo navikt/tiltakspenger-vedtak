@@ -8,18 +8,18 @@ import io.ktor.server.response.respond
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
 
 private val LOG = KotlinLogging.logger {}
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 object ExceptionHandler {
     suspend fun handle(
         call: ApplicationCall,
         cause: Throwable,
     ) {
-        SECURELOG.error("Feil i route ${call.request.uri}", cause)
+        sikkerlogg.error("Feil i route ${call.request.uri}", cause)
         LOG.error("Feil i route: ${cause.message}. Se securelog for mer detaljer.")
         when (cause) {
             is IllegalStateException -> {

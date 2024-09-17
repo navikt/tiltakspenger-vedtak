@@ -8,7 +8,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
-import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
@@ -25,8 +25,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
-
 fun Route.behandlingBenkRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
@@ -34,7 +32,7 @@ fun Route.behandlingBenkRoutes(
     auditService: AuditService,
 ) {
     get(BEHANDLINGER_PATH) {
-        SECURELOG.debug("Mottatt request for å hente alle behandlinger på benken")
+        sikkerlogg.debug("Mottatt request for å hente alle behandlinger på benken")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
 
@@ -44,7 +42,7 @@ fun Route.behandlingBenkRoutes(
     }
 
     post("$BEHANDLING_PATH/startbehandling") {
-        SECURELOG.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
+        sikkerlogg.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val søknadId = SøknadId.fromString(call.receive<BehandlingIdDTO>().id)
 
@@ -98,7 +96,7 @@ fun Route.behandlingBenkRoutes(
     }
 
     post("$BEHANDLING_PATH/tabehandling") {
-        SECURELOG.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
+        sikkerlogg.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)

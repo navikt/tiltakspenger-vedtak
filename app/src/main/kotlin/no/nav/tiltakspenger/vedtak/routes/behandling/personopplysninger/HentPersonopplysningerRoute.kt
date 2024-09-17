@@ -6,7 +6,7 @@ import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -15,8 +15,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
-
 // TODO pre-mvp B: Midlertidig løsning for å ikke brekke dev. Denne skal skrives om til å hente personalia direkte fra pdl.
 fun Route.hentPersonRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
@@ -24,7 +22,7 @@ fun Route.hentPersonRoute(
     auditService: AuditService,
 ) {
     get("$BEHANDLING_PATH/{behandlingId}/personopplysninger") {
-        SECURELOG.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/personopplysninger")
+        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/personopplysninger")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

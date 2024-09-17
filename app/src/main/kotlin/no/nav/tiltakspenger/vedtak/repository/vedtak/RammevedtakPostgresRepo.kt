@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.vedtak
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
-import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -19,8 +19,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
 import java.time.LocalDateTime
-
-private val SECURELOG = KotlinLogging.logger("tjenestekall")
 
 class RammevedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -60,7 +58,7 @@ class RammevedtakPostgresRepo(
                     }.asList,
                 )
             }.also {
-                SECURELOG.info { "Hentet ${it.size} vedtak for ident $fnr" }
+                sikkerlogg.info { "Hentet ${it.size} vedtak for ident $fnr" }
             }
 
     override fun lagre(

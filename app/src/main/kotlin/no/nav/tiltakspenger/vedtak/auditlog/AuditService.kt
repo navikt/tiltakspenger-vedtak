@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.auditlog
 
 import arrow.core.Either
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -12,7 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import java.lang.String.join
 import java.util.UUID
 
-private val LOG = KotlinLogging.logger {}
+private val logg = KotlinLogging.logger {}
 
 data class AuditLogEvent(
     val navIdent: String,
@@ -216,7 +217,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedMeldekortId(
@@ -241,7 +242,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedSakId(
@@ -266,7 +267,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedSaksnummer(
@@ -291,7 +292,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedBrukerId(
@@ -314,7 +315,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logForSøknadId(
@@ -339,7 +340,7 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft { logg.error { "Det oppstod en feil ved auditlogging" } }
     }
 
     fun logMedVedtakId(
@@ -364,6 +365,9 @@ class AuditService(
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
             )
-        }.onLeft { LOG.error { "Det oppstod en feil ved auditlogging" } }
+        }.onLeft {
+            logg.error { "Det oppstod en feil ved auditlogging. Se sikkerlogg for mer exception." }
+            sikkerlogg.error(it) { "Det oppstod en feil ved auditlogging" }
+        }
     }
 }
