@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.meldekort.dto
 
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
@@ -13,11 +14,12 @@ data class MeldekortDTO(
     val beslutter: String?,
     val status: MeldekortstatusDTO,
     val totalbeløpTilUtbetaling: Int?,
+    val sakPeriode: PeriodeDTO,
     // TODO post-mvp Kew: Må få på antall dager per uke når vi trenger det.
 //    val antallDagerPerUke: Int,
 )
 
-fun Meldekort.toDTO(): MeldekortDTO =
+fun Meldekort.toDTO(sakPeriode: Periode): MeldekortDTO =
     MeldekortDTO(
         id = id.toString(),
         periode = periode.toDTO(),
@@ -27,4 +29,5 @@ fun Meldekort.toDTO(): MeldekortDTO =
         status = status.toDTO(),
         meldekortDager = meldekortperiode.toDTO(),
         totalbeløpTilUtbetaling = this.beregnTotalbeløp(),
+        sakPeriode = sakPeriode.toDTO(),
     )

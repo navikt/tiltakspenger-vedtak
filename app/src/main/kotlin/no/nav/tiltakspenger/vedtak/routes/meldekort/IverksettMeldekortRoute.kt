@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.iverksettMeldekortRoute(
@@ -60,7 +59,7 @@ fun Route.iverksettMeldekortRoute(
                     status = HttpStatusCode.BadRequest,
                 )
             },
-            { call.respond(message = it.toDTO(), status = HttpStatusCode.OK) },
+            { call.respond(message = {}, status = HttpStatusCode.OK) },
         )
     }
 }

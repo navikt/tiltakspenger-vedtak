@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.D
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import java.time.LocalDate
 
@@ -97,7 +96,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     callId = call.callId,
                 )
 
-                call.respond(message = it.toDTO(), status = HttpStatusCode.OK)
+                call.respond(message = {}, status = HttpStatusCode.OK)
             },
         )
     }

@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
@@ -18,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.hentMeldekortRoute(
     hentMeldekortService: HentMeldekortService,
+    sakService: SakService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     auditService: AuditService,
 ) {
@@ -53,6 +55,8 @@ fun Route.hentMeldekortRoute(
                 ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
         val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler)
         checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
+        val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler)
+        checkNotNull(sak) { "Sak med saksId ${meldekort.sakId} fra meldekort med iden $meldekortId finnes ikke." }
 
         auditService.logMedMeldekortId(
             meldekortId = MeldekortId.fromString(meldekortId),
@@ -62,6 +66,6 @@ fun Route.hentMeldekortRoute(
             callId = call.callId,
         )
 
-        call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO())
+        call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.hentVedtaksperiode()))
     }
 }
