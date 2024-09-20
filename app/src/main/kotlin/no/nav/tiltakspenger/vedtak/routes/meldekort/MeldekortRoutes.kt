@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -18,8 +19,9 @@ fun Route.meldekortRoutes(
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     auditService: AuditService,
+    sakService: SakService,
 ) {
-    hentMeldekortRoute(hentMeldekortService, innloggetSaksbehandlerProvider, auditService)
+    hentMeldekortRoute(hentMeldekortService, sakService, innloggetSaksbehandlerProvider, auditService)
     iverksettMeldekortRoute(iverksettMeldekortService, innloggetSaksbehandlerProvider, auditService)
     sendMeldekortTilBeslutterRoute(sendMeldekortTilBeslutterService, innloggetSaksbehandlerProvider, auditService)
 }

@@ -97,6 +97,7 @@ internal fun Application.vedtakApi(
                 sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 auditService = applicationContext.personContext.auditService,
+                sakService = applicationContext.sakContext.sakService,
             )
         }
         authenticate("systemtoken") {

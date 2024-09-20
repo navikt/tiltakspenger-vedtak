@@ -10,6 +10,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -55,6 +56,10 @@ data class Sak(
 
     fun hentRammevedtak(): Rammevedtak? {
         return vedtak.lastOrNull()
+    }
+
+    fun hentVedtaksperiode(): Periode {
+        return vedtak.first().periode
     }
 
     companion object {
