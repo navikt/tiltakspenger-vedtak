@@ -15,6 +15,11 @@ data class SakPersonopplysninger(
 
     fun søker(): PersonopplysningerSøker = liste.filterIsInstance<PersonopplysningerSøker>().first()
 
+    fun erSøkerStrengtFortrolig(): Boolean {
+        val søker = søker()
+        return søker.strengtFortrolig || søker.strengtFortroligUtland
+    }
+
     fun barnMedIdent(): List<PersonopplysningerBarnMedIdent> = liste.filterIsInstance<PersonopplysningerBarnMedIdent>()
 
     fun barnMedIdent(fnr: Fnr): PersonopplysningerBarnMedIdent? =

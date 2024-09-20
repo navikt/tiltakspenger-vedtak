@@ -8,7 +8,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.VedtaksType
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
-fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, versjon: String) =
+fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
     StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
@@ -32,10 +32,12 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, versjon: S
         behandlingResultat = null,
         resultatBegrunnelse = null,
         behandlingMetode = BehandlingMetode.MANUELL.name,
-        opprettetAv = "system",
-        saksbehandler = behandling.saksbehandler,
-        ansvarligBeslutter = null,
-        ansvarligEnhet = null,
+        // skal være -5 for kode 6
+        opprettetAv = if (gjelderKode6) "-5" else "system",
+        saksbehandler = if (gjelderKode6) "-5" else behandling.saksbehandler,
+        ansvarligBeslutter = if (gjelderKode6) "-5" else null,
+        ansvarligEnhet = if (gjelderKode6) "-5" else null,
+
         tilbakekrevingsbeløp = null,
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,
@@ -44,7 +46,7 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, versjon: S
         hendelse = "opprettet_behandling",
     )
 
-fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Rammevedtak, versjon: String): StatistikkSakDTO {
+fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Rammevedtak, gjelderKode6: Boolean, versjon: String): StatistikkSakDTO {
     return StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
@@ -71,12 +73,15 @@ fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: 
             VedtaksType.STANS -> BehandlingResultat.STANS
             VedtaksType.FORLENGELSE -> BehandlingResultat.FORLENGELSE
         },
-        resultatBegrunnelse = "resultatBegrunnelse",
+        resultatBegrunnelse = null,
         behandlingMetode = BehandlingMetode.MANUELL.name,
-        opprettetAv = "system",
-        saksbehandler = behandling.saksbehandler,
-        ansvarligBeslutter = behandling.beslutter,
-        ansvarligEnhet = "må hentes fra NORG",
+
+        // skal være -5 for kode 6
+        opprettetAv = if (gjelderKode6) "-5" else "system",
+        saksbehandler = if (gjelderKode6) "-5" else behandling.saksbehandler,
+        ansvarligBeslutter = if (gjelderKode6) "-5" else behandling.beslutter,
+        ansvarligEnhet = if (gjelderKode6) "-5" else "må hentes fra NORG",
+
         tilbakekrevingsbeløp = null,
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,

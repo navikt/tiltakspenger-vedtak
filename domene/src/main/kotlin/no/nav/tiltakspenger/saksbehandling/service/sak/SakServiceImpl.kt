@@ -102,6 +102,7 @@ class SakServiceImpl(
             opprettBehandlingMapper(
                 sak = sak.sakDetaljer,
                 behandling = sak.førstegangsbehandling,
+                gjelderKode6 = sakPersonopplysninger.erSøkerStrengtFortrolig(),
                 versjon = gitHash,
             )
 

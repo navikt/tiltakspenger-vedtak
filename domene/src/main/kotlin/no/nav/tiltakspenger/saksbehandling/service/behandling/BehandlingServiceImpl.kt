@@ -100,8 +100,16 @@ class BehandlingServiceImpl(
             )
         val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
 
+        val personopplysninger = personopplysningRepo.hent(sakId = sak.id)
+
         val vedtak = iverksattBehandling.opprettVedtak()
-        val sakStatistikk = iverksettBehandlingMapper(sak, iverksattBehandling, vedtak, gitHash)
+        val sakStatistikk = iverksettBehandlingMapper(
+            sak = sak,
+            behandling = iverksattBehandling,
+            vedtak = vedtak,
+            gjelderKode6 = personopplysninger.erSøkerStrengtFortrolig(),
+            versjon = gitHash,
+        )
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
         sessionFactory.withTransactionContext { tx ->
