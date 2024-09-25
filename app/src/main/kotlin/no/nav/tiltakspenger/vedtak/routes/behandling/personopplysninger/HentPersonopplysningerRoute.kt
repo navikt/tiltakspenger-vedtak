@@ -13,8 +13,8 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.parameter
+import no.nav.tiltakspenger.vedtak.routes.sak.SAK_PATH
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.hentPersonRoute(
@@ -23,8 +23,8 @@ fun Route.hentPersonRoute(
     personGateway: PersonGateway,
     auditService: AuditService,
 ) {
-    get("$BEHANDLING_PATH/{sakId}/personopplysninger") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{sakId}/personopplysninger")
+    get("$SAK_PATH/{sakId}/personopplysninger") {
+        sikkerlogg.debug("Mottatt request på $SAK_PATH/{sakId}/personopplysninger")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val sakId = SakId.fromString(call.parameter("sakId"))
