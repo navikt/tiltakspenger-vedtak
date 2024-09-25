@@ -4,6 +4,7 @@ import arrow.atomic.Atomic
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
@@ -15,7 +16,7 @@ class UtbetalingsvedtakFakeRepo(
 ) : UtbetalingsvedtakRepo {
     private val data = Atomic(mutableMapOf<VedtakId, Utbetalingsvedtak>())
 
-    override fun lagre(vedtak: Utbetalingsvedtak) {
+    override fun lagre(vedtak: Utbetalingsvedtak, context: TransactionContext?) {
         data.get()[vedtak.id] = vedtak
     }
 
@@ -44,7 +45,9 @@ class UtbetalingsvedtakFakeRepo(
             data.get().values.none { utbetalingsvedtak -> utbetalingsvedtak.meldekortperiode.meldekortId == it.id }
         }
 
-    override fun hentUtbetalingsvedtakForUtsjekk(limit: Int): List<Utbetalingsvedtak> = data.get().values.filter { it.sendtTilUtbetaling }
+    override fun hentUtbetalingsvedtakForUtsjekk(limit: Int): List<Utbetalingsvedtak> =
+        data.get().values.filter { it.sendtTilUtbetaling }
 
-    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> = data.get().values.filter { it.sendtTilDokument }
+    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> =
+        data.get().values.filter { it.sendtTilDokument }
 }

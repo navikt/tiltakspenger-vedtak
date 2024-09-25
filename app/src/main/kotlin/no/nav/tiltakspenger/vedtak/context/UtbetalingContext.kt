@@ -40,6 +40,7 @@ open class UtbetalingContext(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
             rammevedtakRepo = rammevedtakRepo,
             statistikkStønadRepo = statistikkStønadRepo,
+            sessionFactory = sessionFactory,
         )
     }
     val hentUtbetalingsvedtakService by lazy {

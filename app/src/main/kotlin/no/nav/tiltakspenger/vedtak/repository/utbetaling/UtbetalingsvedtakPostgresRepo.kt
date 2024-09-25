@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
@@ -21,8 +22,8 @@ import no.nav.tiltakspenger.vedtak.repository.meldekort.toMeldekortStatus
 internal class UtbetalingsvedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : UtbetalingsvedtakRepo {
-    override fun lagre(vedtak: Utbetalingsvedtak) {
-        sessionFactory.withSession { session ->
+    override fun lagre(vedtak: Utbetalingsvedtak, context: TransactionContext?) {
+        sessionFactory.withSession(context) { session ->
             session.run(
                 queryOf(
                     """

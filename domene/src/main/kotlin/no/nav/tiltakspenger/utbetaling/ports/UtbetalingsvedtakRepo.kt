@@ -3,12 +3,13 @@ package no.nav.tiltakspenger.utbetaling.ports
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 
 interface UtbetalingsvedtakRepo {
-    fun lagre(vedtak: Utbetalingsvedtak)
+    fun lagre(vedtak: Utbetalingsvedtak, context: TransactionContext? = null)
 
     fun markerSendtTilUtbetaling(
         vedtakId: VedtakId,
