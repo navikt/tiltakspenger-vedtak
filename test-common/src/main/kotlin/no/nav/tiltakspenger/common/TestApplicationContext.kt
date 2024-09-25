@@ -22,7 +22,7 @@ import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.personklient.tilgangsstyring.TilgangsstyringServiceImpl
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.context.DokumentContext
@@ -63,7 +63,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     fun leggTilPerson(
         fnr: Fnr,
         erSkjermet: Boolean,
-        personopplysningerForBruker: Personopplysninger,
+        personopplysningerForBruker: PersonopplysningerSøker,
         tiltak: Tiltak,
     ) {
         skjermingFakeGateway.leggTil(fnr = fnr, skjermet = erSkjermet)

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
@@ -46,4 +47,12 @@ class PersonHttpklient(
             .map { mapPersonopplysninger(it, LocalDateTime.now(), fnr) }
             .getOrElse { it.mapError() }
     }
+
+    override suspend fun hentEnkelPerson(fnr: Fnr): EnkelPerson {
+        val token = azureTokenProvider::getToken
+        val body = objectMapper.writeValueAsString(hentEnkelPersonQuery(fnr))
+        return personklient.hentPerson(fnr, token(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
+    }
+
+    // TODO: hent navn på person (etternavn + fornavn)
 }

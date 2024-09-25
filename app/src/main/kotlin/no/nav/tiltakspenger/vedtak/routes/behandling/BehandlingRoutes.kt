@@ -11,6 +11,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
@@ -41,6 +42,7 @@ fun Route.behandlingRoutes(
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
+    personGateway: PersonGateway,
 ) {
     get("$BEHANDLING_PATH/{behandlingId}") {
         sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
@@ -98,7 +100,7 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, auditService)
+    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, personGateway, auditService)
     tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService, auditService)

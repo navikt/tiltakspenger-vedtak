@@ -74,6 +74,7 @@ internal fun Application.vedtakApi(
                 kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
                 livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
                 auditService = applicationContext.personContext.auditService,
+                personGateway = applicationContext.personContext.personGateway,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
