@@ -58,10 +58,8 @@ fun main() {
         TaskExecutor.startJob(
             runCheckFactory = runCheckFactory,
             tasks =
-            listOf { correlationId ->
+            listOf { _ ->
                 applicationContext.utbetalingContext.opprettUtbetalingsvedtakService.opprettUtbetalingsvedtak()
-                applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
-                applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.send(correlationId)
             },
         )
 
