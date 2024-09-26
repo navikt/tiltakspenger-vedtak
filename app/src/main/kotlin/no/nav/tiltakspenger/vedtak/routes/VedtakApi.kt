@@ -71,10 +71,10 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
                 sakService = applicationContext.sakContext.sakService,
+                personService = applicationContext.personContext.personService,
                 kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
                 livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
                 auditService = applicationContext.personContext.auditService,
-                personGateway = applicationContext.personContext.personGateway,
             )
             behandlingBenkRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,

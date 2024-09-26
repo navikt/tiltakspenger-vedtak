@@ -8,9 +8,9 @@ import no.nav.tiltakspenger.saksbehandling.service.personopplysning.Personopplys
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auditlog.PersonService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
+import no.nav.tiltakspenger.vedtak.clients.person.PersonService
 import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
 import no.nav.tiltakspenger.vedtak.repository.person.PersonRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerPostgresRepo
@@ -42,11 +42,15 @@ open class PersonContext(
             sessionFactory = sessionFactory as PostgresSessionFactory,
         )
     }
+    val personService by lazy {
+        PersonService(
+            personRepo = personRepo,
+            personClient = personGateway,
+        )
+    }
     val auditService by lazy {
         AuditService(
-            PersonService(
-                personRepo = personRepo,
-            ),
+            personService,
         )
     }
 }

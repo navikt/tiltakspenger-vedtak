@@ -11,13 +11,13 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.clients.person.PersonService
 import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -39,10 +39,10 @@ fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     sakService: SakService,
+    personService: PersonService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
-    personGateway: PersonGateway,
 ) {
     get("$BEHANDLING_PATH/{behandlingId}") {
         sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
@@ -100,7 +100,7 @@ fun Route.behandlingRoutes(
         call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
-    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, personGateway, auditService)
+    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, personService, auditService)
     tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService, auditService)
