@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger
 
+import arrow.core.Either
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.plugins.callid.callId
@@ -25,24 +26,28 @@ fun Route.hentPersonRoute(
 ) {
     get("$SAK_PATH/{sakId}/personopplysninger") {
         sikkerlogg.debug("Mottatt request på $SAK_PATH/{sakId}/personopplysninger")
+        Either.catch {
+            val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
+            val sakId = SakId.fromString(call.parameter("sakId"))
 
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val sakId = SakId.fromString(call.parameter("sakId"))
+            val fnr = sakService.hentFnrForSakId(sakId)
 
-        val fnr = sakService.hentFnrForSakId(sakId)
+            require(fnr != null) { "Fant ikke fødselsnummer på sak med sakId: $sakId" }
 
-        require(fnr != null) { "Fant ikke fødselsnummer på sak med sakId: $sakId" }
+            val personopplysninger = runBlocking { personGateway.hentEnkelPerson(fnr) }.toDTO()
 
-        val personopplysninger = runBlocking { personGateway.hentEnkelPerson(fnr) }.toDTO()
+            auditService.logMedSakId(
+                sakId = sakId,
+                navIdent = saksbehandler.navIdent,
+                action = AuditLogEvent.Action.ACCESS,
+                contextMessage = "Henter personopplysninger for en behandling",
+                callId = call.callId,
+            )
 
-        auditService.logMedSakId(
-            sakId = sakId,
-            navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.ACCESS,
-            contextMessage = "Henter personopplysninger for en behandling",
-            callId = call.callId,
-        )
-
-        call.respond(status = HttpStatusCode.OK, personopplysninger)
+            call.respond(status = HttpStatusCode.OK, personopplysninger)
+        }.onLeft {
+            sikkerlogg.error(it) { "Henting av personopplysninger feilet: ${it.message}" }
+            throw it
+        }
     }
 }
