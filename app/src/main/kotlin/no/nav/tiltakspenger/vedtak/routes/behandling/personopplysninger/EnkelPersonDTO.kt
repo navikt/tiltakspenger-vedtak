@@ -1,11 +1,10 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger
 
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.PdlPerson
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 
 data class EnkelPersonDTO(
-    val fnr: Fnr,
+    val fnr: String,
     val fornavn: String,
     val mellomnavn: String?,
     val etternavn: String,
@@ -20,7 +19,7 @@ internal data class PdlResponse(
 )
 
 fun EnkelPerson.toDTO(): EnkelPersonDTO = EnkelPersonDTO(
-    fnr = fnr,
+    fnr = fnr.verdi,
     fornavn = fornavn,
     mellomnavn = mellomnavn,
     etternavn = etternavn,
