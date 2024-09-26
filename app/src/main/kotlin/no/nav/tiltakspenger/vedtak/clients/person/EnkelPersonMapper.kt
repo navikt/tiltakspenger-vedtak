@@ -1,7 +1,10 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
+import arrow.core.Either
 import arrow.core.getOrElse
 import com.fasterxml.jackson.module.kotlin.readValue
+import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.Navn
@@ -14,10 +17,18 @@ internal data class PdlResponse(
     val hentPerson: PdlPerson,
 )
 
+private val logger = KotlinLogging.logger { }
+
 fun String.toEnkelPerson(
     fnr: Fnr,
 ): EnkelPerson {
-    val data: PdlResponse = objectMapper.readValue<PdlResponse>(this)
+    val data: PdlResponse = Either.catch {
+        objectMapper.readValue<PdlResponse>(this)
+    }.getOrElse {
+        logger.error { "Klarte ikke deserialisere respons fra pdl. Se sikkerlog for mer informasjon" }
+        sikkerlogg.error(it) { "Klarte ikke deserialisere respons fra pdl. fnr ${fnr.verdi} respons: $this " }
+        throw it
+    }
     val person: PdlPerson = data.hentPerson
     val navn: Navn = avklarNavn(person.navn).getOrElse { it.mapError() }
     val adressebeskyttelse: AdressebeskyttelseGradering =
