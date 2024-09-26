@@ -1,7 +1,9 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
+import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import org.junit.jupiter.api.Test
 
 internal class EnkelPersonMapperTest {
@@ -9,7 +11,6 @@ internal class EnkelPersonMapperTest {
     @Test
     fun test() {
         val fnr = Fnr.random()
-        //language=JSON
         """
 {
   "hentPerson": {
@@ -43,6 +44,15 @@ internal class EnkelPersonMapperTest {
     ]
   }
 }
-        """.trimIndent().toEnkelPerson(fnr)
+        """.trimIndent().toEnkelPerson(fnr) shouldBe EnkelPerson(
+            fnr = fnr,
+            fornavn = "UFØLSOM",
+            mellomnavn = null,
+            etternavn = "FAKKEL",
+            fortrolig = false,
+            strengtFortrolig = false,
+            strengtFortroligUtland = false,
+            skjermet = null,
+        )
     }
 }
