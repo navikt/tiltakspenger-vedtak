@@ -7,10 +7,9 @@ import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -21,7 +20,7 @@ import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 fun Route.hentPersonRoute(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     sakService: SakService,
-    personGateway: PersonGateway,
+    personService: PersonService,
     auditService: AuditService,
 ) {
     get("$SAK_PATH/{sakId}/personopplysninger") {
@@ -34,7 +33,7 @@ fun Route.hentPersonRoute(
 
             require(fnr != null) { "Fant ikke fødselsnummer på sak med sakId: $sakId" }
 
-            val personopplysninger = runBlocking { personGateway.hentEnkelPerson(fnr) }.toDTO()
+            val personopplysninger = personService.hentEnkelPersonForFnr(fnr).toDTO()
 
             auditService.logMedSakId(
                 sakId = sakId,

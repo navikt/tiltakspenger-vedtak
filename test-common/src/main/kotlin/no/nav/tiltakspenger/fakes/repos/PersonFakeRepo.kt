@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 
 class PersonFakeRepo(
     private val sakFakeRepo: SakFakeRepo,
