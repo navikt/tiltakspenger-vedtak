@@ -204,6 +204,7 @@ class MeldekortPostgresRepo(
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
                         status = row.string("status").toMeldekortStatus(),
+                        iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                     )
                 }
                 "KLAR_TIL_UTFYLLING" -> {

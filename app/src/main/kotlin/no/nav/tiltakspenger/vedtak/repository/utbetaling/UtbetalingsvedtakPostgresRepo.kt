@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.repository.utbetaling
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -18,6 +19,7 @@ import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.toMeldekortStatus
+import java.time.LocalDateTime
 
 internal class UtbetalingsvedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -70,14 +72,21 @@ internal class UtbetalingsvedtakPostgresRepo(
 
     override fun markerSendtTilUtbetaling(
         vedtakId: VedtakId,
+        tidspunkt: LocalDateTime,
         utbetalingsrespons: SendtUtbetaling,
     ) {
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "update utbetalingsvedtak set sendt_til_utbetaling = true, utbetaling_metadata = to_jsonb(:metadata::jsonb) where id = :id",
+                    """
+                      update utbetalingsvedtak
+                      set sendt_til_utbetaling_tidspunkt = :tidspunkt, 
+                          utbetaling_metadata = to_jsonb(:metadata::jsonb)
+                      where id = :id
+                    """.trimIndent(),
                     mapOf(
                         "id" to vedtakId.toString(),
+                        "tidspunkt" to tidspunkt,
                         "metadata" to """{"request": "${utbetalingsrespons.request}", "response": "${utbetalingsrespons.response}"}""",
                     ),
                 ).asUpdate,
@@ -85,12 +94,25 @@ internal class UtbetalingsvedtakPostgresRepo(
         }
     }
 
-    override fun markerSendtTilDokument(vedtakId: VedtakId) {
+    override fun markerJournalført(
+        vedtakId: VedtakId,
+        journalpostId: JournalpostId,
+        tidspunkt: LocalDateTime,
+    ) {
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "update utbetalingsvedtak set sendt_til_dokument = true where id = :id",
-                    mapOf("id" to vedtakId.toString()),
+                    """
+                      update utbetalingsvedtak 
+                      set journalpost_id = :journalpostId,
+                          journalføringstidspunkt = :tidspunkt
+                      where id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to vedtakId.toString(),
+                        "journalpostId" to journalpostId.toString(),
+                        "tidspunkt" to tidspunkt.toString(),
+                    ),
                 ).asUpdate,
             )
         }
@@ -170,6 +192,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
                         status = row.string("status").toMeldekortStatus(),
+                        iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                     )
                 }.asList,
             )
@@ -183,7 +206,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     select u.*,s.ident as fnr,s.saksnummer 
                     from utbetalingsvedtak u 
                     join sak s on s.id = u.sakid 
-                    where u.sendt_til_utbetaling = false
+                    where u.sendt_til_utbetaling_tidspunkt is null
                     limit :limit
                     """.trimIndent(),
                     mapOf("limit" to limit),
@@ -193,7 +216,7 @@ internal class UtbetalingsvedtakPostgresRepo(
             )
         }
 
-    override fun hentUtbetalingsvedtakForDokument(limit: Int): List<Utbetalingsvedtak> =
+    override fun hentDeSomSkalJournalføres(limit: Int): List<Utbetalingsvedtak> =
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -201,7 +224,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     select u.*,s.ident as fnr,s.saksnummer 
                     from utbetalingsvedtak u 
                     join sak s on s.id = u.sakid 
-                    where u.sendt_til_dokument = false
+                    where u.journalpost_id is null
                     limit :limit
                     """.trimIndent(),
                     mapOf("limit" to limit),
@@ -225,15 +248,15 @@ internal class UtbetalingsvedtakPostgresRepo(
             beslutter = string("beslutter"),
             utbetalingsperiode = string("utbetalingsperiode").toUtbetalingsperiode(),
             forrigeUtbetalingsvedtak = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
-            meldekortperiode =
+            meldekort =
             MeldekortPostgresRepo
                 .hentForMeldekortId(
                     MeldekortId.fromString(string("meldekortId")),
                     session,
-                )!!
-                .meldekortperiode as Meldeperiode.UtfyltMeldeperiode,
-            sendtTilUtbetaling = boolean("sendt_til_utbetaling"),
-            sendtTilDokument = boolean("sendt_til_dokument"),
+                )!! as UtfyltMeldekort,
+            sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),
+            journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
+            journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
         )
     }
 }

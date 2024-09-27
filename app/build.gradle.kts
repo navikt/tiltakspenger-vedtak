@@ -83,7 +83,11 @@ dependencies {
     // Helved/Utsjekk/Utbetaling
     implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
 
-    // DIV
+    // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
+    implementation("org.apache.pdfbox:pdfbox:2.0.28")
+
+
+    // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
     testImplementation(platform("org.junit:junit-bom:5.11.1"))

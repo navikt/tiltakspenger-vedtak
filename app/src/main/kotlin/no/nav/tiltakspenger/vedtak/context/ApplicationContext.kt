@@ -44,6 +44,9 @@ open class ApplicationContext(
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
             gitHash = gitHash,
+            journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
+            genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
+            dokdistGateway = dokumentContext.dokdistGateway,
         )
     }
     open val utbetalingContext by lazy {
@@ -51,7 +54,8 @@ open class ApplicationContext(
             sessionFactory = sessionFactory,
             rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
-            dokumentGateway = dokumentContext.dokumentGateway,
+            genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
+            journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
         )
     }
 }

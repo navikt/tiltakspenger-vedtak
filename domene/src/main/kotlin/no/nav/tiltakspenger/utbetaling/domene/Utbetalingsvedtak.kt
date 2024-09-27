@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.utbetaling.domene
 
+import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
@@ -25,11 +25,12 @@ data class Utbetalingsvedtak(
     val brukerNavkontor: String,
     val saksbehandler: String,
     val beslutter: String,
-    val meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
+    val meldekort: Meldekort.UtfyltMeldekort,
     val utbetalingsperiode: UtbetalingsperioderGruppertPåMeldekortperiode,
     val forrigeUtbetalingsvedtak: VedtakId?,
-    val sendtTilUtbetaling: Boolean,
-    val sendtTilDokument: Boolean,
+    val sendtTilUtbetaling: LocalDateTime?,
+    val journalpostId: JournalpostId?,
+    val journalføringstidspunkt: LocalDateTime?,
 ) {
     val periode = utbetalingsperiode.periode
     val beløp = utbetalingsperiode.beløp
@@ -44,23 +45,6 @@ data class Utbetalingsvedtak(
         }
     }
 }
-
-/**
- * @property meldekortperiode Vi tar bare inn en periode her i MVP, siden vi ikke har støtte for korrigering av tidligere meldekort.
- */
-fun Utbetalingsvedtak.nyttUtbetalingVedtak(
-    saksbehandler: String,
-    meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
-): Utbetalingsvedtak =
-    this.copy(
-        id = VedtakId.random(),
-        vedtakstidspunkt = LocalDateTime.now(),
-        saksbehandler = saksbehandler,
-        beslutter = saksbehandler,
-        utbetalingsperiode = meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
-        meldekortperiode = meldekortperiode,
-        forrigeUtbetalingsvedtak = this.id,
-    )
 
 fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
     rammevedtak: Rammevedtak,
@@ -77,11 +61,12 @@ fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
         brukerNavkontor = "0220",
         saksbehandler = this.saksbehandler,
         beslutter = this.beslutter!!,
-        meldekortperiode = this.meldekortperiode,
+        meldekort = this,
         utbetalingsperiode = this.meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
         forrigeUtbetalingsvedtak = forrigeUtbetalingsvedtak,
-        sendtTilUtbetaling = false,
-        sendtTilDokument = false,
+        sendtTilUtbetaling = null,
+        journalpostId = null,
+        journalføringstidspunkt = null,
     )
 
 fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO =

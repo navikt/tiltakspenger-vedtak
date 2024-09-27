@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.utbetaling.domene.tilUtbetalingsperiode
 import no.nav.tiltakspenger.vedtak.db.persisterRammevedtakMedUtfyltMeldekort
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 class UtbetalingsvedtakRepoImplTest {
     @Test
@@ -26,7 +27,11 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.hentGodkjenteMeldekortUtenUtbetalingsvedtak() shouldBe emptyList()
 
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
-            utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, SendtUtbetaling("", ""))
+            utbetalingsvedtakRepo.markerSendtTilUtbetaling(
+                vedtakId = utbetalingsvedtak.id,
+                tidspunkt = LocalDateTime.now(),
+                utbetalingsrespons = SendtUtbetaling("", ""),
+            )
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe emptyList()
         }
     }
