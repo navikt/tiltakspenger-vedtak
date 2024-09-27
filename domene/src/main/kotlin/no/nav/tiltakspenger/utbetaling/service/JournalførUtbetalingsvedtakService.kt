@@ -20,6 +20,7 @@ class JournalførUtbetalingsvedtakService(
     private val log = KotlinLogging.logger { }
 
     suspend fun journalfør(correlationId: CorrelationId) {
+        log.info { "Kaller utbetalingsvedtakRepo.hentDeSomSkalJournalføres(). Hvorfor finner vi ingen utbetalingsvedtak som skal journalføres? Slett denne linjen når det er OK" }
         utbetalingsvedtakRepo.hentDeSomSkalJournalføres().forEach { utbetalingsvedtak ->
             log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
             Either.catch {

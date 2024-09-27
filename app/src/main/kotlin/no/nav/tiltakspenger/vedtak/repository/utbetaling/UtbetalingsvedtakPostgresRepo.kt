@@ -111,7 +111,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     mapOf(
                         "id" to vedtakId.toString(),
                         "journalpostId" to journalpostId.toString(),
-                        "tidspunkt" to tidspunkt.toString(),
+                        "tidspunkt" to tidspunkt,
                     ),
                 ).asUpdate,
             )

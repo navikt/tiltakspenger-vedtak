@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.utbetaling
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.tilUtbetalingsperiode
 import no.nav.tiltakspenger.vedtak.db.persisterRammevedtakMedUtfyltMeldekort
@@ -33,6 +34,15 @@ class UtbetalingsvedtakRepoImplTest {
                 utbetalingsrespons = SendtUtbetaling("", ""),
             )
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe emptyList()
+
+            val oppdatertMedUtbetalingsdata = utbetalingsvedtakRepo.hentForVedtakId(utbetalingsvedtak.id)!!
+            utbetalingsvedtakRepo.hentDeSomSkalJournalføres() shouldBe listOf(oppdatertMedUtbetalingsdata)
+            utbetalingsvedtakRepo.markerJournalført(
+                vedtakId = utbetalingsvedtak.id,
+                journalpostId = JournalpostId("123"),
+                tidspunkt = LocalDateTime.now(),
+            )
+            utbetalingsvedtakRepo.hentDeSomSkalJournalføres() shouldBe emptyList()
         }
     }
 }
