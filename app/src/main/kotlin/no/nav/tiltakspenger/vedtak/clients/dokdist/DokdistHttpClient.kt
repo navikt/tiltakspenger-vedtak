@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.clients.dokdist
 
 import arrow.core.Either
 import arrow.core.flatten
+import arrow.core.left
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
@@ -48,7 +49,15 @@ class DokdistHttpClient(
                 .catch {
                     val request = createRequest(jsonPayload, correlationId)
                     val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-                    httpResponse.body().dokdistResponseToDomain(log)
+                    val status = httpResponse.statusCode()
+                    val jsonResponse = httpResponse.body()
+                    if (status != 409 && status != 200) {
+                        log.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. Se sikkerlogg for detaljer." }
+                        sikkerlogg.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. jsonPayload: $jsonPayload. jsonResponse: $jsonResponse" }
+                        return@withContext KunneIkkeDistribuereDokument.left()
+                    }
+                    // 409 er en forventet statuskode ved forsøk på å distribuere samme dokument flere ganger.
+                    jsonResponse.dokdistResponseToDomain(log)
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
                     log.error(it) { "Feil ved kall til dokdist. journalpostId: $journalpostId. Se sikkerlogg for detaljer." }

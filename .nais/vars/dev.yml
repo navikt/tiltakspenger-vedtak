@@ -9,7 +9,7 @@ tenant: trygdeetaten.no
 urlPdl: pdl-api.dev-fss-pub.nais.io
 urlSkjerming: skjermede-personer-pip.intern.dev.nav.no
 urlJoark: dokarkiv.dev-fss-pub.nais.io
-urlDokdist: dokdistfordeling.dev-fss-pub.nais.io
+urlDokdist: dokdistfordeling-q1.dev-fss-pub.nais.io
 azure:
   groups:
     - name: ROLE_SAKSBEHANDLER

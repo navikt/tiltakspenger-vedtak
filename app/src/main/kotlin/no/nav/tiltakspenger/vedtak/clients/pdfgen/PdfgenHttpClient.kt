@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import arrow.core.Either
+import arrow.core.left
 import com.fasterxml.jackson.databind.JsonNode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
@@ -53,8 +54,14 @@ internal class PdfgenHttpClient(
                 .catch {
                     val request = createPdfgenRequest(jsonPayload, vedtakInnvilgelseUri)
                     val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray()).await()
-                    val body = httpResponse.body()
-                    PdfOgJson(PdfA(body), jsonPayload)
+                    val jsonResponse = httpResponse.body()
+                    val status = httpResponse.statusCode()
+                    if (status != 200) {
+                        log.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Status: $status. uri: $vedtakInnvilgelseUri. Se sikkerlogg for detaljer." }
+                        sikkerlogg.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. uri: $vedtakInnvilgelseUri. jsonResponse: $jsonResponse. jsonPayload: $jsonPayload." }
+                        return@withContext KunneIkkeGenererePdf.left()
+                    }
+                    PdfOgJson(PdfA(jsonResponse), jsonPayload)
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
                     log.error(it) { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Se sikkerlogg for detaljer." }
