@@ -40,5 +40,5 @@ interface SakService {
         saksbehandler: Saksbehandler,
     ): Sak?
 
-    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
+    suspend fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
 }

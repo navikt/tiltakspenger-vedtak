@@ -28,6 +28,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SkjermingGateway
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
+import no.nav.tiltakspenger.saksbehandling.ports.TilgangGateway
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeFnr
@@ -44,6 +45,7 @@ class SakServiceImpl(
     private val sessionFactory: SessionFactory,
     private val tiltakGateway: TiltakGateway,
     private val statistikkSakRepo: StatistikkSakRepo,
+    private val tilgangGateway: TilgangGateway,
     private val gitHash: String,
 ) : SakService {
     sealed interface KanIkkeStarteFørstegangsbehandling {
@@ -169,11 +171,19 @@ class SakServiceImpl(
         return sak
     }
 
-    override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
+    override suspend fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
         require(saksbehandler.isSaksbehandler())
+        val tilgangSkjerming = tilgangGateway.evaluerTilgangTilSkjermet(saksbehandler.navIdent)
+        val tilgangFortrolig = tilgangGateway.evaluerTilgangTilFortrolig(saksbehandler.navIdent)
+        val tilgangStrengtFortrolig = tilgangGateway.evaluerTilgangTilStrengtFortrolig(saksbehandler.navIdent)
+
         // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
-        return saksoversiktRepo.hentAlle()
+        val saksoversikt = saksoversiktRepo.hentAlle()
+        return saksoversikt
     }
+
+    private suspend fun harTilgangTilPerson(personer: List<Fnr>): List<Fnr> =
+        TODO()
 
     private suspend fun lagListeMedSkjerming(liste: List<Personopplysninger>): Map<Fnr, Boolean> =
         liste

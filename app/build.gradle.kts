@@ -5,6 +5,7 @@ val testContainersVersion = "1.20.1"
 val felleslibVersion = "0.0.220"
 val tokenSupportVersion = "3.2.0"
 val iverksettVersjon = "1.0_20240829083905_36ac417"
+val poaoTilgangVersjon = "2024.09.26_13.02-767203f889ef"
 
 plugins {
     application
@@ -82,6 +83,9 @@ dependencies {
 
     // Helved/Utsjekk/Utbetaling
     implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
+
+    //POAO tilgang
+    implementation("no.nav.poao-tilgang:client:$poaoTilgangVersjon")
 
     // DIV
     implementation("io.arrow-kt:arrow-core:1.2.4")

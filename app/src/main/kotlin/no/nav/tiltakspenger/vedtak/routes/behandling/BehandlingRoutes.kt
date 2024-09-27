@@ -17,7 +17,6 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphol
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auditlog.PersonService
 import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -29,7 +28,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsopp
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
-import no.nav.tiltakspenger.vedtak.tilgang.TilgangAdressebeskyttelseProvider
 
 private val LOG = KotlinLogging.logger {}
 
@@ -43,8 +41,6 @@ fun Route.behandlingRoutes(
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
-    tilgangAdressebeskyttelseProvider: TilgangAdressebeskyttelseProvider,
-    personService: PersonService,
 ) {
     get("$BEHANDLING_PATH/{behandlingId}") {
         sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
@@ -52,9 +48,6 @@ fun Route.behandlingRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
         val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler).toDTO()
-
-        val fnr = personService.hentFnrForBehandlingId(behandlingId)
-        tilgangAdressebeskyttelseProvider.sjekkTilgangEnkel(fnr)
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
