@@ -349,6 +349,7 @@ create table statistikk_sak
 
 create table statistikk_sak_vilkår
 (
+    id                     serial                   primary key,
     statistikk_sak_id      int                      not null references statistikk_sak (id),
     vilkår                 varchar                  null,
     beskrivelse            varchar                  null,
