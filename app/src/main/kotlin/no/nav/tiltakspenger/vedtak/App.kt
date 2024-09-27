@@ -65,7 +65,7 @@ fun main() {
             listOf { correlationId ->
                 applicationContext.utbetalingContext.opprettUtbetalingsvedtakService.opprettUtbetalingsvedtak()
                 // applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
-                // applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
+                applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(correlationId)
             },
