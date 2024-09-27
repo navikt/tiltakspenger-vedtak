@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.repository.person
+package no.nav.tiltakspenger.saksbehandling.ports
 
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr

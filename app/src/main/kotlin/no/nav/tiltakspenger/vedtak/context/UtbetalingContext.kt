@@ -2,7 +2,8 @@ package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.meldekort.ports.DokumentGateway
+import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
@@ -21,12 +22,13 @@ open class UtbetalingContext(
     sessionFactory: SessionFactory,
     rammevedtakRepo: RammevedtakRepo,
     statistikkStønadRepo: StatistikkStønadRepo,
-    dokumentGateway: DokumentGateway,
+    genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
+    journalførMeldekortGateway: JournalførMeldekortGateway,
 ) {
     private val tokenProviderUtbetaling = AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
     open val utbetalingGateway: UtbetalingGateway by lazy {
         UtbetalingHttpClient(
-            endepunkt = Configuration.utbetalingClientConfig().baseUrl,
+            baseUrl = Configuration.utbetalingClientConfig().baseUrl,
             getToken = tokenProviderUtbetaling::getToken,
         )
     }
@@ -40,6 +42,7 @@ open class UtbetalingContext(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
             rammevedtakRepo = rammevedtakRepo,
             statistikkStønadRepo = statistikkStønadRepo,
+            sessionFactory = sessionFactory,
         )
     }
     val hentUtbetalingsvedtakService by lazy {
@@ -54,7 +57,8 @@ open class UtbetalingContext(
     val journalførUtbetalingsvedtakService by lazy {
         JournalførUtbetalingsvedtakService(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
-            dokumentGateway = dokumentGateway,
+            journalførMeldekortGateway = journalførMeldekortGateway,
+            genererMeldekortPdfGateway = genererMeldekortPdfGateway,
         )
     }
 }

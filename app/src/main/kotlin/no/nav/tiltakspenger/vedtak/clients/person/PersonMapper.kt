@@ -95,7 +95,7 @@ private data class PdlResponseData(
     val hentPerson: PdlPerson,
 )
 
-private val objectMapper: ObjectMapper =
+internal val objectMapper: ObjectMapper =
     JsonMapper
         .builder()
         .addModule(JavaTimeModule())

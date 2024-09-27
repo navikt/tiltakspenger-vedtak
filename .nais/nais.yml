@@ -56,12 +56,13 @@ spec:
     outbound:
       rules:
         - application: tiltakspenger-tiltak
-        - application: tiltakspenger-dokument
         - application: utsjekk
           namespace: helved
       external:
         - host: {{ urlPdl }}
         - host: {{ urlSkjerming }}
+        - host: {{ urlJoark }}
+        - host: {{ urlDokdist }}
     inbound:
       rules:
         - application: tiltakspenger-saksbehandler
@@ -74,12 +75,6 @@ spec:
             roles:
               - "hente_data"
         - application: tiltakspenger-soknad-api
-          namespace: tpts
-          cluster: {{ cluster }}
-          permissions:
-            roles:
-              - "lage_hendelser"
-        - application: tiltakspenger-vedtak-rivers
           namespace: tpts
           cluster: {{ cluster }}
           permissions:

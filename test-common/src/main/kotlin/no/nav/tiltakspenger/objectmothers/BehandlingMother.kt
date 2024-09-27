@@ -22,6 +22,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
@@ -212,7 +213,7 @@ fun TestApplicationContext.nySøknad(
             fornavn = fornavn,
             etternavn = etternavn,
         ),
-    personopplysningerForBrukerFraPdl: Personopplysninger =
+    personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
         ObjectMother.personopplysningKjedeligFyr(
             fnr = fnr,
             skjermet = erSkjermet,
@@ -250,7 +251,7 @@ fun TestApplicationContext.førstegangsbehandlingUavklart(
     saksbehandler: Saksbehandler = saksbehandler(),
     erSkjermet: Boolean = false,
     fødselsdato: LocalDate = 1.januar(2000),
-    personopplysningerForBrukerFraPdl: Personopplysninger =
+    personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
         ObjectMother.personopplysningKjedeligFyr(
             fnr = fnr,
             skjermet = erSkjermet,

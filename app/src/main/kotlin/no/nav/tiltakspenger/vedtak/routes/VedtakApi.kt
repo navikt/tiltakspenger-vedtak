@@ -71,6 +71,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
                 sakService = applicationContext.sakContext.sakService,
+                personService = applicationContext.personContext.personService,
                 kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
                 livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
                 auditService = applicationContext.personContext.auditService,
@@ -173,7 +174,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
     verifier(jwkProviderGammel, config.issuer) {
-        LOG.info { "Er nå i verifier" }
+        LOG.debug { "Er nå i verifier" }
         withAudience(config.clientId)
         acceptLeeway(config.leeway)
     }
@@ -182,17 +183,17 @@ private fun AuthenticationConfig.jwtSystemToken(
         call.respond(HttpStatusCode.Unauthorized, "Ikke tilgang")
     }
     validate { cred ->
-        LOG.info { "er nå i validate, skal ha oid" }
+        LOG.debug { "er nå i validate, skal ha oid" }
         if (cred.getClaim("oid", String::class) == null) {
             LOG.info { "Fant ikke oid" }
             return@validate null
         }
-        LOG.info { "er nå i validate, skal ha sub" }
+        LOG.debug { "er nå i validate, skal ha sub" }
         if (cred.getClaim("sub", String::class) == null) {
             LOG.info { "Fant ikke sub" }
             return@validate null
         }
-        LOG.info { "er nå i validate, skal ha azp_name" }
+        LOG.debug { "er nå i validate, skal ha azp_name" }
         if (cred.getClaim("azp_name", String::class) == null) {
             LOG.info { "Fant ikke azp_name" }
             return@validate null
@@ -204,10 +205,10 @@ private fun AuthenticationConfig.jwtSystemToken(
         }
 
         val claimedRoles: List<String> = cred.getListClaim("roles", String::class).map { it.uppercase() }
-        LOG.info { "Vi fant disse rollene i token : $claimedRoles" }
+        LOG.debug { "Vi fant disse rollene i token : $claimedRoles" }
         val authorizedRoles = roles?.map { it.name }
 
-        LOG.info { "Dette er gyldige roller : $authorizedRoles" }
+        LOG.debug { "Dette er gyldige roller : $authorizedRoles" }
 
         if (!authorizedRoles.isNullOrEmpty()) {
             if (claimedRoles.none(authorizedRoles::contains)) {

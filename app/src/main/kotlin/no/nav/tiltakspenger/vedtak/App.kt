@@ -18,6 +18,8 @@ import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 fun main() {
     System.setProperty("logback.configurationFile", Configuration.logbackConfigurationFile())
@@ -49,19 +51,23 @@ fun main() {
             RunCheckFactory(
                 leaderPodLookup =
                 object : LeaderPodLookup {
-                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> = true.right()
+                    override fun amITheLeader(localHostName: String): Either<LeaderPodLookupFeil, Boolean> =
+                        true.right()
                 },
             )
         }
 
     val stoppableTasks =
         TaskExecutor.startJob(
+            initialDelay = if (Configuration.isNais()) 1.minutes else 1.seconds,
             runCheckFactory = runCheckFactory,
             tasks =
             listOf { correlationId ->
                 applicationContext.utbetalingContext.opprettUtbetalingsvedtakService.opprettUtbetalingsvedtak()
-                applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
-                applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.send(correlationId)
+                // applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
+                // applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
+                applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
+                applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(correlationId)
             },
         )
 

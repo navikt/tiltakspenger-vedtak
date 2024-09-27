@@ -2,8 +2,6 @@ package no.nav.tiltakspenger.meldekort.domene
 
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
-import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket
-import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Fravær.Velferd.VelferdIkkeGodkjentAvNav
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import java.time.LocalDate
@@ -19,6 +17,9 @@ sealed interface Meldekortdag {
     val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær?
     val tiltakstype: TiltakstypeSomGirRett
     val beregningsdag: Beregningsdag?
+
+    val beløp: Int get() = beregningsdag?.beløp ?: 0
+    val prosent: Int get() = beregningsdag?.prosent ?: 0
 
     data class IkkeUtfylt(
         override val meldekortId: MeldekortId,

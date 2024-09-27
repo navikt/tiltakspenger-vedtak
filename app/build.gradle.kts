@@ -2,7 +2,7 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.1"
-val felleslibVersion = "0.0.220"
+val felleslibVersion = "0.0.225"
 val tokenSupportVersion = "3.2.0"
 val iverksettVersjon = "1.0_20240829083905_36ac417"
 val poaoTilgangVersjon = "2024.09.26_13.02-767203f889ef"
@@ -76,8 +76,8 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.18.0")
-    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.18.2")
+    implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
 
@@ -88,9 +88,13 @@ dependencies {
     implementation("no.nav.poao-tilgang:client:$poaoTilgangVersjon")
 
     // DIV
+    // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
+    implementation("org.apache.pdfbox:pdfbox:2.0.28")
+
+    // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.0"))
+    testImplementation(platform("org.junit:junit-bom:5.11.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.mockk:mockk:$mockkVersion")
@@ -104,7 +108,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.15.0")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.15.1")
     testImplementation(project(":test-common"))
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")

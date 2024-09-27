@@ -3,29 +3,38 @@ package no.nav.tiltakspenger.utbetaling.service
 import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.meldekort.ports.DokumentGateway
+import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
+import java.time.LocalDateTime
 
 /**
- * Har ansvar for å sende utbetalingsvedtak/meldekort til tiltakspenger-dokument.
+ * Har ansvar for å generere pdf og sende utbetalingsvedtak til journalføring.
  * Denne er kun ment og kalles fra en jobb.
  */
 class JournalførUtbetalingsvedtakService(
+    private val journalførMeldekortGateway: JournalførMeldekortGateway,
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
-    private val dokumentGateway: DokumentGateway,
+    private val genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
 ) {
-    private val logger = KotlinLogging.logger { }
+    private val log = KotlinLogging.logger { }
 
-    suspend fun send(correlationId: CorrelationId) {
-        utbetalingsvedtakRepo.hentUtbetalingsvedtakForDokument().forEach { utbetalingsvedtak ->
+    suspend fun journalfør(correlationId: CorrelationId) {
+        utbetalingsvedtakRepo.hentDeSomSkalJournalføres().forEach { utbetalingsvedtak ->
+            log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
             Either.catch {
-                // TODO pre-mvp jah: Diskuter med teamet om vi trenger en egen pod for å journalføre? Den er jo uansett synkron så vedtak vil ta seg av retries. Kunne det vært et lib istedenfor?
-                val response = dokumentGateway.journalførMeldekort(utbetalingsvedtak, correlationId)
-                logger.info { "Utbetalingsvedtak journalført. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. Response: $response" }
-                utbetalingsvedtakRepo.markerSendtTilDokument(utbetalingsvedtak.id)
-                logger.info { "Utbetalingsvedtak markert som sendt til dokument. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. Response: $response" }
+                val pdfOgJson = genererMeldekortPdfGateway.genererMeldekortPdf(utbetalingsvedtak.meldekort)
+                log.info { "Pdf generert for utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
+                val journalpostId = journalførMeldekortGateway.journalførMeldekort(
+                    meldekort = utbetalingsvedtak.meldekort,
+                    pdfOgJson = pdfOgJson,
+                    correlationId = correlationId,
+                )
+                log.info { "utbetalingsvedtak journalført. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. JournalpostId: $journalpostId" }
+                utbetalingsvedtakRepo.markerJournalført(utbetalingsvedtak.id, journalpostId, LocalDateTime.now())
+                log.info { "Utbetalingsvedtak markert som journalført. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. JournalpostId: $journalpostId" }
             }.onLeft {
-                logger.error(it) { "Ukjent feil skjedde under journalføring av utbetaling. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
+                log.error(it) { "Ukjent feil skjedde under generering av brev og journalføring av utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
             }
         }
     }

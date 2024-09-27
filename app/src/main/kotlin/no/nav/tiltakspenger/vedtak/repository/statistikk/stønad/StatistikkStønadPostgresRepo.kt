@@ -102,7 +102,7 @@ class StatistikkStønadPostgresRepo(
                     "arsak" to dto.årsak,
                     "posteringsDato" to dto.posteringDato,
                     "gyldigFraDato" to dto.gyldigFraDatoPostering,
-                    "gyldigTilDat" to dto.gyldigTilDatoPostering,
+                    "gyldigTilDato" to dto.gyldigTilDatoPostering,
                 ),
             ).asUpdate,
         )

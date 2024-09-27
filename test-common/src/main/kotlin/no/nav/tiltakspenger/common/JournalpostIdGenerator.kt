@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.common
 
+import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -10,5 +11,5 @@ class JournalpostIdGenerator(
 ) {
     private val neste = AtomicLong(første)
 
-    fun neste(): String = neste.getAndIncrement().toString()
+    fun neste(): JournalpostId = JournalpostId(neste.getAndIncrement().toString())
 }

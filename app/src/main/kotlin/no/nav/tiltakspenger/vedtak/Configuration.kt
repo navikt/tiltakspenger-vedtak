@@ -56,9 +56,9 @@ object Configuration {
                 "ROLE_STRENGT_FORTROLIG" to "5ef775f2-61f8-4283-bf3d-8d03f428aa14",
                 "ROLE_SKJERMING" to "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d",
                 "ROLE_DRIFT" to "c511113e-5b22-49e7-b9c4-eeb23b01f518",
-                "PDL_SCOPE" to "api://localhost:8091/.default",
                 "POAO_TILGANG_URL" to "http://host.docker.internal:8091",
                 "POAO_TILGANG_SCOPE" to "localhost",
+                "PDL_SCOPE" to "localhost",
                 "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
                 "SKJERMING_SCOPE" to "localhost",
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
@@ -66,12 +66,16 @@ object Configuration {
                 "TILTAK_URL" to "http://host.docker.internal:8091",
                 "UTBETALING_SCOPE" to "localhost",
                 "UTBETALING_URL" to "http://localhost:8091",
-                "DOKUMENT_SCOPE" to "localhost",
-                "DOKUMENT_URL" to "http://localhost:8091",
+                "JOARK_SCOPE" to "localhost",
+                "JOARK_URL" to "http://localhost:8091",
+                "DOKDIST_SCOPE" to "localhost",
+                "DOKDIST_URL" to "http://localhost:8091",
+                "PDFGEN_SCOPE" to "localhost",
+                "PDFGEN_URL" to "http://localhost:8091",
                 "NAIS_APP_IMAGE" to "http://localhost8080:githubhash",
                 "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
                 "AZURE_APP_CLIENT_SECRET" to "secret",
-                "AZURE_APP_WELL_KNOWN_URL" to "http://localhost:2222",
+                "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azure/.well-known/openid-configuration",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
                 "DB_USERNAME" to "postgres",
@@ -94,8 +98,12 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "UTBETALING_SCOPE" to "api://dev-gcp.helved.utsjekk/.default",
                 "UTBETALING_URL" to "http://utsjekk.helved",
-                "DOKUMENT_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-dokument/.default",
-                "DOKUMENT_URL" to "http://tiltakspenger-dokument",
+                "JOARK_SCOPE" to "api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default",
+                "JOARK_URL" to "https://dokarkiv.dev-fss-pub.nais.io",
+                "DOKDIST_SCOPE" to "api://dev-fss.teamdokumenthandtering.saf-q1/.default",
+                "DOKDIST_URL" to "https://dokdistfordeling-q1.dev-fss-pub.nais.io",
+                "PDFGEN_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-pdfgen/.default",
+                "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
                 "POAO_TILGANG_URL" to "https://poao-tilgang.dev.intern.nav.no",
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
             ),
@@ -112,8 +120,12 @@ object Configuration {
                 "TILTAK_URL" to "http://tiltakspenger-tiltak",
                 "UTBETALING_SCOPE" to "api://prod-gcp.helved.utsjekk/.default",
                 "UTBETALING_URL" to "http://utsjekk.helved",
-                "DOKUMENT_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-dokument/.default",
-                "DOKUMENT_URL" to "http://tiltakspenger-dokument",
+                "JOARK_SCOPE" to "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
+                "JOARK_URL" to "https://dokarkiv.prod-fss-pub.nais.io",
+                "DOKDIST_SCOPE" to "api://prod-fss.teamdokumenthandtering.saf/.default",
+                "DOKDIST_URL" to "https://dokdistfordeling.prod-fss-pub.nais.io",
+                "PDFGEN_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-pdfgen/.default",
+                "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
             ),
         )
 
@@ -202,8 +214,20 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
-    fun oauthConfigDokument(
-        scope: String = config()[Key("DOKUMENT_SCOPE", stringType)],
+    fun oauthConfigJoark(
+        scope: String = config()[Key("JOARK_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun oauthConfigDokdist(
+        scope: String = config()[Key("DOKDIST_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
@@ -244,7 +268,9 @@ object Configuration {
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
-    fun dokumentClientConfig(baseUrl: String = config()[Key("DOKUMENT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun joarkClientConfig(baseUrl: String = config()[Key("JOARK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun dokdistClientConfig(baseUrl: String = config()[Key("DOKDIST_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun pdfgenClientConfig(baseUrl: String = config()[Key("PDFGEN_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun tilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 

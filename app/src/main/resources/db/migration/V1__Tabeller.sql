@@ -22,8 +22,8 @@ create TABLE sak
     id                      VARCHAR                  PRIMARY KEY,
     ident                   VARCHAR                  NOT NULL,
     saksnummer              VARCHAR                  NOT NULL UNIQUE,
-    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+    sist_endret             TIMESTAMPTZ NOT NULL,
+    opprettet               TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE behandling
@@ -35,9 +35,9 @@ CREATE TABLE behandling
     status                  VARCHAR                  NOT NULL,
     saksbehandler           VARCHAR                  NULL,
     beslutter               VARCHAR                  NULL,
-    iverksattTidspunkt      TIMESTAMP WITH TIME ZONE NULL,
-    sist_endret             TIMESTAMP WITH TIME ZONE NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL,
+    iverksatt_tidspunkt     TIMESTAMPTZ NULL,
+    sist_endret             TIMESTAMPTZ NOT NULL,
+    opprettet               TIMESTAMPTZ NOT NULL,
     vilkårssett             JSONB                    NOT NULL,
     stønadsdager            JSONB                    NOT NULL,
     attesteringer           JSONB                    NULL
@@ -49,17 +49,21 @@ CREATE TABLE rammevedtak
     sak_id                  VARCHAR                  NULL REFERENCES sak (id),
     behandling_id           VARCHAR                  NULL REFERENCES behandling (id),
     vedtakstype             VARCHAR                  NOT NULL,
-    vedtaksdato             TIMESTAMP WITH TIME ZONE NOT NULL,
+    vedtaksdato             TIMESTAMPTZ              NOT NULL,
     fom                     DATE                     NOT NULL,
     tom                     DATE                     NOT NULL,
     saksbehandler           VARCHAR                  NOT NULL,
     beslutter               VARCHAR                  NOT NULL,
-    opprettet               TIMESTAMP WITH TIME ZONE NOT NULL
+    opprettet               TIMESTAMPTZ              NOT NULL,
+    journalpost_id          VARCHAR                  NULL,
+    journalføringstidspunkt TIMESTAMPTZ              NULL,
+    distribusjon_id         VARCHAR                  NULL,
+    distribusjonstidspunkt  TIMESTAMPTZ              NULL
 );
 
 CREATE TABLE sak_personopplysninger_søker
 (
-    id                       VARCHAR PRIMARY KEY,
+    id                       VARCHAR                  PRIMARY KEY,
     sakId                    VARCHAR                  NOT NULL REFERENCES sak (id),
     ident                    VARCHAR                  NOT NULL,
     fødselsdato              DATE                     NOT NULL,
@@ -72,7 +76,7 @@ CREATE TABLE sak_personopplysninger_søker
     skjermet                 BOOLEAN                  NULL,
     kommune                  VARCHAR                  NULL,
     bydel                    VARCHAR                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel_hos_oss      TIMESTAMPTZ              NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_barn_med_ident
@@ -89,7 +93,7 @@ CREATE TABLE sak_personopplysninger_barn_med_ident
     strengt_fortrolig_utland BOOLEAN                  NOT NULL,
     oppholdsland             VARCHAR                  NULL,
     skjermet                 BOOLEAN                  NULL,
-    tidsstempel_hos_oss      TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel_hos_oss      TIMESTAMPTZ              NOT NULL
 );
 
 CREATE TABLE sak_personopplysninger_barn_uten_ident
@@ -100,7 +104,7 @@ CREATE TABLE sak_personopplysninger_barn_uten_ident
     fornavn             VARCHAR                  NULL,
     mellomnavn          VARCHAR                  NULL,
     etternavn           VARCHAR                  NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel_hos_oss TIMESTAMPTZ              NOT NULL
 );
 
 CREATE TABLE søknad
@@ -113,8 +117,8 @@ CREATE TABLE søknad
     fornavn             VARCHAR                  NOT NULL,
     etternavn           VARCHAR                  NOT NULL,
     journalpost_id      VARCHAR                  NOT NULL,
-    opprettet           TIMESTAMP WITH TIME ZONE NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
+    opprettet           TIMESTAMPTZ              NULL,
+    tidsstempel_hos_oss TIMESTAMPTZ              NOT NULL,
     kvp_type            VARCHAR                  NOT NULL,
     kvp_ja              BOOLEAN                  NULL,
     kvp_fom             DATE                     NULL,
@@ -197,22 +201,22 @@ CREATE TABLE tiltak
     deltakelse_prosent     FLOAT                    NULL,
     deltakelse_status      VARCHAR                  NOT NULL,
     kilde                  VARCHAR                  NOT NULL,
-    tidsstempel_kilde      TIMESTAMP WITH TIME ZONE NOT NULL,
-    tidsstempel_hos_oss    TIMESTAMP WITH TIME ZONE NOT NULL
+    tidsstempel_kilde      TIMESTAMPTZ              NOT NULL,
+    tidsstempel_hos_oss    TIMESTAMPTZ              NOT NULL
 );
 
 CREATE TABLE stønadsdager_tiltak
 (
-    id                  VARCHAR PRIMARY KEY,
+    id                  VARCHAR                  PRIMARY KEY,
     antall_dager        NUMERIC                  NOT NULL,
     fom                 DATE                     NOT NULL,
     tom                 DATE                     NOT NULL,
     datakilde           VARCHAR                  NOT NULL,
-    tidsstempel_kilde   TIMESTAMP WITH TIME ZONE NOT NULL,
-    tidsstempel_hos_oss TIMESTAMP WITH TIME ZONE NOT NULL,
+    tidsstempel_kilde   TIMESTAMPTZ              NOT NULL,
+    tidsstempel_hos_oss TIMESTAMPTZ              NOT NULL,
     tiltak_id           VARCHAR                  NOT NULL REFERENCES tiltak (id),
     behandling_id       VARCHAR                  NOT NULL REFERENCES behandling (id),
-    avklart_tidspunkt   TIMESTAMP WITH TIME ZONE NULL,
+    avklart_tidspunkt   TIMESTAMPTZ              NULL,
     saksbehandler       VARCHAR                  NULL
 );
 
@@ -227,7 +231,8 @@ create table meldekort
     meldekortdager       jsonb not null,
     saksbehandler        varchar null,
     beslutter            varchar null,
-    status               varchar not null
+    status               varchar not null,
+    iverksatt_tidspunkt timestamptz null
 );
 
 create table utbetalingsvedtak
@@ -236,14 +241,15 @@ create table utbetalingsvedtak
     sakId                varchar not null references sak(id),
     rammevedtakId        varchar not null references rammevedtak(id),
     brukerNavkontor      varchar not null,
-    vedtakstidspunkt     timestamp not null,
+    vedtakstidspunkt     timestamptz not null,
     saksbehandler        varchar not null,
     beslutter            varchar not null,
     forrigeVedtakId      varchar null references utbetalingsvedtak(id),
     meldekortId          varchar not null references meldekort(id),
     utbetalingsperiode   jsonb not null,
-    sendt_til_utbetaling boolean not null default false,
-    sendt_til_dokument   boolean not null default false,
+    sendt_til_utbetaling_tidspunkt timestamptz null,
+    journalpost_id       varchar null,
+    journalføringstidspunkt timestamptz null,
     utbetaling_metadata   jsonb null
 );
 
@@ -301,8 +307,8 @@ create table statistikk_stønad
     tiltak_dato             date                     null,
     gyldig_fra_dato_tiltak  date                     null,
     gyldig_til_dato_tiltak  date                     null,
-    sist_endret             timestamp with time zone null,
-    opprettet               timestamp with time zone null
+    sist_endret             timestamptz              null,
+    opprettet               timestamptz              null
 );
 
 create table statistikk_sak
@@ -313,15 +319,15 @@ create table statistikk_sak
     behandlingid           varchar                  null,
     relatertbehandlingid   varchar                  null,
     ident                  varchar                  null,
-    mottatt_tidspunkt      timestamp with time zone null,
-    registrerttidspunkt    timestamp with time zone null,
-    ferdigbehandlettidspunkt timestamp with time zone null,
-    vedtaktidspunkt        timestamp with time zone null,
-    utbetalttidspunkt      timestamp with time zone null,
-    endrettidspunkt        timestamp with time zone null,
+    mottatt_tidspunkt      timestamptz              null,
+    registrerttidspunkt    timestamptz              null,
+    ferdigbehandlettidspunkt timestamptz            null,
+    vedtaktidspunkt        timestamptz              null,
+    utbetalttidspunkt      timestamptz              null,
+    endrettidspunkt        timestamptz              null,
     søknadsformat          varchar                  null,
-    forventetoppstarttidspunkt timestamp with time zone null,
-    teknisktidspunkt       timestamp with time zone null,
+    forventetoppstarttidspunkt timestamptz          null,
+    teknisktidspunkt       timestamptz              null,
     sakytelse              varchar                  null,
     sakutland              boolean                  null,
     behandlingtype         varchar                  null,
@@ -343,6 +349,7 @@ create table statistikk_sak
 
 create table statistikk_sak_vilkår
 (
+    id                     serial                   primary key,
     statistikk_sak_id      int                      not null references statistikk_sak (id),
     vilkår                 varchar                  null,
     beskrivelse            varchar                  null,

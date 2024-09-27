@@ -62,7 +62,7 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
                         sikkerlogg.info(message)
                     }
                 }
-            level = LogLevel.ALL
+            level = LogLevel.INFO
         }
         this.expectSuccess = true
     }
