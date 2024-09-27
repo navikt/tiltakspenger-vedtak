@@ -1,6 +1,5 @@
-package no.nav.tiltakspenger.vedtak.clients.person
+package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
 
-import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -8,10 +7,9 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
-import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
+import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 
 class PersonService(
     private val personRepo: PersonRepo,
@@ -42,5 +40,5 @@ class PersonService(
         personRepo.hentFnrForSøknadId(søknadId)
             ?: throw IkkeFunnetException("Fant ikke fnr på søknadId: søknadId")
 
-    fun hentEnkelPersonForFnr(fnr: Fnr): EnkelPerson = runBlocking { personClient.hentEnkelPerson(fnr) }
+    suspend fun hentEnkelPersonForFnr(fnr: Fnr): EnkelPerson = personClient.hentEnkelPerson(fnr)
 }

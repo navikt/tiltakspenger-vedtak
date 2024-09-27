@@ -2,7 +2,9 @@ package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
+import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
@@ -10,9 +12,7 @@ import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
-import no.nav.tiltakspenger.vedtak.clients.person.PersonService
-import no.nav.tiltakspenger.vedtak.repository.person.PersonRepo
-import no.nav.tiltakspenger.vedtak.repository.person.PersonRepoImpl
+import no.nav.tiltakspenger.vedtak.repository.person.PersonPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerPostgresRepo
 
 @Suppress("unused")
@@ -38,7 +38,7 @@ open class PersonContext(
         )
     }
     open val personRepo: PersonRepo by lazy {
-        PersonRepoImpl(
+        PersonPostgresRepo(
             sessionFactory = sessionFactory as PostgresSessionFactory,
         )
     }

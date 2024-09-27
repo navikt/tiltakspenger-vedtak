@@ -9,10 +9,10 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.clients.person.PersonService
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.routes.sak.SAK_PATH
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
