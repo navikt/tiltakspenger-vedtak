@@ -6,7 +6,6 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.distribusjon.domene.DistribusjonId
 import no.nav.tiltakspenger.distribusjon.domene.VedtakSomSkalDistribueres
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -40,18 +39,18 @@ class RammevedtakPostgresRepo(
             )
         }
 
-    override fun hentForFnr(fnr: Fnr): List<Rammevedtak> =
-        sessionFactory
+    override fun hentForFnr(fnr: Fnr): List<Rammevedtak> {
+        return sessionFactory
             .withSession { session ->
                 session.run(
                     queryOf(
                         """
-                        select v.*, 
-                               s.saksnummer
-                          from rammevedtak v
-                        join sak s 
-                          on s.id = v.sak_id
-                        where s.ident = :ident
+                            select v.*,
+                                   s.saksnummer
+                              from rammevedtak v
+                            join sak s
+                              on s.id = v.sak_id 
+                            where s.ident = :ident
                         """.trimIndent(),
                         mapOf(
                             "ident" to fnr.verdi,
@@ -60,9 +59,8 @@ class RammevedtakPostgresRepo(
                         row.toVedtak(session)
                     }.asList,
                 )
-            }.also {
-                sikkerlogg.info { "Hentet ${it.size} vedtak for ident $fnr" }
             }
+    }
 
     override fun hentRammevedtakSomSkalJournalføres(
         limit: Int,
