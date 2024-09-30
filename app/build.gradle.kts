@@ -84,7 +84,7 @@ dependencies {
     implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
 
     // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
-    implementation("org.apache.pdfbox:pdfbox:2.0.28")
+    implementation("org.apache.pdfbox:pdfbox:3.0.3")
 
 
     // Arrow
