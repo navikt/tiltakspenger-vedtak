@@ -36,7 +36,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
         init {
             require(verdi.size == 14) { "En meldekortperiode må være 14 dager, men var ${verdi.size}" }
             require(verdi.first().dato.dayOfWeek == DayOfWeek.MONDAY) { "Utbetalingsperioden må starte på en mandag" }
-            require(verdi.last().dato.dayOfWeek == DayOfWeek.SUNDAY) { "Utbetalingsperioden må slutte på en sønad" }
+            require(verdi.last().dato.dayOfWeek == DayOfWeek.SUNDAY) { "Utbetalingsperioden må slutte på en søndag" }
             verdi.forEachIndexed { index, dag ->
                 require(verdi.first().dato.plusDays(index.toLong()) == dag.dato) {
                     "Datoene må være sammenhengende og sortert, men var ${verdi.map { it.dato }}"
