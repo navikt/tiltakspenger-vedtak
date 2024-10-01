@@ -27,7 +27,7 @@ fun Meldekort.toDTO(sakPeriode: Periode): MeldekortDTO =
         beslutter = beslutter,
         tiltakstype = tiltakstype.toDTO(),
         status = status.toDTO(),
-        meldekortDager = meldekortperiode.toDTO(),
+        meldekortDager = meldeperiode.toDTO(),
         totalbeløpTilUtbetaling = this.beregnTotalbeløp(),
         sakPeriode = sakPeriode.toDTO(),
     )

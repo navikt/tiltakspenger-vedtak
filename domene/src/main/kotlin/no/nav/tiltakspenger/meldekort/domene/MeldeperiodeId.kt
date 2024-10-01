@@ -12,7 +12,7 @@ import java.time.LocalDate
  * Kan brukes for å identifisere en meldeperiode i en sak, uavhengig om den har blitt korrigert.
  * En [no.nav.tiltakspenger.libs.common.MeldekortId] er unik på tvers av saker og brukes til å identifisere en enkelt meldekorthendelse (utfylling). Uavhengig om det er en førstegangsutfylling eller korrigering.
  */
-data class MeldekortIdForSak(val verdi: String) {
+data class MeldeperiodeId(val verdi: String) {
 
     val periode: Periode = Periode(
         fraOgMed = LocalDate.parse(verdi.split("/")[0]),
@@ -30,9 +30,11 @@ data class MeldekortIdForSak(val verdi: String) {
         require(tilOgMed.dayOfWeek == DayOfWeek.SUNDAY) { "MeldekortIdForSak må slutte på en søndag" }
     }
 
+    override fun toString() = verdi
+
     companion object {
-        fun fraPeriode(periode: Periode): MeldekortIdForSak {
-            return MeldekortIdForSak("${periode.fraOgMed}/${periode.tilOgMed}")
+        fun fraPeriode(periode: Periode): MeldeperiodeId {
+            return MeldeperiodeId("${periode.fraOgMed}/${periode.tilOgMed}")
         }
     }
 }

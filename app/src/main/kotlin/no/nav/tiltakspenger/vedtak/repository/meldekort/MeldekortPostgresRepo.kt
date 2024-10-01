@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
+import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
@@ -33,6 +34,7 @@ class MeldekortPostgresRepo(
                     """
                     insert into meldekort (
                         id,
+                        meldeperiode_id,
                         sakId,
                         rammevedtakId,
                         fraOgMed,
@@ -43,6 +45,7 @@ class MeldekortPostgresRepo(
                         status
                     ) values (
                         :id,
+                        :meldeperiode_id,
                         :sakId,
                         :rammevedtakId,
                         :fraOgMed,
@@ -55,11 +58,12 @@ class MeldekortPostgresRepo(
                     """.trimIndent(),
                     mapOf(
                         "id" to meldekort.id.toString(),
+                        "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
                         "sakId" to meldekort.sakId.toString(),
                         "rammevedtakId" to meldekort.rammevedtakId.toString(),
                         "fraOgMed" to meldekort.fraOgMed,
                         "tilOgMed" to meldekort.periode.tilOgMed,
-                        "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
+                        "meldekortdager" to meldekort.meldeperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
@@ -86,7 +90,7 @@ class MeldekortPostgresRepo(
                     """.trimIndent(),
                     mapOf(
                         "id" to meldekort.id.toString(),
-                        "meldekortdager" to meldekort.meldekortperiode.toDbJson(),
+                        "meldekortdager" to meldekort.meldeperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
@@ -195,10 +199,11 @@ class MeldekortPostgresRepo(
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
                     UtfyltMeldekort(
                         id = id,
+                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
                         sakId = sakId,
                         fnr = Fnr.fromString(row.string("fnr")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                        meldekortperiode = meldekortperiode,
+                        meldeperiode = meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
                         beslutter = row.stringOrNull("beslutter"),
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
@@ -211,10 +216,11 @@ class MeldekortPostgresRepo(
                     val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
                     IkkeUtfyltMeldekort(
                         id = id,
+                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
                         sakId = sakId,
                         fnr = Fnr.fromString(row.string("fnr")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                        meldekortperiode = meldekortperiode,
+                        meldeperiode = meldekortperiode,
                         forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
                         tiltakstype = meldekortperiode.tiltakstype,
                     )

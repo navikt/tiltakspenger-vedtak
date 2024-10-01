@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
+import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
@@ -179,13 +180,14 @@ internal class UtbetalingsvedtakPostgresRepo(
                                 MeldekortId.fromString(row.string("id")),
                                 session,
                             )!!
-                            .meldekortperiode as Meldeperiode.UtfyltMeldeperiode
+                            .meldeperiode as Meldeperiode.UtfyltMeldeperiode
                     UtfyltMeldekort(
                         id = MeldekortId.fromString(row.string("id")),
+                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
                         sakId = SakId.fromString(row.string("sakId")),
                         fnr = Fnr.fromString(row.string("fnr")),
                         rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                        meldekortperiode =
+                        meldeperiode =
                         meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
                         beslutter = row.string("beslutter"),
