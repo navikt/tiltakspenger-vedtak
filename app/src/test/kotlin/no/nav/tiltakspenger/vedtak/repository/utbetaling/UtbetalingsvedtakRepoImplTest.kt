@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 class UtbetalingsvedtakRepoImplTest {
+
     @Test
     fun `kan lagre og hente`() {
         withMigratedDb(runIsolated = true) { testDataHelper ->
@@ -31,8 +32,10 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.markerSendtTilUtbetaling(
                 vedtakId = utbetalingsvedtak.id,
                 tidspunkt = LocalDateTime.now(),
-                utbetalingsrespons = SendtUtbetaling("", ""),
+                utbetalingsrespons = SendtUtbetaling("myReq", "myRes"),
             )
+            utbetalingsvedtakRepo.hentUtbetalingJsonForVedtakId(utbetalingsvedtak.id) shouldBe "myReq"
+
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe emptyList()
 
             val oppdatertMedUtbetalingsdata = utbetalingsvedtakRepo.hentForVedtakId(utbetalingsvedtak.id)!!

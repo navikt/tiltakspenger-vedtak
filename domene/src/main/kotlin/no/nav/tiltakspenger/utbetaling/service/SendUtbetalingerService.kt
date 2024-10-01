@@ -19,7 +19,9 @@ class SendUtbetalingerService(
 
         utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk().forEach { utbetalingsvedtak ->
             Either.catch {
-                utbetalingsklient.iverksett(utbetalingsvedtak, correlationId).onRight {
+                val forrigeUtbetalingJson =
+                    utbetalingsvedtak.forrigeUtbetalingsvedtakId?.let { utbetalingsvedtakRepo.hentUtbetalingJsonForVedtakId(it) }
+                utbetalingsklient.iverksett(utbetalingsvedtak, forrigeUtbetalingJson, correlationId).onRight {
                     logger.info { "Utbetaling iverksatt for vedtak ${utbetalingsvedtak.id}" }
                     utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, LocalDateTime.now(), it)
                     logger.info { "Utbetaling markert som utbetalt for vedtak ${utbetalingsvedtak.id}" }

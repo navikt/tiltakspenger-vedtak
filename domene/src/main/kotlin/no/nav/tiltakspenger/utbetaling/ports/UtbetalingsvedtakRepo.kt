@@ -27,6 +27,8 @@ interface UtbetalingsvedtakRepo {
 
     fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak?
 
+    fun hentUtbetalingJsonForVedtakId(vedtakId: VedtakId): String?
+
     fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak>
 
     fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak>

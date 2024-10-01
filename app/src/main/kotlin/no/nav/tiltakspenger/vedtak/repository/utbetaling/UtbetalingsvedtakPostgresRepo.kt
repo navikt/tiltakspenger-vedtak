@@ -36,35 +36,26 @@ internal class UtbetalingsvedtakPostgresRepo(
                         rammevedtakId,
                         brukerNavkontor,
                         vedtakstidspunkt,
-                        saksbehandler,
-                        beslutter,
                         forrigeVedtakId,
-                        meldekortId,
-                        utbetalingsperiode
+                        meldekortId
                     ) values (
                         :id,
                         :sakId,
                         :rammevedtakId,
-                        :brukerNavnkontor,
+                        :brukerNavkontor,
                         :vedtakstidspunkt,
-                        :saksbehandler,
-                        :beslutter,
                         :forrigeVedtakId,
-                        :meldekortId,
-                        to_jsonb(:utbetalingsperiode::jsonb)
+                        :meldekortId
                     )
                     """.trimIndent(),
                     mapOf(
                         "id" to vedtak.id.toString(),
                         "sakId" to vedtak.sakId.toString(),
                         "rammevedtakId" to vedtak.rammevedtakId.toString(),
-                        "brukerNavnkontor" to vedtak.brukerNavkontor,
+                        "brukerNavkontor" to vedtak.brukerNavkontor,
                         "vedtakstidspunkt" to vedtak.vedtakstidspunkt,
-                        "saksbehandler" to vedtak.saksbehandler,
-                        "beslutter" to vedtak.beslutter,
-                        "forrigeVedtakId" to vedtak.forrigeUtbetalingsvedtak?.toString(),
+                        "forrigeVedtakId" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
                         "meldekortId" to vedtak.meldekortId.toString(),
-                        "utbetalingsperiode" to vedtak.utbetalingsperiode.toDbJson(),
                     ),
                 ).asUpdate,
             )
@@ -119,8 +110,8 @@ internal class UtbetalingsvedtakPostgresRepo(
         }
     }
 
-    override fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak? =
-        sessionFactory.withSession { session ->
+    override fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak? {
+        return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     "select u.*,s.ident as fnr,s.saksnummer from utbetalingsvedtak u join sak s on s.id = u.sakid where u.id = :id",
@@ -130,9 +121,23 @@ internal class UtbetalingsvedtakPostgresRepo(
                 }.asSingle,
             )
         }
+    }
 
-    override fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak> =
-        sessionFactory.withSession { session ->
+    override fun hentUtbetalingJsonForVedtakId(vedtakId: VedtakId): String? {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    "select (utbetaling_metadata->>'request') as req from utbetalingsvedtak where id = :id",
+                    mapOf("id" to vedtakId.toString()),
+                ).map { row ->
+                    row.stringOrNull("req")
+                }.asSingle,
+            )
+        }
+    }
+
+    override fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak> {
+        return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId",
@@ -142,17 +147,18 @@ internal class UtbetalingsvedtakPostgresRepo(
                 }.asList,
             )
         }
+    }
 
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak> =
-        sessionFactory.withSession { session ->
+    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak> {
+        return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
-                    select u.*, s.ident as fnr, s.saksnummer
-                    from utbetalingsvedtak u
-                    join sak s on s.id = u.sakid
-                    join rammevedtak v on u.rammevedtakId = v.id
-                    where v.behandling_id = :behandlingId
+                        select u.*, s.ident as fnr, s.saksnummer
+                        from utbetalingsvedtak u
+                        join sak s on s.id = u.sakid
+                        join rammevedtak v on u.rammevedtakId = v.id
+                        where v.behandling_id = :behandlingId
                     """.trimIndent(),
                     mapOf("behandlingId" to behandlingId.toString()),
                 ).map { row ->
@@ -160,6 +166,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                 }.asList,
             )
         }
+    }
 
     override fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int): List<UtfyltMeldekort> =
         sessionFactory.withSession { session ->
@@ -246,10 +253,7 @@ internal class UtbetalingsvedtakPostgresRepo(
             rammevedtakId = VedtakId.fromString(string("rammevedtakId")),
             brukerNavkontor = string("brukerNavkontor"),
             vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
-            saksbehandler = string("saksbehandler"),
-            beslutter = string("beslutter"),
-            utbetalingsperiode = string("utbetalingsperiode").toUtbetalingsperiode(),
-            forrigeUtbetalingsvedtak = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
+            forrigeUtbetalingsvedtakId = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
             meldekort =
             MeldekortPostgresRepo
                 .hentForMeldekortId(

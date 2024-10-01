@@ -32,7 +32,9 @@ sealed interface Meldekort {
     val saksbehandler: String?
     val beslutter: String?
     val status: MeldekortStatus
-    fun beregnTotalbeløp(): Int?
+
+    /** Totalsummen for meldeperioden */
+    val beløpTotal: Int?
 
     val meldeperiodeId: MeldeperiodeId get() = MeldeperiodeId.fraPeriode(periode)
 
@@ -58,6 +60,7 @@ sealed interface Meldekort {
         override val status: MeldekortStatus,
         val iverksattTidspunkt: LocalDateTime?,
     ) : Meldekort {
+
         init {
             require(status in listOf(MeldekortStatus.GODKJENT, MeldekortStatus.KLAR_TIL_BESLUTNING))
         }
@@ -116,7 +119,7 @@ sealed interface Meldekort {
             ).right()
         }
 
-        override fun beregnTotalbeløp(): Int = meldeperiode.beregnTotalbeløp()
+        override val beløpTotal: Int = meldeperiode.beregnTotalbeløp()
     }
 
     data class IkkeUtfyltMeldekort(
@@ -129,7 +132,7 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
     ) : Meldekort {
-        override fun beregnTotalbeløp() = null
+        override val beløpTotal = null
         override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
         fun sendTilBeslutter(
             meldekortperiode: Meldeperiode.UtfyltMeldeperiode,

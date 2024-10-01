@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 interface UtbetalingGateway {
     suspend fun iverksett(
         vedtak: Utbetalingsvedtak,
+        forrigeUtbetalingJson: String?,
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling>
 }
