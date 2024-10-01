@@ -24,15 +24,17 @@ sealed interface Meldekort {
     val fnr: Fnr
     val rammevedtakId: VedtakId
     val forrigeMeldekortId: MeldekortId?
-    val meldekortperiode: Meldeperiode
+    val meldeperiode: Meldeperiode
     val tiltakstype: TiltakstypeSomGirRett
-    val fraOgMed: LocalDate get() = meldekortperiode.fraOgMed
-    val tilOgMed: LocalDate get() = meldekortperiode.tilOgMed
-    val periode: Periode get() = meldekortperiode.periode
+    val fraOgMed: LocalDate get() = meldeperiode.fraOgMed
+    val tilOgMed: LocalDate get() = meldeperiode.tilOgMed
+    val periode: Periode get() = meldeperiode.periode
     val saksbehandler: String?
     val beslutter: String?
     val status: MeldekortStatus
     fun beregnTotalbeløp(): Int?
+
+    val meldeperiodeId: MeldeperiodeId get() = MeldeperiodeId.fraPeriode(periode)
 
     /**
      * Meldekort utfylt av saksbehandler og godkjent av beslutter.
@@ -44,11 +46,12 @@ sealed interface Meldekort {
      */
     data class UtfyltMeldekort(
         override val id: MeldekortId,
+        override val meldeperiodeId: MeldeperiodeId,
         override val sakId: SakId,
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
-        override val meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
+        override val meldeperiode: Meldeperiode.UtfyltMeldeperiode,
         override val tiltakstype: TiltakstypeSomGirRett,
         override val saksbehandler: String,
         override val beslutter: String?,
@@ -73,12 +76,13 @@ sealed interface Meldekort {
             val meldekortId = MeldekortId.random()
             return IkkeUtfyltMeldekort(
                 id = meldekortId,
+                meldeperiodeId = MeldeperiodeId.fraPeriode(periode),
                 sakId = this.sakId,
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
                 tiltakstype = this.tiltakstype,
-                meldekortperiode =
+                meldeperiode =
                 Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     meldeperiode = periode,
                     tiltakstype = this.tiltakstype,
@@ -98,11 +102,12 @@ sealed interface Meldekort {
             }
             return UtfyltMeldekort(
                 id = this.id,
+                meldeperiodeId = this.meldeperiodeId,
                 sakId = this.sakId,
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
-                meldekortperiode = this.meldekortperiode,
+                meldeperiode = this.meldeperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = this.saksbehandler,
                 beslutter = beslutter.navIdent,
@@ -111,17 +116,18 @@ sealed interface Meldekort {
             ).right()
         }
 
-        override fun beregnTotalbeløp(): Int = meldekortperiode.beregnTotalbeløp()
+        override fun beregnTotalbeløp(): Int = meldeperiode.beregnTotalbeløp()
     }
 
     data class IkkeUtfyltMeldekort(
         override val id: MeldekortId,
+        override val meldeperiodeId: MeldeperiodeId,
         override val sakId: SakId,
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
         override val tiltakstype: TiltakstypeSomGirRett,
-        override val meldekortperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
+        override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
     ) : Meldekort {
         override fun beregnTotalbeløp() = null
         override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
@@ -139,11 +145,12 @@ sealed interface Meldekort {
             }
             return UtfyltMeldekort(
                 id = this.id,
+                meldeperiodeId = this.meldeperiodeId,
                 sakId = this.sakId,
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
-                meldekortperiode = meldekortperiode,
+                meldeperiode = meldekortperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = this.beslutter,
@@ -165,12 +172,13 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
 
     return Meldekort.IkkeUtfyltMeldekort(
         id = meldekortId,
+        meldeperiodeId = MeldeperiodeId.fraPeriode(periode),
         sakId = this.sakId,
         fnr = this.behandling.fnr,
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
         tiltakstype = tiltakstype,
-        meldekortperiode =
+        meldeperiode =
         Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
             meldeperiode = periode,
             utfallsperioder = utfallsperioder,

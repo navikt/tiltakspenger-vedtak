@@ -10,9 +10,9 @@ internal class MeldekortIdForSakTest {
     @Test
     fun fraPeriode() {
         val periode = Periode(1.mars(2021), 14.mars(2021))
-        val meldekortIdForSak = MeldekortIdForSak.fraPeriode(periode)
-        "2021-03-01" shouldBe meldekortIdForSak.fraOgMed.toString()
-        "2021-03-14" shouldBe meldekortIdForSak.tilOgMed.toString()
-        meldekortIdForSak.verdi shouldBe "2021-03-01/2021-03-14"
+        val meldeperiodeId = MeldeperiodeId.fraPeriode(periode)
+        "2021-03-01" shouldBe meldeperiodeId.fraOgMed.toString()
+        "2021-03-14" shouldBe meldeperiodeId.tilOgMed.toString()
+        meldeperiodeId.verdi shouldBe "2021-03-01/2021-03-14"
     }
 }

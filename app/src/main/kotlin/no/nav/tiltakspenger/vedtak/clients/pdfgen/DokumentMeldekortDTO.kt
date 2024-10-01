@@ -47,7 +47,7 @@ fun Meldekort.UtfyltMeldekort.toPdf(): JsonNode {
             tom = periode.tilOgMed.toString(),
         ),
         saksbehandler = saksbehandler,
-        meldekortDager = this.meldekortperiode.verdi.map { dag ->
+        meldekortDager = this.meldeperiode.verdi.map { dag ->
             DokumentMeldekortDTO.MeldekortDagDTO(
                 dato = dag.dato.toString(),
                 tiltakType = dag.tiltakstype.toString(),

@@ -62,7 +62,7 @@ fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
         saksbehandler = this.saksbehandler,
         beslutter = this.beslutter!!,
         meldekort = this,
-        utbetalingsperiode = this.meldekortperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
+        utbetalingsperiode = this.meldeperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
         forrigeUtbetalingsvedtak = forrigeUtbetalingsvedtak,
         sendtTilUtbetaling = null,
         journalpostId = null,
