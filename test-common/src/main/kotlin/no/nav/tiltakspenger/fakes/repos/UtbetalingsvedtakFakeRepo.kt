@@ -41,6 +41,10 @@ class UtbetalingsvedtakFakeRepo(
 
     override fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak? = data.get()[vedtakId]
 
+    override fun hentUtbetalingJsonForVedtakId(vedtakId: VedtakId): String? {
+        return "fake-utbetaling-json"
+    }
+
     override fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak> = data.get().values.filter { it.sakId == sakId }
 
     override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak> {

@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 /**
- * @property forrigeUtbetalingsvedtak er null for første utbetalingsvedtak i en sak.
+ * @property forrigeUtbetalingsvedtakId er null for første utbetalingsvedtak i en sak.
  */
 data class Utbetalingsvedtak(
     val id: VedtakId,
@@ -23,23 +23,20 @@ data class Utbetalingsvedtak(
     val rammevedtakId: VedtakId,
     val vedtakstidspunkt: LocalDateTime,
     val brukerNavkontor: String,
-    val saksbehandler: String,
-    val beslutter: String,
     val meldekort: Meldekort.UtfyltMeldekort,
-    val utbetalingsperiode: UtbetalingsperioderGruppertPåMeldekortperiode,
-    val forrigeUtbetalingsvedtak: VedtakId?,
+    val forrigeUtbetalingsvedtakId: VedtakId?,
     val sendtTilUtbetaling: LocalDateTime?,
     val journalpostId: JournalpostId?,
     val journalføringstidspunkt: LocalDateTime?,
 ) {
-    val periode = utbetalingsperiode.periode
-    val beløp = utbetalingsperiode.beløp
-    val meldekortId = utbetalingsperiode.meldekortId
+    val periode = meldekort.periode
+    val beløpTotal = meldekort.beløpTotal
+    val meldekortId = meldekort.id
+    val meldeperiodeId = meldekort.meldeperiodeId
+    val saksbehandler: String = meldekort.saksbehandler
+    val beslutter: String = meldekort.beslutter!!
 
     init {
-        require(utbetalingsperiode.periode == utbetalingsperiode.periode) {
-            "Utbetalingsperiodene må være lik meldekortperiodene"
-        }
         require(vedtakstidspunkt.truncatedTo(ChronoUnit.MICROS) == vedtakstidspunkt) {
             "vedtakstidspunkt må være i mikrosekunder, men var: $vedtakstidspunkt"
         }
@@ -59,11 +56,8 @@ fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
         vedtakstidspunkt = nå(),
         // TODO pre-mvp: Hent fra NORG
         brukerNavkontor = "0220",
-        saksbehandler = this.saksbehandler,
-        beslutter = this.beslutter!!,
         meldekort = this,
-        utbetalingsperiode = this.meldeperiode.genererUtbetalingsperioderGruppertPåMeldekortperiode(),
-        forrigeUtbetalingsvedtak = forrigeUtbetalingsvedtak,
+        forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtak,
         sendtTilUtbetaling = null,
         journalpostId = null,
         journalføringstidspunkt = null,
@@ -71,11 +65,11 @@ fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
 
 fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO =
     StatistikkUtbetalingDTO(
-        // er rammevedtakId det riktige her?
-        id = this.rammevedtakId.toString(),
+        // TODO pre-mvp jah: Vi sender uuid-delen av denne til helved som behandlingId som mappes videre til OS/UR i feltet 'henvisning'.
+        id = this.id.toString(),
         sakId = this.sakId.toString(),
         saksnummer = this.saksnummer.toString(),
-        beløp = this.beløp,
+        beløp = this.beløpTotal,
         beløpBeskrivelse = "",
         årsak = "",
         posteringDato = this.vedtakstidspunkt.toLocalDate(),

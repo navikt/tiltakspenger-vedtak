@@ -45,12 +45,14 @@ class UtbetalingHttpClient(
 
     override suspend fun iverksett(
         vedtak: Utbetalingsvedtak,
+        forrigeUtbetalingJson: String?,
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling> =
         withContext(Dispatchers.IO) {
             Either
                 .catch {
-                    val request = createRequest(vedtak, correlationId)
+                    val jsonPayload = vedtak.toDTO(forrigeUtbetalingJson)
+                    val request = createRequest(correlationId, jsonPayload)
 
                     val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
                     val body = httpResponse.body()
@@ -68,8 +70,8 @@ class UtbetalingHttpClient(
         }
 
     private suspend fun createRequest(
-        vedtak: Utbetalingsvedtak,
         correlationId: CorrelationId,
+        jsonPayload: String,
     ): HttpRequest? =
         HttpRequest
             .newBuilder()
@@ -80,7 +82,7 @@ class UtbetalingHttpClient(
             .header("Content-Type", "application/json")
             // Dette er kun for vår del, open telemetry vil kunne være et alternativ. Slack tråd: https://nav-it.slack.com/archives/C06SJTR2X3L/p1724072054018589
             .header("Nav-Call-Id", correlationId.value)
-            .POST(HttpRequest.BodyPublishers.ofString(vedtak.toDTO()))
+            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
             .build()
 }
 

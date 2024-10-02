@@ -15,6 +15,7 @@ class UtbetalingFakeGateway : UtbetalingGateway {
 
     override suspend fun iverksett(
         vedtak: Utbetalingsvedtak,
+        forrigeUtbetalingJson: String?,
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling> {
         val response = SendtUtbetaling("request - ${vedtak.id}", "response - ${vedtak.id}")
