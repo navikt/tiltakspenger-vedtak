@@ -55,12 +55,12 @@ class UtbetalingHttpClient(
                     val request = createRequest(correlationId, jsonPayload)
 
                     val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-                    val body = httpResponse.body()
+                    val jsonResponse = httpResponse.body()
                     mapStatus(
                         status = httpResponse.statusCode(),
                         vedtak = vedtak,
-                        request = body,
-                        response = body,
+                        request = jsonPayload,
+                        response = jsonResponse,
                     )
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
